@@ -49,6 +49,8 @@ This includes things like:
 
 We'll be continuing to develop new components on an on-going basis, with a goal of reaching a pretty fleshed out v1.0 by the end of the year.
 
+---
+
 ## Menu Button (Dropdown)
 
 [View complete demo on CodeSandbox](https://codesandbox.io/s/flamboyant-glade-b2jb4?file=/src/App.vue)
@@ -69,24 +71,16 @@ The `MenuButton` will automatically open/close the `MenuItems` when clicked, and
 ```vue
 <template>
   <Menu>
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
     <MenuItems>
       <MenuItem v-slot="{ active }">
-        <a :class="{ 'bg-blue-500': active }" href="/account-settings">
-          Account settings
-        </a>
+        <a :class="{ 'bg-blue-500': active }" href="/account-settings"> Account settings </a>
       </MenuItem>
       <MenuItem v-slot="{ active }">
-        <a :class="{ 'bg-blue-500': active }" href="/account-settings">
-          Documentation
-        </a>
+        <a :class="{ 'bg-blue-500': active }" href="/account-settings"> Documentation </a>
       </MenuItem>
       <MenuItem v-slot="{ active }" disabled>
-        <span :class="{ 'bg-blue-500': active }">
-          Invite a friend (coming soon!)
-        </span>
+        <span :class="{ 'bg-blue-500': active }"> Invite a friend (coming soon!) </span>
       </MenuItem>
     </MenuItems>
   </Menu>
@@ -117,9 +111,7 @@ You can use this state to conditionally apply whatever active/focus styles you l
 ```vue
 <template>
   <Menu>
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
     <MenuItems>
       <!-- Use the `active` state to conditionally style the active item. -->
       <MenuItem v-slot="{ active }">
@@ -140,16 +132,12 @@ By default, your `MenuItems` instance will be shown/hidden automatically based o
 ```vue
 <template>
   <Menu>
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
 
     <!-- By default, this will automatically show/hide when the MenuButton is pressed. -->
     <MenuItems>
       <MenuItem v-slot="{ active }">
-        <a :class="{ 'bg-blue-500': active }" href="/account-settings">
-          Account settings
-        </a>
+        <a :class="{ 'bg-blue-500': active }" href="/account-settings"> Account settings </a>
       </MenuItem>
       <!-- ... -->
     </MenuItems>
@@ -162,17 +150,13 @@ If you'd rather handle this yourself (perhaps because you need to add an extra w
 ```vue
 <template>
   <Menu v-slot="{ open }">
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
 
     <div v-show="open">
       <!-- Using `static`, `MenuItems` is always rendered and ignores the `open` state. -->
       <MenuItems static>
         <MenuItem v-slot="{ active }">
-          <a :class="{ 'bg-blue-500': active }" href="/account-settings">
-            Account settings
-          </a>
+          <a :class="{ 'bg-blue-500': active }" href="/account-settings"> Account settings </a>
         </MenuItem>
         <!-- ... -->
       </MenuItems>
@@ -188,9 +172,7 @@ Use the `disabled` prop to disable a `MenuItem`. This will make it unselectable 
 ```vue
 <template>
   <Menu>
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
     <MenuItems>
       <MenuItem disabled>
         <span class="opacity-75">Invite a friend (coming soon!)</span>
@@ -208,9 +190,7 @@ To animate the opening/closing of the menu panel, use Vue's built-in `transition
 ```vue
 <template>
   <Menu>
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
     <transition
       enter-active-class="transition duration-100 ease-out"
       enter-from-class="transform scale-95 opacity-0"
@@ -221,9 +201,7 @@ To animate the opening/closing of the menu panel, use Vue's built-in `transition
     >
       <MenuItems>
         <MenuItem v-slot="{ active }">
-          <a :class="{ 'bg-blue-500': active }" href="/account-settings">
-            Account settings
-          </a>
+          <a :class="{ 'bg-blue-500': active }" href="/account-settings"> Account settings </a>
         </MenuItem>
         <!-- ... -->
       </MenuItems>
@@ -241,18 +219,14 @@ For example, if you'd like to add a little header section to the menu with some 
 ```vue
 <template>
   <Menu>
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
     <MenuItems>
       <div class="px-4 py-3">
         <p class="text-sm leading-5">Signed in as</p>
         <p class="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
       </div>
       <MenuItem v-slot="{ active }">
-        <a :class="{ 'bg-blue-500': active }" href="/account-settings">
-          Account settings
-        </a>
+        <a :class="{ 'bg-blue-500': active }" href="/account-settings"> Account settings </a>
       </MenuItem>
       <!-- ... -->
     </MenuItems>
@@ -274,16 +248,12 @@ This is easy to change using the `as` prop, which exists on every component.
 <template>
   <!-- Render a `div` instead of no wrapper element -->
   <Menu as="div">
-    <MenuButton>
-      More
-    </MenuButton>
+    <MenuButton> More </MenuButton>
     <!-- Render a `ul` instead of a `div` -->
     <MenuItems as="ul">
       <!-- Render an `li` instead of no wrapper element -->
       <MenuItem as="li" v-slot="{ active }">
-        <a href="/account-settings" :class="{ 'bg-blue-500': active }">
-          Account settings
-        </a>
+        <a href="/account-settings" :class="{ 'bg-blue-500': active }"> Account settings </a>
       </MenuItem>
       <!-- ... -->
     </MenuItems>
@@ -298,15 +268,11 @@ To tell an element to render its children directly with no wrapper element, use 
   <Menu>
     <!-- Render no wrapper, instead pass in a button manually -->
     <MenuButton as="template">
-      <button>
-        More
-      </button>
+      <button>More</button>
     </MenuButton>
     <MenuItems>
       <MenuItem v-slot="{ active }">
-        <a href="/account-settings" :class="{ 'bg-blue-500': active }">
-          Account settings
-        </a>
+        <a href="/account-settings" :class="{ 'bg-blue-500': active }"> Account settings </a>
       </MenuItem>
       <!-- ... -->
     </MenuItems>
@@ -330,9 +296,9 @@ To tell an element to render its children directly with no wrapper element, use 
 
 ##### Props
 
-| Prop | Type                | Default                           | Description                                                |
-| ---- | ------------------- | --------------------------------- | ---------------------------------------------------------- |
-| `as` | String \| Component | `template` _(no wrapper element_) | The element or component the `MenuItems` should render as. |
+| Prop | Type                | Default                           | Description                                           |
+| ---- | ------------------- | --------------------------------- | ----------------------------------------------------- |
+| `as` | String \| Component | `template` _(no wrapper element_) | The element or component the `Menu` should render as. |
 
 ##### Slot props
 
@@ -351,9 +317,9 @@ To tell an element to render its children directly with no wrapper element, use 
 
 ##### Props
 
-| Prop | Type                | Default  | Description                                                |
-| ---- | ------------------- | -------- | ---------------------------------------------------------- |
-| `as` | String \| Component | `button` | The element or component the `MenuItems` should render as. |
+| Prop | Type                | Default  | Description                                                 |
+| ---- | ------------------- | -------- | ----------------------------------------------------------- |
+| `as` | String \| Component | `button` | The element or component the `MenuButton` should render as. |
 
 ##### Slot props
 
