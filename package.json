@@ -1,0 +1,40 @@
+{
+  "name": "headlessui",
+  "version": "0.0.1",
+  "description": "Headless UI components for various libraries like React and Vue",
+  "main": "index.js",
+  "repository": "https://github.com/tailwindlabs/headlessui",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "react": "yarn workspace @headlessui/react",
+    "vue": "yarn workspace @headlessui/vue",
+    "shared": "yarn workspace @headlessui/shared",
+    "build": "yarn workspaces run build",
+    "test": "yarn workspaces run test",
+    "lint": "./scripts/lint.sh"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "devDependencies": {
+    "@types/node": "^14.10.1",
+    "babel-jest": "^26.3.0",
+    "husky": "^4.3.0",
+    "jest": "^26.4.2",
+    "tsdx": "^0.13.3",
+    "tslib": "^2.0.1",
+    "typescript": "^3.9.7"
+  }
+}
