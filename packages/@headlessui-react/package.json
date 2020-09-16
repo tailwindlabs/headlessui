@@ -1,0 +1,42 @@
+{
+  "name": "@headlessui/react",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "module": "dist/headlessui.esm.js",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/headlessui.git",
+    "directory": "packages/@headlessui-react"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "playground": "next dev",
+    "test": "../../scripts/test.sh",
+    "build": "../../scripts/build.sh",
+    "lint": "../../scripts/lint.sh"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "@popperjs/core": "^2.4.4",
+    "@testing-library/react": "^11.0.2",
+    "framer-motion": "^2.6.13",
+    "next": "9.5.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "snapshot-diff": "^0.8.1"
+  }
+}
