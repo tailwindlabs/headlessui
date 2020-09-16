@@ -8,7 +8,7 @@ export enum MenuState {
   Closed,
 }
 
-type MenuButtonOptions = { attributes?: Record<string, string | null> } & (
+type MenuButtonOptions = { attributes?: Record<string, string | null>; textContent?: string } & (
   | { state: MenuButtonState.Closed }
   | { state: MenuButtonState.Open }
 )
@@ -28,6 +28,10 @@ export function assertMenuButton(button: HTMLElement | null, options: MenuButton
     if (options.state === MenuButtonState.Closed) {
       expect(button.getAttribute('aria-controls')).toBeNull()
       expect(button.getAttribute('aria-expanded')).toBeNull()
+    }
+
+    if (options.textContent) {
+      expect(button.textContent?.trim()).toBe(options.textContent.trim())
     }
 
     // Ensure menu button has the following attributes
@@ -90,7 +94,7 @@ export function assertNoActiveMenuItem(menu: HTMLElement | null) {
   }
 }
 
-type MenuOptions = { attributes?: Record<string, string | null> } & (
+type MenuOptions = { attributes?: Record<string, string | null>; textContent?: string } & (
   | { state: MenuState.Closed }
   | { state: MenuState.Open }
 )
@@ -109,6 +113,10 @@ export function assertMenu(menu: HTMLElement | null, options: MenuOptions) {
       // Check that the menu is focused
       expect(document.activeElement).toBe(menu)
 
+      if (options.textContent) {
+        expect(menu.textContent?.trim()).toBe(options.textContent.trim())
+      }
+
       // Ensure menu button has the following attributes
       for (let attributeName in options.attributes) {
         expect(menu.getAttribute(attributeName)).toEqual(options.attributes[attributeName])
@@ -126,7 +134,7 @@ export function assertMenu(menu: HTMLElement | null, options: MenuOptions) {
   }
 }
 
-type MenuItemOptions = { tag: string }
+type MenuItemOptions = { tag?: string; attributes?: Record<string, string | null> }
 export function assertMenuItem(item: HTMLElement | null, options?: MenuItemOptions) {
   try {
     if (item === null) return expect(item).not.toBe(null)
@@ -139,8 +147,15 @@ export function assertMenuItem(item: HTMLElement | null, options?: MenuItemOptio
     expect(item.getAttribute('role')).toBe('menuitem')
     expect(item.getAttribute('tabindex')).toBe('-1')
 
-    if (options?.tag) {
-      expect(item.tagName.toLowerCase()).toBe(options.tag)
+    // Ensure menu button has the following attributes
+    if (options) {
+      for (let attributeName in options.attributes) {
+        expect(item.getAttribute(attributeName)).toEqual(options.attributes[attributeName])
+      }
+
+      if (options.tag) {
+        expect(item.tagName.toLowerCase()).toBe(options.tag)
+      }
     }
   } catch (err) {
     if (Error.captureStackTrace) {

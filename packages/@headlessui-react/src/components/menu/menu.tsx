@@ -1,9 +1,9 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#menubutton
 import * as React from 'react'
 
-import { AsRenderProp, AsShortcut } from '../../types'
+import { Props } from '../../types'
 import { match } from '../../utils/match'
-import { forwardRefWithAs, render, isRenderProp } from '../../utils/renderable'
+import { forwardRefWithAs, render } from '../../utils/render'
 import { Transition, TransitionClasses } from '../transitions/transition'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -231,7 +231,7 @@ const DEFAULT_MENU_TAG = React.Fragment
 type MenuRenderPropArg = { open: boolean }
 
 export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
-  props: AsShortcut<TTag> | AsRenderProp<MenuRenderPropArg>
+  props: Props<TTag, MenuRenderPropArg>
 ) {
   const d = useDisposables()
   const reducerBag = React.useReducer(stateReducer, defaultState)
@@ -283,7 +283,7 @@ type ButtonRenderPropArg = { open: boolean; focused: boolean }
 const Button = forwardRefWithAs(function Button<
   TTag extends React.ElementType = typeof DEFAULT_BUTTON_TAG
 >(
-  props: AsShortcut<TTag, ButtonPropsWeControl> | AsRenderProp<ButtonRenderPropArg>,
+  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: React.Ref<HTMLButtonElement>
 ) {
   const [state, dispatch] = useMenuContext([Menu.name, Button.name].join('.'))
@@ -292,8 +292,6 @@ const Button = forwardRefWithAs(function Button<
 
   const id = `tailwindui-menu-button-${useId()}`
   const d = useDisposables()
-
-  const usingRenderProp = isRenderProp(props)
 
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -337,12 +335,10 @@ const Button = forwardRefWithAs(function Button<
 
   const handleFocus = React.useCallback(() => {
     if (state.menuState === MenuStates.Open) state.itemsRef.current?.focus()
-    if (usingRenderProp) setFocused(true)
-  }, [state, usingRenderProp, setFocused])
+    setFocused(true)
+  }, [state, setFocused])
 
-  const handleBlur = React.useCallback(() => {
-    if (usingRenderProp) setFocused(false)
-  }, [usingRenderProp, setFocused])
+  const handleBlur = React.useCallback(() => setFocused(false), [setFocused])
 
   const propsBag = React.useMemo(() => ({ open: state.menuState === MenuStates.Open, focused }), [
     state,
@@ -384,7 +380,7 @@ type ItemsRenderPropArg = { open: boolean }
 const Items = forwardRefWithAs(function Items<
   TTag extends React.ElementType = typeof DEFAULT_ITEMS_TAG
 >(
-  props: (AsShortcut<TTag, ItemsPropsWeControl> | AsRenderProp<ItemsRenderPropArg>) &
+  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
     TransitionClasses & { static?: boolean },
   ref: React.Ref<HTMLDivElement>
 ) {
@@ -515,10 +511,7 @@ const DEFAULT_ITEM_TAG = React.Fragment
 type ItemRenderPropArg = { active: boolean; disabled: boolean }
 
 function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
-  props: (
-    | AsShortcut<TTag, MenuItemPropsWeControl | 'className'>
-    | AsRenderProp<ItemRenderPropArg>
-  ) & {
+  props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl | 'className'> & {
     disabled?: boolean
     onClick?: (event: { preventDefault: Function }) => void
 

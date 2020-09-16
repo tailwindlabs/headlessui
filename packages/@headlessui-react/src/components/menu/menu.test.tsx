@@ -30,7 +30,7 @@ import {
 function getMenuButton(): HTMLElement | null {
   // This is just an assumption for our tests. We assume that we only have 1 button. And if we have
   // more, than we assume that it is the first one.
-  return document.querySelector('button')
+  return document.querySelector('[role="button"],button')
 }
 
 function getMenu(): HTMLElement | null {
@@ -133,7 +133,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Menu>
-            <Menu.Button>{({ open }) => <button data-open={open}>Trigger</button>}</Menu.Button>
+            <Menu.Button>{JSON.stringify}</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">Item A</Menu.Item>
               <Menu.Item as="a">Item B</Menu.Item>
@@ -144,7 +144,8 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1', 'data-open': 'false' },
+          attributes: { id: 'tailwindui-menu-button-1' },
+          textContent: JSON.stringify({ open: false, focused: false }),
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -152,7 +153,42 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Open,
-          attributes: { id: 'tailwindui-menu-button-1', 'data-open': 'true' },
+          attributes: { id: 'tailwindui-menu-button-1' },
+          textContent: JSON.stringify({ open: true, focused: false }),
+        })
+        assertMenu(getMenu(), { state: MenuState.Open })
+      })
+    )
+
+    it(
+      'should be possible to render a Menu.Button using a render prop and an `as` prop',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button as="div" role="button">
+              {JSON.stringify}
+            </Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Closed,
+          attributes: { id: 'tailwindui-menu-button-1' },
+          textContent: JSON.stringify({ open: false, focused: false }),
+        })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        await click(getMenuButton())
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Open,
+          attributes: { id: 'tailwindui-menu-button-1' },
+          textContent: JSON.stringify({ open: true, focused: false }),
         })
         assertMenu(getMenu(), { state: MenuState.Open })
       })
@@ -167,12 +203,10 @@ describe('Rendering', () => {
           <Menu>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
-              {({ open }) => (
-                <div data-open={open}>
-                  <Menu.Item as="a">Item A</Menu.Item>
-                  <Menu.Item as="a">Item B</Menu.Item>
-                  <Menu.Item as="a">Item C</Menu.Item>
-                </div>
+              {data => (
+                <>
+                  <Menu.Item as="a">{JSON.stringify(data)}</Menu.Item>
+                </>
               )}
             </Menu.Items>
           </Menu>
@@ -190,7 +224,10 @@ describe('Rendering', () => {
           state: MenuButtonState.Open,
           attributes: { id: 'tailwindui-menu-button-1' },
         })
-        assertMenu(getMenu(), { state: MenuState.Open, attributes: { 'data-open': 'true' } })
+        assertMenu(getMenu(), {
+          state: MenuState.Open,
+          textContent: JSON.stringify({ open: true }),
+        })
       })
     )
 
@@ -211,7 +248,38 @@ describe('Rendering', () => {
     })
   })
 
-  describe('MenuItem', () => {})
+  describe('MenuItem', () => {
+    it(
+      'should be possible to render a MenuItem using a render prop',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">{JSON.stringify}</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Closed,
+          attributes: { id: 'tailwindui-menu-button-1' },
+        })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        await click(getMenuButton())
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Open,
+          attributes: { id: 'tailwindui-menu-button-1' },
+        })
+        assertMenu(getMenu(), {
+          state: MenuState.Open,
+          textContent: JSON.stringify({ active: false, disabled: false }),
+        })
+      })
+    )
+  })
 })
 
 describe('Rendering composition', () => {
