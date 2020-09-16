@@ -29,7 +29,7 @@ yarn add @headlessui/vue
 
 _This project is still in early development. New components will be added regularly over the coming months._
 
-- [Menu Button](#menu-button-dropdown)
+- [Menu Button (Dropdown)](#menu-button-dropdown)
 
 ### Roadmap
 
