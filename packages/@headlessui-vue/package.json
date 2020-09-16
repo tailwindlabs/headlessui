@@ -1,0 +1,42 @@
+{
+  "name": "@headlessui/vue",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "module": "dist/headlessui.esm.js",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/headlessui.git",
+    "directory": "packages/@headlessui-vue"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "playground": "vite",
+    "build": "../../scripts/build.sh",
+    "test": "../../scripts/test.sh",
+    "lint": "../../scripts/lint.sh"
+  },
+  "devDependencies": {
+    "@popperjs/core": "^2.4.4",
+    "@tailwindcss/ui": "^0.6.0",
+    "@testing-library/vue": "^5.0.4",
+    "@types/debounce": "^1.2.0",
+    "@types/node": "^14.6.4",
+    "@vue/compiler-sfc": "^3.0.0-rc.10",
+    "@vue/test-utils": "^2.0.0-beta.4",
+    "husky": "^4.3.0",
+    "tailwindcss": "^1.8.8",
+    "tsdx": "^0.13.3",
+    "vite": "^1.0.0-rc.4",
+    "vue": "^3.0.0-rc.10"
+  }
+}
