@@ -211,15 +211,6 @@ function useMenuContext(component: string) {
   return context
 }
 
-const defaultState: StateDefinition = {
-  menuState: MenuStates.Closed,
-  buttonRef: React.createRef(),
-  itemsRef: React.createRef(),
-  items: [],
-  searchQuery: '',
-  activeItemIndex: null,
-}
-
 function stateReducer(state: StateDefinition, action: Actions) {
   return match(action.type, reducers, state, action)
 }
@@ -234,7 +225,14 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
   props: Props<TTag, MenuRenderPropArg>
 ) {
   const d = useDisposables()
-  const reducerBag = React.useReducer(stateReducer, defaultState)
+  const reducerBag = React.useReducer(stateReducer, {
+    menuState: MenuStates.Closed,
+    buttonRef: React.createRef(),
+    itemsRef: React.createRef(),
+    items: [],
+    searchQuery: '',
+    activeItemIndex: null,
+  } as StateDefinition)
   const [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
 
   React.useEffect(() => {
