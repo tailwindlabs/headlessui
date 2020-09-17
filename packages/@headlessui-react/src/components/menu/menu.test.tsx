@@ -81,7 +81,7 @@ describe('Safe guards', () => {
 
       assertMenuButton(getMenuButton(), {
         state: MenuButtonState.Closed,
-        attributes: { id: 'tailwindui-menu-button-1' },
+        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu(getMenu(), { state: MenuState.Closed })
     })
@@ -112,7 +112,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -120,7 +120,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Open,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Open })
       })
@@ -144,7 +144,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: false, focused: false }),
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
@@ -153,7 +153,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Open,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: true, focused: false }),
         })
         assertMenu(getMenu(), { state: MenuState.Open })
@@ -178,7 +178,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: false, focused: false }),
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
@@ -187,7 +187,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Open,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: true, focused: false }),
         })
         assertMenu(getMenu(), { state: MenuState.Open })
@@ -214,7 +214,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -222,7 +222,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Open,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), {
           state: MenuState.Open,
@@ -263,7 +263,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -271,7 +271,7 @@ describe('Rendering', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Open,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), {
           state: MenuState.Open,
@@ -305,7 +305,7 @@ describe('Rendering composition', () => {
 
       assertMenuButton(getMenuButton(), {
         state: MenuButtonState.Closed,
-        attributes: { id: 'tailwindui-menu-button-1' },
+        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -362,7 +362,7 @@ describe('Rendering composition', () => {
 
       assertMenuButton(getMenuButton(), {
         state: MenuButtonState.Closed,
-        attributes: { id: 'tailwindui-menu-button-1' },
+        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -394,7 +394,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -408,7 +408,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -463,7 +463,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -500,7 +500,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -539,7 +539,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -569,7 +569,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -604,7 +604,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -648,7 +648,7 @@ describe('Keyboard interactions', () => {
 
       assertMenuButton(getMenuButton(), {
         state: MenuButtonState.Closed,
-        attributes: { id: 'tailwindui-menu-button-1' },
+        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -691,7 +691,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -705,7 +705,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -758,7 +758,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -795,7 +795,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -834,7 +834,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -874,7 +874,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -905,7 +905,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -919,7 +919,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -954,7 +954,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -968,7 +968,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -1005,7 +1005,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1019,7 +1019,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -1072,7 +1072,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1120,7 +1120,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1162,7 +1162,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1198,7 +1198,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1212,7 +1212,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -1269,7 +1269,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1307,7 +1307,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1349,7 +1349,7 @@ describe('Keyboard interactions', () => {
 
         assertMenuButton(getMenuButton(), {
           state: MenuButtonState.Closed,
-          attributes: { id: 'tailwindui-menu-button-1' },
+          attributes: { id: 'headlessui-menu-button-1' },
         })
         assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -1363,7 +1363,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
         assertMenu(getMenu(), {
           state: MenuState.Open,
-          attributes: { id: 'tailwindui-menu-items-2' },
+          attributes: { id: 'headlessui-menu-items-2' },
         })
         assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 
@@ -2073,7 +2073,7 @@ describe('Mouse interactions', () => {
 
       assertMenuButton(getMenuButton(), {
         state: MenuButtonState.Closed,
-        attributes: { id: 'tailwindui-menu-button-1' },
+        attributes: { id: 'headlessui-menu-button-1' },
       })
       assertMenu(getMenu(), { state: MenuState.Closed })
 
@@ -2084,7 +2084,7 @@ describe('Mouse interactions', () => {
       assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
       assertMenu(getMenu(), {
         state: MenuState.Open,
-        attributes: { id: 'tailwindui-menu-items-2' },
+        attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu(getMenuButton(), getMenu())
 

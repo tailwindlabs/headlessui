@@ -288,7 +288,7 @@ const Button = forwardRefWithAs(function Button<
   const buttonRef = useSyncRefs(state.buttonRef, ref)
   const [focused, setFocused] = React.useState(false)
 
-  const id = `tailwindui-menu-button-${useId()}`
+  const id = `headlessui-menu-button-${useId()}`
   const d = useDisposables()
 
   const handleKeyDown = React.useCallback(
@@ -395,7 +395,7 @@ const Items = forwardRefWithAs(function Items<
   const [state, dispatch] = useMenuContext([Menu.name, Items.name].join('.'))
   const itemsRef = useSyncRefs(state.itemsRef, ref)
 
-  const id = `tailwindui-menu-items-${useId()}`
+  const id = `headlessui-menu-items-${useId()}`
   const d = useDisposables()
   const searchDisposables = useDisposables()
 
@@ -520,7 +520,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
   const { disabled = false, className, onClick, ...passthroughProps } = props
   const [state, dispatch] = useMenuContext([Menu.name, Item.name].join('.'))
   const d = useDisposables()
-  const id = `tailwindui-menu-item-${useId()}`
+  const id = `headlessui-menu-item-${useId()}`
   const active =
     state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
 
