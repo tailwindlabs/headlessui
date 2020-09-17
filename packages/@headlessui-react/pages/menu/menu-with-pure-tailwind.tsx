@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { Menu } from '@tailwindui/react'
+import { Menu } from '@headlessui/react'
 
 import { classNames } from '../../src/utils/class-names'
 import { PropsOf } from '../../src/types'

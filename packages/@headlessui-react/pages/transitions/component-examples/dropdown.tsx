@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
-import { Transition } from '@tailwindui/react'
+import { Transition } from '@headlessui/react'
 
 export default function Home() {
   return (

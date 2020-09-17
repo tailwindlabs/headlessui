@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Head from 'next/head'
-import { Transition } from '@tailwindui/react'
+import { Transition } from '@headlessui/react'
 
 import { classNames } from '../../../src/utils/class-names'
 import { match } from '../../../src/utils/match'
