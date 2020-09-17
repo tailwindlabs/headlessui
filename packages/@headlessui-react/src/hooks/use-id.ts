@@ -1,9 +1,11 @@
 import * as React from 'react'
 
-if (process.env.JEST_WORKER_ID !== undefined) {
-  beforeEach(() => {
-    id = 0
-  })
+if (process.env.NODE_ENV === 'test') {
+  if (process.env.JEST_WORKER_ID !== undefined) {
+    beforeEach(() => {
+      id = 0
+    })
+  }
 }
 
 let id = 0
