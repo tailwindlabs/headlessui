@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/",
+    "component": "./components/Home.vue"
+  },
+  {
+    "name": "Menu",
+    "path": "/menu",
+    "children": [
+      {
+        "name": "Menu with Popper",
+        "path": "/menu/menu-with-popper",
+        "component": "./components/menu/menu-with-popper.vue"
+      },
+      {
+        "name": "Menu with Tailwind",
+        "path": "/menu/menu-with-tailwind",
+        "component": "./components/menu/menu-with-tailwind.vue"
+      }
+    ]
+  }
+]

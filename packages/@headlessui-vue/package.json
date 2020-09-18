@@ -20,7 +20,8 @@
     "access": "public"
   },
   "scripts": {
-    "playground": "vite",
+    "playground": "vite serve examples",
+    "playground:build": "vite build examples",
     "build": "../../scripts/build.sh",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh"
@@ -40,6 +41,7 @@
     "tailwindcss": "^1.8.10",
     "tsdx": "^0.13.3",
     "vite": "^1.0.0-rc.4",
-    "vue": "^3.0.0-rc.13"
+    "vue": "^3.0.0-rc.13",
+    "vue-router": "^4.0.0-beta.10"
   }
 }
