@@ -26,6 +26,8 @@ import {
   word,
 } from '../../test-utils/interactions'
 
+jest.mock('../../hooks/use-id')
+
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   const defaultComponents = { Menu, MenuButton, MenuItems, MenuItem }
 

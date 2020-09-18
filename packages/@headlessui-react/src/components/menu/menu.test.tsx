@@ -27,6 +27,8 @@ import {
   Keys,
 } from '../../test-utils/interactions'
 
+jest.mock('../../hooks/use-id')
+
 function getMenuButton(): HTMLElement | null {
   // This is just an assumption for our tests. We assume that we only have 1 button. And if we have
   // more, than we assume that it is the first one.

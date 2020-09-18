@@ -1,5 +1,9 @@
 import * as React from 'react'
 
+beforeEach(() => {
+  id = 0
+})
+
 let id = 0
 function generateId() {
   return ++id
