@@ -25,6 +25,9 @@
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh"
   },
+  "peerDependencies": {
+    "vue": "^3.0.0-rc.10"
+  },
   "devDependencies": {
     "@popperjs/core": "^2.4.4",
     "@tailwindcss/ui": "^0.6.0",
