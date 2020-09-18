@@ -20,6 +20,7 @@
 
 <script>
 import KeyCaster from './KeyCaster.vue'
+import './.generated/preload.js'
 
 export default {
   name: 'App',
