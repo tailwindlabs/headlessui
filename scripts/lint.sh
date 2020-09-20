@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-SCRIPTS_DIR="$(dirname "${BASH_SOURCE[0]}")"
-ROOT_DIR="$(realpath $SCRIPTS_DIR/..)/"
+ROOT_DIR="$(git rev-parse --show-toplevel)/"
 TARGET_DIR="$(pwd)"
 RELATIVE_TARGET_DIR="${TARGET_DIR/$ROOT_DIR/}"
 

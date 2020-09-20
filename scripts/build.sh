@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-TARGET_DIR="$(pwd)"
-
-# INFO: This script is always run from the individual package.
-
 node="yarn node"
 tsdxArgs=()
 
