@@ -105,7 +105,7 @@ function KeyCaster() {
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter()
-  const { allExamples = [] } = pageProps
+  const { examples = [] } = pageProps
 
   return (
     <>
@@ -138,7 +138,7 @@ function MyApp({ Component, pageProps }) {
               alt="Tailwind UI"
             />
           </NextLink>
-          {allExamples.length > 0 && (
+          {examples.length > 0 && (
             <div>
               <select
                 value={router.asPath}
@@ -147,7 +147,7 @@ function MyApp({ Component, pageProps }) {
                 }}
                 className="block w-full py-2 pl-3 pr-10 text-base leading-6 border-gray-300 form-select focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
               >
-                <RecursiveExamplesSelectOptions examples={allExamples} />
+                <RecursiveExamplesSelectOptions examples={examples} />
               </select>
             </div>
           )}

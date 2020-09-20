@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { NextApiRequest } from 'next'
 import Error from 'next/error'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -16,11 +15,10 @@ function NextLink(props: PropsOf<'a'>) {
   )
 }
 
-export async function getServerSideProps({ req }: { req: NextApiRequest }) {
+export async function getStaticProps() {
   return {
     props: {
-      allExamples: await resolveAllExamples('pages'),
-      examples: await resolveAllExamples('pages', ...req.url.split('/').slice(1)),
+      examples: await resolveAllExamples('pages'),
     },
   }
 }
