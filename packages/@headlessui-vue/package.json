@@ -21,7 +21,7 @@
   },
   "scripts": {
     "playground": "vite serve examples",
-    "playground:build": "vite build examples",
+    "playground:build": "NODE_ENV=production vite build examples",
     "build": "../../scripts/build.sh",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh"
