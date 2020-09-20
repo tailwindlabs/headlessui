@@ -48,7 +48,7 @@ const TailwindUIPlugin = ({
 
 module.exports = {
   alias: {
-    '@headlessui/vue': path.resolve(__dirname, './src/index.ts'),
+    '/@headlessui/vue/': path.resolve(__dirname, './src/index.ts'),
   },
   configureServer: [TailwindUIPlugin],
 }
