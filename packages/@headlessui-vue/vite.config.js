@@ -55,7 +55,14 @@ Prism.plugins.customClass.map({
 
 const sourcePipeline = pipe(
   path => fs.readFileSync(path, 'utf8'),
-  contents => prettier.format(contents, { parser: 'vue', printWidth: 100 }),
+  contents =>
+    prettier.format(contents, {
+      parser: 'vue',
+      printWidth: 100,
+      semi: false,
+      singleQuote: true,
+      trailingComma: 'es5',
+    }),
   contents => Prism.highlight(contents, Prism.languages.markup),
   contents =>
     [
