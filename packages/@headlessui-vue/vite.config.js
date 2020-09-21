@@ -1,5 +1,10 @@
 const fs = require('fs')
 const path = require('path')
+
+const prettier = require('prettier')
+const Prism = require('prismjs')
+require('prismjs/plugins/custom-class/prism-custom-class')
+
 const routes = require('./examples/src/routes')
 
 function flatten(routes, resolver) {
@@ -27,6 +32,59 @@ fs.writeFileSync(
     .join(',\n')}\n}`,
   'utf8'
 )
+
+// ---
+
+function pipe(...fns) {
+  return fns.reduceRight((f, g) => (...args) => f(g(...args)), fns.pop())
+}
+
+Prism.plugins.customClass.map({
+  tag: 'text-code-red',
+  'attr-name': 'text-code-yellow',
+  'attr-value': 'text-code-green',
+  deleted: 'text-code-red',
+  inserted: 'text-code-green',
+  punctuation: 'text-code-white',
+  keyword: 'text-code-purple',
+  string: 'text-code-green',
+  function: 'text-code-blue',
+  boolean: 'text-code-red',
+  comment: 'text-gray-400 italic',
+})
+
+const sourcePipeline = pipe(
+  path => fs.readFileSync(path, 'utf8'),
+  contents => prettier.format(contents, { parser: 'vue', printWidth: 100 }),
+  contents => Prism.highlight(contents, Prism.languages.markup),
+  contents =>
+    [
+      '<pre class="language-vue rounded-md bg-gray-800 py-3 px-4 overflow-x-auto">',
+      '<code class="language-vue text-gray-200">',
+      contents,
+      '</code>',
+      '</pre>',
+    ].join('')
+)
+
+const skipRoutes = ['/']
+const source = Object.assign(
+  {},
+  ...flatten(routes, route => ({
+    urlPath: route.path,
+    sourcePath: route.component,
+  }))
+    .filter(({ urlPath }) => !skipRoutes.includes(urlPath))
+    .map(({ urlPath, sourcePath }) => ({
+      [urlPath]: sourcePipeline(path.resolve(__dirname, 'examples', 'src', sourcePath), 'utf8'),
+    }))
+)
+fs.writeFileSync(
+  path.resolve(__dirname, './examples/src/.generated/source.json'),
+  JSON.stringify(source, null, 2),
+  'utf8'
+)
+// ---
 
 const TailwindUIPlugin = ({
   root, // project root directory, absolute path
