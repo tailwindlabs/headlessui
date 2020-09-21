@@ -34,17 +34,17 @@
             </div>
 
             <div class="py-1">
-              <MenuItem as="a" :className="resolveClass" href="#account-settings">
-                Account Settings
+              <MenuItem as="a" href="#account-settings" :className="resolveClass">
+                Account settings
               </MenuItem>
-              <MenuItem as="a" :className="resolveClass" href="#support">Support</MenuItem>
-              <MenuItem as="a" disabled :className="resolveClass" href="#new-feature">
+              <MenuItem as="a" href="#support" :className="resolveClass">Support</MenuItem>
+              <MenuItem as="a" disabled href="#new-feature" :className="resolveClass">
                 New feature (soon)
               </MenuItem>
-              <MenuItem as="a" :className="resolveClass" href="#license">License</MenuItem>
+              <MenuItem as="a" href="#license" :className="resolveClass">License</MenuItem>
             </div>
             <div class="py-1">
-              <MenuItem as="a" :className="resolveClass" href="#sign-out">Sign out</MenuItem>
+              <MenuItem as="a" href="#sign-out" :className="resolveClass">Sign out</MenuItem>
             </div>
           </MenuItems>
         </transition>

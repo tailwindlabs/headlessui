@@ -26,7 +26,7 @@
           </div>
 
           <div class="py-1">
-            <CustomMenuItem href="#account-settings">Account Settings</CustomMenuItem>
+            <CustomMenuItem href="#account-settings">Account settings</CustomMenuItem>
             <CustomMenuItem href="#support">Support</CustomMenuItem>
             <CustomMenuItem disabled href="#new-feature">New feature (soon)</CustomMenuItem>
             <CustomMenuItem href="#license">License</CustomMenuItem>
