@@ -8,14 +8,24 @@
     "path": "/menu",
     "children": [
       {
+        "name": "Menu (basic)",
+        "path": "/menu/menu",
+        "component": "./components/menu/menu.vue"
+      },
+      {
         "name": "Menu with Popper",
         "path": "/menu/menu-with-popper",
         "component": "./components/menu/menu-with-popper.vue"
       },
       {
-        "name": "Menu with Tailwind",
-        "path": "/menu/menu-with-tailwind",
-        "component": "./components/menu/menu-with-tailwind.vue"
+        "name": "Menu with Transition",
+        "path": "/menu/menu-with-transition",
+        "component": "./components/menu/menu-with-transition.vue"
+      },
+      {
+        "name": "Menu with Popper + Transition",
+        "path": "/menu/menu-with-transition-and-popper",
+        "component": "./components/menu/menu-with-transition-and-popper.vue"
       }
     ]
   }

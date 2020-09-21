@@ -17,33 +17,24 @@
           </MenuButton>
         </span>
 
-        <transition
-          enter-active-class="transition duration-100 ease-out"
-          enter-from-class="transform scale-95 opacity-0"
-          enter-to-class="transform scale-100 opacity-100"
-          leave-active-class="transition duration-75 ease-out"
-          leave-from-class="transform scale-100 opacity-100"
-          leave-to-class="transform scale-95 opacity-0"
+        <MenuItems
+          class="absolute right-0 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
         >
-          <MenuItems
-            class="absolute right-0 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
-          >
-            <div class="px-4 py-3">
-              <p class="text-sm leading-5">Signed in as</p>
-              <p class="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
-            </div>
+          <div class="px-4 py-3">
+            <p class="text-sm leading-5">Signed in as</p>
+            <p class="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
+          </div>
 
-            <div class="py-1">
-              <CustomMenuItem href="#account-settings">Account Settings</CustomMenuItem>
-              <CustomMenuItem href="#support">Support</CustomMenuItem>
-              <CustomMenuItem disabled href="#new-feature">New feature (soon)</CustomMenuItem>
-              <CustomMenuItem href="#license">License</CustomMenuItem>
-            </div>
-            <div class="py-1">
-              <CustomMenuItem href="#sign-out">Sign out</CustomMenuItem>
-            </div>
-          </MenuItems>
-        </transition>
+          <div class="py-1">
+            <CustomMenuItem href="#account-settings">Account Settings</CustomMenuItem>
+            <CustomMenuItem href="#support">Support</CustomMenuItem>
+            <CustomMenuItem disabled href="#new-feature">New feature (soon)</CustomMenuItem>
+            <CustomMenuItem href="#license">License</CustomMenuItem>
+          </div>
+          <div class="py-1">
+            <CustomMenuItem href="#sign-out">Sign out</CustomMenuItem>
+          </div>
+        </MenuItems>
       </Menu>
     </div>
   </div>
