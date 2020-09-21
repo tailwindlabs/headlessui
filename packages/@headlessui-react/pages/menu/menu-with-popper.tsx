@@ -2,11 +2,11 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import Head from 'next/head'
 import Link from 'next/link'
-import { createPopper, Options } from '@popperjs/core'
 import { Menu } from '@headlessui/react'
 
 import { classNames } from '../../src/utils/class-names'
 import { PropsOf } from '../../src/types'
+import { usePopper } from '../../playground-utils/hooks/use-popper'
 
 export default function Home() {
   return (
@@ -19,41 +19,6 @@ export default function Home() {
         <Dropdown />
       </div>
     </>
-  )
-}
-
-/**
- * Example implementation to use Popper: https://popper.js.org/
- */
-function usePopper(
-  options?: Partial<Options>
-): [React.RefCallback<Element | null>, React.RefCallback<HTMLElement | null>] {
-  const reference = React.useRef<Element>(null)
-  const popper = React.useRef<HTMLElement>(null)
-
-  const cleanupCallback = React.useRef(() => {})
-
-  const instantiatePopper = React.useCallback(() => {
-    if (!reference.current) return
-    if (!popper.current) return
-
-    if (cleanupCallback.current) cleanupCallback.current()
-
-    cleanupCallback.current = createPopper(reference.current, popper.current, options).destroy
-  }, [reference, popper, cleanupCallback, options])
-
-  return React.useMemo(
-    () => [
-      referenceDomNode => {
-        reference.current = referenceDomNode
-        instantiatePopper()
-      },
-      popperDomNode => {
-        popper.current = popperDomNode
-        instantiatePopper()
-      },
-    ],
-    [reference, popper, instantiatePopper]
   )
 }
 
@@ -73,6 +38,14 @@ function Dropdown() {
     strategy: 'fixed',
     modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
   })
+
+  function resolveClass({ active, disabled }) {
+    return classNames(
+      'block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700',
+      active && 'bg-gray-100 text-gray-900',
+      disabled && 'cursor-not-allowed opacity-50'
+    )
+  }
 
   return (
     <div className="inline-block mt-64 text-left">
@@ -95,12 +68,6 @@ function Dropdown() {
 
         <Portal>
           <Menu.Items
-            enter="transition-opacity ease-out duration-100"
-            enterFrom="transform opacity-0 scale-95"
-            enterTo="transform opacity-100 scale-100"
-            leave="transition-opacity ease-in duration-75"
-            leaveFrom="transform opacity-100 scale-100"
-            leaveTo="transform opacity-0 scale-95"
             className="w-56 bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
             ref={container}
           >
@@ -112,18 +79,22 @@ function Dropdown() {
             </div>
 
             <div className="py-1">
-              <Item href="#account-settings">Account settings</Item>
-              <Item as={NextLink} href="#support">
+              <Menu.Item as="a" href="#account-settings" className={resolveClass}>
+                Account settings
+              </Menu.Item>
+              <Menu.Item as={NextLink} href="#support" className={resolveClass}>
                 Support
-              </Item>
-              <Item href="#new-feature" disabled>
+              </Menu.Item>
+              <Menu.Item as="a" href="#new-feature" disabled className={resolveClass}>
                 New feature (soon)
-              </Item>
-              <Item href="#license">License</Item>
+              </Menu.Item>
+              <Menu.Item as="a" href="#license" className={resolveClass}>
+                License
+              </Menu.Item>
             </div>
 
             <div className="py-1">
-              <Item as={SignOutButton} />
+              <Menu.Item as={SignOutButton} className={resolveClass} />
             </div>
           </Menu.Items>
         </Portal>
@@ -156,21 +127,5 @@ function SignOutButton(props) {
         Sign out
       </button>
     </form>
-  )
-}
-
-function Item(props: PropsOf<typeof Menu.Item>) {
-  return (
-    <Menu.Item
-      as="a"
-      className={({ active, disabled }) =>
-        classNames(
-          'block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700',
-          active && 'bg-gray-100 text-gray-900',
-          disabled && 'cursor-not-allowed opacity-50'
-        )
-      }
-      {...props}
-    />
   )
 }
