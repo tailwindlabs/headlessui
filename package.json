@@ -14,7 +14,7 @@
     "vue": "yarn workspace @headlessui/vue",
     "shared": "yarn workspace @headlessui/shared",
     "build": "yarn workspaces run build",
-    "test": "yarn workspaces run test",
+    "test": "./scripts/test.sh",
     "lint": "./scripts/lint.sh"
   },
   "husky": {
