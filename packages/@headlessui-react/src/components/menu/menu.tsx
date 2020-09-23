@@ -482,7 +482,6 @@ type MenuItemPropsWeControl =
   | 'role'
   | 'tabIndex'
   | 'aria-disabled'
-  | 'onPointerEnter'
   | 'onPointerLeave'
   | 'onFocus'
 
