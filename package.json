@@ -19,8 +19,11 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,md,html,css,vue}": "tsdx lint"
   },
   "prettier": {
     "printWidth": 100,
@@ -34,6 +37,7 @@
     "babel-jest": "^26.3.0",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
+    "lint-staged": "^10.4.0",
     "prismjs": "^1.21.0",
     "tsdx": "^0.13.3",
     "tslib": "^2.0.1",
