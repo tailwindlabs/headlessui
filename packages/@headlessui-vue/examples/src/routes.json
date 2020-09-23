@@ -28,5 +28,16 @@
         "component": "./components/menu/menu-with-transition-and-popper.vue"
       }
     ]
+  },
+  {
+    "name": "Listbox",
+    "path": "/listbox",
+    "children": [
+      {
+        "name": "Listbox (basic)",
+        "path": "/listbox/listbox",
+        "component": "./components/listbox/listbox.vue"
+      }
+    ]
   }
 ]
