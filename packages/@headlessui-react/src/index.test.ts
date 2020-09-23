@@ -5,5 +5,5 @@ import * as TailwindUI from './index'
  * the outside world that we didn't want!
  */
 it('should expose the correct components', () => {
-  expect(Object.keys(TailwindUI)).toEqual(['Transition', 'Menu'])
+  expect(Object.keys(TailwindUI)).toEqual(['Transition', 'Menu', 'Listbox'])
 })
