@@ -9,30 +9,11 @@ import { useDisposables } from '../../hooks/use-disposables'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
+import { Keys } from '../keyboard'
 
 enum MenuStates {
   Open,
   Closed,
-}
-
-// TODO: This must already exist somewhere, right? 🤔
-// Ref: https://www.w3.org/TR/uievents-key/#named-key-attribute-values
-enum Key {
-  Space = ' ',
-  Enter = 'Enter',
-  Escape = 'Escape',
-  Backspace = 'Backspace',
-
-  ArrowUp = 'ArrowUp',
-  ArrowDown = 'ArrowDown',
-
-  Home = 'Home',
-  End = 'End',
-
-  PageUp = 'PageUp',
-  PageDown = 'PageDown',
-
-  Tab = 'Tab',
 }
 
 type MenuItemDataRef = React.MutableRefObject<{ textValue?: string; disabled: boolean }>
@@ -286,9 +267,9 @@ const Button = forwardRefWithAs(function Button<
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-13
 
-        case Key.Space:
-        case Key.Enter:
-        case Key.ArrowDown:
+        case Keys.Space:
+        case Keys.Enter:
+        case Keys.ArrowDown:
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
@@ -297,7 +278,7 @@ const Button = forwardRefWithAs(function Button<
           })
           break
 
-        case Key.ArrowUp:
+        case Keys.ArrowUp:
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
@@ -398,11 +379,11 @@ const Items = forwardRefWithAs(function Items<
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         // @ts-expect-error Falthrough is expected here
-        case Key.Space:
+        case Keys.Space:
           if (state.searchQuery !== '')
             return dispatch({ type: ActionTypes.Search, value: event.key })
         // When in type ahead mode, fallthrough
-        case Key.Enter:
+        case Keys.Enter:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
           if (state.activeItemIndex !== null) {
@@ -412,31 +393,31 @@ const Items = forwardRefWithAs(function Items<
           }
           break
 
-        case Key.ArrowDown:
+        case Keys.ArrowDown:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.NextItem })
 
-        case Key.ArrowUp:
+        case Keys.ArrowUp:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.PreviousItem })
 
-        case Key.Home:
-        case Key.PageUp:
+        case Keys.Home:
+        case Keys.PageUp:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
 
-        case Key.End:
-        case Key.PageDown:
+        case Keys.End:
+        case Keys.PageDown:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
 
-        case Key.Escape:
+        case Keys.Escape:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
           d.nextFrame(() => state.buttonRef.current?.focus())
           break
 
-        case Key.Tab:
+        case Keys.Tab:
           return event.preventDefault()
 
         default:
