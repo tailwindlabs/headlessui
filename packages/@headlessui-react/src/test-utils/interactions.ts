@@ -1,6 +1,8 @@
 import { fireEvent } from '@testing-library/react'
 import { disposables } from '../utils/disposables'
 
+const d = disposables()
+
 export const Keys: Record<string, Partial<KeyboardEvent>> = {
   Space: { key: ' ' },
   Enter: { key: 'Enter' },
@@ -34,7 +36,6 @@ export async function type(events: Partial<KeyboardEvent>[]) {
     if (document.activeElement === null) return expect(document.activeElement).not.toBe(null)
 
     const element = document.activeElement
-    const d = disposables()
 
     events.forEach(event => {
       fireEvent.keyDown(element, event)
@@ -60,8 +61,6 @@ export async function click(element: Document | Element | Window | Node | null) 
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    const d = disposables()
-
     fireEvent.pointerDown(element)
     fireEvent.mouseDown(element)
     fireEvent.pointerUp(element)
@@ -79,8 +78,6 @@ export async function focus(element: Document | Element | Window | Node | null) 
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    const d = disposables()
-
     fireEvent.focus(element)
 
     await new Promise(d.nextFrame)
@@ -92,7 +89,6 @@ export async function focus(element: Document | Element | Window | Node | null) 
 export async function mouseEnter(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
-    const d = disposables()
 
     fireEvent.pointerOver(element)
     fireEvent.pointerEnter(element)
@@ -108,7 +104,6 @@ export async function mouseEnter(element: Document | Element | Window | null) {
 export async function mouseMove(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
-    const d = disposables()
 
     fireEvent.pointerMove(element)
     fireEvent.mouseMove(element)
@@ -123,7 +118,6 @@ export async function mouseMove(element: Document | Element | Window | null) {
 export async function mouseLeave(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
-    const d = disposables()
 
     fireEvent.pointerOut(element)
     fireEvent.pointerLeave(element)
