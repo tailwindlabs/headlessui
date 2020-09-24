@@ -15,7 +15,7 @@
 
 ## Installation
 
-```shell
+```sh
 # npm
 npm install @headlessui/react
 
@@ -51,6 +51,8 @@ We'll be continuing to develop new components on an on-going basis, with a goal 
 ---
 
 ## Transition
+
+[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-menu-example-b6xje?file=/src/App.js)
 
 The `Transition` component lets you add enter/leave transitions to conditionally rendered elements, using CSS classes to control the actual transition styles in the different stages of the transition.
 
@@ -369,6 +371,8 @@ function MyComponent({ isShowing }) {
 
 ## Menu Button (Dropdown)
 
+[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-menu-example-b6xje?file=/src/App.js)
+
 The `Menu` component and related child components are used to quickly build custom dropdown components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard navigation support.
 
 - [Basic example](#basic-example-1)
@@ -535,23 +539,25 @@ function MyDropdown() {
   return (
     <Menu>
       {({ open }) => (
-        <Menu.Button>More</Menu.Button>
+        <>
+          <Menu.Button>More</Menu.Button>
 
-        {/* Use the Transition + open render prop argument to add transitions. */}
-        <Transition
-          show={open}
-          enter="transition duration-100 ease-out"
-          enterFrom="transform scale-95 opacity-0"
-          enterTo="transform scale-100 opacity-100"
-          leave="transition duration-75 ease-out"
-          leaveFrom="transform scale-100 opacity-100"
-          leaveTo="transform scale-95 opacity-0"
-        >
-          <Menu.Items static>
-            <Menu.Item>{/* ... */}</Menu.Item>
-            {/* ... */}
-          </Menu.Items>
-        </Transition>
+          {/* Use the Transition + open render prop argument to add transitions. */}
+          <Transition
+            show={open}
+            enter="transition duration-100 ease-out"
+            enterFrom="transform scale-95 opacity-0"
+            enterTo="transform scale-100 opacity-100"
+            leave="transition duration-75 ease-out"
+            leaveFrom="transform scale-100 opacity-100"
+            leaveTo="transform scale-95 opacity-0"
+          >
+            <Menu.Items static>
+              <Menu.Item>{/* ... */}</Menu.Item>
+              {/* ... */}
+            </Menu.Items>
+          </Transition>
+        </>
       )}
     </Menu>
   )
