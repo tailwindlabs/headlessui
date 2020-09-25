@@ -22,7 +22,7 @@ type TransitionContextValues = {
 } | null
 const TransitionContext = React.createContext<TransitionContextValues>(null)
 
-enum TreeStates {
+const enum TreeStates {
   Visible = 'visible',
   Hidden = 'hidden',
 }

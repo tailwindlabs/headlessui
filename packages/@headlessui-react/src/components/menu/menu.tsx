@@ -10,14 +10,14 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 
-enum MenuStates {
+const enum MenuStates {
   Open,
   Closed,
 }
 
 // TODO: This must already exist somewhere, right? 🤔
 // Ref: https://www.w3.org/TR/uievents-key/#named-key-attribute-values
-enum Key {
+const enum Key {
   Space = ' ',
   Enter = 'Enter',
   Escape = 'Escape',
@@ -46,7 +46,7 @@ type StateDefinition = {
   activeItemIndex: number | null
 }
 
-enum ActionTypes {
+const enum ActionTypes {
   ToggleMenu,
   OpenMenu,
   CloseMenu,
@@ -59,7 +59,7 @@ enum ActionTypes {
   UnregisterItem,
 }
 
-enum Focus {
+const enum Focus {
   FirstItem,
   PreviousItem,
   NextItem,

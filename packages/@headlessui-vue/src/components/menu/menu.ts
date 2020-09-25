@@ -14,14 +14,14 @@ import { match } from '../../utils/match'
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 
-enum MenuStates {
+const enum MenuStates {
   Open,
   Closed,
 }
 
 // TODO: This must already exist somewhere, right? 🤔
 // Ref: https://www.w3.org/TR/uievents-key/#named-key-attribute-values
-enum Key {
+const enum Key {
   Space = ' ',
   Enter = 'Enter',
   Escape = 'Escape',
@@ -39,7 +39,7 @@ enum Key {
   Tab = 'Tab',
 }
 
-enum Focus {
+const enum Focus {
   FirstItem,
   PreviousItem,
   NextItem,

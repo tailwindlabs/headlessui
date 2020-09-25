@@ -15,7 +15,7 @@ function NextLink(props: PropsOf<'a'>) {
   )
 }
 
-enum KeyDisplayMac {
+const enum KeyDisplayMac {
   ArrowUp = '↑',
   ArrowDown = '↓',
   ArrowLeft = '←',
@@ -37,7 +37,7 @@ enum KeyDisplayMac {
   ' ' = '␣',
 }
 
-enum KeyDisplayWindows {
+const enum KeyDisplayWindows {
   ArrowUp = '↑',
   ArrowDown = '↓',
   ArrowLeft = '←',

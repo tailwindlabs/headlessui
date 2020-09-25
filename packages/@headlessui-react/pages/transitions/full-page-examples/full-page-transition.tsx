@@ -28,7 +28,7 @@ function usePrevious<T>(value: T) {
   return ref.current
 }
 
-enum Direction {
+const enum Direction {
   Forwards = ' -> ',
   Backwards = ' <- ',
 }
