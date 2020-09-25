@@ -18,7 +18,6 @@
       "@headlessui/vue": ["src"],
       "*": ["src/*", "node_modules/*"]
     },
-    "types": ["@types/node", "vue", "@types/jest"],
     "esModuleInterop": true,
     "target": "es5",
     "allowJs": true,
