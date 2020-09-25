@@ -75,20 +75,22 @@ function MyComponent() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <button onClick={() => setIsOpen(!isOpen)}>
-      Toggle
-    </button>
-    <Transition
-      show={isOpen}
-      enter="transition-opacity duration-75"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-150"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      I will fade in and out
-    </Transition>
+    <>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        Toggle
+      </button>
+      <Transition
+        show={isOpen}
+        enter="transition-opacity duration-75"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-150"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        I will fade in and out
+      </Transition>
+    </>
   )
 }
 ```
@@ -105,15 +107,17 @@ function MyComponent() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <button onClick={() => setIsOpen(!isOpen)}>
-      Toggle
-    </button>
-    <Transition
-      show={isOpen}
-      // ...
-    >
-      I will fade in and out
-    </Transition>
+    <>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        Toggle
+      </button>
+      <Transition
+        show={isOpen}
+        // ...
+      >
+        I will fade in and out
+      </Transition>
+    </>
   )
 }
 ```
@@ -128,18 +132,20 @@ function MyComponent() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <button onClick={() => setIsOpen(!isOpen)}>
-      Toggle
-    </button>
-    <Transition
-      show={isOpen}
-      as="a"
-      href="/my-url"
-      className="font-bold"
-      // ...
-    >
-      I will fade in and out
-    </Transition>
+    <>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        Toggle
+      </button>
+      <Transition
+        show={isOpen}
+        as="a"
+        href="/my-url"
+        className="font-bold"
+        // ...
+      >
+        I will fade in and out
+      </Transition>
+    </>
   )
 }
 ```
@@ -154,15 +160,17 @@ function MyComponent() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <button onClick={() => setIsOpen(!isOpen)}>
-      Toggle
-    </button>
-    <Transition
-      show={isOpen}
-      // ...
-    >
-      {ref => <div ref={ref}>{/* Your content goes here*/}</div>}
-    </Transition>
+    <>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        Toggle
+      </button>
+      <Transition
+        show={isOpen}
+        // ...
+      >
+        {(ref) => <div ref={ref}>{/* Your content goes here*/}</div>}
+      </Transition>
+    </>
   )
 }
 ```
@@ -192,20 +200,22 @@ function MyComponent() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <button onClick={() => setIsOpen(!isOpen)}>
-      Toggle
-    </button>
-    <Transition
-      show={isOpen}
-      enter="transition-opacity duration-75"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-150"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      I will fade in and out
-    </Transition>
+    <>
+      <button onClick={() => setIsOpen(!isOpen)}>
+        Toggle
+      </button>
+      <Transition
+        show={isOpen}
+        enter="transition-opacity duration-75"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-150"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        I will fade in and out
+      </Transition>
+    </>
   )
 }
 ```
