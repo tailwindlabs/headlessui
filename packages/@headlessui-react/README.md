@@ -27,7 +27,7 @@ yarn add @headlessui/react
 
 _This project is still in early development. New components will be added regularly over the coming months._
 
-- [Transition](#menu-button-dropdown)
+- [Transition](#transition)
 - [Menu Button (Dropdown)](#menu-button-dropdown)
 
 ### Roadmap
