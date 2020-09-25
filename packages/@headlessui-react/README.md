@@ -530,7 +530,7 @@ function MyDropdown() {
 
 ### Transitions
 
-To animate the opening/closing of the menu panel, use jsx's built-in `transition` component. All you need to do is wrap your `Menu.Items` instance in a `<transition>` element and the transition will be applied automatically.
+To animate the opening/closing of the menu panel, use the provided `Transition` component. All you need to do is mark your `Menu.Items` as `static`, wrap it in a `<Transition>`, and the transition will be applied automatically.
 
 ```jsx
 import { Menu, Transition } from '@headlessui/react'
