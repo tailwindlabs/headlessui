@@ -22,6 +22,7 @@
   "scripts": {
     "playground": "vite serve examples",
     "playground:build": "NODE_ENV=production vite build examples",
+    "prepublishOnly": "npm run build",
     "build": "../../scripts/build.sh",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh"

@@ -22,6 +22,7 @@
   "scripts": {
     "playground": "next dev",
     "playground:build": "next build",
+    "prepublishOnly": "npm run build",
     "test": "../../scripts/test.sh",
     "build": "../../scripts/build.sh",
     "lint": "../../scripts/lint.sh"
