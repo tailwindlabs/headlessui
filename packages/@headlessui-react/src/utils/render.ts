@@ -32,12 +32,49 @@ export function render<TTag extends React.ElementType, TBag>(
         resolvedChildren,
 
         // Filter out undefined values so that they don't override the existing values
-        compact(passThroughProps)
+        mergeEventFunctions(compact(passThroughProps), resolvedChildren.props, ['onClick'])
       )
     }
   }
 
   return React.createElement(Component, passThroughProps, resolvedChildren)
+}
+
+/**
+ * We can use this function for the following useCase:
+ *
+ * <Menu.Item> <button onClick={console.log} /> </Menu.Item>
+ *
+ * Our `Menu.Item` will have an internal `onClick`, if you passthrough an `onClick` to the actual
+ * `Menu.Item` component we will call it correctly. However, when we have an `onClick` on the actual
+ * first child, that one should _also_ be called (but before this implementation, it was just
+ * overriding the `onClick`). But it is only when we *render* that we have access to the existing
+ * props of this component.
+ *
+ * It's a bit hacky, and not that clean, but it is something internal and we have tests to rely on
+ * so that we can refactor this later (if needed).
+ */
+function mergeEventFunctions(
+  passThroughProps: Record<string, any>,
+  existingProps: Record<string, any>,
+  functionsToMerge: string[]
+) {
+  let clone = Object.assign({}, passThroughProps)
+  for (let func of functionsToMerge) {
+    if (passThroughProps[func] !== undefined && existingProps[func] !== undefined) {
+      Object.assign(clone, {
+        [func](event: { defaultPrevented: boolean }) {
+          // Props we control
+          if (!event.defaultPrevented) passThroughProps[func](event)
+
+          // Existing props on the component
+          if (!event.defaultPrevented) existingProps[func](event)
+        },
+      })
+    }
+  }
+
+  return clone
 }
 
 /**

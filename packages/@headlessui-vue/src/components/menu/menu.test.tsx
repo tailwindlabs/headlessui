@@ -2526,7 +2526,9 @@ describe('Mouse interactions', () => {
             <MenuItem as="a" @click="clickHandler" disabled>
               bob
             </MenuItem>
-            <MenuItem as="a" @click="clickHandler">charlie</MenuItem>
+            <MenuItem>
+              <button @click="clickHandler">charlie</button>
+            </MenuItem>
           </MenuItems>
         </Menu>
       `,
@@ -2542,7 +2544,11 @@ describe('Mouse interactions', () => {
     await focus(items[0])
     await focus(items[1])
     await press(Keys.Enter)
+    expect(clickHandler).not.toHaveBeenCalled()
 
+    // Activate the last item
+    await focus(items[2])
+    await press(Keys.Enter)
     expect(clickHandler).not.toHaveBeenCalled()
   })
 })
