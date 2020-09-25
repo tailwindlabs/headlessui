@@ -524,7 +524,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
   const active =
     state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
 
-  const bag = React.useRef<MenuItemDataRef['current']>({ disabled: disabled })
+  const bag = React.useRef<MenuItemDataRef['current']>({ disabled })
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled
@@ -584,8 +584,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     role: 'menuitem',
     tabIndex: -1,
     className: resolvePropValue(className, propsBag),
-    disabled: disabled,
-    'aria-disabled': disabled,
+    'aria-disabled': disabled === true ? true : undefined,
     onClick: handleClick,
     onFocus: handleFocus,
     onMouseMove: handleMouseMove,

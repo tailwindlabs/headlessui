@@ -411,7 +411,7 @@ export const MenuItem = defineComponent({
         : false
     })
 
-    const dataRef = ref<MenuItemDataRef['value']>({ disabled: disabled, textValue: '' })
+    const dataRef = ref<MenuItemDataRef['value']>({ disabled, textValue: '' })
     onMounted(() => {
       const textValue = document
         .getElementById(id)
@@ -462,8 +462,7 @@ export const MenuItem = defineComponent({
         role: 'menuitem',
         tabIndex: -1,
         class: resolvePropValue(className, slot),
-        disabled: disabled === true ? disabled : undefined,
-        'aria-disabled': disabled === true ? disabled : undefined,
+        'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
         onMouseMove: handleMouseMove,
