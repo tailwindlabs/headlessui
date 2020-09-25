@@ -816,10 +816,12 @@ describe('Keyboard interactions', () => {
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
             <MenuItem as="a">Item A</MenuItem>
-            <MenuItem as="button" :onClick="clickHandler">
+            <MenuItem as="button" @click="clickHandler">
               Item B
             </MenuItem>
-            <MenuItem as="a">Item C</MenuItem>
+            <MenuItem>
+              <button @click="clickHandler">Item C</button>
+            </MenuItem>
           </MenuItems>
         </Menu>
       `,
@@ -851,6 +853,18 @@ describe('Keyboard interactions', () => {
 
     // Verify the button got "clicked"
     expect(clickHandler).toHaveBeenCalledTimes(1)
+
+    // Click the menu button again
+    await click(getMenuButton())
+
+    // Active the last menu item
+    await hover(getMenuItems()[2])
+
+    // Close menu, and invoke the item
+    await press(Keys.Enter)
+
+    // Verify the button got "clicked"
+    expect(clickHandler).toHaveBeenCalledTimes(2)
   })
 
   describe('`Space` key', () => {
@@ -2388,6 +2402,46 @@ describe('Mouse interactions', () => {
     assertMenu(getMenu(), { state: MenuState.Closed })
   })
 
+  it('should be possible to click a menu item, which closes the menu and invokes the @click handler', async () => {
+    const clickHandler = jest.fn()
+    renderTemplate({
+      template: `
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">alice</MenuItem>
+            <MenuItem as="button" @click="clickHandler">bob</MenuItem>
+            <MenuItem>
+              <button @click="clickHandler">charlie</button>
+            </MenuItem>
+          </MenuItems>
+        </Menu>
+      `,
+      setup: () => ({ clickHandler }),
+    })
+
+    // Open menu
+    await click(getMenuButton())
+    assertMenu(getMenu(), { state: MenuState.Open })
+
+    // We should be able to click the first item
+    await click(getMenuItems()[1])
+    assertMenu(getMenu(), { state: MenuState.Closed })
+
+    // Verify the callback has been called
+    expect(clickHandler).toHaveBeenCalledTimes(1)
+
+    // Let's re-open the window for now
+    await click(getMenuButton())
+
+    // Click the last item, which should close and invoke the handler
+    await click(getMenuItems()[2])
+    assertMenu(getMenu(), { state: MenuState.Closed })
+
+    // Verify the callback has been called
+    expect(clickHandler).toHaveBeenCalledTimes(2)
+  })
+
   it('should be possible to click a disabled menu item, which is a no-op', async () => {
     renderTemplate(`
       <Menu>
@@ -2468,11 +2522,11 @@ describe('Mouse interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem as="a" :onClick="clickHandler">alice</MenuItem>
-            <MenuItem as="a" :onClick="clickHandler" disabled>
+            <MenuItem as="a" @click="clickHandler">alice</MenuItem>
+            <MenuItem as="a" @click="clickHandler" disabled>
               bob
             </MenuItem>
-            <MenuItem as="a" :onClick="clickHandler">charlie</MenuItem>
+            <MenuItem as="a" @click="clickHandler">charlie</MenuItem>
           </MenuItems>
         </Menu>
       `,

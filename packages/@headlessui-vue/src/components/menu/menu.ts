@@ -399,7 +399,6 @@ export const MenuItem = defineComponent({
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
     className: { type: [String, Function], required: false },
-    onClick: { type: Function, required: false },
   },
   setup(props, { slots, attrs }) {
     const api = useMenuContext('MenuItem')
@@ -454,7 +453,6 @@ export const MenuItem = defineComponent({
 
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault()
-      if (props.onClick) return props.onClick(event)
     }
 
     return () => {
