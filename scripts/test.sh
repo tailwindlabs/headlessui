@@ -19,7 +19,7 @@ tsdxArgs+=("test")
 # Add default arguments
 tsdxArgs+=("--passWithNoTests" $RELATIVE_TARGET_DIR)
 
-# Add arguments based on environment variabls
+# Add arguments based on environment variables
 if [ -n "$CI" ]; then
   jestArgs+=("--maxWorkers=4")
   jestArgs+=("--ci")
