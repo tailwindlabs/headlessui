@@ -35,10 +35,22 @@ function getMenuButton(): HTMLElement | null {
   return document.querySelector('[role="button"],button')
 }
 
+function getMenuButtons(): HTMLElement[] {
+  // This is just an assumption for our tests. We assume that we only have 1 button. And if we have
+  // more, than we assume that it is the first one.
+  return Array.from(document.querySelectorAll('[role="button"],button'))
+}
+
 function getMenu(): HTMLElement | null {
   // This is just an assumption for our tests. We assume that our menu has this role and that it is
   // the first item in the DOM.
   return document.querySelector('[role="menu"]')
+}
+
+function getMenus(): HTMLElement[] {
+  // This is just an assumption for our tests. We assume that our menu has this role and that it is
+  // the first item in the DOM.
+  return Array.from(document.querySelectorAll('[role="menu"]'))
 }
 
 function getMenuItems(): HTMLElement[] {
@@ -2245,6 +2257,50 @@ describe('Mouse interactions', () => {
 
       // Should be closed now
       assertMenu(getMenu(), { state: MenuState.Closed })
+    })
+  )
+
+  it(
+    'should be possible to click outside of the menu on another menu button which should close the current menu and open the new menu',
+    suppressConsoleLogs(async () => {
+      render(
+        <div>
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">alice</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+              <Menu.Item as="a">charlie</Menu.Item>
+            </Menu.Items>
+          </Menu>
+
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">alice</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+              <Menu.Item as="a">charlie</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        </div>
+      )
+
+      const [button1, button2] = getMenuButtons()
+
+      // Click the first menu button
+      await click(button1)
+      expect(getMenus()).toHaveLength(1) // Only 1 menu should be visible
+
+      // Ensure the open menu is linked to the first button
+      assertMenuButtonLinkedWithMenu(button1, getMenu())
+
+      // Click the second menu button
+      await click(button2)
+
+      expect(getMenus()).toHaveLength(1) // Only 1 menu should be visible
+
+      // Ensure the open menu is linked to the second button
+      assertMenuButtonLinkedWithMenu(button2, getMenu())
     })
   )
 
