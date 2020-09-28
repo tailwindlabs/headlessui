@@ -562,8 +562,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
 
   const handlePointerUp = React.useCallback(
     (event: React.PointerEvent<HTMLElement>) => {
-      if (disabled) return
-      event.preventDefault()
+      if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
       d.nextFrame(() => state.buttonRef.current?.focus())
     },

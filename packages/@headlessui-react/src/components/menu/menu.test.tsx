@@ -593,11 +593,14 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the menu with Enter and invoke the active menu item',
       suppressConsoleLogs(async () => {
+        const clickHandler = jest.fn()
         render(
           <Menu>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
-              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a" onClick={clickHandler}>
+                Item A
+              </Menu.Item>
               <Menu.Item as="a">Item B</Menu.Item>
               <Menu.Item as="a">Item C</Menu.Item>
             </Menu.Items>
@@ -626,6 +629,9 @@ describe('Keyboard interactions', () => {
         // Verify it is closed
         assertMenuButton(getMenuButton(), { state: MenuButtonState.Closed })
         assertMenu(getMenu(), { state: MenuState.Closed })
+
+        // Verify the "click" went through on the `a` tag
+        expect(clickHandler).toHaveBeenCalled()
       })
     )
   })
@@ -2458,12 +2464,15 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click a menu item, which closes the menu',
     suppressConsoleLogs(async () => {
+      const clickHandler = jest.fn()
       render(
         <Menu>
           <Menu.Button>Trigger</Menu.Button>
           <Menu.Items>
             <Menu.Item as="a">alice</Menu.Item>
-            <Menu.Item as="a">bob</Menu.Item>
+            <Menu.Item as="a" onClick={clickHandler}>
+              bob
+            </Menu.Item>
             <Menu.Item as="a">charlie</Menu.Item>
           </Menu.Items>
         </Menu>
@@ -2478,6 +2487,7 @@ describe('Mouse interactions', () => {
       // We should be able to click the first item
       await click(items[1])
       assertMenu(getMenu(), { state: MenuState.Closed })
+      expect(clickHandler).toHaveBeenCalled()
     })
   )
 

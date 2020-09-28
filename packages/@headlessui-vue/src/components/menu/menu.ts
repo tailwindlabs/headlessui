@@ -445,10 +445,18 @@ export const MenuItem = defineComponent({
     }
 
     function handlePointerUp(event: PointerEvent) {
-      if (disabled) return
-      event.preventDefault()
-      api.closeMenu()
-      nextTick(() => api.buttonRef.value?.focus())
+      if (disabled) return event.preventDefault()
+
+      // Turns out that we can't use nextTick here. Even if we do, the `handleClick` would *not* be
+      // called because the closeMenu() update is *too fast* and the tree gets unmounted before it
+      // bubbles up. So instead of nextTick, we use the good old double requestAnimationFrame to
+      // wait for a "nextFrame".
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          api.closeMenu()
+          api.buttonRef.value?.focus()
+        })
+      })
     }
 
     function handleClick(event: MouseEvent) {

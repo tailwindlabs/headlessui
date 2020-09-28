@@ -1,4 +1,4 @@
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, nextTick } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -60,6 +60,13 @@ function getMenuItems(): HTMLElement[] {
   // This is just an assumption for our tests. We assume that all menu items have this role.
   return Array.from(document.querySelectorAll('[role="menuitem"]'))
 }
+
+beforeAll(() => {
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(nextTick as any)
+  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn())
+})
+
+afterAll(() => jest.restoreAllMocks())
 
 describe('Safe guards', () => {
   it.each([
@@ -771,16 +778,20 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to close the menu with Enter and invoke the active menu item', async () => {
-      renderTemplate(`
-        <Menu>
-          <MenuButton>Trigger</MenuButton>
-          <MenuItems>
-            <MenuItem as="a">Item A</MenuItem>
-            <MenuItem as="a">Item B</MenuItem>
-            <MenuItem as="a">Item C</MenuItem>
-          </MenuItems>
-        </Menu>
-      `)
+      const clickHandler = jest.fn()
+      renderTemplate({
+        template: `
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <MenuItems>
+              <MenuItem as="a" @click="clickHandler">Item A</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
+            </MenuItems>
+          </Menu>
+        `,
+        setup: () => ({ clickHandler }),
+      })
 
       assertMenuButton(getMenuButton(), {
         state: MenuButtonState.Closed,
@@ -804,6 +815,9 @@ describe('Keyboard interactions', () => {
       // Verify it is closed
       assertMenuButton(getMenuButton(), { state: MenuButtonState.Closed })
       assertMenu(getMenu(), { state: MenuState.Closed })
+
+      // Verify the "click" went through on the `a` tag
+      expect(clickHandler).toHaveBeenCalled()
     })
   })
 
@@ -2380,16 +2394,20 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to click a menu item, which closes the menu', async () => {
-    renderTemplate(`
-      <Menu>
-        <MenuButton>Trigger</MenuButton>
-        <MenuItems>
-          <MenuItem as="a">alice</MenuItem>
-          <MenuItem as="a">bob</MenuItem>
-          <MenuItem as="a">charlie</MenuItem>
-        </MenuItems>
-      </Menu>
-    `)
+    const clickHandler = jest.fn()
+    renderTemplate({
+      template: `
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">alice</MenuItem>
+            <MenuItem as="a" @click="clickHandler">bob</MenuItem>
+            <MenuItem as="a">charlie</MenuItem>
+          </MenuItems>
+        </Menu>
+      `,
+      setup: () => ({ clickHandler }),
+    })
 
     // Open menu
     await click(getMenuButton())
@@ -2400,6 +2418,7 @@ describe('Mouse interactions', () => {
     // We should be able to click the first item
     await click(items[1])
     assertMenu(getMenu(), { state: MenuState.Closed })
+    expect(clickHandler).toHaveBeenCalled()
   })
 
   it('should be possible to click a menu item, which closes the menu and invokes the @click handler', async () => {
