@@ -47,7 +47,6 @@ type StateDefinition = {
 }
 
 enum ActionTypes {
-  ToggleMenu,
   OpenMenu,
   CloseMenu,
 
@@ -114,7 +113,6 @@ function calculateActiveItemIndex(
 }
 
 type Actions =
-  | { type: ActionTypes.ToggleMenu }
   | { type: ActionTypes.CloseMenu }
   | { type: ActionTypes.OpenMenu }
   | { type: ActionTypes.GoToItem; focus: Focus; id?: string }
@@ -129,13 +127,6 @@ const reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.ToggleMenu]: state => ({
-    ...state,
-    menuState: match(state.menuState, {
-      [MenuStates.Open]: MenuStates.Closed,
-      [MenuStates.Closed]: MenuStates.Open,
-    }),
-  }),
   [ActionTypes.CloseMenu]: state => ({ ...state, menuState: MenuStates.Closed }),
   [ActionTypes.OpenMenu]: state => ({ ...state, menuState: MenuStates.Open }),
   [ActionTypes.GoToItem]: (state, action) => {
@@ -237,17 +228,17 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 
   React.useEffect(() => {
     function handler(event: PointerEvent) {
-      if (event.defaultPrevented) return
       if (menuState !== MenuStates.Open) return
+      if (buttonRef.current?.contains(event.target as HTMLElement)) return
 
       if (!itemsRef.current?.contains(event.target as HTMLElement)) {
         dispatch({ type: ActionTypes.CloseMenu })
-        d.nextFrame(() => buttonRef.current?.focus())
+        if (!event.defaultPrevented) buttonRef.current?.focus()
       }
     }
 
-    window.addEventListener('pointerdown', handler)
-    return () => window.removeEventListener('pointerdown', handler)
+    window.addEventListener('pointerup', handler)
+    return () => window.removeEventListener('pointerup', handler)
   }, [menuState, itemsRef, buttonRef, d, dispatch])
 
   const propsBag = React.useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
@@ -272,7 +263,6 @@ type ButtonPropsWeControl =
   | 'onFocus'
   | 'onBlur'
   | 'onPointerUp'
-  | 'onPointerDown'
 
 const DEFAULT_BUTTON_TAG = 'button'
 
@@ -320,16 +310,18 @@ const Button = forwardRefWithAs(function Button<
     [dispatch, state, d]
   )
 
-  const handlePointerDown = React.useCallback((event: React.PointerEvent<HTMLButtonElement>) => {
-    // We have a `pointerdown` event listener in the menu for the 'outside click', so we just want
-    // to prevent going there if we happen to click this button.
-    event.preventDefault()
-  }, [])
-
-  const handlePointerUp = React.useCallback(() => {
-    dispatch({ type: ActionTypes.ToggleMenu })
-    d.nextFrame(() => state.itemsRef.current?.focus())
-  }, [dispatch, d, state])
+  const handlePointerUp = React.useCallback(
+    (event: MouseEvent) => {
+      if (state.menuState === MenuStates.Open) {
+        dispatch({ type: ActionTypes.CloseMenu })
+      } else {
+        event.preventDefault()
+        dispatch({ type: ActionTypes.OpenMenu })
+        d.nextFrame(() => state.itemsRef.current?.focus())
+      }
+    },
+    [dispatch, d, state]
+  )
 
   const handleFocus = React.useCallback(() => {
     if (state.menuState === MenuStates.Open) state.itemsRef.current?.focus()
@@ -354,7 +346,6 @@ const Button = forwardRefWithAs(function Button<
     onFocus: handleFocus,
     onBlur: handleBlur,
     onPointerUp: handlePointerUp,
-    onPointerDown: handlePointerDown,
   }
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)

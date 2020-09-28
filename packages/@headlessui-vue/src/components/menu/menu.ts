@@ -59,7 +59,6 @@ type StateDefinition = {
   activeItemIndex: Ref<number | null>
 
   // State mutators
-  toggleMenu(): void
   closeMenu(): void
   openMenu(): void
   goToItem(focus: Focus, id?: string): void
@@ -141,12 +140,6 @@ export const Menu = defineComponent({
       items,
       searchQuery,
       activeItemIndex,
-      toggleMenu() {
-        menuState.value = match(menuState.value, {
-          [MenuStates.Closed]: MenuStates.Open,
-          [MenuStates.Open]: MenuStates.Closed,
-        })
-      },
       closeMenu: () => (menuState.value = MenuStates.Closed),
       openMenu: () => (menuState.value = MenuStates.Open),
       goToItem(focus: Focus, id?: string) {
@@ -195,17 +188,17 @@ export const Menu = defineComponent({
 
     onMounted(() => {
       function handler(event: PointerEvent) {
-        if (event.defaultPrevented) return
         if (menuState.value !== MenuStates.Open) return
+        if (buttonRef.value?.contains(event.target as HTMLElement)) return
 
         if (!itemsRef.value?.contains(event.target as HTMLElement)) {
           api.closeMenu()
-          nextTick(() => buttonRef.value?.focus())
+          if (!event.defaultPrevented) buttonRef.value?.focus()
         }
       }
 
-      window.addEventListener('pointerdown', handler)
-      onUnmounted(() => window.removeEventListener('pointerdown', handler))
+      window.addEventListener('pointerup', handler)
+      onUnmounted(() => window.removeEventListener('pointerup', handler))
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -234,7 +227,6 @@ export const MenuButton = defineComponent({
       onKeyDown: this.handleKeyDown,
       onFocus: this.handleFocus,
       onPointerUp: this.handlePointerUp,
-      onPointerDown: this.handlePointerDown,
     }
 
     return render({
@@ -274,15 +266,14 @@ export const MenuButton = defineComponent({
       }
     }
 
-    function handlePointerDown(event: PointerEvent) {
-      // We have a `pointerdown` event listener in the menu for the 'outside click', so we just want
-      // to prevent going there if we happen to click this button.
-      event.preventDefault()
-    }
-
-    function handlePointerUp() {
-      api.toggleMenu()
-      nextTick(() => api.itemsRef.value?.focus())
+    function handlePointerUp(event: MouseEvent) {
+      if (api.menuState.value === MenuStates.Open) {
+        api.closeMenu()
+      } else {
+        event.preventDefault()
+        api.openMenu()
+        nextTick(() => api.itemsRef.value?.focus())
+      }
     }
 
     function handleFocus() {
@@ -293,7 +284,6 @@ export const MenuButton = defineComponent({
       id,
       el: api.buttonRef,
       handleKeyDown,
-      handlePointerDown,
       handlePointerUp,
       handleFocus,
     }
