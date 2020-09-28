@@ -336,6 +336,7 @@ export const MenuItems = defineComponent({
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         case Key.Enter:
+          event.preventDefault()
           api.closeMenu()
           if (api.activeItemIndex.value !== null) {
             const { id } = api.items.value[api.activeItemIndex.value]
@@ -345,20 +346,25 @@ export const MenuItems = defineComponent({
           break
 
         case Key.ArrowDown:
+          event.preventDefault()
           return api.goToItem(Focus.NextItem)
 
         case Key.ArrowUp:
+          event.preventDefault()
           return api.goToItem(Focus.PreviousItem)
 
         case Key.Home:
         case Key.PageUp:
+          event.preventDefault()
           return api.goToItem(Focus.FirstItem)
 
         case Key.End:
         case Key.PageDown:
+          event.preventDefault()
           return api.goToItem(Focus.LastItem)
 
         case Key.Escape:
+          event.preventDefault()
           api.closeMenu()
           nextTick(() => api.buttonRef.value?.focus())
           break

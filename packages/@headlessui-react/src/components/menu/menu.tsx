@@ -398,6 +398,7 @@ const Items = forwardRefWithAs(function Items<
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         case Key.Enter:
+          event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
           if (state.activeItemIndex !== null) {
             const { id } = state.items[state.activeItemIndex]
@@ -407,20 +408,25 @@ const Items = forwardRefWithAs(function Items<
           break
 
         case Key.ArrowDown:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.NextItem })
 
         case Key.ArrowUp:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.PreviousItem })
 
         case Key.Home:
         case Key.PageUp:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
 
         case Key.End:
         case Key.PageDown:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
 
         case Key.Escape:
+          event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
           d.nextFrame(() => state.buttonRef.current?.focus())
           break
