@@ -419,9 +419,10 @@ export const MenuItem = defineComponent({
     onMounted(() => api.registerItem(id, dataRef))
     onUnmounted(() => api.unregisterItem(id))
 
-    function handlePointerEnter() {
-      if (disabled) return
-      api.goToItem(Focus.SpecificItem, id)
+    function handleClick(event: MouseEvent) {
+      if (disabled) return event.preventDefault()
+      api.closeMenu()
+      nextTick(() => api.buttonRef.value?.focus())
     }
 
     function handleFocus() {
@@ -429,21 +430,15 @@ export const MenuItem = defineComponent({
       api.goToItem(Focus.SpecificItem, id)
     }
 
-    function handlePointerLeave() {
-      if (disabled) return
-      api.goToItem(Focus.Nothing)
-    }
-
-    function handleMouseMove() {
+    function handlePointerMove() {
       if (disabled) return
       if (active.value) return
       api.goToItem(Focus.SpecificItem, id)
     }
 
-    function handleClick(event: MouseEvent) {
-      if (disabled) return event.preventDefault()
-      api.closeMenu()
-      nextTick(() => api.buttonRef.value?.focus())
+    function handlePointerLeave() {
+      if (disabled) return
+      api.goToItem(Focus.Nothing)
     }
 
     return () => {
@@ -456,8 +451,7 @@ export const MenuItem = defineComponent({
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
-        onMouseMove: handleMouseMove,
-        onPointerEnter: handlePointerEnter,
+        onPointerMove: handlePointerMove,
         onPointerLeave: handlePointerLeave,
       }
 

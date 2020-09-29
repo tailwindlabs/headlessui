@@ -85,20 +85,7 @@ export async function focus(element: Document | Element | Window | null) {
   }
 }
 
-export async function mouseMove(element: Document | Element | Window | null) {
-  try {
-    if (element === null) return expect(element).not.toBe(null)
-
-    fireEvent.mouseMove(element)
-
-    await new Promise<void>(nextTick)
-  } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseMove)
-    throw err
-  }
-}
-
-export async function hover(element: Document | Element | Window | null) {
+export async function mouseEnter(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
@@ -108,12 +95,26 @@ export async function hover(element: Document | Element | Window | null) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, hover)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseEnter)
     throw err
   }
 }
 
-export async function unHover(element: Document | Element | Window | null) {
+export async function mouseMove(element: Document | Element | Window | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    fireEvent.pointerMove(element)
+    fireEvent.mouseMove(element)
+
+    await new Promise<void>(nextTick)
+  } catch (err) {
+    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseMove)
+    throw err
+  }
+}
+
+export async function mouseLeave(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
@@ -124,7 +125,7 @@ export async function unHover(element: Document | Element | Window | null) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, unHover)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseLeave)
     throw err
   }
 }

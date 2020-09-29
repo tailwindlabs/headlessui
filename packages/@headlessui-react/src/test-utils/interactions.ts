@@ -89,13 +89,28 @@ export async function focus(element: Document | Element | Window | Node | null) 
     throw err
   }
 }
-
-export async function mouseMove(element: Document | Element | Window | Node | null) {
+export async function mouseEnter(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
-
     const d = disposables()
 
+    fireEvent.pointerOver(element)
+    fireEvent.pointerEnter(element)
+    fireEvent.mouseOver(element)
+
+    await new Promise(d.nextFrame)
+  } catch (err) {
+    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseEnter)
+    throw err
+  }
+}
+
+export async function mouseMove(element: Document | Element | Window | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+    const d = disposables()
+
+    fireEvent.pointerMove(element)
     fireEvent.mouseMove(element)
 
     await new Promise(d.nextFrame)
@@ -105,27 +120,9 @@ export async function mouseMove(element: Document | Element | Window | Node | nu
   }
 }
 
-export async function hover(element: Document | Element | Window | Node | null) {
+export async function mouseLeave(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
-
-    const d = disposables()
-
-    fireEvent.pointerOver(element)
-    fireEvent.pointerEnter(element)
-    fireEvent.mouseOver(element)
-
-    await new Promise(d.nextFrame)
-  } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, hover)
-    throw err
-  }
-}
-
-export async function unHover(element: Document | Element | Window | Node | null) {
-  try {
-    if (element === null) return expect(element).not.toBe(null)
-
     const d = disposables()
 
     fireEvent.pointerOut(element)
@@ -135,7 +132,7 @@ export async function unHover(element: Document | Element | Window | Node | null
 
     await new Promise(d.nextFrame)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, unHover)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseLeave)
     throw err
   }
 }

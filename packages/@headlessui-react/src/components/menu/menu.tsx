@@ -535,27 +535,6 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     return () => dispatch({ type: ActionTypes.UnregisterItem, id })
   }, [bag, id])
 
-  const handlePointerEnter = React.useCallback(() => {
-    if (disabled) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
-  }, [disabled, id, dispatch])
-
-  const handleFocus = React.useCallback(() => {
-    if (disabled) return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
-  }, [disabled, id, dispatch])
-
-  const handlePointerLeave = React.useCallback(() => {
-    if (disabled) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-  }, [disabled, dispatch])
-
-  const handleMouseMove = React.useCallback(() => {
-    if (disabled) return
-    if (active) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
-  }, [disabled, active, id, dispatch])
-
   const handleClick = React.useCallback(
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
@@ -566,6 +545,22 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     [d, dispatch, state.buttonRef, disabled, onClick]
   )
 
+  const handleFocus = React.useCallback(() => {
+    if (disabled) return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
+    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
+  }, [disabled, id, dispatch])
+
+  const handlePointerMove = React.useCallback(() => {
+    if (disabled) return
+    if (active) return
+    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
+  }, [disabled, active, id, dispatch])
+
+  const handlePointerLeave = React.useCallback(() => {
+    if (disabled) return
+    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
+  }, [disabled, dispatch])
+
   const propsBag = React.useMemo(() => ({ active, disabled }), [active, disabled])
   const propsWeControl = {
     id,
@@ -575,8 +570,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     'aria-disabled': disabled === true ? true : undefined,
     onClick: handleClick,
     onFocus: handleFocus,
-    onMouseMove: handleMouseMove,
-    onPointerEnter: handlePointerEnter,
+    onPointerMove: handlePointerMove,
     onPointerLeave: handlePointerLeave,
   }
 

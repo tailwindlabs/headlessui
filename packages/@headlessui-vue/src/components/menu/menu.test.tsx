@@ -16,12 +16,11 @@ import {
 import {
   click,
   focus,
-  hover,
   mouseMove,
+  mouseLeave,
   press,
   shift,
   type,
-  unHover,
   Keys,
   word,
 } from '../../test-utils/interactions'
@@ -812,7 +811,7 @@ describe('Keyboard interactions', () => {
 
       // Activate the first menu item
       const items = getMenuItems()
-      await hover(items[0])
+      await mouseMove(items[0])
 
       // Close menu, and invoke the item
       await press(Keys.Enter)
@@ -861,7 +860,7 @@ describe('Keyboard interactions', () => {
 
     // Activate the second menu item
     const items = getMenuItems()
-    await hover(items[1])
+    await mouseMove(items[1])
 
     // Close menu, and invoke the item
     await press(Keys.Enter)
@@ -877,7 +876,7 @@ describe('Keyboard interactions', () => {
     await click(getMenuButton())
 
     // Active the last menu item
-    await hover(getMenuItems()[2])
+    await mouseMove(getMenuItems()[2])
 
     // Close menu, and invoke the item
     await press(Keys.Enter)
@@ -2273,15 +2272,15 @@ describe('Mouse interactions', () => {
 
     const items = getMenuItems()
     // We should be able to go to the second item
-    await hover(items[1])
+    await mouseMove(items[1])
     assertMenuLinkedWithMenuItem(getMenu(), items[1])
 
     // We should be able to go to the first item
-    await hover(items[0])
+    await mouseMove(items[0])
     assertMenuLinkedWithMenuItem(getMenu(), items[0])
 
     // We should be able to go to the last item
-    await hover(items[2])
+    await mouseMove(items[2])
     assertMenuLinkedWithMenuItem(getMenu(), items[2])
   })
 
@@ -2372,7 +2371,7 @@ describe('Mouse interactions', () => {
     const items = getMenuItems()
 
     // Try to hover over item 1, which is disabled
-    await hover(items[1])
+    await mouseMove(items[1])
 
     // We should not have an active item now
     assertNoActiveMenuItem(getMenu())
@@ -2396,24 +2395,24 @@ describe('Mouse interactions', () => {
     const items = getMenuItems()
 
     // We should be able to go to the second item
-    await hover(items[1])
+    await mouseMove(items[1])
     assertMenuLinkedWithMenuItem(getMenu(), items[1])
 
-    await unHover(items[1])
+    await mouseLeave(items[1])
     assertNoActiveMenuItem(getMenu())
 
     // We should be able to go to the first item
-    await hover(items[0])
+    await mouseMove(items[0])
     assertMenuLinkedWithMenuItem(getMenu(), items[0])
 
-    await unHover(items[0])
+    await mouseLeave(items[0])
     assertNoActiveMenuItem(getMenu())
 
     // We should be able to go to the last item
-    await hover(items[2])
+    await mouseMove(items[2])
     assertMenuLinkedWithMenuItem(getMenu(), items[2])
 
-    await unHover(items[2])
+    await mouseLeave(items[2])
     assertNoActiveMenuItem(getMenu())
   })
 
@@ -2435,10 +2434,10 @@ describe('Mouse interactions', () => {
     const items = getMenuItems()
 
     // Try to hover over item 1, which is disabled
-    await hover(items[1])
+    await mouseMove(items[1])
     assertNoActiveMenuItem(getMenu())
 
-    await unHover(items[1])
+    await mouseLeave(items[1])
     assertNoActiveMenuItem(getMenu())
   })
 
