@@ -397,6 +397,7 @@ const Items = forwardRefWithAs(function Items<
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
+        // @ts-expect-error Falthrough is expected here
         case Key.Space:
           if (state.searchQuery !== '')
             return dispatch({ type: ActionTypes.Search, value: event.key })
