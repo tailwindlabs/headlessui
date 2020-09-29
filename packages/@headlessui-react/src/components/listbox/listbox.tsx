@@ -427,10 +427,13 @@ const Items = forwardRefWithAs(function Items<
 
         // @ts-expect-error Falthrough is expected here
         case Keys.Space:
-          if (state.searchQuery !== '')
+          if (state.searchQuery !== '') {
+            event.preventDefault()
             return dispatch({ type: ActionTypes.Search, value: event.key })
+          }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
+          event.preventDefault()
           dispatch({ type: ActionTypes.CloseListbox })
           if (state.activeItemIndex !== null) {
             const { dataRef } = state.items[state.activeItemIndex]
@@ -440,20 +443,25 @@ const Items = forwardRefWithAs(function Items<
           break
 
         case Keys.ArrowDown:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.NextItem })
 
         case Keys.ArrowUp:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.PreviousItem })
 
         case Keys.Home:
         case Keys.PageUp:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
 
         case Keys.End:
         case Keys.PageDown:
+          event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
 
         case Keys.Escape:
+          event.preventDefault()
           dispatch({ type: ActionTypes.CloseListbox })
           return d.nextFrame(() => state.buttonRef.current?.focus())
 

@@ -318,7 +318,10 @@ export const MenuItems = defineComponent({
 
         // @ts-expect-error Falthrough is expected here
         case Keys.Space:
-          if (api.searchQuery.value !== '') return api.search(event.key)
+          if (api.searchQuery.value !== '') {
+            event.preventDefault()
+            return api.search(event.key)
+          }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()

@@ -380,8 +380,10 @@ const Items = forwardRefWithAs(function Items<
 
         // @ts-expect-error Falthrough is expected here
         case Keys.Space:
-          if (state.searchQuery !== '')
+          if (state.searchQuery !== '') {
+            event.preventDefault()
             return dispatch({ type: ActionTypes.Search, value: event.key })
+          }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
