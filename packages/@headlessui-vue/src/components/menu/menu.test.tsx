@@ -1031,6 +1031,87 @@ describe('Keyboard interactions', () => {
 
       assertNoActiveMenuItem(getMenu())
     })
+
+    it(
+      'should be possible to close the menu with Space when there is no active menuitem',
+      suppressConsoleLogs(async () => {
+        renderTemplate(`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <MenuItems>
+              <MenuItem>Item A</MenuItem>
+              <MenuItem>Item B</MenuItem>
+              <MenuItem>Item C</MenuItem>
+            </MenuItems>
+          </Menu>
+        `)
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        // Open menu
+        await click(getMenuButton())
+
+        // Verify it is open
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
+
+        // Close menu
+        await press(Keys.Space)
+
+        // Verify it is closed
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Closed })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+      })
+    )
+
+    it(
+      'should be possible to close the menu with Space and invoke the active menu item',
+      suppressConsoleLogs(async () => {
+        const clickHandler = jest.fn()
+        renderTemplate({
+          template: `
+            <Menu>
+              <MenuButton>Trigger</MenuButton>
+              <MenuItems>
+                <MenuItem as="a" @click="clickHandler">Item A</MenuItem>
+                <MenuItem as="a">Item B</MenuItem>
+                <MenuItem as="a">Item C</MenuItem>
+              </MenuItems>
+            </Menu>
+          `,
+          setup: () => ({ clickHandler }),
+        })
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        // Open menu
+        await click(getMenuButton())
+
+        // Verify it is open
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
+
+        // Activate the first menu item
+        const items = getMenuItems()
+        await mouseMove(items[0])
+
+        // Close menu, and invoke the item
+        await press(Keys.Space)
+
+        // Verify it is closed
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Closed })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        // Verify the "click" went through on the `a` tag
+        expect(clickHandler).toHaveBeenCalled()
+      })
+    )
   })
 
   describe('`Escape` key', () => {
@@ -2023,6 +2104,45 @@ describe('Keyboard interactions', () => {
       await type(word('char'))
       assertMenuLinkedWithMenuItem(getMenu(), items[2])
     })
+
+    it(
+      'should be possible to type words with spaces',
+      suppressConsoleLogs(async () => {
+        renderTemplate(`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <MenuItems>
+              <MenuItem as="a">value a</MenuItem>
+              <MenuItem as="a">value b</MenuItem>
+              <MenuItem as="a">value c</MenuItem>
+            </MenuItems>
+          </Menu>
+        `)
+
+        // Focus the button
+        getMenuButton()?.focus()
+
+        // Open menu
+        await press(Keys.ArrowUp)
+
+        const items = getMenuItems()
+
+        // We should be on the last item
+        assertMenuLinkedWithMenuItem(getMenu(), items[2])
+
+        // We should be able to go to the second item
+        await type(word('value b'))
+        assertMenuLinkedWithMenuItem(getMenu(), items[1])
+
+        // We should be able to go to the first item
+        await type(word('value a'))
+        assertMenuLinkedWithMenuItem(getMenu(), items[0])
+
+        // We should be able to go to the last item
+        await type(word('value c'))
+        assertMenuLinkedWithMenuItem(getMenu(), items[2])
+      })
+    )
 
     it('should not be possible to search for a disabled item', async () => {
       renderTemplate(`

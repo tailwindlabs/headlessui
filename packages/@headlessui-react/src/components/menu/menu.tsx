@@ -397,6 +397,10 @@ const Items = forwardRefWithAs(function Items<
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
+        case Key.Space:
+          if (state.searchQuery !== '')
+            return dispatch({ type: ActionTypes.Search, value: event.key })
+        // When in type ahead mode, fallthrough
         case Key.Enter:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })

@@ -880,6 +880,86 @@ describe('Keyboard interactions', () => {
         assertNoActiveMenuItem(getMenu())
       })
     )
+
+    it(
+      'should be possible to close the menu with Space when there is no active menuitem',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        // Open menu
+        await click(getMenuButton())
+
+        // Verify it is open
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
+
+        // Close menu
+        await press(Keys.Space)
+
+        // Verify it is closed
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Closed })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+      })
+    )
+
+    it(
+      'should be possible to close the menu with Space and invoke the active menu item',
+      suppressConsoleLogs(async () => {
+        const clickHandler = jest.fn()
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a" onClick={clickHandler}>
+                Item A
+              </Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton(getMenuButton(), {
+          state: MenuButtonState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        // Open menu
+        await click(getMenuButton())
+
+        // Verify it is open
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Open })
+
+        // Activate the first menu item
+        const items = getMenuItems()
+        await mouseMove(items[0])
+
+        // Close menu, and invoke the item
+        await press(Keys.Space)
+
+        // Verify it is closed
+        assertMenuButton(getMenuButton(), { state: MenuButtonState.Closed })
+        assertMenu(getMenu(), { state: MenuState.Closed })
+
+        // Verify the "click" went through on the `a` tag
+        expect(clickHandler).toHaveBeenCalled()
+      })
+    )
   })
 
   describe('`Escape` key', () => {
@@ -2048,6 +2128,45 @@ describe('Keyboard interactions', () => {
 
         // We should be able to go to the last item
         await type(word('char'))
+        assertMenuLinkedWithMenuItem(getMenu(), items[2])
+      })
+    )
+
+    it(
+      'should be possible to type words with spaces',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">value a</Menu.Item>
+              <Menu.Item as="a">value b</Menu.Item>
+              <Menu.Item as="a">value c</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        // Focus the button
+        getMenuButton()?.focus()
+
+        // Open menu
+        await press(Keys.ArrowUp)
+
+        const items = getMenuItems()
+
+        // We should be on the last item
+        assertMenuLinkedWithMenuItem(getMenu(), items[2])
+
+        // We should be able to go to the second item
+        await type(word('value b'))
+        assertMenuLinkedWithMenuItem(getMenu(), items[1])
+
+        // We should be able to go to the first item
+        await type(word('value a'))
+        assertMenuLinkedWithMenuItem(getMenu(), items[0])
+
+        // We should be able to go to the last item
+        await type(word('value c'))
         assertMenuLinkedWithMenuItem(getMenu(), items[2])
       })
     )
