@@ -187,7 +187,7 @@ export const Menu = defineComponent({
     }
 
     onMounted(() => {
-      function handler(event: PointerEvent) {
+      function handler(event: MouseEvent) {
         if (menuState.value !== MenuStates.Open) return
         if (buttonRef.value?.contains(event.target as HTMLElement)) return
 
@@ -197,8 +197,8 @@ export const Menu = defineComponent({
         }
       }
 
-      window.addEventListener('pointerup', handler)
-      onUnmounted(() => window.removeEventListener('pointerup', handler))
+      window.addEventListener('click', handler)
+      onUnmounted(() => window.removeEventListener('click', handler))
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -440,23 +440,10 @@ export const MenuItem = defineComponent({
       api.goToItem(Focus.SpecificItem, id)
     }
 
-    function handlePointerUp(event: PointerEvent) {
-      if (disabled) return event.preventDefault()
-
-      // Turns out that we can't use nextTick here. Even if we do, the `handleClick` would *not* be
-      // called because the closeMenu() update is *too fast* and the tree gets unmounted before it
-      // bubbles up. So instead of nextTick, we use the good old double requestAnimationFrame to
-      // wait for a "nextFrame".
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          api.closeMenu()
-          api.buttonRef.value?.focus()
-        })
-      })
-    }
-
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault()
+      api.closeMenu()
+      nextTick(() => api.buttonRef.value?.focus())
     }
 
     return () => {
@@ -472,7 +459,6 @@ export const MenuItem = defineComponent({
         onMouseMove: handleMouseMove,
         onPointerEnter: handlePointerEnter,
         onPointerLeave: handlePointerLeave,
-        onPointerUp: handlePointerUp,
       }
 
       return render({

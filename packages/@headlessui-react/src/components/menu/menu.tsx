@@ -227,7 +227,7 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
   const [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
 
   React.useEffect(() => {
-    function handler(event: PointerEvent) {
+    function handler(event: MouseEvent) {
       if (menuState !== MenuStates.Open) return
       if (buttonRef.current?.contains(event.target as HTMLElement)) return
 
@@ -237,8 +237,8 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
       }
     }
 
-    window.addEventListener('pointerup', handler)
-    return () => window.removeEventListener('pointerup', handler)
+    window.addEventListener('click', handler)
+    return () => window.removeEventListener('click', handler)
   }, [menuState, itemsRef, buttonRef, d, dispatch])
 
   const propsBag = React.useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
@@ -498,7 +498,6 @@ type MenuItemPropsWeControl =
   | 'aria-disabled'
   | 'onPointerEnter'
   | 'onPointerLeave'
-  | 'onPointerUp'
   | 'onFocus'
 
 const DEFAULT_ITEM_TAG = React.Fragment
@@ -557,21 +556,14 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
   }, [disabled, active, id, dispatch])
 
-  const handlePointerUp = React.useCallback(
-    (event: React.PointerEvent<HTMLElement>) => {
-      if (disabled) return event.preventDefault()
-      dispatch({ type: ActionTypes.CloseMenu })
-      d.nextFrame(() => state.buttonRef.current?.focus())
-    },
-    [dispatch, disabled, d, state.buttonRef]
-  )
-
   const handleClick = React.useCallback(
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
+      dispatch({ type: ActionTypes.CloseMenu })
+      d.nextFrame(() => state.buttonRef.current?.focus())
       if (onClick) return onClick(event)
     },
-    [disabled, onClick]
+    [d, dispatch, state.buttonRef, disabled, onClick]
   )
 
   const propsBag = React.useMemo(() => ({ active, disabled }), [active, disabled])
@@ -586,7 +578,6 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     onMouseMove: handleMouseMove,
     onPointerEnter: handlePointerEnter,
     onPointerLeave: handlePointerLeave,
-    onPointerUp: handlePointerUp,
   }
 
   return render<TTag, ItemRenderPropArg>(

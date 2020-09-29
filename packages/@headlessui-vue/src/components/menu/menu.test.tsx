@@ -1,4 +1,4 @@
-import { defineComponent, h, nextTick } from 'vue'
+import { defineComponent, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -72,13 +72,6 @@ function getMenuItems(): HTMLElement[] {
   // This is just an assumption for our tests. We assume that all menu items have this role.
   return Array.from(document.querySelectorAll('[role="menuitem"]'))
 }
-
-beforeAll(() => {
-  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(nextTick as any)
-  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn())
-})
-
-afterAll(() => jest.restoreAllMocks())
 
 describe('Safe guards', () => {
   it.each([
