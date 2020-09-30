@@ -855,6 +855,12 @@ describe('Keyboard interactions', () => {
         // Verify we got the change event
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenCalledWith('a')
+
+        // Open listbox again
+        await click(getListboxButton())
+
+        // Verify the active item is the previously selected one
+        assertActiveListboxItem(getListboxItems()[0])
       })
     )
   })
@@ -1148,6 +1154,12 @@ describe('Keyboard interactions', () => {
         // Verify we got the change event
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenCalledWith('a')
+
+        // Open listbox again
+        await click(getListboxButton())
+
+        // Verify the active item is the previously selected one
+        assertActiveListboxItem(getListboxItems()[0])
       })
     )
   })
@@ -3185,6 +3197,12 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Closed })
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('bob')
+
+      // Open listbox again
+      await click(getListboxButton())
+
+      // Verify the active item is the previously selected one
+      assertActiveListboxItem(getListboxItems()[1])
     })
   )
 
@@ -3226,6 +3244,15 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Open })
       assertActiveElement(getListbox())
       expect(handleChange).toHaveBeenCalledTimes(0)
+
+      // Close the listbox
+      await click(getListboxButton())
+
+      // Open listbox again
+      await click(getListboxButton())
+
+      // Verify the active item is non existing
+      assertNoActiveListboxItem()
     })
   )
 

@@ -751,16 +751,29 @@ describe('Keyboard interactions', () => {
       'should be possible to close the listbox with Enter and choose the active listbox item',
       suppressConsoleLogs(async () => {
         const handleChange = jest.fn()
-        render(
-          <Listbox value={undefined} onChange={handleChange}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Items>
-              <Listbox.Item value="a">Item A</Listbox.Item>
-              <Listbox.Item value="b">Item B</Listbox.Item>
-              <Listbox.Item value="c">Item C</Listbox.Item>
-            </Listbox.Items>
-          </Listbox>
-        )
+
+        function Example() {
+          const [value, setValue] = React.useState(undefined)
+
+          return (
+            <Listbox
+              value={value}
+              onChange={value => {
+                setValue(value)
+                handleChange(value)
+              }}
+            >
+              <Listbox.Button>Trigger</Listbox.Button>
+              <Listbox.Items>
+                <Listbox.Item value="a">Item A</Listbox.Item>
+                <Listbox.Item value="b">Item B</Listbox.Item>
+                <Listbox.Item value="c">Item C</Listbox.Item>
+              </Listbox.Items>
+            </Listbox>
+          )
+        }
+
+        render(<Example />)
 
         assertListboxButton({
           state: ListboxState.Closed,
@@ -788,6 +801,12 @@ describe('Keyboard interactions', () => {
         // Verify we got the change event
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenCalledWith('a')
+
+        // Open listbox again
+        await click(getListboxButton())
+
+        // Verify the active item is the previously selected one
+        assertActiveListboxItem(getListboxItems()[0])
       })
     )
   })
@@ -1017,16 +1036,29 @@ describe('Keyboard interactions', () => {
       'should be possible to close the listbox with Space and choose the active listbox item',
       suppressConsoleLogs(async () => {
         const handleChange = jest.fn()
-        render(
-          <Listbox value={undefined} onChange={handleChange}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Items>
-              <Listbox.Item value="a">Item A</Listbox.Item>
-              <Listbox.Item value="b">Item B</Listbox.Item>
-              <Listbox.Item value="c">Item C</Listbox.Item>
-            </Listbox.Items>
-          </Listbox>
-        )
+
+        function Example() {
+          const [value, setValue] = React.useState(undefined)
+
+          return (
+            <Listbox
+              value={value}
+              onChange={value => {
+                setValue(value)
+                handleChange(value)
+              }}
+            >
+              <Listbox.Button>Trigger</Listbox.Button>
+              <Listbox.Items>
+                <Listbox.Item value="a">Item A</Listbox.Item>
+                <Listbox.Item value="b">Item B</Listbox.Item>
+                <Listbox.Item value="c">Item C</Listbox.Item>
+              </Listbox.Items>
+            </Listbox>
+          )
+        }
+
+        render(<Example />)
 
         assertListboxButton({
           state: ListboxState.Closed,
@@ -1054,6 +1086,12 @@ describe('Keyboard interactions', () => {
         // Verify we got the change event
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenCalledWith('a')
+
+        // Open listbox again
+        await click(getListboxButton())
+
+        // Verify the active item is the previously selected one
+        assertActiveListboxItem(getListboxItems()[0])
       })
     )
   })
@@ -2906,16 +2944,28 @@ describe('Mouse interactions', () => {
     'should be possible to click a listbox item, which closes the listbox',
     suppressConsoleLogs(async () => {
       const handleChange = jest.fn()
-      render(
-        <Listbox value={undefined} onChange={handleChange}>
-          <Listbox.Button>Trigger</Listbox.Button>
-          <Listbox.Items>
-            <Listbox.Item value="alice">alice</Listbox.Item>
-            <Listbox.Item value="bob">bob</Listbox.Item>
-            <Listbox.Item value="charlie">charlie</Listbox.Item>
-          </Listbox.Items>
-        </Listbox>
-      )
+      function Example() {
+        const [value, setValue] = React.useState(undefined)
+
+        return (
+          <Listbox
+            value={value}
+            onChange={value => {
+              setValue(value)
+              handleChange(value)
+            }}
+          >
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Items>
+              <Listbox.Item value="alice">alice</Listbox.Item>
+              <Listbox.Item value="bob">bob</Listbox.Item>
+              <Listbox.Item value="charlie">charlie</Listbox.Item>
+            </Listbox.Items>
+          </Listbox>
+        )
+      }
+
+      render(<Example />)
 
       // Open listbox
       await click(getListboxButton())
@@ -2929,6 +2979,12 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Closed })
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('bob')
+
+      // Open listbox again
+      await click(getListboxButton())
+
+      // Verify the active item is the previously selected one
+      assertActiveListboxItem(getListboxItems()[1])
     })
   )
 
@@ -2936,18 +2992,30 @@ describe('Mouse interactions', () => {
     'should be possible to click a disabled listbox item, which is a no-op',
     suppressConsoleLogs(async () => {
       const handleChange = jest.fn()
-      render(
-        <Listbox value={undefined} onChange={handleChange}>
-          <Listbox.Button>Trigger</Listbox.Button>
-          <Listbox.Items>
-            <Listbox.Item value="alice">alice</Listbox.Item>
-            <Listbox.Item disabled value="bob">
-              bob
-            </Listbox.Item>
-            <Listbox.Item value="charlie">charlie</Listbox.Item>
-          </Listbox.Items>
-        </Listbox>
-      )
+      function Example() {
+        const [value, setValue] = React.useState(undefined)
+
+        return (
+          <Listbox
+            value={value}
+            onChange={value => {
+              setValue(value)
+              handleChange(value)
+            }}
+          >
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Items>
+              <Listbox.Item value="alice">alice</Listbox.Item>
+              <Listbox.Item disabled value="bob">
+                bob
+              </Listbox.Item>
+              <Listbox.Item value="charlie">charlie</Listbox.Item>
+            </Listbox.Items>
+          </Listbox>
+        )
+      }
+
+      render(<Example />)
 
       // Open listbox
       await click(getListboxButton())
@@ -2961,6 +3029,15 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Open })
       assertActiveElement(getListbox())
       expect(handleChange).toHaveBeenCalledTimes(0)
+
+      // Close the listbox
+      await click(getListboxButton())
+
+      // Open listbox again
+      await click(getListboxButton())
+
+      // Verify the active item is non existing
+      assertNoActiveListboxItem()
     })
   )
 
