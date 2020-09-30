@@ -33,9 +33,9 @@
   "devDependencies": {
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
-    "@popperjs/core": "^2.4.4",
-    "@testing-library/react": "^11.0.2",
-    "framer-motion": "^2.6.13",
+    "@popperjs/core": "^2.5.3",
+    "@testing-library/react": "^11.0.4",
+    "framer-motion": "^2.7.6",
     "next": "9.5.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
