@@ -8,6 +8,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Props } from '../../types'
 import { forwardRefWithAs, render } from '../../utils/render'
 import { match } from '../../utils/match'
+import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Transition, TransitionClasses } from '../transitions/transition'
 
@@ -591,6 +592,13 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG, TType = 
     document.getElementById(id)?.focus?.()
   }, [])
 
+  useIsoMorphicEffect(() => {
+    if (!active) return
+    const d = disposables()
+    d.nextFrame(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+    return d.dispose
+  }, [active])
+
   const handleClick = React.useCallback(
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
@@ -614,8 +622,9 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG, TType = 
 
   const handlePointerLeave = React.useCallback(() => {
     if (disabled) return
+    if (!active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-  }, [disabled, dispatch])
+  }, [disabled, active, dispatch])
 
   const propsBag = React.useMemo(() => ({ active, selected, disabled }), [
     active,

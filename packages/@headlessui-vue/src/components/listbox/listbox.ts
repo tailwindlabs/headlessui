@@ -10,6 +10,7 @@ import {
   InjectionKey,
   Ref,
   ComputedRef,
+  watchEffect,
 } from 'vue'
 import { match } from '../../utils/match'
 import { render } from '../../utils/render'
@@ -490,6 +491,11 @@ export const ListboxItem = defineComponent({
       document.getElementById(id)?.focus?.()
     })
 
+    watchEffect(() => {
+      if (!active.value) return
+      nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+    })
+
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault()
       api.select(value)
@@ -510,6 +516,7 @@ export const ListboxItem = defineComponent({
 
     function handlePointerLeave() {
       if (disabled) return
+      if (!active.value) return
       api.goToItem(Focus.Nothing)
     }
 
