@@ -316,7 +316,7 @@ export const MenuItems = defineComponent({
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        // @ts-expect-error Falthrough is expected here
+        // @ts-expect-error Fallthrough is expected here
         case Keys.Space:
           if (api.searchQuery.value !== '') {
             event.preventDefault()
