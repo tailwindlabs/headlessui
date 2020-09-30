@@ -545,8 +545,9 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
 
   const handlePointerLeave = React.useCallback(() => {
     if (disabled) return
+    if (!active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-  }, [disabled, dispatch])
+  }, [disabled, active, dispatch])
 
   const propsBag = React.useMemo(() => ({ active, disabled }), [active, disabled])
   const propsWeControl = {

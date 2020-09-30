@@ -426,6 +426,7 @@ export const MenuItem = defineComponent({
 
     function handlePointerLeave() {
       if (disabled) return
+      if (!active.value) return
       api.goToItem(Focus.Nothing)
     }
 
