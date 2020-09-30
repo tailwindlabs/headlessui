@@ -4,7 +4,6 @@ import * as React from 'react'
 import { Props } from '../../types'
 import { match } from '../../utils/match'
 import { forwardRefWithAs, render } from '../../utils/render'
-import { Transition, TransitionClasses } from '../transitions/transition'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -350,20 +349,10 @@ type ItemsRenderPropArg = { open: boolean }
 const Items = forwardRefWithAs(function Items<
   TTag extends React.ElementType = typeof DEFAULT_ITEMS_TAG
 >(
-  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
-    TransitionClasses & { static?: boolean },
+  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> & { static?: boolean },
   ref: React.Ref<HTMLDivElement>
 ) {
-  const {
-    enter,
-    enterFrom,
-    enterTo,
-    leave,
-    leaveFrom,
-    leaveTo,
-    static: isStatic = false,
-    ...passthroughProps
-  } = props
+  const { static: isStatic = false, ...passthroughProps } = props
   const [state, dispatch] = useMenuContext([Menu.name, Items.name].join('.'))
   const itemsRef = useSyncRefs(state.itemsRef, ref)
 
@@ -444,36 +433,12 @@ const Items = forwardRefWithAs(function Items<
     tabIndex: 0,
   }
 
-  if (isStatic) {
-    return render(
-      { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
-      propsBag,
-      DEFAULT_ITEMS_TAG
-    )
-  }
+  if (!isStatic && state.menuState === MenuStates.Closed) return null
 
-  return (
-    <Transition
-      show={state.menuState === MenuStates.Open}
-      {...{ enter, enterFrom, enterTo, leave, leaveFrom, leaveTo }}
-    >
-      {ref =>
-        render(
-          {
-            ...passthroughProps,
-            ...propsWeControl,
-            ...{
-              ref(elementRef: HTMLDivElement) {
-                ref.current = elementRef
-                itemsRef(elementRef)
-              },
-            },
-          },
-          propsBag,
-          DEFAULT_ITEMS_TAG
-        )
-      }
-    </Transition>
+  return render(
+    { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
+    propsBag,
+    DEFAULT_ITEMS_TAG
   )
 })
 

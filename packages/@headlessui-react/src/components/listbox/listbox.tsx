@@ -10,7 +10,6 @@ import { forwardRefWithAs, render } from '../../utils/render'
 import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
-import { Transition, TransitionClasses } from '../transitions/transition'
 
 enum ListboxStates {
   Open,
@@ -396,8 +395,9 @@ const DEFAULT_ITEMS_TAG = 'ul'
 
 type ItemsRenderPropArg = { open: boolean }
 
-type ListboxItemsProp<TTag> = Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
-  TransitionClasses & { static?: boolean }
+type ListboxItemsProp<TTag> = Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> & {
+  static?: boolean
+}
 
 const Items = forwardRefWithAs(function Items<
   TTag extends React.ElementType = typeof DEFAULT_ITEMS_TAG
@@ -499,36 +499,12 @@ const Items = forwardRefWithAs(function Items<
     tabIndex: 0,
   }
 
-  if (isStatic) {
-    return render(
-      { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
-      propsBag,
-      DEFAULT_ITEMS_TAG
-    )
-  }
+  if (!isStatic && state.listboxState === ListboxStates.Closed) return null
 
-  return (
-    <Transition
-      show={state.listboxState === ListboxStates.Open}
-      {...{ enter, enterFrom, enterTo, leave, leaveFrom, leaveTo }}
-    >
-      {ref =>
-        render(
-          {
-            ...passthroughProps,
-            ...propsWeControl,
-            ...{
-              ref(elementRef: HTMLUListElement) {
-                ref.current = elementRef
-                itemsRef(elementRef)
-              },
-            },
-          },
-          propsBag,
-          DEFAULT_ITEMS_TAG
-        )
-      }
-    </Transition>
+  return render(
+    { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
+    propsBag,
+    DEFAULT_ITEMS_TAG
   )
 })
 
