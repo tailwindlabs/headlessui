@@ -727,7 +727,7 @@ function MyDropdown() {
 <Menu.Items>
   <Menu.Item>{/* ... */}></Menu.Item>
   {/* ... */}>
-</Menu.Item>
+</Menu.Items>
 ```
 
 ##### Props
