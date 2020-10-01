@@ -39,5 +39,16 @@
         "component": "./components/listbox/listbox.vue"
       }
     ]
+  },
+  {
+    "name": "Switch",
+    "path": "/switch",
+    "children": [
+      {
+        "name": "Switch (basic)",
+        "path": "/switch/switch",
+        "component": "./components/switch/switch.vue"
+      }
+    ]
   }
 ]

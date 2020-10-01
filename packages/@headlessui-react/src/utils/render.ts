@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Props } from '../types'
 
 export function render<TTag extends React.ElementType, TBag>(
-  props: Props<TTag, TBag>,
+  props: Props<TTag, TBag, any>,
   bag: TBag,
   tag: React.ElementType
 ) {
