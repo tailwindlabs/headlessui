@@ -85,7 +85,7 @@ describe('safeguards', () => {
 describe('Rendering', () => {
   describe('Listbox', () => {
     it(
-      'should be possilbe to render a Listbox using a render prop',
+      'should be possible to render a Listbox using a render prop',
       suppressConsoleLogs(async () => {
         render(
           <Listbox value={undefined} onChange={console.log}>

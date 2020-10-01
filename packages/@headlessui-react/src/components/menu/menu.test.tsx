@@ -79,7 +79,7 @@ describe('Safe guards', () => {
 describe('Rendering', () => {
   describe('Menu', () => {
     it(
-      'should be possilbe to render a Menu using a render prop',
+      'should be possible to render a Menu using a render prop',
       suppressConsoleLogs(async () => {
         render(
           <Menu>
