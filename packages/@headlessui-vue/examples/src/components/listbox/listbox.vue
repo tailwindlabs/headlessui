@@ -32,14 +32,14 @@
             </span>
 
             <div class="absolute w-full mt-1 bg-white rounded-md shadow-lg">
-              <ListboxItems
+              <ListboxOptions
                 class="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5"
               >
-                <ListboxItem
+                <ListboxOption
                   v-for="name in people"
                   :key="name"
                   :value="name"
-                  :className="resolveListboxItemClassName"
+                  :className="resolveListboxOptionClassName"
                   v-slot="{ active, selected }"
                 >
                   <span
@@ -66,8 +66,8 @@
                       />
                     </svg>
                   </span>
-                </ListboxItem>
-              </ListboxItems>
+                </ListboxOption>
+              </ListboxOptions>
             </div>
           </div>
         </Listbox>
@@ -78,14 +78,20 @@
 
 <script>
 import { defineComponent, h, ref, onMounted, watchEffect, watch } from 'vue'
-import { Listbox, ListboxLabel, ListboxButton, ListboxItems, ListboxItem } from '@headlessui/vue'
+import {
+  Listbox,
+  ListboxLabel,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption,
+} from '@headlessui/vue'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 export default {
-  components: { Listbox, ListboxLabel, ListboxButton, ListboxItems, ListboxItem },
+  components: { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption },
   setup(props, context) {
     const people = [
       'Wade Cooper',
@@ -106,7 +112,7 @@ export default {
       people,
       active,
       classNames,
-      resolveListboxItemClassName({ active }) {
+      resolveListboxOptionClassName({ active }) {
         return classNames(
           'relative py-2 pl-3 cursor-default select-none pr-9 focus:outline-none',
           active ? 'text-white bg-indigo-600' : 'text-gray-900'

@@ -23,34 +23,34 @@ enum ListboxStates {
 }
 
 enum Focus {
-  FirstItem,
-  PreviousItem,
-  NextItem,
-  LastItem,
-  SpecificItem,
+  First,
+  Previous,
+  Next,
+  Last,
+  Specific,
   Nothing,
 }
 
-type ListboxItemDataRef = Ref<{ textValue: string; disabled: boolean; value: unknown }>
+type ListboxOptionDataRef = Ref<{ textValue: string; disabled: boolean; value: unknown }>
 type StateDefinition = {
   // State
   listboxState: Ref<ListboxStates>
   value: ComputedRef<unknown>
   labelRef: Ref<HTMLLabelElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
-  itemsRef: Ref<HTMLDivElement | null>
-  items: Ref<{ id: string; dataRef: ListboxItemDataRef }[]>
+  optionsRef: Ref<HTMLDivElement | null>
+  options: Ref<{ id: string; dataRef: ListboxOptionDataRef }[]>
   searchQuery: Ref<string>
-  activeItemIndex: Ref<number | null>
+  activeOptionIndex: Ref<number | null>
 
   // State mutators
   closeListbox(): void
   openListbox(): void
-  goToItem(focus: Focus, id?: string): void
+  goToOption(focus: Focus, id?: string): void
   search(value: string): void
   clearSearch(): void
-  registerItem(id: string, dataRef: ListboxItemDataRef): void
-  unregisterItem(id: string): void
+  registerOption(id: string, dataRef: ListboxOptionDataRef): void
+  unregisterOption(id: string): void
   select(value: unknown): void
 }
 
@@ -81,51 +81,54 @@ export const Listbox = defineComponent({
     const listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
     const labelRef = ref<StateDefinition['labelRef']['value']>(null)
     const buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
-    const itemsRef = ref<StateDefinition['itemsRef']['value']>(null)
-    const items = ref<StateDefinition['items']['value']>([])
+    const optionsRef = ref<StateDefinition['optionsRef']['value']>(null)
+    const options = ref<StateDefinition['options']['value']>([])
     const searchQuery = ref<StateDefinition['searchQuery']['value']>('')
-    const activeItemIndex = ref<StateDefinition['activeItemIndex']['value']>(null)
+    const activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
     const value = computed(() => props.modelValue)
 
-    function calculateActiveItemIndex(focus: Focus, id?: string) {
-      if (items.value.length <= 0) return null
+    function calculateActiveOptionIndex(focus: Focus, id?: string) {
+      if (options.value.length <= 0) return null
 
-      const currentActiveItemIndex = activeItemIndex.value ?? -1
+      const currentActiveOptionIndex = activeOptionIndex.value ?? -1
 
       const nextActiveIndex = match(focus, {
-        [Focus.FirstItem]: () => items.value.findIndex(item => !item.dataRef.disabled),
-        [Focus.PreviousItem]: () => {
-          const idx = items.value
+        [Focus.First]: () => options.value.findIndex(option => !option.dataRef.disabled),
+        [Focus.Previous]: () => {
+          const idx = options.value
             .slice()
             .reverse()
-            .findIndex((item, idx, all) => {
-              if (currentActiveItemIndex !== -1 && all.length - idx - 1 >= currentActiveItemIndex)
+            .findIndex((option, idx, all) => {
+              if (
+                currentActiveOptionIndex !== -1 &&
+                all.length - idx - 1 >= currentActiveOptionIndex
+              )
                 return false
-              return !item.dataRef.disabled
+              return !option.dataRef.disabled
             })
           if (idx === -1) return idx
-          return items.value.length - 1 - idx
+          return options.value.length - 1 - idx
         },
-        [Focus.NextItem]: () => {
-          return items.value.findIndex((item, idx) => {
-            if (idx <= currentActiveItemIndex) return false
-            return !item.dataRef.disabled
+        [Focus.Next]: () => {
+          return options.value.findIndex((option, idx) => {
+            if (idx <= currentActiveOptionIndex) return false
+            return !option.dataRef.disabled
           })
         },
-        [Focus.LastItem]: () => {
-          const idx = items.value
+        [Focus.Last]: () => {
+          const idx = options.value
             .slice()
             .reverse()
-            .findIndex(item => !item.dataRef.disabled)
+            .findIndex(option => !option.dataRef.disabled)
           if (idx === -1) return idx
-          return items.value.length - 1 - idx
+          return options.value.length - 1 - idx
         },
-        [Focus.SpecificItem]: () => items.value.findIndex(item => item.id === id),
+        [Focus.Specific]: () => options.value.findIndex(option => option.id === id),
         [Focus.Nothing]: () => null,
       })
 
-      if (nextActiveIndex === -1) return activeItemIndex.value
+      if (nextActiveIndex === -1) return activeOptionIndex.value
       return nextActiveIndex
     }
 
@@ -134,52 +137,53 @@ export const Listbox = defineComponent({
       value,
       labelRef,
       buttonRef,
-      itemsRef,
-      items,
+      optionsRef,
+      options,
       searchQuery,
-      activeItemIndex,
+      activeOptionIndex,
       closeListbox: () => (listboxState.value = ListboxStates.Closed),
       openListbox: () => (listboxState.value = ListboxStates.Open),
-      goToItem(focus: Focus, id?: string) {
-        const nextActiveItemIndex = calculateActiveItemIndex(focus, id)
-        if (searchQuery.value === '' && activeItemIndex.value === nextActiveItemIndex) return
+      goToOption(focus: Focus, id?: string) {
+        const nextActiveOptionIndex = calculateActiveOptionIndex(focus, id)
+        if (searchQuery.value === '' && activeOptionIndex.value === nextActiveOptionIndex) return
         searchQuery.value = ''
-        activeItemIndex.value = nextActiveItemIndex
+        activeOptionIndex.value = nextActiveOptionIndex
       },
       search(value: string) {
         searchQuery.value += value
 
-        const match = items.value.findIndex(
-          item => !item.dataRef.disabled && item.dataRef.textValue.startsWith(searchQuery.value)
+        const match = options.value.findIndex(
+          option =>
+            !option.dataRef.disabled && option.dataRef.textValue.startsWith(searchQuery.value)
         )
 
-        if (match === -1 || match === activeItemIndex.value) {
+        if (match === -1 || match === activeOptionIndex.value) {
           return
         }
 
-        activeItemIndex.value = match
+        activeOptionIndex.value = match
       },
       clearSearch() {
         searchQuery.value = ''
       },
-      registerItem(id: string, dataRef: ListboxItemDataRef) {
+      registerOption(id: string, dataRef: ListboxOptionDataRef) {
         // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
-        items.value.push({ id, dataRef })
+        options.value.push({ id, dataRef })
       },
-      unregisterItem(id: string) {
-        const nextItems = items.value.slice()
-        const currentActiveItem =
-          activeItemIndex.value !== null ? nextItems[activeItemIndex.value] : null
-        const idx = nextItems.findIndex(a => a.id === id)
-        if (idx !== -1) nextItems.splice(idx, 1)
-        items.value = nextItems
-        activeItemIndex.value = (() => {
-          if (idx === activeItemIndex.value) return null
-          if (currentActiveItem === null) return null
+      unregisterOption(id: string) {
+        const nextOptions = options.value.slice()
+        const currentActiveOption =
+          activeOptionIndex.value !== null ? nextOptions[activeOptionIndex.value] : null
+        const idx = nextOptions.findIndex(a => a.id === id)
+        if (idx !== -1) nextOptions.splice(idx, 1)
+        options.value = nextOptions
+        activeOptionIndex.value = (() => {
+          if (idx === activeOptionIndex.value) return null
+          if (currentActiveOption === null) return null
 
-          // If we removed the item before the actual active index, then it would be out of sync. To
+          // If we removed the option before the actual active index, then it would be out of sync. To
           // fix this, we will find the correct (new) index position.
-          return nextItems.indexOf(currentActiveItem)
+          return nextOptions.indexOf(currentActiveOption)
         })()
       },
       select(value: unknown) {
@@ -192,7 +196,7 @@ export const Listbox = defineComponent({
         if (listboxState.value !== ListboxStates.Open) return
         if (buttonRef.value?.contains(event.target as HTMLElement)) return
 
-        if (!itemsRef.value?.contains(event.target as HTMLElement)) {
+        if (!optionsRef.value?.contains(event.target as HTMLElement)) {
           api.closeListbox()
           if (!event.defaultPrevented) buttonRef.value?.focus()
         }
@@ -262,7 +266,7 @@ export const ListboxButton = defineComponent({
       id: this.id,
       type: 'button',
       'aria-haspopup': true,
-      'aria-controls': api.itemsRef.value?.id,
+      'aria-controls': api.optionsRef.value?.id,
       'aria-expanded': api.listboxState.value === ListboxStates.Open ? true : undefined,
       'aria-labelledby': api.labelRef.value
         ? [api.labelRef.value.id, this.id].join(' ')
@@ -295,8 +299,8 @@ export const ListboxButton = defineComponent({
           event.preventDefault()
           api.openListbox()
           nextTick(() => {
-            api.itemsRef.value?.focus()
-            if (!api.value.value) api.goToItem(Focus.FirstItem)
+            api.optionsRef.value?.focus()
+            if (!api.value.value) api.goToOption(Focus.First)
           })
           break
 
@@ -304,8 +308,8 @@ export const ListboxButton = defineComponent({
           event.preventDefault()
           api.openListbox()
           nextTick(() => {
-            api.itemsRef.value?.focus()
-            if (!api.value.value) api.goToItem(Focus.LastItem)
+            api.optionsRef.value?.focus()
+            if (!api.value.value) api.goToOption(Focus.Last)
           })
           break
       }
@@ -317,12 +321,12 @@ export const ListboxButton = defineComponent({
       } else {
         event.preventDefault()
         api.openListbox()
-        nextTick(() => api.itemsRef.value?.focus())
+        nextTick(() => api.optionsRef.value?.focus())
       }
     }
 
     function handleFocus() {
-      if (api.listboxState.value === ListboxStates.Open) return api.itemsRef.value?.focus()
+      if (api.listboxState.value === ListboxStates.Open) return api.optionsRef.value?.focus()
       focused.value = true
     }
 
@@ -344,14 +348,14 @@ export const ListboxButton = defineComponent({
 
 // ---
 
-export const ListboxItems = defineComponent({
-  name: 'ListboxItems',
+export const ListboxOptions = defineComponent({
+  name: 'ListboxOptions',
   props: {
     as: { type: [Object, String], default: 'ul' },
     static: { type: Boolean, default: false },
   },
   render() {
-    const api = useListboxContext('ListboxItems')
+    const api = useListboxContext('ListboxOptions')
 
     // `static` is a reserved keyword, therefore aliasing it...
     const { static: isStatic, ...passThroughProps } = this.$props
@@ -361,9 +365,9 @@ export const ListboxItems = defineComponent({
     const slot = { open: api.listboxState.value === ListboxStates.Open }
     const propsWeControl = {
       'aria-activedescendant':
-        api.activeItemIndex.value === null
+        api.activeOptionIndex.value === null
           ? undefined
-          : api.items.value[api.activeItemIndex.value]?.id,
+          : api.options.value[api.activeOptionIndex.value]?.id,
       'aria-labelledby': api.labelRef.value?.id ?? api.buttonRef.value?.id,
       id: this.id,
       onKeyDown: this.handleKeyDown,
@@ -380,8 +384,8 @@ export const ListboxItems = defineComponent({
     })
   },
   setup() {
-    const api = useListboxContext('ListboxItems')
-    const id = `headlessui-listbox-items-${useId()}`
+    const api = useListboxContext('ListboxOptions')
+    const id = `headlessui-listbox-options-${useId()}`
     const searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -400,8 +404,8 @@ export const ListboxItems = defineComponent({
         case Keys.Enter:
           event.preventDefault()
           api.closeListbox()
-          if (api.activeItemIndex.value !== null) {
-            const { dataRef } = api.items.value[api.activeItemIndex.value]
+          if (api.activeOptionIndex.value !== null) {
+            const { dataRef } = api.options.value[api.activeOptionIndex.value]
             api.select(dataRef.value)
             nextTick(() => api.buttonRef.value?.focus())
           }
@@ -409,21 +413,21 @@ export const ListboxItems = defineComponent({
 
         case Keys.ArrowDown:
           event.preventDefault()
-          return api.goToItem(Focus.NextItem)
+          return api.goToOption(Focus.Next)
 
         case Keys.ArrowUp:
           event.preventDefault()
-          return api.goToItem(Focus.PreviousItem)
+          return api.goToOption(Focus.Previous)
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
-          return api.goToItem(Focus.FirstItem)
+          return api.goToOption(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
-          return api.goToItem(Focus.LastItem)
+          return api.goToOption(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
@@ -445,14 +449,14 @@ export const ListboxItems = defineComponent({
 
     return {
       id,
-      el: api.itemsRef,
+      el: api.optionsRef,
       handleKeyDown,
     }
   },
 })
 
-export const ListboxItem = defineComponent({
-  name: 'ListboxItem',
+export const ListboxOption = defineComponent({
+  name: 'ListboxOption',
   props: {
     as: { type: [Object, String], default: 'li' },
     value: { type: [Object, String], default: null },
@@ -461,19 +465,19 @@ export const ListboxItem = defineComponent({
     className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
-    const api = useListboxContext('ListboxItem')
-    const id = `headlessui-listbox-item-${useId()}`
+    const api = useListboxContext('ListboxOption')
+    const id = `headlessui-listbox-option-${useId()}`
     const { disabled, class: defaultClass, className = defaultClass, value } = props
 
     const active = computed(() => {
-      return api.activeItemIndex.value !== null
-        ? api.items.value[api.activeItemIndex.value].id === id
+      return api.activeOptionIndex.value !== null
+        ? api.options.value[api.activeOptionIndex.value].id === id
         : false
     })
 
     const selected = computed(() => api.value.value === value)
 
-    const dataRef = ref<ListboxItemDataRef['value']>({ disabled, value, textValue: '' })
+    const dataRef = ref<ListboxOptionDataRef['value']>({ disabled, value, textValue: '' })
     onMounted(() => {
       const textValue = document
         .getElementById(id)
@@ -482,12 +486,12 @@ export const ListboxItem = defineComponent({
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 
-    onMounted(() => api.registerItem(id, dataRef))
-    onUnmounted(() => api.unregisterItem(id))
+    onMounted(() => api.registerOption(id, dataRef))
+    onUnmounted(() => api.unregisterOption(id))
 
     onMounted(() => {
       if (!selected.value) return
-      api.goToItem(Focus.SpecificItem, id)
+      api.goToOption(Focus.Specific, id)
       document.getElementById(id)?.focus?.()
     })
 
@@ -504,20 +508,20 @@ export const ListboxItem = defineComponent({
     }
 
     function handleFocus() {
-      if (disabled) return api.goToItem(Focus.Nothing)
-      api.goToItem(Focus.SpecificItem, id)
+      if (disabled) return api.goToOption(Focus.Nothing)
+      api.goToOption(Focus.Specific, id)
     }
 
     function handlePointerMove() {
       if (disabled) return
       if (active.value) return
-      api.goToItem(Focus.SpecificItem, id)
+      api.goToOption(Focus.Specific, id)
     }
 
     function handlePointerLeave() {
       if (disabled) return
       if (!active.value) return
-      api.goToItem(Focus.Nothing)
+      api.goToOption(Focus.Nothing)
     }
 
     return () => {

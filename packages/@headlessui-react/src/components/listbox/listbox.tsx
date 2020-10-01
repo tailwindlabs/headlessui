@@ -16,7 +16,7 @@ enum ListboxStates {
   Closed,
 }
 
-type ListboxItemDataRef = React.MutableRefObject<{
+type ListboxOptionDataRef = React.MutableRefObject<{
   textValue?: string
   disabled: boolean
   value: unknown
@@ -27,86 +27,86 @@ type StateDefinition = {
   propsRef: React.MutableRefObject<{ value: unknown; onChange(value: unknown): void }>
   labelRef: React.MutableRefObject<HTMLLabelElement | null>
   buttonRef: React.MutableRefObject<HTMLButtonElement | null>
-  itemsRef: React.MutableRefObject<HTMLUListElement | null>
-  items: { id: string; dataRef: ListboxItemDataRef }[]
+  optionsRef: React.MutableRefObject<HTMLUListElement | null>
+  options: { id: string; dataRef: ListboxOptionDataRef }[]
   searchQuery: string
-  activeItemIndex: number | null
+  activeOptionIndex: number | null
 }
 
 enum ActionTypes {
   OpenListbox,
   CloseListbox,
 
-  GoToItem,
+  GoToOption,
   Search,
   ClearSearch,
 
-  RegisterItem,
-  UnregisterItem,
+  RegisterOption,
+  UnregisterOption,
 }
 
 enum Focus {
-  FirstItem,
-  PreviousItem,
-  NextItem,
-  LastItem,
-  SpecificItem,
+  First,
+  Previous,
+  Next,
+  Last,
+  Specific,
   Nothing,
 }
 
-function calculateActiveItemIndex(
+function calculateActiveOptionIndex(
   state: StateDefinition,
   focus: Focus,
   id?: string
-): StateDefinition['activeItemIndex'] {
-  if (state.items.length <= 0) return null
+): StateDefinition['activeOptionIndex'] {
+  if (state.options.length <= 0) return null
 
-  const items = state.items
-  const activeItemIndex = state.activeItemIndex ?? -1
+  const options = state.options
+  const activeOptionIndex = state.activeOptionIndex ?? -1
 
   const nextActiveIndex = match(focus, {
-    [Focus.FirstItem]: () => items.findIndex(item => !item.dataRef.current.disabled),
-    [Focus.PreviousItem]: () => {
-      const idx = items
+    [Focus.First]: () => options.findIndex(option => !option.dataRef.current.disabled),
+    [Focus.Previous]: () => {
+      const idx = options
         .slice()
         .reverse()
-        .findIndex((item, idx, all) => {
-          if (activeItemIndex !== -1 && all.length - idx - 1 >= activeItemIndex) return false
-          return !item.dataRef.current.disabled
+        .findIndex((option, idx, all) => {
+          if (activeOptionIndex !== -1 && all.length - idx - 1 >= activeOptionIndex) return false
+          return !option.dataRef.current.disabled
         })
       if (idx === -1) return idx
-      return items.length - 1 - idx
+      return options.length - 1 - idx
     },
-    [Focus.NextItem]: () => {
-      return items.findIndex((item, idx) => {
-        if (idx <= activeItemIndex) return false
-        return !item.dataRef.current.disabled
+    [Focus.Next]: () => {
+      return options.findIndex((option, idx) => {
+        if (idx <= activeOptionIndex) return false
+        return !option.dataRef.current.disabled
       })
     },
-    [Focus.LastItem]: () => {
-      const idx = items
+    [Focus.Last]: () => {
+      const idx = options
         .slice()
         .reverse()
-        .findIndex(item => !item.dataRef.current.disabled)
+        .findIndex(option => !option.dataRef.current.disabled)
       if (idx === -1) return idx
-      return items.length - 1 - idx
+      return options.length - 1 - idx
     },
-    [Focus.SpecificItem]: () => items.findIndex(item => item.id === id),
+    [Focus.Specific]: () => options.findIndex(option => option.id === id),
     [Focus.Nothing]: () => null,
   })
 
-  if (nextActiveIndex === -1) return state.activeItemIndex
+  if (nextActiveIndex === -1) return state.activeOptionIndex
   return nextActiveIndex
 }
 
 type Actions =
   | { type: ActionTypes.CloseListbox }
   | { type: ActionTypes.OpenListbox }
-  | { type: ActionTypes.GoToItem; focus: Focus; id?: string }
+  | { type: ActionTypes.GoToOption; focus: Focus; id?: string }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
-  | { type: ActionTypes.RegisterItem; id: string; dataRef: ListboxItemDataRef }
-  | { type: ActionTypes.UnregisterItem; id: string }
+  | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef }
+  | { type: ActionTypes.UnregisterOption; id: string }
 
 const reducers: {
   [P in ActionTypes]: (
@@ -116,52 +116,53 @@ const reducers: {
 } = {
   [ActionTypes.CloseListbox]: state => ({ ...state, listboxState: ListboxStates.Closed }),
   [ActionTypes.OpenListbox]: state => ({ ...state, listboxState: ListboxStates.Open }),
-  [ActionTypes.GoToItem]: (state, action) => {
-    const activeItemIndex = calculateActiveItemIndex(state, action.focus, action.id)
+  [ActionTypes.GoToOption]: (state, action) => {
+    const activeOptionIndex = calculateActiveOptionIndex(state, action.focus, action.id)
 
-    if (state.searchQuery === '' && state.activeItemIndex === activeItemIndex) {
+    if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) {
       return state
     }
 
-    return { ...state, searchQuery: '', activeItemIndex }
+    return { ...state, searchQuery: '', activeOptionIndex }
   },
   [ActionTypes.Search]: (state, action) => {
     const searchQuery = state.searchQuery + action.value
-    const match = state.items.findIndex(
-      item =>
-        !item.dataRef.current.disabled && item.dataRef.current.textValue?.startsWith(searchQuery)
+    const match = state.options.findIndex(
+      option =>
+        !option.dataRef.current.disabled &&
+        option.dataRef.current.textValue?.startsWith(searchQuery)
     )
 
-    if (match === -1 || match === state.activeItemIndex) {
+    if (match === -1 || match === state.activeOptionIndex) {
       return { ...state, searchQuery }
     }
 
-    return { ...state, searchQuery, activeItemIndex: match }
+    return { ...state, searchQuery, activeOptionIndex: match }
   },
   [ActionTypes.ClearSearch]: state => ({ ...state, searchQuery: '' }),
-  [ActionTypes.RegisterItem]: (state, action) => ({
+  [ActionTypes.RegisterOption]: (state, action) => ({
     ...state,
-    items: [...state.items, { id: action.id, dataRef: action.dataRef }],
+    options: [...state.options, { id: action.id, dataRef: action.dataRef }],
   }),
-  [ActionTypes.UnregisterItem]: (state, action) => {
-    const nextItems = state.items.slice()
-    const currentActiveItem =
-      state.activeItemIndex !== null ? nextItems[state.activeItemIndex] : null
+  [ActionTypes.UnregisterOption]: (state, action) => {
+    const nextOptions = state.options.slice()
+    const currentActiveOption =
+      state.activeOptionIndex !== null ? nextOptions[state.activeOptionIndex] : null
 
-    const idx = nextItems.findIndex(a => a.id === action.id)
+    const idx = nextOptions.findIndex(a => a.id === action.id)
 
-    if (idx !== -1) nextItems.splice(idx, 1)
+    if (idx !== -1) nextOptions.splice(idx, 1)
 
     return {
       ...state,
-      items: nextItems,
-      activeItemIndex: (() => {
-        if (idx === state.activeItemIndex) return null
-        if (currentActiveItem === null) return null
+      options: nextOptions,
+      activeOptionIndex: (() => {
+        if (idx === state.activeOptionIndex) return null
+        if (currentActiveOption === null) return null
 
-        // If we removed the item before the actual active index, then it would be out of sync. To
+        // If we removed the option before the actual active index, then it would be out of sync. To
         // fix this, we will find the correct (new) index position.
-        return nextItems.indexOf(currentActiveItem)
+        return nextOptions.indexOf(currentActiveOption)
       })(),
     }
   },
@@ -200,12 +201,12 @@ export function Listbox<
     propsRef: { current: { value, onChange } },
     labelRef: React.createRef(),
     buttonRef: React.createRef(),
-    itemsRef: React.createRef(),
-    items: [],
+    optionsRef: React.createRef(),
+    options: [],
     searchQuery: '',
-    activeItemIndex: null,
+    activeOptionIndex: null,
   } as StateDefinition)
-  const [{ listboxState, propsRef, itemsRef, buttonRef }, dispatch] = reducerBag
+  const [{ listboxState, propsRef, optionsRef, buttonRef }, dispatch] = reducerBag
 
   useIsoMorphicEffect(() => {
     propsRef.current.value = value
@@ -219,7 +220,7 @@ export function Listbox<
       if (listboxState !== ListboxStates.Open) return
       if (buttonRef.current?.contains(event.target as HTMLElement)) return
 
-      if (!itemsRef.current?.contains(event.target as HTMLElement)) {
+      if (!optionsRef.current?.contains(event.target as HTMLElement)) {
         dispatch({ type: ActionTypes.CloseListbox })
         if (!event.defaultPrevented) buttonRef.current?.focus()
       }
@@ -227,7 +228,7 @@ export function Listbox<
 
     window.addEventListener('click', handler)
     return () => window.removeEventListener('click', handler)
-  }, [listboxState, itemsRef, buttonRef, d, dispatch])
+  }, [listboxState, optionsRef, buttonRef, d, dispatch])
 
   const propsBag = React.useMemo<ListboxRenderPropArg>(
     () => ({ open: listboxState === ListboxStates.Open }),
@@ -284,9 +285,9 @@ const Button = forwardRefWithAs(function Button<
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.itemsRef.current?.focus()
+            state.optionsRef.current?.focus()
             if (!state.propsRef.current.value)
-              dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
+              dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
           })
           break
 
@@ -294,9 +295,9 @@ const Button = forwardRefWithAs(function Button<
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.itemsRef.current?.focus()
+            state.optionsRef.current?.focus()
             if (!state.propsRef.current.value)
-              dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
+              dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
           })
           break
       }
@@ -311,14 +312,14 @@ const Button = forwardRefWithAs(function Button<
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenListbox })
-        d.nextFrame(() => state.itemsRef.current?.focus())
+        d.nextFrame(() => state.optionsRef.current?.focus())
       }
     },
     [dispatch, d, state]
   )
 
   const handleFocus = React.useCallback(() => {
-    if (state.listboxState === ListboxStates.Open) return state.itemsRef.current?.focus()
+    if (state.listboxState === ListboxStates.Open) return state.optionsRef.current?.focus()
     setFocused(true)
   }, [state, setFocused])
 
@@ -338,7 +339,7 @@ const Button = forwardRefWithAs(function Button<
     id,
     type: 'button',
     'aria-haspopup': true,
-    'aria-controls': state.itemsRef.current?.id,
+    'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.listboxState === ListboxStates.Open ? true : undefined,
     'aria-labelledby': labelledby,
     onKeyDown: handleKeyDown,
@@ -368,7 +369,7 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
     state.buttonRef,
   ])
 
-  const propsBag = React.useMemo<ItemsRenderPropArg>(
+  const propsBag = React.useMemo<OptionsRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
     [state]
   )
@@ -382,7 +383,7 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
 
 // ---
 
-type ItemsPropsWeControl =
+type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
   | 'id'
@@ -391,17 +392,17 @@ type ItemsPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-const DEFAULT_ITEMS_TAG = 'ul'
+const DEFAULT_OPTIONS_TAG = 'ul'
 
-type ItemsRenderPropArg = { open: boolean }
+type OptionsRenderPropArg = { open: boolean }
 
-type ListboxItemsProp<TTag> = Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> & {
+type ListboxOptionsProp<TTag> = Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> & {
   static?: boolean
 }
 
-const Items = forwardRefWithAs(function Items<
-  TTag extends React.ElementType = typeof DEFAULT_ITEMS_TAG
->(props: ListboxItemsProp<TTag>, ref: React.Ref<HTMLUListElement>) {
+const Options = forwardRefWithAs(function Options<
+  TTag extends React.ElementType = typeof DEFAULT_OPTIONS_TAG
+>(props: ListboxOptionsProp<TTag>, ref: React.Ref<HTMLUListElement>) {
   const {
     enter,
     enterFrom,
@@ -412,10 +413,10 @@ const Items = forwardRefWithAs(function Items<
     static: isStatic = false,
     ...passthroughProps
   } = props
-  const [state, dispatch] = useListboxContext([Listbox.name, Items.name].join('.'))
-  const itemsRef = useSyncRefs(state.itemsRef, ref)
+  const [state, dispatch] = useListboxContext([Listbox.name, Options.name].join('.'))
+  const optionsRef = useSyncRefs(state.optionsRef, ref)
 
-  const id = `headlessui-listbox-items-${useId()}`
+  const id = `headlessui-listbox-options-${useId()}`
   const d = useDisposables()
   const searchDisposables = useDisposables()
 
@@ -436,8 +437,8 @@ const Items = forwardRefWithAs(function Items<
         case Keys.Enter:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseListbox })
-          if (state.activeItemIndex !== null) {
-            const { dataRef } = state.items[state.activeItemIndex]
+          if (state.activeOptionIndex !== null) {
+            const { dataRef } = state.options[state.activeOptionIndex]
             state.propsRef.current.onChange(dataRef.current.value)
           }
           d.nextFrame(() => state.buttonRef.current?.focus())
@@ -445,21 +446,21 @@ const Items = forwardRefWithAs(function Items<
 
         case Keys.ArrowDown:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.NextItem })
+          return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Next })
 
         case Keys.ArrowUp:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.PreviousItem })
+          return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Previous })
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
+          return dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
+          return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
 
         case Keys.Escape:
           event.preventDefault()
@@ -485,13 +486,13 @@ const Items = forwardRefWithAs(function Items<
     state.buttonRef.current,
   ])
 
-  const propsBag = React.useMemo<ItemsRenderPropArg>(
+  const propsBag = React.useMemo<OptionsRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
     [state]
   )
   const propsWeControl = {
     'aria-activedescendant':
-      state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
+      state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     id,
     onKeyDown: handleKeyDown,
@@ -502,15 +503,15 @@ const Items = forwardRefWithAs(function Items<
   if (!isStatic && state.listboxState === ListboxStates.Closed) return null
 
   return render(
-    { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
+    { ...passthroughProps, ...propsWeControl, ...{ ref: optionsRef } },
     propsBag,
-    DEFAULT_ITEMS_TAG
+    DEFAULT_OPTIONS_TAG
   )
 })
 
 // ---
 
-type ListboxItemPropsWeControl =
+type ListboxOptionPropsWeControl =
   | 'id'
   | 'role'
   | 'tabIndex'
@@ -519,28 +520,28 @@ type ListboxItemPropsWeControl =
   | 'onPointerLeave'
   | 'onFocus'
 
-const DEFAULT_ITEM_TAG = 'li'
+const DEFAULT_OPTION_TAG = 'li'
 
-type ItemRenderPropArg = { active: boolean; selected: boolean; disabled: boolean }
+type OptionRenderPropArg = { active: boolean; selected: boolean; disabled: boolean }
 
-function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG, TType = string>(
-  props: Props<TTag, ItemRenderPropArg, ListboxItemPropsWeControl | 'className'> & {
+function Option<TTag extends React.ElementType = typeof DEFAULT_OPTION_TAG, TType = string>(
+  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'className'> & {
     disabled?: boolean
     value: TType
 
     // Special treatment, can either be a string or a function that resolves to a string
-    className?: ((bag: ItemRenderPropArg) => string) | string
+    className?: ((bag: OptionRenderPropArg) => string) | string
   }
 ) {
   const { disabled = false, value, className, ...passthroughProps } = props
-  const [state, dispatch] = useListboxContext([Listbox.name, Item.name].join('.'))
+  const [state, dispatch] = useListboxContext([Listbox.name, Option.name].join('.'))
   const d = useDisposables()
-  const id = `headlessui-listbox-item-${useId()}`
+  const id = `headlessui-listbox-option-${useId()}`
   const active =
-    state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
+    state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
   const selected = state.propsRef.current.value === value
 
-  const bag = React.useRef<ListboxItemDataRef['current']>({ disabled, value })
+  const bag = React.useRef<ListboxOptionDataRef['current']>({ disabled, value })
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled
@@ -558,13 +559,13 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG, TType = 
   ])
 
   useIsoMorphicEffect(() => {
-    dispatch({ type: ActionTypes.RegisterItem, id, dataRef: bag })
-    return () => dispatch({ type: ActionTypes.UnregisterItem, id })
+    dispatch({ type: ActionTypes.RegisterOption, id, dataRef: bag })
+    return () => dispatch({ type: ActionTypes.UnregisterOption, id })
   }, [bag, id])
 
   useIsoMorphicEffect(() => {
     if (!selected) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
+    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
     document.getElementById(id)?.focus?.()
   }, [])
 
@@ -586,20 +587,20 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG, TType = 
   )
 
   const handleFocus = React.useCallback(() => {
-    if (disabled) return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
+    if (disabled) return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
+    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [disabled, id, dispatch])
 
   const handlePointerMove = React.useCallback(() => {
     if (disabled) return
     if (active) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
+    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [disabled, active, id, dispatch])
 
   const handlePointerLeave = React.useCallback(() => {
     if (disabled) return
     if (!active) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
+    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
   const propsBag = React.useMemo(() => ({ active, selected, disabled }), [
@@ -612,7 +613,6 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG, TType = 
     role: 'option',
     tabIndex: -1,
     className: resolvePropValue(className, propsBag),
-    disabled: disabled === true ? true : undefined,
     'aria-disabled': disabled === true ? true : undefined,
     'aria-selected': selected === true ? true : undefined,
     onClick: handleClick,
@@ -621,10 +621,10 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG, TType = 
     onPointerLeave: handlePointerLeave,
   }
 
-  return render<TTag, ItemRenderPropArg>(
+  return render<TTag, OptionRenderPropArg>(
     { ...passthroughProps, ...propsWeControl },
     propsBag,
-    DEFAULT_ITEM_TAG
+    DEFAULT_OPTION_TAG
   )
 }
 
@@ -638,5 +638,5 @@ function resolvePropValue<TProperty, TBag>(property: TProperty, bag: TBag) {
 
 Listbox.Button = Button
 Listbox.Label = Label
-Listbox.Items = Items
-Listbox.Item = Item
+Listbox.Options = Options
+Listbox.Option = Option

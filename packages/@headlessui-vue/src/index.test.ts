@@ -16,7 +16,7 @@ it('should expose the correct components', () => {
     'Listbox',
     'ListboxLabel',
     'ListboxButton',
-    'ListboxItems',
-    'ListboxItem',
+    'ListboxOptions',
+    'ListboxOption',
   ])
 })

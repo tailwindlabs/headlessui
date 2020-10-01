@@ -1,24 +1,24 @@
 import { defineComponent, ref, watchEffect } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
-import { Listbox, ListboxLabel, ListboxButton, ListboxItems, ListboxItem } from './listbox'
+import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   assertActiveElement,
-  assertActiveListboxItem,
+  assertActiveListboxOption,
   assertListbox,
   assertListboxButton,
   assertListboxButtonLinkedWithListbox,
   assertListboxButtonLinkedWithListboxLabel,
-  assertListboxItem,
+  assertListboxOption,
   assertListboxLabel,
   assertListboxLabelLinkedWithListbox,
-  assertNoActiveListboxItem,
-  assertNoSelectedListboxItem,
+  assertNoActiveListboxOption,
+  assertNoSelectedListboxOption,
   getListbox,
   getListboxButton,
   getListboxButtons,
   getListboxes,
-  getListboxItems,
+  getListboxOptions,
   getListboxLabel,
   ListboxState,
 } from '../../test-utils/accessibility-assertions'
@@ -37,7 +37,7 @@ import {
 jest.mock('../../hooks/use-id')
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
-  const defaultComponents = { Listbox, ListboxLabel, ListboxButton, ListboxItems, ListboxItem }
+  const defaultComponents = { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption }
 
   if (typeof input === 'string') {
     return render(defineComponent({ template: input, components: defaultComponents }))
@@ -56,8 +56,8 @@ describe('safeguards', () => {
   it.each([
     ['ListboxButton', ListboxButton],
     ['ListboxLabel', ListboxLabel],
-    ['ListboxItems', ListboxItems],
-    ['ListboxItem', ListboxItem],
+    ['ListboxOptions', ListboxOptions],
+    ['ListboxOption', ListboxOption],
   ])(
     'should error when we are using a <%s /> without a parent <Listbox />',
     suppressConsoleLogs((name, Component) => {
@@ -74,11 +74,11 @@ describe('safeguards', () => {
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="a">Item A</ListboxItem>
-              <ListboxItem value="b">Item B</ListboxItem>
-              <ListboxItem value="c">Item C</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -105,11 +105,11 @@ describe('Rendering', () => {
                 <>
                   <ListboxButton>Trigger</ListboxButton>
                   {open && (
-                    <ListboxItems>
-                      <ListboxItem value="a">Item A</ListboxItem>
-                      <ListboxItem value="b">Item B</ListboxItem>
-                      <ListboxItem value="c">Item C</ListboxItem>
-                    </ListboxItems>
+                    <ListboxOptions>
+                      <ListboxOption value="a">Option A</ListboxOption>
+                      <ListboxOption value="b">Option B</ListboxOption>
+                      <ListboxOption value="c">Option C</ListboxOption>
+                    </ListboxOptions>
                   )}
                 </>
               )}
@@ -144,11 +144,11 @@ describe('Rendering', () => {
             <Listbox v-model="value">
               <ListboxLabel v-slot="data">{{JSON.stringify(data)}}</ListboxLabel>
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -184,11 +184,11 @@ describe('Rendering', () => {
             <Listbox v-model="value">
               <ListboxLabel as="p" v-slot="data">{{JSON.stringify(data)}}</ListboxLabel>
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -220,11 +220,11 @@ describe('Rendering', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton v-slot="data">{{JSON.stringify(data)}}</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -255,11 +255,11 @@ describe('Rendering', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton as="div" role="button" v-slot="data">{{JSON.stringify(data)}}</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -291,11 +291,11 @@ describe('Rendering', () => {
             <Listbox v-model="value">
               <ListboxLabel>Label</ListboxLabel>
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -313,17 +313,17 @@ describe('Rendering', () => {
     )
   })
 
-  describe('ListboxItems', () => {
+  describe('ListboxOptions', () => {
     it(
-      'should be possible to render ListboxItems using a render prop',
+      'should be possible to render ListboxOptions using a render prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems v-slot="data">
-                <ListboxItem value="a">{{JSON.stringify(data)}}</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions v-slot="data">
+                <ListboxOption value="a">{{JSON.stringify(data)}}</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -349,16 +349,16 @@ describe('Rendering', () => {
       })
     )
 
-    it('should be possible to always render the ListboxItems if we provide it a `static` prop', () => {
+    it('should be possible to always render the ListboxOptions if we provide it a `static` prop', () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems static>
-              <ListboxItem value="a">Item A</ListboxItem>
-              <ListboxItem value="b">Item B</ListboxItem>
-              <ListboxItem value="c">Item C</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions static>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -369,17 +369,17 @@ describe('Rendering', () => {
     })
   })
 
-  describe('ListboxItem', () => {
+  describe('ListboxOption', () => {
     it(
-      'should be possible to render a ListboxItem using a render prop',
+      'should be possible to render a ListboxOption using a render prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a" v-slot="data">{{JSON.stringify(data)}}</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a" v-slot="data">{{JSON.stringify(data)}}</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -414,17 +414,17 @@ describe('Rendering composition', () => {
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="a" :className="JSON.stringify">
-                Item A
-              </ListboxItem>
-              <ListboxItem value="b" disabled :className="JSON.stringify">
-                Item B
-              </ListboxItem>
-              <ListboxItem value="c" className="no-special-treatment">
-                Item C
-              </ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="a" :className="JSON.stringify">
+                Option A
+              </ListboxOption>
+              <ListboxOption value="b" disabled :className="JSON.stringify">
+                Option B
+              </ListboxOption>
+              <ListboxOption value="c" className="no-special-treatment">
+                Option C
+              </ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -439,70 +439,70 @@ describe('Rendering composition', () => {
       // Open Listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
       // Verify correct classNames
-      expect('' + items[0].classList).toEqual(
+      expect('' + options[0].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: false })
       )
-      expect('' + items[1].classList).toEqual(
+      expect('' + options[1].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: true })
       )
-      expect('' + items[2].classList).toEqual('no-special-treatment')
+      expect('' + options[2].classList).toEqual('no-special-treatment')
 
       // Double check that nothing is active
-      assertNoActiveListboxItem(getListbox())
+      assertNoActiveListboxOption(getListbox())
 
-      // Make the first item active
+      // Make the first option active
       await press(Keys.ArrowDown)
 
       // Verify the classNames
-      expect('' + items[0].classList).toEqual(
+      expect('' + options[0].classList).toEqual(
         JSON.stringify({ active: true, selected: false, disabled: false })
       )
-      expect('' + items[1].classList).toEqual(
+      expect('' + options[1].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: true })
       )
-      expect('' + items[2].classList).toEqual('no-special-treatment')
+      expect('' + options[2].classList).toEqual('no-special-treatment')
 
-      // Double check that the first item is the active one
-      assertActiveListboxItem(items[0])
+      // Double check that the first option is the active one
+      assertActiveListboxOption(options[0])
 
-      // Let's go down, this should go to the third item since the second item is disabled!
+      // Let's go down, this should go to the third option since the second option is disabled!
       await press(Keys.ArrowDown)
 
       // Verify the classNames
-      expect('' + items[0].classList).toEqual(
+      expect('' + options[0].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: false })
       )
-      expect('' + items[1].classList).toEqual(
+      expect('' + options[1].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: true })
       )
-      expect('' + items[2].classList).toEqual('no-special-treatment')
+      expect('' + options[2].classList).toEqual('no-special-treatment')
 
-      // Double check that the last item is the active one
-      assertActiveListboxItem(items[2])
+      // Double check that the last option is the active one
+      assertActiveListboxOption(options[2])
     })
   )
 
   it(
-    'should be possible to swap the Listbox item with a button for example',
+    'should be possible to swap the Listbox option with a button for example',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem as="button" value="a">
-                Item A
-              </ListboxItem>
-              <ListboxItem as="button" value="b">
-                Item B
-              </ListboxItem>
-              <ListboxItem as="button" value="c">
-                Item C
-              </ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption as="button" value="a">
+                Option A
+              </ListboxOption>
+              <ListboxOption as="button" value="b">
+                Option B
+              </ListboxOption>
+              <ListboxOption as="button" value="c">
+                Option C
+              </ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -517,9 +517,8 @@ describe('Rendering composition', () => {
       // Open Listbox
       await click(getListboxButton())
 
-      // Verify items are buttons now
-      const items = getListboxItems()
-      items.forEach(item => assertListboxItem(item, { tag: 'button' }))
+      // Verify options are buttons now
+      getListboxOptions().forEach(option => assertListboxOption(option, { tag: 'button' }))
     })
   )
 })
@@ -533,11 +532,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -559,34 +558,34 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item, { selected: false }))
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option, { selected: false }))
 
-        // Verify that the first listbox item is active
-        assertActiveListboxItem(items[0])
-        assertNoSelectedListboxItem()
+        // Verify that the first listbox option is active
+        assertActiveListboxOption(options[0])
+        assertNoSelectedListboxOption()
       })
     )
 
     it(
-      'should be possible to open the listbox with Enter, and focus the selected item',
+      'should be possible to open the listbox with Enter, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref('b') }),
@@ -608,29 +607,29 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach((item, i) => assertListboxItem(item, { selected: i === 1 }))
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
 
-        // Verify that the second listbox item is active (because it is already selected)
-        assertActiveListboxItem(items[1])
+        // Verify that the second listbox option is active (because it is already selected)
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should have no active listbox item when there are no listbox items at all',
+      'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems />
+              <ListboxOptions />
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -646,24 +645,24 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.Open })
         assertActiveElement(getListbox())
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
 
     it(
-      'should focus the first non disabled listbox item when opening with Enter',
+      'should focus the first non disabled listbox option when opening with Enter',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -681,29 +680,29 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // Verify that the first non-disabled listbox item is active
-        assertActiveListboxItem(items[1])
+        // Verify that the first non-disabled listbox option is active
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should focus the first non disabled listbox item when opening with Enter (jump over multiple disabled ones)',
+      'should focus the first non disabled listbox option when opening with Enter (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -721,31 +720,31 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // Verify that the first non-disabled listbox item is active
-        assertActiveListboxItem(items[2])
+        // Verify that the first non-disabled listbox option is active
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should have no active listbox item upon Enter key press, when there are no non-disabled listbox items',
+      'should have no active listbox option upon Enter key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -763,22 +762,22 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
 
     it(
-      'should be possible to close the listbox with Enter when there is no active listboxitem',
+      'should be possible to close the listbox with Enter when there is no active listboxoption',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -806,18 +805,18 @@ describe('Keyboard interactions', () => {
     )
 
     it(
-      'should be possible to close the listbox with Enter and choose the active listbox item',
+      'should be possible to close the listbox with Enter and choose the active listbox option',
       suppressConsoleLogs(async () => {
         const handleChange = jest.fn()
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup() {
@@ -841,11 +840,11 @@ describe('Keyboard interactions', () => {
         // Verify it is open
         assertListboxButton({ state: ListboxState.Open })
 
-        // Activate the first listbox item
-        const items = getListboxItems()
-        await mouseMove(items[0])
+        // Activate the first listbox option
+        const options = getListboxOptions()
+        await mouseMove(options[0])
 
-        // Choose item, and close listbox
+        // Choose option, and close listbox
         await press(Keys.Enter)
 
         // Verify it is closed
@@ -859,8 +858,8 @@ describe('Keyboard interactions', () => {
         // Open listbox again
         await click(getListboxButton())
 
-        // Verify the active item is the previously selected one
-        assertActiveListboxItem(getListboxItems()[0])
+        // Verify the active option is the previously selected one
+        assertActiveListboxOption(getListboxOptions()[0])
       })
     )
   })
@@ -873,11 +872,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -899,31 +898,31 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[0])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
       })
     )
 
     it(
-      'should be possible to open the listbox with Space, and focus the selected item',
+      'should be possible to open the listbox with Space, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref('b') }),
@@ -945,29 +944,29 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach((item, i) => assertListboxItem(item, { selected: i === 1 }))
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
 
-        // Verify that the second listbox item is active (because it is already selected)
-        assertActiveListboxItem(items[1])
+        // Verify that the second listbox option is active (because it is already selected)
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should have no active listbox item when there are no listbox items at all',
+      'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems />
+              <ListboxOptions />
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -983,24 +982,24 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.Open })
         assertActiveElement(getListbox())
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
 
     it(
-      'should focus the first non disabled listbox item when opening with Space',
+      'should focus the first non disabled listbox option when opening with Space',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1018,29 +1017,29 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Space)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // Verify that the first non-disabled listbox item is active
-        assertActiveListboxItem(items[1])
+        // Verify that the first non-disabled listbox option is active
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should focus the first non disabled listbox item when opening with Space (jump over multiple disabled ones)',
+      'should focus the first non disabled listbox option when opening with Space (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1058,31 +1057,31 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Space)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // Verify that the first non-disabled listbox item is active
-        assertActiveListboxItem(items[2])
+        // Verify that the first non-disabled listbox option is active
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should have no active listbox item upon Space key press, when there are no non-disabled listbox items',
+      'should have no active listbox option upon Space key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1100,23 +1099,23 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Space)
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
 
     it(
-      'should be possible to close the listbox with Space and choose the active listbox item',
+      'should be possible to close the listbox with Space and choose the active listbox option',
       suppressConsoleLogs(async () => {
         const handleChange = jest.fn()
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup() {
@@ -1140,11 +1139,11 @@ describe('Keyboard interactions', () => {
         // Verify it is open
         assertListboxButton({ state: ListboxState.Open })
 
-        // Activate the first listbox item
-        const items = getListboxItems()
-        await mouseMove(items[0])
+        // Activate the first listbox option
+        const options = getListboxOptions()
+        await mouseMove(options[0])
 
-        // Choose item, and close listbox
+        // Choose option, and close listbox
         await press(Keys.Space)
 
         // Verify it is closed
@@ -1158,8 +1157,8 @@ describe('Keyboard interactions', () => {
         // Open listbox again
         await click(getListboxButton())
 
-        // Verify the active item is the previously selected one
-        assertActiveListboxItem(getListboxItems()[0])
+        // Verify the active option is the previously selected one
+        assertActiveListboxOption(getListboxOptions()[0])
       })
     )
   })
@@ -1172,11 +1171,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1192,7 +1191,7 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
@@ -1215,11 +1214,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1241,16 +1240,16 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[0])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
 
         // Try to tab
         await press(Keys.Tab)
@@ -1269,11 +1268,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1295,16 +1294,16 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[0])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
 
         // Try to Shift+Tab
         await press(shift(Keys.Tab))
@@ -1325,11 +1324,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1351,33 +1350,33 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
 
-        // Verify that the first listbox item is active
-        assertActiveListboxItem(items[0])
+        // Verify that the first listbox option is active
+        assertActiveListboxOption(options[0])
       })
     )
 
     it(
-      'should be possible to open the listbox with ArrowDown, and focus the selected item',
+      'should be possible to open the listbox with ArrowDown, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref('b') }),
@@ -1399,29 +1398,29 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach((item, i) => assertListboxItem(item, { selected: i === 1 }))
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
 
-        // Verify that the second listbox item is active (because it is already selected)
-        assertActiveListboxItem(items[1])
+        // Verify that the second listbox option is active (because it is already selected)
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should have no active listbox item when there are no listbox items at all',
+      'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems />
+              <ListboxOptions />
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1437,22 +1436,22 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.Open })
         assertActiveElement(getListbox())
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
 
     it(
-      'should be possible to use ArrowDown to navigate the listbox items',
+      'should be possible to use ArrowDown to navigate the listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1470,40 +1469,40 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[0])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
 
         // We should be able to go down once
         await press(Keys.ArrowDown)
-        assertActiveListboxItem(items[1])
+        assertActiveListboxOption(options[1])
 
         // We should be able to go down again
         await press(Keys.ArrowDown)
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
 
-        // We should NOT be able to go down again (because last item). Current implementation won't go around.
+        // We should NOT be able to go down again (because last option). Current implementation won't go around.
         await press(Keys.ArrowDown)
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to use ArrowDown to navigate the listbox items and skip the first disabled one',
+      'should be possible to use ArrowDown to navigate the listbox options and skip the first disabled one',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1521,34 +1520,34 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[1])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[1])
 
         // We should be able to go down once
         await press(Keys.ArrowDown)
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to use ArrowDown to navigate the listbox items and jump to the first non-disabled one',
+      'should be possible to use ArrowDown to navigate the listbox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1566,28 +1565,28 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[2])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[2])
       })
     )
   })
 
   describe('`ArrowUp` key', () => {
     it(
-      'should be possible to open the listbox with ArrowUp and the last item should be active',
+      'should be possible to open the listbox with ArrowUp and the last option should be active',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1609,33 +1608,33 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
 
-        // ! ALERT: The LAST item should now be active
-        assertActiveListboxItem(items[2])
+        // ! ALERT: The LAST option should now be active
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to open the listbox with ArrowUp, and focus the selected item',
+      'should be possible to open the listbox with ArrowUp, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref('b') }),
@@ -1657,29 +1656,29 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach((item, i) => assertListboxItem(item, { selected: i === 1 }))
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
 
-        // Verify that the second listbox item is active (because it is already selected)
-        assertActiveListboxItem(items[1])
+        // Verify that the second listbox option is active (because it is already selected)
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should have no active listbox item when there are no listbox items at all',
+      'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems />
+              <ListboxOptions />
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1695,26 +1694,26 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.Open })
         assertActiveElement(getListbox())
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
 
     it(
-      'should be possible to use ArrowUp to navigate the listbox items and jump to the first non-disabled one',
+      'should be possible to use ArrowUp to navigate the listbox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1732,30 +1731,30 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.ArrowUp)
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[0])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
       })
     )
 
     it(
-      'should not be possible to navigate up or down if there is only a single non-disabled item',
+      'should not be possible to navigate up or down if there is only a single non-disabled option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1773,34 +1772,34 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[2])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[2])
 
         // We should not be able to go up (because those are disabled)
         await press(Keys.ArrowUp)
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
 
-        // We should not be able to go down (because this is the last item)
+        // We should not be able to go down (because this is the last option)
         await press(Keys.ArrowDown)
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to use ArrowUp to navigate the listbox items',
+      'should be possible to use ArrowUp to navigate the listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1822,45 +1821,45 @@ describe('Keyboard interactions', () => {
         assertListboxButton({ state: ListboxState.Open })
         assertListbox({
           state: ListboxState.Open,
-          attributes: { id: 'headlessui-listbox-items-2' },
+          attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
         assertListboxButtonLinkedWithListbox()
 
-        // Verify we have listbox items
-        const items = getListboxItems()
-        expect(items).toHaveLength(3)
-        items.forEach(item => assertListboxItem(item))
-        assertActiveListboxItem(items[2])
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[2])
 
         // We should be able to go down once
         await press(Keys.ArrowUp)
-        assertActiveListboxItem(items[1])
+        assertActiveListboxOption(options[1])
 
         // We should be able to go down again
         await press(Keys.ArrowUp)
-        assertActiveListboxItem(items[0])
+        assertActiveListboxOption(options[0])
 
-        // We should NOT be able to go up again (because first item). Current implementation won't go around.
+        // We should NOT be able to go up again (because first option). Current implementation won't go around.
         await press(Keys.ArrowUp)
-        assertActiveListboxItem(items[0])
+        assertActiveListboxOption(options[0])
       })
     )
   })
 
   describe('`End` key', () => {
     it(
-      'should be possible to use the End key to go to the last listbox item',
+      'should be possible to use the End key to go to the last listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1872,34 +1871,34 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the first item
-        assertActiveListboxItem(items[0])
+        // We should be on the first option
+        assertActiveListboxOption(options[0])
 
-        // We should be able to go to the last item
+        // We should be able to go to the last option
         await press(Keys.End)
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to use the End key to go to the last non disabled listbox item',
+      'should be possible to use the End key to go to the last non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1911,36 +1910,36 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the first item
-        assertActiveListboxItem(items[0])
+        // We should be on the first option
+        assertActiveListboxOption(options[0])
 
-        // We should be able to go to the last non-disabled item
+        // We should be able to go to the last non-disabled option
         await press(Keys.End)
-        assertActiveListboxItem(items[1])
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should be possible to use the End key to go to the first listbox item if that is the only non-disabled listbox item',
+      'should be possible to use the End key to go to the first listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1949,38 +1948,38 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.End)
 
-        const items = getListboxItems()
-        assertActiveListboxItem(items[0])
+        const options = getListboxOptions()
+        assertActiveListboxOption(options[0])
       })
     )
 
     it(
-      'should have no active listbox item upon End key press, when there are no non-disabled listbox items',
+      'should have no active listbox option upon End key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -1989,30 +1988,30 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.End)
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
   })
 
   describe('`PageDown` key', () => {
     it(
-      'should be possible to use the PageDown key to go to the last listbox item',
+      'should be possible to use the PageDown key to go to the last listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2024,34 +2023,34 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the first item
-        assertActiveListboxItem(items[0])
+        // We should be on the first option
+        assertActiveListboxOption(options[0])
 
-        // We should be able to go to the last item
+        // We should be able to go to the last option
         await press(Keys.PageDown)
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to use the PageDown key to go to the last non disabled listbox item',
+      'should be possible to use the PageDown key to go to the last non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2063,36 +2062,36 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.Enter)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the first item
-        assertActiveListboxItem(items[0])
+        // We should be on the first option
+        assertActiveListboxOption(options[0])
 
-        // We should be able to go to the last non-disabled item
+        // We should be able to go to the last non-disabled option
         await press(Keys.PageDown)
-        assertActiveListboxItem(items[1])
+        assertActiveListboxOption(options[1])
       })
     )
 
     it(
-      'should be possible to use the PageDown key to go to the first listbox item if that is the only non-disabled listbox item',
+      'should be possible to use the PageDown key to go to the first listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2101,38 +2100,38 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.PageDown)
 
-        const items = getListboxItems()
-        assertActiveListboxItem(items[0])
+        const options = getListboxOptions()
+        assertActiveListboxOption(options[0])
       })
     )
 
     it(
-      'should have no active listbox item upon PageDown key press, when there are no non-disabled listbox items',
+      'should have no active listbox option upon PageDown key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2141,30 +2140,30 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.PageDown)
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
   })
 
   describe('`Home` key', () => {
     it(
-      'should be possible to use the Home key to go to the first listbox item',
+      'should be possible to use the Home key to go to the first listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2176,34 +2175,34 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.ArrowUp)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the last item
-        assertActiveListboxItem(items[2])
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
 
-        // We should be able to go to the first item
+        // We should be able to go to the first option
         await press(Keys.Home)
-        assertActiveListboxItem(items[0])
+        assertActiveListboxOption(options[0])
       })
     )
 
     it(
-      'should be possible to use the Home key to go to the first non disabled listbox item',
+      'should be possible to use the Home key to go to the first non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-                <ListboxItem value="d">Item D</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+                <ListboxOption value="d">Option D</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2212,38 +2211,38 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.Home)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the first non-disabled item
-        assertActiveListboxItem(items[2])
+        // We should be on the first non-disabled option
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to use the Home key to go to the last listbox item if that is the only non-disabled listbox item',
+      'should be possible to use the Home key to go to the last listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem value="d">Item D</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption value="d">Option D</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2252,38 +2251,38 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.Home)
 
-        const items = getListboxItems()
-        assertActiveListboxItem(items[3])
+        const options = getListboxOptions()
+        assertActiveListboxOption(options[3])
       })
     )
 
     it(
-      'should have no active listbox item upon Home key press, when there are no non-disabled listbox items',
+      'should have no active listbox option upon Home key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2292,30 +2291,30 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.Home)
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
   })
 
   describe('`PageUp` key', () => {
     it(
-      'should be possible to use the PageUp key to go to the first listbox item',
+      'should be possible to use the PageUp key to go to the first listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">Item A</ListboxItem>
-                <ListboxItem value="b">Item B</ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2327,34 +2326,34 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.ArrowUp)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the last item
-        assertActiveListboxItem(items[2])
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
 
-        // We should be able to go to the first item
+        // We should be able to go to the first option
         await press(Keys.PageUp)
-        assertActiveListboxItem(items[0])
+        assertActiveListboxOption(options[0])
       })
     )
 
     it(
-      'should be possible to use the PageUp key to go to the first non disabled listbox item',
+      'should be possible to use the PageUp key to go to the first non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem value="c">Item C</ListboxItem>
-                <ListboxItem value="d">Item D</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+                <ListboxOption value="d">Option D</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2363,38 +2362,38 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.PageUp)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the first non-disabled item
-        assertActiveListboxItem(items[2])
+        // We should be on the first non-disabled option
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should be possible to use the PageUp key to go to the last listbox item if that is the only non-disabled listbox item',
+      'should be possible to use the PageUp key to go to the last listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem value="d">Item D</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption value="d">Option D</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2403,38 +2402,38 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.PageUp)
 
-        const items = getListboxItems()
-        assertActiveListboxItem(items[3])
+        const options = getListboxOptions()
+        assertActiveListboxOption(options[3])
       })
     )
 
     it(
-      'should have no active listbox item upon PageUp key press, when there are no non-disabled listbox items',
+      'should have no active listbox option upon PageUp key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem disabled value="a">
-                  Item A
-                </ListboxItem>
-                <ListboxItem disabled value="b">
-                  Item B
-                </ListboxItem>
-                <ListboxItem disabled value="c">
-                  Item C
-                </ListboxItem>
-                <ListboxItem disabled value="d">
-                  Item D
-                </ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption disabled value="a">
+                  Option A
+                </ListboxOption>
+                <ListboxOption disabled value="b">
+                  Option B
+                </ListboxOption>
+                <ListboxOption disabled value="c">
+                  Option C
+                </ListboxOption>
+                <ListboxOption disabled value="d">
+                  Option D
+                </ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2443,13 +2442,13 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        // We opened via click, we don't have an active item
-        assertNoActiveListboxItem()
+        // We opened via click, we don't have an active option
+        assertNoActiveListboxOption()
 
         // We should not be able to go to the end
         await press(Keys.PageUp)
 
-        assertNoActiveListboxItem()
+        assertNoActiveListboxOption()
       })
     )
   })
@@ -2462,11 +2461,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="alice">alice</ListboxItem>
-                <ListboxItem value="bob">bob</ListboxItem>
-                <ListboxItem value="charlie">charlie</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="alice">alice</ListboxOption>
+                <ListboxOption value="bob">bob</ListboxOption>
+                <ListboxOption value="charlie">charlie</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2475,19 +2474,19 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await click(getListboxButton())
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be able to go to the second item
+        // We should be able to go to the second option
         await type(word('bob'))
-        assertActiveListboxItem(items[1])
+        assertActiveListboxOption(options[1])
 
-        // We should be able to go to the first item
+        // We should be able to go to the first option
         await type(word('alice'))
-        assertActiveListboxItem(items[0])
+        assertActiveListboxOption(options[0])
 
-        // We should be able to go to the last item
+        // We should be able to go to the last option
         await type(word('charlie'))
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
@@ -2498,11 +2497,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="alice">alice</ListboxItem>
-                <ListboxItem value="bob">bob</ListboxItem>
-                <ListboxItem value="charlie">charlie</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="alice">alice</ListboxOption>
+                <ListboxOption value="bob">bob</ListboxOption>
+                <ListboxOption value="charlie">charlie</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2514,22 +2513,22 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.ArrowUp)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the last item
-        assertActiveListboxItem(items[2])
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
 
-        // We should be able to go to the second item
+        // We should be able to go to the second option
         await type(word('bo'))
-        assertActiveListboxItem(items[1])
+        assertActiveListboxOption(options[1])
 
-        // We should be able to go to the first item
+        // We should be able to go to the first option
         await type(word('ali'))
-        assertActiveListboxItem(items[0])
+        assertActiveListboxOption(options[0])
 
-        // We should be able to go to the last item
+        // We should be able to go to the last option
         await type(word('char'))
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
@@ -2540,11 +2539,11 @@ describe('Keyboard interactions', () => {
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="a">value a</ListboxItem>
-                <ListboxItem value="b">value b</ListboxItem>
-                <ListboxItem value="c">value c</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="a">value a</ListboxOption>
+                <ListboxOption value="b">value b</ListboxOption>
+                <ListboxOption value="c">value c</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2556,39 +2555,39 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.ArrowUp)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the last item
-        assertActiveListboxItem(items[2])
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
 
-        // We should be able to go to the second item
+        // We should be able to go to the second option
         await type(word('value b'))
-        assertActiveListboxItem(items[1])
+        assertActiveListboxOption(options[1])
 
-        // We should be able to go to the first item
+        // We should be able to go to the first option
         await type(word('value a'))
-        assertActiveListboxItem(items[0])
+        assertActiveListboxOption(options[0])
 
-        // We should be able to go to the last item
+        // We should be able to go to the last option
         await type(word('value c'))
-        assertActiveListboxItem(items[2])
+        assertActiveListboxOption(options[2])
       })
     )
 
     it(
-      'should not be possible to search for a disabled item',
+      'should not be possible to search for a disabled option',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="alice">alice</ListboxItem>
-                <ListboxItem disabled value="bob">
+              <ListboxOptions>
+                <ListboxOption value="alice">alice</ListboxOption>
+                <ListboxOption disabled value="bob">
                   bob
-                </ListboxItem>
-                <ListboxItem value="charlie">charlie</ListboxItem>
-              </ListboxItems>
+                </ListboxOption>
+                <ListboxOption value="charlie">charlie</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -2600,16 +2599,16 @@ describe('Keyboard interactions', () => {
         // Open listbox
         await press(Keys.ArrowUp)
 
-        const items = getListboxItems()
+        const options = getListboxOptions()
 
-        // We should be on the last item
-        assertActiveListboxItem(items[2])
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
 
-        // We should not be able to go to the disabled item
+        // We should not be able to go to the disabled option
         await type(word('bo'))
 
-        // We should still be on the last item
-        assertActiveListboxItem(items[2])
+        // We should still be on the last option
+        assertActiveListboxOption(options[2])
       })
     )
   })
@@ -2624,11 +2623,11 @@ describe('Mouse interactions', () => {
           <Listbox v-model="value">
             <ListboxLabel>Label</ListboxLabel>
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="a">Item A</ListboxItem>
-              <ListboxItem value="b">Item B</ListboxItem>
-              <ListboxItem value="c">Item C</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2652,11 +2651,11 @@ describe('Mouse interactions', () => {
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="a">Item A</ListboxItem>
-              <ListboxItem value="b">Item B</ListboxItem>
-              <ListboxItem value="c">Item C</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2675,30 +2674,30 @@ describe('Mouse interactions', () => {
       assertListboxButton({ state: ListboxState.Open })
       assertListbox({
         state: ListboxState.Open,
-        attributes: { id: 'headlessui-listbox-items-2' },
+        attributes: { id: 'headlessui-listbox-options-2' },
       })
       assertActiveElement(getListbox())
       assertListboxButtonLinkedWithListbox()
 
-      // Verify we have listbox items
-      const items = getListboxItems()
-      expect(items).toHaveLength(3)
-      items.forEach(item => assertListboxItem(item))
+      // Verify we have listbox options
+      const options = getListboxOptions()
+      expect(options).toHaveLength(3)
+      options.forEach(option => assertListboxOption(option))
     })
   )
 
   it(
-    'should be possible to open a listbox on click, and focus the selected item',
+    'should be possible to open a listbox on click, and focus the selected option',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="a">Item A</ListboxItem>
-              <ListboxItem value="b">Item B</ListboxItem>
-              <ListboxItem value="c">Item C</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref('b') }),
@@ -2717,18 +2716,18 @@ describe('Mouse interactions', () => {
       assertListboxButton({ state: ListboxState.Open })
       assertListbox({
         state: ListboxState.Open,
-        attributes: { id: 'headlessui-listbox-items-2' },
+        attributes: { id: 'headlessui-listbox-options-2' },
       })
       assertActiveElement(getListbox())
       assertListboxButtonLinkedWithListbox()
 
-      // Verify we have listbox items
-      const items = getListboxItems()
-      expect(items).toHaveLength(3)
-      items.forEach((item, i) => assertListboxItem(item, { selected: i === 1 }))
+      // Verify we have listbox options
+      const options = getListboxOptions()
+      expect(options).toHaveLength(3)
+      options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
 
-      // Verify that the second listbox item is active (because it is already selected)
-      assertActiveListboxItem(items[1])
+      // Verify that the second listbox option is active (because it is already selected)
+      assertActiveListboxOption(options[1])
     })
   )
 
@@ -2739,11 +2738,11 @@ describe('Mouse interactions', () => {
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="a">Item A</ListboxItem>
-              <ListboxItem value="b">Item B</ListboxItem>
-              <ListboxItem value="c">Item C</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2769,11 +2768,11 @@ describe('Mouse interactions', () => {
       template: `
         <Listbox v-model="value">
           <ListboxButton>Trigger</ListboxButton>
-          <ListboxItems>
-            <ListboxItem value="a">Item A</ListboxItem>
-            <ListboxItem value="b">Item B</ListboxItem>
-            <ListboxItem value="c">Item C</ListboxItem>
-          </ListboxItems>
+          <ListboxOptions>
+            <ListboxOption value="a">Option A</ListboxOption>
+            <ListboxOption value="b">Option B</ListboxOption>
+            <ListboxOption value="c">Option C</ListboxOption>
+          </ListboxOptions>
         </Listbox>
       `,
       setup: () => ({ value: ref(null) }),
@@ -2799,11 +2798,11 @@ describe('Mouse interactions', () => {
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2827,11 +2826,11 @@ describe('Mouse interactions', () => {
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2858,20 +2857,20 @@ describe('Mouse interactions', () => {
           <div>
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="alice">alice</ListboxItem>
-                <ListboxItem value="bob">bob</ListboxItem>
-                <ListboxItem value="charlie">charlie</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="alice">alice</ListboxOption>
+                <ListboxOption value="bob">bob</ListboxOption>
+                <ListboxOption value="charlie">charlie</ListboxOption>
+              </ListboxOptions>
             </Listbox>
 
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
-              <ListboxItems>
-                <ListboxItem value="alice">alice</ListboxItem>
-                <ListboxItem value="bob">bob</ListboxItem>
-                <ListboxItem value="charlie">charlie</ListboxItem>
-              </ListboxItems>
+              <ListboxOptions>
+                <ListboxOption value="alice">alice</ListboxOption>
+                <ListboxOption value="bob">bob</ListboxOption>
+                <ListboxOption value="charlie">charlie</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           </div>
         `,
@@ -2904,11 +2903,11 @@ describe('Mouse interactions', () => {
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2928,17 +2927,17 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to hover an item and make it active',
+    'should be possible to hover an option and make it active',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2947,33 +2946,33 @@ describe('Mouse interactions', () => {
       // Open listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
-      // We should be able to go to the second item
-      await mouseMove(items[1])
-      assertActiveListboxItem(items[1])
+      const options = getListboxOptions()
+      // We should be able to go to the second option
+      await mouseMove(options[1])
+      assertActiveListboxOption(options[1])
 
-      // We should be able to go to the first item
-      await mouseMove(items[0])
-      assertActiveListboxItem(items[0])
+      // We should be able to go to the first option
+      await mouseMove(options[0])
+      assertActiveListboxOption(options[0])
 
-      // We should be able to go to the last item
-      await mouseMove(items[2])
-      assertActiveListboxItem(items[2])
+      // We should be able to go to the last option
+      await mouseMove(options[2])
+      assertActiveListboxOption(options[2])
     })
   )
 
   it(
-    'should make a listbox item active when you move the mouse over it',
+    'should make a listbox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -2982,25 +2981,25 @@ describe('Mouse interactions', () => {
       // Open listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
-      // We should be able to go to the second item
-      await mouseMove(items[1])
-      assertActiveListboxItem(items[1])
+      const options = getListboxOptions()
+      // We should be able to go to the second option
+      await mouseMove(options[1])
+      assertActiveListboxOption(options[1])
     })
   )
 
   it(
-    'should be a no-op when we move the mouse and the listbox item is already active',
+    'should be a no-op when we move the mouse and the listbox option is already active',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -3009,33 +3008,33 @@ describe('Mouse interactions', () => {
       // Open listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      // We should be able to go to the second item
-      await mouseMove(items[1])
-      assertActiveListboxItem(items[1])
+      // We should be able to go to the second option
+      await mouseMove(options[1])
+      assertActiveListboxOption(options[1])
 
-      await mouseMove(items[1])
+      await mouseMove(options[1])
 
       // Nothing should be changed
-      assertActiveListboxItem(items[1])
+      assertActiveListboxOption(options[1])
     })
   )
 
   it(
-    'should be a no-op when we move the mouse and the listbox item is disabled',
+    'should be a no-op when we move the mouse and the listbox option is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem disabled value="bob">
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption disabled value="bob">
                 bob
-              </ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+              </ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -3044,27 +3043,27 @@ describe('Mouse interactions', () => {
       // Open listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      await mouseMove(items[1])
-      assertNoActiveListboxItem()
+      await mouseMove(options[1])
+      assertNoActiveListboxOption()
     })
   )
 
   it(
-    'should not be possible to hover an item that is disabled',
+    'should not be possible to hover an option that is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem disabled value="bob">
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption disabled value="bob">
                 bob
-              </ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+              </ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -3073,28 +3072,28 @@ describe('Mouse interactions', () => {
       // Open listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      // Try to hover over item 1, which is disabled
-      await mouseMove(items[1])
+      // Try to hover over option 1, which is disabled
+      await mouseMove(options[1])
 
-      // We should not have an active item now
-      assertNoActiveListboxItem()
+      // We should not have an active option now
+      assertNoActiveListboxOption()
     })
   )
 
   it(
-    'should be possible to mouse leave an item and make it inactive',
+    'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -3103,45 +3102,45 @@ describe('Mouse interactions', () => {
       // Open listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      // We should be able to go to the second item
-      await mouseMove(items[1])
-      assertActiveListboxItem(items[1])
+      // We should be able to go to the second option
+      await mouseMove(options[1])
+      assertActiveListboxOption(options[1])
 
-      await mouseLeave(items[1])
-      assertNoActiveListboxItem()
+      await mouseLeave(options[1])
+      assertNoActiveListboxOption()
 
-      // We should be able to go to the first item
-      await mouseMove(items[0])
-      assertActiveListboxItem(items[0])
+      // We should be able to go to the first option
+      await mouseMove(options[0])
+      assertActiveListboxOption(options[0])
 
-      await mouseLeave(items[0])
-      assertNoActiveListboxItem()
+      await mouseLeave(options[0])
+      assertNoActiveListboxOption()
 
-      // We should be able to go to the last item
-      await mouseMove(items[2])
-      assertActiveListboxItem(items[2])
+      // We should be able to go to the last option
+      await mouseMove(options[2])
+      assertActiveListboxOption(options[2])
 
-      await mouseLeave(items[2])
-      assertNoActiveListboxItem()
+      await mouseLeave(options[2])
+      assertNoActiveListboxOption()
     })
   )
 
   it(
-    'should be possible to mouse leave a disabled item and be a no-op',
+    'should be possible to mouse leave a disabled option and be a no-op',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem disabled value="bob">
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption disabled value="bob">
                 bob
-              </ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+              </ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -3150,30 +3149,30 @@ describe('Mouse interactions', () => {
       // Open listbox
       await click(getListboxButton())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      // Try to hover over item 1, which is disabled
-      await mouseMove(items[1])
-      assertNoActiveListboxItem()
+      // Try to hover over option 1, which is disabled
+      await mouseMove(options[1])
+      assertNoActiveListboxOption()
 
-      await mouseLeave(items[1])
-      assertNoActiveListboxItem()
+      await mouseLeave(options[1])
+      assertNoActiveListboxOption()
     })
   )
 
   it(
-    'should be possible to click a listbox item, which closes the listbox',
+    'should be possible to click a listbox option, which closes the listbox',
     suppressConsoleLogs(async () => {
       const handleChange = jest.fn()
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup() {
@@ -3190,10 +3189,10 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Open })
       assertActiveElement(getListbox())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      // We should be able to click the first item
-      await click(items[1])
+      // We should be able to click the first option
+      await click(options[1])
       assertListbox({ state: ListboxState.Closed })
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('bob')
@@ -3201,26 +3200,26 @@ describe('Mouse interactions', () => {
       // Open listbox again
       await click(getListboxButton())
 
-      // Verify the active item is the previously selected one
-      assertActiveListboxItem(getListboxItems()[1])
+      // Verify the active option is the previously selected one
+      assertActiveListboxOption(getListboxOptions()[1])
     })
   )
 
   it(
-    'should be possible to click a disabled listbox item, which is a no-op',
+    'should be possible to click a disabled listbox option, which is a no-op',
     suppressConsoleLogs(async () => {
       const handleChange = jest.fn()
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem disabled value="bob">
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption disabled value="bob">
                 bob
-              </ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+              </ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup() {
@@ -3237,10 +3236,10 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Open })
       assertActiveElement(getListbox())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      // We should be able to click the first item
-      await click(items[1])
+      // We should be able to click the first option
+      await click(options[1])
       assertListbox({ state: ListboxState.Open })
       assertActiveElement(getListbox())
       expect(handleChange).toHaveBeenCalledTimes(0)
@@ -3251,23 +3250,23 @@ describe('Mouse interactions', () => {
       // Open listbox again
       await click(getListboxButton())
 
-      // Verify the active item is non existing
-      assertNoActiveListboxItem()
+      // Verify the active option is non existing
+      assertNoActiveListboxOption()
     })
   )
 
   it(
-    'should be possible focus a listbox item, so that it becomes active',
+    'should be possible focus a listbox option, so that it becomes active',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem value="bob">bob</ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -3278,31 +3277,31 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Open })
       assertActiveElement(getListbox())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
       // Verify that nothing is active yet
-      assertNoActiveListboxItem()
+      assertNoActiveListboxOption()
 
-      // We should be able to focus the first item
-      await focus(items[1])
-      assertActiveListboxItem(items[1])
+      // We should be able to focus the first option
+      await focus(options[1])
+      assertActiveListboxOption(options[1])
     })
   )
 
   it(
-    'should not be possible to focus a listbox item which is disabled',
+    'should not be possible to focus a listbox option which is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
-            <ListboxItems>
-              <ListboxItem value="alice">alice</ListboxItem>
-              <ListboxItem disabled value="bob">
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption disabled value="bob">
                 bob
-              </ListboxItem>
-              <ListboxItem value="charlie">charlie</ListboxItem>
-            </ListboxItems>
+              </ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
           </Listbox>
         `,
         setup: () => ({ value: ref(null) }),
@@ -3313,11 +3312,11 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Open })
       assertActiveElement(getListbox())
 
-      const items = getListboxItems()
+      const options = getListboxOptions()
 
-      // We should not be able to focus the first item
-      await focus(items[1])
-      assertNoActiveListboxItem()
+      // We should not be able to focus the first option
+      await focus(options[1])
+      assertNoActiveListboxOption()
     })
   )
 })

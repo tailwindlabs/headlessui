@@ -62,9 +62,9 @@ export default function Home() {
               </span>
 
               <div className="absolute w-full mt-1 bg-white rounded-md shadow-lg">
-                <Listbox.Items className="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
+                <Listbox.Options className="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
                   {people.map(name => (
-                    <Listbox.Item
+                    <Listbox.Option
                       key={name}
                       value={name}
                       className={({ active }) => {
@@ -102,9 +102,9 @@ export default function Home() {
                           )}
                         </>
                       )}
-                    </Listbox.Item>
+                    </Listbox.Option>
                   ))}
-                </Listbox.Items>
+                </Listbox.Options>
               </div>
             </div>
           </Listbox>

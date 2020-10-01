@@ -210,7 +210,7 @@ export function getListboxes(): HTMLElement[] {
   return Array.from(document.querySelectorAll('[role="listbox"]'))
 }
 
-export function getListboxItems(): HTMLElement[] {
+export function getListboxOptions(): HTMLElement[] {
   return Array.from(document.querySelectorAll('[role="option"]'))
 }
 
@@ -388,7 +388,7 @@ export function assertListboxButtonLinkedWithListboxLabel(
   }
 }
 
-export function assertActiveListboxItem(item: HTMLElement | null, listbox = getListbox()) {
+export function assertActiveListboxOption(item: HTMLElement | null, listbox = getListbox()) {
   try {
     if (listbox === null) return expect(listbox).not.toBe(null)
     if (item === null) return expect(item).not.toBe(null)
@@ -396,33 +396,33 @@ export function assertActiveListboxItem(item: HTMLElement | null, listbox = getL
     // Ensure link between listbox & listbox item is correct
     expect(listbox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertActiveListboxItem)
+    Error.captureStackTrace(err, assertActiveListboxOption)
     throw err
   }
 }
 
-export function assertNoActiveListboxItem(listbox = getListbox()) {
+export function assertNoActiveListboxOption(listbox = getListbox()) {
   try {
     if (listbox === null) return expect(listbox).not.toBe(null)
 
     // Ensure we don't have an active listbox
     expect(listbox).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
-    Error.captureStackTrace(err, assertNoActiveListboxItem)
+    Error.captureStackTrace(err, assertNoActiveListboxOption)
     throw err
   }
 }
 
-export function assertNoSelectedListboxItem(items = getListboxItems()) {
+export function assertNoSelectedListboxOption(items = getListboxOptions()) {
   try {
     for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
   } catch (err) {
-    Error.captureStackTrace(err, assertNoSelectedListboxItem)
+    Error.captureStackTrace(err, assertNoSelectedListboxOption)
     throw err
   }
 }
 
-export function assertListboxItem(
+export function assertListboxOption(
   item: HTMLElement | null,
   options?: {
     tag?: string
@@ -465,7 +465,7 @@ export function assertListboxItem(
       }
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertListboxItem)
+    Error.captureStackTrace(err, assertListboxOption)
     throw err
   }
 }
