@@ -69,7 +69,7 @@ export const Switch = defineComponent({
       'aria-checked': this.$props.modelValue,
       'aria-labelledby': labelledby.value,
       onClick: this.handleClick,
-      onKeyDown: this.handleKeyDown,
+      onKeyUp: this.handleKeyUp,
     }
 
     return render({
@@ -94,7 +94,7 @@ export const Switch = defineComponent({
         event.preventDefault()
         toggle()
       },
-      handleKeyDown(event: KeyboardEvent) {
+      handleKeyUp(event: KeyboardEvent) {
         if (event.key === Keys.Space) {
           event.preventDefault()
           toggle()

@@ -40,6 +40,8 @@ export async function type(events: Partial<KeyboardEvent>[]) {
       if (!cancelled && event.key === Keys.Tab.key) {
         element = focusNext(event)
       }
+      fireEvent.keyPress(element, event)
+      fireEvent.keyUp(element, event)
     })
 
     // We don't want to actually wait in our tests, so let's advance

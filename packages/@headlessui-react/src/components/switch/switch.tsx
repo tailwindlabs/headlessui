@@ -55,7 +55,7 @@ const DEFAULT_SWITCH_TAG = 'button'
 
 type SwitchRenderPropArg = { checked: boolean }
 
-type SwitchPropsWeControl = 'id' | 'role' | 'tabIndex' | 'aria-checked' | 'onClick' | 'onKeyDown'
+type SwitchPropsWeControl = 'id' | 'role' | 'tabIndex' | 'aria-checked' | 'onClick' | 'onKeyUp'
 
 export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TAG>(
   props: Props<
@@ -82,7 +82,7 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
     },
     [toggle]
   )
-  const handleKeyDown = React.useCallback(
+  const handleKeyUp = React.useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
       if (event.key === Keys.Space) {
         event.preventDefault()
@@ -102,7 +102,7 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
     'aria-checked': checked,
     'aria-labelledby': groupContext?.label?.id,
     onClick: handleClick,
-    onKeyDown: handleKeyDown,
+    onKeyUp: handleKeyUp,
   }
 
   return render({ ...passThroughProps, ...propsWeControl }, propsBag, DEFAULT_SWITCH_TAG)
