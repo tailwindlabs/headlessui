@@ -23,7 +23,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,md,html,css,vue}": "tsdx lint"
+    "*.{js,jsx,ts,tsx}": "tsdx lint"
   },
   "prettier": {
     "printWidth": 100,
