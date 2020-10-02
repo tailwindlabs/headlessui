@@ -31,18 +31,15 @@
     "vue": "^3.0.0-rc.13"
   },
   "devDependencies": {
-    "@popperjs/core": "^2.4.4",
-    "@tailwindcss/ui": "^0.6.2",
-    "@testing-library/vue": "^5.0.4",
+    "@popperjs/core": "^2.5.3",
+    "@testing-library/vue": "^5.1.0",
     "@types/debounce": "^1.2.0",
-    "@types/node": "^14.11.1",
+    "@types/node": "^14.11.2",
     "@vue/compiler-sfc": "3.0.0-rc.13",
-    "@vue/test-utils": "^2.0.0-beta.5",
+    "@vue/test-utils": "^2.0.0-beta.6",
     "husky": "^4.3.0",
-    "tailwindcss": "^1.8.10",
-    "tsdx": "^0.13.3",
     "vite": "^1.0.0-rc.4",
     "vue": "^3.0.0-rc.13",
-    "vue-router": "^4.0.0-beta.10"
+    "vue-router": "^4.0.0-beta.12"
   }
 }

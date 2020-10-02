@@ -14,13 +14,16 @@
     "vue": "yarn workspace @headlessui/vue",
     "shared": "yarn workspace @headlessui/shared",
     "build": "yarn workspaces run build",
-    "test": "yarn workspaces run test",
+    "test": "./scripts/test.sh",
     "lint": "./scripts/lint.sh"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint"
+      "pre-commit": "lint-staged"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,md,html,css,vue}": "tsdx lint"
   },
   "prettier": {
     "printWidth": 100,
@@ -29,11 +32,15 @@
     "trailingComma": "es5"
   },
   "devDependencies": {
-    "@types/node": "^14.10.1",
+    "@tailwindcss/ui": "^0.6.2",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@types/node": "^14.11.2",
     "babel-jest": "^26.3.0",
     "husky": "^4.3.0",
     "jest": "^26.4.2",
+    "lint-staged": "^10.4.0",
     "prismjs": "^1.21.0",
+    "tailwindcss": "^1.8.10",
     "tsdx": "^0.13.3",
     "tslib": "^2.0.1",
     "typescript": "^3.9.7"

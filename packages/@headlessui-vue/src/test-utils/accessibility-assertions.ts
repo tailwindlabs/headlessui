@@ -1,158 +1,483 @@
-export enum MenuButtonState {
-  Open,
-  Closed,
+function assertNever(x: never): never {
+  throw new Error('Unexpected object: ' + x)
 }
+
+// ---
+
+export function getMenuButton(): HTMLElement | null {
+  return document.querySelector('button,[role="button"]')
+}
+
+export function getMenuButtons(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('button,[role="button"]'))
+}
+
+export function getMenu(): HTMLElement | null {
+  return document.querySelector('[role="menu"]')
+}
+
+export function getMenus(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="menu"]'))
+}
+
+export function getMenuItems(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="menuitem"]'))
+}
+
+// ---
 
 export enum MenuState {
   Open,
   Closed,
 }
 
-type MenuButtonOptions = { attributes?: Record<string, string | null>; textContent?: string } & (
-  | { state: MenuButtonState.Closed }
-  | { state: MenuButtonState.Open }
-)
-export function assertMenuButton(button: HTMLElement | null, options: MenuButtonOptions) {
+export function assertMenuButton(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: MenuState
+  },
+  button = getMenuButton()
+) {
   try {
     if (button === null) return expect(button).not.toBe(null)
 
     // Ensure menu button have these properties
-    expect(button.hasAttribute('id')).toBe(true)
-    expect(button.hasAttribute('aria-haspopup')).toBe(true)
+    expect(button).toHaveAttribute('id')
+    expect(button).toHaveAttribute('aria-haspopup')
 
-    if (options.state === MenuButtonState.Open) {
-      expect(button.hasAttribute('aria-controls')).toBe(true)
-      expect(button.getAttribute('aria-expanded')).toBe('true')
-    }
+    switch (options.state) {
+      case MenuState.Open:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).toHaveAttribute('aria-expanded', 'true')
+        break
 
-    if (options.state === MenuButtonState.Closed) {
-      expect(button.getAttribute('aria-controls')).toBeNull()
-      expect(button.getAttribute('aria-expanded')).toBeNull()
+      case MenuState.Closed:
+        expect(button).not.toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      default:
+        assertNever(options.state)
     }
 
     if (options.textContent) {
-      expect(button.textContent?.trim()).toBe(options.textContent.trim())
+      expect(button).toHaveTextContent(options.textContent)
     }
 
     // Ensure menu button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(button.getAttribute(attributeName)).toEqual(options.attributes[attributeName])
+      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, assertMenuButton)
+    Error.captureStackTrace(err, assertMenuButton)
     throw err
   }
 }
 
-export function assertMenuButtonLinkedWithMenu(
-  button: HTMLElement | null,
-  menu: HTMLElement | null
-) {
+export function assertMenuButtonLinkedWithMenu(button = getMenuButton(), menu = getMenu()) {
   try {
     if (button === null) return expect(button).not.toBe(null)
     if (menu === null) return expect(menu).not.toBe(null)
 
     // Ensure link between button & menu is correct
-    expect(button.getAttribute('aria-controls')).toBe(menu.getAttribute('id'))
-    expect(menu.getAttribute('aria-labelledby')).toBe(button.getAttribute('id'))
+    expect(button).toHaveAttribute('aria-controls', menu.getAttribute('id'))
+    expect(menu).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, assertMenuButtonLinkedWithMenu)
+    Error.captureStackTrace(err, assertMenuButtonLinkedWithMenu)
     throw err
   }
 }
 
-export function assertMenuLinkedWithMenuItem(menu: HTMLElement | null, item: HTMLElement | null) {
+export function assertMenuLinkedWithMenuItem(item: HTMLElement | null, menu = getMenu()) {
   try {
     if (menu === null) return expect(menu).not.toBe(null)
     if (item === null) return expect(item).not.toBe(null)
 
     // Ensure link between menu & menu item is correct
-    expect(menu.getAttribute('aria-activedescendant')).toBe(item.getAttribute('id'))
+    expect(menu).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, assertMenuLinkedWithMenuItem)
+    Error.captureStackTrace(err, assertMenuLinkedWithMenuItem)
     throw err
   }
 }
 
-export function assertNoActiveMenuItem(menu: HTMLElement | null) {
+export function assertNoActiveMenuItem(menu = getMenu()) {
   try {
     if (menu === null) return expect(menu).not.toBe(null)
 
     // Ensure we don't have an active menu
-    expect(menu.hasAttribute('aria-activedescendant')).toBe(false)
+    expect(menu).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, assertNoActiveMenuItem)
+    Error.captureStackTrace(err, assertNoActiveMenuItem)
     throw err
   }
 }
 
-type MenuOptions = { attributes?: Record<string, string | null> } & (
-  | { state: MenuState.Closed }
-  | { state: MenuState.Open }
-)
-export function assertMenu(menu: HTMLElement | null, options: MenuOptions) {
+export function assertMenu(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: MenuState
+  },
+  menu = getMenu()
+) {
   try {
-    if (options.state === MenuState.Open) {
-      if (menu === null) return expect(menu).not.toBe(null)
+    switch (options.state) {
+      case MenuState.Open:
+        if (menu === null) return expect(menu).not.toBe(null)
 
-      // Check that some attributes exists, doesn't really matter what the values are at this point in
-      // time, we just require them.
-      expect(menu.hasAttribute('aria-labelledby')).toBe(true)
+        // Check that some attributes exists, doesn't really matter what the values are at this point in
+        // time, we just require them.
+        expect(menu).toHaveAttribute('aria-labelledby')
 
-      // Check that we have the correct values for certain attributes
-      expect(menu.getAttribute('role')).toBe('menu')
+        // Check that we have the correct values for certain attributes
+        expect(menu).toHaveAttribute('role', 'menu')
 
-      // Check that the menu is focused
-      expect(document.activeElement).toBe(menu)
+        if (options.textContent) {
+          expect(menu).toHaveTextContent(options.textContent)
+        }
 
-      // Ensure menu button has the following attributes
-      for (let attributeName in options.attributes) {
-        expect(menu.getAttribute(attributeName)).toEqual(options.attributes[attributeName])
-      }
-    }
+        // Ensure menu button has the following attributes
+        for (let attributeName in options.attributes) {
+          expect(menu).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
 
-    if (options.state === MenuState.Closed) {
-      expect(menu).toBeNull()
+      case MenuState.Closed:
+        expect(menu).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
     }
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, assertMenu)
+    Error.captureStackTrace(err, assertMenu)
     throw err
   }
 }
 
-type MenuItemOptions = { tag: string; attributes?: Record<string, string | null> }
-export function assertMenuItem(item: HTMLElement | null, options?: MenuItemOptions) {
+export function assertMenuItem(
+  item: HTMLElement | null,
+  options?: { tag?: string; attributes?: Record<string, string | null> }
+) {
   try {
     if (item === null) return expect(item).not.toBe(null)
 
     // Check that some attributes exists, doesn't really matter what the values are at this point in
     // time, we just require them.
-    expect(item.hasAttribute('id')).toBe(true)
+    expect(item).toHaveAttribute('id')
 
     // Check that we have the correct values for certain attributes
-    expect(item.getAttribute('role')).toBe('menuitem')
-    expect(item.getAttribute('tabindex')).toBe('-1')
+    expect(item).toHaveAttribute('role', 'menuitem')
+    expect(item).toHaveAttribute('tabindex', '-1')
 
-    if (options?.tag) {
-      expect(item.tagName.toLowerCase()).toBe(options.tag)
-    }
+    // Ensure menu button has the following attributes
+    if (options) {
+      for (let attributeName in options.attributes) {
+        expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
+      }
 
-    // Ensure menu item has the following attributes
-    for (let attributeName in options?.attributes) {
-      expect(item.getAttribute(attributeName)).toEqual(options?.attributes[attributeName])
+      if (options.tag) {
+        expect(item.tagName.toLowerCase()).toBe(options.tag)
+      }
     }
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, assertMenuItem)
+    Error.captureStackTrace(err, assertMenuItem)
     throw err
   }
 }
+
+// ---
+
+export function getListboxLabel(): HTMLElement | null {
+  return document.querySelector('label,[id^="headlessui-listbox-label"]')
+}
+
+export function getListboxButton(): HTMLElement | null {
+  return document.querySelector('button,[role="button"]')
+}
+
+export function getListboxButtons(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('button,[role="button"]'))
+}
+
+export function getListbox(): HTMLElement | null {
+  return document.querySelector('[role="listbox"]')
+}
+
+export function getListboxes(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="listbox"]'))
+}
+
+export function getListboxOptions(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="option"]'))
+}
+
+// ---
+
+export enum ListboxState {
+  Open,
+  Closed,
+}
+
+export function assertListbox(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: ListboxState
+  },
+  listbox = getListbox()
+) {
+  try {
+    switch (options.state) {
+      case ListboxState.Open:
+        if (listbox === null) return expect(listbox).not.toBe(null)
+
+        // Check that some attributes exists, doesn't really matter what the values are at this point in
+        // time, we just require them.
+        expect(listbox).toHaveAttribute('aria-labelledby')
+
+        // Check that we have the correct values for certain attributes
+        expect(listbox).toHaveAttribute('role', 'listbox')
+
+        if (options.textContent) {
+          expect(listbox).toHaveTextContent(options.textContent)
+        }
+
+        // Ensure listbox button has the following attributes
+        for (let attributeName in options.attributes) {
+          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ListboxState.Closed:
+        expect(listbox).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertListbox)
+    throw err
+  }
+}
+
+export function assertListboxButton(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: ListboxState
+  },
+  button = getListboxButton()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+
+    // Ensure menu button have these properties
+    expect(button).toHaveAttribute('id')
+    expect(button).toHaveAttribute('aria-haspopup')
+
+    switch (options.state) {
+      case ListboxState.Open:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).toHaveAttribute('aria-expanded', 'true')
+        break
+
+      case ListboxState.Closed:
+        expect(button).not.toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      default:
+        assertNever(options.state)
+    }
+
+    if (options.textContent) {
+      expect(button).toHaveTextContent(options.textContent)
+    }
+
+    // Ensure menu button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertListboxButton)
+    throw err
+  }
+}
+
+export function assertListboxLabel(
+  options: {
+    attributes?: Record<string, string | null>
+    tag?: string
+    textContent?: string
+  },
+  label = getListboxLabel()
+) {
+  try {
+    if (label === null) return expect(label).not.toBe(null)
+
+    // Ensure menu button have these properties
+    expect(label).toHaveAttribute('id')
+
+    if (options.textContent) {
+      expect(label).toHaveTextContent(options.textContent)
+    }
+
+    if (options.tag) {
+      expect(label.tagName.toLowerCase()).toBe(options.tag)
+    }
+
+    // Ensure menu button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertListboxLabel)
+    throw err
+  }
+}
+
+export function assertListboxButtonLinkedWithListbox(
+  button = getListboxButton(),
+  listbox = getListbox()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+    if (listbox === null) return expect(listbox).not.toBe(null)
+
+    // Ensure link between button & listbox is correct
+    expect(button).toHaveAttribute('aria-controls', listbox.getAttribute('id'))
+    expect(listbox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
+  } catch (err) {
+    Error.captureStackTrace(err, assertListboxButtonLinkedWithListbox)
+    throw err
+  }
+}
+
+export function assertListboxLabelLinkedWithListbox(
+  label = getListboxLabel(),
+  listbox = getListbox()
+) {
+  try {
+    if (label === null) return expect(label).not.toBe(null)
+    if (listbox === null) return expect(listbox).not.toBe(null)
+
+    expect(listbox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
+  } catch (err) {
+    Error.captureStackTrace(err, assertListboxLabelLinkedWithListbox)
+    throw err
+  }
+}
+
+export function assertListboxButtonLinkedWithListboxLabel(
+  button = getListboxButton(),
+  label = getListboxLabel()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+    if (label === null) return expect(label).not.toBe(null)
+
+    // Ensure link between button & label is correct
+    expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
+  } catch (err) {
+    Error.captureStackTrace(err, assertListboxButtonLinkedWithListboxLabel)
+    throw err
+  }
+}
+
+export function assertActiveListboxOption(item: HTMLElement | null, listbox = getListbox()) {
+  try {
+    if (listbox === null) return expect(listbox).not.toBe(null)
+    if (item === null) return expect(item).not.toBe(null)
+
+    // Ensure link between listbox & listbox item is correct
+    expect(listbox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
+  } catch (err) {
+    Error.captureStackTrace(err, assertActiveListboxOption)
+    throw err
+  }
+}
+
+export function assertNoActiveListboxOption(listbox = getListbox()) {
+  try {
+    if (listbox === null) return expect(listbox).not.toBe(null)
+
+    // Ensure we don't have an active listbox
+    expect(listbox).not.toHaveAttribute('aria-activedescendant')
+  } catch (err) {
+    Error.captureStackTrace(err, assertNoActiveListboxOption)
+    throw err
+  }
+}
+
+export function assertNoSelectedListboxOption(items = getListboxOptions()) {
+  try {
+    for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
+  } catch (err) {
+    Error.captureStackTrace(err, assertNoSelectedListboxOption)
+    throw err
+  }
+}
+
+export function assertListboxOption(
+  item: HTMLElement | null,
+  options?: {
+    tag?: string
+    attributes?: Record<string, string | null>
+    selected?: boolean
+  }
+) {
+  try {
+    if (item === null) return expect(item).not.toBe(null)
+
+    // Check that some attributes exists, doesn't really matter what the values are at this point in
+    // time, we just require them.
+    expect(item).toHaveAttribute('id')
+
+    // Check that we have the correct values for certain attributes
+    expect(item).toHaveAttribute('role', 'option')
+    expect(item).toHaveAttribute('tabindex', '-1')
+
+    // Ensure listbox button has the following attributes
+    if (!options) return
+
+    for (let attributeName in options.attributes) {
+      expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+
+    if (options.tag) {
+      expect(item.tagName.toLowerCase()).toBe(options.tag)
+    }
+
+    if (options.selected != null) {
+      switch (options.selected) {
+        case true:
+          return expect(item).toHaveAttribute('aria-selected', 'true')
+
+        case false:
+          return expect(item).not.toHaveAttribute('aria-selected')
+
+        default:
+          assertNever(options.selected)
+      }
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertListboxOption)
+    throw err
+  }
+}
+
+// ---
 
 export function assertActiveElement(element: HTMLElement | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
     expect(document.activeElement).toBe(element)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, assertActiveElement)
+    Error.captureStackTrace(err, assertActiveElement)
     throw err
   }
 }

@@ -4,35 +4,15 @@ import * as React from 'react'
 import { Props } from '../../types'
 import { match } from '../../utils/match'
 import { forwardRefWithAs, render } from '../../utils/render'
-import { Transition, TransitionClasses } from '../transitions/transition'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
+import { Keys } from '../keyboard'
 
 enum MenuStates {
   Open,
   Closed,
-}
-
-// TODO: This must already exist somewhere, right? 🤔
-// Ref: https://www.w3.org/TR/uievents-key/#named-key-attribute-values
-enum Key {
-  Space = ' ',
-  Enter = 'Enter',
-  Escape = 'Escape',
-  Backspace = 'Backspace',
-
-  ArrowUp = 'ArrowUp',
-  ArrowDown = 'ArrowDown',
-
-  Home = 'Home',
-  End = 'End',
-
-  PageUp = 'PageUp',
-  PageDown = 'PageDown',
-
-  Tab = 'Tab',
 }
 
 type MenuItemDataRef = React.MutableRefObject<{ textValue?: string; disabled: boolean }>
@@ -286,9 +266,9 @@ const Button = forwardRefWithAs(function Button<
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-13
 
-        case Key.Space:
-        case Key.Enter:
-        case Key.ArrowDown:
+        case Keys.Space:
+        case Keys.Enter:
+        case Keys.ArrowDown:
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
@@ -297,7 +277,7 @@ const Button = forwardRefWithAs(function Button<
           })
           break
 
-        case Key.ArrowUp:
+        case Keys.ArrowUp:
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
@@ -369,20 +349,10 @@ type ItemsRenderPropArg = { open: boolean }
 const Items = forwardRefWithAs(function Items<
   TTag extends React.ElementType = typeof DEFAULT_ITEMS_TAG
 >(
-  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
-    TransitionClasses & { static?: boolean },
+  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> & { static?: boolean },
   ref: React.Ref<HTMLDivElement>
 ) {
-  const {
-    enter,
-    enterFrom,
-    enterTo,
-    leave,
-    leaveFrom,
-    leaveTo,
-    static: isStatic = false,
-    ...passthroughProps
-  } = props
+  const { static: isStatic = false, ...passthroughProps } = props
   const [state, dispatch] = useMenuContext([Menu.name, Items.name].join('.'))
   const itemsRef = useSyncRefs(state.itemsRef, ref)
 
@@ -397,12 +367,14 @@ const Items = forwardRefWithAs(function Items<
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        // @ts-expect-error Falthrough is expected here
-        case Key.Space:
-          if (state.searchQuery !== '')
+        // @ts-expect-error Fallthrough is expected here
+        case Keys.Space:
+          if (state.searchQuery !== '') {
+            event.preventDefault()
             return dispatch({ type: ActionTypes.Search, value: event.key })
+          }
         // When in type ahead mode, fallthrough
-        case Key.Enter:
+        case Keys.Enter:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
           if (state.activeItemIndex !== null) {
@@ -412,31 +384,31 @@ const Items = forwardRefWithAs(function Items<
           }
           break
 
-        case Key.ArrowDown:
+        case Keys.ArrowDown:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.NextItem })
 
-        case Key.ArrowUp:
+        case Keys.ArrowUp:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.PreviousItem })
 
-        case Key.Home:
-        case Key.PageUp:
+        case Keys.Home:
+        case Keys.PageUp:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
 
-        case Key.End:
-        case Key.PageDown:
+        case Keys.End:
+        case Keys.PageDown:
           event.preventDefault()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
 
-        case Key.Escape:
+        case Keys.Escape:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
           d.nextFrame(() => state.buttonRef.current?.focus())
           break
 
-        case Key.Tab:
+        case Keys.Tab:
           return event.preventDefault()
 
         default:
@@ -461,36 +433,12 @@ const Items = forwardRefWithAs(function Items<
     tabIndex: 0,
   }
 
-  if (isStatic) {
-    return render(
-      { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
-      propsBag,
-      DEFAULT_ITEMS_TAG
-    )
-  }
+  if (!isStatic && state.menuState === MenuStates.Closed) return null
 
-  return (
-    <Transition
-      show={state.menuState === MenuStates.Open}
-      {...{ enter, enterFrom, enterTo, leave, leaveFrom, leaveTo }}
-    >
-      {ref =>
-        render(
-          {
-            ...passthroughProps,
-            ...propsWeControl,
-            ...{
-              ref(elementRef: HTMLDivElement) {
-                ref.current = elementRef
-                itemsRef(elementRef)
-              },
-            },
-          },
-          propsBag,
-          DEFAULT_ITEMS_TAG
-        )
-      }
-    </Transition>
+  return render(
+    { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
+    propsBag,
+    DEFAULT_ITEMS_TAG
   )
 })
 
@@ -501,7 +449,6 @@ type MenuItemPropsWeControl =
   | 'role'
   | 'tabIndex'
   | 'aria-disabled'
-  | 'onPointerEnter'
   | 'onPointerLeave'
   | 'onFocus'
 
@@ -563,8 +510,9 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
 
   const handlePointerLeave = React.useCallback(() => {
     if (disabled) return
+    if (!active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-  }, [disabled, dispatch])
+  }, [disabled, active, dispatch])
 
   const propsBag = React.useMemo(() => ({ active, disabled }), [active, disabled])
   const propsWeControl = {

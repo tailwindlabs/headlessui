@@ -13,30 +13,11 @@ import {
 import { match } from '../../utils/match'
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
+import { Keys } from '../../keyboard'
 
 enum MenuStates {
   Open,
   Closed,
-}
-
-// TODO: This must already exist somewhere, right? 🤔
-// Ref: https://www.w3.org/TR/uievents-key/#named-key-attribute-values
-enum Key {
-  Space = ' ',
-  Enter = 'Enter',
-  Escape = 'Escape',
-  Backspace = 'Backspace',
-
-  ArrowUp = 'ArrowUp',
-  ArrowDown = 'ArrowDown',
-
-  Home = 'Home',
-  End = 'End',
-
-  PageUp = 'PageUp',
-  PageDown = 'PageDown',
-
-  Tab = 'Tab',
 }
 
 enum Focus {
@@ -244,9 +225,9 @@ export const MenuButton = defineComponent({
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-13
 
-        case Key.Space:
-        case Key.Enter:
-        case Key.ArrowDown:
+        case Keys.Space:
+        case Keys.Enter:
+        case Keys.ArrowDown:
           event.preventDefault()
           api.openMenu()
           nextTick(() => {
@@ -255,7 +236,7 @@ export const MenuButton = defineComponent({
           })
           break
 
-        case Key.ArrowUp:
+        case Keys.ArrowUp:
           event.preventDefault()
           api.openMenu()
           nextTick(() => {
@@ -335,11 +316,14 @@ export const MenuItems = defineComponent({
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        // @ts-expect-error Falthrough is expected here
-        case Key.Space:
-          if (api.searchQuery.value !== '') return api.search(event.key)
+        // @ts-expect-error Fallthrough is expected here
+        case Keys.Space:
+          if (api.searchQuery.value !== '') {
+            event.preventDefault()
+            return api.search(event.key)
+          }
         // When in type ahead mode, fallthrough
-        case Key.Enter:
+        case Keys.Enter:
           event.preventDefault()
           api.closeMenu()
           if (api.activeItemIndex.value !== null) {
@@ -349,31 +333,31 @@ export const MenuItems = defineComponent({
           }
           break
 
-        case Key.ArrowDown:
+        case Keys.ArrowDown:
           event.preventDefault()
           return api.goToItem(Focus.NextItem)
 
-        case Key.ArrowUp:
+        case Keys.ArrowUp:
           event.preventDefault()
           return api.goToItem(Focus.PreviousItem)
 
-        case Key.Home:
-        case Key.PageUp:
+        case Keys.Home:
+        case Keys.PageUp:
           event.preventDefault()
           return api.goToItem(Focus.FirstItem)
 
-        case Key.End:
-        case Key.PageDown:
+        case Keys.End:
+        case Keys.PageDown:
           event.preventDefault()
           return api.goToItem(Focus.LastItem)
 
-        case Key.Escape:
+        case Keys.Escape:
           event.preventDefault()
           api.closeMenu()
           nextTick(() => api.buttonRef.value?.focus())
           break
 
-        case Key.Tab:
+        case Keys.Tab:
           return event.preventDefault()
 
         default:
@@ -442,6 +426,7 @@ export const MenuItem = defineComponent({
 
     function handlePointerLeave() {
       if (disabled) return
+      if (!active.value) return
       api.goToItem(Focus.Nothing)
     }
 

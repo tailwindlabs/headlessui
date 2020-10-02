@@ -11,5 +11,12 @@ it('should expose the correct components', () => {
     'MenuButton',
     'MenuItems',
     'MenuItem',
+
+    // Listbox
+    'Listbox',
+    'ListboxLabel',
+    'ListboxButton',
+    'ListboxOptions',
+    'ListboxOption',
   ])
 })

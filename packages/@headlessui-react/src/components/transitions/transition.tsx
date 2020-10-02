@@ -8,7 +8,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { match } from '../../utils/match'
 import { Reason, transition } from './utils/transition'
 
-type ID = number
+type ID = ReturnType<typeof useId>
 
 function useSplitClasses(classes: string = '') {
   return React.useMemo(() => classes.split(' ').filter(className => className.trim().length > 1), [
