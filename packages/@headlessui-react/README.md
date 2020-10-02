@@ -76,9 +76,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         enter="transition-opacity duration-75"
@@ -108,9 +106,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         // ...
@@ -133,9 +129,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         as="a"
@@ -161,14 +155,12 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         // ...
       >
-        {(ref) => <div ref={ref}>{/* Your content goes here*/}</div>}
+        {ref => <div ref={ref}>{/* Your content goes here*/}</div>}
       </Transition>
     </>
   )
@@ -201,9 +193,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         enter="transition-opacity duration-75"
