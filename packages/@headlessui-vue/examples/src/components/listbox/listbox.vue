@@ -100,7 +100,7 @@ export default {
       'Tom Cook',
       'Tanya Fox',
       'Hellen Schmidt',
-      'Caronline Schultz',
+      'Caroline Schultz',
       'Mason Heaney',
       'Claudie Smitham',
       'Emil Schaefer',
