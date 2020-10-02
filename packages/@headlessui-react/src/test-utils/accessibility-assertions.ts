@@ -476,6 +476,10 @@ export function getSwitch(): HTMLElement | null {
   return document.querySelector('[role="switch"]')
 }
 
+export function getSwitchLabel(): HTMLElement | null {
+  return document.querySelector('label,[id^="headlessui-switch-label"]')
+}
+
 // ---
 
 export enum SwitchState {

@@ -7,6 +7,7 @@ import {
   assertSwitch,
   getSwitch,
   assertActiveElement,
+  getSwitchLabel,
 } from '../../test-utils/accessibility-assertions'
 import { press, click, Keys } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -211,6 +212,48 @@ describe('Mouse interactions', () => {
 
     // Toggle
     await click(getSwitch())
+
+    // Ensure state is off
+    assertSwitch({ state: SwitchState.Off })
+  })
+
+  it('should be possible to toggle the Switch with a click on the Label', async () => {
+    const handleChange = jest.fn()
+    function Example() {
+      const [state, setState] = React.useState(false)
+      return (
+        <Switch.Group>
+          <Switch
+            checked={state}
+            onChange={value => {
+              setState(value)
+              handleChange(value)
+            }}
+          />
+          <Switch.Label>The label</Switch.Label>
+        </Switch.Group>
+      )
+    }
+
+    render(<Example />)
+
+    // Ensure checkbox is off
+    assertSwitch({ state: SwitchState.Off })
+
+    // Toggle
+    await click(getSwitchLabel())
+
+    // Ensure the switch is focused
+    assertActiveElement(getSwitch())
+
+    // Ensure state is on
+    assertSwitch({ state: SwitchState.On })
+
+    // Toggle
+    await click(getSwitchLabel())
+
+    // Ensure the switch is focused
+    assertActiveElement(getSwitch())
 
     // Ensure state is off
     assertSwitch({ state: SwitchState.Off })
