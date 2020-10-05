@@ -30,6 +30,7 @@ _This project is still in early development. New components will be added regula
 - [Transition](#transition)
 - [Menu Button (Dropdown)](#menu-button-dropdown)
 - [Listbox](#listbox)
+- [Switch (Toggle)](#switch-toggle)
 
 ### Roadmap
 
@@ -1071,6 +1072,160 @@ function MyDropdown() {
     {/* ... */}
   </Listbox.Options>
 </Listbox>
+```
+
+##### Props
+
+| Prop       | Type                    | Default                                 | Description                                              |
+| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
+| `as`       | String \| Component     | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
+| `value`    | `T` _(A generic value)_ | `undefined`                             | The selected value.                                      |
+| `onChange` | `(value: T): void`      | `undefined`                             | The function to call when a new option is selected.      |
+
+##### Render prop object
+
+| Prop   | Type    | Description                         |
+| ------ | ------- | ----------------------------------- |
+| `open` | Boolean | Whether or not the listbox is open. |
+
+#### Listbox.Button
+
+```jsx
+<Listbox.Button>
+  {({ open }) => (
+    <>
+      <span>More options</span>
+      <ChevronRightIcon className={`${open ? 'transform rotate-90' : ''}`} />
+    </>
+  )}
+</Listbox.Button>
+```
+
+##### Props
+
+| Prop | Type                | Default  | Description                                                     |
+| ---- | ------------------- | -------- | --------------------------------------------------------------- |
+| `as` | String \| Component | `button` | The element or component the `Listbox.Button` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                         |
+| ------ | ------- | ----------------------------------- |
+| `open` | Boolean | Whether or not the listbox is open. |
+
+#### Listbox.Label
+
+```jsx
+<Listbox.Label>Enable notifications</Listbox.Label>
+```
+
+##### Props
+
+| Prop | Type                | Default | Description                                                    |
+| ---- | ------------------- | ------- | -------------------------------------------------------------- |
+| `as` | String \| Component | `label` | The element or component the `Listbox.Label` should render as. |
+
+#### Listbox.Options
+
+```jsx
+<Listbox.Options>
+  <Listbox.Option value="option-a">{/* ... */}></Listbox.Option>
+  {/* ... */}>
+</Listbox.Options>
+```
+
+##### Props
+
+| Prop     | Type                | Default | Description                                                                 |
+| -------- | ------------------- | ------- | --------------------------------------------------------------------------- |
+| `as`     | String \| Component | `ul`    | The element or component the `Listbox.Options` should render as.            |
+| `static` | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                         |
+| ------ | ------- | ----------------------------------- |
+| `open` | Boolean | Whether or not the listbox is open. |
+
+#### Listbox.Option
+
+```jsx
+<Listbox.Option value="option-a">Option A</Listbox.Option>
+```
+
+##### Props
+
+| Prop       | Type                    | Default     | Description                                                                             |
+| ---------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
+| `as`       | String \| Component     | `li`        | The element or component the `Listbox.Option` should render as.                         |
+| `value`    | `T` _(A generic value)_ | `undefined` | The selected value.                                                                     |
+| `disabled` | Boolean                 | `false`     | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
+
+##### Render prop object
+
+| Prop       | Type    | Description                                                                          |
+| ---------- | ------- | ------------------------------------------------------------------------------------ |
+| `active`   | Boolean | Whether or not the option is the active/focused option in the list.                  |
+| `selected` | Boolean | Whether or not the option is the selected option in the list.                        |
+| `disabled` | Boolean | Whether or not the option is the disabled for keyboard navigation and ARIA purposes. |
+
+## Switch (Toggle)
+
+[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-menu-example-b6xje?file=/src/App.js)
+
+The `Switch` component and related child components are used to quickly build custom switch components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard navigation support.
+
+- [Basic example](#basic-example-3)
+- [Using a custom label](#using-a-custom-label)
+- [Component API](#component-api-3)
+
+### Basic example
+
+Switches are built using the `Switch` component. Optionally you can also use the `Switch.Group` and `Switch.Label` components.
+
+```jsx
+import { useState } from 'react'
+import { Switch } from '@headlessui/react'
+
+function NotificationsToggle() {
+  const [enabled, setEnabled] = useState(false)
+  return (
+    <Switch checked={enabled} onChange={setEnabled}>
+      <span className="sr-only">Enable notifications</span>
+    </Switch>
+  )
+}
+```
+
+### Using a custom label
+
+By default the `Switch` will use the contents as the label for screenreaders. However you can also render a custom `Switch.Label` inside a `Switch.Group`.
+
+Clicking on the label will also toggle the switch state from on to off and vice-versa.
+
+```jsx
+import { useState, Fragment } from 'react'
+import { Switch } from '@headlessui/react'
+
+function NotificationsToggle() {
+  const [enabled, setEnabled] = useState(false)
+  return (
+    <Switch.Group>
+      <Switch.Label>Enable notifications</Switch.Label>
+      <Switch checked={enabled} onChange={setEnabled} />
+    </Switch.Group>
+  )
+}
+```
+
+### Component API
+
+#### Switch
+
+```jsx
+<Switch checked={true} onChange={console.log}>
+  Enable notifications
+</Switch>
 ```
 
 ##### Props
