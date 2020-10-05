@@ -376,7 +376,7 @@ To tell an element to render its children directly with no wrapper element, use 
 
 ## Listbox
 
-[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuivue-menu-example-70br3?file=/src/App.vue)
+[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuivue-listbox-example-mi67g?file=/src/App.vue)
 
 The `Listbox` component and related child components are used to quickly build custom listbox components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard navigation support.
 

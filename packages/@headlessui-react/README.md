@@ -765,7 +765,7 @@ function MyDropdown() {
 
 ## Listbox
 
-[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-menu-example-b6xje?file=/src/App.js)
+[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-listbox-example-57eoj?file=/src/App.js)
 
 The `Listbox` component and related child components are used to quickly build custom listbox components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard navigation support.
 
