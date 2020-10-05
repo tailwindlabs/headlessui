@@ -222,8 +222,8 @@ export function Listbox<
 
       if (!optionsRef.current?.contains(event.target as HTMLElement)) {
         dispatch({ type: ActionTypes.CloseListbox })
-        if (!event.defaultPrevented) buttonRef.current?.focus()
       }
+      if (!event.defaultPrevented) d.nextFrame(() => buttonRef.current?.focus())
     }
 
     window.addEventListener('click', handler)
@@ -309,6 +309,7 @@ const Button = forwardRefWithAs(function Button<
     (event: MouseEvent) => {
       if (state.listboxState === ListboxStates.Open) {
         dispatch({ type: ActionTypes.CloseListbox })
+        d.nextFrame(() => state.buttonRef.current?.focus())
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenListbox })
@@ -441,7 +442,7 @@ const Options = forwardRefWithAs(function Options<
             const { dataRef } = state.options[state.activeOptionIndex]
             state.propsRef.current.onChange(dataRef.current.value)
           }
-          d.nextFrame(() => state.buttonRef.current?.focus())
+          disposables().nextFrame(() => state.buttonRef.current?.focus())
           break
 
         case Keys.ArrowDown:
@@ -535,7 +536,6 @@ function Option<TTag extends React.ElementType = typeof DEFAULT_OPTION_TAG, TTyp
 ) {
   const { disabled = false, value, className, ...passthroughProps } = props
   const [state, dispatch] = useListboxContext([Listbox.name, Option.name].join('.'))
-  const d = useDisposables()
   const id = `headlessui-listbox-option-${useId()}`
   const active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
@@ -581,9 +581,9 @@ function Option<TTag extends React.ElementType = typeof DEFAULT_OPTION_TAG, TTyp
       if (disabled) return event.preventDefault()
       select()
       dispatch({ type: ActionTypes.CloseListbox })
-      d.nextFrame(() => state.buttonRef.current?.focus())
+      disposables().nextFrame(() => state.buttonRef.current?.focus())
     },
-    [d, dispatch, state.buttonRef, disabled, select]
+    [dispatch, state.buttonRef, disabled, select]
   )
 
   const handleFocus = React.useCallback(() => {
