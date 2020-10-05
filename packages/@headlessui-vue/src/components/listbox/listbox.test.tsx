@@ -801,6 +801,9 @@ describe('Keyboard interactions', () => {
         // Verify it is closed
         assertListboxButton({ state: ListboxState.Closed })
         assertListbox({ state: ListboxState.Closed })
+
+        // Verify the button is focused again
+        assertActiveElement(getListboxButton())
       })
     )
 
@@ -854,6 +857,9 @@ describe('Keyboard interactions', () => {
         // Verify we got the change event
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenCalledWith('a')
+
+        // Verify the button is focused again
+        assertActiveElement(getListboxButton())
 
         // Open listbox again
         await click(getListboxButton())
@@ -1154,6 +1160,9 @@ describe('Keyboard interactions', () => {
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenCalledWith('a')
 
+        // Verify the button is focused again
+        assertActiveElement(getListboxButton())
+
         // Open listbox again
         await click(getListboxButton())
 
@@ -1202,6 +1211,9 @@ describe('Keyboard interactions', () => {
         // Verify it is closed
         assertListboxButton({ state: ListboxState.Closed })
         assertListbox({ state: ListboxState.Closed })
+
+        // Verify the button is focused again
+        assertActiveElement(getListboxButton())
       })
     )
   })
@@ -2846,6 +2858,9 @@ describe('Mouse interactions', () => {
 
       // Should be closed now
       assertListbox({ state: ListboxState.Closed })
+
+      // Verify the button is focused again
+      assertActiveElement(getListboxButton())
     })
   )
 
@@ -2923,6 +2938,9 @@ describe('Mouse interactions', () => {
 
       // Should be closed now
       assertListbox({ state: ListboxState.Closed })
+
+      // Verify the button is focused again
+      assertActiveElement(getListboxButton())
     })
   )
 
@@ -3196,6 +3214,9 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.Closed })
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('bob')
+
+      // Verify the button is focused again
+      assertActiveElement(getListboxButton())
 
       // Open listbox again
       await click(getListboxButton())
