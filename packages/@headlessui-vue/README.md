@@ -398,13 +398,11 @@ The `ListboxButton` will automatically open/close the `ListboxOptions` when clic
 
 ```vue
 <template>
-  <Listbox v-model="option">
-    <ListboxButton>More</ListboxButton>
+  <Listbox v-model="selectedPerson">
+    <ListboxButton>{{ selectedPerson.name }}</ListboxButton>
     <ListboxOptions>
-      <ListboxOption value="option-a">Option A</ListboxOption>
-      <ListboxOption value="option-b">Option B </ListboxOption>
-      <ListboxOption value="option-c" disabled>
-        Option C
+      <ListboxOption v-for="person in people" :value="person" :disabled="person.unavailable">
+        {{ person.name }}
       </ListboxOption>
     </ListboxOptions>
   </Listbox>
@@ -429,8 +427,17 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds', unavailable: false },
+      { id: 2, name: 'Kenton Towne', unavailable: false },
+      { id: 3, name: 'Therese Wunsch', unavailable: false },
+      { id: 4, name: 'Benedict Kessler', unavailable: true },
+      { id: 5, name: 'Katelyn Rohan', unavailable: false },
+    ]
+    const selectedPerson = ref(people[0])
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
@@ -439,31 +446,27 @@ export default {
 
 ### Styling the active and selected option
 
-This is a headless component so there are no styles included by default. Instead, the components expose useful information via [render props](https://reactjs.org/docs/render-props.html) that you can use to apply the styles you'd like to apply yourself.
+This is a headless component so there are no styles included by default. Instead, the components expose useful information via [scoped slots](https://v3.vuejs.org/guide/component-slots.html#scoped-slots) that you can use to apply the styles you'd like to apply yourself.
 
-To style the active `ListboxOption` you can read the `active` render prop argument, which tells you whether or not that listbox option is the option that is currently focused via the mouse or keyboard.
+To style the active `ListboxOption` you can read the `active` slot prop, which tells you whether or not that listbox option is the option that is currently focused via the mouse or keyboard.
 
-To style the selected `ListboxOption` you can read the `selected` render prop argument, which tells you whether or not that listbox option is the option that is currently the `value` passed to the `Listbox`.
+To style the selected `ListboxOption` you can read the `selected` slot prop, which tells you whether or not that listbox option is the option that is currently the `value` passed to the `Listbox`.
 
-> Note: An option can be both **active** and **selected** at the same time!
-
-You can use this state to conditionally apply whatever active/focus styles you like, for instance a blue background like is typical in most operating systems. For the selected state, a checkmark is also common.
+You can use this state to conditionally apply whatever active/focus styles you like, for instance a blue background like is typical in most operating systems. For the selected state, you might conditionally render a checkmark next to the seleted option.
 
 ```vue
 <template>
-  <Listbox v-model="option">
-    <ListboxButton>More</ListboxButton>
+  <Listbox v-model="selectedPerson">
+    <ListboxButton>{{ selectedPerson.name }}</ListboxButton>
     <ListboxOptions>
       <!-- Use the `active` state to conditionally style the active option. -->
       <!-- Use the `selected` state to conditionally style the selected option. -->
-      <ListboxOption as="template" value="option-a" v-slot="{ active, selected }">
+      <ListboxOption as="template" v-slot="{ active, selected }" v-for="person in people" :value="person">
         <li :class="{ 'bg-blue-500 text-white': active, 'bg-white text-black': !active }">
-          <!-- Checkmark svg -->
-          <svg v-show="selected" />
-          Option A
+          <CheckmarkIcon v-show="selected" />
+          {{ person.name }}
         </li>
       </ListboxOption>
-      <!-- ... -->
     </ListboxOptions>
   </Listbox>
 </template>
@@ -477,6 +480,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from '@headlessui/vue'
+import CheckmarkIcon from './CheckmarkIcon'
 
 export default {
   components: {
@@ -485,10 +489,20 @@ export default {
     ListboxButton,
     ListboxOptions,
     ListboxOption,
+    CheckmarkIcon,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds' },
+      { id: 2, name: 'Kenton Towne' },
+      { id: 3, name: 'Therese Wunsch' },
+      { id: 4, name: 'Benedict Kessler' },
+      { id: 5, name: 'Katelyn Rohan' },
+    ]
+    const selectedPerson = ref(people[0])
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
@@ -497,7 +511,7 @@ export default {
 
 ### Using a custom label
 
-By default the `Listbox` will use the button contents as the label for screenreaders. However you can also render a custom `ListboxLabel`.
+By default the `Listbox` will use the button contents as the label for screenreaders. However you can also render a custom `ListboxLabel` which will be automatically linked to the listbox with a generated ID.
 
 ```vue
 <template>
@@ -533,8 +547,10 @@ export default {
     ListboxOption,
   },
   setup() {
+    const country = ref('belgium')
+
     return {
-      country: ref('belgium'),
+      country,
     }
   },
 }
@@ -548,12 +564,13 @@ By default, your `ListboxOptions` instance will be shown/hidden automatically ba
 ```vue
 <template>
   <Listbox v-model="option">
-    <ListboxButton>More</ListboxButton>
+    <ListboxButton>{{ person.name }}</ListboxButton>
 
     <!-- By default, this will automatically show/hide when the ListboxButton is pressed. -->
     <ListboxOptions>
-      <ListboxOption value="option-a"><!-- ... --></ListboxOption>
-      <!-- ... -->
+      <ListboxOption v-for="person in people" :value="person">
+        {{ person.name }}
+      </ListboxOption>
     </ListboxOptions>
   </Listbox>
 </template>
@@ -577,8 +594,18 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds' },
+      { id: 2, name: 'Kenton Towne' },
+      { id: 3, name: 'Therese Wunsch' },
+      { id: 4, name: 'Benedict Kessler' },
+      { id: 5, name: 'Katelyn Rohan' },
+    ]
+    const selectedPerson = ref(people[0])
+
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
@@ -590,12 +617,14 @@ If you'd rather handle this yourself (perhaps because you need to add an extra w
 ```vue
 <template>
   <Listbox v-model="option" v-slot="{ open }">
-    <ListboxButton>More</ListboxButton>
+    <ListboxButton>{{ person.name }}</ListboxButton>
+
     <div v-show="open">
       <!-- Using `static`, `ListboxOptions` is always rendered and ignores the `open` state. -->
       <ListboxOptions static>
-        <ListboxOption value="option-a"><!-- ... --></ListboxOption>
-        <!-- ... -->
+        <ListboxOption v-for="person in people" :value="person">
+          {{ person.name }}
+        </ListboxOption>
       </ListboxOptions>
     </div>
   </Listbox>
@@ -620,8 +649,18 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds' },
+      { id: 2, name: 'Kenton Towne' },
+      { id: 3, name: 'Therese Wunsch' },
+      { id: 4, name: 'Benedict Kessler' },
+      { id: 5, name: 'Katelyn Rohan' },
+    ]
+    const selectedPerson = ref(people[0])
+
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
@@ -634,17 +673,13 @@ Use the `disabled` prop to disable a `ListboxOption`. This will make it unselect
 
 ```vue
 <template>
-  <Listbox v-model="option">
-    <ListboxButton>More</ListboxButton>
+  <Listbox v-model="selectedPerson">
+    <ListboxButton>{{ selectedPerson.name }}</ListboxButton>
     <ListboxOptions>
-      <!-- ... -->
-
-      <!-- This option will be skipped by keyboard navigation. -->
-      <ListboxOption disabled value="option-a">
-        <span class="opacity-75">Invite a friend (coming soon!)</span>
+      <!-- Disabled options will be skipped by keyboard navigation. -->
+      <ListboxOption v-for="person in people" :value="person" :disabled="person.unavailable">
+        <span :class="{ 'opacity-75': person.unavailable }">{{ person.name }}</span>
       </ListboxOption>
-
-      <!-- ... -->
     </ListboxOptions>
   </Listbox>
 </template>
@@ -668,8 +703,17 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds', unavailable: false },
+      { id: 2, name: 'Kenton Towne', unavailable: false },
+      { id: 3, name: 'Therese Wunsch', unavailable: false },
+      { id: 4, name: 'Benedict Kessler', unavailable: true },
+      { id: 5, name: 'Katelyn Rohan', unavailable: false },
+    ]
+    const selectedPerson = ref(people[0])
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
@@ -678,14 +722,15 @@ export default {
 
 ### Transitions
 
-To animate the opening/closing of the listbox panel, use the provided `Transition` component. All you need to do is mark your `ListboxOptions` as `static`, wrap it in a `<Transition>`, and the transition will be applied automatically.
+To animate the opening/closing of the menu panel, use Vue's built-in `transition` component. All you need to do is wrap your `ListboxOptions` instance in a `<transition>` element and the transition will be applied automatically.
+
+
 
 ```vue
 <template>
-  <Listbox v-model="option">
-    <ListboxButton>More</ListboxButton>
+  <Listbox v-model="selectedPerson">
+    <ListboxButton>{{ selectedPerson.name }}</ListboxButton>
 
-    <!-- Use the Transition + open render prop argument to add transitions. -->
     <transition
       enter-active-class="transition duration-100 ease-out"
       enter-from-class="transform scale-95 opacity-0"
@@ -695,8 +740,9 @@ To animate the opening/closing of the listbox panel, use the provided `Transitio
       leave-to-class="transform scale-95 opacity-0"
     >
       <ListboxOptions>
-        <ListboxOption value="option-a"><!-- ... --></ListboxOption>
-        <!-- ... -->
+        <ListboxOption v-for="person in people" :value="person" :disabled="person.unavailable">
+          {{ person.name }}
+        </ListboxOption>
       </ListboxOptions>
     </transition>
   </Listbox>
@@ -721,63 +767,22 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds', unavailable: false },
+      { id: 2, name: 'Kenton Towne', unavailable: false },
+      { id: 3, name: 'Therese Wunsch', unavailable: false },
+      { id: 4, name: 'Benedict Kessler', unavailable: true },
+      { id: 5, name: 'Katelyn Rohan', unavailable: false },
+    ]
+    const selectedPerson = ref(people[0])
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
 </script>
 ```
-
-### Rendering additional content
-
-The `Listbox` component is not limited to rendering only its related subcomponents. You can render anything you like within a listbox, which gives you complete control over exactly what you are building.
-
-For example, if you'd like to add a little header section to the listbox with some extra information in it, just render an extra `div` with your content in it.
-
-```vue
-<template>
-  <Listbox v-model="option">
-    <ListboxButton>More</ListboxButton>
-    <ListboxOptions>
-      <div class="px-4 py-3">
-        <p class="text-sm leading-5">Signed in as</p>
-        <p class="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
-      </div>
-      <ListboxOption value="option-a">Option A</ListboxOption>
-      <!-- ... -->
-    </ListboxOptions>
-  </Listbox>
-</template>
-
-<script>
-import { ref } from 'vue'
-import {
-  Listbox,
-  ListboxLabel,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption,
-} from '@headlessui/vue'
-
-export default {
-  components: {
-    Listbox,
-    ListboxLabel,
-    ListboxButton,
-    ListboxOptions,
-    ListboxOption,
-  },
-  setup() {
-    return {
-      option: ref('option-a'),
-    }
-  },
-}
-</script>
-```
-
-Note that only `ListboxOption` instances will be navigable via the keyboard.
 
 ### Rendering a different element for a component
 
@@ -789,17 +794,12 @@ This is easy to change using the `as` prop, which exists on every component.
 
 ```vue
 <template>
-  <!-- Render a `div` instead of no wrapper element -->
-  <Listbox as="div" v-model="option">
-    <ListboxButton>More</ListboxButton>
-    <!-- Render a `div` instead of a `ul` -->
+  <Listbox as="div" v-model="selectedPerson">
+    <ListboxButton>{{ selectedPerson.name }}</ListboxButton>
     <ListboxOptions as="div">
-      <!-- Render an `span` instead of an `li` -->
-      <ListboxOption as="span" value="option-a">
-        Option A
+      <ListboxOption as="span" v-for="person in people" :value="person">
+        {{ person.name }}
       </ListboxOption>
-
-      <!-- ... -->
     </ListboxOptions>
   </Listbox>
 </template>
@@ -823,26 +823,36 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds' },
+      { id: 2, name: 'Kenton Towne' },
+      { id: 3, name: 'Therese Wunsch' },
+      { id: 4, name: 'Benedict Kessler' },
+      { id: 5, name: 'Katelyn Rohan' },
+    ]
+    const selectedPerson = ref(people[0])
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
 </script>
 ```
 
-To tell an element to render its children directly with no wrapper element, use `as={React.Fragment}`.
+To tell an element to render its children directly with no wrapper element, use `as="template"`.
 
 ```vue
 <template>
-  <Listbox v-model="option">
+  <Listbox v-model="selectedPerson">
     <!-- Render no wrapper, instead pass in a button manually. -->
     <ListboxButton as="template">
-      <button>More</button>
+      <button>{{ selectedPerson.name }}</button>
     </ListboxButton>
     <ListboxOptions>
-      <ListboxOption value="option-a">Option A</ListboxOption>
-      <!-- ... -->
+      <ListboxOption v-for="person in people" :value="person">
+        {{ person.name }}
+      </ListboxOption>
     </ListboxOptions>
   </Listbox>
 </template>
@@ -866,13 +876,23 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds' },
+      { id: 2, name: 'Kenton Towne' },
+      { id: 3, name: 'Therese Wunsch' },
+      { id: 4, name: 'Benedict Kessler' },
+      { id: 5, name: 'Katelyn Rohan' },
+    ]
+    const selectedPerson = ref(people[0])
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
 </script>
 ```
+
 
 ### Component API
 
@@ -880,11 +900,14 @@ export default {
 
 ```vue
 <template>
-  <Listbox v-model="option">
-    <ListboxButton>More</ListboxButton>
+  <Listbox v-model="selectedPerson">
+    <ListboxButton>
+      {{ selectedPerson.name }}
+    </ListboxButton>
     <ListboxOptions>
-      <ListboxOption value="option-a"><!-- ... --></ListboxOption>
-      <!-- ... -->
+      <ListboxOption v-for="person in people" :value="person">
+        {{ person.name }}
+      </ListboxOption>
     </ListboxOptions>
   </Listbox>
 </template>
@@ -908,8 +931,17 @@ export default {
     ListboxOption,
   },
   setup() {
+    const people = [
+      { id: 1, name: 'Durward Reynolds' },
+      { id: 2, name: 'Kenton Towne' },
+      { id: 3, name: 'Therese Wunsch' },
+      { id: 4, name: 'Benedict Kessler' },
+      { id: 5, name: 'Katelyn Rohan' },
+    ]
+    const selectedPerson = ref(people[0])
     return {
-      option: ref('option-a'),
+      people,
+      selectedPerson,
     }
   },
 }
@@ -921,9 +953,9 @@ export default {
 | Prop      | Type                    | Default                           | Description                                              |
 | --------- | ----------------------- | --------------------------------- | -------------------------------------------------------- |
 | `as`      | String \| Component     | `template` _(no wrapper element_) | The element or component the `Listbox` should render as. |
-| `v-model` | `T` _(A generic value)_ | `undefined`                       | The selected value.                                      |
+| `v-model` | T |                        | The selected value.                                      |
 
-##### Render prop object
+##### Slot props
 
 | Prop   | Type    | Description                         |
 | ------ | ------- | ----------------------------------- |
@@ -932,13 +964,9 @@ export default {
 #### ListboxButton
 
 ```vue
-<ListboxButton>
-  {({ open }) => (
-    <>
-      <span>More options</span>
-      <ChevronRightIcon class={`${open ? 'transform rotate-90' : ''}`} />
-    </>
-  )}
+<ListboxButton v-slot="{ open }">
+  <span>{{ selectedPerson.name }}</span>
+  <ChevronRightIcon class={`${open ? 'transform rotate-90' : ''}`} />
 </ListboxButton>
 ```
 
@@ -948,7 +976,7 @@ export default {
 | ---- | ------------------- | -------- | -------------------------------------------------------------- |
 | `as` | String \| Component | `button` | The element or component the `ListboxButton` should render as. |
 
-##### Render prop object
+##### Slot props
 
 | Prop   | Type    | Description                         |
 | ------ | ------- | ----------------------------------- |
@@ -970,8 +998,8 @@ export default {
 
 ```vue
 <ListboxOptions>
-  <ListboxOption value="option-a"><!-- ... -->></ListboxOption>
-  <!-- ... -->>
+  <ListboxOption value="option-a"><!-- ... --></ListboxOption>
+  <!-- ... -->
 </ListboxOptions>
 ```
 
@@ -982,7 +1010,7 @@ export default {
 | `as`     | String \| Component | `ul`    | The element or component the `ListboxOptions` should render as.             |
 | `static` | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state. |
 
-##### Render prop object
+##### Slot props
 
 | Prop   | Type    | Description                         |
 | ------ | ------- | ----------------------------------- |
@@ -999,10 +1027,10 @@ export default {
 | Prop       | Type                    | Default     | Description                                                                             |
 | ---------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
 | `as`       | String \| Component     | `li`        | The element or component the `ListboxOption` should render as.                          |
-| `value`    | `T` _(A generic value)_ | `undefined` | The selected value.                                                                     |
+| `value`    | T |  | The selected value.                                                                     |
 | `disabled` | Boolean                 | `false`     | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
 
-##### Render prop object
+##### Slot props
 
 | Prop       | Type    | Description                                                                          |
 | ---------- | ------- | ------------------------------------------------------------------------------------ |
