@@ -37,7 +37,7 @@
     "@types/node": "^14.11.2",
     "babel-jest": "^26.3.0",
     "husky": "^4.3.0",
-    "jest": "^26.4.2",
+    "jest": "^26.5.0",
     "lint-staged": "^10.4.0",
     "prismjs": "^1.21.0",
     "tailwindcss": "^1.8.10",
