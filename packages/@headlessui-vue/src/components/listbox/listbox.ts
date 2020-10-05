@@ -198,8 +198,8 @@ export const Listbox = defineComponent({
 
         if (!optionsRef.value?.contains(event.target as HTMLElement)) {
           api.closeListbox()
-          if (!event.defaultPrevented) buttonRef.value?.focus()
         }
+        if (!event.defaultPrevented) nextTick(() => buttonRef.value?.focus())
       }
 
       window.addEventListener('click', handler)
@@ -318,6 +318,7 @@ export const ListboxButton = defineComponent({
     function handlePointerUp(event: MouseEvent) {
       if (api.listboxState.value === ListboxStates.Open) {
         api.closeListbox()
+        nextTick(() => api.buttonRef.value?.focus())
       } else {
         event.preventDefault()
         api.openListbox()
@@ -407,8 +408,8 @@ export const ListboxOptions = defineComponent({
           if (api.activeOptionIndex.value !== null) {
             const { dataRef } = api.options.value[api.activeOptionIndex.value]
             api.select(dataRef.value)
-            nextTick(() => api.buttonRef.value?.focus())
           }
+          nextTick(() => api.buttonRef.value?.focus())
           break
 
         case Keys.ArrowDown:

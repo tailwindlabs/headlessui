@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Props } from '../../types'
 import { match } from '../../utils/match'
 import { forwardRefWithAs, render } from '../../utils/render'
+import { disposables } from '../../utils/disposables'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -213,8 +214,8 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 
       if (!itemsRef.current?.contains(event.target as HTMLElement)) {
         dispatch({ type: ActionTypes.CloseMenu })
-        if (!event.defaultPrevented) buttonRef.current?.focus()
       }
+      if (!event.defaultPrevented) d.nextFrame(() => buttonRef.current?.focus())
     }
 
     window.addEventListener('click', handler)
@@ -294,6 +295,7 @@ const Button = forwardRefWithAs(function Button<
     (event: MouseEvent) => {
       if (state.menuState === MenuStates.Open) {
         dispatch({ type: ActionTypes.CloseMenu })
+        d.nextFrame(() => state.buttonRef.current?.focus())
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenMenu })
@@ -357,7 +359,6 @@ const Items = forwardRefWithAs(function Items<
   const itemsRef = useSyncRefs(state.itemsRef, ref)
 
   const id = `headlessui-menu-items-${useId()}`
-  const d = useDisposables()
   const searchDisposables = useDisposables()
 
   const handleKeyDown = React.useCallback(
@@ -380,8 +381,8 @@ const Items = forwardRefWithAs(function Items<
           if (state.activeItemIndex !== null) {
             const { id } = state.items[state.activeItemIndex]
             document.getElementById(id)?.click()
-            d.nextFrame(() => state.buttonRef.current?.focus())
           }
+          disposables().nextFrame(() => state.buttonRef.current?.focus())
           break
 
         case Keys.ArrowDown:
@@ -405,7 +406,7 @@ const Items = forwardRefWithAs(function Items<
         case Keys.Escape:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
-          d.nextFrame(() => state.buttonRef.current?.focus())
+          disposables().nextFrame(() => state.buttonRef.current?.focus())
           break
 
         case Keys.Tab:
@@ -419,7 +420,7 @@ const Items = forwardRefWithAs(function Items<
           break
       }
     },
-    [d, dispatch, searchDisposables, state]
+    [dispatch, searchDisposables, state]
   )
 
   const propsBag = React.useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])

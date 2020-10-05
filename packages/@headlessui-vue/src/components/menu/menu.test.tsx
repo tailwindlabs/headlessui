@@ -754,6 +754,9 @@ describe('Keyboard interactions', () => {
       // Verify it is closed
       assertMenuButton({ state: MenuState.Closed })
       assertMenu({ state: MenuState.Closed })
+
+      // Verify the button is focused again
+      assertActiveElement(getMenuButton())
     })
 
     it('should be possible to close the menu with Enter and invoke the active menu item', async () => {
@@ -794,6 +797,9 @@ describe('Keyboard interactions', () => {
       // Verify it is closed
       assertMenuButton({ state: MenuState.Closed })
       assertMenu({ state: MenuState.Closed })
+
+      // Verify the button is focused again
+      assertActiveElement(getMenuButton())
 
       // Verify the "click" went through on the `a` tag
       expect(clickHandler).toHaveBeenCalled()
@@ -847,6 +853,9 @@ describe('Keyboard interactions', () => {
     // Verify the button got "clicked"
     expect(clickHandler).toHaveBeenCalledTimes(1)
 
+    // Verify the button is focused again
+    assertActiveElement(getMenuButton())
+
     // Click the menu button again
     await click(getMenuButton())
 
@@ -858,6 +867,9 @@ describe('Keyboard interactions', () => {
 
     // Verify the button got "clicked"
     expect(clickHandler).toHaveBeenCalledTimes(2)
+
+    // Verify the button is focused again
+    assertActiveElement(getMenuButton())
   })
 
   describe('`Space` key', () => {
@@ -1039,6 +1051,9 @@ describe('Keyboard interactions', () => {
         // Verify it is closed
         assertMenuButton({ state: MenuState.Closed })
         assertMenu({ state: MenuState.Closed })
+
+        // Verify the button is focused again
+        assertActiveElement(getMenuButton())
       })
     )
 
@@ -1085,6 +1100,9 @@ describe('Keyboard interactions', () => {
 
         // Verify the "click" went through on the `a` tag
         expect(clickHandler).toHaveBeenCalled()
+
+        // Verify the button is focused again
+        assertActiveElement(getMenuButton())
       })
     )
   })
@@ -1122,6 +1140,9 @@ describe('Keyboard interactions', () => {
       // Verify it is closed
       assertMenuButton({ state: MenuState.Closed })
       assertMenu({ state: MenuState.Closed })
+
+      // Verify the button is focused again
+      assertActiveElement(getMenuButton())
     })
   })
 
@@ -2281,6 +2302,9 @@ describe('Mouse interactions', () => {
 
     // Should be closed now
     assertMenu({ state: MenuState.Closed })
+
+    // Verify the button is focused again
+    assertActiveElement(getMenuButton())
   })
 
   it('should be possible to click outside of the menu which should close the menu (even if we press the menu button)', async () => {
@@ -2304,6 +2328,9 @@ describe('Mouse interactions', () => {
 
     // Should be closed now
     assertMenu({ state: MenuState.Closed })
+
+    // Verify the button is focused again
+    assertActiveElement(getMenuButton())
   })
 
   it(

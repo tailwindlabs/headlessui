@@ -174,8 +174,8 @@ export const Menu = defineComponent({
 
         if (!itemsRef.value?.contains(event.target as HTMLElement)) {
           api.closeMenu()
-          if (!event.defaultPrevented) buttonRef.value?.focus()
         }
+        if (!event.defaultPrevented) nextTick(() => buttonRef.value?.focus())
       }
 
       window.addEventListener('click', handler)
@@ -250,6 +250,7 @@ export const MenuButton = defineComponent({
     function handlePointerUp(event: MouseEvent) {
       if (api.menuState.value === MenuStates.Open) {
         api.closeMenu()
+        nextTick(() => api.buttonRef.value?.focus())
       } else {
         event.preventDefault()
         api.openMenu()
@@ -329,8 +330,8 @@ export const MenuItems = defineComponent({
           if (api.activeItemIndex.value !== null) {
             const { id } = api.items.value[api.activeItemIndex.value]
             document.getElementById(id)?.click()
-            nextTick(() => api.buttonRef.value?.focus())
           }
+          nextTick(() => api.buttonRef.value?.focus())
           break
 
         case Keys.ArrowDown:
