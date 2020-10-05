@@ -29,6 +29,7 @@ _This project is still in early development. New components will be added regula
 
 - [Transition](#transition)
 - [Menu Button (Dropdown)](#menu-button-dropdown)
+- [Listbox](#listbox)
 
 ### Roadmap
 
@@ -76,9 +77,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         enter="transition-opacity duration-75"
@@ -108,9 +107,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         // ...
@@ -133,9 +130,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         as="a"
@@ -161,14 +156,12 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         // ...
       >
-        {(ref) => <div ref={ref}>{/* Your content goes here*/}</div>}
+        {ref => <div ref={ref}>{/* Your content goes here*/}</div>}
       </Transition>
     </>
   )
@@ -201,9 +194,7 @@ function MyComponent() {
 
   return (
     <>
-      <button onClick={() => setIsOpen(!isOpen)}>
-        Toggle
-      </button>
+      <button onClick={() => setIsOpen(!isOpen)}>Toggle</button>
       <Transition
         show={isOpen}
         enter="transition-opacity duration-75"
@@ -771,3 +762,408 @@ function MyDropdown() {
 | ---------- | ------- | ---------------------------------------------------------------------------------- |
 | `active`   | Boolean | Whether or not the item is the active/focused item in the list.                    |
 | `disabled` | Boolean | Whether or not the item is the disabled for keyboard navigation and ARIA purposes. |
+
+## Listbox
+
+[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-menu-example-b6xje?file=/src/App.js)
+
+The `Listbox` component and related child components are used to quickly build custom listbox components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard navigation support.
+
+- [Basic example](#basic-example-2)
+- [Styling the active and selected option](#styling-the-active-and-selected-option)
+- [Showing/hiding the listbox](#showinghiding-the-listbox)
+- [Using a custom label](#using-a-custom-label)
+- [Disabling an option](#disabling-an-option)
+- [Transitions](#transitions-1)
+- [Rendering additional content](#rendering-additional-content-1)
+- [Rendering a different element for a component](#rendering-a-different-element-for-a-component-1)
+- [Component API](#component-api-2)
+
+### Basic example
+
+Listboxes are built using the `Listbox`, `Listbox.Button`, `Listbox.Options`, `Listbox.Option` and `Listbox.Label` components.
+
+The `Listbox.Button` will automatically open/close the `Listbox.Options` when clicked, and when the menu is open, the list of items receives focus and is automatically navigable via the keyboard.
+
+```jsx
+import { useState } from 'react'
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  const [option, setOption] = useState('option-a')
+  return (
+    <Listbox value={option} onChange={setOption}>
+      <Listbox.Button>More</Listbox.Button>
+      <Listbox.Options>
+        <Listbox.Option value="option-a">Option A</Listbox.Option>
+        <Listbox.Option value="option-b">Option B </Listbox.Option>
+        <Listbox.Option value="option-c" disabled>
+          Option C
+        </Listbox.Option>
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+### Styling the active and selected option
+
+This is a headless component so there are no styles included by default. Instead, the components expose useful information via [render props](https://reactjs.org/docs/render-props.html) that you can use to apply the styles you'd like to apply yourself.
+
+To style the active `Listbox.Option` you can read the `active` render prop argument, which tells you whether or not that listbox option is the option that is currently focused via the mouse or keyboard.
+
+To style the selected `Listbox.Option` you can read the `selected` render prop argument, which tells you whether or not that listbox option is the option that is currently the `value` passed to the `Listbox`.
+
+> Note: An option can be both **active** and **selected** at the same time!
+
+You can use this state to conditionally apply whatever active/focus styles you like, for instance a blue background like is typical in most operating systems. For the selected state, a checkmark is also common.
+
+```jsx
+import { useState, Fragment } from 'react'
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  const [option, setOption] = useState('option-a')
+  return (
+    <Listbox value={option} onChange={setOption}>
+      <Listbox.Button>More</Listbox.Button>
+      <Listbox.Options>
+        {/* Use the `active` state to conditionally style the active option. */}
+        {/* Use the `selected` state to conditionally style the selected option. */}
+        <Listbox.Option as={Fragment} value="option-a">
+          {({ active, selected }) => (
+            <li className={`${active ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}>
+              {selected && <svg />} {/* Checkmark svg */}
+              Option A
+            </li>
+          )}
+        </Listbox.Option>
+        {/* ... */}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+### Using a custom label
+
+By default the `Listbox` will use the button contents as the label for screenreaders. However you can also render a custom `Listbox.Label`.
+
+```jsx
+import { useState, Fragment } from 'react'
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  const [country, setCountry] = useState('belgium')
+  return (
+    <Listbox value={country} onChange={setCountry}>
+      <Listbox.Label>Country:</Listbox.Label>
+      <Listbox.Button>{country}</Listbox.Button>
+      <Listbox.Options>
+        <Listbox.Option value="australia">Australia</Listbox.Option>
+        <Listbox.Option value="belgium">Belgium</Listbox.Option>
+        <Listbox.Option value="canada">Canada</Listbox.Option>
+        <Listbox.Option value="england">England</Listbox.Option>
+        {/* ... */}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+### Showing/hiding the listbox
+
+By default, your `Listbox.Options` instance will be shown/hidden automatically based on the internal `open` state tracked within the `Listbox` component itself.
+
+```jsx
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  return (
+    <Listbox value="option-a" onChange={console.log}>
+      <Listbox.Button>More</Listbox.Button>
+
+      {/* By default, this will automatically show/hide when the Listbox.Button is pressed. */}
+      <Listbox.Options>
+        <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
+        {/* ... */}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+If you'd rather handle this yourself (perhaps because you need to add an extra wrapper element for one reason or another), you can add a `static` prop to the `Listbox.Options` instance to tell it to always render, and inspect the `open` slot prop provided by the `Listbox` to control which element is shown/hidden yourself.
+
+```jsx
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  return (
+    <Listbox value="option-a" onChange={console.log}>
+      {({ open }) => (
+        <Listbox.Button>More</Listbox.Button>
+        {open && (
+          <div>
+            {/* Using `static`, `Listbox.Options` is always rendered and ignores the `open` state. */}
+            <Listbox.Options static>
+              <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
+              {/* ... */}
+            </Listbox.Options>
+          </div>
+        )}
+      )}
+    </Listbox>
+  )
+}
+```
+
+### Disabling an option
+
+Use the `disabled` prop to disable a `Listbox.Option`. This will make it unselectable via keyboard navigation, and it will be skipped when pressing the up/down arrows.
+
+```jsx
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  return (
+    <Listbox value="option-a" onChange={console.log}>
+      <Listbox.Button>More</Listbox.Button>
+      <Listbox.Options>
+        {/* ... */}
+
+        {/* This option will be skipped by keyboard navigation. */}
+        <Listbox.Option disabled value="option-a">
+          <span className="opacity-75">Invite a friend (coming soon!)</span>
+        </Listbox.Option>
+
+        {/* ... */}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+### Transitions
+
+To animate the opening/closing of the listbox panel, use the provided `Transition` component. All you need to do is mark your `Listbox.Options` as `static`, wrap it in a `<Transition>`, and the transition will be applied automatically.
+
+```jsx
+import { Listbox, Transition } from '@headlessui/react'
+
+function MyListbox() {
+  return (
+    <Listbox value="option-a" onChange={console.log}>
+      {({ open }) => (
+        <>
+          <Listbox.Button>More</Listbox.Button>
+
+          {/* Use the Transition + open render prop argument to add transitions. */}
+          <Transition
+            show={open}
+            enter="transition duration-100 ease-out"
+            enterFrom="transform scale-95 opacity-0"
+            enterTo="transform scale-100 opacity-100"
+            leave="transition duration-75 ease-out"
+            leaveFrom="transform scale-100 opacity-100"
+            leaveTo="transform scale-95 opacity-0"
+          >
+            <Listbox.Options static>
+              <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
+              {/* ... */}
+            </Listbox.Options>
+          </Transition>
+        </>
+      )}
+    </Listbox>
+  )
+}
+```
+
+### Rendering additional content
+
+The `Listbox` component is not limited to rendering only its related subcomponents. You can render anything you like within a listbox, which gives you complete control over exactly what you are building.
+
+For example, if you'd like to add a little header section to the listbox with some extra information in it, just render an extra `div` with your content in it.
+
+```jsx
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  return (
+    <Listbox value="option-a" onChange={console.log}>
+      <Listbox.Button>More</Listbox.Button>
+      <Listbox.Options>
+        <div class="px-4 py-3">
+          <p class="text-sm leading-5">Signed in as</p>
+          <p class="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
+        </div>
+        <Listbox.Option value="option-a">Option A</Listbox.Option>
+        {/* ... */}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+Note that only `Listbox.Option` instances will be navigable via the keyboard.
+
+### Rendering a different element for a component
+
+By default, the `Listbox` and its subcomponents each render a default element that is sensible for that component.
+
+For example, `Listbox.Label` renders a `label` by default, `Listbox.Button` renders a `button` by default, `Listbox.Options` renders a `ul` and `Listbox.Option` renders a `li` by default. `Listbox` interestingly _does not render an extra element_, and instead renders its children directly by default.
+
+This is easy to change using the `as` prop, which exists on every component.
+
+```jsx
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  return (
+    {/* Render a `div` instead of no wrapper element */}
+    <Listbox as="div" value="option-a" onChange={console.log}>
+      <Listbox.Button>More</Listbox.Button>
+      {/* Render a `div` instead of a `ul` */}
+      <Listbox.Options as="div">
+        {/* Render an `span` instead of an `li` */}
+        <Listbox.Option as="span" value="option-a">
+          Option A
+        </Listbox.Option>
+
+        {/* ... */}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+To tell an element to render its children directly with no wrapper element, use `as={React.Fragment}`.
+
+```jsx
+import { Listbox } from '@headlessui/react'
+
+function MyDropdown() {
+  return (
+    <Listbox value="option-a" onChange={console.log}>
+      {/* Render no wrapper, instead pass in a button manually. */}
+      <Listbox.Button as={React.Fragment}>
+        <button>More</button>
+      </Listbox.Button>
+      <Listbox.Options>
+        <Listbox.Option value="option-a">Option A</Listbox.Option>
+        {/* ... */}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
+```
+
+### Component API
+
+#### Listbox
+
+```jsx
+<Listbox value="option-a" onChange={console.log}>
+  <Listbox.Button>More</Listbox.Button>
+  <Listbox.Options>
+    <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
+    {/* ... */}
+  </Listbox.Options>
+</Listbox>
+```
+
+##### Props
+
+| Prop       | Type                    | Default                                 | Description                                              |
+| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
+| `as`       | String \| Component     | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
+| `value`    | `T` _(A generic value)_ | `undefined`                             | The selected value.                                      |
+| `onChange` | `(value: T): void`      | `undefined`                             | The function to call when a new option is selected.      |
+
+##### Render prop object
+
+| Prop   | Type    | Description                         |
+| ------ | ------- | ----------------------------------- |
+| `open` | Boolean | Whether or not the listbox is open. |
+
+#### Listbox.Button
+
+```jsx
+<Listbox.Button>
+  {({ open }) => (
+    <>
+      <span>More options</span>
+      <ChevronRightIcon className={`${open ? 'transform rotate-90' : ''}`} />
+    </>
+  )}
+</Listbox.Button>
+```
+
+##### Props
+
+| Prop | Type                | Default  | Description                                                     |
+| ---- | ------------------- | -------- | --------------------------------------------------------------- |
+| `as` | String \| Component | `button` | The element or component the `Listbox.Button` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                         |
+| ------ | ------- | ----------------------------------- |
+| `open` | Boolean | Whether or not the listbox is open. |
+
+#### Listbox.Label
+
+```jsx
+<Listbox.Label>Enable notifications</Listbox.Label>
+```
+
+##### Props
+
+| Prop | Type                | Default | Description                                                    |
+| ---- | ------------------- | ------- | -------------------------------------------------------------- |
+| `as` | String \| Component | `label` | The element or component the `Listbox.Label` should render as. |
+
+#### Listbox.Options
+
+```jsx
+<Listbox.Options>
+  <Listbox.Option value="option-a">{/* ... */}></Listbox.Option>
+  {/* ... */}>
+</Listbox.Options>
+```
+
+##### Props
+
+| Prop     | Type                | Default | Description                                                                 |
+| -------- | ------------------- | ------- | --------------------------------------------------------------------------- |
+| `as`     | String \| Component | `ul`    | The element or component the `Listbox.Options` should render as.            |
+| `static` | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                         |
+| ------ | ------- | ----------------------------------- |
+| `open` | Boolean | Whether or not the listbox is open. |
+
+#### Listbox.Option
+
+```jsx
+<Listbox.Option value="option-a">Option A</Listbox.Option>
+```
+
+##### Props
+
+| Prop       | Type                    | Default     | Description                                                                             |
+| ---------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
+| `as`       | String \| Component     | `li`        | The element or component the `Listbox.Option` should render as.                         |
+| `value`    | `T` _(A generic value)_ | `undefined` | The selected value.                                                                     |
+| `disabled` | Boolean                 | `false`     | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
+
+##### Render prop object
+
+| Prop       | Type    | Description                                                                          |
+| ---------- | ------- | ------------------------------------------------------------------------------------ |
+| `active`   | Boolean | Whether or not the option is the active/focused option in the list.                  |
+| `selected` | Boolean | Whether or not the option is the selected option in the list.                        |
+| `disabled` | Boolean | Whether or not the option is the disabled for keyboard navigation and ARIA purposes. |
