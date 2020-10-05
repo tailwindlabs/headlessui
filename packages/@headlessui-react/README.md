@@ -797,7 +797,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler', unavailable: true },
     { id: 5, name: 'Katelyn Rohan', unavailable: false },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -839,7 +839,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler' },
     { id: 5, name: 'Katelyn Rohan' },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -880,7 +880,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler' },
     { id: 5, name: 'Katelyn Rohan' },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -914,7 +914,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler', unavailable: true },
     { id: 5, name: 'Katelyn Rohan', unavailable: false },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -947,7 +947,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler', unavailable: true },
     { id: 5, name: 'Katelyn Rohan', unavailable: false },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -989,7 +989,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler', unavailable: true },
     { id: 5, name: 'Katelyn Rohan', unavailable: false },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -1023,7 +1023,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler', unavailable: true },
     { id: 5, name: 'Katelyn Rohan', unavailable: false },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -1071,7 +1071,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler' },
     { id: 5, name: 'Katelyn Rohan' },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox as="div" value={selectedPerson} onChange={setSelectedPerson}>
@@ -1102,7 +1102,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler' },
     { id: 5, name: 'Katelyn Rohan' },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
@@ -1135,7 +1135,7 @@ function MyListbox() {
     { id: 4, name: 'Benedict Kessler' },
     { id: 5, name: 'Katelyn Rohan' },
   ]
-  const [selectedPerson, setSelectedPerson] = useState('option-a')
+  const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
