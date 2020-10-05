@@ -786,20 +786,28 @@ Listboxes are built using the `Listbox`, `Listbox.Button`, `Listbox.Options`, `L
 The `Listbox.Button` will automatically open/close the `Listbox.Options` when clicked, and when the menu is open, the list of items receives focus and is automatically navigable via the keyboard.
 
 ```jsx
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
-  const [option, setOption] = useState('option-a')
+  const people = [
+    { id: 1, name: 'Durward Reynolds', unavailable: false },
+    { id: 2, name: 'Kenton Towne', unavailable: false },
+    { id: 3, name: 'Therese Wunsch', unavailable: false },
+    { id: 4, name: 'Benedict Kessler', unavailable: true },
+    { id: 5, name: 'Katelyn Rohan', unavailable: false },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
   return (
-    <Listbox value={option} onChange={setOption}>
-      <Listbox.Button>More</Listbox.Button>
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
-        <Listbox.Option value="option-a">Option A</Listbox.Option>
-        <Listbox.Option value="option-b">Option B </Listbox.Option>
-        <Listbox.Option value="option-c" disabled>
-          Option C
-        </Listbox.Option>
+        {people.map(person => (
+          <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
+            {person.name}
+          </Listbox.Option>
+        ))}
       </Listbox.Options>
     </Listbox>
   )
@@ -821,24 +829,34 @@ You can use this state to conditionally apply whatever active/focus styles you l
 ```jsx
 import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
+import CheckmarkIcon from './CheckmarkIcon'
 
 function MyListbox() {
-  const [option, setOption] = useState('option-a')
+  const people = [
+    { id: 1, name: 'Durward Reynolds' },
+    { id: 2, name: 'Kenton Towne' },
+    { id: 3, name: 'Therese Wunsch' },
+    { id: 4, name: 'Benedict Kessler' },
+    { id: 5, name: 'Katelyn Rohan' },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
   return (
-    <Listbox value={option} onChange={setOption}>
-      <Listbox.Button>More</Listbox.Button>
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
-        {/* Use the `active` state to conditionally style the active option. */}
-        {/* Use the `selected` state to conditionally style the selected option. */}
-        <Listbox.Option as={Fragment} value="option-a">
-          {({ active, selected }) => (
-            <li className={`${active ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}>
-              {selected && <svg />} {/* Checkmark svg */}
-              Option A
-            </li>
-          )}
-        </Listbox.Option>
-        {/* ... */}
+        {people.map(person => (
+          {/* Use the `active` state to conditionally style the active option. */}
+          {/* Use the `selected` state to conditionally style the selected option. */}
+          <Listbox.Option as={Fragment} key={person.id} value={person}>
+            {({ active, selected }) => (
+              <li className={`${active ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}>
+                {selected && <CheckmarkIcon />}
+                {person.name}
+              </li>
+            )}
+          </Listbox.Option>
+        ))}
       </Listbox.Options>
     </Listbox>
   )
@@ -852,19 +870,28 @@ By default the `Listbox` will use the button contents as the label for screenrea
 ```jsx
 import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
+import CheckmarkIcon from './CheckmarkIcon'
 
 function MyListbox() {
-  const [country, setCountry] = useState('belgium')
+  const people = [
+    { id: 1, name: 'Durward Reynolds' },
+    { id: 2, name: 'Kenton Towne' },
+    { id: 3, name: 'Therese Wunsch' },
+    { id: 4, name: 'Benedict Kessler' },
+    { id: 5, name: 'Katelyn Rohan' },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
   return (
-    <Listbox value={country} onChange={setCountry}>
-      <Listbox.Label>Country:</Listbox.Label>
-      <Listbox.Button>{country}</Listbox.Button>
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Label>Assignee:</Listbox.Label>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
-        <Listbox.Option value="australia">Australia</Listbox.Option>
-        <Listbox.Option value="belgium">Belgium</Listbox.Option>
-        <Listbox.Option value="canada">Canada</Listbox.Option>
-        <Listbox.Option value="england">England</Listbox.Option>
-        {/* ... */}
+        {people.map(person => (
+          <Listbox.Option as={Fragment} key={person.id} value={person}>
+            {person.name}
+          </Listbox.Option>
+        ))}
       </Listbox.Options>
     </Listbox>
   )
@@ -876,17 +903,30 @@ function MyListbox() {
 By default, your `Listbox.Options` instance will be shown/hidden automatically based on the internal `open` state tracked within the `Listbox` component itself.
 
 ```jsx
+import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
+  const people = [
+    { id: 1, name: 'Durward Reynolds', unavailable: false },
+    { id: 2, name: 'Kenton Towne', unavailable: false },
+    { id: 3, name: 'Therese Wunsch', unavailable: false },
+    { id: 4, name: 'Benedict Kessler', unavailable: true },
+    { id: 5, name: 'Katelyn Rohan', unavailable: false },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
   return (
-    <Listbox value="option-a" onChange={console.log}>
-      <Listbox.Button>More</Listbox.Button>
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
 
       {/* By default, this will automatically show/hide when the Listbox.Button is pressed. */}
       <Listbox.Options>
-        <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
-        {/* ... */}
+        {people.map(person => (
+          <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
+            {person.name}
+          </Listbox.Option>
+        ))}
       </Listbox.Options>
     </Listbox>
   )
@@ -896,22 +936,37 @@ function MyListbox() {
 If you'd rather handle this yourself (perhaps because you need to add an extra wrapper element for one reason or another), you can add a `static` prop to the `Listbox.Options` instance to tell it to always render, and inspect the `open` slot prop provided by the `Listbox` to control which element is shown/hidden yourself.
 
 ```jsx
+import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
+  const people = [
+    { id: 1, name: 'Durward Reynolds', unavailable: false },
+    { id: 2, name: 'Kenton Towne', unavailable: false },
+    { id: 3, name: 'Therese Wunsch', unavailable: false },
+    { id: 4, name: 'Benedict Kessler', unavailable: true },
+    { id: 5, name: 'Katelyn Rohan', unavailable: false },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
   return (
-    <Listbox value="option-a" onChange={console.log}>
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
       {({ open }) => (
-        <Listbox.Button>More</Listbox.Button>
-        {open && (
-          <div>
-            {/* Using `static`, `Listbox.Options` is always rendered and ignores the `open` state. */}
-            <Listbox.Options static>
-              <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
-              {/* ... */}
-            </Listbox.Options>
-          </div>
-        )}
+        <>
+          <Listbox.Button>{selectedPerson.name}</Listbox.Button>
+          {open && (
+            <div>
+              {/* Using `static`, `Listbox.Options` is always rendered and ignores the `open` state. */}
+              <Listbox.Options static>
+                {people.map(person => (
+                  <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
+                    {person.name}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </div>
+          )}
+        </>
       )}
     </Listbox>
   )
@@ -923,21 +978,29 @@ function MyListbox() {
 Use the `disabled` prop to disable a `Listbox.Option`. This will make it unselectable via keyboard navigation, and it will be skipped when pressing the up/down arrows.
 
 ```jsx
+import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
+  const people = [
+    { id: 1, name: 'Durward Reynolds', unavailable: false },
+    { id: 2, name: 'Kenton Towne', unavailable: false },
+    { id: 3, name: 'Therese Wunsch', unavailable: false },
+    { id: 4, name: 'Benedict Kessler', unavailable: true },
+    { id: 5, name: 'Katelyn Rohan', unavailable: false },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
   return (
-    <Listbox value="option-a" onChange={console.log}>
-      <Listbox.Button>More</Listbox.Button>
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
-        {/* ... */}
-
-        {/* This option will be skipped by keyboard navigation. */}
-        <Listbox.Option disabled value="option-a">
-          <span className="opacity-75">Invite a friend (coming soon!)</span>
-        </Listbox.Option>
-
-        {/* ... */}
+        {people.map(person => (
+          {/* Disabled options will be skipped by keyboard navigation. */}
+          <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
+            <span className={person.unavailable ? 'opacity-75' : ''}>{person.name}</span>
+          </Listbox.Option>
+        ))}
       </Listbox.Options>
     </Listbox>
   )
@@ -949,64 +1012,44 @@ function MyListbox() {
 To animate the opening/closing of the listbox panel, use the provided `Transition` component. All you need to do is mark your `Listbox.Options` as `static`, wrap it in a `<Transition>`, and the transition will be applied automatically.
 
 ```jsx
+import { useState, Fragment } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 
 function MyListbox() {
-  return (
-    <Listbox value="option-a" onChange={console.log}>
-      {({ open }) => (
-        <>
-          <Listbox.Button>More</Listbox.Button>
+  const people = [
+    { id: 1, name: 'Durward Reynolds', unavailable: false },
+    { id: 2, name: 'Kenton Towne', unavailable: false },
+    { id: 3, name: 'Therese Wunsch', unavailable: false },
+    { id: 4, name: 'Benedict Kessler', unavailable: true },
+    { id: 5, name: 'Katelyn Rohan', unavailable: false },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
 
-          {/* Use the Transition + open render prop argument to add transitions. */}
-          <Transition
-            show={open}
-            enter="transition duration-100 ease-out"
-            enterFrom="transform scale-95 opacity-0"
-            enterTo="transform scale-100 opacity-100"
-            leave="transition duration-75 ease-out"
-            leaveFrom="transform scale-100 opacity-100"
-            leaveTo="transform scale-95 opacity-0"
-          >
-            <Listbox.Options static>
-              <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
-              {/* ... */}
-            </Listbox.Options>
-          </Transition>
-        </>
-      )}
+  return (
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
+      {/* Use the Transition + open render prop argument to add transitions. */}
+      <Transition
+        show={open}
+        enter="transition duration-100 ease-out"
+        enterFrom="transform scale-95 opacity-0"
+        enterTo="transform scale-100 opacity-100"
+        leave="transition duration-75 ease-out"
+        leaveFrom="transform scale-100 opacity-100"
+        leaveTo="transform scale-95 opacity-0"
+      >
+        <Listbox.Options static>
+          {people.map(person => (
+            <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
+              {person.name}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </Transition>
     </Listbox>
   )
 }
 ```
-
-### Rendering additional content
-
-The `Listbox` component is not limited to rendering only its related subcomponents. You can render anything you like within a listbox, which gives you complete control over exactly what you are building.
-
-For example, if you'd like to add a little header section to the listbox with some extra information in it, just render an extra `div` with your content in it.
-
-```jsx
-import { Listbox } from '@headlessui/react'
-
-function MyListbox() {
-  return (
-    <Listbox value="option-a" onChange={console.log}>
-      <Listbox.Button>More</Listbox.Button>
-      <Listbox.Options>
-        <div class="px-4 py-3">
-          <p class="text-sm leading-5">Signed in as</p>
-          <p class="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
-        </div>
-        <Listbox.Option value="option-a">Option A</Listbox.Option>
-        {/* ... */}
-      </Listbox.Options>
-    </Listbox>
-  )
-}
-```
-
-Note that only `Listbox.Option` instances will be navigable via the keyboard.
 
 ### Rendering a different element for a component
 
@@ -1017,21 +1060,28 @@ For example, `Listbox.Label` renders a `label` by default, `Listbox.Button` rend
 This is easy to change using the `as` prop, which exists on every component.
 
 ```jsx
+import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
-  return (
-    {/* Render a `div` instead of no wrapper element */}
-    <Listbox as="div" value="option-a" onChange={console.log}>
-      <Listbox.Button>More</Listbox.Button>
-      {/* Render a `div` instead of a `ul` */}
-      <Listbox.Options as="div">
-        {/* Render an `span` instead of an `li` */}
-        <Listbox.Option as="span" value="option-a">
-          Option A
-        </Listbox.Option>
+  const people = [
+    { id: 1, name: 'Durward Reynolds' },
+    { id: 2, name: 'Kenton Towne' },
+    { id: 3, name: 'Therese Wunsch' },
+    { id: 4, name: 'Benedict Kessler' },
+    { id: 5, name: 'Katelyn Rohan' },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
 
-        {/* ... */}
+  return (
+    <Listbox as="div" value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
+      <Listbox.Options as="div">
+        {people.map(person => (
+          <Listbox.Option as="span" key={person.id} value={person}>
+            {person.name}
+          </Listbox.Option>
+        ))}
       </Listbox.Options>
     </Listbox>
   )
@@ -1041,18 +1091,28 @@ function MyListbox() {
 To tell an element to render its children directly with no wrapper element, use `as={React.Fragment}`.
 
 ```jsx
+import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
-function MyDropdown() {
+function MyListbox() {
+  const people = [
+    { id: 1, name: 'Durward Reynolds' },
+    { id: 2, name: 'Kenton Towne' },
+    { id: 3, name: 'Therese Wunsch' },
+    { id: 4, name: 'Benedict Kessler' },
+    { id: 5, name: 'Katelyn Rohan' },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
   return (
-    <Listbox value="option-a" onChange={console.log}>
-      {/* Render no wrapper, instead pass in a button manually. */}
-      <Listbox.Button as={React.Fragment}>
-        <button>More</button>
-      </Listbox.Button>
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button as={React.Fragment}>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
-        <Listbox.Option value="option-a">Option A</Listbox.Option>
-        {/* ... */}
+        {people.map(person => (
+          <Listbox.Option key={person.id} value={person}>
+            {person.name}
+          </Listbox.Option>
+        ))}
       </Listbox.Options>
     </Listbox>
   )
@@ -1064,13 +1124,32 @@ function MyDropdown() {
 #### Listbox
 
 ```jsx
-<Listbox value="option-a" onChange={console.log}>
-  <Listbox.Button>More</Listbox.Button>
-  <Listbox.Options>
-    <Listbox.Option value="option-a">{/* ... */}</Listbox.Option>
-    {/* ... */}
-  </Listbox.Options>
-</Listbox>
+import { useState, Fragment } from 'react'
+import { Listbox } from '@headlessui/react'
+
+function MyListbox() {
+  const people = [
+    { id: 1, name: 'Durward Reynolds' },
+    { id: 2, name: 'Kenton Towne' },
+    { id: 3, name: 'Therese Wunsch' },
+    { id: 4, name: 'Benedict Kessler' },
+    { id: 5, name: 'Katelyn Rohan' },
+  ]
+  const [selectedPerson, setSelectedPerson] = useState('option-a')
+
+  return (
+    <Listbox value={selectedPerson} onChange={setSelectedPerson}>
+      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
+      <Listbox.Options>
+        {people.map(person => (
+          <Listbox.Option key={person.id} value={person}>
+            {person.name}
+          </Listbox.Option>
+        ))}
+      </Listbox.Options>
+    </Listbox>
+  )
+}
 ```
 
 ##### Props
@@ -1078,8 +1157,8 @@ function MyDropdown() {
 | Prop       | Type                    | Default                                 | Description                                              |
 | ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
 | `as`       | String \| Component     | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
-| `value`    | `T` _(A generic value)_ | `undefined`                             | The selected value.                                      |
-| `onChange` | `(value: T): void`      | `undefined`                             | The function to call when a new option is selected.      |
+| `value`    | `T` |                              | The selected value.                                      |
+| `onChange` | `(value: T): void`      |                              | The function to call when a new option is selected.      |
 
 ##### Render prop object
 
@@ -1157,7 +1236,7 @@ function MyDropdown() {
 | Prop       | Type                    | Default     | Description                                                                             |
 | ---------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
 | `as`       | String \| Component     | `li`        | The element or component the `Listbox.Option` should render as.                         |
-| `value`    | `T` _(A generic value)_ | `undefined` | The selected value.                                                                     |
+| `value`    | `T` |  | The option value. |
 | `disabled` | Boolean                 | `false`     | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Render prop object
