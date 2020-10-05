@@ -35,10 +35,15 @@ export async function type(events: Partial<KeyboardEvent>[]) {
   try {
     if (document.activeElement === null) return expect(document.activeElement).not.toBe(null)
 
-    const element = document.activeElement
+    let element = document.activeElement
 
     events.forEach(event => {
-      fireEvent.keyDown(element, event)
+      const cancelled = !fireEvent.keyDown(element, event)
+      if (!cancelled && event.key === Keys.Tab.key) {
+        element = focusNext(event)
+      }
+      fireEvent.keyPress(element, event)
+      fireEvent.keyUp(element, event)
     })
 
     // We don't want to actually wait in our tests, so let's advance
@@ -129,4 +134,45 @@ export async function mouseLeave(element: Document | Element | Window | null) {
     if (Error.captureStackTrace) Error.captureStackTrace(err, mouseLeave)
     throw err
   }
+}
+
+// ---
+
+function focusNext(event: Partial<KeyboardEvent>) {
+  const direction = event.shiftKey ? -1 : +1
+  const focusableElements = getFocusableElements()
+  const total = focusableElements.length
+
+  function innerFocusNext(offset = 0): Element {
+    const currentIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
+    const next = focusableElements[(currentIdx + total + direction + offset) % total] as HTMLElement
+
+    if (next) next?.focus({ preventScroll: true })
+
+    if (next !== document.activeElement) return innerFocusNext(offset + direction)
+    return next
+  }
+
+  return innerFocusNext()
+}
+
+// Credit:
+//  - https://stackoverflow.com/a/30753870
+const focusableSelector = [
+  '[contentEditable=true]',
+  '[tabindex]',
+  'a[href]',
+  'area[href]',
+  'button:not([disabled])',
+  'iframe',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+]
+  .map(selector => `${selector}:not([tabindex='-1'])`)
+  .join(',')
+
+function getFocusableElements(container = document.body) {
+  if (!container) return []
+  return Array.from(container.querySelectorAll(focusableSelector))
 }

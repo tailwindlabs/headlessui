@@ -18,5 +18,10 @@ it('should expose the correct components', () => {
     'ListboxButton',
     'ListboxOptions',
     'ListboxOption',
+
+    // Switch
+    'SwitchGroup',
+    'Switch',
+    'SwitchLabel',
   ])
 })

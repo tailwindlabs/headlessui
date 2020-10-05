@@ -472,6 +472,92 @@ export function assertListboxOption(
 
 // ---
 
+export function getSwitch(): HTMLElement | null {
+  return document.querySelector('[role="switch"]')
+}
+
+export function getSwitchLabel(): HTMLElement | null {
+  return document.querySelector('label,[id^="headlessui-switch-label"]')
+}
+
+// ---
+
+export enum SwitchState {
+  On,
+  Off,
+}
+
+export function assertSwitch(
+  options: {
+    state: SwitchState
+    tag?: string
+    textContent?: string
+    label?: string
+  },
+  switchElement = getSwitch()
+) {
+  try {
+    if (switchElement === null) return expect(switchElement).not.toBe(null)
+
+    expect(switchElement).toHaveAttribute('role', 'switch')
+    expect(switchElement).toHaveAttribute('tabindex', '0')
+
+    if (options.textContent) {
+      expect(switchElement).toHaveTextContent(options.textContent)
+    }
+
+    if (options.tag) {
+      expect(switchElement.tagName.toLowerCase()).toBe(options.tag)
+    }
+
+    if (options.label) {
+      assertLabelValue(switchElement, options.label)
+    }
+
+    switch (options.state) {
+      case SwitchState.On:
+        expect(switchElement).toHaveAttribute('aria-checked', 'true')
+        break
+
+      case SwitchState.Off:
+        expect(switchElement).toHaveAttribute('aria-checked', 'false')
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertSwitch)
+    throw err
+  }
+}
+
+// ---
+
+export function assertLabelValue(element: HTMLElement | null, value: string) {
+  if (element === null) return expect(element).not.toBe(null)
+
+  if (element.hasAttribute('aria-labelledby')) {
+    const ids = element.getAttribute('aria-labelledby')!.split(' ')
+    expect(ids.map(id => document.getElementById(id)?.textContent).join(' ')).toEqual(value)
+    return
+  }
+
+  if (element.hasAttribute('aria-label')) {
+    expect(element).toHaveAttribute('aria-label', value)
+    return
+  }
+
+  if (element.hasAttribute('id') && document.querySelectorAll(`[for="${element.id}"]`).length > 0) {
+    expect(document.querySelector(`[for="${element.id}"]`)).toHaveTextContent(value)
+    return
+  }
+
+  expect(element).toHaveTextContent(value)
+}
+
+// ---
+
 export function assertActiveElement(element: HTMLElement | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
