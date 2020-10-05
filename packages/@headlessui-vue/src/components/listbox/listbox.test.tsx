@@ -623,6 +623,61 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should be possible to open the listbox with Enter, and focus the selected option (with a list of objects)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <Listbox v-model="value">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption v-for="option in options" key="option.id" :value="option">{{ option.name }}</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => {
+            const options = [
+              { id: 'a', name: 'Option A' },
+              { id: 'b', name: 'Option B' },
+              { id: 'c', name: 'Option C' },
+            ]
+            const value = ref(options[1])
+
+            return { value, options }
+          },
+        })
+
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.Enter)
+
+        // Verify it is open
+        assertListboxButton({ state: ListboxState.Open })
+        assertListbox({
+          state: ListboxState.Open,
+          attributes: { id: 'headlessui-listbox-options-2' },
+        })
+        assertActiveElement(getListbox())
+        assertListboxButtonLinkedWithListbox()
+
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
+
+        // Verify that the second listbox option is active (because it is already selected)
+        assertActiveListboxOption(options[1])
+      })
+    )
+
+    it(
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({

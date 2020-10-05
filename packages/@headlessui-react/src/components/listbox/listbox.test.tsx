@@ -580,6 +580,59 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should be possible to open the listbox with Enter, and focus the selected option (with a list of objects)',
+      suppressConsoleLogs(async () => {
+        const myOptions = [
+          { id: 'a', name: 'Option A' },
+          { id: 'b', name: 'Option B' },
+          { id: 'c', name: 'Option C' },
+        ]
+        const selectedOption = myOptions[1]
+        render(
+          <Listbox value={selectedOption} onChange={console.log}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              {myOptions.map(myOption => (
+                <Listbox.Option key={myOption.id} value={myOption}>
+                  {myOption.name}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.Enter)
+
+        // Verify it is open
+        assertListboxButton({ state: ListboxState.Open })
+        assertListbox({
+          state: ListboxState.Open,
+          attributes: { id: 'headlessui-listbox-options-2' },
+        })
+        assertActiveElement(getListbox())
+        assertListboxButtonLinkedWithListbox()
+
+        // Verify we have listbox options
+        const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
+
+        // Verify that the second listbox option is active (because it is already selected)
+        assertActiveListboxOption(options[1])
+      })
+    )
+
+    it(
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         render(

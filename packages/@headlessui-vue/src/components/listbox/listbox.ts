@@ -11,6 +11,7 @@ import {
   Ref,
   ComputedRef,
   watchEffect,
+  toRaw,
 } from 'vue'
 import { match } from '../../utils/match'
 import { render } from '../../utils/render'
@@ -476,7 +477,7 @@ export const ListboxOption = defineComponent({
         : false
     })
 
-    const selected = computed(() => api.value.value === value)
+    const selected = computed(() => toRaw(api.value.value) === toRaw(value))
 
     const dataRef = ref<ListboxOptionDataRef['value']>({ disabled, value, textValue: '' })
     onMounted(() => {

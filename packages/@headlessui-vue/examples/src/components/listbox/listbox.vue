@@ -12,7 +12,7 @@
               <ListboxButton
                 class="relative w-full py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md cursor-default focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
               >
-                <span class="block truncate">{{ active }}</span>
+                <span class="block truncate">{{ active.name }}</span>
                 <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                   <svg
                     class="w-5 h-5 text-gray-400"
@@ -36,9 +36,9 @@
                 class="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5"
               >
                 <ListboxOption
-                  v-for="name in people"
-                  :key="name"
-                  :value="name"
+                  v-for="person in people"
+                  :key="person.id"
+                  :value="person"
                   :className="resolveListboxOptionClassName"
                   v-slot="{ active, selected }"
                 >
@@ -47,7 +47,7 @@
                       classNames('block truncate', selected ? 'font-semibold' : 'font-normal')
                     "
                   >
-                    {{ name }}
+                    {{ person.name }}
                   </span>
                   <span
                     v-if="selected"
@@ -94,16 +94,16 @@ export default {
   components: { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption },
   setup(props, context) {
     const people = [
-      'Wade Cooper',
-      'Arlene Mccoy',
-      'Devon Webb',
-      'Tom Cook',
-      'Tanya Fox',
-      'Hellen Schmidt',
-      'Caroline Schultz',
-      'Mason Heaney',
-      'Claudie Smitham',
-      'Emil Schaefer',
+      { id: 1, name: 'Wade Cooper' },
+      { id: 2, name: 'Arlene Mccoy' },
+      { id: 3, name: 'Devon Webb' },
+      { id: 4, name: 'Tom Cook' },
+      { id: 5, name: 'Tanya Fox' },
+      { id: 6, name: 'Hellen Schmidt' },
+      { id: 7, name: 'Caroline Schultz' },
+      { id: 8, name: 'Mason Heaney' },
+      { id: 9, name: 'Claudie Smitham' },
+      { id: 10, name: 'Emil Schaefer' },
     ]
 
     const active = ref(people[Math.floor(Math.random() * people.length)])
