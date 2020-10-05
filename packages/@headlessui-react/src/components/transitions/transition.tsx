@@ -83,8 +83,13 @@ type NestingContextValues = {
 const NestingContext = React.createContext<NestingContextValues | null>(null)
 
 function useNesting(done?: () => void) {
+  const doneRef = React.useRef(done)
   const transitionableChildren = React.useRef<ID[]>([])
   const mounted = useIsMounted()
+
+  React.useEffect(() => {
+    doneRef.current = done
+  }, [done])
 
   const unregister = React.useCallback(
     (childId: ID) => {
@@ -95,10 +100,10 @@ function useNesting(done?: () => void) {
       transitionableChildren.current.splice(idx, 1)
 
       if (transitionableChildren.current.length <= 0 && mounted.current) {
-        done?.()
+        doneRef.current?.()
       }
     },
-    [done, mounted, transitionableChildren]
+    [doneRef, mounted, transitionableChildren]
   )
 
   const register = React.useCallback(
@@ -132,18 +137,19 @@ function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildPr
 
   const isTransitioning = React.useRef(false)
 
-  const nesting = useNesting(
-    React.useCallback(() => {
-      // When all children have been unmounted we can only hide ourselves if and only if we are not
-      // transitioning ourserlves. Otherwise we would unmount before the transitions are finished.
-      if (!isTransitioning.current) {
-        setState(TreeStates.Hidden)
-        unregister(id)
-      }
-    }, [id, unregister, isTransitioning])
-  )
+  const nesting = useNesting(() => {
+    // When all children have been unmounted we can only hide ourselves if and only if we are not
+    // transitioning ourserlves. Otherwise we would unmount before the transitions are finished.
+    if (!isTransitioning.current) {
+      setState(TreeStates.Hidden)
+      unregister(id)
+    }
+  })
 
-  useIsoMorphicEffect(() => register(id), [register, id])
+  useIsoMorphicEffect(() => {
+    if (!id) return
+    return register(id)
+  }, [register, id])
 
   const enterClasses = useSplitClasses(enter)
   const enterFromClasses = useSplitClasses(enterFrom)
@@ -159,13 +165,13 @@ function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildPr
     }
   }, [container, state])
 
+  // Skipping initial transition
+  const skip = initial && !appear
+
   useIsoMorphicEffect(() => {
     const node = container.current
-
     if (!node) return
-
-    // Skipping initial transition
-    if (initial && !appear) return
+    if (skip) return
 
     isTransitioning.current = true
 
@@ -191,8 +197,7 @@ function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildPr
     unregister,
     nesting,
     container,
-    initial,
-    appear,
+    skip,
     show,
     enterClasses,
     enterFromClasses,
@@ -235,11 +240,9 @@ export function Transition<TTag extends HTMLTags = 'div'>(
 
   const [state, setState] = React.useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
-  const nestingBag = useNesting(
-    React.useCallback(() => {
-      setState(TreeStates.Hidden)
-    }, [])
-  )
+  const nestingBag = useNesting(() => {
+    setState(TreeStates.Hidden)
+  })
 
   const initial = useIsInitialRender()
   const transitionBag = React.useMemo<TransitionContextValues>(
