@@ -1,4 +1,4 @@
-import { defineComponent, ref, watchEffect } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -879,9 +879,7 @@ describe('Keyboard interactions', () => {
           `,
           setup() {
             const value = ref(null)
-            watchEffect(() => {
-              if (value.value !== null) handleChange(value.value)
-            })
+            watch([value], () => handleChange(value.value))
             return { value }
           },
         })
@@ -1181,9 +1179,7 @@ describe('Keyboard interactions', () => {
           `,
           setup() {
             const value = ref(null)
-            watchEffect(() => {
-              if (value.value !== null) handleChange(value.value)
-            })
+            watch([value], () => handleChange(value.value))
             return { value }
           },
         })
@@ -3250,9 +3246,7 @@ describe('Mouse interactions', () => {
         `,
         setup() {
           const value = ref(null)
-          watchEffect(() => {
-            if (value.value !== null) handleChange(value.value)
-          })
+          watch([value], () => handleChange(value.value))
           return { value }
         },
       })
@@ -3300,9 +3294,7 @@ describe('Mouse interactions', () => {
         `,
         setup() {
           const value = ref(null)
-          watchEffect(() => {
-            if (value.value !== null) handleChange(value.value)
-          })
+          watch([value], () => handleChange(value.value))
           return { value }
         },
       })
