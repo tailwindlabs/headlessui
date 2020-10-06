@@ -535,6 +535,41 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should not be possible to open the listbox with Enter when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log}>
+            <Listbox.Button disabled>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Try to open the listbox
+        await press(Keys.Enter)
+
+        // Verify it is still closed
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+      })
+    )
+
+    it(
       'should be possible to open the listbox with Enter, and focus the selected option',
       suppressConsoleLogs(async () => {
         render(
@@ -910,6 +945,41 @@ describe('Keyboard interactions', () => {
         expect(options).toHaveLength(3)
         options.forEach(option => assertListboxOption(option))
         assertActiveListboxOption(options[0])
+      })
+    )
+
+    it(
+      'should not be possible to open the listbox with Space when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log}>
+            <Listbox.Button disabled>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Try to open the listbox
+        await press(Keys.Space)
+
+        // Verify it is still closed
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
       })
     )
 
@@ -1351,6 +1421,41 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should not be possible to open the listbox with ArrowDown when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log}>
+            <Listbox.Button disabled>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Try to open the listbox
+        await press(Keys.ArrowDown)
+
+        // Verify it is still closed
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+      })
+    )
+
+    it(
       'should be possible to open the listbox with ArrowDown, and focus the selected option',
       suppressConsoleLogs(async () => {
         render(
@@ -1587,6 +1692,41 @@ describe('Keyboard interactions', () => {
 
         // ! ALERT: The LAST option should now be active
         assertActiveListboxOption(options[2])
+      })
+    )
+
+    it(
+      'should not be possible to open the listbox with ArrowUp and the last option should be active when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log}>
+            <Listbox.Button disabled>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Try to open the listbox
+        await press(Keys.ArrowUp)
+
+        // Verify it is still closed
+        assertListboxButton({
+          state: ListboxState.Closed,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.Closed })
       })
     )
 
@@ -2534,7 +2674,7 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to open a listbox on click',
+    'should be possible to open the listbox on click',
     suppressConsoleLogs(async () => {
       render(
         <Listbox value={undefined} onChange={console.log}>
@@ -2573,7 +2713,39 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to open a listbox on click, and focus the selected option',
+    'should not be possible to open the listbox on click when the button is disabled',
+    suppressConsoleLogs(async () => {
+      render(
+        <Listbox value={undefined} onChange={console.log}>
+          <Listbox.Button disabled>Trigger</Listbox.Button>
+          <Listbox.Options>
+            <Listbox.Option value="a">Option A</Listbox.Option>
+            <Listbox.Option value="b">Option B</Listbox.Option>
+            <Listbox.Option value="c">Option C</Listbox.Option>
+          </Listbox.Options>
+        </Listbox>
+      )
+
+      assertListboxButton({
+        state: ListboxState.Closed,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({ state: ListboxState.Closed })
+
+      // Try to open the listbox
+      await click(getListboxButton())
+
+      // Verify it is still closed
+      assertListboxButton({
+        state: ListboxState.Closed,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({ state: ListboxState.Closed })
+    })
+  )
+
+  it(
+    'should be possible to open the listbox on click, and focus the selected option',
     suppressConsoleLogs(async () => {
       render(
         <Listbox value="b" onChange={console.log}>

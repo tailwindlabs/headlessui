@@ -307,6 +307,7 @@ const Button = forwardRefWithAs(function Button<
 
   const handlePointerUp = React.useCallback(
     (event: MouseEvent) => {
+      if (props.disabled) return
       if (state.listboxState === ListboxStates.Open) {
         dispatch({ type: ActionTypes.CloseListbox })
         d.nextFrame(() => state.buttonRef.current?.focus())
@@ -316,7 +317,7 @@ const Button = forwardRefWithAs(function Button<
         d.nextFrame(() => state.optionsRef.current?.focus())
       }
     },
-    [dispatch, d, state]
+    [dispatch, d, state, props.disabled]
   )
 
   const handleFocus = React.useCallback(() => {
