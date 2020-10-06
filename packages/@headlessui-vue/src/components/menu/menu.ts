@@ -193,7 +193,10 @@ export const Menu = defineComponent({
 })
 
 export const MenuButton = defineComponent({
-  props: { as: { type: [Object, String], default: 'button' } },
+  props: {
+    disabled: { type: Boolean, default: false },
+    as: { type: [Object, String], default: 'button' },
+  },
   render() {
     const api = useMenuContext('MenuButton')
 
@@ -217,7 +220,7 @@ export const MenuButton = defineComponent({
       slots: this.$slots,
     })
   },
-  setup() {
+  setup(props) {
     const api = useMenuContext('MenuButton')
     const id = `headlessui-menu-button-${useId()}`
 
@@ -248,6 +251,7 @@ export const MenuButton = defineComponent({
     }
 
     function handlePointerUp(event: MouseEvent) {
+      if (props.disabled) return
       if (api.menuState.value === MenuStates.Open) {
         api.closeMenu()
         nextTick(() => api.buttonRef.value?.focus())
