@@ -411,6 +411,41 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should not be possible to open the menu with Enter when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button disabled>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
+
+        // Focus the button
+        getMenuButton()?.focus()
+
+        // Try to open the menu
+        await press(Keys.Enter)
+
+        // Verify it is still closed
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
+      })
+    )
+
+    it(
       'should have no active menu item when there are no menu items at all',
       suppressConsoleLogs(async () => {
         render(
@@ -734,6 +769,41 @@ describe('Keyboard interactions', () => {
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[0])
+      })
+    )
+
+    it(
+      'should not be possible to open the menu with Space when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button disabled>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
+
+        // Focus the button
+        getMenuButton()?.focus()
+
+        // Try to open the menu
+        await press(Keys.Space)
+
+        // Verify it is still closed
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
       })
     )
 
@@ -1143,6 +1213,41 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should not be possible to open the menu with ArrowDown when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button disabled>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
+
+        // Focus the button
+        getMenuButton()?.focus()
+
+        // Try to open the menu
+        await press(Keys.ArrowDown)
+
+        // Verify it is still closed
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
+      })
+    )
+
+    it(
       'should have no active menu item when there are no menu items at all',
       suppressConsoleLogs(async () => {
         render(
@@ -1332,6 +1437,41 @@ describe('Keyboard interactions', () => {
 
         // ! ALERT: The LAST item should now be active
         assertMenuLinkedWithMenuItem(items[2])
+      })
+    )
+
+    it(
+      'should not be possible to open the menu with ArrowUp and the last item should be active when the button is disabled',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button disabled>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">Item A</Menu.Item>
+              <Menu.Item as="a">Item B</Menu.Item>
+              <Menu.Item as="a">Item C</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
+
+        // Focus the button
+        getMenuButton()?.focus()
+
+        // Try to open the menu
+        await press(Keys.ArrowUp)
+
+        // Verify it is still closed
+        assertMenuButton({
+          state: MenuState.Closed,
+          attributes: { id: 'headlessui-menu-button-1' },
+        })
+        assertMenu({ state: MenuState.Closed })
       })
     )
 
@@ -2240,6 +2380,38 @@ describe('Mouse interactions', () => {
       const items = getMenuItems()
       expect(items).toHaveLength(3)
       items.forEach(item => assertMenuItem(item))
+    })
+  )
+
+  it(
+    'should not be possible to open a menu on click when the button is disabled',
+    suppressConsoleLogs(async () => {
+      render(
+        <Menu>
+          <Menu.Button disabled>Trigger</Menu.Button>
+          <Menu.Items>
+            <Menu.Item as="a">Item A</Menu.Item>
+            <Menu.Item as="a">Item B</Menu.Item>
+            <Menu.Item as="a">Item C</Menu.Item>
+          </Menu.Items>
+        </Menu>
+      )
+
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
+
+      // Try to open the menu
+      await click(getMenuButton())
+
+      // Verify it is still closed
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
     })
   )
 

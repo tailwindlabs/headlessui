@@ -293,6 +293,7 @@ const Button = forwardRefWithAs(function Button<
 
   const handlePointerUp = React.useCallback(
     (event: MouseEvent) => {
+      if (props.disabled) return
       if (state.menuState === MenuStates.Open) {
         dispatch({ type: ActionTypes.CloseMenu })
         d.nextFrame(() => state.buttonRef.current?.focus())
@@ -302,7 +303,7 @@ const Button = forwardRefWithAs(function Button<
         d.nextFrame(() => state.itemsRef.current?.focus())
       }
     },
-    [dispatch, d, state]
+    [dispatch, d, state, props.disabled]
   )
 
   const handleFocus = React.useCallback(() => {
