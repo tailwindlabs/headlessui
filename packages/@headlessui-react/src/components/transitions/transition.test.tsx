@@ -412,7 +412,7 @@ describe('Transitions', () => {
 
         return (
           <>
-            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .from { opacity: 100%; }`}</style>
+            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
@@ -462,7 +462,7 @@ describe('Transitions', () => {
         return (
           <>
             <style>{`.enter { transition-duration: ${enterDuration /
-              1000}s; } .from { opacity: 0%; } .from { opacity: 100%; }`}</style>
+              1000}s; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
@@ -511,7 +511,7 @@ describe('Transitions', () => {
 
         return (
           <>
-            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .from { opacity: 100%; }`}</style>
+            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
