@@ -36,6 +36,13 @@ export type TransitionClasses = Partial<{
   leaveTo: string
 }>
 
+export type TransitionEvents = Partial<{
+  beforeEnter(): void
+  afterEnter(): void
+  beforeLeave(): void
+  afterLeave(): void
+}>
+
 type HTMLTags = keyof JSX.IntrinsicElements
 type HTMLTagProps<TTag extends HTMLTags> = JSX.IntrinsicElements[TTag]
 
@@ -52,7 +59,8 @@ type BaseConfig = Partial<{ appear: boolean }>
 
 type TransitionChildProps<TTag extends HTMLTags> = BaseConfig &
   (AsShortcut<TTag> | AsRenderPropFunction) &
-  TransitionClasses
+  TransitionClasses &
+  TransitionEvents
 
 function useTransitionContext() {
   const context = React.useContext(TransitionContext)
@@ -124,8 +132,50 @@ function useNesting(done?: () => void) {
   )
 }
 
+function noop() {}
+const eventNames: (keyof TransitionEvents)[] = [
+  'beforeEnter',
+  'afterEnter',
+  'beforeLeave',
+  'afterLeave',
+]
+function ensureEventHooksExist(events: TransitionEvents) {
+  return eventNames.reduce((all, eventName) => {
+    all[eventName] = events[eventName] || noop
+    return all
+  }, {} as Record<keyof TransitionEvents, () => void>)
+}
+
+function useEvents(events: TransitionEvents) {
+  const eventsRef = React.useRef(ensureEventHooksExist(events))
+
+  React.useEffect(() => {
+    eventsRef.current = ensureEventHooksExist(events)
+  }, [events])
+
+  return eventsRef
+}
+
 function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildProps<TTag>) {
-  const { children, enter, enterFrom, enterTo, leave, leaveFrom, leaveTo, ...rest } = props
+  const {
+    // Event "handlers"
+    beforeEnter,
+    afterEnter,
+    beforeLeave,
+    afterLeave,
+
+    // Class names
+    enter,
+    enterFrom,
+    enterTo,
+    leave,
+    leaveFrom,
+    leaveTo,
+
+    // ..
+    children,
+    ...rest
+  } = props
   const container = React.useRef<HTMLElement | null>(null)
   const [state, setState] = React.useState(TreeStates.Visible)
 
@@ -143,6 +193,7 @@ function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildPr
     if (!isTransitioning.current) {
       setState(TreeStates.Hidden)
       unregister(id)
+      events.current.afterLeave()
     }
   })
 
@@ -158,6 +209,8 @@ function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildPr
   const leaveClasses = useSplitClasses(leave)
   const leaveFromClasses = useSplitClasses(leaveFrom)
   const leaveToClasses = useSplitClasses(leaveTo)
+
+  const events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
 
   React.useEffect(() => {
     if (state === TreeStates.Visible && container.current === null) {
@@ -175,9 +228,13 @@ function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildPr
 
     isTransitioning.current = true
 
+    if (show) events.current.beforeEnter()
+    if (!show) events.current.beforeLeave()
+
     return show
-      ? transition(node, enterClasses, enterFromClasses, enterToClasses, () => {
+      ? transition(node, enterClasses, enterFromClasses, enterToClasses, reason => {
           isTransitioning.current = false
+          if (reason === Reason.Finished) events.current.afterEnter()
         })
       : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, reason => {
           isTransitioning.current = false
@@ -189,9 +246,11 @@ function TransitionChild<TTag extends HTMLTags = 'div'>(props: TransitionChildPr
           if (nesting.children.current.length <= 0) {
             setState(TreeStates.Hidden)
             unregister(id)
+            events.current.afterLeave()
           }
         })
   }, [
+    events,
     id,
     isTransitioning,
     unregister,
