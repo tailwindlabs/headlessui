@@ -40,6 +40,6 @@
     "husky": "^4.3.0",
     "vite": "^1.0.0-rc.4",
     "vue": "^3.0.0-rc.13",
-    "vue-router": "^4.0.0-beta.12"
+    "vue-router": "^4.0.0-beta.13"
   }
 }
