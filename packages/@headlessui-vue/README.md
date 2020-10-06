@@ -373,6 +373,8 @@ To tell an element to render its children directly with no wrapper element, use 
 | `active`   | Boolean | Whether or not the item is the active/focused item in the list.                    |
 | `disabled` | Boolean | Whether or not the item is the disabled for keyboard navigation and ARIA purposes. |
 
+**[:arrow_up: back to top](#components)**
+
 ## Listbox (Select)
 
 [View live demo on CodeSandbox](https://codesandbox.io/s/headlessuivue-listbox-example-mi67g?file=/src/App.vue)
@@ -1037,6 +1039,8 @@ export default {
 | `selected` | Boolean | Whether or not the option is the selected option in the list.                        |
 | `disabled` | Boolean | Whether or not the option is the disabled for keyboard navigation and ARIA purposes. |
 
+**[:arrow_up: back to top](#components)**
+
 ## Switch (Toggle)
 
 [View live demo on CodeSandbox](https://codesandbox.io/s/headlessuivue-switch-example-8ycp6?file=/src/App.vue)
@@ -1193,3 +1197,5 @@ export default {
 | Prop       | Type                    | Default                                 | Description                                              |
 | ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
 | `as`       | String \| Component     | `template` _(no wrapper element)_| The element or component the `SwitchGroup` should render as. |
+
+**[:arrow_up: back to top](#components)**
