@@ -1139,7 +1139,7 @@ export default {
 
 #### Switch
 
-```jsx
+```html
 <Switch v-model="switchState">
   <span class="sr-only">Enable notifications</span>
   <!-- ... -->
@@ -1162,7 +1162,7 @@ export default {
 
 #### Switch.Label
 
-```jsx
+```html
 <SwitchGroup>
   <SwitchLabel>Enable notifications</SwitchLabel>
   <Switch v-model="switchState">
@@ -1179,7 +1179,7 @@ export default {
 
 #### Switch.Group
 
-```jsx
+```html
 <SwitchGroup>
   <SwitchLabel>Enable notifications</SwitchLabel>
   <Switch v-model="switchState">
