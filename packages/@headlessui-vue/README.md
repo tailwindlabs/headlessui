@@ -1160,7 +1160,7 @@ export default {
 | `checked` | Boolean | Whether or not the switch is checked. |
 
 
-#### Switch.Label
+#### SwitchLabel
 
 ```html
 <SwitchGroup>
@@ -1177,7 +1177,7 @@ export default {
 | ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
 | `as`       | String \| Component     | `label` | The element or component the `SwitchLabel` should render as. |
 
-#### Switch.Group
+#### SwitchGroup
 
 ```html
 <SwitchGroup>
