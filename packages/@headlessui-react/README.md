@@ -29,7 +29,7 @@ _This project is still in early development. New components will be added regula
 
 - [Transition](#transition)
 - [Menu Button (Dropdown)](#menu-button-dropdown)
-- [Listbox (Select)](#listbox)
+- [Listbox (Select)](#listbox-select)
 - [Switch (Toggle)](#switch-toggle)
 
 ### Roadmap
@@ -785,7 +785,7 @@ Listboxes are built using the `Listbox`, `Listbox.Button`, `Listbox.Options`, `L
 The `Listbox.Button` will automatically open/close the `Listbox.Options` when clicked, and when the menu is open, the list of items receives focus and is automatically navigable via the keyboard.
 
 ```jsx
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
@@ -902,7 +902,7 @@ function MyListbox() {
 By default, your `Listbox.Options` instance will be shown/hidden automatically based on the internal `open` state tracked within the `Listbox` component itself.
 
 ```jsx
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
@@ -935,7 +935,7 @@ function MyListbox() {
 If you'd rather handle this yourself (perhaps because you need to add an extra wrapper element for one reason or another), you can add a `static` prop to the `Listbox.Options` instance to tell it to always render, and inspect the `open` slot prop provided by the `Listbox` to control which element is shown/hidden yourself.
 
 ```jsx
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
@@ -977,7 +977,7 @@ function MyListbox() {
 Use the `disabled` prop to disable a `Listbox.Option`. This will make it unselectable via keyboard navigation, and it will be skipped when pressing the up/down arrows.
 
 ```jsx
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
@@ -1011,7 +1011,7 @@ function MyListbox() {
 To animate the opening/closing of the listbox panel, use the provided `Transition` component. All you need to do is mark your `Listbox.Options` as `static`, wrap it in a `<Transition>`, and the transition will be applied automatically.
 
 ```jsx
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 
 function MyListbox() {
@@ -1026,25 +1026,29 @@ function MyListbox() {
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
-      <Listbox.Button>{selectedPerson.name}</Listbox.Button>
-      {/* Use the Transition + open render prop argument to add transitions. */}
-      <Transition
-        show={open}
-        enter="transition duration-100 ease-out"
-        enterFrom="transform scale-95 opacity-0"
-        enterTo="transform scale-100 opacity-100"
-        leave="transition duration-75 ease-out"
-        leaveFrom="transform scale-100 opacity-100"
-        leaveTo="transform scale-95 opacity-0"
-      >
-        <Listbox.Options static>
-          {people.map(person => (
-            <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
-              {person.name}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </Transition>
+      {({ open }) => (
+        <>
+          <Listbox.Button>{selectedPerson.name}</Listbox.Button>
+          {/* Use the Transition + open render prop argument to add transitions. */}
+          <Transition
+            show={open}
+            enter="transition duration-100 ease-out"
+            enterFrom="transform scale-95 opacity-0"
+            enterTo="transform scale-100 opacity-100"
+            leave="transition duration-75 ease-out"
+            leaveFrom="transform scale-100 opacity-100"
+            leaveTo="transform scale-95 opacity-0"
+          >
+            <Listbox.Options static>
+              {people.map(person => (
+                <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
+                  {person.name}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Transition>
+        </>
+      )}
     </Listbox>
   )
 }
@@ -1059,7 +1063,7 @@ For example, `Listbox.Label` renders a `label` by default, `Listbox.Button` rend
 This is easy to change using the `as` prop, which exists on every component.
 
 ```jsx
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
@@ -1105,7 +1109,7 @@ function MyListbox() {
 
   return (
     <Listbox value={selectedPerson} onChange={setSelectedPerson}>
-      <Listbox.Button as={React.Fragment}>{selectedPerson.name}</Listbox.Button>
+      <Listbox.Button as={Fragment}>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
         {people.map(person => (
           <Listbox.Option key={person.id} value={person}>
@@ -1123,7 +1127,7 @@ function MyListbox() {
 #### Listbox
 
 ```jsx
-import { useState, Fragment } from 'react'
+import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
 function MyListbox() {
