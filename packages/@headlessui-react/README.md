@@ -367,7 +367,7 @@ function MyComponent({ isShowing }) {
 | ----- | ---------------------- | ----------------------------------------------------------------------------------- |
 | `ref` | React.MutableRefObject | A ref that needs to be manually added to the child node when using the render prop. |
 
----
+**[:arrow_up: back to top](#components)**
 
 ## Menu Button (Dropdown)
 
@@ -761,6 +761,8 @@ function MyDropdown() {
 | ---------- | ------- | ---------------------------------------------------------------------------------- |
 | `active`   | Boolean | Whether or not the item is the active/focused item in the list.                    |
 | `disabled` | Boolean | Whether or not the item is the disabled for keyboard navigation and ARIA purposes. |
+
+**[:arrow_up: back to top](#components)**
 
 ## Listbox (Select)
 
@@ -1250,6 +1252,8 @@ function MyListbox() {
 | `selected` | Boolean | Whether or not the option is the selected option in the list.                        |
 | `disabled` | Boolean | Whether or not the option is the disabled for keyboard navigation and ARIA purposes. |
 
+**[:arrow_up: back to top](#components)**
+
 ## Switch (Toggle)
 
 [View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-switch-example-y40i1?file=/src/App.js)
@@ -1375,3 +1379,5 @@ function NotificationsToggle() {
 | Prop       | Type                    | Default                                 | Description                                              |
 | ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
 | `as`       | String \| Component     | `React.Fragment` _(no wrapper element)_| The element or component the `Switch.Group` should render as. |
+
+**[:arrow_up: back to top](#components)**
