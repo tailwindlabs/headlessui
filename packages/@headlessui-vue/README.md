@@ -30,7 +30,8 @@ yarn add @headlessui/vue
 _This project is still in early development. New components will be added regularly over the coming months._
 
 - [Menu Button (Dropdown)](#menu-button-dropdown)
-- [Listbox](#listbox)
+- [Listbox (Select)](#listbox-select)
+- [Switch (Toggle)](#switch-toggle)
 
 ### Roadmap
 
@@ -38,8 +39,6 @@ This project is still in early development, but the plan is to build out all of 
 
 This includes things like:
 
-- Listboxes
-- Toggles
 - Modals
 - Tabs
 - Slide-overs
@@ -374,7 +373,7 @@ To tell an element to render its children directly with no wrapper element, use 
 | `active`   | Boolean | Whether or not the item is the active/focused item in the list.                    |
 | `disabled` | Boolean | Whether or not the item is the disabled for keyboard navigation and ARIA purposes. |
 
-## Listbox
+## Listbox (Select)
 
 [View live demo on CodeSandbox](https://codesandbox.io/s/headlessuivue-listbox-example-mi67g?file=/src/App.vue)
 
@@ -1044,9 +1043,9 @@ export default {
 
 The `Switch` component and related child components are used to quickly build custom switch/toggle components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard support.
 
-- [Basic example](#basic-example-3)
-- [Using a custom label](#using-a-custom-label)
-- [Component API](#component-api-3)
+- [Basic example](#basic-example-2)
+- [Using a custom label](#using-a-custom-label-1)
+- [Component API](#component-api-2)
 
 ### Basic example
 

@@ -29,7 +29,8 @@ _This project is still in early development. New components will be added regula
 
 - [Transition](#transition)
 - [Menu Button (Dropdown)](#menu-button-dropdown)
-- [Listbox](#listbox)
+- [Listbox (Select)](#listbox)
+- [Switch (Toggle)](#switch-toggle)
 
 ### Roadmap
 
@@ -37,8 +38,6 @@ This project is still in early development, but the plan is to build out all of 
 
 This includes things like:
 
-- Listboxes
-- Toggles
 - Modals
 - Tabs
 - Slide-overs
@@ -763,7 +762,7 @@ function MyDropdown() {
 | `active`   | Boolean | Whether or not the item is the active/focused item in the list.                    |
 | `disabled` | Boolean | Whether or not the item is the disabled for keyboard navigation and ARIA purposes. |
 
-## Listbox
+## Listbox (Select)
 
 [View live demo on CodeSandbox](https://codesandbox.io/s/headlessuireact-listbox-example-57eoj?file=/src/App.js)
 
@@ -1254,7 +1253,7 @@ function MyListbox() {
 The `Switch` component and related child components are used to quickly build custom switch/toggle components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard support.
 
 - [Basic example](#basic-example-3)
-- [Using a custom label](#using-a-custom-label)
+- [Using a custom label](#using-a-custom-label-1)
 - [Component API](#component-api-3)
 
 ### Basic example
