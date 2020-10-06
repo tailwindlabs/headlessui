@@ -156,6 +156,24 @@ describe('Keyboard interactions', () => {
     })
   })
 
+  describe('`Enter` key', () => {
+    it('should not be possible to use Enter to toggle the Switch', async () => {
+      const handleChange = jest.fn()
+      render(<Switch checked={false} onChange={handleChange} />)
+
+      // Ensure checkbox is off
+      assertSwitch({ state: SwitchState.Off })
+
+      // Focus the switch
+      getSwitch()?.focus()
+
+      // Try to toggle
+      await press(Keys.Enter)
+
+      expect(handleChange).not.toHaveBeenCalled()
+    })
+  })
+
   describe('`Tab` key', () => {
     it('should be possible to tab away from the Switch', async () => {
       render(

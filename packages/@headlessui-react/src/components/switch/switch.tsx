@@ -55,7 +55,14 @@ const DEFAULT_SWITCH_TAG = 'button'
 
 type SwitchRenderPropArg = { checked: boolean }
 
-type SwitchPropsWeControl = 'id' | 'role' | 'tabIndex' | 'aria-checked' | 'onClick' | 'onKeyUp'
+type SwitchPropsWeControl =
+  | 'id'
+  | 'role'
+  | 'tabIndex'
+  | 'aria-checked'
+  | 'onClick'
+  | 'onKeyUp'
+  | 'onKeyPress'
 
 export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TAG>(
   props: Props<
@@ -84,12 +91,16 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
   )
   const handleKeyUp = React.useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
-      if (event.key === Keys.Space) {
-        event.preventDefault()
-        toggle()
-      }
+      if (event.key !== Keys.Tab) event.preventDefault()
+      if (event.key === Keys.Space) toggle()
     },
     [toggle]
+  )
+
+  // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
+  const handleKeyPress = React.useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => event.preventDefault(),
+    []
   )
 
   const propsBag = React.useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
@@ -103,6 +114,7 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
     'aria-labelledby': groupContext?.label?.id,
     onClick: handleClick,
     onKeyUp: handleKeyUp,
+    onKeyPress: handleKeyPress,
   }
 
   return render({ ...passThroughProps, ...propsWeControl }, propsBag, DEFAULT_SWITCH_TAG)

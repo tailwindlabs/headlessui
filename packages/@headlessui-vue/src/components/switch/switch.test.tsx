@@ -1,4 +1,4 @@
-import { defineComponent, ref, watchEffect } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Switch, SwitchLabel, SwitchGroup } from './switch'
@@ -175,7 +175,7 @@ describe('Keyboard interactions', () => {
         template: `<Switch v-model="checked" />`,
         setup() {
           const checked = ref(false)
-          watchEffect(() => handleChange(checked.value))
+          watch([checked], () => handleChange(checked.value))
           return { checked }
         },
       })
@@ -197,6 +197,31 @@ describe('Keyboard interactions', () => {
 
       // Ensure state is off
       assertSwitch({ state: SwitchState.Off })
+    })
+  })
+
+  describe('`Enter` key', () => {
+    it('should not be possible to use Enter to toggle the Switch', async () => {
+      const handleChange = jest.fn()
+      renderTemplate({
+        template: `<Switch v-model="checked" />`,
+        setup() {
+          const checked = ref(false)
+          watch([checked], () => handleChange(checked.value))
+          return { checked }
+        },
+      })
+
+      // Ensure checkbox is off
+      assertSwitch({ state: SwitchState.Off })
+
+      // Focus the switch
+      getSwitch()?.focus()
+
+      // Try to toggle
+      await press(Keys.Enter)
+
+      expect(handleChange).not.toHaveBeenCalled()
     })
   })
 
@@ -237,7 +262,7 @@ describe('Mouse interactions', () => {
       template: `<Switch v-model="checked" />`,
       setup() {
         const checked = ref(false)
-        watchEffect(() => handleChange(checked.value))
+        watch([checked], () => handleChange(checked.value))
         return { checked }
       },
     })
@@ -269,7 +294,7 @@ describe('Mouse interactions', () => {
       `,
       setup() {
         const checked = ref(false)
-        watchEffect(() => handleChange(checked.value))
+        watch([checked], () => handleChange(checked.value))
         return { checked }
       },
     })

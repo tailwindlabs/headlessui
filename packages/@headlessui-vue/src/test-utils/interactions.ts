@@ -2,21 +2,21 @@ import { nextTick } from 'vue'
 import { fireEvent } from '@testing-library/dom'
 
 export const Keys: Record<string, Partial<KeyboardEvent>> = {
-  Space: { key: ' ' },
-  Enter: { key: 'Enter' },
-  Escape: { key: 'Escape' },
-  Backspace: { key: 'Backspace' },
+  Space: { key: ' ', keyCode: 32 },
+  Enter: { key: 'Enter', keyCode: 13 },
+  Escape: { key: 'Escape', keyCode: 27 },
+  Backspace: { key: 'Backspace', keyCode: 8 },
 
-  ArrowUp: { key: 'ArrowUp' },
-  ArrowDown: { key: 'ArrowDown' },
+  ArrowUp: { key: 'ArrowUp', keyCode: 38 },
+  ArrowDown: { key: 'ArrowDown', keyCode: 40 },
 
-  Home: { key: 'Home' },
-  End: { key: 'End' },
+  Home: { key: 'Home', keyCode: 36 },
+  End: { key: 'End', keyCode: 35 },
 
-  PageUp: { key: 'PageUp' },
-  PageDown: { key: 'PageDown' },
+  PageUp: { key: 'PageUp', keyCode: 33 },
+  PageDown: { key: 'PageDown', keyCode: 34 },
 
-  Tab: { key: 'Tab' },
+  Tab: { key: 'Tab', keyCode: 9 },
 }
 
 export function shift(event: Partial<KeyboardEvent>) {
@@ -36,11 +36,19 @@ export async function type(events: Partial<KeyboardEvent>[]) {
     let element = document.activeElement
 
     events.forEach(event => {
-      const cancelled = !fireEvent.keyDown(element, event)
-      if (!cancelled && event.key === Keys.Tab.key) {
+      const cancelled1 = !fireEvent.keyDown(element, event)
+
+      // Special treatment for `Tab` on an element
+      if (!cancelled1 && event.key === Keys.Tab.key) {
         element = focusNext(event)
       }
-      fireEvent.keyPress(element, event)
+
+      const cancelled2 = !fireEvent.keyPress(element, event)
+      // Special treatment for `Enter` on a button element
+      if (!cancelled2 && event.key === Keys.Enter.key && element instanceof HTMLButtonElement) {
+        fireEvent.click(element)
+      }
+
       fireEvent.keyUp(element, event)
     })
 

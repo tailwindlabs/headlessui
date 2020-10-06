@@ -70,6 +70,7 @@ export const Switch = defineComponent({
       'aria-labelledby': labelledby.value,
       onClick: this.handleClick,
       onKeyUp: this.handleKeyUp,
+      onKeyPress: this.handleKeyPress,
     }
 
     return render({
@@ -95,10 +96,12 @@ export const Switch = defineComponent({
         toggle()
       },
       handleKeyUp(event: KeyboardEvent) {
-        if (event.key === Keys.Space) {
-          event.preventDefault()
-          toggle()
-        }
+        if (event.key !== Keys.Tab) event.preventDefault()
+        if (event.key === Keys.Space) toggle()
+      },
+      // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
+      handleKeyPress(event: KeyboardEvent) {
+        event.preventDefault()
       },
     }
   },
