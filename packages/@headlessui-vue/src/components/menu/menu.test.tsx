@@ -617,6 +617,38 @@ describe('Keyboard interactions', () => {
       assertMenuLinkedWithMenuItem(items[0])
     })
 
+    it('should not be possible to open the menu with Enter when the button is disabled', async () => {
+      renderTemplate(`
+        <Menu>
+          <MenuButton disabled>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
+
+      // Focus the button
+      getMenuButton()?.focus()
+
+      // Try to open the menu
+      await press(Keys.Enter)
+
+      // Verify it is still closed
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
+    })
+
     it('should have no active menu item when there are no menu items at all', async () => {
       renderTemplate(`
         <Menu>
@@ -910,6 +942,38 @@ describe('Keyboard interactions', () => {
       expect(items).toHaveLength(3)
       items.forEach(item => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[0])
+    })
+
+    it('should not be possible to open the menu with Space when the button is disabled', async () => {
+      renderTemplate(`
+        <Menu>
+          <MenuButton disabled>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
+
+      // Focus the button
+      getMenuButton()?.focus()
+
+      // Try to open the menu
+      await press(Keys.Space)
+
+      // Verify it is still closed
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
@@ -1280,6 +1344,38 @@ describe('Keyboard interactions', () => {
 
       // Verify that the first menu item is active
       assertMenuLinkedWithMenuItem(items[0])
+    })
+
+    it('should not be possible to open the menu with ArrowDown when the button is disabled', async () => {
+      renderTemplate(`
+        <Menu>
+          <MenuButton disabled>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
+
+      // Focus the button
+      getMenuButton()?.focus()
+
+      // Try to open the menu
+      await press(Keys.ArrowDown)
+
+      // Verify it is still closed
+      assertMenuButton({
+        state: MenuState.Closed,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Closed })
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
@@ -2206,6 +2302,35 @@ describe('Mouse interactions', () => {
     const items = getMenuItems()
     expect(items).toHaveLength(3)
     items.forEach(item => assertMenuItem(item))
+  })
+
+  it('should not be possible to open a menu on click when the button is disabled', async () => {
+    renderTemplate(`
+      <Menu>
+        <MenuButton disabled>Trigger</MenuButton>
+        <MenuItems>
+          <MenuItem as="a">Item A</MenuItem>
+          <MenuItem as="a">Item B</MenuItem>
+          <MenuItem as="a">Item C</MenuItem>
+        </MenuItems>
+      </Menu>
+    `)
+
+    assertMenuButton({
+      state: MenuState.Closed,
+      attributes: { id: 'headlessui-menu-button-1' },
+    })
+    assertMenu({ state: MenuState.Closed })
+
+    // Try to open the menu
+    await click(getMenuButton())
+
+    // Verify it is still closed
+    assertMenuButton({
+      state: MenuState.Closed,
+      attributes: { id: 'headlessui-menu-button-1' },
+    })
+    assertMenu({ state: MenuState.Closed })
   })
 
   it('should be possible to close a menu on click', async () => {

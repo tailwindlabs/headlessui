@@ -257,7 +257,10 @@ export const ListboxLabel = defineComponent({
 
 export const ListboxButton = defineComponent({
   name: 'ListboxButton',
-  props: { as: { type: [Object, String], default: 'button' } },
+  props: {
+    disabled: { type: Boolean, default: false },
+    as: { type: [Object, String], default: 'button' },
+  },
   render() {
     const api = useListboxContext('ListboxButton')
 
@@ -285,7 +288,7 @@ export const ListboxButton = defineComponent({
       slots: this.$slots,
     })
   },
-  setup() {
+  setup(props) {
     const api = useListboxContext('ListboxButton')
     const id = `headlessui-listbox-button-${useId()}`
     const focused = ref(false)
@@ -317,6 +320,7 @@ export const ListboxButton = defineComponent({
     }
 
     function handlePointerUp(event: MouseEvent) {
+      if (props.disabled) return
       if (api.listboxState.value === ListboxStates.Open) {
         api.closeListbox()
         nextTick(() => api.buttonRef.value?.focus())
