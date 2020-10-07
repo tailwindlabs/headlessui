@@ -490,7 +490,8 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
   }, [bag, id])
 
   const handleClick = React.useCallback(
-    (event: { preventDefault: Function }) => {
+    (event: { preventDefault: Function, isDefaultPrevented: Function }) => {
+      if (event.isDefaultPrevented()) return
       if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
       d.nextFrame(() => state.buttonRef.current?.focus())
