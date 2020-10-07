@@ -413,6 +413,7 @@ export const MenuItem = defineComponent({
     onUnmounted(() => api.unregisterItem(id))
 
     function handleClick(event: MouseEvent) {
+      if (event.isDefaultPrevented()) return
       if (disabled) return event.preventDefault()
       api.closeMenu()
       nextTick(() => api.buttonRef.value?.focus())
