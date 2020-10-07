@@ -1,8 +1,9 @@
 version: 2
 updates:
-  - package-ecosystem: 'npm'
+  - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'daily'
     labels:
       - 'dependencies'
+      - 'github_actions'
