@@ -1275,7 +1275,7 @@ function NotificationsToggle() {
     <Switch
       checked={enabled}
       onChange={setEnabled}
-      className={`${switchValue ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
+      className={`${enabled ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
     >
       <span className="sr-only">Enable notifications</span>
       <span
@@ -1305,7 +1305,7 @@ function NotificationsToggle() {
       <Switch
         checked={enabled}
         onChange={setEnabled}
-        className={`${switchValue ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
+        className={`${enabled ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
       >
         <span
           className={`${enabled ? "translate-x-4" : "translate-x-0"} inline-block w-4 h-4 transform bg-white rounded-full`}
