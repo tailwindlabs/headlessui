@@ -412,7 +412,7 @@ describe('Transitions', () => {
 
         return (
           <>
-            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .from { opacity: 100%; }`}</style>
+            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
@@ -462,7 +462,7 @@ describe('Transitions', () => {
         return (
           <>
             <style>{`.enter { transition-duration: ${enterDuration /
-              1000}s; } .from { opacity: 0%; } .from { opacity: 100%; }`}</style>
+              1000}s; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
@@ -511,7 +511,7 @@ describe('Transitions', () => {
 
         return (
           <>
-            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .from { opacity: 100%; }`}</style>
+            <style>{`.enter { transition-duration: ${enterDuration}ms; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
@@ -870,4 +870,119 @@ describe('Transitions', () => {
       })
     )
   })
+})
+
+describe('Events', () => {
+  it(
+    'should fire events for all the stages',
+    suppressConsoleLogs(async () => {
+      const eventHandler = jest.fn()
+      const enterDuration = 50
+      const leaveDuration = 75
+
+      function Example() {
+        const [show, setShow] = React.useState(false)
+        const start = React.useRef(Date.now())
+
+        React.useLayoutEffect(() => {
+          start.current = Date.now()
+        }, [])
+
+        return (
+          <>
+            <style>{`.enter { transition-duration: ${enterDuration}ms; } .enter-from { opacity: 0%; } .enter-to { opacity: 100%; }`}</style>
+            <style>{`.leave { transition-duration: ${leaveDuration}ms; } .leave-from { opacity: 100%; } .leave-to { opacity: 0%; }`}</style>
+
+            <Transition
+              show={show}
+              // Events
+              beforeEnter={() => eventHandler('beforeEnter', Date.now() - start.current)}
+              afterEnter={() => eventHandler('afterEnter', Date.now() - start.current)}
+              beforeLeave={() => eventHandler('beforeLeave', Date.now() - start.current)}
+              afterLeave={() => eventHandler('afterLeave', Date.now() - start.current)}
+              // Class names
+              enter="enter"
+              enterFrom="enter-from"
+              enterTo="enter-to"
+              leave="leave"
+              leaveFrom="leave-from"
+              leaveTo="leave-to"
+            >
+              <span>Hello!</span>
+            </Transition>
+
+            <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              Toggle
+            </button>
+          </>
+        )
+      }
+
+      const timeline = await executeTimeline(<Example />, [
+        // Toggle to show
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(enterDuration)
+        },
+        // Toggle to hide
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(leaveDuration)
+        },
+      ])
+
+      expect(timeline).toMatchInlineSnapshot(`
+        "Render 1:
+            +   <div
+            +     class=\\"enter enter-from\\"
+            +   >
+            +     <span>
+            +       Hello!
+            +     </span>
+            +   </div>
+
+        Render 2:
+            -     class=\\"enter enter-from\\"
+            +     class=\\"enter enter-to\\"
+
+        Render 3: Transition took at least 50ms (yes)
+            -     class=\\"enter enter-to\\"
+            +     class=\\"\\"
+
+        Render 4:
+            -     class=\\"\\"
+            +     class=\\"leave leave-from\\"
+
+        Render 5:
+            -     class=\\"leave leave-from\\"
+            +     class=\\"leave leave-to\\"
+
+        Render 6: Transition took at least 75ms (yes)
+            -   <div
+            -     class=\\"leave leave-to\\"
+            -   >
+            -     <span>
+            -       Hello!
+            -     </span>
+            -   </div>"
+      `)
+
+      expect(eventHandler).toHaveBeenCalledTimes(4)
+      expect(eventHandler.mock.calls.map(([name]) => name)).toEqual([
+        // Order is important here
+        'beforeEnter',
+        'afterEnter',
+        'beforeLeave',
+        'afterLeave',
+      ])
+
+      const enterHookDiff = eventHandler.mock.calls[1][1] - eventHandler.mock.calls[0][1]
+      expect(enterHookDiff).toBeGreaterThanOrEqual(enterDuration)
+      expect(enterHookDiff).toBeLessThanOrEqual(enterDuration * 2)
+
+      const leaveHookDiff = eventHandler.mock.calls[3][1] - eventHandler.mock.calls[2][1]
+      expect(leaveHookDiff).toBeGreaterThanOrEqual(leaveDuration)
+      expect(leaveHookDiff).toBeLessThanOrEqual(leaveDuration * 2)
+    })
+  )
 })
