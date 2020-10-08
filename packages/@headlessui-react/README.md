@@ -312,17 +312,21 @@ function MyComponent({ isShowing }) {
 
 ##### Props
 
-| Prop        | Type                                  | Description                                                                           |
-| ----------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
-| `show`      | Boolean                               | Whether the children should be shown or hidden.                                       |
-| `as`        | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition` itself.               |
-| `appear`    | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
-| `enter`     | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
-| `enterFrom` | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
-| `enterTo`   | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
-| `leave`     | String _(Default: '')_                | Classes to add to the transitioning element during the entire leave phase.            |
-| `leaveFrom` | String _(Default: '')_                | Classes to add to the transitioning element before the leave phase starts.            |
-| `leaveTo`   | String _(Default: '')_                | Classes to add to the transitioning element immediately after the leave phase starts. |
+| Prop          | Type                                  | Description                                                                           |
+| ------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
+| `show`        | Boolean                               | Whether the children should be shown or hidden.                                       |
+| `as`          | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition` itself.               |
+| `appear`      | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
+| `enter`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
+| `enterFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
+| `enterTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
+| `leave`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire leave phase.            |
+| `leaveFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the leave phase starts.            |
+| `leaveTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the leave phase starts. |
+| `beforeEnter` | Function                              | Callback which is called before we start the enter transition.                        |
+| `afterEnter`  | Function                              | Callback which is called after we finished the enter transition.                      |
+| `beforeLeave` | Function                              | Callback which is called before we start the leave transition.                        |
+| `afterLeave`  | Function                              | Callback which is called after we finished the leave transition.                      |
 
 ##### Render prop arguments
 
