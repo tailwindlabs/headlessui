@@ -526,8 +526,13 @@ const DEFAULT_OPTION_TAG = 'li'
 
 type OptionRenderPropArg = { active: boolean; selected: boolean; disabled: boolean }
 
-function Option<TTag extends React.ElementType = typeof DEFAULT_OPTION_TAG, TType = string>(
-  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'className'> & {
+function Option<
+  TTag extends React.ElementType = typeof DEFAULT_OPTION_TAG,
+  // TODO: One day we will be able to infer this type from the generic in Listbox itself.
+  // But today is not that day..
+  TType = Parameters<typeof Listbox>[0]['value']
+>(
+  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'className' | 'value'> & {
     disabled?: boolean
     value: TType
 
