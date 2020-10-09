@@ -34,7 +34,7 @@
   "devDependencies": {
     "@tailwindcss/ui": "^0.6.2",
     "@testing-library/jest-dom": "^5.11.4",
-    "@types/node": "^14.11.5",
+    "@types/node": "^14.11.7",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
     "prismjs": "^1.21.0",
