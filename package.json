@@ -34,13 +34,13 @@
   "devDependencies": {
     "@tailwindcss/ui": "^0.6.2",
     "@testing-library/jest-dom": "^5.11.4",
-    "@types/node": "^14.11.5",
+    "@types/node": "^14.11.8",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.0",
-    "prismjs": "^1.21.0",
-    "tailwindcss": "^1.8.12",
+    "prismjs": "^1.22.0",
+    "tailwindcss": "^1.8.13",
     "tsdx": "^0.13.3",
-    "tslib": "^2.0.2",
+    "tslib": "^2.0.3",
     "typescript": "^3.9.7"
   }
 }
