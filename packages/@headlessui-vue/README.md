@@ -400,7 +400,12 @@ The `ListboxButton` will automatically open/close the `ListboxOptions` when clic
   <Listbox v-model="selectedPerson">
     <ListboxButton>{{ selectedPerson.name }}</ListboxButton>
     <ListboxOptions>
-      <ListboxOption v-for="person in people" :key="person.id" :value="person" :disabled="person.unavailable">
+      <ListboxOption
+        v-for="person in people"
+        :key="person.id"
+        :value="person"
+        :disabled="person.unavailable"
+      >
         {{ person.name }}
       </ListboxOption>
     </ListboxOptions>
@@ -434,6 +439,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan', unavailable: false },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -460,7 +466,13 @@ You can use this state to conditionally apply whatever active/focus styles you l
     <ListboxOptions>
       <!-- Use the `active` state to conditionally style the active option. -->
       <!-- Use the `selected` state to conditionally style the selected option. -->
-      <ListboxOption as="template" v-slot="{ active, selected }" v-for="person in people" :key="person.id" :value="person">
+      <ListboxOption
+        as="template"
+        v-slot="{ active, selected }"
+        v-for="person in people"
+        :key="person.id"
+        :value="person"
+      >
         <li :class="{ 'bg-blue-500 text-white': active, 'bg-white text-black': !active }">
           <CheckmarkIcon v-show="selected" />
           {{ person.name }}
@@ -499,6 +511,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -676,7 +689,12 @@ Use the `disabled` prop to disable a `ListboxOption`. This will make it unselect
     <ListboxButton>{{ selectedPerson.name }}</ListboxButton>
     <ListboxOptions>
       <!-- Disabled options will be skipped by keyboard navigation. -->
-      <ListboxOption v-for="person in people" :key="person.id" :value="person" :disabled="person.unavailable">
+      <ListboxOption
+        v-for="person in people"
+        :key="person.id"
+        :value="person"
+        :disabled="person.unavailable"
+      >
         <span :class="{ 'opacity-75': person.unavailable }">{{ person.name }}</span>
       </ListboxOption>
     </ListboxOptions>
@@ -710,6 +728,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan', unavailable: false },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -722,8 +741,6 @@ export default {
 ### Transitions
 
 To animate the opening/closing of the menu panel, use Vue's built-in `transition` component. All you need to do is wrap your `ListboxOptions` instance in a `<transition>` element and the transition will be applied automatically.
-
-
 
 ```vue
 <template>
@@ -739,7 +756,12 @@ To animate the opening/closing of the menu panel, use Vue's built-in `transition
       leave-to-class="transform scale-95 opacity-0"
     >
       <ListboxOptions>
-        <ListboxOption v-for="person in people" :key="person.id" :value="person" :disabled="person.unavailable">
+        <ListboxOption
+          v-for="person in people"
+          :key="person.id"
+          :value="person"
+          :disabled="person.unavailable"
+        >
           {{ person.name }}
         </ListboxOption>
       </ListboxOptions>
@@ -774,6 +796,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan', unavailable: false },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -830,6 +853,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -883,6 +907,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -891,7 +916,6 @@ export default {
 }
 </script>
 ```
-
 
 ### Component API
 
@@ -938,6 +962,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -949,10 +974,10 @@ export default {
 
 ##### Props
 
-| Prop      | Type                    | Default                           | Description                                              |
-| --------- | ----------------------- | --------------------------------- | -------------------------------------------------------- |
-| `as`      | String \| Component     | `template` _(no wrapper element_) | The element or component the `Listbox` should render as. |
-| `v-model` | `T` |                        | The selected value.                                      |
+| Prop      | Type                | Default                           | Description                                              |
+| --------- | ------------------- | --------------------------------- | -------------------------------------------------------- |
+| `as`      | String \| Component | `template` _(no wrapper element_) | The element or component the `Listbox` should render as. |
+| `v-model` | `T`                 |                                   | The selected value.                                      |
 
 ##### Slot props
 
@@ -1023,11 +1048,11 @@ export default {
 
 ##### Props
 
-| Prop       | Type                    | Default     | Description                                                                             |
-| ---------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
-| `as`       | String \| Component     | `li`        | The element or component the `ListboxOption` should render as.                          |
-| `value`    | `T` |  | The option value.                                                                     |
-| `disabled` | Boolean                 | `false`     | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
+| Prop       | Type                | Default | Description                                                                             |
+| ---------- | ------------------- | ------- | --------------------------------------------------------------------------------------- |
+| `as`       | String \| Component | `li`    | The element or component the `ListboxOption` should render as.                          |
+| `value`    | `T`                 |         | The option value.                                                                       |
+| `disabled` | Boolean             | `false` | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Slot props
 
@@ -1056,7 +1081,7 @@ Switches are built using the `Switch` component. Optionally you can also use the
   <Switch
     as="button"
     v-model="switchValue"
-    class="relative inline-flex h-6 rounded-full w-8"
+    class="relative inline-flex w-8 h-6 rounded-full"
     :class="switchValue ? 'bg-blue-600' : 'bg-gray-200'"
     v-slot="{ checked }"
   >
@@ -1068,8 +1093,8 @@ Switches are built using the `Switch` component. Optionally you can also use the
 </template>
 
 <script>
-import { ref } from "vue";
-import { SwitchGroup, Switch, SwitchLabel } from "@headlessui/vue";
+import { ref } from 'vue'
+import { SwitchGroup, Switch, SwitchLabel } from '@headlessui/vue'
 
 export default {
   components: {
@@ -1078,13 +1103,13 @@ export default {
     SwitchLabel,
   },
   setup() {
-    const switchValue = ref(false);
+    const switchValue = ref(false)
 
     return {
       switchValue,
-    };
+    }
   },
-};
+}
 </script>
 ```
 
@@ -1102,7 +1127,7 @@ Clicking the label will toggle the switch state, like you'd expect from a native
     <Switch
       as="button"
       v-model="switchValue"
-      class="relative inline-flex h-6 rounded-full w-8"
+      class="relative inline-flex w-8 h-6 rounded-full"
       :class="switchValue ? 'bg-blue-600' : 'bg-gray-200'"
       v-slot="{ checked }"
     >
@@ -1115,8 +1140,8 @@ Clicking the label will toggle the switch state, like you'd expect from a native
 </template>
 
 <script>
-import { ref } from "vue";
-import { SwitchGroup, Switch, SwitchLabel } from "@headlessui/vue";
+import { ref } from 'vue'
+import { SwitchGroup, Switch, SwitchLabel } from '@headlessui/vue'
 
 export default {
   components: {
@@ -1125,13 +1150,13 @@ export default {
     SwitchLabel,
   },
   setup() {
-    const switchValue = ref(false);
+    const switchValue = ref(false)
 
     return {
       switchValue,
-    };
+    }
   },
-};
+}
 </script>
 ```
 
@@ -1148,17 +1173,16 @@ export default {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `button` | The element or component the `Switch` should render as. |
-| `v-model` | `T` |                        | The switch value. |
+| Prop      | Type                | Default  | Description                                             |
+| --------- | ------------------- | -------- | ------------------------------------------------------- |
+| `as`      | String \| Component | `button` | The element or component the `Switch` should render as. |
+| `v-model` | `T`                 |          | The switch value.                                       |
 
 ##### Slot props
 
-| Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
+| Prop      | Type    | Description                           |
+| --------- | ------- | ------------------------------------- |
 | `checked` | Boolean | Whether or not the switch is checked. |
-
 
 #### SwitchLabel
 
@@ -1173,9 +1197,9 @@ export default {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `label` | The element or component the `SwitchLabel` should render as. |
+| Prop | Type                | Default | Description                                                  |
+| ---- | ------------------- | ------- | ------------------------------------------------------------ |
+| `as` | String \| Component | `label` | The element or component the `SwitchLabel` should render as. |
 
 #### SwitchGroup
 
@@ -1190,6 +1214,6 @@ export default {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `template` _(no wrapper element)_| The element or component the `SwitchGroup` should render as. |
+| Prop | Type                | Default                           | Description                                                  |
+| ---- | ------------------- | --------------------------------- | ------------------------------------------------------------ |
+| `as` | String \| Component | `template` _(no wrapper element)_ | The element or component the `SwitchGroup` should render as. |

@@ -792,14 +792,15 @@ The `Listbox.Button` will automatically open/close the `Listbox.Options` when cl
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -834,14 +835,15 @@ import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 import CheckmarkIcon from './CheckmarkIcon'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -849,8 +851,8 @@ function MyListbox() {
       <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
         {people.map(person => (
-          {/* Use the `active` state to conditionally style the active option. */}
-          {/* Use the `selected` state to conditionally style the selected option. */}
+          /* Use the `active` state to conditionally style the active option. */
+          /* Use the `selected` state to conditionally style the selected option. */
           <Listbox.Option as={Fragment} key={person.id} value={person}>
             {({ active, selected }) => (
               <li className={`${active ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}>
@@ -875,14 +877,15 @@ import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 import CheckmarkIcon from './CheckmarkIcon'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -909,14 +912,15 @@ By default, your `Listbox.Options` instance will be shown/hidden automatically b
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -942,14 +946,15 @@ If you'd rather handle this yourself (perhaps because you need to add an extra w
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -984,14 +989,15 @@ Use the `disabled` prop to disable a `Listbox.Option`. This will make it unselec
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -999,7 +1005,7 @@ function MyListbox() {
       <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
         {people.map(person => (
-          {/* Disabled options will be skipped by keyboard navigation. */}
+          /* Disabled options will be skipped by keyboard navigation. */
           <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
             <span className={person.unavailable ? 'opacity-75' : ''}>{person.name}</span>
           </Listbox.Option>
@@ -1018,14 +1024,15 @@ To animate the opening/closing of the listbox panel, use the provided `Transitio
 import { useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -1070,14 +1077,15 @@ This is easy to change using the `as` prop, which exists on every component.
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -1101,14 +1109,15 @@ To tell an element to render its children directly with no wrapper element, use 
 import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -1134,14 +1143,15 @@ function MyListbox() {
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -1161,11 +1171,11 @@ function MyListbox() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
-| `value`    | `T` |                              | The selected value.                                      |
-| `onChange` | `(value: T): void`      |                              | The function to call when a new option is selected.      |
+| Prop       | Type                | Default                                 | Description                                              |
+| ---------- | ------------------- | --------------------------------------- | -------------------------------------------------------- |
+| `as`       | String \| Component | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
+| `value`    | `T`                 |                                         | The selected value.                                      |
+| `onChange` | `(value: T): void`  |                                         | The function to call when a new option is selected.      |
 
 ##### Render prop object
 
@@ -1240,11 +1250,11 @@ function MyListbox() {
 
 ##### Props
 
-| Prop       | Type                    | Default     | Description                                                                             |
-| ---------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
-| `as`       | String \| Component     | `li`        | The element or component the `Listbox.Option` should render as.                         |
-| `value`    | `T` |  | The option value. |
-| `disabled` | Boolean                 | `false`     | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
+| Prop       | Type                | Default | Description                                                                             |
+| ---------- | ------------------- | ------- | --------------------------------------------------------------------------------------- |
+| `as`       | String \| Component | `li`    | The element or component the `Listbox.Option` should render as.                         |
+| `value`    | `T`                 |         | The option value.                                                                       |
+| `disabled` | Boolean             | `false` | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Render prop object
 
@@ -1279,11 +1289,15 @@ function NotificationsToggle() {
     <Switch
       checked={enabled}
       onChange={setEnabled}
-      className={`${enabled ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
+      className={`${
+        enabled ? 'bg-blue-600' : 'bg-gray-200'
+      } relative inline-flex h-6 rounded-full w-8`}
     >
       <span className="sr-only">Enable notifications</span>
       <span
-        className={`${enabled ? "translate-x-4" : "translate-x-0"} inline-block w-4 h-4 transform bg-white rounded-full`}
+        className={`${
+          enabled ? 'translate-x-4' : 'translate-x-0'
+        } inline-block w-4 h-4 transform bg-white rounded-full`}
       />
     </Switch>
   )
@@ -1309,10 +1323,14 @@ function NotificationsToggle() {
       <Switch
         checked={enabled}
         onChange={setEnabled}
-        className={`${enabled ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
+        className={`${
+          enabled ? 'bg-blue-600' : 'bg-gray-200'
+        } relative inline-flex h-6 rounded-full w-8`}
       >
         <span
-          className={`${enabled ? "translate-x-4" : "translate-x-0"} inline-block w-4 h-4 transform bg-white rounded-full`}
+          className={`${
+            enabled ? 'translate-x-4' : 'translate-x-0'
+          } inline-block w-4 h-4 transform bg-white rounded-full`}
         />
       </Switch>
     </Switch.Group>
@@ -1333,18 +1351,17 @@ function NotificationsToggle() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `button` | The element or component the `Switch` should render as. |
-| `checked`    | Boolean |                              | Whether or not the switch is checked.                                      |
-| `onChange` | `(value: boolean): void`      |                              | The function to call when the switch is toggled.      |
+| Prop       | Type                     | Default  | Description                                             |
+| ---------- | ------------------------ | -------- | ------------------------------------------------------- |
+| `as`       | String \| Component      | `button` | The element or component the `Switch` should render as. |
+| `checked`  | Boolean                  |          | Whether or not the switch is checked.                   |
+| `onChange` | `(value: boolean): void` |          | The function to call when the switch is toggled.        |
 
 ##### Render prop object
 
-| Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
+| Prop      | Type    | Description                           |
+| --------- | ------- | ------------------------------------- |
 | `checked` | Boolean | Whether or not the switch is checked. |
-
 
 #### Switch.Label
 
@@ -1359,9 +1376,9 @@ function NotificationsToggle() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `label` | The element or component the `Switch.Label` should render as. |
+| Prop | Type                | Default | Description                                                   |
+| ---- | ------------------- | ------- | ------------------------------------------------------------- |
+| `as` | String \| Component | `label` | The element or component the `Switch.Label` should render as. |
 
 #### Switch.Group
 
@@ -1376,6 +1393,6 @@ function NotificationsToggle() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `React.Fragment` _(no wrapper element)_| The element or component the `Switch.Group` should render as. |
+| Prop | Type                | Default                                 | Description                                                   |
+| ---- | ------------------- | --------------------------------------- | ------------------------------------------------------------- |
+| `as` | String \| Component | `React.Fragment` _(no wrapper element)_ | The element or component the `Switch.Group` should render as. |
