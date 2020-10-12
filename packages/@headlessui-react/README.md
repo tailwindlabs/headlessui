@@ -1161,11 +1161,11 @@ function MyListbox() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
-| `value`    | `T` |                              | The selected value.                                      |
-| `onChange` | `(value: T): void`      |                              | The function to call when a new option is selected.      |
+| Prop       | Type                | Default                                 | Description                                              |
+| ---------- | ------------------- | --------------------------------------- | -------------------------------------------------------- |
+| `as`       | String \| Component | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
+| `value`    | `T`                 |                                         | The selected value.                                      |
+| `onChange` | `(value: T): void`  |                                         | The function to call when a new option is selected.      |
 
 ##### Render prop object
 
@@ -1240,11 +1240,11 @@ function MyListbox() {
 
 ##### Props
 
-| Prop       | Type                    | Default     | Description                                                                             |
-| ---------- | ----------------------- | ----------- | --------------------------------------------------------------------------------------- |
-| `as`       | String \| Component     | `li`        | The element or component the `Listbox.Option` should render as.                         |
-| `value`    | `T` |  | The option value. |
-| `disabled` | Boolean                 | `false`     | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
+| Prop       | Type                | Default | Description                                                                             |
+| ---------- | ------------------- | ------- | --------------------------------------------------------------------------------------- |
+| `as`       | String \| Component | `li`    | The element or component the `Listbox.Option` should render as.                         |
+| `value`    | `T`                 |         | The option value.                                                                       |
+| `disabled` | Boolean             | `false` | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Render prop object
 
@@ -1279,11 +1279,15 @@ function NotificationsToggle() {
     <Switch
       checked={enabled}
       onChange={setEnabled}
-      className={`${enabled ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
+      className={`${
+        enabled ? 'bg-blue-600' : 'bg-gray-200'
+      } relative inline-flex h-6 rounded-full w-8`}
     >
       <span className="sr-only">Enable notifications</span>
       <span
-        className={`${enabled ? "translate-x-4" : "translate-x-0"} inline-block w-4 h-4 transform bg-white rounded-full`}
+        className={`${
+          enabled ? 'translate-x-4' : 'translate-x-0'
+        } inline-block w-4 h-4 transform bg-white rounded-full`}
       />
     </Switch>
   )
@@ -1309,10 +1313,14 @@ function NotificationsToggle() {
       <Switch
         checked={enabled}
         onChange={setEnabled}
-        className={`${enabled ? "bg-blue-600" : "bg-gray-200"} relative inline-flex h-6 rounded-full w-8`}
+        className={`${
+          enabled ? 'bg-blue-600' : 'bg-gray-200'
+        } relative inline-flex h-6 rounded-full w-8`}
       >
         <span
-          className={`${enabled ? "translate-x-4" : "translate-x-0"} inline-block w-4 h-4 transform bg-white rounded-full`}
+          className={`${
+            enabled ? 'translate-x-4' : 'translate-x-0'
+          } inline-block w-4 h-4 transform bg-white rounded-full`}
         />
       </Switch>
     </Switch.Group>
@@ -1333,18 +1341,17 @@ function NotificationsToggle() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `button` | The element or component the `Switch` should render as. |
-| `checked`    | Boolean |                              | Whether or not the switch is checked.                                      |
-| `onChange` | `(value: boolean): void`      |                              | The function to call when the switch is toggled.      |
+| Prop       | Type                     | Default  | Description                                             |
+| ---------- | ------------------------ | -------- | ------------------------------------------------------- |
+| `as`       | String \| Component      | `button` | The element or component the `Switch` should render as. |
+| `checked`  | Boolean                  |          | Whether or not the switch is checked.                   |
+| `onChange` | `(value: boolean): void` |          | The function to call when the switch is toggled.        |
 
 ##### Render prop object
 
-| Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
+| Prop      | Type    | Description                           |
+| --------- | ------- | ------------------------------------- |
 | `checked` | Boolean | Whether or not the switch is checked. |
-
 
 #### Switch.Label
 
@@ -1359,9 +1366,9 @@ function NotificationsToggle() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `label` | The element or component the `Switch.Label` should render as. |
+| Prop | Type                | Default | Description                                                   |
+| ---- | ------------------- | ------- | ------------------------------------------------------------- |
+| `as` | String \| Component | `label` | The element or component the `Switch.Label` should render as. |
 
 #### Switch.Group
 
@@ -1376,6 +1383,6 @@ function NotificationsToggle() {
 
 ##### Props
 
-| Prop       | Type                    | Default                                 | Description                                              |
-| ---------- | ----------------------- | --------------------------------------- | -------------------------------------------------------- |
-| `as`       | String \| Component     | `React.Fragment` _(no wrapper element)_| The element or component the `Switch.Group` should render as. |
+| Prop | Type                | Default                                 | Description                                                   |
+| ---- | ------------------- | --------------------------------------- | ------------------------------------------------------------- |
+| `as` | String \| Component | `React.Fragment` _(no wrapper element)_ | The element or component the `Switch.Group` should render as. |
