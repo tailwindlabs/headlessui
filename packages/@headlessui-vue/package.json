@@ -31,14 +31,14 @@
     "vue": "^3.0.0-rc.13"
   },
   "devDependencies": {
+    "@headlessui/tests": "^0.0.0",
     "@popperjs/core": "^2.5.3",
     "@testing-library/vue": "^5.1.0",
     "@types/debounce": "^1.2.0",
     "@vue/compiler-sfc": "3.0.0",
     "@vue/test-utils": "^2.0.0-beta.6",
-    "husky": "^4.3.0",
     "vite": "^1.0.0-rc.4",
-    "vue": "^3.0.0-rc.13",
-    "vue-router": "^4.0.0-beta.13"
+    "vue-router": "^4.0.0-beta.13",
+    "vue": "^3.0.0-rc.13"
   }
 }

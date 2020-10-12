@@ -1,18 +1,19 @@
 import { defineComponent, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
+import { switchComponent } from '@headlessui/tests/suits'
+import { suppressConsoleLogs } from '@headlessui/tests/utils'
+import { SwitchState, assertSwitch } from '@headlessui/tests/accessibility-assertions'
 
 import { Switch, SwitchLabel, SwitchGroup } from './switch'
-import {
-  SwitchState,
-  assertSwitch,
-  getSwitch,
-  assertActiveElement,
-  getSwitchLabel,
-} from '../../test-utils/accessibility-assertions'
-import { press, click, Keys } from '../../test-utils/interactions'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
+
+beforeAll(() => {
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
+  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
+})
+
+afterAll(() => jest.restoreAllMocks())
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   const defaultComponents = { Switch, SwitchLabel, SwitchGroup }
@@ -37,7 +38,7 @@ describe('Safe guards', () => {
       expect(() => render(Component)).toThrowError(
         `<${name} /> is missing a parent <SwitchGroup /> component.`
       )
-    })
+    }, 'warn')
   )
 
   it('should be possible to render a Switch without crashing', () => {
@@ -167,98 +168,9 @@ describe('Render composition', () => {
   })
 })
 
-describe('Keyboard interactions', () => {
-  describe('`Space` key', () => {
-    it('should be possible to toggle the Switch with Space', async () => {
-      const handleChange = jest.fn()
-      renderTemplate({
-        template: `<Switch v-model="checked" />`,
-        setup() {
-          const checked = ref(false)
-          watch([checked], () => handleChange(checked.value))
-          return { checked }
-        },
-      })
-
-      // Ensure checkbox is off
-      assertSwitch({ state: SwitchState.Off })
-
-      // Focus the switch
-      getSwitch()?.focus()
-
-      // Toggle
-      await press(Keys.Space)
-
-      // Ensure state is on
-      assertSwitch({ state: SwitchState.On })
-
-      // Toggle
-      await press(Keys.Space)
-
-      // Ensure state is off
-      assertSwitch({ state: SwitchState.Off })
-    })
-  })
-
-  describe('`Enter` key', () => {
-    it('should not be possible to use Enter to toggle the Switch', async () => {
-      const handleChange = jest.fn()
-      renderTemplate({
-        template: `<Switch v-model="checked" />`,
-        setup() {
-          const checked = ref(false)
-          watch([checked], () => handleChange(checked.value))
-          return { checked }
-        },
-      })
-
-      // Ensure checkbox is off
-      assertSwitch({ state: SwitchState.Off })
-
-      // Focus the switch
-      getSwitch()?.focus()
-
-      // Try to toggle
-      await press(Keys.Enter)
-
-      expect(handleChange).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('`Tab` key', () => {
-    it('should be possible to tab away from the Switch', async () => {
-      renderTemplate({
-        template: `
-          <div>
-            <Switch v-model="checked" />
-            <button id="btn">Other element</button>
-          </div>
-        `,
-        setup: () => ({ checked: ref(false) }),
-      })
-
-      // Ensure checkbox is off
-      assertSwitch({ state: SwitchState.Off })
-
-      // Focus the switch
-      getSwitch()?.focus()
-
-      // Expect the switch to be active
-      assertActiveElement(getSwitch())
-
-      // Toggle
-      await press(Keys.Tab)
-
-      // Expect the button to be active
-      assertActiveElement(document.getElementById('btn'))
-    })
-  })
-})
-
-describe('Mouse interactions', () => {
-  it('should be possible to toggle the Switch with a click', async () => {
-    const handleChange = jest.fn()
-    renderTemplate({
+switchComponent.run({
+  [switchComponent.scenarios.Default]({ handleChange }) {
+    return renderTemplate({
       template: `<Switch v-model="checked" />`,
       setup() {
         const checked = ref(false)
@@ -266,26 +178,20 @@ describe('Mouse interactions', () => {
         return { checked }
       },
     })
-
-    // Ensure checkbox is off
-    assertSwitch({ state: SwitchState.Off })
-
-    // Toggle
-    await click(getSwitch())
-
-    // Ensure state is on
-    assertSwitch({ state: SwitchState.On })
-
-    // Toggle
-    await click(getSwitch())
-
-    // Ensure state is off
-    assertSwitch({ state: SwitchState.Off })
-  })
-
-  it('should be possible to toggle the Switch with a click on the Label', async () => {
-    const handleChange = jest.fn()
-    renderTemplate({
+  },
+  [switchComponent.scenarios.WithOtherElement]() {
+    return renderTemplate({
+      template: `
+        <div>
+          <Switch v-model="checked" />
+          <button id="btn">Other element</button>
+        </div>
+      `,
+      setup: () => ({ checked: ref(false) }),
+    })
+  },
+  [switchComponent.scenarios.WithGroup]({ handleChange }) {
+    return renderTemplate({
       template: `
         <SwitchGroup>
           <Switch v-model="checked" />
@@ -298,26 +204,5 @@ describe('Mouse interactions', () => {
         return { checked }
       },
     })
-
-    // Ensure checkbox is off
-    assertSwitch({ state: SwitchState.Off })
-
-    // Toggle
-    await click(getSwitchLabel())
-
-    // Ensure the switch is focused
-    assertActiveElement(getSwitch())
-
-    // Ensure state is on
-    assertSwitch({ state: SwitchState.On })
-
-    // Toggle
-    await click(getSwitchLabel())
-
-    // Ensure the switch is focused
-    assertActiveElement(getSwitch())
-
-    // Ensure state is off
-    assertSwitch({ state: SwitchState.Off })
-  })
+  },
 })
