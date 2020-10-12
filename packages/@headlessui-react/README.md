@@ -792,14 +792,15 @@ The `Listbox.Button` will automatically open/close the `Listbox.Options` when cl
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -834,14 +835,15 @@ import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 import CheckmarkIcon from './CheckmarkIcon'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -849,8 +851,8 @@ function MyListbox() {
       <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
         {people.map(person => (
-          {/* Use the `active` state to conditionally style the active option. */}
-          {/* Use the `selected` state to conditionally style the selected option. */}
+          /* Use the `active` state to conditionally style the active option. */
+          /* Use the `selected` state to conditionally style the selected option. */
           <Listbox.Option as={Fragment} key={person.id} value={person}>
             {({ active, selected }) => (
               <li className={`${active ? 'bg-blue-500 text-white' : 'bg-white text-black'}`}>
@@ -875,14 +877,15 @@ import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 import CheckmarkIcon from './CheckmarkIcon'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -909,14 +912,15 @@ By default, your `Listbox.Options` instance will be shown/hidden automatically b
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -942,14 +946,15 @@ If you'd rather handle this yourself (perhaps because you need to add an extra w
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -984,14 +989,15 @@ Use the `disabled` prop to disable a `Listbox.Option`. This will make it unselec
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -999,7 +1005,7 @@ function MyListbox() {
       <Listbox.Button>{selectedPerson.name}</Listbox.Button>
       <Listbox.Options>
         {people.map(person => (
-          {/* Disabled options will be skipped by keyboard navigation. */}
+          /* Disabled options will be skipped by keyboard navigation. */
           <Listbox.Option key={person.id} value={person} disabled={person.unavailable}>
             <span className={person.unavailable ? 'opacity-75' : ''}>{person.name}</span>
           </Listbox.Option>
@@ -1018,14 +1024,15 @@ To animate the opening/closing of the listbox panel, use the provided `Transitio
 import { useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds', unavailable: false },
+  { id: 2, name: 'Kenton Towne', unavailable: false },
+  { id: 3, name: 'Therese Wunsch', unavailable: false },
+  { id: 4, name: 'Benedict Kessler', unavailable: true },
+  { id: 5, name: 'Katelyn Rohan', unavailable: false },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds', unavailable: false },
-    { id: 2, name: 'Kenton Towne', unavailable: false },
-    { id: 3, name: 'Therese Wunsch', unavailable: false },
-    { id: 4, name: 'Benedict Kessler', unavailable: true },
-    { id: 5, name: 'Katelyn Rohan', unavailable: false },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -1070,14 +1077,15 @@ This is easy to change using the `as` prop, which exists on every component.
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -1101,14 +1109,15 @@ To tell an element to render its children directly with no wrapper element, use 
 import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
@@ -1134,14 +1143,15 @@ function MyListbox() {
 import { useState } from 'react'
 import { Listbox } from '@headlessui/react'
 
+const people = [
+  { id: 1, name: 'Durward Reynolds' },
+  { id: 2, name: 'Kenton Towne' },
+  { id: 3, name: 'Therese Wunsch' },
+  { id: 4, name: 'Benedict Kessler' },
+  { id: 5, name: 'Katelyn Rohan' },
+]
+
 function MyListbox() {
-  const people = [
-    { id: 1, name: 'Durward Reynolds' },
-    { id: 2, name: 'Kenton Towne' },
-    { id: 3, name: 'Therese Wunsch' },
-    { id: 4, name: 'Benedict Kessler' },
-    { id: 5, name: 'Katelyn Rohan' },
-  ]
   const [selectedPerson, setSelectedPerson] = useState(people[0])
 
   return (
