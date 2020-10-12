@@ -12,7 +12,7 @@
   "scripts": {
     "react": "yarn workspace @headlessui/react",
     "vue": "yarn workspace @headlessui/vue",
-    "shared": "yarn workspace @headlessui/shared",
+    "tests": "yarn workspace @headlessui/tests",
     "build": "yarn workspaces run build",
     "test": "./scripts/test.sh",
     "lint": "./scripts/lint.sh"

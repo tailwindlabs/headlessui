@@ -1,0 +1,28 @@
+{
+  "name": "@headlessui/tests",
+  "version": "0.0.0",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/headlessui.git",
+    "directory": "packages/@headlessui-tests"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "../../scripts/build.sh",
+    "test": "../../scripts/test.sh",
+    "lint": "../../scripts/lint.sh"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^7.24.5"
+  }
+}

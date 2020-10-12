@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { render, fireEvent } from '@testing-library/react'
+import { suppressConsoleLogs } from '@headlessui/tests/utils'
 
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from './transition'
 
 import { executeTimeline } from '../../test-utils/execute-timeline'

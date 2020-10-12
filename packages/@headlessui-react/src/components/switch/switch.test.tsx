@@ -1,16 +1,10 @@
 import React from 'react'
 import { render } from '@testing-library/react'
+import { switchComponent } from '@headlessui/tests/suits'
+import { suppressConsoleLogs } from '@headlessui/tests/utils'
+import { SwitchState, assertSwitch } from '@headlessui/tests/accessibility-assertions'
 
 import { Switch } from './switch'
-import {
-  SwitchState,
-  assertSwitch,
-  getSwitch,
-  assertActiveElement,
-  getSwitchLabel,
-} from '../../test-utils/accessibility-assertions'
-import { press, click, Keys } from '../../test-utils/interactions'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
 
@@ -117,93 +111,8 @@ describe('Render composition', () => {
   })
 })
 
-describe('Keyboard interactions', () => {
-  describe('`Space` key', () => {
-    it('should be possible to toggle the Switch with Space', async () => {
-      const handleChange = jest.fn()
-      function Example() {
-        const [state, setState] = React.useState(false)
-        return (
-          <Switch
-            checked={state}
-            onChange={value => {
-              setState(value)
-              handleChange(value)
-            }}
-          />
-        )
-      }
-
-      render(<Example />)
-
-      // Ensure checkbox is off
-      assertSwitch({ state: SwitchState.Off })
-
-      // Focus the switch
-      getSwitch()?.focus()
-
-      // Toggle
-      await press(Keys.Space)
-
-      // Ensure state is on
-      assertSwitch({ state: SwitchState.On })
-
-      // Toggle
-      await press(Keys.Space)
-
-      // Ensure state is off
-      assertSwitch({ state: SwitchState.Off })
-    })
-  })
-
-  describe('`Enter` key', () => {
-    it('should not be possible to use Enter to toggle the Switch', async () => {
-      const handleChange = jest.fn()
-      render(<Switch checked={false} onChange={handleChange} />)
-
-      // Ensure checkbox is off
-      assertSwitch({ state: SwitchState.Off })
-
-      // Focus the switch
-      getSwitch()?.focus()
-
-      // Try to toggle
-      await press(Keys.Enter)
-
-      expect(handleChange).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('`Tab` key', () => {
-    it('should be possible to tab away from the Switch', async () => {
-      render(
-        <div>
-          <Switch checked={false} onChange={console.log} />
-          <button id="btn">Other element</button>
-        </div>
-      )
-
-      // Ensure checkbox is off
-      assertSwitch({ state: SwitchState.Off })
-
-      // Focus the switch
-      getSwitch()?.focus()
-
-      // Expect the switch to be active
-      assertActiveElement(getSwitch())
-
-      // Toggle
-      await press(Keys.Tab)
-
-      // Expect the button to be active
-      assertActiveElement(document.getElementById('btn'))
-    })
-  })
-})
-
-describe('Mouse interactions', () => {
-  it('should be possible to toggle the Switch with a click', async () => {
-    const handleChange = jest.fn()
+switchComponent.run({
+  [switchComponent.scenarios.Default]({ handleChange }) {
     function Example() {
       const [state, setState] = React.useState(false)
       return (
@@ -217,26 +126,17 @@ describe('Mouse interactions', () => {
       )
     }
 
-    render(<Example />)
-
-    // Ensure checkbox is off
-    assertSwitch({ state: SwitchState.Off })
-
-    // Toggle
-    await click(getSwitch())
-
-    // Ensure state is on
-    assertSwitch({ state: SwitchState.On })
-
-    // Toggle
-    await click(getSwitch())
-
-    // Ensure state is off
-    assertSwitch({ state: SwitchState.Off })
-  })
-
-  it('should be possible to toggle the Switch with a click on the Label', async () => {
-    const handleChange = jest.fn()
+    return render(<Example />)
+  },
+  [switchComponent.scenarios.WithOtherElement]() {
+    return render(
+      <div>
+        <Switch checked={false} onChange={console.log} />
+        <button id="btn">Other element</button>
+      </div>
+    )
+  },
+  [switchComponent.scenarios.WithGroup]({ handleChange }) {
     function Example() {
       const [state, setState] = React.useState(false)
       return (
@@ -253,27 +153,6 @@ describe('Mouse interactions', () => {
       )
     }
 
-    render(<Example />)
-
-    // Ensure checkbox is off
-    assertSwitch({ state: SwitchState.Off })
-
-    // Toggle
-    await click(getSwitchLabel())
-
-    // Ensure the switch is focused
-    assertActiveElement(getSwitch())
-
-    // Ensure state is on
-    assertSwitch({ state: SwitchState.On })
-
-    // Toggle
-    await click(getSwitchLabel())
-
-    // Ensure the switch is focused
-    assertActiveElement(getSwitch())
-
-    // Ensure state is off
-    assertSwitch({ state: SwitchState.Off })
-  })
+    return render(<Example />)
+  },
 })

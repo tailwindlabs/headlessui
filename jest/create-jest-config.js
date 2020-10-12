@@ -13,6 +13,11 @@ module.exports = function createJestConfig(root, options) {
           tsConfig: '<rootDir>/tsconfig.tsdx.json',
         },
       },
+      moduleNameMapper: {
+        '^@headlessui/tests$': '<rootDir>../../packages/@headlessui-tests/src',
+        '^@headlessui/react$': '<rootDir>../../packages/@headlessui-react/src',
+        '^@headlessui/vue$': '<rootDir>../../packages/@headlessui-vue/src',
+      },
     },
     options
   )
