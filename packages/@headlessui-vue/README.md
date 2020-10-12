@@ -439,6 +439,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan', unavailable: false },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -510,6 +511,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -726,6 +728,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan', unavailable: false },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -793,6 +796,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan', unavailable: false },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -849,6 +853,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -902,6 +907,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
@@ -956,6 +962,7 @@ export default {
       { id: 5, name: 'Katelyn Rohan' },
     ]
     const selectedPerson = ref(people[0])
+
     return {
       people,
       selectedPerson,
