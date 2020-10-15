@@ -37,7 +37,7 @@
     "@testing-library/react": "^11.0.4",
     "framer-motion": "^2.9.1",
     "next": "9.5.5",
-    "react": "^16.13.1",
+    "react": "^16.14.0",
     "react-dom": "^16.13.1",
     "snapshot-diff": "^0.8.1"
   }
