@@ -11,7 +11,7 @@ import {
   Ref,
 } from 'vue'
 import { match } from '../../utils/match'
-import { render } from '../../utils/render'
+import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 
@@ -121,7 +121,10 @@ export const Menu = defineComponent({
       items,
       searchQuery,
       activeItemIndex,
-      closeMenu: () => (menuState.value = MenuStates.Closed),
+      closeMenu: () => {
+        menuState.value = MenuStates.Closed
+        activeItemIndex.value = null
+      },
       openMenu: () => (menuState.value = MenuStates.Open),
       goToItem(focus: Focus, id?: string) {
         const nextActiveItemIndex = calculateActiveItemIndex(focus, id)
@@ -280,14 +283,10 @@ export const MenuItems = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
+    unmount: { type: Boolean, default: true },
   },
   render() {
     const api = useMenuContext('MenuItems')
-
-    // `static` is a reserved keyword, therefore aliasing it...
-    const { static: isStatic, ...passThroughProps } = this.$props
-
-    if (!isStatic && api.menuState.value === MenuStates.Closed) return null
 
     const slot = { open: api.menuState.value === MenuStates.Open }
     const propsWeControl = {
@@ -302,12 +301,15 @@ export const MenuItems = defineComponent({
       tabIndex: 0,
       ref: 'el',
     }
+    const passThroughProps = this.$props
 
     return render({
       props: { ...passThroughProps, ...propsWeControl },
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      features: Features.RenderStrategy | Features.Static,
+      visible: slot.open,
     })
   },
   setup() {
@@ -330,11 +332,11 @@ export const MenuItems = defineComponent({
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
-          api.closeMenu()
           if (api.activeItemIndex.value !== null) {
             const { id } = api.items.value[api.activeItemIndex.value]
             document.getElementById(id)?.click()
           }
+          api.closeMenu()
           nextTick(() => api.buttonRef.value?.focus())
           break
 

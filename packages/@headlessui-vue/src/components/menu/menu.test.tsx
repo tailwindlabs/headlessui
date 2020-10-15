@@ -1,4 +1,4 @@
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, nextTick } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -74,10 +74,10 @@ describe('Safe guards', () => {
     `)
 
     assertMenuButton({
-      state: MenuState.Closed,
+      state: MenuState.InvisibleUnmounted,
       attributes: { id: 'headlessui-menu-button-1' },
     })
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
   })
 })
 
@@ -96,20 +96,20 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
         textContent: 'Trigger hidden',
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
         textContent: 'Trigger visible',
       })
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
     })
 
     it('should be possible to render a Menu using a template `as` prop', async () => {
@@ -127,18 +127,18 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
     })
 
     it(
@@ -178,20 +178,20 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
         textContent: 'Trigger hidden',
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
         textContent: 'Trigger visible',
       })
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
     })
 
     it('should be possible to render a MenuButton using a template `as` prop', async () => {
@@ -209,18 +209,18 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1', 'data-open': 'false' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1', 'data-open': 'true' },
       })
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
     })
 
     it(
@@ -262,18 +262,18 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
       expect(getMenu()?.firstChild?.textContent).toBe('visible')
     })
 
@@ -292,18 +292,18 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Open, attributes: { 'data-open': 'true' } })
+      assertMenu({ state: MenuState.Visible, attributes: { 'data-open': 'true' } })
     })
 
     it('should yell when we render MenuItems using a template `as` prop that contains multiple children', async () => {
@@ -356,6 +356,28 @@ describe('Rendering', () => {
       // Let's verify that the Menu is already there
       expect(getMenu()).not.toBe(null)
     })
+
+    it('should be possible to use a different render strategy for the MenuItems', async () => {
+      renderTemplate(`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems :unmount="false">
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      await new Promise<void>(nextTick)
+
+      assertMenu({ state: MenuState.InvisibleHidden })
+
+      // Let's open the Menu, to see if it is not hidden anymore
+      await click(getMenuButton())
+
+      assertMenu({ state: MenuState.Visible })
+    })
   })
 
   describe('MenuItem', () => {
@@ -374,18 +396,18 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
       expect(getMenuItems()[0]?.textContent).toBe(
         `Item A - ${JSON.stringify({ active: false, disabled: false })}`
       )
@@ -410,20 +432,20 @@ describe('Rendering', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       getMenuButton()?.focus()
 
       await press(Keys.Enter)
 
       assertMenuButton({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
       assertMenuItem(getMenuItems()[0], {
         tag: 'a',
         attributes: { 'data-active': 'true', 'data-disabled': 'false' },
@@ -492,10 +514,10 @@ describe('Rendering composition', () => {
     `)
 
     assertMenuButton({
-      state: MenuState.Closed,
+      state: MenuState.InvisibleUnmounted,
       attributes: { id: 'headlessui-menu-button-1' },
     })
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Open menu
     await click(getMenuButton())
@@ -557,10 +579,10 @@ describe('Rendering composition', () => {
       })
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Open menu
       await click(getMenuButton())
@@ -589,10 +611,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -601,9 +623,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.Enter)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -630,10 +652,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -643,10 +665,10 @@ describe('Keyboard interactions', () => {
 
       // Verify it is still closed
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
@@ -657,14 +679,14 @@ describe('Keyboard interactions', () => {
         </Menu>
       `)
 
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
 
       // Open menu
       await press(Keys.Enter)
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
 
       assertNoActiveMenuItem()
     })
@@ -682,10 +704,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -712,10 +734,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -742,10 +764,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -769,23 +791,23 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Open menu
       await click(getMenuButton())
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
 
       // Close menu
       await press(Keys.Enter)
 
       // Verify it is closed
-      assertMenuButton({ state: MenuState.Closed })
-      assertMenu({ state: MenuState.Closed })
+      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the button is focused again
       assertActiveElement(getMenuButton())
@@ -808,16 +830,16 @@ describe('Keyboard interactions', () => {
       })
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Open menu
       await click(getMenuButton())
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
 
       // Activate the first menu item
       const items = getMenuItems()
@@ -827,8 +849,8 @@ describe('Keyboard interactions', () => {
       await press(Keys.Enter)
 
       // Verify it is closed
-      assertMenuButton({ state: MenuState.Closed })
-      assertMenu({ state: MenuState.Closed })
+      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the button is focused again
       assertActiveElement(getMenuButton())
@@ -860,16 +882,16 @@ describe('Keyboard interactions', () => {
     })
 
     assertMenuButton({
-      state: MenuState.Closed,
+      state: MenuState.InvisibleUnmounted,
       attributes: { id: 'headlessui-menu-button-1' },
     })
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Open menu
     await click(getMenuButton())
 
     // Verify it is open
-    assertMenuButton({ state: MenuState.Open })
+    assertMenuButton({ state: MenuState.Visible })
 
     // Activate the second menu item
     const items = getMenuItems()
@@ -879,8 +901,8 @@ describe('Keyboard interactions', () => {
     await press(Keys.Enter)
 
     // Verify it is closed
-    assertMenuButton({ state: MenuState.Closed })
-    assertMenu({ state: MenuState.Closed })
+    assertMenuButton({ state: MenuState.InvisibleUnmounted })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Verify the button got "clicked"
     expect(clickHandler).toHaveBeenCalledTimes(1)
@@ -918,10 +940,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -930,9 +952,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.Space)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -957,10 +979,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -970,10 +992,10 @@ describe('Keyboard interactions', () => {
 
       // Verify it is still closed
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
@@ -984,14 +1006,14 @@ describe('Keyboard interactions', () => {
         </Menu>
       `)
 
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
 
       // Open menu
       await press(Keys.Space)
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
 
       assertNoActiveMenuItem()
     })
@@ -1009,10 +1031,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1039,10 +1061,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1069,10 +1091,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1098,23 +1120,23 @@ describe('Keyboard interactions', () => {
         `)
 
         assertMenuButton({
-          state: MenuState.Closed,
+          state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.Closed })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Open menu
         await click(getMenuButton())
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Open })
+        assertMenuButton({ state: MenuState.Visible })
 
         // Close menu
         await press(Keys.Space)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.Closed })
-        assertMenu({ state: MenuState.Closed })
+        assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Verify the button is focused again
         assertActiveElement(getMenuButton())
@@ -1140,16 +1162,16 @@ describe('Keyboard interactions', () => {
         })
 
         assertMenuButton({
-          state: MenuState.Closed,
+          state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.Closed })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Open menu
         await click(getMenuButton())
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Open })
+        assertMenuButton({ state: MenuState.Visible })
 
         // Activate the first menu item
         const items = getMenuItems()
@@ -1159,8 +1181,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.Closed })
-        assertMenu({ state: MenuState.Closed })
+        assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Verify the "click" went through on the `a` tag
         expect(clickHandler).toHaveBeenCalled()
@@ -1191,9 +1213,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.Space)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -1202,8 +1224,8 @@ describe('Keyboard interactions', () => {
       await press(Keys.Escape)
 
       // Verify it is closed
-      assertMenuButton({ state: MenuState.Closed })
-      assertMenu({ state: MenuState.Closed })
+      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the button is focused again
       assertActiveElement(getMenuButton())
@@ -1224,10 +1246,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1236,9 +1258,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.Enter)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -1253,8 +1275,8 @@ describe('Keyboard interactions', () => {
       await press(Keys.Tab)
 
       // Verify it is still open
-      assertMenuButton({ state: MenuState.Open })
-      assertMenu({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
+      assertMenu({ state: MenuState.Visible })
     })
 
     it('should focus trap when we use Shift+Tab', async () => {
@@ -1270,10 +1292,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1282,9 +1304,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.Enter)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -1299,8 +1321,8 @@ describe('Keyboard interactions', () => {
       await press(shift(Keys.Tab))
 
       // Verify it is still open
-      assertMenuButton({ state: MenuState.Open })
-      assertMenu({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
+      assertMenu({ state: MenuState.Visible })
     })
   })
 
@@ -1318,10 +1340,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1330,9 +1352,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.ArrowDown)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -1359,10 +1381,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1372,10 +1394,10 @@ describe('Keyboard interactions', () => {
 
       // Verify it is still closed
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
@@ -1386,14 +1408,14 @@ describe('Keyboard interactions', () => {
         </Menu>
       `)
 
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
 
       // Open menu
       await press(Keys.ArrowDown)
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
 
       assertNoActiveMenuItem()
     })
@@ -1411,10 +1433,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1454,10 +1476,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1489,10 +1511,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1522,10 +1544,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1534,9 +1556,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.ArrowUp)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -1558,14 +1580,14 @@ describe('Keyboard interactions', () => {
         </Menu>
       `)
 
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
 
       // Open menu
       await press(Keys.ArrowUp)
-      assertMenu({ state: MenuState.Open })
+      assertMenu({ state: MenuState.Visible })
 
       assertNoActiveMenuItem()
     })
@@ -1583,10 +1605,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1614,10 +1636,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1653,10 +1675,10 @@ describe('Keyboard interactions', () => {
       `)
 
       assertMenuButton({
-        state: MenuState.Closed,
+        state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.Closed })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Focus the button
       getMenuButton()?.focus()
@@ -1665,9 +1687,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.ArrowUp)
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Open })
+      assertMenuButton({ state: MenuState.Visible })
       assertMenu({
-        state: MenuState.Open,
+        state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
       assertMenuButtonLinkedWithMenu()
@@ -2282,18 +2304,18 @@ describe('Mouse interactions', () => {
     `)
 
     assertMenuButton({
-      state: MenuState.Closed,
+      state: MenuState.InvisibleUnmounted,
       attributes: { id: 'headlessui-menu-button-1' },
     })
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Open menu
     await click(getMenuButton())
 
     // Verify it is open
-    assertMenuButton({ state: MenuState.Open })
+    assertMenuButton({ state: MenuState.Visible })
     assertMenu({
-      state: MenuState.Open,
+      state: MenuState.Visible,
       attributes: { id: 'headlessui-menu-items-2' },
     })
     assertMenuButtonLinkedWithMenu()
@@ -2317,20 +2339,20 @@ describe('Mouse interactions', () => {
     `)
 
     assertMenuButton({
-      state: MenuState.Closed,
+      state: MenuState.InvisibleUnmounted,
       attributes: { id: 'headlessui-menu-button-1' },
     })
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Try to open the menu
     await click(getMenuButton())
 
     // Verify it is still closed
     assertMenuButton({
-      state: MenuState.Closed,
+      state: MenuState.InvisibleUnmounted,
       attributes: { id: 'headlessui-menu-button-1' },
     })
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
   })
 
   it('should be possible to close a menu on click', async () => {
@@ -2349,14 +2371,14 @@ describe('Mouse interactions', () => {
     await click(getMenuButton())
 
     // Verify it is open
-    assertMenuButton({ state: MenuState.Open })
+    assertMenuButton({ state: MenuState.Visible })
 
     // Click to close
     await click(getMenuButton())
 
     // Verify it is closed
-    assertMenuButton({ state: MenuState.Closed })
-    assertMenu({ state: MenuState.Closed })
+    assertMenuButton({ state: MenuState.InvisibleUnmounted })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
   })
 
   it('should focus the menu when you try to focus the button again (when the menu is already open)', async () => {
@@ -2397,13 +2419,13 @@ describe('Mouse interactions', () => {
     `)
 
     // Verify that the window is closed
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Click something that is not related to the menu
     await click(document.body)
 
     // Should still be closed
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
   })
 
   it('should be possible to click outside of the menu which should close the menu', async () => {
@@ -2420,13 +2442,13 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     // Click something that is not related to the menu
     await click(document.body)
 
     // Should be closed now
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Verify the button is focused again
     assertActiveElement(getMenuButton())
@@ -2446,13 +2468,13 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     // Click the menu button again
     await click(getMenuButton())
 
     // Should be closed now
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Verify the button is focused again
     assertActiveElement(getMenuButton())
@@ -2706,14 +2728,14 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     const items = getMenuItems()
 
     // We should be able to click the first item
     await click(items[1])
 
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
     expect(clickHandler).toHaveBeenCalled()
   })
 
@@ -2737,11 +2759,11 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     // We should be able to click the first item
     await click(getMenuItems()[1])
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Verify the callback has been called
     expect(clickHandler).toHaveBeenCalledTimes(1)
@@ -2751,7 +2773,7 @@ describe('Mouse interactions', () => {
 
     // Click the last item, which should close and invoke the handler
     await click(getMenuItems()[2])
-    assertMenu({ state: MenuState.Closed })
+    assertMenu({ state: MenuState.InvisibleUnmounted })
 
     // Verify the callback has been called
     expect(clickHandler).toHaveBeenCalledTimes(2)
@@ -2771,13 +2793,13 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     const items = getMenuItems()
 
     // We should be able to click the first item
     await click(items[1])
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
   })
 
   it('should be possible focus a menu item, so that it becomes active', async () => {
@@ -2794,7 +2816,7 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     const items = getMenuItems()
 
@@ -2820,7 +2842,7 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     const items = getMenuItems()
 
@@ -2852,7 +2874,7 @@ describe('Mouse interactions', () => {
 
     // Open menu
     await click(getMenuButton())
-    assertMenu({ state: MenuState.Open })
+    assertMenu({ state: MenuState.Visible })
 
     const items = getMenuItems()
 
