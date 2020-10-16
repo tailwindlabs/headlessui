@@ -491,11 +491,12 @@ const Options = forwardRefWithAs(function Options<
     onKeyDown: handleKeyDown,
     role: 'listbox',
     tabIndex: 0,
+    ref: optionsRef,
   }
   const passthroughProps = props
 
   return render(
-    { ...passthroughProps, ...propsWeControl, ref: optionsRef },
+    { ...passthroughProps, ...propsWeControl },
     propsBag,
     DEFAULT_OPTIONS_TAG,
     OptionsRenderFeatures,

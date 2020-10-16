@@ -438,11 +438,12 @@ const Items = forwardRefWithAs(function Items<
     onKeyDown: handleKeyDown,
     role: 'menu',
     tabIndex: 0,
+    ref: itemsRef,
   }
   const passthroughProps = props
 
   return render(
-    { ...passthroughProps, ...propsWeControl, ref: itemsRef },
+    { ...passthroughProps, ...propsWeControl },
     propsBag,
     DEFAULT_ITEMS_TAG,
     ItemsRenderFeatures,
