@@ -78,11 +78,17 @@ export function render<TFeature extends Features, TTag extends React.ElementType
 }
 
 function _render<TTag extends React.ElementType, TBag>(
-  props: Props<TTag, TBag, any>,
+  props: Props<TTag, TBag, any> & { ref?: unknown },
   bag: TBag,
   tag: React.ElementType
 ) {
-  const { as: Component = tag, children, ...passThroughProps } = omit(props, ['unmount', 'static'])
+  const { as: Component = tag, children, refName = 'ref', ...passThroughProps } = omit(props, [
+    'unmount',
+    'static',
+  ])
+
+  // This allows us to use `<HeadlessUIComponent as={MyComopnent} refName="innerRef" />`
+  const refRelatedProps = props.ref !== undefined ? { [refName]: props.ref } : {}
 
   const resolvedChildren = (typeof children === 'function' ? children(bag) : children) as
     | React.ReactElement
@@ -106,14 +112,27 @@ function _render<TTag extends React.ElementType, TBag>(
 
       return React.cloneElement(
         resolvedChildren,
-
-        // Filter out undefined values so that they don't override the existing values
-        mergeEventFunctions(compact(passThroughProps), resolvedChildren.props, ['onClick'])
+        Object.assign(
+          {},
+          // Filter out undefined values so that they don't override the existing values
+          mergeEventFunctions(compact(omit(passThroughProps, ['ref'])), resolvedChildren.props, [
+            'onClick',
+          ]),
+          refRelatedProps
+        )
       )
     }
   }
 
-  return React.createElement(Component, passThroughProps, resolvedChildren)
+  return React.createElement(
+    Component,
+    Object.assign(
+      {},
+      omit(passThroughProps, ['ref']),
+      Component !== React.Fragment && refRelatedProps
+    ),
+    resolvedChildren
+  )
 }
 
 /**

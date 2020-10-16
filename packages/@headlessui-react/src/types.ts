@@ -10,6 +10,7 @@ export type PropsOf<TTag = any> = TTag extends React.ElementType
 export type Props<TTag, TSlot = {}, TOmitableProps extends keyof any = ''> = {
   as?: TTag
   children?: React.ReactNode | ((bag: TSlot) => React.ReactElement)
+  refName?: string
 } & Omit<PropsOf<TTag>, TOmitableProps>
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
