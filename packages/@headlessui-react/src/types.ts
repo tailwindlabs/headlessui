@@ -7,14 +7,16 @@ export type PropsOf<TTag = any> = TTag extends React.ElementType
   ? React.ComponentProps<TTag>
   : never
 
-export type Props<TTag, TSlot = {}, TOmitableProps extends keyof any = ''> = {
+export type Props<TTag, TSlot = {}, TOmitableProps extends keyof any = __> = {
   as?: TTag
   children?: React.ReactNode | ((bag: TSlot) => React.ReactElement)
   refName?: string
-} & Omit<PropsOf<TTag>, TOmitableProps>
+} & (TOmitableProps extends __ ? PropsOf<TTag> : Omit<PropsOf<TTag>, TOmitableProps>)
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
-export type XOR<T, U> = T extends __
+export type XOR<T, U> = T | U extends __
+  ? never
+  : T extends __
   ? U
   : U extends __
   ? T

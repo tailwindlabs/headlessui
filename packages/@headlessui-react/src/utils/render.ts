@@ -78,7 +78,7 @@ export function render<TFeature extends Features, TTag extends React.ElementType
 }
 
 function _render<TTag extends React.ElementType, TBag>(
-  props: Props<TTag, TBag, any> & { ref?: unknown },
+  props: Props<TTag, TBag> & { ref?: unknown },
   bag: TBag,
   tag: React.ElementType
 ) {
