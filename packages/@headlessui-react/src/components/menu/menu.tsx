@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import { Props } from '../../types'
 import { match } from '../../utils/match'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, render, Features, PropsForFeatures } from '../../utils/render'
 import { disposables } from '../../utils/disposables'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -108,7 +108,11 @@ const reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.CloseMenu]: state => ({ ...state, menuState: MenuStates.Closed }),
+  [ActionTypes.CloseMenu]: state => ({
+    ...state,
+    activeItemIndex: null,
+    menuState: MenuStates.Closed,
+  }),
   [ActionTypes.OpenMenu]: state => ({ ...state, menuState: MenuStates.Open }),
   [ActionTypes.GoToItem]: (state, action) => {
     const activeItemIndex = calculateActiveItemIndex(state, action.focus, action.id)
@@ -348,14 +352,15 @@ type ItemsPropsWeControl =
 const DEFAULT_ITEMS_TAG = 'div'
 
 type ItemsRenderPropArg = { open: boolean }
+const ItemsRenderFeatures = Features.RenderStrategy | Features.Static
 
 const Items = forwardRefWithAs(function Items<
   TTag extends React.ElementType = typeof DEFAULT_ITEMS_TAG
 >(
-  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> & { static?: boolean },
+  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
+    PropsForFeatures<typeof ItemsRenderFeatures>,
   ref: React.Ref<HTMLDivElement>
 ) {
-  const { static: isStatic = false, ...passthroughProps } = props
   const [state, dispatch] = useMenuContext([Menu.name, Items.name].join('.'))
   const itemsRef = useSyncRefs(state.itemsRef, ref)
 
@@ -433,14 +438,16 @@ const Items = forwardRefWithAs(function Items<
     onKeyDown: handleKeyDown,
     role: 'menu',
     tabIndex: 0,
+    ref: itemsRef,
   }
-
-  if (!isStatic && state.menuState === MenuStates.Closed) return null
+  const passthroughProps = props
 
   return render(
-    { ...passthroughProps, ...propsWeControl, ...{ ref: itemsRef } },
+    { ...passthroughProps, ...propsWeControl },
     propsBag,
-    DEFAULT_ITEMS_TAG
+    DEFAULT_ITEMS_TAG,
+    ItemsRenderFeatures,
+    state.menuState === MenuStates.Open
   )
 })
 
@@ -529,11 +536,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     onPointerLeave: handlePointerLeave,
   }
 
-  return render<TTag, ItemRenderPropArg>(
-    { ...passthroughProps, ...propsWeControl },
-    propsBag,
-    DEFAULT_ITEM_TAG
-  )
+  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_ITEM_TAG)
 }
 
 function resolvePropValue<TProperty, TBag>(property: TProperty, bag: TBag) {

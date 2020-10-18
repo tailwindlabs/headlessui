@@ -317,6 +317,7 @@ function MyComponent({ isShowing }) {
 | `show`        | Boolean                               | Whether the children should be shown or hidden.                                       |
 | `as`          | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition` itself.               |
 | `appear`      | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
+| `unmount`     | Boolean _(Default: `true`)_           | Whether the element should be unmounted or hidden based on the show state.            |
 | `enter`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
 | `enterFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
 | `enterTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
@@ -358,6 +359,7 @@ function MyComponent({ isShowing }) {
 | ----------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
 | `as`        | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition.Child` itself.         |
 | `appear`    | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
+| `unmount`   | Boolean _(Default: `true`)_           | Whether the element should be unmounted or hidden based on the show state.            |
 | `enter`     | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
 | `enterFrom` | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
 | `enterTo`   | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
@@ -726,10 +728,13 @@ function MyDropdown() {
 
 ##### Props
 
-| Prop     | Type                | Default | Description                                                                 |
-| -------- | ------------------- | ------- | --------------------------------------------------------------------------- |
-| `as`     | String \| Component | `div`   | The element or component the `Menu.Items` should render as.                 |
-| `static` | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state. |
+| Prop      | Type                | Default | Description                                                                       |
+| --------- | ------------------- | ------- | --------------------------------------------------------------------------------- |
+| `as`      | String \| Component | `div`   | The element or component the `Menu.Items` should render as.                       |
+| `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
+| `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
+
+> **note**: `static` and `unmount` can not be used at the same time. You will get a TypeScript error if you try to do it.
 
 ##### Render prop object
 
@@ -1231,10 +1236,13 @@ function MyListbox() {
 
 ##### Props
 
-| Prop     | Type                | Default | Description                                                                 |
-| -------- | ------------------- | ------- | --------------------------------------------------------------------------- |
-| `as`     | String \| Component | `ul`    | The element or component the `Listbox.Options` should render as.            |
-| `static` | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state. |
+| Prop      | Type                | Default | Description                                                                       |
+| --------- | ------------------- | ------- | --------------------------------------------------------------------------------- |
+| `as`      | String \| Component | `ul`    | The element or component the `Listbox.Options` should render as.                  |
+| `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
+| `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
+
+> **note**: `static` and `unmount` can not be used at the same time. You will get a TypeScript error if you try to do it.
 
 ##### Render prop object
 

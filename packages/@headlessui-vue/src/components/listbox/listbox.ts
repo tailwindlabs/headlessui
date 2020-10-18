@@ -12,9 +12,10 @@ import {
   ComputedRef,
   watchEffect,
   toRaw,
+  watch,
 } from 'vue'
 import { match } from '../../utils/match'
-import { render } from '../../utils/render'
+import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 
@@ -142,7 +143,10 @@ export const Listbox = defineComponent({
       options,
       searchQuery,
       activeOptionIndex,
-      closeListbox: () => (listboxState.value = ListboxStates.Closed),
+      closeListbox: () => {
+        listboxState.value = ListboxStates.Closed
+        activeOptionIndex.value = null
+      },
       openListbox: () => (listboxState.value = ListboxStates.Open),
       goToOption(focus: Focus, id?: string) {
         const nextActiveOptionIndex = calculateActiveOptionIndex(focus, id)
@@ -359,14 +363,10 @@ export const ListboxOptions = defineComponent({
   props: {
     as: { type: [Object, String], default: 'ul' },
     static: { type: Boolean, default: false },
+    unmount: { type: Boolean, default: true },
   },
   render() {
     const api = useListboxContext('ListboxOptions')
-
-    // `static` is a reserved keyword, therefore aliasing it...
-    const { static: isStatic, ...passThroughProps } = this.$props
-
-    if (!isStatic && api.listboxState.value === ListboxStates.Closed) return null
 
     const slot = { open: api.listboxState.value === ListboxStates.Open }
     const propsWeControl = {
@@ -381,12 +381,15 @@ export const ListboxOptions = defineComponent({
       tabIndex: 0,
       ref: 'el',
     }
+    const passThroughProps = this.$props
 
     return render({
       props: { ...passThroughProps, ...propsWeControl },
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      features: Features.RenderStrategy | Features.Static,
+      visible: slot.open,
     })
   },
   setup() {
@@ -409,11 +412,11 @@ export const ListboxOptions = defineComponent({
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
-          api.closeListbox()
           if (api.activeOptionIndex.value !== null) {
             const { dataRef } = api.options.value[api.activeOptionIndex.value]
             api.select(dataRef.value)
           }
+          api.closeListbox()
           nextTick(() => api.buttonRef.value?.focus())
           break
 
@@ -496,12 +499,20 @@ export const ListboxOption = defineComponent({
     onUnmounted(() => api.unregisterOption(id))
 
     onMounted(() => {
-      if (!selected.value) return
-      api.goToOption(Focus.Specific, id)
-      document.getElementById(id)?.focus?.()
+      watch(
+        [api.listboxState, selected],
+        () => {
+          if (api.listboxState.value !== ListboxStates.Open) return
+          if (!selected.value) return
+          api.goToOption(Focus.Specific, id)
+          document.getElementById(id)?.focus?.()
+        },
+        { immediate: true }
+      )
     })
 
     watchEffect(() => {
+      if (api.listboxState.value !== ListboxStates.Open) return
       if (!active.value) return
       nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     })

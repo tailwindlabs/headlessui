@@ -1,12 +1,94 @@
 import * as React from 'react'
-import { Props } from '../types'
+import { Props, XOR, __ } from '../types'
+import { match } from './match'
 
-export function render<TTag extends React.ElementType, TBag>(
-  props: Props<TTag, TBag, any>,
+export enum Features {
+  /** No features at all */
+  None = 0,
+
+  /**
+   * When used, this will allow us to use one of the render strategies.
+   *
+   * **The render strategies are:**
+   *    - **Unmount**   _(Will unmount the component.)_
+   *    - **Hidden**    _(Will hide the component using the [hidden] attribute.)_
+   */
+  RenderStrategy = 1,
+
+  /**
+   * When used, this will allow the user of our component to be in control. This can be used when
+   * you want to transition based on some state.
+   */
+  Static = 2,
+}
+
+export enum RenderStrategy {
+  Unmount,
+  Hidden,
+}
+
+type PropsForFeature<TPassedInFeatures extends Features, TForFeature extends Features, TProps> = {
+  [P in TPassedInFeatures]: P extends TForFeature ? TProps : __
+}[TPassedInFeatures]
+
+export type PropsForFeatures<T extends Features> = XOR<
+  PropsForFeature<T, Features.Static, { static?: boolean }>,
+  PropsForFeature<T, Features.RenderStrategy, { unmount?: boolean }>
+>
+
+export function render<TFeature extends Features, TTag extends React.ElementType, TBag>(
+  props: Props<TTag, TBag, any> & PropsForFeatures<TFeature>,
+  propsBag: TBag,
+  defaultTag: React.ElementType,
+  features?: TFeature,
+  visible: boolean = true
+) {
+  // Visible always render
+  if (visible) return _render(props, propsBag, defaultTag)
+
+  const featureFlags = features ?? Features.None
+
+  if (featureFlags & Features.Static) {
+    const { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
+
+    // When the `static` prop is passed as `true`, then the user is in control, thus we don't care about anything else
+    if (isStatic) return _render(rest, propsBag, defaultTag)
+  }
+
+  if (featureFlags & Features.RenderStrategy) {
+    const { unmount = true, ...rest } = props as PropsForFeatures<Features.RenderStrategy>
+    const strategy = unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
+
+    return match(strategy, {
+      [RenderStrategy.Unmount]() {
+        return null
+      },
+      [RenderStrategy.Hidden]() {
+        return _render(
+          { ...rest, ...{ hidden: true, style: { display: 'none' } } },
+          propsBag,
+          defaultTag
+        )
+      },
+    })
+  }
+
+  // No features enabled, just render
+  return _render(props, propsBag, defaultTag)
+}
+
+function _render<TTag extends React.ElementType, TBag>(
+  props: Props<TTag, TBag> & { ref?: unknown },
   bag: TBag,
   tag: React.ElementType
 ) {
-  const { as: Component = tag, children, ...passThroughProps } = props
+  const { as: Component = tag, children, refName = 'ref', ...passThroughProps } = omit(props, [
+    'unmount',
+    'static',
+  ])
+
+  // This allows us to use `<HeadlessUIComponent as={MyComopnent} refName="innerRef" />`
+  const refRelatedProps = props.ref !== undefined ? { [refName]: props.ref } : {}
 
   const resolvedChildren = (typeof children === 'function' ? children(bag) : children) as
     | React.ReactElement
@@ -16,7 +98,7 @@ export function render<TTag extends React.ElementType, TBag>(
     if (Object.keys(passThroughProps).length > 0) {
       if (Array.isArray(resolvedChildren) && resolvedChildren.length > 1) {
         const err = new Error('You should only render 1 child')
-        if (Error.captureStackTrace) Error.captureStackTrace(err, render)
+        if (Error.captureStackTrace) Error.captureStackTrace(err, _render)
         throw err
       }
 
@@ -24,20 +106,33 @@ export function render<TTag extends React.ElementType, TBag>(
         const err = new Error(
           `You should render an element as a child. Did you forget the as="..." prop?`
         )
-        if (Error.captureStackTrace) Error.captureStackTrace(err, render)
+        if (Error.captureStackTrace) Error.captureStackTrace(err, _render)
         throw err
       }
 
       return React.cloneElement(
         resolvedChildren,
-
-        // Filter out undefined values so that they don't override the existing values
-        mergeEventFunctions(compact(passThroughProps), resolvedChildren.props, ['onClick'])
+        Object.assign(
+          {},
+          // Filter out undefined values so that they don't override the existing values
+          mergeEventFunctions(compact(omit(passThroughProps, ['ref'])), resolvedChildren.props, [
+            'onClick',
+          ]),
+          refRelatedProps
+        )
       )
     }
   }
 
-  return React.createElement(Component, passThroughProps, resolvedChildren)
+  return React.createElement(
+    Component,
+    Object.assign(
+      {},
+      omit(passThroughProps, ['ref']),
+      Component !== React.Fragment && refRelatedProps
+    ),
+    resolvedChildren
+  )
 }
 
 /**
@@ -89,6 +184,14 @@ function compact<T extends Record<any, any>>(object: T) {
   let clone = Object.assign({}, object)
   for (let key in clone) {
     if (clone[key] === undefined) delete clone[key]
+  }
+  return clone
+}
+
+function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) {
+  let clone = Object.assign({}, object)
+  for (let key of keysToOmit) {
+    if (key in clone) delete clone[key]
   }
   return clone
 }

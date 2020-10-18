@@ -120,7 +120,9 @@ describe('Setup API', () => {
 
     it('should be possible to use a render prop', () => {
       const { container } = render(
-        <Transition show={true}>{ref => <span ref={ref}>Children</span>}</Transition>
+        <Transition show={true} as={React.Fragment}>
+          {() => <span>Children</span>}
+        </Transition>
       )
 
       expect(container.firstChild).toMatchInlineSnapshot(`
@@ -131,12 +133,20 @@ describe('Setup API', () => {
     })
 
     it(
-      'should yell at us when we forget to apply the ref when using a render prop',
+      'should yell at us when we forget to forward the ref when using a render prop',
       suppressConsoleLogs(() => {
         expect.assertions(1)
 
+        function Dummy(props: any) {
+          return <span {...props}>Children</span>
+        }
+
         expect(() => {
-          render(<Transition show={true}>{() => <span>Children</span>}</Transition>)
+          render(
+            <Transition show={true} as={React.Fragment}>
+              {() => <Dummy />}
+            </Transition>
+          )
         }).toThrowErrorMatchingInlineSnapshot(
           `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`
         )
@@ -253,8 +263,10 @@ describe('Setup API', () => {
       const { container } = render(
         <div className="My Page">
           <Transition show={true}>
-            <Transition.Child>{ref => <aside ref={ref}>Sidebar</aside>}</Transition.Child>
-            <Transition.Child>{ref => <section ref={ref}>Content</section>}</Transition.Child>
+            <Transition.Child as={React.Fragment}>{() => <aside>Sidebar</aside>}</Transition.Child>
+            <Transition.Child as={React.Fragment}>
+              {() => <section>Content</section>}
+            </Transition.Child>
           </Transition>
         </div>
       )
@@ -278,11 +290,15 @@ describe('Setup API', () => {
     it('should be possible to use render props on the Transition and Transition.Child components', () => {
       const { container } = render(
         <div className="My Page">
-          <Transition show={true}>
-            {ref => (
-              <article ref={ref}>
-                <Transition.Child>{ref => <aside ref={ref}>Sidebar</aside>}</Transition.Child>
-                <Transition.Child>{ref => <section ref={ref}>Content</section>}</Transition.Child>
+          <Transition show={true} as={React.Fragment}>
+            {() => (
+              <article>
+                <Transition.Child as={React.Fragment}>
+                  {() => <aside>Sidebar</aside>}
+                </Transition.Child>
+                <Transition.Child as={React.Fragment}>
+                  {() => <section>Content</section>}
+                </Transition.Child>
               </article>
             )}
           </Transition>
@@ -306,16 +322,24 @@ describe('Setup API', () => {
     })
 
     it(
-      'should yell at us when we forgot to apply the ref on one of the Transition.Child components',
+      'should yell at us when we forgot to forward the ref on one of the Transition.Child components',
       suppressConsoleLogs(() => {
         expect.assertions(1)
+
+        function Dummy(props: any) {
+          return <div {...props} />
+        }
 
         expect(() => {
           render(
             <div className="My Page">
               <Transition show={true}>
-                <Transition.Child>{ref => <aside ref={ref}>Sidebar</aside>}</Transition.Child>
-                <Transition.Child>{() => <section>Content</section>}</Transition.Child>
+                <Transition.Child as={React.Fragment}>
+                  {() => <Dummy>Sidebar</Dummy>}
+                </Transition.Child>
+                <Transition.Child as={React.Fragment}>
+                  {() => <Dummy>Content</Dummy>}
+                </Transition.Child>
               </Transition>
             </div>
           )
@@ -326,21 +350,23 @@ describe('Setup API', () => {
     )
 
     it(
-      'should yell at us when we forgot to apply a ref on the Transition component',
+      'should yell at us when we forgot to forward a ref on the Transition component',
       suppressConsoleLogs(() => {
         expect.assertions(1)
+
+        function Dummy(props: any) {
+          return <div {...props} />
+        }
 
         expect(() => {
           render(
             <div className="My Page">
-              <Transition show={true}>
+              <Transition show={true} as={React.Fragment}>
                 {() => (
-                  <article>
-                    <Transition.Child>{ref => <aside ref={ref}>Sidebar</aside>}</Transition.Child>
-                    <Transition.Child>
-                      {ref => <section ref={ref}>Content</section>}
-                    </Transition.Child>
-                  </article>
+                  <Dummy>
+                    <Transition.Child>{() => <aside>Sidebar</aside>}</Transition.Child>
+                    <Transition.Child>{() => <section>Content</section>}</Transition.Child>
+                  </Dummy>
                 )}
               </Transition>
             </div>
@@ -503,6 +529,53 @@ describe('Transitions', () => {
       `)
     })
 
+    it('should transition in completely (duration defined in seconds) in (render strategy = hidden)', async () => {
+      const enterDuration = 50
+
+      function Example() {
+        const [show, setShow] = React.useState(false)
+
+        return (
+          <>
+            <style>{`.enter { transition-duration: ${enterDuration /
+              1000}s; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
+
+            <Transition show={show} unmount={false} enter="enter" enterFrom="from" enterTo="to">
+              <span>Hello!</span>
+            </Transition>
+
+            <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              Toggle
+            </button>
+          </>
+        )
+      }
+
+      const timeline = await executeTimeline(<Example />, [
+        // Toggle to show
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(enterDuration)
+        },
+      ])
+
+      expect(timeline).toMatchInlineSnapshot(`
+        "Render 1:
+            -     hidden=\\"\\"
+            -     style=\\"display: none;\\"
+            +     class=\\"enter from\\"
+            +     style=\\"\\"
+
+        Render 2:
+            -     class=\\"enter from\\"
+            +     class=\\"enter to\\"
+
+        Render 3: Transition took at least 50ms (yes)
+            -     class=\\"enter to\\"
+            +     class=\\"\\""
+      `)
+    })
+
     it('should transition in completely', async () => {
       const enterDuration = 50
 
@@ -607,6 +680,57 @@ describe('Transitions', () => {
     )
 
     it(
+      'should transition out completely (render strategy = hidden)',
+      suppressConsoleLogs(async () => {
+        const leaveDuration = 50
+
+        function Example() {
+          const [show, setShow] = React.useState(true)
+
+          return (
+            <>
+              <style>{`.leave { transition-duration: ${leaveDuration}ms; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
+
+              <Transition show={show} unmount={false} leave="leave" leaveFrom="from" leaveTo="to">
+                <span>Hello!</span>
+              </Transition>
+
+              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+                Toggle
+              </button>
+            </>
+          )
+        }
+
+        const timeline = await executeTimeline(<Example />, [
+          // Toggle to hide
+          ({ getByTestId }) => {
+            fireEvent.click(getByTestId('toggle'))
+            return executeTimeline.fullTransition(leaveDuration)
+          },
+        ])
+
+        expect(timeline).toMatchInlineSnapshot(`
+          "Render 1:
+              -   <div>
+              +   <div
+              +     class=\\"leave from\\"
+              +   >
+
+          Render 2:
+              -     class=\\"leave from\\"
+              +     class=\\"leave to\\"
+
+          Render 3: Transition took at least 50ms (yes)
+              -     class=\\"leave to\\"
+              +     class=\\"\\"
+              +     hidden=\\"\\"
+              +     style=\\"display: none;\\""
+        `)
+      })
+    )
+
+    it(
       'should transition in and out completely',
       suppressConsoleLogs(async () => {
         const enterDuration = 50
@@ -687,6 +811,108 @@ describe('Transitions', () => {
               -       Hello!
               -     </span>
               -   </div>"
+        `)
+      })
+    )
+
+    it(
+      'should transition in and out completely (render strategy = hidden)',
+      suppressConsoleLogs(async () => {
+        const enterDuration = 50
+        const leaveDuration = 75
+
+        function Example() {
+          const [show, setShow] = React.useState(false)
+
+          return (
+            <>
+              <style>{`.enter { transition-duration: ${enterDuration}ms; } .enter-from { opacity: 0%; } .enter-to { opacity: 100%; }`}</style>
+              <style>{`.leave { transition-duration: ${leaveDuration}ms; } .leave-from { opacity: 100%; } .leave-to { opacity: 0%; }`}</style>
+
+              <Transition
+                show={show}
+                unmount={false}
+                enter="enter"
+                enterFrom="enter-from"
+                enterTo="enter-to"
+                leave="leave"
+                leaveFrom="leave-from"
+                leaveTo="leave-to"
+              >
+                <span>Hello!</span>
+              </Transition>
+
+              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+                Toggle
+              </button>
+            </>
+          )
+        }
+
+        const timeline = await executeTimeline(<Example />, [
+          // Toggle to show
+          ({ getByTestId }) => {
+            fireEvent.click(getByTestId('toggle'))
+            return executeTimeline.fullTransition(enterDuration)
+          },
+
+          // Toggle to hide
+          ({ getByTestId }) => {
+            fireEvent.click(getByTestId('toggle'))
+            return executeTimeline.fullTransition(leaveDuration)
+          },
+
+          // Toggle to show
+          ({ getByTestId }) => {
+            fireEvent.click(getByTestId('toggle'))
+            return executeTimeline.fullTransition(leaveDuration)
+          },
+        ])
+
+        expect(timeline).toMatchInlineSnapshot(`
+          "Render 1:
+              -     hidden=\\"\\"
+              -     style=\\"display: none;\\"
+              +     class=\\"enter enter-from\\"
+              +     style=\\"\\"
+
+          Render 2:
+              -     class=\\"enter enter-from\\"
+              +     class=\\"enter enter-to\\"
+
+          Render 3: Transition took at least 50ms (yes)
+              -     class=\\"enter enter-to\\"
+              +     class=\\"\\"
+
+          Render 4:
+              -     class=\\"\\"
+              +     class=\\"leave leave-from\\"
+
+          Render 5:
+              -     class=\\"leave leave-from\\"
+              +     class=\\"leave leave-to\\"
+
+          Render 6: Transition took at least 75ms (yes)
+              -     class=\\"leave leave-to\\"
+              -     style=\\"\\"
+              +     class=\\"\\"
+              +     hidden=\\"\\"
+              +     style=\\"display: none;\\"
+
+          Render 7:
+              -     class=\\"\\"
+              -     hidden=\\"\\"
+              -     style=\\"display: none;\\"
+              +     class=\\"enter enter-from\\"
+              +     style=\\"\\"
+
+          Render 8:
+              -     class=\\"enter enter-from\\"
+              +     class=\\"enter enter-to\\"
+
+          Render 9: Transition took at least 75ms (yes)
+              -     class=\\"enter enter-to\\"
+              +     class=\\"\\""
         `)
       })
     )

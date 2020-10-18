@@ -1,4 +1,4 @@
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, nextTick, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -85,10 +85,10 @@ describe('safeguards', () => {
       })
 
       assertListboxButton({
-        state: ListboxState.Closed,
+        state: ListboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-listbox-button-1' },
       })
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
     })
   )
 })
@@ -119,18 +119,18 @@ describe('Rendering', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         await click(getListboxButton())
 
         assertListboxButton({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
       })
     )
   })
@@ -155,14 +155,14 @@ describe('Rendering', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-2' },
         })
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
           textContent: JSON.stringify({ open: false }),
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         await click(getListboxButton())
 
@@ -170,7 +170,7 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-listbox-label-1' },
           textContent: JSON.stringify({ open: true }),
         })
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
         assertListboxLabelLinkedWithListbox()
         assertListboxButtonLinkedWithListboxLabel()
       })
@@ -199,7 +199,7 @@ describe('Rendering', () => {
           textContent: JSON.stringify({ open: false }),
           tag: 'p',
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         await click(getListboxButton())
         assertListboxLabel({
@@ -207,7 +207,7 @@ describe('Rendering', () => {
           textContent: JSON.stringify({ open: true }),
           tag: 'p',
         })
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
       })
     )
   })
@@ -231,20 +231,20 @@ describe('Rendering', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
           textContent: JSON.stringify({ open: false, focused: false }),
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         await click(getListboxButton())
 
         assertListboxButton({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
           textContent: JSON.stringify({ open: true, focused: false }),
         })
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
       })
     )
 
@@ -266,20 +266,20 @@ describe('Rendering', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
           textContent: JSON.stringify({ open: false, focused: false }),
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         await click(getListboxButton())
 
         assertListboxButton({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
           textContent: JSON.stringify({ open: true, focused: false }),
         })
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
       })
     )
 
@@ -304,10 +304,10 @@ describe('Rendering', () => {
         await new Promise(requestAnimationFrame)
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-2' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
         assertListboxButtonLinkedWithListboxLabel()
       })
     )
@@ -330,19 +330,19 @@ describe('Rendering', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         await click(getListboxButton())
 
         assertListboxButton({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           textContent: JSON.stringify({ open: true }),
         })
         assertActiveElement(getListbox())
@@ -367,6 +367,31 @@ describe('Rendering', () => {
       // Let's verify that the Listbox is already there
       expect(getListbox()).not.toBe(null)
     })
+
+    it('should be possible to use a different render strategy for the ListboxOptions', async () => {
+      renderTemplate({
+        template: `
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions :unmount="false">
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertListbox({ state: ListboxState.InvisibleHidden })
+
+      // Let's open the Listbox, to see if it is not hidden anymore
+      await click(getListboxButton())
+
+      assertListbox({ state: ListboxState.Visible })
+    })
   })
 
   describe('ListboxOption', () => {
@@ -386,19 +411,19 @@ describe('Rendering', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         await click(getListboxButton())
 
         assertListboxButton({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
         })
       })
@@ -431,10 +456,10 @@ describe('Rendering composition', () => {
       })
 
       assertListboxButton({
-        state: ListboxState.Closed,
+        state: ListboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-listbox-button-1' },
       })
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Open Listbox
       await click(getListboxButton())
@@ -509,10 +534,10 @@ describe('Rendering composition', () => {
       })
 
       assertListboxButton({
-        state: ListboxState.Closed,
+        state: ListboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-listbox-button-1' },
       })
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Open Listbox
       await click(getListboxButton())
@@ -543,10 +568,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -555,9 +580,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -592,10 +617,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -605,10 +630,10 @@ describe('Keyboard interactions', () => {
 
         // Verify it is still closed
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
       })
     )
 
@@ -630,10 +655,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -642,9 +667,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -652,6 +677,72 @@ describe('Keyboard interactions', () => {
 
         // Verify we have listbox options
         const options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
+
+        // Verify that the second listbox option is active (because it is already selected)
+        assertActiveListboxOption(options[1])
+      })
+    )
+
+    it(
+      'should be possible to open the listbox with Enter, and focus the selected option (when using the `hidden` render strategy)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <Listbox v-model="value">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions :unmount="false">
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref('b') }),
+        })
+
+        await new Promise<void>(nextTick)
+
+        assertListboxButton({
+          state: ListboxState.InvisibleHidden,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleHidden })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.Enter)
+
+        // Verify it is visible
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({
+          state: ListboxState.Visible,
+          attributes: { id: 'headlessui-listbox-options-2' },
+        })
+        assertActiveElement(getListbox())
+        assertListboxButtonLinkedWithListbox()
+
+        const options = getListboxOptions()
+
+        // Hover over Option A
+        await mouseMove(options[0])
+
+        // Verify that Option A is active
+        assertActiveListboxOption(options[0])
+
+        // Verify that Option B is still selected
+        assertListboxOption(options[1], { selected: true })
+
+        // Close/Hide the listbox
+        await press(Keys.Escape)
+
+        // Re-open the listbox
+        await click(getListboxButton())
+
+        // Verify we have listbox options
         expect(options).toHaveLength(3)
         options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
 
@@ -685,10 +776,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -697,9 +788,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -728,14 +819,14 @@ describe('Keyboard interactions', () => {
           setup: () => ({ value: ref(null) }),
         })
 
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
 
         // Open listbox
         await press(Keys.Enter)
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
         assertActiveElement(getListbox())
 
         assertNoActiveListboxOption()
@@ -762,10 +853,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -802,10 +893,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -844,10 +935,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -877,23 +968,23 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Open listbox
         await click(getListboxButton())
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
 
         // Close listbox
         await press(Keys.Enter)
 
         // Verify it is closed
-        assertListboxButton({ state: ListboxState.Closed })
-        assertListbox({ state: ListboxState.Closed })
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Verify the button is focused again
         assertActiveElement(getListboxButton())
@@ -923,16 +1014,16 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Open listbox
         await click(getListboxButton())
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
 
         // Activate the first listbox option
         const options = getListboxOptions()
@@ -942,8 +1033,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is closed
-        assertListboxButton({ state: ListboxState.Closed })
-        assertListbox({ state: ListboxState.Closed })
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Verify we got the change event
         expect(handleChange).toHaveBeenCalledTimes(1)
@@ -980,10 +1071,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -992,9 +1083,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1026,10 +1117,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1039,10 +1130,10 @@ describe('Keyboard interactions', () => {
 
         // Verify it is still closed
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
       })
     )
 
@@ -1064,10 +1155,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1076,9 +1167,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1107,14 +1198,14 @@ describe('Keyboard interactions', () => {
           setup: () => ({ value: ref(null) }),
         })
 
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
 
         // Open listbox
         await press(Keys.Space)
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
         assertActiveElement(getListbox())
 
         assertNoActiveListboxOption()
@@ -1141,10 +1232,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1181,10 +1272,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1223,10 +1314,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1261,16 +1352,16 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Open listbox
         await click(getListboxButton())
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
 
         // Activate the first listbox option
         const options = getListboxOptions()
@@ -1280,8 +1371,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is closed
-        assertListboxButton({ state: ListboxState.Closed })
-        assertListbox({ state: ListboxState.Closed })
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Verify we got the change event
         expect(handleChange).toHaveBeenCalledTimes(1)
@@ -1324,9 +1415,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1336,8 +1427,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Escape)
 
         // Verify it is closed
-        assertListboxButton({ state: ListboxState.Closed })
-        assertListbox({ state: ListboxState.Closed })
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Verify the button is focused again
         assertActiveElement(getListboxButton())
@@ -1364,10 +1455,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1376,9 +1467,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1394,8 +1485,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Tab)
 
         // Verify it is still open
-        assertListboxButton({ state: ListboxState.Open })
-        assertListbox({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({ state: ListboxState.Visible })
         assertActiveElement(getListbox())
       })
     )
@@ -1418,10 +1509,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1430,9 +1521,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1448,8 +1539,8 @@ describe('Keyboard interactions', () => {
         await press(shift(Keys.Tab))
 
         // Verify it is still open
-        assertListboxButton({ state: ListboxState.Open })
-        assertListbox({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({ state: ListboxState.Visible })
         assertActiveElement(getListbox())
       })
     )
@@ -1474,10 +1565,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1486,9 +1577,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowDown)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1522,10 +1613,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1535,10 +1626,10 @@ describe('Keyboard interactions', () => {
 
         // Verify it is still closed
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
       })
     )
 
@@ -1560,10 +1651,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1572,9 +1663,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowDown)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1603,14 +1694,14 @@ describe('Keyboard interactions', () => {
           setup: () => ({ value: ref(null) }),
         })
 
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
 
         // Open listbox
         await press(Keys.ArrowDown)
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
         assertActiveElement(getListbox())
 
         assertNoActiveListboxOption()
@@ -1635,10 +1726,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1686,10 +1777,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1731,10 +1822,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1770,10 +1861,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1782,9 +1873,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1818,10 +1909,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1831,10 +1922,10 @@ describe('Keyboard interactions', () => {
 
         // Verify it is still closed
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
       })
     )
 
@@ -1856,10 +1947,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1868,9 +1959,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -1899,14 +1990,14 @@ describe('Keyboard interactions', () => {
           setup: () => ({ value: ref(null) }),
         })
 
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
 
         // Open listbox
         await press(Keys.ArrowUp)
-        assertListbox({ state: ListboxState.Open })
+        assertListbox({ state: ListboxState.Visible })
         assertActiveElement(getListbox())
 
         assertNoActiveListboxOption()
@@ -1935,10 +2026,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -1976,10 +2067,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -2021,10 +2112,10 @@ describe('Keyboard interactions', () => {
         })
 
         assertListboxButton({
-          state: ListboxState.Closed,
+          state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
         })
-        assertListbox({ state: ListboxState.Closed })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
         getListboxButton()?.focus()
@@ -2033,9 +2124,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
 
         // Verify it is open
-        assertListboxButton({ state: ListboxState.Open })
+        assertListboxButton({ state: ListboxState.Visible })
         assertListbox({
-          state: ListboxState.Open,
+          state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-options-2' },
         })
         assertActiveElement(getListbox())
@@ -2877,18 +2968,18 @@ describe('Mouse interactions', () => {
       })
 
       assertListboxButton({
-        state: ListboxState.Closed,
+        state: ListboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-listbox-button-1' },
       })
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Open listbox
       await click(getListboxButton())
 
       // Verify it is open
-      assertListboxButton({ state: ListboxState.Open })
+      assertListboxButton({ state: ListboxState.Visible })
       assertListbox({
-        state: ListboxState.Open,
+        state: ListboxState.Visible,
         attributes: { id: 'headlessui-listbox-options-2' },
       })
       assertActiveElement(getListbox())
@@ -2919,20 +3010,20 @@ describe('Mouse interactions', () => {
       })
 
       assertListboxButton({
-        state: ListboxState.Closed,
+        state: ListboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-listbox-button-1' },
       })
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Try to open the listbox
       await click(getListboxButton())
 
       // Verify it is still closed
       assertListboxButton({
-        state: ListboxState.Closed,
+        state: ListboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-listbox-button-1' },
       })
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
     })
   )
 
@@ -2954,18 +3045,18 @@ describe('Mouse interactions', () => {
       })
 
       assertListboxButton({
-        state: ListboxState.Closed,
+        state: ListboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-listbox-button-1' },
       })
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Open listbox
       await click(getListboxButton())
 
       // Verify it is open
-      assertListboxButton({ state: ListboxState.Open })
+      assertListboxButton({ state: ListboxState.Visible })
       assertListbox({
-        state: ListboxState.Open,
+        state: ListboxState.Visible,
         attributes: { id: 'headlessui-listbox-options-2' },
       })
       assertActiveElement(getListbox())
@@ -3002,14 +3093,14 @@ describe('Mouse interactions', () => {
       await click(getListboxButton())
 
       // Verify it is open
-      assertListboxButton({ state: ListboxState.Open })
+      assertListboxButton({ state: ListboxState.Visible })
 
       // Click to close
       await click(getListboxButton())
 
       // Verify it is closed
-      assertListboxButton({ state: ListboxState.Closed })
-      assertListbox({ state: ListboxState.Closed })
+      assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
     })
   )
 
@@ -3059,13 +3150,13 @@ describe('Mouse interactions', () => {
       })
 
       // Verify that the window is closed
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Click something that is not related to the listbox
       await click(document.body)
 
       // Should still be closed
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
     })
   )
 
@@ -3088,14 +3179,14 @@ describe('Mouse interactions', () => {
 
       // Open listbox
       await click(getListboxButton())
-      assertListbox({ state: ListboxState.Open })
+      assertListbox({ state: ListboxState.Visible })
       assertActiveElement(getListbox())
 
       // Click something that is not related to the listbox
       await click(document.body)
 
       // Should be closed now
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Verify the button is focused again
       assertActiveElement(getListboxButton())
@@ -3168,14 +3259,14 @@ describe('Mouse interactions', () => {
 
       // Open listbox
       await click(getListboxButton())
-      assertListbox({ state: ListboxState.Open })
+      assertListbox({ state: ListboxState.Visible })
       assertActiveElement(getListbox())
 
       // Click the listbox button again
       await click(getListboxButton())
 
       // Should be closed now
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
 
       // Verify the button is focused again
       assertActiveElement(getListboxButton())
@@ -3440,14 +3531,14 @@ describe('Mouse interactions', () => {
 
       // Open listbox
       await click(getListboxButton())
-      assertListbox({ state: ListboxState.Open })
+      assertListbox({ state: ListboxState.Visible })
       assertActiveElement(getListbox())
 
       const options = getListboxOptions()
 
       // We should be able to click the first option
       await click(options[1])
-      assertListbox({ state: ListboxState.Closed })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('bob')
 
@@ -3488,14 +3579,14 @@ describe('Mouse interactions', () => {
 
       // Open listbox
       await click(getListboxButton())
-      assertListbox({ state: ListboxState.Open })
+      assertListbox({ state: ListboxState.Visible })
       assertActiveElement(getListbox())
 
       const options = getListboxOptions()
 
       // We should be able to click the first option
       await click(options[1])
-      assertListbox({ state: ListboxState.Open })
+      assertListbox({ state: ListboxState.Visible })
       assertActiveElement(getListbox())
       expect(handleChange).toHaveBeenCalledTimes(0)
 
@@ -3529,7 +3620,7 @@ describe('Mouse interactions', () => {
 
       // Open listbox
       await click(getListboxButton())
-      assertListbox({ state: ListboxState.Open })
+      assertListbox({ state: ListboxState.Visible })
       assertActiveElement(getListbox())
 
       const options = getListboxOptions()
@@ -3564,7 +3655,7 @@ describe('Mouse interactions', () => {
 
       // Open listbox
       await click(getListboxButton())
-      assertListbox({ state: ListboxState.Open })
+      assertListbox({ state: ListboxState.Visible })
       assertActiveElement(getListbox())
 
       const options = getListboxOptions()

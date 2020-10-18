@@ -27,8 +27,14 @@ export function getMenuItems(): HTMLElement[] {
 // ---
 
 export enum MenuState {
-  Open,
-  Closed,
+  /** The menu is visible to the user. */
+  Visible,
+
+  /** The menu is **not** visible to the user. It's still in the DOM, but it is hidden. */
+  InvisibleHidden,
+
+  /** The menu is **not** visible to the user. It's not in the DOM, it is unmounted. */
+  InvisibleUnmounted,
 }
 
 export function assertMenuButton(
@@ -47,12 +53,17 @@ export function assertMenuButton(
     expect(button).toHaveAttribute('aria-haspopup')
 
     switch (options.state) {
-      case MenuState.Open:
+      case MenuState.Visible:
         expect(button).toHaveAttribute('aria-controls')
         expect(button).toHaveAttribute('aria-expanded', 'true')
         break
 
-      case MenuState.Closed:
+      case MenuState.InvisibleHidden:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      case MenuState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
         expect(button).not.toHaveAttribute('aria-expanded')
         break
@@ -124,27 +135,37 @@ export function assertMenu(
 ) {
   try {
     switch (options.state) {
-      case MenuState.Open:
+      case MenuState.InvisibleHidden:
         if (menu === null) return expect(menu).not.toBe(null)
 
-        // Check that some attributes exists, doesn't really matter what the values are at this point in
-        // time, we just require them.
-        expect(menu).toHaveAttribute('aria-labelledby')
+        assertHidden(menu)
 
-        // Check that we have the correct values for certain attributes
+        expect(menu).toHaveAttribute('aria-labelledby')
         expect(menu).toHaveAttribute('role', 'menu')
 
-        if (options.textContent) {
-          expect(menu).toHaveTextContent(options.textContent)
-        }
+        if (options.textContent) expect(menu).toHaveTextContent(options.textContent)
 
-        // Ensure menu button has the following attributes
         for (let attributeName in options.attributes) {
           expect(menu).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
-      case MenuState.Closed:
+      case MenuState.Visible:
+        if (menu === null) return expect(menu).not.toBe(null)
+
+        assertVisible(menu)
+
+        expect(menu).toHaveAttribute('aria-labelledby')
+        expect(menu).toHaveAttribute('role', 'menu')
+
+        if (options.textContent) expect(menu).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(menu).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case MenuState.InvisibleUnmounted:
         expect(menu).toBe(null)
         break
 
@@ -217,8 +238,14 @@ export function getListboxOptions(): HTMLElement[] {
 // ---
 
 export enum ListboxState {
-  Open,
-  Closed,
+  /** The listbox is visible to the user. */
+  Visible,
+
+  /** The listbox is **not** visible to the user. It's still in the DOM, but it is hidden. */
+  InvisibleHidden,
+
+  /** The listbox is **not** visible to the user. It's not in the DOM, it is unmounted. */
+  InvisibleUnmounted,
 }
 
 export function assertListbox(
@@ -231,27 +258,37 @@ export function assertListbox(
 ) {
   try {
     switch (options.state) {
-      case ListboxState.Open:
+      case ListboxState.InvisibleHidden:
         if (listbox === null) return expect(listbox).not.toBe(null)
 
-        // Check that some attributes exists, doesn't really matter what the values are at this point in
-        // time, we just require them.
-        expect(listbox).toHaveAttribute('aria-labelledby')
+        assertHidden(listbox)
 
-        // Check that we have the correct values for certain attributes
+        expect(listbox).toHaveAttribute('aria-labelledby')
         expect(listbox).toHaveAttribute('role', 'listbox')
 
-        if (options.textContent) {
-          expect(listbox).toHaveTextContent(options.textContent)
-        }
+        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
 
-        // Ensure listbox button has the following attributes
         for (let attributeName in options.attributes) {
           expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
-      case ListboxState.Closed:
+      case ListboxState.Visible:
+        if (listbox === null) return expect(listbox).not.toBe(null)
+
+        assertVisible(listbox)
+
+        expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('role', 'listbox')
+
+        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ListboxState.InvisibleUnmounted:
         expect(listbox).toBe(null)
         break
 
@@ -280,12 +317,17 @@ export function assertListboxButton(
     expect(button).toHaveAttribute('aria-haspopup')
 
     switch (options.state) {
-      case ListboxState.Open:
+      case ListboxState.Visible:
         expect(button).toHaveAttribute('aria-controls')
         expect(button).toHaveAttribute('aria-expanded', 'true')
         break
 
-      case ListboxState.Closed:
+      case ListboxState.InvisibleHidden:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      case ListboxState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
         expect(button).not.toHaveAttribute('aria-expanded')
         break
@@ -564,6 +606,32 @@ export function assertActiveElement(element: HTMLElement | null) {
     expect(document.activeElement).toBe(element)
   } catch (err) {
     Error.captureStackTrace(err, assertActiveElement)
+    throw err
+  }
+}
+
+// ---
+
+export function assertHidden(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    expect(element).toHaveAttribute('hidden')
+    expect(element).toHaveStyle({ display: 'none' })
+  } catch (err) {
+    Error.captureStackTrace(err, assertHidden)
+    throw err
+  }
+}
+
+export function assertVisible(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    expect(element).not.toHaveAttribute('hidden')
+    expect(element).not.toHaveStyle({ display: 'none' })
+  } catch (err) {
+    Error.captureStackTrace(err, assertVisible)
     throw err
   }
 }

@@ -6,7 +6,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useComputed } from '../../hooks/use-computed'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Props } from '../../types'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { Features, forwardRefWithAs, PropsForFeatures, render } from '../../utils/render'
 import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
@@ -114,7 +114,11 @@ const reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.CloseListbox]: state => ({ ...state, listboxState: ListboxStates.Closed }),
+  [ActionTypes.CloseListbox]: state => ({
+    ...state,
+    activeOptionIndex: null,
+    listboxState: ListboxStates.Closed,
+  }),
   [ActionTypes.OpenListbox]: state => ({ ...state, listboxState: ListboxStates.Open }),
   [ActionTypes.GoToOption]: (state, action) => {
     const activeOptionIndex = calculateActiveOptionIndex(state, action.focus, action.id)
@@ -375,11 +379,7 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
     [state]
   )
-  const propsWeControl = {
-    ref: state.labelRef,
-    id,
-    onPointerUp: handlePointerUp,
-  }
+  const propsWeControl = { ref: state.labelRef, id, onPointerUp: handlePointerUp }
   return render({ ...props, ...propsWeControl }, propsBag, DEFAULT_LABEL_TAG)
 }
 
@@ -397,24 +397,15 @@ type OptionsPropsWeControl =
 const DEFAULT_OPTIONS_TAG = 'ul'
 
 type OptionsRenderPropArg = { open: boolean }
-
-type ListboxOptionsProp<TTag> = Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> & {
-  static?: boolean
-}
+const OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
 const Options = forwardRefWithAs(function Options<
   TTag extends React.ElementType = typeof DEFAULT_OPTIONS_TAG
->(props: ListboxOptionsProp<TTag>, ref: React.Ref<HTMLUListElement>) {
-  const {
-    enter,
-    enterFrom,
-    enterTo,
-    leave,
-    leaveFrom,
-    leaveTo,
-    static: isStatic = false,
-    ...passthroughProps
-  } = props
+>(
+  props: Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
+    PropsForFeatures<typeof OptionsRenderFeatures>,
+  ref: React.Ref<HTMLUListElement>
+) {
   const [state, dispatch] = useListboxContext([Listbox.name, Options.name].join('.'))
   const optionsRef = useSyncRefs(state.optionsRef, ref)
 
@@ -500,14 +491,16 @@ const Options = forwardRefWithAs(function Options<
     onKeyDown: handleKeyDown,
     role: 'listbox',
     tabIndex: 0,
+    ref: optionsRef,
   }
-
-  if (!isStatic && state.listboxState === ListboxStates.Closed) return null
+  const passthroughProps = props
 
   return render(
-    { ...passthroughProps, ...propsWeControl, ...{ ref: optionsRef } },
+    { ...passthroughProps, ...propsWeControl },
     propsBag,
-    DEFAULT_OPTIONS_TAG
+    DEFAULT_OPTIONS_TAG,
+    OptionsRenderFeatures,
+    state.listboxState === ListboxStates.Open
   )
 })
 
@@ -570,17 +563,19 @@ function Option<
   }, [bag, id])
 
   useIsoMorphicEffect(() => {
+    if (state.listboxState !== ListboxStates.Open) return
     if (!selected) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
     document.getElementById(id)?.focus?.()
-  }, [])
+  }, [state.listboxState])
 
   useIsoMorphicEffect(() => {
+    if (state.listboxState !== ListboxStates.Open) return
     if (!active) return
     const d = disposables()
     d.nextFrame(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     return d.dispose
-  }, [active])
+  }, [active, state.listboxState])
 
   const handleClick = React.useCallback(
     (event: { preventDefault: Function }) => {
@@ -627,11 +622,7 @@ function Option<
     onPointerLeave: handlePointerLeave,
   }
 
-  return render<TTag, OptionRenderPropArg>(
-    { ...passthroughProps, ...propsWeControl },
-    propsBag,
-    DEFAULT_OPTION_TAG
-  )
+  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OPTION_TAG)
 }
 
 function resolvePropValue<TProperty, TBag>(property: TProperty, bag: TBag) {
