@@ -10,6 +10,7 @@ import { Features, forwardRefWithAs, PropsForFeatures, render } from '../../util
 import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 
 enum ListboxStates {
   Open,
@@ -45,64 +46,11 @@ enum ActionTypes {
   UnregisterOption,
 }
 
-enum Focus {
-  First,
-  Previous,
-  Next,
-  Last,
-  Specific,
-  Nothing,
-}
-
-function calculateActiveOptionIndex(
-  state: StateDefinition,
-  focus: Focus,
-  id?: string
-): StateDefinition['activeOptionIndex'] {
-  if (state.options.length <= 0) return null
-
-  const options = state.options
-  const activeOptionIndex = state.activeOptionIndex ?? -1
-
-  const nextActiveIndex = match(focus, {
-    [Focus.First]: () => options.findIndex(option => !option.dataRef.current.disabled),
-    [Focus.Previous]: () => {
-      const idx = options
-        .slice()
-        .reverse()
-        .findIndex((option, idx, all) => {
-          if (activeOptionIndex !== -1 && all.length - idx - 1 >= activeOptionIndex) return false
-          return !option.dataRef.current.disabled
-        })
-      if (idx === -1) return idx
-      return options.length - 1 - idx
-    },
-    [Focus.Next]: () => {
-      return options.findIndex((option, idx) => {
-        if (idx <= activeOptionIndex) return false
-        return !option.dataRef.current.disabled
-      })
-    },
-    [Focus.Last]: () => {
-      const idx = options
-        .slice()
-        .reverse()
-        .findIndex(option => !option.dataRef.current.disabled)
-      if (idx === -1) return idx
-      return options.length - 1 - idx
-    },
-    [Focus.Specific]: () => options.findIndex(option => option.id === id),
-    [Focus.Nothing]: () => null,
-  })
-
-  if (nextActiveIndex === -1) return state.activeOptionIndex
-  return nextActiveIndex
-}
-
 type Actions =
   | { type: ActionTypes.CloseListbox }
   | { type: ActionTypes.OpenListbox }
-  | { type: ActionTypes.GoToOption; focus: Focus; id?: string }
+  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
+  | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef }
@@ -121,7 +69,12 @@ const reducers: {
   }),
   [ActionTypes.OpenListbox]: state => ({ ...state, listboxState: ListboxStates.Open }),
   [ActionTypes.GoToOption]: (state, action) => {
-    const activeOptionIndex = calculateActiveOptionIndex(state, action.focus, action.id)
+    const activeOptionIndex = calculateActiveIndex(action, {
+      resolveItems: () => state.options,
+      resolveActiveIndex: () => state.activeOptionIndex,
+      resolveId: item => item.id,
+      resolveDisabled: item => item.dataRef.current.disabled,
+    })
 
     if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) {
       return state

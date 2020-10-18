@@ -10,6 +10,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 
 enum MenuStates {
   Open,
@@ -39,64 +40,11 @@ enum ActionTypes {
   UnregisterItem,
 }
 
-enum Focus {
-  FirstItem,
-  PreviousItem,
-  NextItem,
-  LastItem,
-  SpecificItem,
-  Nothing,
-}
-
-function calculateActiveItemIndex(
-  state: StateDefinition,
-  focus: Focus,
-  id?: string
-): StateDefinition['activeItemIndex'] {
-  if (state.items.length <= 0) return null
-
-  const items = state.items
-  const activeItemIndex = state.activeItemIndex ?? -1
-
-  const nextActiveIndex = match(focus, {
-    [Focus.FirstItem]: () => items.findIndex(item => !item.dataRef.current.disabled),
-    [Focus.PreviousItem]: () => {
-      const idx = items
-        .slice()
-        .reverse()
-        .findIndex((item, idx, all) => {
-          if (activeItemIndex !== -1 && all.length - idx - 1 >= activeItemIndex) return false
-          return !item.dataRef.current.disabled
-        })
-      if (idx === -1) return idx
-      return items.length - 1 - idx
-    },
-    [Focus.NextItem]: () => {
-      return items.findIndex((item, idx) => {
-        if (idx <= activeItemIndex) return false
-        return !item.dataRef.current.disabled
-      })
-    },
-    [Focus.LastItem]: () => {
-      const idx = items
-        .slice()
-        .reverse()
-        .findIndex(item => !item.dataRef.current.disabled)
-      if (idx === -1) return idx
-      return items.length - 1 - idx
-    },
-    [Focus.SpecificItem]: () => items.findIndex(item => item.id === id),
-    [Focus.Nothing]: () => null,
-  })
-
-  if (nextActiveIndex === -1) return state.activeItemIndex
-  return nextActiveIndex
-}
-
 type Actions =
   | { type: ActionTypes.CloseMenu }
   | { type: ActionTypes.OpenMenu }
-  | { type: ActionTypes.GoToItem; focus: Focus; id?: string }
+  | { type: ActionTypes.GoToItem; focus: Focus.Specific; id: string }
+  | { type: ActionTypes.GoToItem; focus: Exclude<Focus, Focus.Specific> }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterItem; id: string; dataRef: MenuItemDataRef }
@@ -115,7 +63,12 @@ const reducers: {
   }),
   [ActionTypes.OpenMenu]: state => ({ ...state, menuState: MenuStates.Open }),
   [ActionTypes.GoToItem]: (state, action) => {
-    const activeItemIndex = calculateActiveItemIndex(state, action.focus, action.id)
+    const activeItemIndex = calculateActiveIndex(action, {
+      resolveItems: () => state.items,
+      resolveActiveIndex: () => state.activeItemIndex,
+      resolveId: item => item.id,
+      resolveDisabled: item => item.dataRef.current.disabled,
+    })
 
     if (state.searchQuery === '' && state.activeItemIndex === activeItemIndex) {
       return state
@@ -278,7 +231,7 @@ const Button = forwardRefWithAs(function Button<
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
             state.itemsRef.current?.focus()
-            dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
+            dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
           })
           break
 
@@ -287,7 +240,7 @@ const Button = forwardRefWithAs(function Button<
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
             state.itemsRef.current?.focus()
-            dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
+            dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
           })
           break
       }
@@ -393,21 +346,21 @@ const Items = forwardRefWithAs(function Items<
 
         case Keys.ArrowDown:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.NextItem })
+          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Next })
 
         case Keys.ArrowUp:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.PreviousItem })
+          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Previous })
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.FirstItem })
+          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
-          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.LastItem })
+          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
 
         case Keys.Escape:
           event.preventDefault()
@@ -508,13 +461,13 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
 
   const handleFocus = React.useCallback(() => {
     if (disabled) return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
+    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   }, [disabled, id, dispatch])
 
   const handlePointerMove = React.useCallback(() => {
     if (disabled) return
     if (active) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.SpecificItem, id })
+    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   }, [disabled, active, id, dispatch])
 
   const handlePointerLeave = React.useCallback(() => {

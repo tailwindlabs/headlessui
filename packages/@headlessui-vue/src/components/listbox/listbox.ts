@@ -14,23 +14,15 @@ import {
   toRaw,
   watch,
 } from 'vue'
-import { match } from '../../utils/match'
+
 import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
+import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 
 enum ListboxStates {
   Open,
   Closed,
-}
-
-enum Focus {
-  First,
-  Previous,
-  Next,
-  Last,
-  Specific,
-  Nothing,
 }
 
 type ListboxOptionDataRef = Ref<{ textValue: string; disabled: boolean; value: unknown }>
@@ -90,50 +82,6 @@ export const Listbox = defineComponent({
 
     const value = computed(() => props.modelValue)
 
-    function calculateActiveOptionIndex(focus: Focus, id?: string) {
-      if (options.value.length <= 0) return null
-
-      const currentActiveOptionIndex = activeOptionIndex.value ?? -1
-
-      const nextActiveIndex = match(focus, {
-        [Focus.First]: () => options.value.findIndex(option => !option.dataRef.disabled),
-        [Focus.Previous]: () => {
-          const idx = options.value
-            .slice()
-            .reverse()
-            .findIndex((option, idx, all) => {
-              if (
-                currentActiveOptionIndex !== -1 &&
-                all.length - idx - 1 >= currentActiveOptionIndex
-              )
-                return false
-              return !option.dataRef.disabled
-            })
-          if (idx === -1) return idx
-          return options.value.length - 1 - idx
-        },
-        [Focus.Next]: () => {
-          return options.value.findIndex((option, idx) => {
-            if (idx <= currentActiveOptionIndex) return false
-            return !option.dataRef.disabled
-          })
-        },
-        [Focus.Last]: () => {
-          const idx = options.value
-            .slice()
-            .reverse()
-            .findIndex(option => !option.dataRef.disabled)
-          if (idx === -1) return idx
-          return options.value.length - 1 - idx
-        },
-        [Focus.Specific]: () => options.value.findIndex(option => option.id === id),
-        [Focus.Nothing]: () => null,
-      })
-
-      if (nextActiveIndex === -1) return activeOptionIndex.value
-      return nextActiveIndex
-    }
-
     const api = {
       listboxState,
       value,
@@ -149,7 +97,18 @@ export const Listbox = defineComponent({
       },
       openListbox: () => (listboxState.value = ListboxStates.Open),
       goToOption(focus: Focus, id?: string) {
-        const nextActiveOptionIndex = calculateActiveOptionIndex(focus, id)
+        const nextActiveOptionIndex = calculateActiveIndex(
+          focus === Focus.Specific
+            ? { focus: Focus.Specific, id: id! }
+            : { focus: focus as Exclude<Focus, Focus.Specific> },
+          {
+            resolveItems: () => options.value,
+            resolveActiveIndex: () => activeOptionIndex.value,
+            resolveId: option => option.id,
+            resolveDisabled: option => option.dataRef.disabled,
+          }
+        )
+
         if (searchQuery.value === '' && activeOptionIndex.value === nextActiveOptionIndex) return
         searchQuery.value = ''
         activeOptionIndex.value = nextActiveOptionIndex
