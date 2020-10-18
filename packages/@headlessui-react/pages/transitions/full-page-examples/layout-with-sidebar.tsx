@@ -26,9 +26,10 @@ export default function App() {
 
       <div className="flex h-screen overflow-hidden bg-cool-gray-100">
         {/* Off-canvas menu for mobile */}
-        <Transition show={mobileOpen} className="fixed inset-0 z-40 flex">
+        <Transition show={mobileOpen} unmount={false} className="fixed inset-0 z-40 flex">
           {/* Off-canvas menu overlay, show/hide based on off-canvas menu state. */}
           <Transition.Child
+            unmount={false}
             enter="transition-opacity ease-linear duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -36,8 +37,8 @@ export default function App() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            {ref => (
-              <div ref={ref} className="fixed inset-0">
+            {() => (
+              <div className="fixed inset-0">
                 <div
                   onClick={() => setMobileOpen(false)}
                   className="absolute inset-0 opacity-75 bg-cool-gray-600"
@@ -48,6 +49,7 @@ export default function App() {
 
           {/* Off-canvas menu, show/hide based on off-canvas menu state. */}
           <Transition.Child
+            unmount={false}
             enter="transition ease-in-out duration-300 transform"
             enterFrom="-translate-x-full"
             enterTo="translate-x-0"
@@ -58,6 +60,7 @@ export default function App() {
           >
             <div className="absolute top-0 right-0 p-1 -mr-14">
               <Transition.Child
+                unmount={false}
                 className="flex items-center justify-center w-12 h-12 rounded-full focus:outline-none focus:bg-cool-gray-600"
                 aria-label="Close sidebar"
                 as="button"
