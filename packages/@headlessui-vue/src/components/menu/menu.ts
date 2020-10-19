@@ -10,23 +10,15 @@ import {
   InjectionKey,
   Ref,
 } from 'vue'
-import { match } from '../../utils/match'
 import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
+import { resolvePropValue } from '../../utils/resolve-prop-value'
 
 enum MenuStates {
   Open,
   Closed,
-}
-
-enum Focus {
-  FirstItem,
-  PreviousItem,
-  NextItem,
-  LastItem,
-  SpecificItem,
-  Nothing,
 }
 
 type MenuItemDataRef = Ref<{ textValue: string; disabled: boolean }>
@@ -52,9 +44,9 @@ type StateDefinition = {
 const MenuContext = Symbol('MenuContext') as InjectionKey<StateDefinition>
 
 function useMenuContext(component: string) {
-  const context = inject(MenuContext)
+  const context = inject(MenuContext, null)
 
-  if (context === undefined) {
+  if (context === null) {
     const err = new Error(`<${component} /> is missing a parent <Menu /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
     throw err
@@ -73,47 +65,6 @@ export const Menu = defineComponent({
     const searchQuery = ref<StateDefinition['searchQuery']['value']>('')
     const activeItemIndex = ref<StateDefinition['activeItemIndex']['value']>(null)
 
-    function calculateActiveItemIndex(focus: Focus, id?: string) {
-      if (items.value.length <= 0) return null
-
-      const currentActiveItemIndex = activeItemIndex.value ?? -1
-
-      const nextActiveIndex = match(focus, {
-        [Focus.FirstItem]: () => items.value.findIndex(item => !item.dataRef.disabled),
-        [Focus.PreviousItem]: () => {
-          const idx = items.value
-            .slice()
-            .reverse()
-            .findIndex((item, idx, all) => {
-              if (currentActiveItemIndex !== -1 && all.length - idx - 1 >= currentActiveItemIndex)
-                return false
-              return !item.dataRef.disabled
-            })
-          if (idx === -1) return idx
-          return items.value.length - 1 - idx
-        },
-        [Focus.NextItem]: () => {
-          return items.value.findIndex((item, idx) => {
-            if (idx <= currentActiveItemIndex) return false
-            return !item.dataRef.disabled
-          })
-        },
-        [Focus.LastItem]: () => {
-          const idx = items.value
-            .slice()
-            .reverse()
-            .findIndex(item => !item.dataRef.disabled)
-          if (idx === -1) return idx
-          return items.value.length - 1 - idx
-        },
-        [Focus.SpecificItem]: () => items.value.findIndex(item => item.id === id),
-        [Focus.Nothing]: () => null,
-      })
-
-      if (nextActiveIndex === -1) return activeItemIndex.value
-      return nextActiveIndex
-    }
-
     const api = {
       menuState,
       buttonRef,
@@ -127,7 +78,18 @@ export const Menu = defineComponent({
       },
       openMenu: () => (menuState.value = MenuStates.Open),
       goToItem(focus: Focus, id?: string) {
-        const nextActiveItemIndex = calculateActiveItemIndex(focus, id)
+        const nextActiveItemIndex = calculateActiveIndex(
+          focus === Focus.Specific
+            ? { focus: Focus.Specific, id: id! }
+            : { focus: focus as Exclude<Focus, Focus.Specific> },
+          {
+            resolveItems: () => items.value,
+            resolveActiveIndex: () => activeItemIndex.value,
+            resolveId: item => item.id,
+            resolveDisabled: item => item.dataRef.disabled,
+          }
+        )
+
         if (searchQuery.value === '' && activeItemIndex.value === nextActiveItemIndex) return
         searchQuery.value = ''
         activeItemIndex.value = nextActiveItemIndex
@@ -139,9 +101,7 @@ export const Menu = defineComponent({
           item => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled
         )
 
-        if (match === -1 || match === activeItemIndex.value) {
-          return
-        }
+        if (match === -1 || match === activeItemIndex.value) return
 
         activeItemIndex.value = match
       },
@@ -175,9 +135,7 @@ export const Menu = defineComponent({
         if (menuState.value !== MenuStates.Open) return
         if (buttonRef.value?.contains(event.target as HTMLElement)) return
 
-        if (!itemsRef.value?.contains(event.target as HTMLElement)) {
-          api.closeMenu()
-        }
+        if (!itemsRef.value?.contains(event.target as HTMLElement)) api.closeMenu()
         if (!event.defaultPrevented) nextTick(() => buttonRef.value?.focus())
       }
 
@@ -238,7 +196,7 @@ export const MenuButton = defineComponent({
           api.openMenu()
           nextTick(() => {
             api.itemsRef.value?.focus()
-            api.goToItem(Focus.FirstItem)
+            api.goToItem(Focus.First)
           })
           break
 
@@ -247,7 +205,7 @@ export const MenuButton = defineComponent({
           api.openMenu()
           nextTick(() => {
             api.itemsRef.value?.focus()
-            api.goToItem(Focus.LastItem)
+            api.goToItem(Focus.Last)
           })
           break
       }
@@ -342,21 +300,21 @@ export const MenuItems = defineComponent({
 
         case Keys.ArrowDown:
           event.preventDefault()
-          return api.goToItem(Focus.NextItem)
+          return api.goToItem(Focus.Next)
 
         case Keys.ArrowUp:
           event.preventDefault()
-          return api.goToItem(Focus.PreviousItem)
+          return api.goToItem(Focus.Previous)
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
-          return api.goToItem(Focus.FirstItem)
+          return api.goToItem(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
-          return api.goToItem(Focus.LastItem)
+          return api.goToItem(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
@@ -376,11 +334,7 @@ export const MenuItems = defineComponent({
       }
     }
 
-    return {
-      id,
-      el: api.itemsRef,
-      handleKeyDown,
-    }
+    return { id, el: api.itemsRef, handleKeyDown }
   },
 })
 
@@ -422,13 +376,13 @@ export const MenuItem = defineComponent({
 
     function handleFocus() {
       if (disabled) return api.goToItem(Focus.Nothing)
-      api.goToItem(Focus.SpecificItem, id)
+      api.goToItem(Focus.Specific, id)
     }
 
     function handlePointerMove() {
       if (disabled) return
       if (active.value) return
-      api.goToItem(Focus.SpecificItem, id)
+      api.goToItem(Focus.Specific, id)
     }
 
     function handlePointerLeave() {
@@ -451,18 +405,7 @@ export const MenuItem = defineComponent({
         onPointerLeave: handlePointerLeave,
       }
 
-      return render({
-        props: { ...props, ...propsWeControl },
-        slot,
-        attrs,
-        slots,
-      })
+      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
     }
   },
 })
-
-function resolvePropValue<TProperty, TBag>(property: TProperty, bag: TBag) {
-  if (property === undefined) return undefined
-  if (typeof property === 'function') return property(bag)
-  return property
-}

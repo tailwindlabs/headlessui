@@ -57,7 +57,7 @@ export async function type(events: Partial<KeyboardEvent>[]) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, type)
+    Error.captureStackTrace(err, type)
     throw err
   } finally {
     jest.useRealTimers()
@@ -80,7 +80,7 @@ export async function click(element: Document | Element | Window | null) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, click)
+    Error.captureStackTrace(err, click)
     throw err
   }
 }
@@ -93,7 +93,7 @@ export async function focus(element: Document | Element | Window | null) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, focus)
+    Error.captureStackTrace(err, focus)
     throw err
   }
 }
@@ -108,7 +108,7 @@ export async function mouseEnter(element: Document | Element | Window | null) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseEnter)
+    Error.captureStackTrace(err, mouseEnter)
     throw err
   }
 }
@@ -122,7 +122,7 @@ export async function mouseMove(element: Document | Element | Window | null) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseMove)
+    Error.captureStackTrace(err, mouseMove)
     throw err
   }
 }
@@ -138,7 +138,7 @@ export async function mouseLeave(element: Document | Element | Window | null) {
 
     await new Promise<void>(nextTick)
   } catch (err) {
-    if (Error.captureStackTrace) Error.captureStackTrace(err, mouseLeave)
+    Error.captureStackTrace(err, mouseLeave)
     throw err
   }
 }
