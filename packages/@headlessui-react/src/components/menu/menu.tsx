@@ -70,15 +70,8 @@ const reducers: {
       resolveDisabled: item => item.dataRef.current.disabled,
     })
 
-    if (state.searchQuery === '' && state.activeItemIndex === activeItemIndex) {
-      return state
-    }
-
-    return {
-      ...state,
-      searchQuery: '',
-      activeItemIndex,
-    }
+    if (state.searchQuery === '' && state.activeItemIndex === activeItemIndex) return state
+    return { ...state, searchQuery: '', activeItemIndex }
   },
   [ActionTypes.Search]: (state, action) => {
     const searchQuery = state.searchQuery + action.value
@@ -87,15 +80,8 @@ const reducers: {
         item.dataRef.current.textValue?.startsWith(searchQuery) && !item.dataRef.current.disabled
     )
 
-    if (match === -1 || match === state.activeItemIndex) {
-      return { ...state, searchQuery }
-    }
-
-    return {
-      ...state,
-      searchQuery,
-      activeItemIndex: match,
-    }
+    if (match === -1 || match === state.activeItemIndex) return { ...state, searchQuery }
+    return { ...state, searchQuery, activeItemIndex: match }
   },
   [ActionTypes.ClearSearch]: state => ({ ...state, searchQuery: '' }),
   [ActionTypes.RegisterItem]: (state, action) => ({
@@ -132,9 +118,7 @@ function useMenuContext(component: string) {
   const context = React.useContext(MenuContext)
   if (context === null) {
     const err = new Error(`<${component} /> is missing a parent <${Menu.name} /> component.`)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(err, useMenuContext)
-    }
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
     throw err
   }
   return context
@@ -147,7 +131,6 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 const DEFAULT_MENU_TAG = React.Fragment
-
 type MenuRenderPropArg = { open: boolean }
 
 export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
@@ -166,12 +149,11 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 
   React.useEffect(() => {
     function handler(event: MouseEvent) {
+      const target = event.target as HTMLElement
       if (menuState !== MenuStates.Open) return
-      if (buttonRef.current?.contains(event.target as HTMLElement)) return
+      if (buttonRef.current?.contains(target)) return
 
-      if (!itemsRef.current?.contains(event.target as HTMLElement)) {
-        dispatch({ type: ActionTypes.CloseMenu })
-      }
+      if (!itemsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseMenu })
       if (!event.defaultPrevented) d.nextFrame(() => buttonRef.current?.focus())
     }
 
@@ -190,6 +172,8 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 
 // ---
 
+const DEFAULT_BUTTON_TAG = 'button'
+type ButtonRenderPropArg = { open: boolean; focused: boolean }
 type ButtonPropsWeControl =
   | 'ref'
   | 'id'
@@ -201,10 +185,6 @@ type ButtonPropsWeControl =
   | 'onFocus'
   | 'onBlur'
   | 'onPointerUp'
-
-const DEFAULT_BUTTON_TAG = 'button'
-
-type ButtonRenderPropArg = { open: boolean; focused: boolean }
 
 const Button = forwardRefWithAs(function Button<
   TTag extends React.ElementType = typeof DEFAULT_BUTTON_TAG
@@ -293,6 +273,8 @@ const Button = forwardRefWithAs(function Button<
 
 // ---
 
+const DEFAULT_ITEMS_TAG = 'div'
+type ItemsRenderPropArg = { open: boolean }
 type ItemsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
@@ -302,9 +284,6 @@ type ItemsPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-const DEFAULT_ITEMS_TAG = 'div'
-
-type ItemsRenderPropArg = { open: boolean }
 const ItemsRenderFeatures = Features.RenderStrategy | Features.Static
 
 const Items = forwardRefWithAs(function Items<
@@ -406,6 +385,8 @@ const Items = forwardRefWithAs(function Items<
 
 // ---
 
+const DEFAULT_ITEM_TAG = React.Fragment
+type ItemRenderPropArg = { active: boolean; disabled: boolean }
 type MenuItemPropsWeControl =
   | 'id'
   | 'role'
@@ -413,10 +394,6 @@ type MenuItemPropsWeControl =
   | 'aria-disabled'
   | 'onPointerLeave'
   | 'onFocus'
-
-const DEFAULT_ITEM_TAG = React.Fragment
-
-type ItemRenderPropArg = { active: boolean; disabled: boolean }
 
 function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
   props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl | 'className'> & {

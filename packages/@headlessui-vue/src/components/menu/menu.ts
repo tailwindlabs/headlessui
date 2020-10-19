@@ -43,9 +43,9 @@ type StateDefinition = {
 const MenuContext = Symbol('MenuContext') as InjectionKey<StateDefinition>
 
 function useMenuContext(component: string) {
-  const context = inject(MenuContext)
+  const context = inject(MenuContext, null)
 
-  if (context === undefined) {
+  if (context === null) {
     const err = new Error(`<${component} /> is missing a parent <Menu /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
     throw err
@@ -100,9 +100,7 @@ export const Menu = defineComponent({
           item => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled
         )
 
-        if (match === -1 || match === activeItemIndex.value) {
-          return
-        }
+        if (match === -1 || match === activeItemIndex.value) return
 
         activeItemIndex.value = match
       },
@@ -136,9 +134,7 @@ export const Menu = defineComponent({
         if (menuState.value !== MenuStates.Open) return
         if (buttonRef.value?.contains(event.target as HTMLElement)) return
 
-        if (!itemsRef.value?.contains(event.target as HTMLElement)) {
-          api.closeMenu()
-        }
+        if (!itemsRef.value?.contains(event.target as HTMLElement)) api.closeMenu()
         if (!event.defaultPrevented) nextTick(() => buttonRef.value?.focus())
       }
 
@@ -337,11 +333,7 @@ export const MenuItems = defineComponent({
       }
     }
 
-    return {
-      id,
-      el: api.itemsRef,
-      handleKeyDown,
-    }
+    return { id, el: api.itemsRef, handleKeyDown }
   },
 })
 
@@ -412,12 +404,7 @@ export const MenuItem = defineComponent({
         onPointerLeave: handlePointerLeave,
       }
 
-      return render({
-        props: { ...props, ...propsWeControl },
-        slot,
-        attrs,
-        slots,
-      })
+      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
     }
   },
 })

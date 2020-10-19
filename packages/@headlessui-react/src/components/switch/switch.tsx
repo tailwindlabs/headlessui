@@ -52,9 +52,7 @@ function Group<TTag extends React.ElementType = typeof DEFAULT_GROUP_TAG>(props:
 // ---
 
 const DEFAULT_SWITCH_TAG = 'button'
-
 type SwitchRenderPropArg = { checked: boolean }
-
 type SwitchPropsWeControl =
   | 'id'
   | 'role'
@@ -122,11 +120,9 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
 
 // ---
 
-type LabelPropsWeControl = 'id' | 'ref' | 'onPointerUp'
-
 const DEFAULT_LABEL_TAG = 'label'
-
 type LabelRenderPropArg = {}
+type LabelPropsWeControl = 'id' | 'ref' | 'onPointerUp'
 
 function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
@@ -140,11 +136,7 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
     state.switch.focus()
   }, [state.switch])
 
-  const propsWeControl = {
-    ref: state.setLabel,
-    id,
-    onPointerUp: handlePointerUp,
-  }
+  const propsWeControl = { ref: state.setLabel, id, onPointerUp: handlePointerUp }
   return render({ ...props, ...propsWeControl }, {}, DEFAULT_LABEL_TAG)
 }
 

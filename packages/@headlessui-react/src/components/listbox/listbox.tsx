@@ -76,10 +76,7 @@ const reducers: {
       resolveDisabled: item => item.dataRef.current.disabled,
     })
 
-    if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) {
-      return state
-    }
-
+    if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) return state
     return { ...state, searchQuery: '', activeOptionIndex }
   },
   [ActionTypes.Search]: (state, action) => {
@@ -90,10 +87,7 @@ const reducers: {
         option.dataRef.current.textValue?.startsWith(searchQuery)
     )
 
-    if (match === -1 || match === state.activeOptionIndex) {
-      return { ...state, searchQuery }
-    }
-
+    if (match === -1 || match === state.activeOptionIndex) return { ...state, searchQuery }
     return { ...state, searchQuery, activeOptionIndex: match }
   },
   [ActionTypes.ClearSearch]: state => ({ ...state, searchQuery: '' }),
@@ -127,10 +121,6 @@ const reducers: {
 
 const ListboxContext = React.createContext<[StateDefinition, React.Dispatch<Actions>] | null>(null)
 
-function stateReducer(state: StateDefinition, action: Actions) {
-  return match(action.type, reducers, state, action)
-}
-
 function useListboxContext(component: string) {
   const context = React.useContext(ListboxContext)
   if (context === null) {
@@ -141,10 +131,13 @@ function useListboxContext(component: string) {
   return context
 }
 
+function stateReducer(state: StateDefinition, action: Actions) {
+  return match(action.type, reducers, state, action)
+}
+
 // ---
 
 const DEFAULT_LISTBOX_TAG = React.Fragment
-
 type ListboxRenderPropArg = { open: boolean }
 
 export function Listbox<
@@ -174,12 +167,11 @@ export function Listbox<
 
   React.useEffect(() => {
     function handler(event: MouseEvent) {
+      const target = event.target as HTMLElement
       if (listboxState !== ListboxStates.Open) return
-      if (buttonRef.current?.contains(event.target as HTMLElement)) return
+      if (buttonRef.current?.contains(target)) return
 
-      if (!optionsRef.current?.contains(event.target as HTMLElement)) {
-        dispatch({ type: ActionTypes.CloseListbox })
-      }
+      if (!optionsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseListbox })
       if (!event.defaultPrevented) d.nextFrame(() => buttonRef.current?.focus())
     }
 
@@ -201,6 +193,8 @@ export function Listbox<
 
 // ---
 
+const DEFAULT_BUTTON_TAG = 'button'
+type ButtonRenderPropArg = { open: boolean; focused: boolean }
 type ButtonPropsWeControl =
   | 'ref'
   | 'id'
@@ -213,10 +207,6 @@ type ButtonPropsWeControl =
   | 'onFocus'
   | 'onBlur'
   | 'onPointerUp'
-
-const DEFAULT_BUTTON_TAG = 'button'
-
-type ButtonRenderPropArg = { open: boolean; focused: boolean }
 
 const Button = forwardRefWithAs(function Button<
   TTag extends React.ElementType = typeof DEFAULT_BUTTON_TAG
@@ -312,10 +302,8 @@ const Button = forwardRefWithAs(function Button<
 
 // ---
 
-type LabelPropsWeControl = 'id' | 'ref' | 'onPointerUp'
-
 const DEFAULT_LABEL_TAG = 'label'
-
+type LabelPropsWeControl = 'id' | 'ref' | 'onPointerUp'
 type LabelRenderPropArg = { open: boolean }
 
 function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
@@ -338,6 +326,8 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
 
 // ---
 
+const DEFAULT_OPTIONS_TAG = 'ul'
+type OptionsRenderPropArg = { open: boolean }
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
@@ -347,9 +337,6 @@ type OptionsPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-const DEFAULT_OPTIONS_TAG = 'ul'
-
-type OptionsRenderPropArg = { open: boolean }
 const OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
 const Options = forwardRefWithAs(function Options<
@@ -459,6 +446,8 @@ const Options = forwardRefWithAs(function Options<
 
 // ---
 
+const DEFAULT_OPTION_TAG = 'li'
+type OptionRenderPropArg = { active: boolean; selected: boolean; disabled: boolean }
 type ListboxOptionPropsWeControl =
   | 'id'
   | 'role'
@@ -467,10 +456,6 @@ type ListboxOptionPropsWeControl =
   | 'aria-selected'
   | 'onPointerLeave'
   | 'onFocus'
-
-const DEFAULT_OPTION_TAG = 'li'
-
-type OptionRenderPropArg = { active: boolean; selected: boolean; disabled: boolean }
 
 function Option<
   TTag extends React.ElementType = typeof DEFAULT_OPTION_TAG,

@@ -15,10 +15,6 @@ export function match<TValue extends string | number = string, TReturnValue = un
       .map(key => `"${key}"`)
       .join(', ')}.`
   )
-
-  if (Error.captureStackTrace) {
-    Error.captureStackTrace(error, match)
-  }
-
+  if (Error.captureStackTrace) Error.captureStackTrace(error, match)
   throw error
 }

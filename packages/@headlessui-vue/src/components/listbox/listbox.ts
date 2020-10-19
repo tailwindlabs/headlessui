@@ -51,9 +51,9 @@ type StateDefinition = {
 const ListboxContext = Symbol('ListboxContext') as InjectionKey<StateDefinition>
 
 function useListboxContext(component: string) {
-  const context = inject(ListboxContext)
+  const context = inject(ListboxContext, null)
 
-  if (context === undefined) {
+  if (context === null) {
     const err = new Error(`<${component} /> is missing a parent <Listbox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useListboxContext)
     throw err
@@ -121,10 +121,7 @@ export const Listbox = defineComponent({
             !option.dataRef.disabled && option.dataRef.textValue.startsWith(searchQuery.value)
         )
 
-        if (match === -1 || match === activeOptionIndex.value) {
-          return
-        }
-
+        if (match === -1 || match === activeOptionIndex.value) return
         activeOptionIndex.value = match
       },
       clearSearch() {
@@ -189,11 +186,7 @@ export const ListboxLabel = defineComponent({
     const api = useListboxContext('ListboxLabel')
 
     const slot = { open: api.listboxState.value === ListboxStates.Open }
-    const propsWeControl = {
-      id: this.id,
-      ref: 'el',
-      onPointerUp: this.handlePointerUp,
-    }
+    const propsWeControl = { id: this.id, ref: 'el', onPointerUp: this.handlePointerUp }
 
     return render({
       props: { ...this.$props, ...propsWeControl },
@@ -415,11 +408,7 @@ export const ListboxOptions = defineComponent({
       }
     }
 
-    return {
-      id,
-      el: api.optionsRef,
-      handleKeyDown,
-    }
+    return { id, el: api.optionsRef, handleKeyDown }
   },
 })
 
@@ -515,12 +504,7 @@ export const ListboxOption = defineComponent({
         onPointerLeave: handlePointerLeave,
       }
 
-      return render({
-        props: { ...props, ...propsWeControl },
-        slot,
-        attrs,
-        slots,
-      })
+      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
     }
   },
 })
