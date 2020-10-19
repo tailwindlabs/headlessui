@@ -19,6 +19,7 @@ import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { resolvePropValue } from '../../utils/resolve-prop-value'
 
 enum ListboxStates {
   Open,
@@ -508,11 +509,3 @@ export const ListboxOption = defineComponent({
     }
   },
 })
-
-// ---
-
-function resolvePropValue<TProperty, TBag>(property: TProperty, bag: TBag) {
-  if (property === undefined) return undefined
-  if (typeof property === 'function') return property(bag)
-  return property
-}

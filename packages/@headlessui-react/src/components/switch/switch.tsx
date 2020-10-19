@@ -4,6 +4,7 @@ import { Props } from '../../types'
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
+import { resolvePropValue } from '../../utils/resolve-prop-value'
 
 type StateDefinition = {
   switch: HTMLButtonElement | null
@@ -144,11 +145,3 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
 
 Switch.Group = Group
 Switch.Label = Label
-
-// ---
-
-function resolvePropValue<TProperty, TBag>(property: TProperty, bag: TBag) {
-  if (property === undefined) return undefined
-  if (typeof property === 'function') return property(bag)
-  return property
-}

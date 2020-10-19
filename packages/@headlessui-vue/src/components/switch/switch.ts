@@ -3,6 +3,7 @@ import { computed, defineComponent, inject, InjectionKey, provide, ref, Ref } fr
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
+import { resolvePropValue } from '../../utils/resolve-prop-value'
 
 type StateDefinition = {
   // State
@@ -140,11 +141,3 @@ export const SwitchLabel = defineComponent({
     }
   },
 })
-
-// ---
-
-function resolvePropValue<TProperty, TBag>(property: TProperty, bag: TBag) {
-  if (property === undefined) return undefined
-  if (typeof property === 'function') return property(bag)
-  return property
-}
