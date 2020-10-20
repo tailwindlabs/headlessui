@@ -24,6 +24,7 @@
     "playground:build": "NODE_ENV=production vite build examples",
     "prepublishOnly": "npm run build",
     "build": "../../scripts/build.sh",
+    "watch": "../../scripts/watch.sh",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh"
   },
