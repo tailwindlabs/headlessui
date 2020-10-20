@@ -31,6 +31,13 @@ import {
 
 jest.mock('../../hooks/use-id')
 
+beforeAll(() => {
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
+  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
+})
+
+afterAll(() => jest.restoreAllMocks())
+
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   const defaultComponents = { Menu, MenuButton, MenuItems, MenuItem }
 
