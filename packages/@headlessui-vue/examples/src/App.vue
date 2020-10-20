@@ -67,7 +67,7 @@
       <!-- TODO: Position this in the correct spot -->
       <div
         v-if="sourceCode"
-        class="container fixed bottom-0 left-0 right-0 my-12 overflow-scroll rounded-md max-h-96"
+        class="container fixed bottom-0 left-0 right-0 hidden my-12 overflow-scroll rounded-md max-h-96"
         v-html="sourceCode"
       />
     </main>

@@ -26,6 +26,10 @@ enum ListboxStates {
   Closed,
 }
 
+function nextFrame(cb: () => void) {
+  requestAnimationFrame(() => requestAnimationFrame(cb))
+}
+
 type ListboxOptionDataRef = Ref<{ textValue: string; disabled: boolean; value: unknown }>
 type StateDefinition = {
   // State
@@ -155,13 +159,15 @@ export const Listbox = defineComponent({
 
     onMounted(() => {
       function handler(event: MouseEvent) {
-        if (listboxState.value !== ListboxStates.Open) return
-        if (buttonRef.value?.contains(event.target as HTMLElement)) return
+        const target = event.target as HTMLElement
+        const active = document.activeElement
 
-        if (!optionsRef.value?.contains(event.target as HTMLElement)) {
-          api.closeListbox()
-        }
-        if (!event.defaultPrevented) nextTick(() => buttonRef.value?.focus())
+        if (listboxState.value !== ListboxStates.Open) return
+        if (buttonRef.value?.contains(target)) return
+
+        if (!optionsRef.value?.contains(target)) api.closeListbox()
+        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+        if (!event.defaultPrevented) buttonRef.value?.focus()
       }
 
       window.addEventListener('click', handler)
@@ -221,7 +227,7 @@ export const ListboxButton = defineComponent({
   render() {
     const api = useListboxContext('ListboxButton')
 
-    const slot = { open: api.listboxState.value === ListboxStates.Open, focused: this.focused }
+    const slot = { open: api.listboxState.value === ListboxStates.Open }
     const propsWeControl = {
       ref: 'el',
       id: this.id,
@@ -233,8 +239,6 @@ export const ListboxButton = defineComponent({
         ? [api.labelRef.value.id, this.id].join(' ')
         : undefined,
       onKeyDown: this.handleKeyDown,
-      onFocus: this.handleFocus,
-      onBlur: this.handleBlur,
       onPointerUp: this.handlePointerUp,
     }
 
@@ -248,7 +252,6 @@ export const ListboxButton = defineComponent({
   setup(props) {
     const api = useListboxContext('ListboxButton')
     const id = `headlessui-listbox-button-${useId()}`
-    const focused = ref(false)
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -284,28 +287,11 @@ export const ListboxButton = defineComponent({
       } else {
         event.preventDefault()
         api.openListbox()
-        nextTick(() => api.optionsRef.value?.focus())
+        nextFrame(() => api.optionsRef.value?.focus())
       }
     }
 
-    function handleFocus() {
-      if (api.listboxState.value === ListboxStates.Open) return api.optionsRef.value?.focus()
-      focused.value = true
-    }
-
-    function handleBlur() {
-      focused.value = false
-    }
-
-    return {
-      id,
-      el: api.buttonRef,
-      focused,
-      handleKeyDown,
-      handlePointerUp,
-      handleFocus,
-      handleBlur,
-    }
+    return { id, el: api.buttonRef, handleKeyDown, handlePointerUp }
   },
 })
 

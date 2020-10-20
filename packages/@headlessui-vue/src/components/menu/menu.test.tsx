@@ -31,6 +31,13 @@ import {
 
 jest.mock('../../hooks/use-id')
 
+beforeAll(() => {
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
+  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
+})
+
+afterAll(() => jest.restoreAllMocks())
+
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   const defaultComponents = { Menu, MenuButton, MenuItems, MenuItem }
 
@@ -2379,31 +2386,6 @@ describe('Mouse interactions', () => {
     // Verify it is closed
     assertMenuButton({ state: MenuState.InvisibleUnmounted })
     assertMenu({ state: MenuState.InvisibleUnmounted })
-  })
-
-  it('should focus the menu when you try to focus the button again (when the menu is already open)', async () => {
-    renderTemplate(`
-      <Menu>
-        <MenuButton>Trigger</MenuButton>
-        <MenuItems>
-          <MenuItem>Item A</MenuItem>
-          <MenuItem>Item B</MenuItem>
-          <MenuItem>Item C</MenuItem>
-        </MenuItems>
-      </Menu>
-    `)
-
-    // Open menu
-    await click(getMenuButton())
-
-    // Verify menu is focused
-    assertActiveElement(getMenu())
-
-    // Try to Re-focus the button
-    getMenuButton()?.focus()
-
-    // Verify menu is still focused
-    assertActiveElement(getMenu())
   })
 
   it('should be a no-op when we click outside of a closed menu', async () => {

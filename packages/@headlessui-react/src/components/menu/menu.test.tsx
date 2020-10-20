@@ -133,7 +133,7 @@ describe('Rendering', () => {
         assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
-          textContent: JSON.stringify({ open: false, focused: false }),
+          textContent: JSON.stringify({ open: false }),
         })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
@@ -142,7 +142,7 @@ describe('Rendering', () => {
         assertMenuButton({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-button-1' },
-          textContent: JSON.stringify({ open: true, focused: false }),
+          textContent: JSON.stringify({ open: true }),
         })
         assertMenu({ state: MenuState.Visible })
       })
@@ -167,7 +167,7 @@ describe('Rendering', () => {
         assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
-          textContent: JSON.stringify({ open: false, focused: false }),
+          textContent: JSON.stringify({ open: false }),
         })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
@@ -176,7 +176,7 @@ describe('Rendering', () => {
         assertMenuButton({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-button-1' },
-          textContent: JSON.stringify({ open: true, focused: false }),
+          textContent: JSON.stringify({ open: true }),
         })
         assertMenu({ state: MenuState.Visible })
       })
@@ -2463,31 +2463,6 @@ describe('Mouse interactions', () => {
       assertMenu({ state: MenuState.InvisibleUnmounted })
     })
   )
-
-  it('should focus the menu when you try to focus the button again (when the menu is already open)', async () => {
-    render(
-      <Menu>
-        <Menu.Button>Trigger</Menu.Button>
-        <Menu.Items>
-          <Menu.Item as="a">Item A</Menu.Item>
-          <Menu.Item as="a">Item B</Menu.Item>
-          <Menu.Item as="a">Item C</Menu.Item>
-        </Menu.Items>
-      </Menu>
-    )
-
-    // Open menu
-    await click(getMenuButton())
-
-    // Verify menu is focused
-    assertActiveElement(getMenu())
-
-    // Try to Re-focus the button
-    getMenuButton()?.focus()
-
-    // Verify menu is still focused
-    assertActiveElement(getMenu())
-  })
 
   it(
     'should be a no-op when we click outside of a closed menu',

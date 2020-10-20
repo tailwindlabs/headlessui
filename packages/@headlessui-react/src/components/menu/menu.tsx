@@ -151,11 +151,14 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
   React.useEffect(() => {
     function handler(event: MouseEvent) {
       const target = event.target as HTMLElement
+      const active = document.activeElement
+
       if (menuState !== MenuStates.Open) return
       if (buttonRef.current?.contains(target)) return
 
       if (!itemsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseMenu })
-      if (!event.defaultPrevented) d.nextFrame(() => buttonRef.current?.focus())
+      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+      if (!event.defaultPrevented) buttonRef.current?.focus()
     }
 
     window.addEventListener('click', handler)
@@ -174,7 +177,7 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 // ---
 
 const DEFAULT_BUTTON_TAG = 'button'
-type ButtonRenderPropArg = { open: boolean; focused: boolean }
+type ButtonRenderPropArg = { open: boolean }
 type ButtonPropsWeControl =
   | 'ref'
   | 'id'
@@ -183,8 +186,6 @@ type ButtonPropsWeControl =
   | 'aria-controls'
   | 'aria-expanded'
   | 'onKeyDown'
-  | 'onFocus'
-  | 'onBlur'
   | 'onPointerUp'
 
 const Button = forwardRefWithAs(function Button<
@@ -195,7 +196,6 @@ const Button = forwardRefWithAs(function Button<
 ) {
   const [state, dispatch] = useMenuContext([Menu.name, Button.name].join('.'))
   const buttonRef = useSyncRefs(state.buttonRef, ref)
-  const [focused, setFocused] = React.useState(false)
 
   const id = `headlessui-menu-button-${useId()}`
   const d = useDisposables()
@@ -244,17 +244,7 @@ const Button = forwardRefWithAs(function Button<
     [dispatch, d, state, props.disabled]
   )
 
-  const handleFocus = React.useCallback(() => {
-    if (state.menuState === MenuStates.Open) state.itemsRef.current?.focus()
-    setFocused(true)
-  }, [state, setFocused])
-
-  const handleBlur = React.useCallback(() => setFocused(false), [setFocused])
-
-  const propsBag = React.useMemo(() => ({ open: state.menuState === MenuStates.Open, focused }), [
-    state,
-    focused,
-  ])
+  const propsBag = React.useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
   const passthroughProps = props
   const propsWeControl = {
     ref: buttonRef,
@@ -264,8 +254,6 @@ const Button = forwardRefWithAs(function Button<
     'aria-controls': state.itemsRef.current?.id,
     'aria-expanded': state.menuState === MenuStates.Open ? true : undefined,
     onKeyDown: handleKeyDown,
-    onFocus: handleFocus,
-    onBlur: handleBlur,
     onPointerUp: handlePointerUp,
   }
 
@@ -431,7 +419,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
-      d.nextFrame(() => state.buttonRef.current?.focus())
+      disposables().nextFrame(() => state.buttonRef.current?.focus())
       if (onClick) return onClick(event)
     },
     [d, dispatch, state.buttonRef, disabled, onClick]

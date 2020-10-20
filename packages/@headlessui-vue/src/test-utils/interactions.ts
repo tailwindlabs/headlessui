@@ -1,5 +1,12 @@
-import { nextTick } from 'vue'
 import { fireEvent } from '@testing-library/dom'
+
+function nextFrame(cb: Function): void {
+  setImmediate(() =>
+    setImmediate(() => {
+      cb()
+    })
+  )
+}
 
 export const Keys: Record<string, Partial<KeyboardEvent>> = {
   Space: { key: ' ', keyCode: 32 },
@@ -55,7 +62,7 @@ export async function type(events: Partial<KeyboardEvent>[]) {
     // We don't want to actually wait in our tests, so let's advance
     jest.runAllTimers()
 
-    await new Promise<void>(nextTick)
+    await new Promise(nextFrame)
   } catch (err) {
     Error.captureStackTrace(err, type)
     throw err
@@ -78,7 +85,7 @@ export async function click(element: Document | Element | Window | null) {
     fireEvent.mouseUp(element)
     fireEvent.click(element)
 
-    await new Promise<void>(nextTick)
+    await new Promise(nextFrame)
   } catch (err) {
     Error.captureStackTrace(err, click)
     throw err
@@ -91,7 +98,7 @@ export async function focus(element: Document | Element | Window | null) {
 
     fireEvent.focus(element)
 
-    await new Promise<void>(nextTick)
+    await new Promise(nextFrame)
   } catch (err) {
     Error.captureStackTrace(err, focus)
     throw err
@@ -106,7 +113,7 @@ export async function mouseEnter(element: Document | Element | Window | null) {
     fireEvent.pointerEnter(element)
     fireEvent.mouseOver(element)
 
-    await new Promise<void>(nextTick)
+    await new Promise(nextFrame)
   } catch (err) {
     Error.captureStackTrace(err, mouseEnter)
     throw err
@@ -120,7 +127,7 @@ export async function mouseMove(element: Document | Element | Window | null) {
     fireEvent.pointerMove(element)
     fireEvent.mouseMove(element)
 
-    await new Promise<void>(nextTick)
+    await new Promise(nextFrame)
   } catch (err) {
     Error.captureStackTrace(err, mouseMove)
     throw err
@@ -136,7 +143,7 @@ export async function mouseLeave(element: Document | Element | Window | null) {
     fireEvent.mouseOut(element)
     fireEvent.mouseLeave(element)
 
-    await new Promise<void>(nextTick)
+    await new Promise(nextFrame)
   } catch (err) {
     Error.captureStackTrace(err, mouseLeave)
     throw err

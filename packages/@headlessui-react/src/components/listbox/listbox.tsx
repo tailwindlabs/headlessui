@@ -169,11 +169,14 @@ export function Listbox<
   React.useEffect(() => {
     function handler(event: MouseEvent) {
       const target = event.target as HTMLElement
+      const active = document.activeElement
+
       if (listboxState !== ListboxStates.Open) return
       if (buttonRef.current?.contains(target)) return
 
       if (!optionsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseListbox })
-      if (!event.defaultPrevented) d.nextFrame(() => buttonRef.current?.focus())
+      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+      if (!event.defaultPrevented) buttonRef.current?.focus()
     }
 
     window.addEventListener('click', handler)
@@ -195,7 +198,7 @@ export function Listbox<
 // ---
 
 const DEFAULT_BUTTON_TAG = 'button'
-type ButtonRenderPropArg = { open: boolean; focused: boolean }
+type ButtonRenderPropArg = { open: boolean }
 type ButtonPropsWeControl =
   | 'ref'
   | 'id'
@@ -205,8 +208,6 @@ type ButtonPropsWeControl =
   | 'aria-expanded'
   | 'aria-labelledby'
   | 'onKeyDown'
-  | 'onFocus'
-  | 'onBlur'
   | 'onPointerUp'
 
 const Button = forwardRefWithAs(function Button<
@@ -217,7 +218,6 @@ const Button = forwardRefWithAs(function Button<
 ) {
   const [state, dispatch] = useListboxContext([Listbox.name, Button.name].join('.'))
   const buttonRef = useSyncRefs(state.buttonRef, ref)
-  const [focused, setFocused] = React.useState(false)
 
   const id = `headlessui-listbox-button-${useId()}`
   const d = useDisposables()
@@ -268,20 +268,14 @@ const Button = forwardRefWithAs(function Button<
     [dispatch, d, state, props.disabled]
   )
 
-  const handleFocus = React.useCallback(() => {
-    if (state.listboxState === ListboxStates.Open) return state.optionsRef.current?.focus()
-    setFocused(true)
-  }, [state, setFocused])
-
-  const handleBlur = React.useCallback(() => setFocused(false), [setFocused])
   const labelledby = useComputed(() => {
     if (!state.labelRef.current) return undefined
     return [state.labelRef.current.id, id].join(' ')
   }, [state.labelRef.current, id])
 
   const propsBag = React.useMemo<ButtonRenderPropArg>(
-    () => ({ open: state.listboxState === ListboxStates.Open, focused }),
-    [state, focused]
+    () => ({ open: state.listboxState === ListboxStates.Open }),
+    [state]
   )
   const passthroughProps = props
   const propsWeControl = {
@@ -293,8 +287,6 @@ const Button = forwardRefWithAs(function Button<
     'aria-expanded': state.listboxState === ListboxStates.Open ? true : undefined,
     'aria-labelledby': labelledby,
     onKeyDown: handleKeyDown,
-    onFocus: handleFocus,
-    onBlur: handleBlur,
     onPointerUp: handlePointerUp,
   }
 

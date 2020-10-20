@@ -36,6 +36,13 @@ import {
 
 jest.mock('../../hooks/use-id')
 
+beforeAll(() => {
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
+  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
+})
+
+afterAll(() => jest.restoreAllMocks())
+
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   const defaultComponents = { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption }
 
@@ -233,7 +240,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, focused: false }),
+          textContent: JSON.stringify({ open: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -242,7 +249,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, focused: false }),
+          textContent: JSON.stringify({ open: true }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -268,7 +275,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, focused: false }),
+          textContent: JSON.stringify({ open: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -277,7 +284,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, focused: false }),
+          textContent: JSON.stringify({ open: true }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -3103,34 +3110,6 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.InvisibleUnmounted })
     })
   )
-
-  it('should focus the listbox when you try to focus the button again (when the listbox is already open)', async () => {
-    renderTemplate({
-      template: `
-        <Listbox v-model="value">
-          <ListboxButton>Trigger</ListboxButton>
-          <ListboxOptions>
-            <ListboxOption value="a">Option A</ListboxOption>
-            <ListboxOption value="b">Option B</ListboxOption>
-            <ListboxOption value="c">Option C</ListboxOption>
-          </ListboxOptions>
-        </Listbox>
-      `,
-      setup: () => ({ value: ref(null) }),
-    })
-
-    // Open listbox
-    await click(getListboxButton())
-
-    // Verify listbox is focused
-    assertActiveElement(getListbox())
-
-    // Try to Re-focus the button
-    getListboxButton()?.focus()
-
-    // Verify listbox is still focused
-    assertActiveElement(getListbox())
-  })
 
   it(
     'should be a no-op when we click outside of a closed listbox',

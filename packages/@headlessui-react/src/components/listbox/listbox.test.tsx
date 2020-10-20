@@ -210,7 +210,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, focused: false }),
+          textContent: JSON.stringify({ open: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -219,7 +219,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, focused: false }),
+          textContent: JSON.stringify({ open: true }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -244,7 +244,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, focused: false }),
+          textContent: JSON.stringify({ open: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -253,7 +253,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, focused: false }),
+          textContent: JSON.stringify({ open: true }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -2895,31 +2895,6 @@ describe('Mouse interactions', () => {
       assertListbox({ state: ListboxState.InvisibleUnmounted })
     })
   )
-
-  it('should focus the listbox when you try to focus the button again (when the listbox is already open)', async () => {
-    render(
-      <Listbox value={undefined} onChange={console.log}>
-        <Listbox.Button>Trigger</Listbox.Button>
-        <Listbox.Options>
-          <Listbox.Option value="a">Option A</Listbox.Option>
-          <Listbox.Option value="b">Option B</Listbox.Option>
-          <Listbox.Option value="c">Option C</Listbox.Option>
-        </Listbox.Options>
-      </Listbox>
-    )
-
-    // Open listbox
-    await click(getListboxButton())
-
-    // Verify listbox is focused
-    assertActiveElement(getListbox())
-
-    // Try to Re-focus the button
-    getListboxButton()?.focus()
-
-    // Verify listbox is still focused
-    assertActiveElement(getListbox())
-  })
 
   it(
     'should be a no-op when we click outside of a closed listbox',
