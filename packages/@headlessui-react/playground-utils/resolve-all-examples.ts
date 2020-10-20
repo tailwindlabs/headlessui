@@ -23,11 +23,11 @@ export async function resolveAllExamples(...paths: string[]) {
     }
 
     const bucket: ExamplesType = {
-      name: file.name.replace(/-/g, ' ').replace(/.tsx?/g, ''),
+      name: file.name.replace(/-/g, ' ').replace(/\.tsx?/g, ''),
       path: [...paths, file.name]
         .join('/')
         .replace(/^pages/, '')
-        .replace(/.tsx?/g, '')
+        .replace(/\.tsx?/g, '')
         .replace(/\/+/g, '/'),
     }
 

@@ -26,6 +26,11 @@
         "name": "Menu with Popper + Transition",
         "path": "/menu/menu-with-transition-and-popper",
         "component": "./components/menu/menu-with-transition-and-popper.vue"
+      },
+      {
+        "name": "Menu multiple elements",
+        "path": "/menu/multiple-elements",
+        "component": "./components/menu/multiple-elements.vue"
       }
     ]
   },
@@ -37,6 +42,11 @@
         "name": "Listbox (basic)",
         "path": "/listbox/listbox",
         "component": "./components/listbox/listbox.vue"
+      },
+      {
+        "name": "Listbox multiple elements",
+        "path": "/listbox/multiple-elements",
+        "component": "./components/listbox/multiple-elements.vue"
       }
     ]
   },
