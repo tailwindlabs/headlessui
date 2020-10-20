@@ -38,7 +38,7 @@
     "husky": "^4.3.0",
     "lint-staged": "^10.4.2",
     "prismjs": "^1.22.0",
-    "tailwindcss": "^1.9.4",
+    "tailwindcss": "^1.9.5",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.3",
     "typescript": "^3.9.7"
