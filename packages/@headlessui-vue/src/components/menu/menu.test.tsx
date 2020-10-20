@@ -2388,31 +2388,6 @@ describe('Mouse interactions', () => {
     assertMenu({ state: MenuState.InvisibleUnmounted })
   })
 
-  it('should focus the menu when you try to focus the button again (when the menu is already open)', async () => {
-    renderTemplate(`
-      <Menu>
-        <MenuButton>Trigger</MenuButton>
-        <MenuItems>
-          <MenuItem>Item A</MenuItem>
-          <MenuItem>Item B</MenuItem>
-          <MenuItem>Item C</MenuItem>
-        </MenuItems>
-      </Menu>
-    `)
-
-    // Open menu
-    await click(getMenuButton())
-
-    // Verify menu is focused
-    assertActiveElement(getMenu())
-
-    // Try to Re-focus the button
-    getMenuButton()?.focus()
-
-    // Verify menu is still focused
-    assertActiveElement(getMenu())
-  })
-
   it('should be a no-op when we click outside of a closed menu', async () => {
     renderTemplate(`
       <Menu>

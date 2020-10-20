@@ -21,6 +21,10 @@ enum MenuStates {
   Closed,
 }
 
+function nextFrame(cb: () => void) {
+  requestAnimationFrame(() => requestAnimationFrame(cb))
+}
+
 type MenuItemDataRef = Ref<{ textValue: string; disabled: boolean }>
 type StateDefinition = {
   // State
@@ -132,11 +136,15 @@ export const Menu = defineComponent({
 
     onMounted(() => {
       function handler(event: MouseEvent) {
-        if (menuState.value !== MenuStates.Open) return
-        if (buttonRef.value?.contains(event.target as HTMLElement)) return
+        const target = event.target as HTMLElement
+        const active = document.activeElement
 
-        if (!itemsRef.value?.contains(event.target as HTMLElement)) api.closeMenu()
-        if (!event.defaultPrevented) nextTick(() => buttonRef.value?.focus())
+        if (menuState.value !== MenuStates.Open) return
+        if (buttonRef.value?.contains(target)) return
+
+        if (!itemsRef.value?.contains(target)) api.closeMenu()
+        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+        if (!event.defaultPrevented) buttonRef.value?.focus()
       }
 
       window.addEventListener('click', handler)
@@ -170,7 +178,6 @@ export const MenuButton = defineComponent({
       'aria-controls': api.itemsRef.value?.id,
       'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
       onKeyDown: this.handleKeyDown,
-      onFocus: this.handleFocus,
       onPointerUp: this.handlePointerUp,
     }
 
@@ -219,12 +226,8 @@ export const MenuButton = defineComponent({
       } else {
         event.preventDefault()
         api.openMenu()
-        nextTick(() => api.itemsRef.value?.focus())
+        nextFrame(() => api.itemsRef.value?.focus())
       }
-    }
-
-    function handleFocus() {
-      if (api.menuState.value === MenuStates.Open) api.itemsRef.value?.focus()
     }
 
     return {
@@ -232,7 +235,6 @@ export const MenuButton = defineComponent({
       el: api.buttonRef,
       handleKeyDown,
       handlePointerUp,
-      handleFocus,
     }
   },
 })
