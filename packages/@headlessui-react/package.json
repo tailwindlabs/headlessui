@@ -38,7 +38,7 @@
     "framer-motion": "^2.9.3",
     "next": "9.5.5",
     "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react-dom": "^17.0.0",
     "snapshot-diff": "^0.8.1"
   }
 }
