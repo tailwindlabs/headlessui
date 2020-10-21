@@ -29,7 +29,7 @@
     "lint": "../../scripts/lint.sh"
   },
   "peerDependencies": {
-    "vue": "^3.0.0-rc.13"
+    "vue": "^3.0.2"
   },
   "devDependencies": {
     "@popperjs/core": "^2.5.3",
@@ -39,7 +39,7 @@
     "@vue/test-utils": "^2.0.0-beta.7",
     "husky": "^4.3.0",
     "vite": "^1.0.0-rc.4",
-    "vue": "^3.0.0-rc.13",
+    "vue": "^3.0.2",
     "vue-router": "^4.0.0-beta.13"
   }
 }
