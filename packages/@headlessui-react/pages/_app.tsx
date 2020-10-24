@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 
@@ -58,9 +58,9 @@ function tap<T>(value: T, cb: (value: T) => void) {
 }
 
 function useKeyDisplay() {
-  const [mounted, setMounted] = React.useState(false)
+  const [mounted, setMounted] = useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true)
   }, [])
 
@@ -70,11 +70,11 @@ function useKeyDisplay() {
 }
 
 function KeyCaster() {
-  const [keys, setKeys] = React.useState<string[]>([])
+  const [keys, setKeys] = useState<string[]>([])
   const d = useDisposables()
   const KeyDisplay = useKeyDisplay()
 
-  React.useEffect(() => {
+  useEffect(() => {
     function handler(event: KeyboardEvent) {
       setKeys(current => [
         event.shiftKey && event.key !== 'Shift'
