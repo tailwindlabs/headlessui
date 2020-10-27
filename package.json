@@ -41,6 +41,6 @@
     "tailwindcss": "^1.9.5",
     "tsdx": "^0.14.1",
     "tslib": "^2.0.3",
-    "typescript": "^3.9.7"
+    "typescript": "^4.0.5"
   }
 }
