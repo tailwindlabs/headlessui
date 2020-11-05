@@ -584,9 +584,9 @@ function MyDropdown() {
     <Menu>
       <Menu.Button>More</Menu.Button>
       <Menu.Items>
-        <div class="px-4 py-3">
-          <p class="text-sm leading-5">Signed in as</p>
-          <p class="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
+        <div className="px-4 py-3">
+          <p className="text-sm leading-5">Signed in as</p>
+          <p className="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
         </div>
         <Menu.Item>
           {({ active }) => (
