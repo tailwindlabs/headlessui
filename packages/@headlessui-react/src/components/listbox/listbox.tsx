@@ -144,7 +144,12 @@ type ListboxRenderPropArg = { open: boolean }
 export function Listbox<
   TTag extends React.ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string
->(props: Props<TTag, ListboxRenderPropArg> & { value: TType; onChange(value: TType): void }) {
+>(
+  props: Props<TTag, ListboxRenderPropArg, 'value' | 'onChange'> & {
+    value: TType
+    onChange(value: TType): void
+  }
+) {
   const { value, onChange, ...passThroughProps } = props
   const d = useDisposables()
   const reducerBag = React.useReducer(stateReducer, {
@@ -200,7 +205,6 @@ export function Listbox<
 const DEFAULT_BUTTON_TAG = 'button'
 type ButtonRenderPropArg = { open: boolean }
 type ButtonPropsWeControl =
-  | 'ref'
   | 'id'
   | 'type'
   | 'aria-haspopup'
@@ -326,7 +330,6 @@ type OptionsPropsWeControl =
   | 'aria-labelledby'
   | 'id'
   | 'onKeyDown'
-  | 'ref'
   | 'role'
   | 'tabIndex'
 

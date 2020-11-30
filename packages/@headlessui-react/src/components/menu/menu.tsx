@@ -137,7 +137,6 @@ type MenuRenderPropArg = { open: boolean }
 export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
   props: Props<TTag, MenuRenderPropArg>
 ) {
-  const d = useDisposables()
   const reducerBag = React.useReducer(stateReducer, {
     menuState: MenuStates.Closed,
     buttonRef: React.createRef(),
@@ -163,7 +162,7 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 
     window.addEventListener('click', handler)
     return () => window.removeEventListener('click', handler)
-  }, [menuState, itemsRef, buttonRef, d, dispatch])
+  }, [menuState, itemsRef, buttonRef, dispatch])
 
   const propsBag = React.useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
 
@@ -179,7 +178,6 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 const DEFAULT_BUTTON_TAG = 'button'
 type ButtonRenderPropArg = { open: boolean }
 type ButtonPropsWeControl =
-  | 'ref'
   | 'id'
   | 'type'
   | 'aria-haspopup'
@@ -269,7 +267,6 @@ type ItemsPropsWeControl =
   | 'aria-labelledby'
   | 'id'
   | 'onKeyDown'
-  | 'ref'
   | 'role'
   | 'tabIndex'
 
@@ -395,7 +392,6 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
 ) {
   const { disabled = false, className, onClick, ...passthroughProps } = props
   const [state, dispatch] = useMenuContext([Menu.name, Item.name].join('.'))
-  const d = useDisposables()
   const id = `headlessui-menu-item-${useId()}`
   const active =
     state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
@@ -422,7 +418,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
       disposables().nextFrame(() => state.buttonRef.current?.focus())
       if (onClick) return onClick(event)
     },
-    [d, dispatch, state.buttonRef, disabled, onClick]
+    [dispatch, state.buttonRef, disabled, onClick]
   )
 
   const handleFocus = React.useCallback(() => {
