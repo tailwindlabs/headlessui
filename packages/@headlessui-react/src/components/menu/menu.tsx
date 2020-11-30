@@ -157,7 +157,7 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 
       if (!itemsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseMenu })
       if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) buttonRef.current?.focus()
+      if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
     }
 
     window.addEventListener('click', handler)
@@ -209,7 +209,7 @@ const Button = forwardRefWithAs(function Button<
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
-            state.itemsRef.current?.focus()
+            state.itemsRef.current?.focus({ preventScroll: true })
             dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
           })
           break
@@ -218,7 +218,7 @@ const Button = forwardRefWithAs(function Button<
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => {
-            state.itemsRef.current?.focus()
+            state.itemsRef.current?.focus({ preventScroll: true })
             dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
           })
           break
@@ -232,11 +232,11 @@ const Button = forwardRefWithAs(function Button<
       if (props.disabled) return
       if (state.menuState === MenuStates.Open) {
         dispatch({ type: ActionTypes.CloseMenu })
-        d.nextFrame(() => state.buttonRef.current?.focus())
+        d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenMenu })
-        d.nextFrame(() => state.itemsRef.current?.focus())
+        d.nextFrame(() => state.itemsRef.current?.focus({ preventScroll: true }))
       }
     },
     [dispatch, d, state, props.disabled]
@@ -306,7 +306,7 @@ const Items = forwardRefWithAs(function Items<
             const { id } = state.items[state.activeItemIndex]
             document.getElementById(id)?.click()
           }
-          disposables().nextFrame(() => state.buttonRef.current?.focus())
+          disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
           break
 
         case Keys.ArrowDown:
@@ -330,7 +330,7 @@ const Items = forwardRefWithAs(function Items<
         case Keys.Escape:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
-          disposables().nextFrame(() => state.buttonRef.current?.focus())
+          disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
@@ -415,7 +415,7 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
-      disposables().nextFrame(() => state.buttonRef.current?.focus())
+      disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
       if (onClick) return onClick(event)
     },
     [dispatch, state.buttonRef, disabled, onClick]

@@ -134,7 +134,7 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
   const handlePointerUp = React.useCallback(() => {
     if (!state.switch) return
     state.switch.click()
-    state.switch.focus()
+    state.switch.focus({ preventScroll: true })
   }, [state.switch])
 
   const propsWeControl = { ref: state.setLabel, id, onPointerUp: handlePointerUp }

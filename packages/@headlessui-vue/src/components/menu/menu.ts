@@ -144,7 +144,7 @@ export const Menu = defineComponent({
 
         if (!itemsRef.value?.contains(target)) api.closeMenu()
         if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) buttonRef.value?.focus()
+        if (!event.defaultPrevented) buttonRef.value?.focus({ preventScroll: true })
       }
 
       window.addEventListener('click', handler)
@@ -202,7 +202,7 @@ export const MenuButton = defineComponent({
           event.preventDefault()
           api.openMenu()
           nextTick(() => {
-            api.itemsRef.value?.focus()
+            api.itemsRef.value?.focus({ preventScroll: true })
             api.goToItem(Focus.First)
           })
           break
@@ -211,7 +211,7 @@ export const MenuButton = defineComponent({
           event.preventDefault()
           api.openMenu()
           nextTick(() => {
-            api.itemsRef.value?.focus()
+            api.itemsRef.value?.focus({ preventScroll: true })
             api.goToItem(Focus.Last)
           })
           break
@@ -222,11 +222,11 @@ export const MenuButton = defineComponent({
       if (props.disabled) return
       if (api.menuState.value === MenuStates.Open) {
         api.closeMenu()
-        nextTick(() => api.buttonRef.value?.focus())
+        nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
         api.openMenu()
-        nextFrame(() => api.itemsRef.value?.focus())
+        nextFrame(() => api.itemsRef.value?.focus({ preventScroll: true }))
       }
     }
 
@@ -297,7 +297,7 @@ export const MenuItems = defineComponent({
             document.getElementById(id)?.click()
           }
           api.closeMenu()
-          nextTick(() => api.buttonRef.value?.focus())
+          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
           break
 
         case Keys.ArrowDown:
@@ -321,7 +321,7 @@ export const MenuItems = defineComponent({
         case Keys.Escape:
           event.preventDefault()
           api.closeMenu()
-          nextTick(() => api.buttonRef.value?.focus())
+          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
@@ -373,7 +373,7 @@ export const MenuItem = defineComponent({
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault()
       api.closeMenu()
-      nextTick(() => api.buttonRef.value?.focus())
+      nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {

@@ -181,7 +181,7 @@ export function Listbox<
 
       if (!optionsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseListbox })
       if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) buttonRef.current?.focus()
+      if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
     }
 
     window.addEventListener('click', handler)
@@ -237,7 +237,7 @@ const Button = forwardRefWithAs(function Button<
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.optionsRef.current?.focus()
+            state.optionsRef.current?.focus({ preventScroll: true })
             if (!state.propsRef.current.value)
               dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
           })
@@ -247,7 +247,7 @@ const Button = forwardRefWithAs(function Button<
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.optionsRef.current?.focus()
+            state.optionsRef.current?.focus({ preventScroll: true })
             if (!state.propsRef.current.value)
               dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
           })
@@ -262,11 +262,11 @@ const Button = forwardRefWithAs(function Button<
       if (props.disabled) return
       if (state.listboxState === ListboxStates.Open) {
         dispatch({ type: ActionTypes.CloseListbox })
-        d.nextFrame(() => state.buttonRef.current?.focus())
+        d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenListbox })
-        d.nextFrame(() => state.optionsRef.current?.focus())
+        d.nextFrame(() => state.optionsRef.current?.focus({ preventScroll: true }))
       }
     },
     [dispatch, d, state, props.disabled]
@@ -309,9 +309,10 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
   const [state] = useListboxContext([Listbox.name, Label.name].join('.'))
   const id = `headlessui-listbox-label-${useId()}`
 
-  const handlePointerUp = React.useCallback(() => state.buttonRef.current?.focus(), [
-    state.buttonRef,
-  ])
+  const handlePointerUp = React.useCallback(
+    () => state.buttonRef.current?.focus({ preventScroll: true }),
+    [state.buttonRef]
+  )
 
   const propsBag = React.useMemo<OptionsRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
@@ -370,7 +371,7 @@ const Options = forwardRefWithAs(function Options<
             const { dataRef } = state.options[state.activeOptionIndex]
             state.propsRef.current.onChange(dataRef.current.value)
           }
-          disposables().nextFrame(() => state.buttonRef.current?.focus())
+          disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
           break
 
         case Keys.ArrowDown:
@@ -394,7 +395,7 @@ const Options = forwardRefWithAs(function Options<
         case Keys.Escape:
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseListbox })
-          return d.nextFrame(() => state.buttonRef.current?.focus())
+          return d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
 
         case Keys.Tab:
           return event.preventDefault()
@@ -516,7 +517,7 @@ function Option<
       if (disabled) return event.preventDefault()
       select()
       dispatch({ type: ActionTypes.CloseListbox })
-      disposables().nextFrame(() => state.buttonRef.current?.focus())
+      disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
     },
     [dispatch, state.buttonRef, disabled, select]
   )

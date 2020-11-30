@@ -136,7 +136,7 @@ export const SwitchLabel = defineComponent({
       el: api.labelRef,
       handlePointerUp() {
         api.switchRef.value?.click()
-        api.switchRef.value?.focus()
+        api.switchRef.value?.focus({ preventScroll: true })
       },
     }
   },

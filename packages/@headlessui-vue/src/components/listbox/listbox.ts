@@ -167,7 +167,7 @@ export const Listbox = defineComponent({
 
         if (!optionsRef.value?.contains(target)) api.closeListbox()
         if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) buttonRef.value?.focus()
+        if (!event.defaultPrevented) buttonRef.value?.focus({ preventScroll: true })
       }
 
       window.addEventListener('click', handler)
@@ -210,7 +210,7 @@ export const ListboxLabel = defineComponent({
       id,
       el: api.labelRef,
       handlePointerUp() {
-        api.buttonRef.value?.focus()
+        api.buttonRef.value?.focus({ preventScroll: true })
       },
     }
   },
@@ -263,7 +263,7 @@ export const ListboxButton = defineComponent({
           event.preventDefault()
           api.openListbox()
           nextTick(() => {
-            api.optionsRef.value?.focus()
+            api.optionsRef.value?.focus({ preventScroll: true })
             if (!api.value.value) api.goToOption(Focus.First)
           })
           break
@@ -272,7 +272,7 @@ export const ListboxButton = defineComponent({
           event.preventDefault()
           api.openListbox()
           nextTick(() => {
-            api.optionsRef.value?.focus()
+            api.optionsRef.value?.focus({ preventScroll: true })
             if (!api.value.value) api.goToOption(Focus.Last)
           })
           break
@@ -283,11 +283,11 @@ export const ListboxButton = defineComponent({
       if (props.disabled) return
       if (api.listboxState.value === ListboxStates.Open) {
         api.closeListbox()
-        nextTick(() => api.buttonRef.value?.focus())
+        nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
         api.openListbox()
-        nextFrame(() => api.optionsRef.value?.focus())
+        nextFrame(() => api.optionsRef.value?.focus({ preventScroll: true }))
       }
     }
 
@@ -356,7 +356,7 @@ export const ListboxOptions = defineComponent({
             api.select(dataRef.value)
           }
           api.closeListbox()
-          nextTick(() => api.buttonRef.value?.focus())
+          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
           break
 
         case Keys.ArrowDown:
@@ -380,7 +380,7 @@ export const ListboxOptions = defineComponent({
         case Keys.Escape:
           event.preventDefault()
           api.closeListbox()
-          nextTick(() => api.buttonRef.value?.focus())
+          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
@@ -456,7 +456,7 @@ export const ListboxOption = defineComponent({
       if (disabled) return event.preventDefault()
       api.select(value)
       api.closeListbox()
-      nextTick(() => api.buttonRef.value?.focus())
+      nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {
