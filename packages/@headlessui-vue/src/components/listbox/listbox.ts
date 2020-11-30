@@ -73,7 +73,7 @@ export const Listbox = defineComponent({
   name: 'Listbox',
   props: {
     as: { type: [Object, String], default: 'template' },
-    modelValue: { type: [Object, String], default: null },
+    modelValue: { type: [Object, String, Number, Boolean], default: null },
   },
   setup(props, { slots, attrs, emit }) {
     const { modelValue, ...passThroughProps } = props
