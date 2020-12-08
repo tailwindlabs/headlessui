@@ -17,8 +17,9 @@ export function useId() {
   const [id, setId] = React.useState(state.serverHandoffComplete ? generateId : null)
 
   useIsoMorphicEffect(() => {
-    if (id === null) setId(generateId())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setId(prevId => prevId === null
+      ? generateId()
+      : prevId)
   }, [])
 
   React.useEffect(() => {
