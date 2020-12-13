@@ -169,6 +169,7 @@ const reducers: {
 }
 
 const ListboxContext = React.createContext<[StateDefinition, React.Dispatch<Actions>] | null>(null)
+ListboxContext.displayName = 'ListboxContext'
 
 function stateReducer(state: StateDefinition, action: Actions) {
   return match(action.type, reducers, state, action)
