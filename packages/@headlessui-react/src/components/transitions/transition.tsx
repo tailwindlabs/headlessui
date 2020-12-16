@@ -23,6 +23,7 @@ type TransitionContextValues = {
   appear: boolean
 } | null
 const TransitionContext = React.createContext<TransitionContextValues>(null)
+TransitionContext.displayName = 'TransitionContext'
 
 enum TreeStates {
   Visible = 'visible',
@@ -76,6 +77,7 @@ type NestingContextValues = {
 }
 
 const NestingContext = React.createContext<NestingContextValues | null>(null)
+NestingContext.displayName = 'NestingContext'
 
 function hasChildren(
   bag: NestingContextValues['children'] | { children: NestingContextValues['children'] }

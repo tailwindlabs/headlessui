@@ -15,6 +15,7 @@ type StateDefinition = {
 }
 
 const GroupContext = React.createContext<StateDefinition | null>(null)
+GroupContext.displayName = 'GroupContext'
 
 function useGroupContext(component: string) {
   const context = React.useContext(GroupContext)

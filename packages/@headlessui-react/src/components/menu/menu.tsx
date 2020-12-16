@@ -114,6 +114,7 @@ const reducers: {
 }
 
 const MenuContext = React.createContext<[StateDefinition, React.Dispatch<Actions>] | null>(null)
+MenuContext.displayName = 'MenuContext'
 
 function useMenuContext(component: string) {
   const context = React.useContext(MenuContext)

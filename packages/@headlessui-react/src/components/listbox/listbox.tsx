@@ -121,6 +121,7 @@ const reducers: {
 }
 
 const ListboxContext = React.createContext<[StateDefinition, React.Dispatch<Actions>] | null>(null)
+ListboxContext.displayName = 'ListboxContext'
 
 function useListboxContext(component: string) {
   const context = React.useContext(ListboxContext)
