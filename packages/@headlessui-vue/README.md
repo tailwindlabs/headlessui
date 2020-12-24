@@ -380,7 +380,7 @@ To tell an element to render its children directly with no wrapper element, use 
 
 The `Listbox` component and related child components are used to quickly build custom listbox components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard navigation support.
 
-- [Basic example](#basic-example-2)
+- [Basic example](#basic-example-1)
 - [Styling the active and selected option](#styling-the-active-and-selected-option)
 - [Showing/hiding the listbox](#showinghiding-the-listbox)
 - [Using a custom label](#using-a-custom-label)
@@ -388,7 +388,7 @@ The `Listbox` component and related child components are used to quickly build c
 - [Transitions](#transitions-1)
 - [Rendering additional content](#rendering-additional-content-1)
 - [Rendering a different element for a component](#rendering-a-different-element-for-a-component-1)
-- [Component API](#component-api-2)
+- [Component API](#component-api-1)
 
 ### Basic example
 
