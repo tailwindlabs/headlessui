@@ -74,6 +74,10 @@ export const Switch = defineComponent({
       onKeyPress: this.handleKeyPress,
     }
 
+    if (this.$props.as === 'button') {
+      Object.assign(propsWeControl, { type: 'button' })
+    }
+
     return render({
       props: { ...this.$props, ...propsWeControl },
       slot,

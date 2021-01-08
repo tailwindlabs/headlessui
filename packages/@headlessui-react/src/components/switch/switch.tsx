@@ -117,6 +117,10 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
     onKeyPress: handleKeyPress,
   }
 
+  if (passThroughProps.as === 'button') {
+    Object.assign(propsWeControl, { type: 'button' })
+  }
+
   return render({ ...passThroughProps, ...propsWeControl }, propsBag, DEFAULT_SWITCH_TAG)
 }
 
