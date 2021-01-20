@@ -71,6 +71,7 @@ function useListboxContext(component: string) {
 
 export const Listbox = defineComponent({
   name: 'Listbox',
+  emits: ['update:modelValue'],
   props: {
     as: { type: [Object, String], default: 'template' },
     modelValue: { type: [Object, String, Number, Boolean], default: null },
