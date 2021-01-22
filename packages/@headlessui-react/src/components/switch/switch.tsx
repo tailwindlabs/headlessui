@@ -5,6 +5,7 @@ import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
 
 type StateDefinition = {
   switch: HTMLButtonElement | null
@@ -84,6 +85,7 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
   const toggle = React.useCallback(() => onChange(!checked), [onChange, checked])
   const handleClick = React.useCallback(
     (event: React.MouseEvent) => {
+      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       event.preventDefault()
       toggle()
     },
