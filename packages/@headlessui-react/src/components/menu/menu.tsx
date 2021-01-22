@@ -12,6 +12,7 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
 
 enum MenuStates {
   Open,
@@ -413,7 +414,8 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
   }, [bag, id])
 
   const handleClick = React.useCallback(
-    (event: { preventDefault: Function }) => {
+    (event: React.MouseEvent) => {
+      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
       disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
