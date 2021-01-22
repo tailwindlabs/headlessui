@@ -48,6 +48,7 @@ export const SwitchGroup = defineComponent({
 
 export const Switch = defineComponent({
   name: 'Switch',
+  emits: ['update:modelValue'],
   props: {
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: [Object, Boolean], default: null },
