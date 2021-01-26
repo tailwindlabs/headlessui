@@ -1,4 +1,5 @@
-export * from './components/transitions/transition'
-export * from './components/menu/menu'
+export * from './components/disclosure/disclosure'
 export * from './components/listbox/listbox'
+export * from './components/menu/menu'
 export * from './components/switch/switch'
+export * from './components/transitions/transition'
