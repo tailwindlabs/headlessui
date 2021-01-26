@@ -1758,9 +1758,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowDown)
         assertActiveListboxOption(options[2])
 
-        // We should NOT be able to go down again (because last option). Current implementation won't go around.
+        // We should be able to wrap to the first item
         await press(Keys.ArrowDown)
-        assertActiveListboxOption(options[2])
+        assertActiveListboxOption(options[0])
       })
     )
 
@@ -2091,11 +2091,11 @@ describe('Keyboard interactions', () => {
         options.forEach(option => assertListboxOption(option))
         assertActiveListboxOption(options[2])
 
-        // We should not be able to go up (because those are disabled)
+        // We should not be able to go up (because other items are disabled)
         await press(Keys.ArrowUp)
         assertActiveListboxOption(options[2])
 
-        // We should not be able to go down (because this is the last option)
+        // We should not be able to go down (because other items are disabled)
         await press(Keys.ArrowDown)
         assertActiveListboxOption(options[2])
       })
@@ -2153,9 +2153,9 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
         assertActiveListboxOption(options[0])
 
-        // We should NOT be able to go up again (because first option). Current implementation won't go around.
+        // We should be able to wrap to the last item
         await press(Keys.ArrowUp)
-        assertActiveListboxOption(options[0])
+        assertActiveListboxOption(options[2])
       })
     )
   })

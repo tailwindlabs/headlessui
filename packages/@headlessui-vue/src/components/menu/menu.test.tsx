@@ -1465,9 +1465,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.ArrowDown)
       assertMenuLinkedWithMenuItem(items[2])
 
-      // We should NOT be able to go down again (because last item). Current implementation won't go around.
+      // We should be able to wrap to the first item
       await press(Keys.ArrowDown)
-      assertMenuLinkedWithMenuItem(items[2])
+      assertMenuLinkedWithMenuItem(items[0])
     })
 
     it('should be possible to use ArrowDown to navigate the menu items and skip the first disabled one', async () => {
@@ -1660,11 +1660,11 @@ describe('Keyboard interactions', () => {
       items.forEach(item => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[2])
 
-      // We should not be able to go up (because those are disabled)
+      // We should not be able to go up (because other items are disabled)
       await press(Keys.ArrowUp)
       assertMenuLinkedWithMenuItem(items[2])
 
-      // We should not be able to go down (because this is the last item)
+      // We should not be able to go up (because other items are disabled)
       await press(Keys.ArrowDown)
       assertMenuLinkedWithMenuItem(items[2])
     })
@@ -1715,9 +1715,9 @@ describe('Keyboard interactions', () => {
       await press(Keys.ArrowUp)
       assertMenuLinkedWithMenuItem(items[0])
 
-      // We should NOT be able to go up again (because first item). Current implementation won't go around.
+      // We should be able to wrap to the last item
       await press(Keys.ArrowUp)
-      assertMenuLinkedWithMenuItem(items[0])
+      assertMenuLinkedWithMenuItem(items[2])
     })
   })
 
