@@ -43,22 +43,21 @@ export function calculateActiveIndex<TItem>(
         return items.findIndex(item => !resolvers.resolveDisabled(item))
 
       case Focus.Previous: {
-        const idx = items
-          .slice()
-          .reverse()
-          .findIndex((item, idx, all) => {
-            if (activeIndex !== -1 && all.length - idx - 1 >= activeIndex) return false
-            return !resolvers.resolveDisabled(item)
-          })
-        if (idx === -1) return idx
-        return items.length - 1 - idx
+        let idx = activeIndex
+        do {
+          idx = idx - 1
+          if (idx < 0) idx = items.length - 1
+        } while (idx !== activeIndex && resolvers.resolveDisabled(items[idx]))
+        return idx
       }
 
-      case Focus.Next:
-        return items.findIndex((item, idx) => {
-          if (idx <= activeIndex) return false
-          return !resolvers.resolveDisabled(item)
-        })
+      case Focus.Next: {
+        let idx = activeIndex
+        do {
+          idx = (idx + 1) % items.length
+        } while (idx !== activeIndex && resolvers.resolveDisabled(items[idx]))
+        return idx
+      }
 
       case Focus.Last: {
         const idx = items
