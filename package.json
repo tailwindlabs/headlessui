@@ -29,7 +29,8 @@
     "printWidth": 100,
     "semi": false,
     "singleQuote": true,
-    "trailingComma": "es5"
+    "trailingComma": "es5",
+    "arrowParens": "avoid"
   },
   "devDependencies": {
     "@tailwindcss/ui": "^0.6.2",
