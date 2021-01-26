@@ -1642,11 +1642,11 @@ describe('Keyboard interactions', () => {
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[2])
 
-        // We should be able to go down once
+        // We should be able to go up once
         await press(Keys.ArrowUp)
         assertMenuLinkedWithMenuItem(items[1])
 
-        // We should be able to go down again
+        // We should be able to go up again
         await press(Keys.ArrowUp)
         assertMenuLinkedWithMenuItem(items[0])
 
