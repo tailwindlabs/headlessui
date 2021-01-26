@@ -9,9 +9,9 @@ function nextFrame(cb: Function): void {
 }
 
 export const Keys: Record<string, Partial<KeyboardEvent>> = {
-  Space: { key: ' ', keyCode: 32 },
-  Enter: { key: 'Enter', keyCode: 13 },
-  Escape: { key: 'Escape', keyCode: 27 },
+  Space: { key: ' ', keyCode: 32, charCode: 32 },
+  Enter: { key: 'Enter', keyCode: 13, charCode: 13 },
+  Escape: { key: 'Escape', keyCode: 27, charCode: 27 },
   Backspace: { key: 'Backspace', keyCode: 8 },
 
   ArrowUp: { key: 'ArrowUp', keyCode: 38 },
@@ -23,7 +23,7 @@ export const Keys: Record<string, Partial<KeyboardEvent>> = {
   PageUp: { key: 'PageUp', keyCode: 33 },
   PageDown: { key: 'PageDown', keyCode: 34 },
 
-  Tab: { key: 'Tab', keyCode: 9 },
+  Tab: { key: 'Tab', keyCode: 9, charCode: 9 },
 }
 
 export function shift(event: Partial<KeyboardEvent>) {
@@ -34,30 +34,125 @@ export function word(input: string): Partial<KeyboardEvent>[] {
   return input.split('').map(key => ({ key }))
 }
 
-export async function type(events: Partial<KeyboardEvent>[]) {
+let Default = Symbol()
+let Ignore = Symbol()
+
+let cancellations: Record<string | typeof Default, Record<string, Set<string>>> = {
+  [Default]: {
+    keydown: new Set(['keypress']),
+    keypress: new Set([]),
+    keyup: new Set([]),
+  },
+  [Keys.Enter.key!]: {
+    keydown: new Set(['keypress', 'click']),
+    keypress: new Set(['click']),
+    keyup: new Set([]),
+  },
+  [Keys.Space.key!]: {
+    keydown: new Set(['keypress', 'click']),
+    keypress: new Set([]),
+    keyup: new Set(['click']),
+  },
+  [Keys.Tab.key!]: {
+    keydown: new Set(['keypress', 'blur', 'focus']),
+    keypress: new Set([]),
+    keyup: new Set([]),
+  },
+}
+
+let order: Record<
+  string | typeof Default,
+  ((
+    element: Element,
+    event: Partial<KeyboardEvent | MouseEvent>
+  ) => boolean | typeof Ignore | Element)[]
+> = {
+  [Default]: [
+    function keydown(element, event) {
+      return fireEvent.keyDown(element, event)
+    },
+    function keypress(element, event) {
+      return fireEvent.keyPress(element, event)
+    },
+    function keyup(element, event) {
+      return fireEvent.keyUp(element, event)
+    },
+  ],
+  [Keys.Enter.key!]: [
+    function keydown(element, event) {
+      return fireEvent.keyDown(element, event)
+    },
+    function keypress(element, event) {
+      return fireEvent.keyPress(element, event)
+    },
+    function click(element, event) {
+      if (element instanceof HTMLButtonElement) return fireEvent.click(element, event)
+      return Ignore
+    },
+    function keyup(element, event) {
+      return fireEvent.keyUp(element, event)
+    },
+  ],
+  [Keys.Space.key!]: [
+    function keydown(element, event) {
+      return fireEvent.keyDown(element, event)
+    },
+    function keypress(element, event) {
+      return fireEvent.keyPress(element, event)
+    },
+    function keyup(element, event) {
+      return fireEvent.keyUp(element, event)
+    },
+    function click(element, event) {
+      if (element instanceof HTMLButtonElement) return fireEvent.click(element, event)
+      return Ignore
+    },
+  ],
+  [Keys.Tab.key!]: [
+    function keydown(element, event) {
+      return fireEvent.keyDown(element, event)
+    },
+    function blurAndfocus(_element, event) {
+      return focusNext(event)
+    },
+    function keyup(element, event) {
+      return fireEvent.keyUp(element, event)
+    },
+  ],
+}
+
+export async function type(events: Partial<KeyboardEvent>[], element = document.activeElement) {
   jest.useFakeTimers()
 
   try {
-    if (document.activeElement === null) return expect(document.activeElement).not.toBe(null)
+    if (element === null) return expect(element).not.toBe(null)
 
-    let element = document.activeElement
+    for (let event of events) {
+      let skip = new Set()
+      let actions = order[event.key!] ?? order[Default as any]
+      for (let action of actions) {
+        let checks = action.name.split('And')
+        if (checks.some(check => skip.has(check))) continue
 
-    events.forEach(event => {
-      const cancelled1 = !fireEvent.keyDown(element, event)
+        let result = action(element, {
+          type: action.name,
+          charCode: event.key?.length === 1 ? event.key?.charCodeAt(0) : undefined,
+          ...event,
+        })
+        if (result === Ignore) continue
+        if (result instanceof Element) {
+          element = result
+        }
 
-      // Special treatment for `Tab` on an element
-      if (!cancelled1 && event.key === Keys.Tab.key) {
-        element = focusNext(event)
+        let cancelled = !result
+        if (cancelled) {
+          let skippablesForKey = cancellations[event.key!] ?? cancellations[Default as any]
+          let skippables = skippablesForKey?.[action.name] ?? new Set()
+
+          for (let skippable of skippables) skip.add(skippable)
+        }
       }
-
-      const cancelled2 = !fireEvent.keyPress(element, event)
-      // Special treatment for `Enter` on a button element
-      if (!cancelled2 && event.key === Keys.Enter.key && element instanceof HTMLButtonElement) {
-        fireEvent.click(element)
-      }
-
-      fireEvent.keyUp(element, event)
-    })
+    }
 
     // We don't want to actually wait in our tests, so let's advance
     jest.runAllTimers()
