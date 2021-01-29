@@ -170,15 +170,44 @@ export async function press(event: Partial<KeyboardEvent>) {
   return type([event])
 }
 
-export async function click(element: Document | Element | Window | Node | null) {
+export enum MouseButton {
+  Left = 0,
+  Right = 2,
+}
+
+export async function click(
+  element: Document | Element | Window | Node | null,
+  button = MouseButton.Left
+) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    fireEvent.pointerDown(element)
-    fireEvent.mouseDown(element)
-    fireEvent.pointerUp(element)
-    fireEvent.mouseUp(element)
-    fireEvent.click(element)
+    let options = { button }
+
+    if (button === MouseButton.Left) {
+      // Cancel in pointerDown cancels mouseDown, mouseUp
+      let cancelled = !fireEvent.pointerDown(element, options)
+      if (!cancelled) {
+        fireEvent.mouseDown(element, options)
+      }
+      fireEvent.pointerUp(element, options)
+      if (!cancelled) {
+        fireEvent.mouseUp(element, options)
+      }
+      fireEvent.click(element, options)
+    } else if (button === MouseButton.Right) {
+      // Cancel in pointerDown cancels mouseDown, mouseUp
+      let cancelled = !fireEvent.pointerDown(element, options)
+      if (!cancelled) {
+        fireEvent.mouseDown(element, options)
+      }
+
+      // Only in Firefox:
+      fireEvent.pointerUp(element, options)
+      if (!cancelled) {
+        fireEvent.mouseUp(element, options)
+      }
+    }
 
     await new Promise(nextFrame)
   } catch (err) {

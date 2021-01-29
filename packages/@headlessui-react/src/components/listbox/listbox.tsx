@@ -12,6 +12,7 @@ import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
 
 enum ListboxStates {
   Open,
@@ -213,7 +214,7 @@ type ButtonPropsWeControl =
   | 'aria-expanded'
   | 'aria-labelledby'
   | 'onKeyDown'
-  | 'onPointerUp'
+  | 'onClick'
 
 const Button = forwardRefWithAs(function Button<
   TTag extends React.ElementType = typeof DEFAULT_BUTTON_TAG
@@ -258,8 +259,9 @@ const Button = forwardRefWithAs(function Button<
     [dispatch, state, d]
   )
 
-  const handlePointerUp = React.useCallback(
-    (event: MouseEvent) => {
+  const handleClick = React.useCallback(
+    (event: React.MouseEvent) => {
+      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       if (props.disabled) return
       if (state.listboxState === ListboxStates.Open) {
         dispatch({ type: ActionTypes.CloseListbox })
@@ -292,7 +294,7 @@ const Button = forwardRefWithAs(function Button<
     'aria-expanded': state.listboxState === ListboxStates.Open ? true : undefined,
     'aria-labelledby': labelledby,
     onKeyDown: handleKeyDown,
-    onPointerUp: handlePointerUp,
+    onClick: handleClick,
   }
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
@@ -301,7 +303,7 @@ const Button = forwardRefWithAs(function Button<
 // ---
 
 const DEFAULT_LABEL_TAG = 'label'
-type LabelPropsWeControl = 'id' | 'ref' | 'onPointerUp'
+type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 type LabelRenderPropArg = { open: boolean }
 
 function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
@@ -310,7 +312,7 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
   const [state] = useListboxContext([Listbox.name, Label.name].join('.'))
   const id = `headlessui-listbox-label-${useId()}`
 
-  const handlePointerUp = React.useCallback(
+  const handleClick = React.useCallback(
     () => state.buttonRef.current?.focus({ preventScroll: true }),
     [state.buttonRef]
   )
@@ -319,7 +321,7 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
     [state]
   )
-  const propsWeControl = { ref: state.labelRef, id, onPointerUp: handlePointerUp }
+  const propsWeControl = { ref: state.labelRef, id, onClick: handleClick }
   return render({ ...props, ...propsWeControl }, propsBag, DEFAULT_LABEL_TAG)
 }
 
@@ -453,6 +455,9 @@ type ListboxOptionPropsWeControl =
   | 'aria-disabled'
   | 'aria-selected'
   | 'onPointerLeave'
+  | 'onMouseLeave'
+  | 'onPointerMove'
+  | 'onMouseMove'
   | 'onFocus'
 
 function Option<
@@ -528,13 +533,13 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [disabled, id, dispatch])
 
-  const handlePointerMove = React.useCallback(() => {
+  const handleMove = React.useCallback(() => {
     if (disabled) return
     if (active) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [disabled, active, id, dispatch])
 
-  const handlePointerLeave = React.useCallback(() => {
+  const handleLeave = React.useCallback(() => {
     if (disabled) return
     if (!active) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
@@ -554,8 +559,10 @@ function Option<
     'aria-selected': selected === true ? true : undefined,
     onClick: handleClick,
     onFocus: handleFocus,
-    onPointerMove: handlePointerMove,
-    onPointerLeave: handlePointerLeave,
+    onPointerMove: handleMove,
+    onMouseMove: handleMove,
+    onPointerLeave: handleLeave,
+    onMouseLeave: handleLeave,
   }
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OPTION_TAG)

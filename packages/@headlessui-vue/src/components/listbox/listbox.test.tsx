@@ -32,6 +32,7 @@ import {
   type,
   word,
   Keys,
+  MouseButton,
 } from '../../test-utils/interactions'
 
 jest.mock('../../hooks/use-id')
@@ -2958,6 +2959,35 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should not focus the ListboxButton when we right click the ListboxLabel',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <Listbox v-model="value">
+            <ListboxLabel>Label</ListboxLabel>
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      // Ensure the button is not focused yet
+      assertActiveElement(document.body)
+
+      // Focus the label
+      await click(getListboxLabel(), MouseButton.Right)
+
+      // Ensure that the body is still active
+      assertActiveElement(document.body)
+    })
+  )
+
+  it(
     'should be possible to open the listbox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
@@ -2996,6 +3026,37 @@ describe('Mouse interactions', () => {
       const options = getListboxOptions()
       expect(options).toHaveLength(3)
       options.forEach(option => assertListboxOption(option))
+    })
+  )
+
+  it(
+    'should not be possible to open the listbox on right click',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      assertListboxButton({
+        state: ListboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Try to open the menu
+      await click(getListboxButton(), MouseButton.Right)
+
+      // Verify it is still closed
+      assertListboxButton({ state: ListboxState.InvisibleUnmounted })
     })
   )
 

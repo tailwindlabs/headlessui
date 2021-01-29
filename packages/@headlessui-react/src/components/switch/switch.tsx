@@ -130,7 +130,7 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
 
 const DEFAULT_LABEL_TAG = 'label'
 type LabelRenderPropArg = {}
-type LabelPropsWeControl = 'id' | 'ref' | 'onPointerUp'
+type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 
 function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
@@ -138,13 +138,13 @@ function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
   const state = useGroupContext([Switch.name, Label.name].join('.'))
   const id = `headlessui-switch-label-${useId()}`
 
-  const handlePointerUp = React.useCallback(() => {
+  const handleClick = React.useCallback(() => {
     if (!state.switch) return
     state.switch.click()
     state.switch.focus({ preventScroll: true })
   }, [state.switch])
 
-  const propsWeControl = { ref: state.setLabel, id, onPointerUp: handlePointerUp }
+  const propsWeControl = { ref: state.setLabel, id, onClick: handleClick }
   return render({ ...props, ...propsWeControl }, {}, DEFAULT_LABEL_TAG)
 }
 

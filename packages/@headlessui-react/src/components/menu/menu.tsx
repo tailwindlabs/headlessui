@@ -186,7 +186,7 @@ type ButtonPropsWeControl =
   | 'aria-controls'
   | 'aria-expanded'
   | 'onKeyDown'
-  | 'onPointerUp'
+  | 'onClick'
 
 const Button = forwardRefWithAs(function Button<
   TTag extends React.ElementType = typeof DEFAULT_BUTTON_TAG
@@ -229,8 +229,9 @@ const Button = forwardRefWithAs(function Button<
     [dispatch, state, d]
   )
 
-  const handlePointerUp = React.useCallback(
-    (event: MouseEvent) => {
+  const handleClick = React.useCallback(
+    (event: React.MouseEvent) => {
+      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       if (props.disabled) return
       if (state.menuState === MenuStates.Open) {
         dispatch({ type: ActionTypes.CloseMenu })
@@ -254,7 +255,7 @@ const Button = forwardRefWithAs(function Button<
     'aria-controls': state.itemsRef.current?.id,
     'aria-expanded': state.menuState === MenuStates.Open ? true : undefined,
     onKeyDown: handleKeyDown,
-    onPointerUp: handlePointerUp,
+    onClick: handleClick,
   }
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
@@ -381,6 +382,9 @@ type MenuItemPropsWeControl =
   | 'tabIndex'
   | 'aria-disabled'
   | 'onPointerLeave'
+  | 'onPointerMove'
+  | 'onMouseLeave'
+  | 'onMouseMove'
   | 'onFocus'
 
 function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
@@ -415,7 +419,6 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
 
   const handleClick = React.useCallback(
     (event: React.MouseEvent) => {
-      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
       disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
@@ -429,13 +432,13 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   }, [disabled, id, dispatch])
 
-  const handlePointerMove = React.useCallback(() => {
+  const handleMove = React.useCallback(() => {
     if (disabled) return
     if (active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   }, [disabled, active, id, dispatch])
 
-  const handlePointerLeave = React.useCallback(() => {
+  const handleLeave = React.useCallback(() => {
     if (disabled) return
     if (!active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
@@ -450,8 +453,10 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     'aria-disabled': disabled === true ? true : undefined,
     onClick: handleClick,
     onFocus: handleFocus,
-    onPointerMove: handlePointerMove,
-    onPointerLeave: handlePointerLeave,
+    onPointerMove: handleMove,
+    onMouseMove: handleMove,
+    onPointerLeave: handleLeave,
+    onMouseLeave: handleLeave,
   }
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_ITEM_TAG)

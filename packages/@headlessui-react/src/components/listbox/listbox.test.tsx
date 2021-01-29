@@ -13,6 +13,7 @@ import {
   type,
   word,
   Keys,
+  MouseButton,
 } from '../../test-utils/interactions'
 import {
   assertActiveElement,
@@ -2755,6 +2756,32 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should not focus the Listbox.Button when we right click the Listbox.Label',
+    suppressConsoleLogs(async () => {
+      render(
+        <Listbox value={undefined} onChange={console.log}>
+          <Listbox.Label>Label</Listbox.Label>
+          <Listbox.Button>Trigger</Listbox.Button>
+          <Listbox.Options>
+            <Listbox.Option value="a">Option A</Listbox.Option>
+            <Listbox.Option value="b">Option B</Listbox.Option>
+            <Listbox.Option value="c">Option C</Listbox.Option>
+          </Listbox.Options>
+        </Listbox>
+      )
+
+      // Ensure the button is not focused yet
+      assertActiveElement(document.body)
+
+      // Focus the label
+      await click(getListboxLabel(), MouseButton.Right)
+
+      // Ensure that the body is still active
+      assertActiveElement(document.body)
+    })
+  )
+
+  it(
     'should be possible to open the listbox on click',
     suppressConsoleLogs(async () => {
       render(
@@ -2790,6 +2817,34 @@ describe('Mouse interactions', () => {
       const options = getListboxOptions()
       expect(options).toHaveLength(3)
       options.forEach(option => assertListboxOption(option))
+    })
+  )
+
+  it(
+    'should not be possible to open the listbox on right click',
+    suppressConsoleLogs(async () => {
+      render(
+        <Listbox value={undefined} onChange={console.log}>
+          <Listbox.Button>Trigger</Listbox.Button>
+          <Listbox.Options>
+            <Listbox.Option value="a">Item A</Listbox.Option>
+            <Listbox.Option value="b">Item B</Listbox.Option>
+            <Listbox.Option value="c">Item C</Listbox.Option>
+          </Listbox.Options>
+        </Listbox>
+      )
+
+      assertListboxButton({
+        state: ListboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Try to open the menu
+      await click(getListboxButton(), MouseButton.Right)
+
+      // Verify it is still closed
+      assertListboxButton({ state: ListboxState.InvisibleUnmounted })
     })
   )
 

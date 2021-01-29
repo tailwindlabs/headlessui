@@ -178,7 +178,7 @@ export const MenuButton = defineComponent({
       'aria-controls': api.itemsRef.value?.id,
       'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
       onKeyDown: this.handleKeyDown,
-      onPointerUp: this.handlePointerUp,
+      onClick: this.handleClick,
     }
 
     return render({
@@ -218,7 +218,7 @@ export const MenuButton = defineComponent({
       }
     }
 
-    function handlePointerUp(event: MouseEvent) {
+    function handleClick(event: MouseEvent) {
       if (props.disabled) return
       if (api.menuState.value === MenuStates.Open) {
         api.closeMenu()
@@ -234,7 +234,7 @@ export const MenuButton = defineComponent({
       id,
       el: api.buttonRef,
       handleKeyDown,
-      handlePointerUp,
+      handleClick,
     }
   },
 })
@@ -381,13 +381,13 @@ export const MenuItem = defineComponent({
       api.goToItem(Focus.Specific, id)
     }
 
-    function handlePointerMove() {
+    function handleMove() {
       if (disabled) return
       if (active.value) return
       api.goToItem(Focus.Specific, id)
     }
 
-    function handlePointerLeave() {
+    function handleLeave() {
       if (disabled) return
       if (!active.value) return
       api.goToItem(Focus.Nothing)
@@ -403,8 +403,10 @@ export const MenuItem = defineComponent({
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
-        onPointerMove: handlePointerMove,
-        onPointerLeave: handlePointerLeave,
+        onPointerMove: handleMove,
+        onMouseMove: handleMove,
+        onPointerLeave: handleLeave,
+        onMouseLeave: handleLeave,
       }
 
       return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })

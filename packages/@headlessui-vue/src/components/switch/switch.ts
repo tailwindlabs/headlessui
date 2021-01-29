@@ -122,7 +122,7 @@ export const SwitchLabel = defineComponent({
     const propsWeControl = {
       id: this.id,
       ref: 'el',
-      onPointerUp: this.handlePointerUp,
+      onClick: this.handleClick,
     }
 
     return render({
@@ -139,7 +139,7 @@ export const SwitchLabel = defineComponent({
     return {
       id,
       el: api.labelRef,
-      handlePointerUp() {
+      handleClick() {
         api.switchRef.value?.click()
         api.switchRef.value?.focus({ preventScroll: true })
       },
