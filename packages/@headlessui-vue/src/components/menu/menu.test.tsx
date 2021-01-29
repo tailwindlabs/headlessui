@@ -27,6 +27,7 @@ import {
   type,
   Keys,
   word,
+  MouseButton,
 } from '../../test-utils/interactions'
 
 jest.mock('../../hooks/use-id')
@@ -2332,6 +2333,34 @@ describe('Mouse interactions', () => {
     expect(items).toHaveLength(3)
     items.forEach(item => assertMenuItem(item))
   })
+
+  it(
+    'should not be possible to open a menu on right click',
+    suppressConsoleLogs(async () => {
+      renderTemplate(`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Try to open the menu
+      await click(getMenuButton(), MouseButton.Right)
+
+      // Verify it is still closed
+      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+    })
+  )
 
   it('should not be possible to open a menu on click when the button is disabled', async () => {
     renderTemplate(`

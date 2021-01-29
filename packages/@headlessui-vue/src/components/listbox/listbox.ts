@@ -194,7 +194,7 @@ export const ListboxLabel = defineComponent({
     const api = useListboxContext('ListboxLabel')
 
     const slot = { open: api.listboxState.value === ListboxStates.Open }
-    const propsWeControl = { id: this.id, ref: 'el', onPointerUp: this.handlePointerUp }
+    const propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
 
     return render({
       props: { ...this.$props, ...propsWeControl },
@@ -210,7 +210,7 @@ export const ListboxLabel = defineComponent({
     return {
       id,
       el: api.labelRef,
-      handlePointerUp() {
+      handleClick() {
         api.buttonRef.value?.focus({ preventScroll: true })
       },
     }
@@ -240,7 +240,7 @@ export const ListboxButton = defineComponent({
         ? [api.labelRef.value.id, this.id].join(' ')
         : undefined,
       onKeyDown: this.handleKeyDown,
-      onPointerUp: this.handlePointerUp,
+      onClick: this.handleClick,
     }
 
     return render({
@@ -280,7 +280,7 @@ export const ListboxButton = defineComponent({
       }
     }
 
-    function handlePointerUp(event: MouseEvent) {
+    function handleClick(event: MouseEvent) {
       if (props.disabled) return
       if (api.listboxState.value === ListboxStates.Open) {
         api.closeListbox()
@@ -292,7 +292,7 @@ export const ListboxButton = defineComponent({
       }
     }
 
-    return { id, el: api.buttonRef, handleKeyDown, handlePointerUp }
+    return { id, el: api.buttonRef, handleKeyDown, handleClick }
   },
 })
 
