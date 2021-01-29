@@ -455,6 +455,9 @@ type ListboxOptionPropsWeControl =
   | 'aria-disabled'
   | 'aria-selected'
   | 'onPointerLeave'
+  | 'onMouseLeave'
+  | 'onPointerMove'
+  | 'onMouseMove'
   | 'onFocus'
 
 function Option<
@@ -530,13 +533,13 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [disabled, id, dispatch])
 
-  const handlePointerMove = React.useCallback(() => {
+  const handleMove = React.useCallback(() => {
     if (disabled) return
     if (active) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [disabled, active, id, dispatch])
 
-  const handlePointerLeave = React.useCallback(() => {
+  const handleLeave = React.useCallback(() => {
     if (disabled) return
     if (!active) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
@@ -556,8 +559,10 @@ function Option<
     'aria-selected': selected === true ? true : undefined,
     onClick: handleClick,
     onFocus: handleFocus,
-    onPointerMove: handlePointerMove,
-    onPointerLeave: handlePointerLeave,
+    onPointerMove: handleMove,
+    onMouseMove: handleMove,
+    onPointerLeave: handleLeave,
+    onMouseLeave: handleLeave,
   }
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OPTION_TAG)

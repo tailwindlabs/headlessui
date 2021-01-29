@@ -465,13 +465,13 @@ export const ListboxOption = defineComponent({
       api.goToOption(Focus.Specific, id)
     }
 
-    function handlePointerMove() {
+    function handleMove() {
       if (disabled) return
       if (active.value) return
       api.goToOption(Focus.Specific, id)
     }
 
-    function handlePointerLeave() {
+    function handleLeave() {
       if (disabled) return
       if (!active.value) return
       api.goToOption(Focus.Nothing)
@@ -488,8 +488,10 @@ export const ListboxOption = defineComponent({
         'aria-selected': selected.value === true ? selected.value : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
-        onPointerMove: handlePointerMove,
-        onPointerLeave: handlePointerLeave,
+        onPointerMove: handleMove,
+        onMouseMove: handleMove,
+        onPointerLeave: handleLeave,
+        onMouseLeave: handleLeave,
       }
 
       return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })

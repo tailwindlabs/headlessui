@@ -381,13 +381,13 @@ export const MenuItem = defineComponent({
       api.goToItem(Focus.Specific, id)
     }
 
-    function handlePointerMove() {
+    function handleMove() {
       if (disabled) return
       if (active.value) return
       api.goToItem(Focus.Specific, id)
     }
 
-    function handlePointerLeave() {
+    function handleLeave() {
       if (disabled) return
       if (!active.value) return
       api.goToItem(Focus.Nothing)
@@ -403,8 +403,10 @@ export const MenuItem = defineComponent({
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
-        onPointerMove: handlePointerMove,
-        onPointerLeave: handlePointerLeave,
+        onPointerMove: handleMove,
+        onMouseMove: handleMove,
+        onPointerLeave: handleLeave,
+        onMouseLeave: handleLeave,
       }
 
       return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
