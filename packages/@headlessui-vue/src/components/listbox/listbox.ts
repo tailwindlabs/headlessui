@@ -171,8 +171,8 @@ export const Listbox = defineComponent({
         if (!event.defaultPrevented) buttonRef.value?.focus({ preventScroll: true })
       }
 
-      window.addEventListener('click', handler)
-      onUnmounted(() => window.removeEventListener('click', handler))
+      window.addEventListener('mousedown', handler)
+      onUnmounted(() => window.removeEventListener('mousedown', handler))
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.

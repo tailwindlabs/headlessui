@@ -186,8 +186,8 @@ export function Listbox<
       if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
     }
 
-    window.addEventListener('click', handler)
-    return () => window.removeEventListener('click', handler)
+    window.addEventListener('mousedown', handler)
+    return () => window.removeEventListener('mousedown', handler)
   }, [listboxState, optionsRef, buttonRef, d, dispatch])
 
   const propsBag = React.useMemo<ListboxRenderPropArg>(

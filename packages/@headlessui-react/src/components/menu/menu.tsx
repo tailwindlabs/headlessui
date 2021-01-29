@@ -162,8 +162,8 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
       if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
     }
 
-    window.addEventListener('click', handler)
-    return () => window.removeEventListener('click', handler)
+    window.addEventListener('mousedown', handler)
+    return () => window.removeEventListener('mousedown', handler)
   }, [menuState, itemsRef, buttonRef, dispatch])
 
   const propsBag = React.useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
