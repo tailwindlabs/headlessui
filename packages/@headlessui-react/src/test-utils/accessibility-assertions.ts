@@ -720,6 +720,163 @@ export function assertLabelValue(element: HTMLElement | null, value: string) {
 
 // ---
 
+export function getDialogButton(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-dialog-button-"]')
+}
+
+export function getDialogPanel(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-dialog-panel-"]')
+}
+
+export function getDialogOverlay(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-dialog-overlay-"]')
+}
+
+// ---
+
+export enum DialogState {
+  /** The dialog is visible to the user. */
+  Visible,
+
+  /** The dialog is **not** visible to the user. It's still in the DOM, but it is hidden. */
+  InvisibleHidden,
+
+  /** The dialog is **not** visible to the user. It's not in the DOM, it is unmounted. */
+  InvisibleUnmounted,
+}
+
+// ---
+
+export function assertDialogButton(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DialogState
+  },
+  button = getDialogButton()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+
+    // Ensure dialog button have these properties
+    expect(button).toHaveAttribute('id')
+
+    if (options.textContent) {
+      expect(button).toHaveTextContent(options.textContent)
+    }
+
+    // Ensure dialog button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDialogButton)
+    throw err
+  }
+}
+
+export function assertDialogPanel(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DialogState
+  },
+  panel = getDialogPanel()
+) {
+  try {
+    switch (options.state) {
+      case DialogState.InvisibleHidden:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertHidden(panel)
+
+        expect(panel).toHaveAttribute('role', 'dialog')
+        expect(panel).toHaveAttribute('aria-modal', 'true')
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.Visible:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertVisible(panel)
+
+        expect(panel).toHaveAttribute('role', 'dialog')
+        expect(panel).toHaveAttribute('aria-modal', 'true')
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.InvisibleUnmounted:
+        expect(panel).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDialogPanel)
+    throw err
+  }
+}
+
+export function assertDialogOverlay(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DialogState
+  },
+  panel = getDialogOverlay()
+) {
+  try {
+    switch (options.state) {
+      case DialogState.InvisibleHidden:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertHidden(panel)
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.Visible:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertVisible(panel)
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.InvisibleUnmounted:
+        expect(panel).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDialogOverlay)
+    throw err
+  }
+}
+
+// ---
+
 export function assertActiveElement(element: HTMLElement | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
