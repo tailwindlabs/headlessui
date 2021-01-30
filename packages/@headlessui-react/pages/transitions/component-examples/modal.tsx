@@ -2,14 +2,14 @@ import React, { useRef, useState } from 'react'
 import { Transition } from '@headlessui/react'
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(false)
+  let [isOpen, setIsOpen] = useState(false)
   function toggle() {
     setIsOpen(v => !v)
   }
 
-  const [email, setEmail] = useState('')
-  const [events, setEvents] = useState([])
-  const inputRef = useRef(null)
+  let [email, setEmail] = useState('')
+  let [events, setEvents] = useState([])
+  let inputRef = useRef(null)
 
   function addEvent(name) {
     setEvents(existing => [...existing, `${new Date().toJSON()} - ${name}`])

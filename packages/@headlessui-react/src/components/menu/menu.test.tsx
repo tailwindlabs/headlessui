@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createElement } from 'react'
 import { render } from '@testing-library/react'
 
 import { Menu } from './menu'
@@ -48,7 +48,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Menu />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(React.createElement(Component))).toThrowError(
+      expect(() => render(createElement(Component))).toThrowError(
         `<${name} /> is missing a parent <Menu /> component.`
       )
     })
@@ -321,7 +321,7 @@ describe('Rendering composition', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // Verify correct classNames
       expect('' + items[0].classList).toEqual(JSON.stringify({ active: false, disabled: false }))
@@ -379,7 +379,7 @@ describe('Rendering composition', () => {
       await click(getMenuButton())
 
       // Verify items are buttons now
-      const items = getMenuItems()
+      let items = getMenuItems()
       items.forEach(item => assertMenuItem(item, { tag: 'button' }))
     })
   )
@@ -422,7 +422,7 @@ describe('Keyboard interactions', () => {
         assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
 
@@ -517,7 +517,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Enter)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
         assertMenuLinkedWithMenuItem(items[1])
@@ -554,7 +554,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Enter)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
         assertMenuLinkedWithMenuItem(items[2])
@@ -638,7 +638,7 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the menu with Enter and invoke the active menu item',
       suppressConsoleLogs(async () => {
-        const clickHandler = jest.fn()
+        let clickHandler = jest.fn()
         render(
           <Menu>
             <Menu.Button>Trigger</Menu.Button>
@@ -665,7 +665,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton({ state: MenuState.Visible })
 
         // Activate the first menu item
-        const items = getMenuItems()
+        let items = getMenuItems()
         await mouseMove(items[0])
 
         // Close menu, and invoke the item
@@ -687,7 +687,7 @@ describe('Keyboard interactions', () => {
   it(
     'should be possible to use a button as a menu item and invoke it upon Enter',
     suppressConsoleLogs(async () => {
-      const clickHandler = jest.fn()
+      let clickHandler = jest.fn()
 
       render(
         <Menu>
@@ -717,7 +717,7 @@ describe('Keyboard interactions', () => {
       assertMenuButton({ state: MenuState.Visible })
 
       // Activate the second menu item
-      const items = getMenuItems()
+      let items = getMenuItems()
       await mouseMove(items[1])
 
       // Close menu, and invoke the item
@@ -786,7 +786,7 @@ describe('Keyboard interactions', () => {
         assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[0])
@@ -879,7 +879,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Space)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
         assertMenuLinkedWithMenuItem(items[1])
@@ -916,7 +916,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Space)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
         assertMenuLinkedWithMenuItem(items[2])
@@ -1000,7 +1000,7 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the menu with Space and invoke the active menu item',
       suppressConsoleLogs(async () => {
-        const clickHandler = jest.fn()
+        let clickHandler = jest.fn()
         render(
           <Menu>
             <Menu.Button>Trigger</Menu.Button>
@@ -1027,7 +1027,7 @@ describe('Keyboard interactions', () => {
         assertMenuButton({ state: MenuState.Visible })
 
         // Activate the first menu item
-        const items = getMenuItems()
+        let items = getMenuItems()
         await mouseMove(items[0])
 
         // Close menu, and invoke the item
@@ -1124,7 +1124,7 @@ describe('Keyboard interactions', () => {
         assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[0])
@@ -1173,7 +1173,7 @@ describe('Keyboard interactions', () => {
         assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[0])
@@ -1224,7 +1224,7 @@ describe('Keyboard interactions', () => {
         assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
 
@@ -1318,7 +1318,7 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[0])
@@ -1366,7 +1366,7 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[1])
@@ -1408,7 +1408,7 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[2])
@@ -1452,7 +1452,7 @@ describe('Keyboard interactions', () => {
         assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
 
@@ -1550,7 +1550,7 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[0])
@@ -1588,7 +1588,7 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[2])
@@ -1638,7 +1638,7 @@ describe('Keyboard interactions', () => {
         assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
-        const items = getMenuItems()
+        let items = getMenuItems()
         expect(items).toHaveLength(3)
         items.forEach(item => assertMenuItem(item))
         assertMenuLinkedWithMenuItem(items[2])
@@ -1679,7 +1679,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Enter)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the first item
         assertMenuLinkedWithMenuItem(items[0])
@@ -1715,7 +1715,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Enter)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the first item
         assertMenuLinkedWithMenuItem(items[0])
@@ -1756,7 +1756,7 @@ describe('Keyboard interactions', () => {
         // We should not be able to go to the end
         await press(Keys.End)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
         assertMenuLinkedWithMenuItem(items[0])
       })
     )
@@ -1819,7 +1819,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Enter)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the first item
         assertMenuLinkedWithMenuItem(items[0])
@@ -1855,7 +1855,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Enter)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the first item
         assertMenuLinkedWithMenuItem(items[0])
@@ -1896,7 +1896,7 @@ describe('Keyboard interactions', () => {
         // We should not be able to go to the end
         await press(Keys.PageDown)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
         assertMenuLinkedWithMenuItem(items[0])
       })
     )
@@ -1959,7 +1959,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.ArrowUp)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the last item
         assertMenuLinkedWithMenuItem(items[2])
@@ -1998,7 +1998,7 @@ describe('Keyboard interactions', () => {
         // We should not be able to go to the end
         await press(Keys.Home)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the first non-disabled item
         assertMenuLinkedWithMenuItem(items[2])
@@ -2035,7 +2035,7 @@ describe('Keyboard interactions', () => {
         // We should not be able to go to the end
         await press(Keys.Home)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
         assertMenuLinkedWithMenuItem(items[3])
       })
     )
@@ -2098,7 +2098,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.ArrowUp)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the last item
         assertMenuLinkedWithMenuItem(items[2])
@@ -2137,7 +2137,7 @@ describe('Keyboard interactions', () => {
         // We should not be able to go to the end
         await press(Keys.PageUp)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the first non-disabled item
         assertMenuLinkedWithMenuItem(items[2])
@@ -2174,7 +2174,7 @@ describe('Keyboard interactions', () => {
         // We should not be able to go to the end
         await press(Keys.PageUp)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
         assertMenuLinkedWithMenuItem(items[3])
       })
     )
@@ -2234,7 +2234,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await click(getMenuButton())
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be able to go to the second item
         await type(word('bob'))
@@ -2270,7 +2270,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.ArrowUp)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the last item
         assertMenuLinkedWithMenuItem(items[2])
@@ -2309,7 +2309,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.ArrowUp)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the last item
         assertMenuLinkedWithMenuItem(items[2])
@@ -2350,7 +2350,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.ArrowUp)
 
-        const items = getMenuItems()
+        let items = getMenuItems()
 
         // We should be on the last item
         assertMenuLinkedWithMenuItem(items[2])
@@ -2398,7 +2398,7 @@ describe('Mouse interactions', () => {
       assertMenuButtonLinkedWithMenu()
 
       // Verify we have menu items
-      const items = getMenuItems()
+      let items = getMenuItems()
       expect(items).toHaveLength(3)
       items.forEach(item => assertMenuItem(item))
     })
@@ -2601,7 +2601,7 @@ describe('Mouse interactions', () => {
         </div>
       )
 
-      const [button1, button2] = getMenuButtons()
+      let [button1, button2] = getMenuButtons()
 
       // Click the first menu button
       await click(button1)
@@ -2637,7 +2637,7 @@ describe('Mouse interactions', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
       // We should be able to go to the second item
       await mouseMove(items[1])
       assertMenuLinkedWithMenuItem(items[1])
@@ -2669,7 +2669,7 @@ describe('Mouse interactions', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
       // We should be able to go to the second item
       await mouseMove(items[1])
       assertMenuLinkedWithMenuItem(items[1])
@@ -2693,7 +2693,7 @@ describe('Mouse interactions', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // We should be able to go to the second item
       await mouseMove(items[1])
@@ -2725,7 +2725,7 @@ describe('Mouse interactions', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       await mouseMove(items[1])
       assertNoActiveMenuItem()
@@ -2751,7 +2751,7 @@ describe('Mouse interactions', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // Try to hover over item 1, which is disabled
       await mouseMove(items[1])
@@ -2778,7 +2778,7 @@ describe('Mouse interactions', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // We should be able to go to the second item
       await mouseMove(items[1])
@@ -2822,7 +2822,7 @@ describe('Mouse interactions', () => {
       // Open menu
       await click(getMenuButton())
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // Try to hover over item 1, which is disabled
       await mouseMove(items[1])
@@ -2836,7 +2836,7 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click a menu item, which closes the menu',
     suppressConsoleLogs(async () => {
-      const clickHandler = jest.fn()
+      let clickHandler = jest.fn()
       render(
         <Menu>
           <Menu.Button>Trigger</Menu.Button>
@@ -2854,7 +2854,7 @@ describe('Mouse interactions', () => {
       await click(getMenuButton())
       assertMenu({ state: MenuState.Visible })
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // We should be able to click the first item
       await click(items[1])
@@ -2867,7 +2867,7 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click a menu item, which closes the menu and invokes the @click handler',
     suppressConsoleLogs(async () => {
-      const clickHandler = jest.fn()
+      let clickHandler = jest.fn()
       render(
         <Menu>
           <Menu.Button>Trigger</Menu.Button>
@@ -2926,7 +2926,7 @@ describe('Mouse interactions', () => {
       await click(getMenuButton())
       assertMenu({ state: MenuState.Visible })
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // We should be able to click the first item
       await click(items[1])
@@ -2952,7 +2952,7 @@ describe('Mouse interactions', () => {
       await click(getMenuButton())
       assertMenu({ state: MenuState.Visible })
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // Verify that nothing is active yet
       assertNoActiveMenuItem()
@@ -2983,7 +2983,7 @@ describe('Mouse interactions', () => {
       await click(getMenuButton())
       assertMenu({ state: MenuState.Visible })
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       // We should not be able to focus the first item
       await focus(items[1])
@@ -2994,7 +2994,7 @@ describe('Mouse interactions', () => {
   it(
     'should not be possible to activate a disabled item',
     suppressConsoleLogs(async () => {
-      const clickHandler = jest.fn()
+      let clickHandler = jest.fn()
 
       render(
         <Menu>
@@ -3017,7 +3017,7 @@ describe('Mouse interactions', () => {
       await click(getMenuButton())
       assertMenu({ state: MenuState.Visible })
 
-      const items = getMenuItems()
+      let items = getMenuItems()
 
       await focus(items[0])
       await click(items[1])

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 // We used a "simple" approach first which worked for SSR and rehydration on the client. However we
@@ -14,13 +14,13 @@ function generateId() {
 }
 
 export function useId() {
-  const [id, setId] = React.useState(state.serverHandoffComplete ? generateId : null)
+  let [id, setId] = useState(state.serverHandoffComplete ? generateId : null)
 
   useIsoMorphicEffect(() => {
     if (id === null) setId(generateId())
   }, [id])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (state.serverHandoffComplete === false) state.serverHandoffComplete = true
   }, [])
 

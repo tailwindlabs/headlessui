@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 
@@ -7,7 +7,7 @@ import { useDisposables } from '../src/hooks/use-disposables'
 import { PropsOf } from '../src/types'
 
 function NextLink(props: PropsOf<'a'>) {
-  const { href, children, ...rest } = props
+  let { href, children, ...rest } = props
   return (
     <Link href={href}>
       <a {...rest}>{children}</a>
@@ -58,23 +58,23 @@ function tap<T>(value: T, cb: (value: T) => void) {
 }
 
 function useKeyDisplay() {
-  const [mounted, setMounted] = React.useState(false)
+  let [mounted, setMounted] = useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true)
   }, [])
 
   if (!mounted) return {}
-  const isMac = navigator.userAgent.indexOf('Mac OS X') !== -1
+  let isMac = navigator.userAgent.indexOf('Mac OS X') !== -1
   return isMac ? KeyDisplayMac : KeyDisplayWindows
 }
 
 function KeyCaster() {
-  const [keys, setKeys] = React.useState<string[]>([])
-  const d = useDisposables()
-  const KeyDisplay = useKeyDisplay()
+  let [keys, setKeys] = useState<string[]>([])
+  let d = useDisposables()
+  let KeyDisplay = useKeyDisplay()
 
-  React.useEffect(() => {
+  useEffect(() => {
     function handler(event: KeyboardEvent) {
       setKeys(current => [
         event.shiftKey && event.key !== 'Shift'

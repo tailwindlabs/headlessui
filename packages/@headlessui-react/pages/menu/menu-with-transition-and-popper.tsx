@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import { Menu, Transition } from '@headlessui/react'
 
 import { usePopper } from '../../playground-utils/hooks/use-popper'
@@ -8,7 +8,7 @@ function classNames(...classes) {
 }
 
 export default function Home() {
-  const [trigger, container] = usePopper({
+  let [trigger, container] = usePopper({
     placement: 'bottom-end',
     strategy: 'fixed',
     modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],

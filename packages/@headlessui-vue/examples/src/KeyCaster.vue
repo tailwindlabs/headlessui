@@ -15,9 +15,9 @@
 <script>
 import { defineComponent, ref } from 'vue'
 
-const isMac = navigator.userAgent.indexOf('Mac OS X') !== -1
+let isMac = navigator.userAgent.indexOf('Mac OS X') !== -1
 
-const KeyDisplay = isMac
+let KeyDisplay = isMac
   ? {
       ArrowUp: '↑',
       ArrowDown: '↓',
@@ -57,7 +57,7 @@ const KeyDisplay = isMac
 
 export default defineComponent({
   setup() {
-    const keys = ref([])
+    let keys = ref([])
 
     window.addEventListener('keydown', event => {
       keys.value.unshift(

@@ -8,7 +8,7 @@ export function suppressConsoleLogs<T extends unknown[]>(
   type: FunctionPropertyNames<typeof global.console> = 'warn'
 ) {
   return (...args: T) => {
-    const spy = jest.spyOn(global.console, type).mockImplementation(jest.fn())
+    let spy = jest.spyOn(global.console, type).mockImplementation(jest.fn())
 
     return new Promise<void>((resolve, reject) => {
       Promise.resolve(cb(...args)).then(resolve, reject)

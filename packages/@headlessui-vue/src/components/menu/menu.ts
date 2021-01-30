@@ -45,13 +45,13 @@ type StateDefinition = {
   unregisterItem(id: string): void
 }
 
-const MenuContext = Symbol('MenuContext') as InjectionKey<StateDefinition>
+let MenuContext = Symbol('MenuContext') as InjectionKey<StateDefinition>
 
 function useMenuContext(component: string) {
-  const context = inject(MenuContext, null)
+  let context = inject(MenuContext, null)
 
   if (context === null) {
-    const err = new Error(`<${component} /> is missing a parent <Menu /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Menu /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
     throw err
   }
@@ -59,17 +59,17 @@ function useMenuContext(component: string) {
   return context
 }
 
-export const Menu = defineComponent({
+export let Menu = defineComponent({
   props: { as: { type: [Object, String], default: 'template' } },
   setup(props, { slots, attrs }) {
-    const menuState = ref<StateDefinition['menuState']['value']>(MenuStates.Closed)
-    const buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
-    const itemsRef = ref<StateDefinition['itemsRef']['value']>(null)
-    const items = ref<StateDefinition['items']['value']>([])
-    const searchQuery = ref<StateDefinition['searchQuery']['value']>('')
-    const activeItemIndex = ref<StateDefinition['activeItemIndex']['value']>(null)
+    let menuState = ref<StateDefinition['menuState']['value']>(MenuStates.Closed)
+    let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
+    let itemsRef = ref<StateDefinition['itemsRef']['value']>(null)
+    let items = ref<StateDefinition['items']['value']>([])
+    let searchQuery = ref<StateDefinition['searchQuery']['value']>('')
+    let activeItemIndex = ref<StateDefinition['activeItemIndex']['value']>(null)
 
-    const api = {
+    let api = {
       menuState,
       buttonRef,
       itemsRef,
@@ -82,7 +82,7 @@ export const Menu = defineComponent({
       },
       openMenu: () => (menuState.value = MenuStates.Open),
       goToItem(focus: Focus, id?: string) {
-        const nextActiveItemIndex = calculateActiveIndex(
+        let nextActiveItemIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
             : { focus: focus as Exclude<Focus, Focus.Specific> },
@@ -101,7 +101,7 @@ export const Menu = defineComponent({
       search(value: string) {
         searchQuery.value += value
 
-        const match = items.value.findIndex(
+        let match = items.value.findIndex(
           item => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled
         )
 
@@ -117,10 +117,10 @@ export const Menu = defineComponent({
         items.value.push({ id, dataRef })
       },
       unregisterItem(id: string) {
-        const nextItems = items.value.slice()
-        const currentActiveItem =
+        let nextItems = items.value.slice()
+        let currentActiveItem =
           activeItemIndex.value !== null ? nextItems[activeItemIndex.value] : null
-        const idx = nextItems.findIndex(a => a.id === id)
+        let idx = nextItems.findIndex(a => a.id === id)
         if (idx !== -1) nextItems.splice(idx, 1)
         items.value = nextItems
         activeItemIndex.value = (() => {
@@ -136,8 +136,8 @@ export const Menu = defineComponent({
 
     onMounted(() => {
       function handler(event: MouseEvent) {
-        const target = event.target as HTMLElement
-        const active = document.activeElement
+        let target = event.target as HTMLElement
+        let active = document.activeElement
 
         if (menuState.value !== MenuStates.Open) return
         if (buttonRef.value?.contains(target)) return
@@ -155,22 +155,22 @@ export const Menu = defineComponent({
     provide(MenuContext, api)
 
     return () => {
-      const slot = { open: menuState.value === MenuStates.Open }
+      let slot = { open: menuState.value === MenuStates.Open }
       return render({ props, slot, slots, attrs })
     }
   },
 })
 
-export const MenuButton = defineComponent({
+export let MenuButton = defineComponent({
   props: {
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
   },
   render() {
-    const api = useMenuContext('MenuButton')
+    let api = useMenuContext('MenuButton')
 
-    const slot = { open: api.menuState.value === MenuStates.Open }
-    const propsWeControl = {
+    let slot = { open: api.menuState.value === MenuStates.Open }
+    let propsWeControl = {
       ref: 'el',
       id: this.id,
       type: 'button',
@@ -189,8 +189,8 @@ export const MenuButton = defineComponent({
     })
   },
   setup(props) {
-    const api = useMenuContext('MenuButton')
-    const id = `headlessui-menu-button-${useId()}`
+    let api = useMenuContext('MenuButton')
+    let id = `headlessui-menu-button-${useId()}`
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -239,17 +239,17 @@ export const MenuButton = defineComponent({
   },
 })
 
-export const MenuItems = defineComponent({
+export let MenuItems = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
   render() {
-    const api = useMenuContext('MenuItems')
+    let api = useMenuContext('MenuItems')
 
-    const slot = { open: api.menuState.value === MenuStates.Open }
-    const propsWeControl = {
+    let slot = { open: api.menuState.value === MenuStates.Open }
+    let propsWeControl = {
       'aria-activedescendant':
         api.activeItemIndex.value === null
           ? undefined
@@ -261,7 +261,7 @@ export const MenuItems = defineComponent({
       tabIndex: 0,
       ref: 'el',
     }
-    const passThroughProps = this.$props
+    let passThroughProps = this.$props
 
     return render({
       props: { ...passThroughProps, ...propsWeControl },
@@ -273,9 +273,9 @@ export const MenuItems = defineComponent({
     })
   },
   setup() {
-    const api = useMenuContext('MenuItems')
-    const id = `headlessui-menu-items-${useId()}`
-    const searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
+    let api = useMenuContext('MenuItems')
+    let id = `headlessui-menu-items-${useId()}`
+    let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
     function handleKeyDown(event: KeyboardEvent) {
       if (searchDebounce.value) clearTimeout(searchDebounce.value)
@@ -293,7 +293,7 @@ export const MenuItems = defineComponent({
         case Keys.Enter:
           event.preventDefault()
           if (api.activeItemIndex.value !== null) {
-            const { id } = api.items.value[api.activeItemIndex.value]
+            let { id } = api.items.value[api.activeItemIndex.value]
             document.getElementById(id)?.click()
           }
           api.closeMenu()
@@ -340,7 +340,7 @@ export const MenuItems = defineComponent({
   },
 })
 
-export const MenuItem = defineComponent({
+export let MenuItem = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
@@ -348,19 +348,19 @@ export const MenuItem = defineComponent({
     className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
-    const api = useMenuContext('MenuItem')
-    const id = `headlessui-menu-item-${useId()}`
-    const { disabled, class: defaultClass, className = defaultClass } = props
+    let api = useMenuContext('MenuItem')
+    let id = `headlessui-menu-item-${useId()}`
+    let { disabled, class: defaultClass, className = defaultClass } = props
 
-    const active = computed(() => {
+    let active = computed(() => {
       return api.activeItemIndex.value !== null
         ? api.items.value[api.activeItemIndex.value].id === id
         : false
     })
 
-    const dataRef = ref<MenuItemDataRef['value']>({ disabled, textValue: '' })
+    let dataRef = ref<MenuItemDataRef['value']>({ disabled, textValue: '' })
     onMounted(() => {
-      const textValue = document
+      let textValue = document
         .getElementById(id)
         ?.textContent?.toLowerCase()
         .trim()
@@ -394,8 +394,8 @@ export const MenuItem = defineComponent({
     }
 
     return () => {
-      const slot = { active: active.value, disabled }
-      const propsWeControl = {
+      let slot = { active: active.value, disabled }
+      let propsWeControl = {
         id,
         role: 'menuitem',
         tabIndex: -1,

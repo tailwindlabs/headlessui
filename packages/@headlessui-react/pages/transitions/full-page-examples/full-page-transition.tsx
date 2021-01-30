@@ -21,7 +21,7 @@ export default function Shell() {
 }
 
 function usePrevious<T>(value: T) {
-  const ref = useRef(value)
+  let ref = useRef(value)
   useEffect(() => {
     ref.current = value
   }, [value])
@@ -33,8 +33,8 @@ enum Direction {
   Backwards = ' <- ',
 }
 
-const pages = ['Dashboard', 'Team', 'Projects', 'Calendar', 'Reports']
-const colors = [
+let pages = ['Dashboard', 'Team', 'Projects', 'Calendar', 'Reports']
+let colors = [
   'bg-gradient-to-r from-teal-400 to-blue-400',
   'bg-gradient-to-r from-blue-400 to-orange-400',
   'bg-gradient-to-r from-orange-400 to-purple-400',
@@ -43,12 +43,12 @@ const colors = [
 ]
 
 function FullPageTransition() {
-  const [activePage, setActivePage] = useState(0)
-  const previousPage = usePrevious(activePage)
+  let [activePage, setActivePage] = useState(0)
+  let previousPage = usePrevious(activePage)
 
-  const direction = activePage > previousPage ? Direction.Forwards : Direction.Backwards
+  let direction = activePage > previousPage ? Direction.Forwards : Direction.Backwards
 
-  const transitions = match(direction, {
+  let transitions = match(direction, {
     [Direction.Forwards]: {
       enter: 'transition transform ease-in-out duration-500',
       enterFrom: 'translate-x-full',

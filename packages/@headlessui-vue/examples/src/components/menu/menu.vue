@@ -48,7 +48,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const CustomMenuItem = defineComponent({
+let CustomMenuItem = defineComponent({
   components: { Menu, MenuButton, MenuItems, MenuItem },
   setup(props, { slots }) {
     return () => {

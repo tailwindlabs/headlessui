@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import { Menu } from '@headlessui/react'
 
 function classNames(...classes) {

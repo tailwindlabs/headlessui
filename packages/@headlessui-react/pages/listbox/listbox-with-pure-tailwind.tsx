@@ -1,9 +1,9 @@
-import * as React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Listbox } from '@headlessui/react'
 
 import { classNames } from '../../src/utils/class-names'
 
-const people = [
+let people = [
   'Wade Cooper',
   'Arlene Mccoy',
   'Devon Webb',
@@ -17,10 +17,10 @@ const people = [
 ]
 
 export default function Home() {
-  const [active, setActivePerson] = React.useState(people[2])
+  let [active, setActivePerson] = useState(people[2])
 
   // Choose a random person on mount
-  React.useEffect(() => {
+  useEffect(() => {
     setActivePerson(people[Math.floor(Math.random() * people.length)])
   }, [])
 

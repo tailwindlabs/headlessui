@@ -12,7 +12,7 @@ import { defineComponent, h } from 'vue'
 import { RouterLink } from 'vue-router'
 import routes from '../routes.json'
 
-const Examples = defineComponent({
+let Examples = defineComponent({
   props: ['examples'],
   setup(props) {
     return () => {

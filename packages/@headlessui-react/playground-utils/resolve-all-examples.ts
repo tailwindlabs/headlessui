@@ -7,14 +7,14 @@ export type ExamplesType = {
 }
 
 export async function resolveAllExamples(...paths: string[]) {
-  const base = path.resolve(process.cwd(), ...paths)
+  let base = path.resolve(process.cwd(), ...paths)
 
   if (!fs.existsSync(base)) {
     return false
   }
 
-  const files = await fs.promises.readdir(base, { withFileTypes: true })
-  const items: ExamplesType[] = []
+  let files = await fs.promises.readdir(base, { withFileTypes: true })
+  let items: ExamplesType[] = []
 
   for (let file of files) {
     // Skip reserved filenames from Next. E.g.: _app.tsx, _error.tsx
@@ -22,7 +22,7 @@ export async function resolveAllExamples(...paths: string[]) {
       continue
     }
 
-    const bucket: ExamplesType = {
+    let bucket: ExamplesType = {
       name: file.name.replace(/-/g, ' ').replace(/\.tsx?/g, ''),
       path: [...paths, file.name]
         .join('/')
@@ -32,7 +32,7 @@ export async function resolveAllExamples(...paths: string[]) {
     }
 
     if (file.isDirectory()) {
-      const children = await resolveAllExamples(...paths, file.name)
+      let children = await resolveAllExamples(...paths, file.name)
 
       if (children) {
         bucket.children = children

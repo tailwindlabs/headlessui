@@ -1,5 +1,5 @@
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+import React, { ReactNode, useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Menu } from '@headlessui/react'
 
 import { usePopper } from '../../playground-utils/hooks/use-popper'
@@ -9,7 +9,7 @@ function classNames(...classes) {
 }
 
 export default function Home() {
-  const [trigger, container] = usePopper({
+  let [trigger, container] = usePopper({
     placement: 'bottom-end',
     strategy: 'fixed',
     modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
@@ -87,12 +87,12 @@ export default function Home() {
   )
 }
 
-function Portal(props: { children: React.ReactNode }) {
-  const { children } = props
-  const [mounted, setMounted] = React.useState(false)
+function Portal(props: { children: ReactNode }) {
+  let { children } = props
+  let [mounted, setMounted] = useState(false)
 
-  React.useEffect(() => setMounted(true), [])
+  useEffect(() => setMounted(true), [])
 
   if (!mounted) return null
-  return ReactDOM.createPortal(children, document.body)
+  return createPortal(children, document.body)
 }

@@ -1,12 +1,12 @@
 import { disposables } from '../utils/disposables'
 
 export function reportChanges<TType>(key: () => TType, onChange: (value: TType) => void) {
-  const d = disposables()
+  let d = disposables()
 
   let previous: TType
 
   function track() {
-    const next = key()
+    let next = key()
     if (previous !== next) {
       previous = next
       onChange(next)

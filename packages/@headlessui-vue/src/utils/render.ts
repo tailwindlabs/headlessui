@@ -48,7 +48,7 @@ export function render({
   }
 
   if (features & Features.RenderStrategy) {
-    const strategy = main.props.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
+    let strategy = main.props.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
     return match(strategy, {
       [RenderStrategy.Unmount]() {
@@ -78,13 +78,13 @@ function _render({
   attrs: Record<string, any>
   slots: Slots
 }) {
-  const { as, ...passThroughProps } = omit(props, ['unmount', 'static'])
+  let { as, ...passThroughProps } = omit(props, ['unmount', 'static'])
 
-  const children = slots.default?.(slot)
+  let children = slots.default?.(slot)
 
   if (as === 'template') {
     if (Object.keys(passThroughProps).length > 0 || 'class' in attrs) {
-      const [firstChild, ...other] = children ?? []
+      let [firstChild, ...other] = children ?? []
 
       if (other.length > 0)
         throw new Error('You should only render 1 child or use the `as="..."` prop')

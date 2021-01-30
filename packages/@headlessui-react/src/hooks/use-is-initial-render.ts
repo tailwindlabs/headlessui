@@ -1,9 +1,9 @@
-import * as React from 'react'
+import { useRef, useEffect } from 'react'
 
 export function useIsInitialRender() {
-  const initial = React.useRef(true)
+  let initial = useRef(true)
 
-  React.useEffect(() => {
+  useEffect(() => {
     initial.current = false
   }, [])
 

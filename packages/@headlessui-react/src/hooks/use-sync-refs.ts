@@ -1,9 +1,9 @@
-import * as React from 'react'
+import { useCallback } from 'react'
 
 export function useSyncRefs<TType>(
   ...refs: (React.MutableRefObject<TType> | ((instance: TType) => void) | null)[]
 ) {
-  return React.useCallback(
+  return useCallback(
     (value: TType) => {
       refs.forEach(ref => {
         if (ref === null) return

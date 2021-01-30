@@ -1,5 +1,23 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#menubutton
-import * as React from 'react'
+import React, {
+  createContext,
+  createRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  Fragment,
+
+  // Types
+  Dispatch,
+  ElementType,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  MutableRefObject,
+  Ref,
+} from 'react'
 
 import { Props } from '../../types'
 import { match } from '../../utils/match'
@@ -19,12 +37,12 @@ enum MenuStates {
   Closed,
 }
 
-type MenuItemDataRef = React.MutableRefObject<{ textValue?: string; disabled: boolean }>
+type MenuItemDataRef = MutableRefObject<{ textValue?: string; disabled: boolean }>
 
-type StateDefinition = {
+interface StateDefinition {
   menuState: MenuStates
-  buttonRef: React.MutableRefObject<HTMLButtonElement | null>
-  itemsRef: React.MutableRefObject<HTMLDivElement | null>
+  buttonRef: MutableRefObject<HTMLButtonElement | null>
+  itemsRef: MutableRefObject<HTMLDivElement | null>
   items: { id: string; dataRef: MenuItemDataRef }[]
   searchQuery: string
   activeItemIndex: number | null
@@ -52,7 +70,7 @@ type Actions =
   | { type: ActionTypes.RegisterItem; id: string; dataRef: MenuItemDataRef }
   | { type: ActionTypes.UnregisterItem; id: string }
 
-const reducers: {
+let reducers: {
   [P in ActionTypes]: (
     state: StateDefinition,
     action: Extract<Actions, { type: P }>
@@ -65,7 +83,7 @@ const reducers: {
   }),
   [ActionTypes.OpenMenu]: state => ({ ...state, menuState: MenuStates.Open }),
   [ActionTypes.GoToItem]: (state, action) => {
-    const activeItemIndex = calculateActiveIndex(action, {
+    let activeItemIndex = calculateActiveIndex(action, {
       resolveItems: () => state.items,
       resolveActiveIndex: () => state.activeItemIndex,
       resolveId: item => item.id,
@@ -76,8 +94,8 @@ const reducers: {
     return { ...state, searchQuery: '', activeItemIndex }
   },
   [ActionTypes.Search]: (state, action) => {
-    const searchQuery = state.searchQuery + action.value
-    const match = state.items.findIndex(
+    let searchQuery = state.searchQuery + action.value
+    let match = state.items.findIndex(
       item =>
         item.dataRef.current.textValue?.startsWith(searchQuery) && !item.dataRef.current.disabled
     )
@@ -91,11 +109,10 @@ const reducers: {
     items: [...state.items, { id: action.id, dataRef: action.dataRef }],
   }),
   [ActionTypes.UnregisterItem]: (state, action) => {
-    const nextItems = state.items.slice()
-    const currentActiveItem =
-      state.activeItemIndex !== null ? nextItems[state.activeItemIndex] : null
+    let nextItems = state.items.slice()
+    let currentActiveItem = state.activeItemIndex !== null ? nextItems[state.activeItemIndex] : null
 
-    const idx = nextItems.findIndex(a => a.id === action.id)
+    let idx = nextItems.findIndex(a => a.id === action.id)
 
     if (idx !== -1) nextItems.splice(idx, 1)
 
@@ -114,13 +131,13 @@ const reducers: {
   },
 }
 
-const MenuContext = React.createContext<[StateDefinition, React.Dispatch<Actions>] | null>(null)
+let MenuContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
 MenuContext.displayName = 'MenuContext'
 
 function useMenuContext(component: string) {
-  const context = React.useContext(MenuContext)
+  let context = useContext(MenuContext)
   if (context === null) {
-    const err = new Error(`<${component} /> is missing a parent <${Menu.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <${Menu.name} /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
     throw err
   }
@@ -133,26 +150,28 @@ function stateReducer(state: StateDefinition, action: Actions) {
 
 // ---
 
-const DEFAULT_MENU_TAG = React.Fragment
-type MenuRenderPropArg = { open: boolean }
+let DEFAULT_MENU_TAG = Fragment
+interface MenuRenderPropArg {
+  open: boolean
+}
 
-export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
+export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   props: Props<TTag, MenuRenderPropArg>
 ) {
-  const reducerBag = React.useReducer(stateReducer, {
+  let reducerBag = useReducer(stateReducer, {
     menuState: MenuStates.Closed,
-    buttonRef: React.createRef(),
-    itemsRef: React.createRef(),
+    buttonRef: createRef(),
+    itemsRef: createRef(),
     items: [],
     searchQuery: '',
     activeItemIndex: null,
   } as StateDefinition)
-  const [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
+  let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
 
-  React.useEffect(() => {
+  useEffect(() => {
     function handler(event: MouseEvent) {
-      const target = event.target as HTMLElement
-      const active = document.activeElement
+      let target = event.target as HTMLElement
+      let active = document.activeElement
 
       if (menuState !== MenuStates.Open) return
       if (buttonRef.current?.contains(target)) return
@@ -166,7 +185,7 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
     return () => window.removeEventListener('mousedown', handler)
   }, [menuState, itemsRef, buttonRef, dispatch])
 
-  const propsBag = React.useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
+  let propsBag = useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
 
   return (
     <MenuContext.Provider value={reducerBag}>
@@ -177,8 +196,10 @@ export function Menu<TTag extends React.ElementType = typeof DEFAULT_MENU_TAG>(
 
 // ---
 
-const DEFAULT_BUTTON_TAG = 'button'
-type ButtonRenderPropArg = { open: boolean }
+let DEFAULT_BUTTON_TAG = 'button' as const
+interface ButtonRenderPropArg {
+  open: boolean
+}
 type ButtonPropsWeControl =
   | 'id'
   | 'type'
@@ -188,20 +209,18 @@ type ButtonPropsWeControl =
   | 'onKeyDown'
   | 'onClick'
 
-const Button = forwardRefWithAs(function Button<
-  TTag extends React.ElementType = typeof DEFAULT_BUTTON_TAG
->(
+let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
-  ref: React.Ref<HTMLButtonElement>
+  ref: Ref<HTMLButtonElement>
 ) {
-  const [state, dispatch] = useMenuContext([Menu.name, Button.name].join('.'))
-  const buttonRef = useSyncRefs(state.buttonRef, ref)
+  let [state, dispatch] = useMenuContext([Menu.name, Button.name].join('.'))
+  let buttonRef = useSyncRefs(state.buttonRef, ref)
 
-  const id = `headlessui-menu-button-${useId()}`
-  const d = useDisposables()
+  let id = `headlessui-menu-button-${useId()}`
+  let d = useDisposables()
 
-  const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLButtonElement>) => {
+  let handleKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-13
 
@@ -229,8 +248,8 @@ const Button = forwardRefWithAs(function Button<
     [dispatch, state, d]
   )
 
-  const handleClick = React.useCallback(
-    (event: React.MouseEvent) => {
+  let handleClick = useCallback(
+    (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       if (props.disabled) return
       if (state.menuState === MenuStates.Open) {
@@ -245,9 +264,9 @@ const Button = forwardRefWithAs(function Button<
     [dispatch, d, state, props.disabled]
   )
 
-  const propsBag = React.useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
-  const passthroughProps = props
-  const propsWeControl = {
+  let propsBag = useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
+  let passthroughProps = props
+  let propsWeControl = {
     ref: buttonRef,
     id,
     type: 'button',
@@ -263,8 +282,10 @@ const Button = forwardRefWithAs(function Button<
 
 // ---
 
-const DEFAULT_ITEMS_TAG = 'div'
-type ItemsRenderPropArg = { open: boolean }
+let DEFAULT_ITEMS_TAG = 'div' as const
+interface ItemsRenderPropArg {
+  open: boolean
+}
 type ItemsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
@@ -273,23 +294,21 @@ type ItemsPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-const ItemsRenderFeatures = Features.RenderStrategy | Features.Static
+let ItemsRenderFeatures = Features.RenderStrategy | Features.Static
 
-const Items = forwardRefWithAs(function Items<
-  TTag extends React.ElementType = typeof DEFAULT_ITEMS_TAG
->(
+let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
     PropsForFeatures<typeof ItemsRenderFeatures>,
-  ref: React.Ref<HTMLDivElement>
+  ref: Ref<HTMLDivElement>
 ) {
-  const [state, dispatch] = useMenuContext([Menu.name, Items.name].join('.'))
-  const itemsRef = useSyncRefs(state.itemsRef, ref)
+  let [state, dispatch] = useMenuContext([Menu.name, Items.name].join('.'))
+  let itemsRef = useSyncRefs(state.itemsRef, ref)
 
-  const id = `headlessui-menu-items-${useId()}`
-  const searchDisposables = useDisposables()
+  let id = `headlessui-menu-items-${useId()}`
+  let searchDisposables = useDisposables()
 
-  const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+  let handleKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
       searchDisposables.dispose()
 
       switch (event.key) {
@@ -306,7 +325,7 @@ const Items = forwardRefWithAs(function Items<
           event.preventDefault()
           dispatch({ type: ActionTypes.CloseMenu })
           if (state.activeItemIndex !== null) {
-            const { id } = state.items[state.activeItemIndex]
+            let { id } = state.items[state.activeItemIndex]
             document.getElementById(id)?.click()
           }
           disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
@@ -350,8 +369,8 @@ const Items = forwardRefWithAs(function Items<
     [dispatch, searchDisposables, state]
   )
 
-  const propsBag = React.useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
-  const propsWeControl = {
+  let propsBag = useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
+  let propsWeControl = {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
     'aria-labelledby': state.buttonRef.current?.id,
@@ -361,7 +380,7 @@ const Items = forwardRefWithAs(function Items<
     tabIndex: 0,
     ref: itemsRef,
   }
-  const passthroughProps = props
+  let passthroughProps = props
 
   return render(
     { ...passthroughProps, ...propsWeControl },
@@ -374,8 +393,11 @@ const Items = forwardRefWithAs(function Items<
 
 // ---
 
-const DEFAULT_ITEM_TAG = React.Fragment
-type ItemRenderPropArg = { active: boolean; disabled: boolean }
+let DEFAULT_ITEM_TAG = Fragment
+interface ItemRenderPropArg {
+  active: boolean
+  disabled: boolean
+}
 type MenuItemPropsWeControl =
   | 'id'
   | 'role'
@@ -387,7 +409,7 @@ type MenuItemPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
-function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
+function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl | 'className'> & {
     disabled?: boolean
     onClick?: (event: { preventDefault: Function }) => void
@@ -396,13 +418,12 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     className?: ((bag: ItemRenderPropArg) => string) | string
   }
 ) {
-  const { disabled = false, className, onClick, ...passthroughProps } = props
-  const [state, dispatch] = useMenuContext([Menu.name, Item.name].join('.'))
-  const id = `headlessui-menu-item-${useId()}`
-  const active =
-    state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
+  let { disabled = false, className, onClick, ...passthroughProps } = props
+  let [state, dispatch] = useMenuContext([Menu.name, Item.name].join('.'))
+  let id = `headlessui-menu-item-${useId()}`
+  let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
 
-  const bag = React.useRef<MenuItemDataRef['current']>({ disabled })
+  let bag = useRef<MenuItemDataRef['current']>({ disabled })
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled
@@ -417,8 +438,8 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     return () => dispatch({ type: ActionTypes.UnregisterItem, id })
   }, [bag, id])
 
-  const handleClick = React.useCallback(
-    (event: React.MouseEvent) => {
+  let handleClick = useCallback(
+    (event: MouseEvent) => {
       if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
       disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
@@ -427,25 +448,25 @@ function Item<TTag extends React.ElementType = typeof DEFAULT_ITEM_TAG>(
     [dispatch, state.buttonRef, disabled, onClick]
   )
 
-  const handleFocus = React.useCallback(() => {
+  let handleFocus = useCallback(() => {
     if (disabled) return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   }, [disabled, id, dispatch])
 
-  const handleMove = React.useCallback(() => {
+  let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   }, [disabled, active, id, dispatch])
 
-  const handleLeave = React.useCallback(() => {
+  let handleLeave = useCallback(() => {
     if (disabled) return
     if (!active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  const propsBag = React.useMemo(() => ({ active, disabled }), [active, disabled])
-  const propsWeControl = {
+  let propsBag = useMemo(() => ({ active, disabled }), [active, disabled])
+  let propsWeControl = {
     id,
     role: 'menuitem',
     tabIndex: -1,

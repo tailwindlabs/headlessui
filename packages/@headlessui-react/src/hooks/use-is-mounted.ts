@@ -1,9 +1,9 @@
-import * as React from 'react'
+import { useRef, useEffect } from 'react'
 
 export function useIsMounted() {
-  const mounted = React.useRef(true)
+  let mounted = useRef(true)
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       mounted.current = false
     }

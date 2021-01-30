@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createElement, useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Switch } from './switch'
@@ -18,7 +18,7 @@ describe('Safe guards', () => {
   it.each([['Switch.Label', Switch.Label]])(
     'should error when we are using a <%s /> without a parent <Switch.Group />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(React.createElement(Component))).toThrowError(
+      expect(() => render(createElement(Component))).toThrowError(
         `<${name} /> is missing a parent <Switch.Group /> component.`
       )
     })
@@ -120,9 +120,9 @@ describe('Render composition', () => {
 describe('Keyboard interactions', () => {
   describe('`Space` key', () => {
     it('should be possible to toggle the Switch with Space', async () => {
-      const handleChange = jest.fn()
+      let handleChange = jest.fn()
       function Example() {
-        const [state, setState] = React.useState(false)
+        let [state, setState] = useState(false)
         return (
           <Switch
             checked={state}
@@ -158,7 +158,7 @@ describe('Keyboard interactions', () => {
 
   describe('`Enter` key', () => {
     it('should not be possible to use Enter to toggle the Switch', async () => {
-      const handleChange = jest.fn()
+      let handleChange = jest.fn()
       render(<Switch checked={false} onChange={handleChange} />)
 
       // Ensure checkbox is off
@@ -203,9 +203,9 @@ describe('Keyboard interactions', () => {
 
 describe('Mouse interactions', () => {
   it('should be possible to toggle the Switch with a click', async () => {
-    const handleChange = jest.fn()
+    let handleChange = jest.fn()
     function Example() {
-      const [state, setState] = React.useState(false)
+      let [state, setState] = useState(false)
       return (
         <Switch
           checked={state}
@@ -236,9 +236,9 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to toggle the Switch with a click on the Label', async () => {
-    const handleChange = jest.fn()
+    let handleChange = jest.fn()
     function Example() {
-      const [state, setState] = React.useState(false)
+      let [state, setState] = useState(false)
       return (
         <Switch.Group>
           <Switch

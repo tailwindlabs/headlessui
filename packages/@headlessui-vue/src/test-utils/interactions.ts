@@ -8,7 +8,7 @@ function nextFrame(cb: Function): void {
   )
 }
 
-export const Keys: Record<string, Partial<KeyboardEvent>> = {
+export let Keys: Record<string, Partial<KeyboardEvent>> = {
   Space: { key: ' ', keyCode: 32, charCode: 32 },
   Enter: { key: 'Enter', keyCode: 13, charCode: 13 },
   Escape: { key: 'Escape', keyCode: 27, charCode: 27 },
@@ -277,13 +277,13 @@ export async function mouseLeave(element: Document | Element | Window | null) {
 // ---
 
 function focusNext(event: Partial<KeyboardEvent>) {
-  const direction = event.shiftKey ? -1 : +1
-  const focusableElements = getFocusableElements()
-  const total = focusableElements.length
+  let direction = event.shiftKey ? -1 : +1
+  let focusableElements = getFocusableElements()
+  let total = focusableElements.length
 
   function innerFocusNext(offset = 0): Element {
-    const currentIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
-    const next = focusableElements[(currentIdx + total + direction + offset) % total] as HTMLElement
+    let currentIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
+    let next = focusableElements[(currentIdx + total + direction + offset) % total] as HTMLElement
 
     if (next) next?.focus({ preventScroll: true })
 
@@ -296,7 +296,7 @@ function focusNext(event: Partial<KeyboardEvent>) {
 
 // Credit:
 //  - https://stackoverflow.com/a/30753870
-const focusableSelector = [
+let focusableSelector = [
   '[contentEditable=true]',
   '[tabindex]',
   'a[href]',

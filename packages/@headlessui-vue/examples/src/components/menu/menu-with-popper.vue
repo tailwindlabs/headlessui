@@ -62,7 +62,7 @@ function classNames(...classes) {
 export default {
   components: { Menu, MenuButton, MenuItems, MenuItem },
   setup(props, context) {
-    const [trigger, container] = usePopper({
+    let [trigger, container] = usePopper({
       placement: 'bottom-end',
       strategy: 'fixed',
       modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, ReactNode } from 'react'
 import { Transition } from '@headlessui/react'
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(true)
+  let [isOpen, setIsOpen] = useState(true)
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function Home() {
   )
 }
 
-function Box({ children }: { children?: React.ReactNode }) {
+function Box({ children }: { children?: ReactNode }) {
   return (
     <Transition.Child
       unmount={true}

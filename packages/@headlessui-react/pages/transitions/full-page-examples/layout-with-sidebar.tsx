@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { Transition } from '@headlessui/react'
 
 export default function App() {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  let [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     function handleEscape(event) {

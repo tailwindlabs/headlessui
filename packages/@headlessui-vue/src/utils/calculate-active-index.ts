@@ -31,19 +31,19 @@ export function calculateActiveIndex<TItem>(
     resolveDisabled(item: TItem): boolean
   }
 ) {
-  const items = resolvers.resolveItems()
+  let items = resolvers.resolveItems()
   if (items.length <= 0) return null
 
-  const currentActiveIndex = resolvers.resolveActiveIndex()
-  const activeIndex = currentActiveIndex ?? -1
+  let currentActiveIndex = resolvers.resolveActiveIndex()
+  let activeIndex = currentActiveIndex ?? -1
 
-  const nextActiveIndex = (() => {
+  let nextActiveIndex = (() => {
     switch (action.focus) {
       case Focus.First:
         return items.findIndex(item => !resolvers.resolveDisabled(item))
 
       case Focus.Previous: {
-        const idx = items
+        let idx = items
           .slice()
           .reverse()
           .findIndex((item, idx, all) => {
@@ -61,7 +61,7 @@ export function calculateActiveIndex<TItem>(
         })
 
       case Focus.Last: {
-        const idx = items
+        let idx = items
           .slice()
           .reverse()
           .findIndex(item => !resolvers.resolveDisabled(item))

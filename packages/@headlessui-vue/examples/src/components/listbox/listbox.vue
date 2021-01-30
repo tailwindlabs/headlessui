@@ -93,7 +93,7 @@ function classNames(...classes) {
 export default {
   components: { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption },
   setup(props, context) {
-    const people = [
+    let people = [
       { id: 1, name: 'Wade Cooper' },
       { id: 2, name: 'Arlene Mccoy' },
       { id: 3, name: 'Devon Webb' },
@@ -106,7 +106,7 @@ export default {
       { id: 10, name: 'Emil Schaefer' },
     ]
 
-    const active = ref(people[Math.floor(Math.random() * people.length)])
+    let active = ref(people[Math.floor(Math.random() * people.length)])
 
     return {
       people,

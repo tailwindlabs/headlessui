@@ -1,5 +1,18 @@
-import * as React from 'react'
-import { Props } from 'types'
+import React, {
+  useMemo,
+  createContext,
+  useContext,
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+  Fragment,
+
+  // Types
+  ElementType,
+  MutableRefObject,
+} from 'react'
+import { Props, Expand } from 'types'
 
 import { useId } from '../../hooks/use-id'
 import { useIsInitialRender } from '../../hooks/use-is-initial-render'
@@ -13,16 +26,16 @@ import { Reason, transition } from './utils/transition'
 type ID = ReturnType<typeof useId>
 
 function useSplitClasses(classes: string = '') {
-  return React.useMemo(() => classes.split(' ').filter(className => className.trim().length > 1), [
+  return useMemo(() => classes.split(' ').filter(className => className.trim().length > 1), [
     classes,
   ])
 }
 
-type TransitionContextValues = {
+interface TransitionContextValues {
   show: boolean
   appear: boolean
-} | null
-const TransitionContext = React.createContext<TransitionContextValues>(null)
+}
+let TransitionContext = createContext<TransitionContextValues | null>(null)
 TransitionContext.displayName = 'TransitionContext'
 
 enum TreeStates {
@@ -30,28 +43,29 @@ enum TreeStates {
   Hidden = 'hidden',
 }
 
-export type TransitionClasses = Partial<{
-  enter: string
-  enterFrom: string
-  enterTo: string
-  leave: string
-  leaveFrom: string
-  leaveTo: string
-}>
+export interface TransitionClasses {
+  enter?: string
+  enterFrom?: string
+  enterTo?: string
+  leave?: string
+  leaveFrom?: string
+  leaveTo?: string
+}
 
-export type TransitionEvents = Partial<{
-  beforeEnter(): void
-  afterEnter(): void
-  beforeLeave(): void
-  afterLeave(): void
-}>
+export interface TransitionEvents {
+  beforeEnter?: () => void
+  afterEnter?: () => void
+  beforeLeave?: () => void
+  afterLeave?: () => void
+}
 
 type TransitionChildProps<TTag> = Props<TTag, TransitionChildRenderPropArg> &
   PropsForFeatures<typeof TransitionChildRenderFeatures> &
-  Partial<{ appear: boolean } & TransitionClasses & TransitionEvents>
+  TransitionClasses &
+  TransitionEvents & { appear?: boolean }
 
 function useTransitionContext() {
-  const context = React.useContext(TransitionContext)
+  let context = useContext(TransitionContext)
 
   if (context === null) {
     throw new Error('A <Transition.Child /> is used but it is missing a parent <Transition />.')
@@ -61,7 +75,7 @@ function useTransitionContext() {
 }
 
 function useParentNesting() {
-  const context = React.useContext(NestingContext)
+  let context = useContext(NestingContext)
 
   if (context === null) {
     throw new Error('A <Transition.Child /> is used but it is missing a parent <Transition />.')
@@ -70,13 +84,13 @@ function useParentNesting() {
   return context
 }
 
-type NestingContextValues = {
-  children: React.MutableRefObject<{ id: ID; state: TreeStates }[]>
+interface NestingContextValues {
+  children: MutableRefObject<{ id: ID; state: TreeStates }[]>
   register: (id: ID) => () => void
   unregister: (id: ID, strategy?: RenderStrategy) => void
 }
 
-const NestingContext = React.createContext<NestingContextValues | null>(null)
+let NestingContext = createContext<NestingContextValues | null>(null)
 NestingContext.displayName = 'NestingContext'
 
 function hasChildren(
@@ -87,17 +101,17 @@ function hasChildren(
 }
 
 function useNesting(done?: () => void) {
-  const doneRef = React.useRef(done)
-  const transitionableChildren = React.useRef<NestingContextValues['children']['current']>([])
-  const mounted = useIsMounted()
+  let doneRef = useRef(done)
+  let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
+  let mounted = useIsMounted()
 
-  React.useEffect(() => {
+  useEffect(() => {
     doneRef.current = done
   }, [done])
 
-  const unregister = React.useCallback(
+  let unregister = useCallback(
     (childId: ID, strategy = RenderStrategy.Hidden) => {
-      const idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
+      let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
       if (idx === -1) return
 
       match(strategy, {
@@ -116,9 +130,9 @@ function useNesting(done?: () => void) {
     [doneRef, mounted, transitionableChildren]
   )
 
-  const register = React.useCallback(
+  let register = useCallback(
     (childId: ID) => {
-      const child = transitionableChildren.current.find(({ id }) => id === childId)
+      let child = transitionableChildren.current.find(({ id }) => id === childId)
       if (!child) {
         transitionableChildren.current.push({ id: childId, state: TreeStates.Visible })
       } else if (child.state !== TreeStates.Visible) {
@@ -130,7 +144,7 @@ function useNesting(done?: () => void) {
     [transitionableChildren, unregister]
   )
 
-  return React.useMemo(
+  return useMemo(
     () => ({
       children: transitionableChildren,
       register,
@@ -141,7 +155,7 @@ function useNesting(done?: () => void) {
 }
 
 function noop() {}
-const eventNames: (keyof TransitionEvents)[] = [
+let eventNames: (keyof TransitionEvents)[] = [
   'beforeEnter',
   'afterEnter',
   'beforeLeave',
@@ -155,9 +169,9 @@ function ensureEventHooksExist(events: TransitionEvents) {
 }
 
 function useEvents(events: TransitionEvents) {
-  const eventsRef = React.useRef(ensureEventHooksExist(events))
+  let eventsRef = useRef(ensureEventHooksExist(events))
 
-  React.useEffect(() => {
+  useEffect(() => {
     eventsRef.current = ensureEventHooksExist(events)
   }, [events])
 
@@ -166,14 +180,14 @@ function useEvents(events: TransitionEvents) {
 
 // ---
 
-const DEFAULT_TRANSITION_CHILD_TAG = 'div'
-type TransitionChildRenderPropArg = React.MutableRefObject<HTMLDivElement>
-const TransitionChildRenderFeatures = Features.RenderStrategy
+let DEFAULT_TRANSITION_CHILD_TAG = 'div' as const
+type TransitionChildRenderPropArg = MutableRefObject<HTMLDivElement>
+let TransitionChildRenderFeatures = Features.RenderStrategy
 
-function TransitionChild<TTag extends React.ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
   props: TransitionChildProps<TTag>
 ) {
-  const {
+  let {
     // Event "handlers"
     beforeEnter,
     afterEnter,
@@ -188,20 +202,20 @@ function TransitionChild<TTag extends React.ElementType = typeof DEFAULT_TRANSIT
     leaveFrom,
     leaveTo,
     ...rest
-  } = props
-  const container = React.useRef<HTMLElement | null>(null)
-  const [state, setState] = React.useState(TreeStates.Visible)
-  const strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
+  } = props as Expand<typeof props>
+  let container = useRef<HTMLElement | null>(null)
+  let [state, setState] = useState(TreeStates.Visible)
+  let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
-  const { show, appear } = useTransitionContext()
-  const { register, unregister } = useParentNesting()
+  let { show, appear } = useTransitionContext()
+  let { register, unregister } = useParentNesting()
 
-  const initial = useIsInitialRender()
-  const id = useId()
+  let initial = useIsInitialRender()
+  let id = useId()
 
-  const isTransitioning = React.useRef(false)
+  let isTransitioning = useRef(false)
 
-  const nesting = useNesting(() => {
+  let nesting = useNesting(() => {
     // When all children have been unmounted we can only hide ourselves if and only if we are not
     // transitioning ourserlves. Otherwise we would unmount before the transitions are finished.
     if (!isTransitioning.current) {
@@ -233,27 +247,27 @@ function TransitionChild<TTag extends React.ElementType = typeof DEFAULT_TRANSIT
     })
   }, [state, id, register, unregister, show, strategy])
 
-  const enterClasses = useSplitClasses(enter)
-  const enterFromClasses = useSplitClasses(enterFrom)
-  const enterToClasses = useSplitClasses(enterTo)
+  let enterClasses = useSplitClasses(enter)
+  let enterFromClasses = useSplitClasses(enterFrom)
+  let enterToClasses = useSplitClasses(enterTo)
 
-  const leaveClasses = useSplitClasses(leave)
-  const leaveFromClasses = useSplitClasses(leaveFrom)
-  const leaveToClasses = useSplitClasses(leaveTo)
+  let leaveClasses = useSplitClasses(leave)
+  let leaveFromClasses = useSplitClasses(leaveFrom)
+  let leaveToClasses = useSplitClasses(leaveTo)
 
-  const events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
+  let events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (state === TreeStates.Visible && container.current === null) {
       throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
     }
   }, [container, state])
 
   // Skipping initial transition
-  const skip = initial && !appear
+  let skip = initial && !appear
 
   useIsoMorphicEffect(() => {
-    const node = container.current
+    let node = container.current
     if (!node) return
     if (skip) return
 
@@ -297,9 +311,9 @@ function TransitionChild<TTag extends React.ElementType = typeof DEFAULT_TRANSIT
     leaveToClasses,
   ])
 
-  const propsBag = {}
-  const propsWeControl = { ref: container }
-  const passthroughProps = rest
+  let propsBag = {}
+  let propsWeControl = { ref: container }
+  let passthroughProps = rest
 
   return (
     <NestingContext.Provider value={nesting}>
@@ -314,28 +328,28 @@ function TransitionChild<TTag extends React.ElementType = typeof DEFAULT_TRANSIT
   )
 }
 
-export function Transition<TTag extends React.ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
   props: TransitionChildProps<TTag> & { show: boolean; appear?: boolean }
 ) {
-  const { show, appear = false, unmount, ...passthroughProps } = props
+  let { show, appear = false, unmount, ...passthroughProps } = props as Expand<typeof props>
 
   if (![true, false].includes(show)) {
     throw new Error('A <Transition /> is used but it is missing a `show={true | false}` prop.')
   }
 
-  const [state, setState] = React.useState(show ? TreeStates.Visible : TreeStates.Hidden)
+  let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
-  const nestingBag = useNesting(() => {
+  let nestingBag = useNesting(() => {
     setState(TreeStates.Hidden)
   })
 
-  const initial = useIsInitialRender()
-  const transitionBag = React.useMemo<TransitionContextValues>(
+  let initial = useIsInitialRender()
+  let transitionBag = useMemo<TransitionContextValues>(
     () => ({ show, appear: appear || !initial }),
     [show, appear, initial]
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (show) {
       setState(TreeStates.Visible)
     } else if (!hasChildren(nestingBag)) {
@@ -343,8 +357,8 @@ export function Transition<TTag extends React.ElementType = typeof DEFAULT_TRANS
     }
   }, [show, nestingBag])
 
-  const sharedProps = { unmount }
-  const propsBag = {}
+  let sharedProps = { unmount }
+  let propsBag = {}
 
   return (
     <NestingContext.Provider value={nestingBag}>
@@ -352,11 +366,11 @@ export function Transition<TTag extends React.ElementType = typeof DEFAULT_TRANS
         {render(
           {
             ...sharedProps,
-            as: React.Fragment,
+            as: Fragment,
             children: <TransitionChild {...sharedProps} {...passthroughProps} />,
           },
           propsBag,
-          React.Fragment,
+          Fragment,
           TransitionChildRenderFeatures,
           state === TreeStates.Visible
         )}

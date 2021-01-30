@@ -4,7 +4,7 @@ import routes from './routes.json'
 
 function buildRoutes(routes) {
   return routes.map(route => {
-    const definition = {
+    let definition = {
       path: route.path,
       component: route.component ? lookup[route.component] : RouterView,
     }

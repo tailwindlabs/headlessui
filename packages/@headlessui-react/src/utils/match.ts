@@ -4,11 +4,11 @@ export function match<TValue extends string | number = string, TReturnValue = un
   ...args: any[]
 ): TReturnValue {
   if (value in lookup) {
-    const returnValue = lookup[value]
+    let returnValue = lookup[value]
     return typeof returnValue === 'function' ? returnValue(...args) : returnValue
   }
 
-  const error = new Error(
+  let error = new Error(
     `Tried to handle "${value}" but there is no handler defined. Only defined handlers are: ${Object.keys(
       lookup
     )
