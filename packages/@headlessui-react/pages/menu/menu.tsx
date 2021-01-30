@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import { Menu } from '@headlessui/react'
 
 import { PropsOf } from '../../src/types'
@@ -55,7 +55,7 @@ export default function Home() {
   )
 }
 
-function CustomMenuItem(props: PropsOf<Menu.Item<'a'>>) {
+function CustomMenuItem(props: PropsOf<typeof Menu.Item>) {
   return (
     <Menu.Item {...props}>
       {({ active, disabled }) => (

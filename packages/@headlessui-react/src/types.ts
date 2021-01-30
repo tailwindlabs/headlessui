@@ -3,6 +3,8 @@
 const __: unique symbol = Symbol('__placeholder__')
 export type __ = typeof __
 
+export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
+
 export type PropsOf<TTag = any> = TTag extends React.ElementType
   ? React.ComponentProps<TTag>
   : never

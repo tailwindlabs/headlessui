@@ -1,5 +1,15 @@
-import * as React from 'react'
-import { Props, XOR, __ } from '../types'
+import {
+  Fragment,
+  cloneElement,
+  createElement,
+  forwardRef,
+  isValidElement,
+
+  // Types
+  ElementType,
+  ReactElement,
+} from 'react'
+import { Props, XOR, __, Expand } from '../types'
 import { match } from './match'
 
 export enum Features {
@@ -36,28 +46,28 @@ export type PropsForFeatures<T extends Features> = XOR<
   PropsForFeature<T, Features.RenderStrategy, { unmount?: boolean }>
 >
 
-export function render<TFeature extends Features, TTag extends React.ElementType, TBag>(
-  props: Props<TTag, TBag, any> & PropsForFeatures<TFeature>,
+export function render<TFeature extends Features, TTag extends ElementType, TBag>(
+  props: Expand<Props<TTag, TBag, any> & PropsForFeatures<TFeature>>,
   propsBag: TBag,
-  defaultTag: React.ElementType,
+  defaultTag: ElementType,
   features?: TFeature,
   visible: boolean = true
 ) {
   // Visible always render
   if (visible) return _render(props, propsBag, defaultTag)
 
-  const featureFlags = features ?? Features.None
+  let featureFlags = features ?? Features.None
 
   if (featureFlags & Features.Static) {
-    const { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
+    let { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
 
     // When the `static` prop is passed as `true`, then the user is in control, thus we don't care about anything else
     if (isStatic) return _render(rest, propsBag, defaultTag)
   }
 
   if (featureFlags & Features.RenderStrategy) {
-    const { unmount = true, ...rest } = props as PropsForFeatures<Features.RenderStrategy>
-    const strategy = unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
+    let { unmount = true, ...rest } = props as PropsForFeatures<Features.RenderStrategy>
+    let strategy = unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
     return match(strategy, {
       [RenderStrategy.Unmount]() {
@@ -77,40 +87,40 @@ export function render<TFeature extends Features, TTag extends React.ElementType
   return _render(props, propsBag, defaultTag)
 }
 
-function _render<TTag extends React.ElementType, TBag>(
-  props: Props<TTag, TBag> & { ref?: unknown },
+function _render<TTag extends ElementType, TBag>(
+  props: Expand<Props<TTag, TBag> & { ref?: unknown }>,
   bag: TBag,
-  tag: React.ElementType
+  tag: ElementType
 ) {
-  const { as: Component = tag, children, refName = 'ref', ...passThroughProps } = omit(props, [
+  let { as: Component = tag, children, refName = 'ref', ...passThroughProps } = omit(props, [
     'unmount',
     'static',
   ])
 
   // This allows us to use `<HeadlessUIComponent as={MyComopnent} refName="innerRef" />`
-  const refRelatedProps = props.ref !== undefined ? { [refName]: props.ref } : {}
+  let refRelatedProps = props.ref !== undefined ? { [refName]: props.ref } : {}
 
-  const resolvedChildren = (typeof children === 'function' ? children(bag) : children) as
-    | React.ReactElement
-    | React.ReactElement[]
+  let resolvedChildren = (typeof children === 'function' ? children(bag) : children) as
+    | ReactElement
+    | ReactElement[]
 
-  if (Component === React.Fragment) {
+  if (Component === Fragment) {
     if (Object.keys(passThroughProps).length > 0) {
       if (Array.isArray(resolvedChildren) && resolvedChildren.length > 1) {
-        const err = new Error('You should only render 1 child')
+        let err = new Error('You should only render 1 child')
         if (Error.captureStackTrace) Error.captureStackTrace(err, _render)
         throw err
       }
 
-      if (!React.isValidElement(resolvedChildren)) {
-        const err = new Error(
+      if (!isValidElement(resolvedChildren)) {
+        let err = new Error(
           `You should render an element as a child. Did you forget the as="..." prop?`
         )
         if (Error.captureStackTrace) Error.captureStackTrace(err, _render)
         throw err
       }
 
-      return React.cloneElement(
+      return cloneElement(
         resolvedChildren,
         Object.assign(
           {},
@@ -124,13 +134,9 @@ function _render<TTag extends React.ElementType, TBag>(
     }
   }
 
-  return React.createElement(
+  return createElement(
     Component,
-    Object.assign(
-      {},
-      omit(passThroughProps, ['ref']),
-      Component !== React.Fragment && refRelatedProps
-    ),
+    Object.assign({}, omit(passThroughProps, ['ref']), Component !== Fragment && refRelatedProps),
     resolvedChildren
   )
 }
@@ -177,7 +183,7 @@ function mergeEventFunctions(
  * wrap it in a forwardRef so that we _can_ passthrough the ref
  */
 export function forwardRefWithAs<T>(component: T): T {
-  return React.forwardRef((component as unknown) as any) as any
+  return forwardRef((component as unknown) as any) as any
 }
 
 function compact<T extends Record<any, any>>(object: T) {

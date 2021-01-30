@@ -1,4 +1,4 @@
-import React from 'react'
+import { RefCallback, useRef, useCallback, useMemo } from 'react'
 import { createPopper, Options } from '@popperjs/core'
 
 /**
@@ -6,13 +6,13 @@ import { createPopper, Options } from '@popperjs/core'
  */
 export function usePopper(
   options?: Partial<Options>
-): [React.RefCallback<Element | null>, React.RefCallback<HTMLElement | null>] {
-  const reference = React.useRef<Element>(null)
-  const popper = React.useRef<HTMLElement>(null)
+): [RefCallback<Element | null>, RefCallback<HTMLElement | null>] {
+  let reference = useRef<Element>(null)
+  let popper = useRef<HTMLElement>(null)
 
-  const cleanupCallback = React.useRef(() => {})
+  let cleanupCallback = useRef(() => {})
 
-  const instantiatePopper = React.useCallback(() => {
+  let instantiatePopper = useCallback(() => {
     if (!reference.current) return
     if (!popper.current) return
 
@@ -21,7 +21,7 @@ export function usePopper(
     cleanupCallback.current = createPopper(reference.current, popper.current, options).destroy
   }, [reference, popper, cleanupCallback, options])
 
-  return React.useMemo(
+  return useMemo(
     () => [
       referenceDomNode => {
         reference.current = referenceDomNode

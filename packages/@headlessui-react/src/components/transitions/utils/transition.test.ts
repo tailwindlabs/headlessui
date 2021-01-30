@@ -8,10 +8,10 @@ beforeEach(() => {
 })
 
 it('should be possible to transition', async () => {
-  const d = disposables()
+  let d = disposables()
 
-  const snapshots: { content: string; recordedAt: bigint }[] = []
-  const element = document.createElement('div')
+  let snapshots: { content: string; recordedAt: bigint }[] = []
+  let element = document.createElement('div')
   document.body.appendChild(element)
 
   d.add(
@@ -44,17 +44,17 @@ it('should be possible to transition', async () => {
   // Cleanup phase
   expect(snapshots[2].content).toEqual('<div class=""></div>')
 
-  await d.dispose()
+  d.dispose()
 })
 
 it('should wait the correct amount of time to finish a transition', async () => {
-  const d = disposables()
+  let d = disposables()
 
-  const snapshots: { content: string; recordedAt: bigint }[] = []
-  const element = document.createElement('div')
+  let snapshots: { content: string; recordedAt: bigint }[] = []
+  let element = document.createElement('div')
   document.body.appendChild(element)
 
-  const duration = 20
+  let duration = 20
 
   element.style.transitionDuration = `${duration}ms`
 
@@ -70,7 +70,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
     )
   )
 
-  const reason = await new Promise(resolve => {
+  let reason = await new Promise(resolve => {
     transition(element, ['enter'], ['enterFrom'], ['enterTo'], resolve)
   })
 
@@ -89,7 +89,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
     `<div style="transition-duration: ${duration}ms;" class="enter enterTo"></div>`
   )
 
-  const estimatedDuration = Number(
+  let estimatedDuration = Number(
     (snapshots[snapshots.length - 1].recordedAt - snapshots[snapshots.length - 2].recordedAt) /
       BigInt(1e6)
   )
@@ -103,14 +103,14 @@ it('should wait the correct amount of time to finish a transition', async () => 
 })
 
 it('should keep the delay time into account', async () => {
-  const d = disposables()
+  let d = disposables()
 
-  const snapshots: { content: string; recordedAt: bigint }[] = []
-  const element = document.createElement('div')
+  let snapshots: { content: string; recordedAt: bigint }[] = []
+  let element = document.createElement('div')
   document.body.appendChild(element)
 
-  const duration = 20
-  const delayDuration = 100
+  let duration = 20
+  let delayDuration = 100
 
   element.style.transitionDuration = `${duration}ms`
   element.style.transitionDelay = `${delayDuration}ms`
@@ -127,14 +127,14 @@ it('should keep the delay time into account', async () => {
     )
   )
 
-  const reason = await new Promise(resolve => {
+  let reason = await new Promise(resolve => {
     transition(element, ['enter'], ['enterFrom'], ['enterTo'], resolve)
   })
 
   await new Promise(resolve => d.nextFrame(resolve))
   expect(reason).toBe(Reason.Finished)
 
-  const estimatedDuration = Number(
+  let estimatedDuration = Number(
     (snapshots[snapshots.length - 1].recordedAt - snapshots[snapshots.length - 2].recordedAt) /
       BigInt(1e6)
   )
@@ -143,18 +143,18 @@ it('should keep the delay time into account', async () => {
 })
 
 it('should be possible to cancel a transition at any time', async () => {
-  const d = disposables()
+  let d = disposables()
 
-  const snapshots: {
+  let snapshots: {
     content: string
     recordedAt: bigint
     relativeTime: number
   }[] = []
-  const element = document.createElement('div')
+  let element = document.createElement('div')
   document.body.appendChild(element)
 
   // This duration is so overkill, however it will demonstrate that we can cancel transitions.
-  const duration = 5000
+  let duration = 5000
 
   element.style.transitionDuration = `${duration}ms`
 
@@ -162,8 +162,8 @@ it('should be possible to cancel a transition at any time', async () => {
     reportChanges(
       () => document.body.innerHTML,
       content => {
-        const recordedAt = process.hrtime.bigint()
-        const total = snapshots.length
+        let recordedAt = process.hrtime.bigint()
+        let total = snapshots.length
 
         snapshots.push({
           content,
@@ -178,7 +178,7 @@ it('should be possible to cancel a transition at any time', async () => {
   expect.assertions(2)
 
   // Setup the transition
-  const cancel = transition(element, ['enter'], ['enterFrom'], ['enterTo'], reason => {
+  let cancel = transition(element, ['enter'], ['enterFrom'], ['enterTo'], reason => {
     expect(reason).toBe(Reason.Cancelled)
   })
 

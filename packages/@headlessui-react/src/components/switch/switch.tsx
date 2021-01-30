@@ -1,4 +1,16 @@
-import * as React from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  Fragment,
+
+  // Types
+  ElementType,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+} from 'react'
 
 import { Props } from '../../types'
 import { render } from '../../utils/render'
@@ -7,7 +19,7 @@ import { Keys } from '../keyboard'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 
-type StateDefinition = {
+interface StateDefinition {
   switch: HTMLButtonElement | null
   label: HTMLLabelElement | null
 
@@ -15,13 +27,13 @@ type StateDefinition = {
   setLabel(element: HTMLLabelElement): void
 }
 
-const GroupContext = React.createContext<StateDefinition | null>(null)
+let GroupContext = createContext<StateDefinition | null>(null)
 GroupContext.displayName = 'GroupContext'
 
 function useGroupContext(component: string) {
-  const context = React.useContext(GroupContext)
+  let context = useContext(GroupContext)
   if (context === null) {
-    const err = new Error(`<${component} /> is missing a parent <Switch.Group /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Switch.Group /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useGroupContext)
     throw err
   }
@@ -30,13 +42,13 @@ function useGroupContext(component: string) {
 
 // ---
 
-const DEFAULT_GROUP_TAG = React.Fragment
+let DEFAULT_GROUP_TAG = Fragment
 
-function Group<TTag extends React.ElementType = typeof DEFAULT_GROUP_TAG>(props: Props<TTag>) {
-  const [switchElement, setSwitchElement] = React.useState<HTMLButtonElement | null>(null)
-  const [labelElement, setLabelElement] = React.useState<HTMLLabelElement | null>(null)
+function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props<TTag>) {
+  let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
+  let [labelElement, setLabelElement] = useState<HTMLLabelElement | null>(null)
 
-  const context = React.useMemo<StateDefinition>(
+  let context = useMemo<StateDefinition>(
     () => ({
       switch: switchElement,
       label: labelElement,
@@ -45,6 +57,7 @@ function Group<TTag extends React.ElementType = typeof DEFAULT_GROUP_TAG>(props:
     }),
     [switchElement, setSwitchElement, labelElement, setLabelElement]
   )
+
   return (
     <GroupContext.Provider value={context}>
       {render(props, {}, DEFAULT_GROUP_TAG)}
@@ -54,8 +67,10 @@ function Group<TTag extends React.ElementType = typeof DEFAULT_GROUP_TAG>(props:
 
 // ---
 
-const DEFAULT_SWITCH_TAG = 'button'
-type SwitchRenderPropArg = { checked: boolean }
+let DEFAULT_SWITCH_TAG = 'button' as const
+interface SwitchRenderPropArg {
+  checked: boolean
+}
 type SwitchPropsWeControl =
   | 'id'
   | 'role'
@@ -65,7 +80,7 @@ type SwitchPropsWeControl =
   | 'onKeyUp'
   | 'onKeyPress'
 
-export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TAG>(
+export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   props: Props<
     TTag,
     SwitchRenderPropArg,
@@ -78,21 +93,21 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
     className?: ((bag: SwitchRenderPropArg) => string) | string
   }
 ) {
-  const { checked, onChange, className, ...passThroughProps } = props
-  const id = `headlessui-switch-${useId()}`
-  const groupContext = React.useContext(GroupContext)
+  let { checked, onChange, className, ...passThroughProps } = props
+  let id = `headlessui-switch-${useId()}`
+  let groupContext = useContext(GroupContext)
 
-  const toggle = React.useCallback(() => onChange(!checked), [onChange, checked])
-  const handleClick = React.useCallback(
-    (event: React.MouseEvent) => {
+  let toggle = useCallback(() => onChange(!checked), [onChange, checked])
+  let handleClick = useCallback(
+    (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       event.preventDefault()
       toggle()
     },
     [toggle]
   )
-  const handleKeyUp = React.useCallback(
-    (event: React.KeyboardEvent<HTMLElement>) => {
+  let handleKeyUp = useCallback(
+    (event: ReactKeyboardEvent<HTMLElement>) => {
       if (event.key !== Keys.Tab) event.preventDefault()
       if (event.key === Keys.Space) toggle()
     },
@@ -100,13 +115,13 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
   )
 
   // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
-  const handleKeyPress = React.useCallback(
-    (event: React.KeyboardEvent<HTMLElement>) => event.preventDefault(),
+  let handleKeyPress = useCallback(
+    (event: ReactKeyboardEvent<HTMLElement>) => event.preventDefault(),
     []
   )
 
-  const propsBag = React.useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
-  const propsWeControl = {
+  let propsBag = useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
+  let propsWeControl = {
     id,
     ref: groupContext === null ? undefined : groupContext.setSwitch,
     role: 'switch',
@@ -128,23 +143,23 @@ export function Switch<TTag extends React.ElementType = typeof DEFAULT_SWITCH_TA
 
 // ---
 
-const DEFAULT_LABEL_TAG = 'label'
-type LabelRenderPropArg = {}
+let DEFAULT_LABEL_TAG = 'label' as const
+interface LabelRenderPropArg {}
 type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 
-function Label<TTag extends React.ElementType = typeof DEFAULT_LABEL_TAG>(
+function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
 ) {
-  const state = useGroupContext([Switch.name, Label.name].join('.'))
-  const id = `headlessui-switch-label-${useId()}`
+  let state = useGroupContext([Switch.name, Label.name].join('.'))
+  let id = `headlessui-switch-label-${useId()}`
 
-  const handleClick = React.useCallback(() => {
+  let handleClick = useCallback(() => {
     if (!state.switch) return
     state.switch.click()
     state.switch.focus({ preventScroll: true })
   }, [state.switch])
 
-  const propsWeControl = { ref: state.setLabel, id, onClick: handleClick }
+  let propsWeControl = { ref: state.setLabel, id, onClick: handleClick }
   return render({ ...props, ...propsWeControl }, {}, DEFAULT_LABEL_TAG)
 }
 

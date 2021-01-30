@@ -53,13 +53,13 @@ type StateDefinition = {
   select(value: unknown): void
 }
 
-const ListboxContext = Symbol('ListboxContext') as InjectionKey<StateDefinition>
+let ListboxContext = Symbol('ListboxContext') as InjectionKey<StateDefinition>
 
 function useListboxContext(component: string) {
-  const context = inject(ListboxContext, null)
+  let context = inject(ListboxContext, null)
 
   if (context === null) {
-    const err = new Error(`<${component} /> is missing a parent <Listbox /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Listbox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useListboxContext)
     throw err
   }
@@ -69,7 +69,7 @@ function useListboxContext(component: string) {
 
 // ---
 
-export const Listbox = defineComponent({
+export let Listbox = defineComponent({
   name: 'Listbox',
   emits: ['update:modelValue'],
   props: {
@@ -77,18 +77,18 @@ export const Listbox = defineComponent({
     modelValue: { type: [Object, String, Number, Boolean], default: null },
   },
   setup(props, { slots, attrs, emit }) {
-    const { modelValue, ...passThroughProps } = props
-    const listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
-    const labelRef = ref<StateDefinition['labelRef']['value']>(null)
-    const buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
-    const optionsRef = ref<StateDefinition['optionsRef']['value']>(null)
-    const options = ref<StateDefinition['options']['value']>([])
-    const searchQuery = ref<StateDefinition['searchQuery']['value']>('')
-    const activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
+    let { modelValue, ...passThroughProps } = props
+    let listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
+    let labelRef = ref<StateDefinition['labelRef']['value']>(null)
+    let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
+    let optionsRef = ref<StateDefinition['optionsRef']['value']>(null)
+    let options = ref<StateDefinition['options']['value']>([])
+    let searchQuery = ref<StateDefinition['searchQuery']['value']>('')
+    let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
-    const value = computed(() => props.modelValue)
+    let value = computed(() => props.modelValue)
 
-    const api = {
+    let api = {
       listboxState,
       value,
       labelRef,
@@ -103,7 +103,7 @@ export const Listbox = defineComponent({
       },
       openListbox: () => (listboxState.value = ListboxStates.Open),
       goToOption(focus: Focus, id?: string) {
-        const nextActiveOptionIndex = calculateActiveIndex(
+        let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
             : { focus: focus as Exclude<Focus, Focus.Specific> },
@@ -122,7 +122,7 @@ export const Listbox = defineComponent({
       search(value: string) {
         searchQuery.value += value
 
-        const match = options.value.findIndex(
+        let match = options.value.findIndex(
           option =>
             !option.dataRef.disabled && option.dataRef.textValue.startsWith(searchQuery.value)
         )
@@ -138,10 +138,10 @@ export const Listbox = defineComponent({
         options.value.push({ id, dataRef })
       },
       unregisterOption(id: string) {
-        const nextOptions = options.value.slice()
-        const currentActiveOption =
+        let nextOptions = options.value.slice()
+        let currentActiveOption =
           activeOptionIndex.value !== null ? nextOptions[activeOptionIndex.value] : null
-        const idx = nextOptions.findIndex(a => a.id === id)
+        let idx = nextOptions.findIndex(a => a.id === id)
         if (idx !== -1) nextOptions.splice(idx, 1)
         options.value = nextOptions
         activeOptionIndex.value = (() => {
@@ -160,8 +160,8 @@ export const Listbox = defineComponent({
 
     onMounted(() => {
       function handler(event: MouseEvent) {
-        const target = event.target as HTMLElement
-        const active = document.activeElement
+        let target = event.target as HTMLElement
+        let active = document.activeElement
 
         if (listboxState.value !== ListboxStates.Open) return
         if (buttonRef.value?.contains(target)) return
@@ -179,7 +179,7 @@ export const Listbox = defineComponent({
     provide(ListboxContext, api)
 
     return () => {
-      const slot = { open: listboxState.value === ListboxStates.Open }
+      let slot = { open: listboxState.value === ListboxStates.Open }
       return render({ props: passThroughProps, slot, slots, attrs })
     }
   },
@@ -187,14 +187,14 @@ export const Listbox = defineComponent({
 
 // ---
 
-export const ListboxLabel = defineComponent({
+export let ListboxLabel = defineComponent({
   name: 'ListboxLabel',
   props: { as: { type: [Object, String], default: 'label' } },
   render() {
-    const api = useListboxContext('ListboxLabel')
+    let api = useListboxContext('ListboxLabel')
 
-    const slot = { open: api.listboxState.value === ListboxStates.Open }
-    const propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
+    let slot = { open: api.listboxState.value === ListboxStates.Open }
+    let propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
 
     return render({
       props: { ...this.$props, ...propsWeControl },
@@ -204,8 +204,8 @@ export const ListboxLabel = defineComponent({
     })
   },
   setup() {
-    const api = useListboxContext('ListboxLabel')
-    const id = `headlessui-listbox-label-${useId()}`
+    let api = useListboxContext('ListboxLabel')
+    let id = `headlessui-listbox-label-${useId()}`
 
     return {
       id,
@@ -219,17 +219,17 @@ export const ListboxLabel = defineComponent({
 
 // ---
 
-export const ListboxButton = defineComponent({
+export let ListboxButton = defineComponent({
   name: 'ListboxButton',
   props: {
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
   },
   render() {
-    const api = useListboxContext('ListboxButton')
+    let api = useListboxContext('ListboxButton')
 
-    const slot = { open: api.listboxState.value === ListboxStates.Open }
-    const propsWeControl = {
+    let slot = { open: api.listboxState.value === ListboxStates.Open }
+    let propsWeControl = {
       ref: 'el',
       id: this.id,
       type: 'button',
@@ -251,8 +251,8 @@ export const ListboxButton = defineComponent({
     })
   },
   setup(props) {
-    const api = useListboxContext('ListboxButton')
-    const id = `headlessui-listbox-button-${useId()}`
+    let api = useListboxContext('ListboxButton')
+    let id = `headlessui-listbox-button-${useId()}`
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -298,7 +298,7 @@ export const ListboxButton = defineComponent({
 
 // ---
 
-export const ListboxOptions = defineComponent({
+export let ListboxOptions = defineComponent({
   name: 'ListboxOptions',
   props: {
     as: { type: [Object, String], default: 'ul' },
@@ -306,10 +306,10 @@ export const ListboxOptions = defineComponent({
     unmount: { type: Boolean, default: true },
   },
   render() {
-    const api = useListboxContext('ListboxOptions')
+    let api = useListboxContext('ListboxOptions')
 
-    const slot = { open: api.listboxState.value === ListboxStates.Open }
-    const propsWeControl = {
+    let slot = { open: api.listboxState.value === ListboxStates.Open }
+    let propsWeControl = {
       'aria-activedescendant':
         api.activeOptionIndex.value === null
           ? undefined
@@ -321,7 +321,7 @@ export const ListboxOptions = defineComponent({
       tabIndex: 0,
       ref: 'el',
     }
-    const passThroughProps = this.$props
+    let passThroughProps = this.$props
 
     return render({
       props: { ...passThroughProps, ...propsWeControl },
@@ -333,9 +333,9 @@ export const ListboxOptions = defineComponent({
     })
   },
   setup() {
-    const api = useListboxContext('ListboxOptions')
-    const id = `headlessui-listbox-options-${useId()}`
-    const searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
+    let api = useListboxContext('ListboxOptions')
+    let id = `headlessui-listbox-options-${useId()}`
+    let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
     function handleKeyDown(event: KeyboardEvent) {
       if (searchDebounce.value) clearTimeout(searchDebounce.value)
@@ -353,7 +353,7 @@ export const ListboxOptions = defineComponent({
         case Keys.Enter:
           event.preventDefault()
           if (api.activeOptionIndex.value !== null) {
-            const { dataRef } = api.options.value[api.activeOptionIndex.value]
+            let { dataRef } = api.options.value[api.activeOptionIndex.value]
             api.select(dataRef.value)
           }
           api.closeListbox()
@@ -400,7 +400,7 @@ export const ListboxOptions = defineComponent({
   },
 })
 
-export const ListboxOption = defineComponent({
+export let ListboxOption = defineComponent({
   name: 'ListboxOption',
   props: {
     as: { type: [Object, String], default: 'li' },
@@ -410,21 +410,21 @@ export const ListboxOption = defineComponent({
     className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
-    const api = useListboxContext('ListboxOption')
-    const id = `headlessui-listbox-option-${useId()}`
-    const { disabled, class: defaultClass, className = defaultClass, value } = props
+    let api = useListboxContext('ListboxOption')
+    let id = `headlessui-listbox-option-${useId()}`
+    let { disabled, class: defaultClass, className = defaultClass, value } = props
 
-    const active = computed(() => {
+    let active = computed(() => {
       return api.activeOptionIndex.value !== null
         ? api.options.value[api.activeOptionIndex.value].id === id
         : false
     })
 
-    const selected = computed(() => toRaw(api.value.value) === toRaw(value))
+    let selected = computed(() => toRaw(api.value.value) === toRaw(value))
 
-    const dataRef = ref<ListboxOptionDataRef['value']>({ disabled, value, textValue: '' })
+    let dataRef = ref<ListboxOptionDataRef['value']>({ disabled, value, textValue: '' })
     onMounted(() => {
-      const textValue = document
+      let textValue = document
         .getElementById(id)
         ?.textContent?.toLowerCase()
         .trim()
@@ -478,8 +478,8 @@ export const ListboxOption = defineComponent({
     }
 
     return () => {
-      const slot = { active: active.value, selected: selected.value, disabled }
-      const propsWeControl = {
+      let slot = { active: active.value, selected: selected.value, disabled }
+      let propsWeControl = {
         id,
         role: 'option',
         tabIndex: -1,

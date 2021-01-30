@@ -7,7 +7,7 @@ type Events = 'onKeyDown' | 'onKeyUp' | 'onKeyPress' | 'onClick' | 'onBlur' | 'o
 let events: Events[] = ['onKeyDown', 'onKeyUp', 'onKeyPress', 'onClick', 'onBlur', 'onFocus']
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
-  const defaultComponents = {}
+  let defaultComponents = {}
 
   if (typeof input === 'string') {
     return render(defineComponent({ template: input, components: defaultComponents }))

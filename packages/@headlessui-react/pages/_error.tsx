@@ -1,5 +1,5 @@
-import * as React from 'react'
-import Error from 'next/error'
+import React from 'react'
+import ErrorPage from 'next/error'
 import Head from 'next/head'
 import Link from 'next/link'
 
@@ -7,7 +7,7 @@ import { ExamplesType, resolveAllExamples } from '../playground-utils/resolve-al
 import { PropsOf } from '../src/types'
 
 function NextLink(props: PropsOf<'a'>) {
-  const { href, children, ...rest } = props
+  let { href, children, ...rest } = props
   return (
     <Link href={href}>
       <a {...rest}>{children}</a>
@@ -25,7 +25,7 @@ export async function getStaticProps() {
 
 export default function Page(props: { examples: false | ExamplesType[] }) {
   if (props.examples === false) {
-    return <Error statusCode={404} />
+    return <ErrorPage statusCode={404} />
   }
 
   return (

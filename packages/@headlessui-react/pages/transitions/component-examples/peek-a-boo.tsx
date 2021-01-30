@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Transition } from '@headlessui/react'
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(true)
+  let [isOpen, setIsOpen] = useState(true)
 
   return (
     <>

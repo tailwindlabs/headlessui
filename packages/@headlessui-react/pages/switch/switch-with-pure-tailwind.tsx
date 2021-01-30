@@ -1,10 +1,10 @@
-import * as React from 'react'
+import React, { useState } from 'react'
 import { Switch } from '@headlessui/react'
 
 import { classNames } from '../../src/utils/class-names'
 
 export default function Home() {
-  const [state, setState] = React.useState(false)
+  let [state, setState] = useState(false)
 
   return (
     <div className="flex items-start justify-center w-screen h-full p-12 bg-gray-50">

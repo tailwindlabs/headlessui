@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState } from 'react'
 
 beforeEach(() => {
   id = 0
@@ -10,6 +10,6 @@ function generateId() {
 }
 
 export function useId() {
-  const [id] = React.useState(generateId)
+  const [id] = useState(generateId)
   return id
 }

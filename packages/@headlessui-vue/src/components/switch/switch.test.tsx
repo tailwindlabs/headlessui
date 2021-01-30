@@ -15,7 +15,7 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 jest.mock('../../hooks/use-id')
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
-  const defaultComponents = { Switch, SwitchLabel, SwitchGroup }
+  let defaultComponents = { Switch, SwitchLabel, SwitchGroup }
 
   if (typeof input === 'string') {
     return render(defineComponent({ template: input, components: defaultComponents }))
@@ -170,11 +170,11 @@ describe('Render composition', () => {
 describe('Keyboard interactions', () => {
   describe('`Space` key', () => {
     it('should be possible to toggle the Switch with Space', async () => {
-      const handleChange = jest.fn()
+      let handleChange = jest.fn()
       renderTemplate({
         template: `<Switch v-model="checked" />`,
         setup() {
-          const checked = ref(false)
+          let checked = ref(false)
           watch([checked], () => handleChange(checked.value))
           return { checked }
         },
@@ -202,11 +202,11 @@ describe('Keyboard interactions', () => {
 
   describe('`Enter` key', () => {
     it('should not be possible to use Enter to toggle the Switch', async () => {
-      const handleChange = jest.fn()
+      let handleChange = jest.fn()
       renderTemplate({
         template: `<Switch v-model="checked" />`,
         setup() {
-          const checked = ref(false)
+          let checked = ref(false)
           watch([checked], () => handleChange(checked.value))
           return { checked }
         },
@@ -257,11 +257,11 @@ describe('Keyboard interactions', () => {
 
 describe('Mouse interactions', () => {
   it('should be possible to toggle the Switch with a click', async () => {
-    const handleChange = jest.fn()
+    let handleChange = jest.fn()
     renderTemplate({
       template: `<Switch v-model="checked" />`,
       setup() {
-        const checked = ref(false)
+        let checked = ref(false)
         watch([checked], () => handleChange(checked.value))
         return { checked }
       },
@@ -284,7 +284,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to toggle the Switch with a click on the Label', async () => {
-    const handleChange = jest.fn()
+    let handleChange = jest.fn()
     renderTemplate({
       template: `
         <SwitchGroup>
@@ -293,7 +293,7 @@ describe('Mouse interactions', () => {
         </SwitchGroup>
       `,
       setup() {
-        const checked = ref(false)
+        let checked = ref(false)
         watch([checked], () => handleChange(checked.value))
         return { checked }
       },

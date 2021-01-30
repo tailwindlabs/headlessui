@@ -17,7 +17,7 @@ export default function Home() {
 }
 
 function Dropdown() {
-  const [isOpen, setIsOpen] = useState(false)
+  let [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="relative inline-block text-left">

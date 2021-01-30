@@ -580,7 +580,7 @@ export function assertLabelValue(element: HTMLElement | null, value: string) {
   if (element === null) return expect(element).not.toBe(null)
 
   if (element.hasAttribute('aria-labelledby')) {
-    const ids = element.getAttribute('aria-labelledby')!.split(' ')
+    let ids = element.getAttribute('aria-labelledby')!.split(' ')
     expect(ids.map(id => document.getElementById(id)?.textContent).join(' ')).toEqual(value)
     return
   }

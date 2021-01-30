@@ -1,20 +1,20 @@
 import { mount } from '@vue/test-utils'
 import { logDOM, fireEvent } from '@testing-library/dom'
 
-const mountedWrappers = new Set()
+let mountedWrappers = new Set()
 
 export function render(
   TestComponent: any,
   options?: Omit<Parameters<typeof mount>[1], 'attachTo'>
 ) {
-  const div = document.createElement('div')
-  const baseElement = document.body
-  const container = baseElement.appendChild(div)
+  let div = document.createElement('div')
+  let baseElement = document.body
+  let container = baseElement.appendChild(div)
 
-  const attachTo = document.createElement('div')
+  let attachTo = document.createElement('div')
   container.appendChild(attachTo)
 
-  const wrapper = mount(TestComponent, {
+  let wrapper = mount(TestComponent, {
     ...options,
     attachTo,
   })

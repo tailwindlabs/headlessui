@@ -1,11 +1,11 @@
-const fs = require('fs')
-const path = require('path')
+let fs = require('fs')
+let path = require('path')
 
-const prettier = require('prettier')
-const Prism = require('prismjs')
+let prettier = require('prettier')
+let Prism = require('prismjs')
 require('prismjs/plugins/custom-class/prism-custom-class')
 
-const routes = require('./examples/src/routes')
+let routes = require('./examples/src/routes')
 
 function flatten(routes, resolver) {
   return routes
@@ -17,10 +17,10 @@ function flatten(routes, resolver) {
 // file. However just doing dynamic imports() doesn't work well at build time. Therefore we will
 // generate a fake file that contains them all.
 let i = 0
-const map = {}
-const contents = flatten(routes, route => route.component)
+let map = {}
+let contents = flatten(routes, route => route.component)
   .map(path => {
-    const name = `Component$${++i}`
+    let name = `Component$${++i}`
     map[path] = name
     return `import ${name} from ".${path}";`
   })
@@ -53,7 +53,7 @@ Prism.plugins.customClass.map({
   comment: 'text-gray-400 italic',
 })
 
-const sourcePipeline = pipe(
+let sourcePipeline = pipe(
   path => fs.readFileSync(path, 'utf8'),
   contents =>
     prettier.format(contents, {
@@ -74,8 +74,8 @@ const sourcePipeline = pipe(
     ].join('')
 )
 
-const skipRoutes = ['/']
-const source = Object.assign(
+let skipRoutes = ['/']
+let source = Object.assign(
   {},
   ...flatten(routes, route => ({
     urlPath: route.path,
@@ -93,14 +93,14 @@ fs.writeFileSync(
 )
 // ---
 
-const TailwindUIPlugin = ({
+let HeadlessUIPlugin = ({
   root, // project root directory, absolute path
   app, // Koa app instance
   server, // raw http server instance
   watcher, // chokidar file watcher instance
   resolver, // chokidar file watcher instance
 }) => {
-  const routePaths = flatten(routes, route => route.path)
+  let routePaths = flatten(routes, route => route.path)
 
   app.use(async (ctx, next) => {
     if (routePaths.includes(ctx.path)) {
@@ -118,5 +118,5 @@ module.exports = {
       './src/index.ts'
     ),
   },
-  configureServer: [TailwindUIPlugin],
+  configureServer: [HeadlessUIPlugin],
 }

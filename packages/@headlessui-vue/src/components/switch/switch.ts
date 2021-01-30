@@ -11,13 +11,13 @@ type StateDefinition = {
   labelRef: Ref<HTMLLabelElement | null>
 }
 
-const GroupContext = Symbol('GroupContext') as InjectionKey<StateDefinition>
+let GroupContext = Symbol('GroupContext') as InjectionKey<StateDefinition>
 
 function useGroupContext(component: string) {
-  const context = inject(GroupContext, null)
+  let context = inject(GroupContext, null)
 
   if (context === null) {
-    const err = new Error(`<${component} /> is missing a parent <SwitchGroup /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <SwitchGroup /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useGroupContext)
     throw err
   }
@@ -27,16 +27,16 @@ function useGroupContext(component: string) {
 
 // ---
 
-export const SwitchGroup = defineComponent({
+export let SwitchGroup = defineComponent({
   name: 'SwitchGroup',
   props: {
     as: { type: [Object, String], default: 'template' },
   },
   setup(props, { slots, attrs }) {
-    const switchRef = ref<StateDefinition['switchRef']['value']>(null)
-    const labelRef = ref<StateDefinition['labelRef']['value']>(null)
+    let switchRef = ref<StateDefinition['switchRef']['value']>(null)
+    let labelRef = ref<StateDefinition['labelRef']['value']>(null)
 
-    const api = { switchRef, labelRef }
+    let api = { switchRef, labelRef }
 
     provide(GroupContext, api)
 
@@ -46,7 +46,7 @@ export const SwitchGroup = defineComponent({
 
 // ---
 
-export const Switch = defineComponent({
+export let Switch = defineComponent({
   name: 'Switch',
   emits: ['update:modelValue'],
   props: {
@@ -56,13 +56,13 @@ export const Switch = defineComponent({
     className: { type: [String, Function], required: false },
   },
   render() {
-    const api = inject(GroupContext, null)
-    const { class: defaultClass, className = defaultClass } = this.$props
+    let api = inject(GroupContext, null)
+    let { class: defaultClass, className = defaultClass } = this.$props
 
-    const labelledby = computed(() => api?.labelRef.value?.id)
+    let labelledby = computed(() => api?.labelRef.value?.id)
 
-    const slot = { checked: this.$props.modelValue }
-    const propsWeControl = {
+    let slot = { checked: this.$props.modelValue }
+    let propsWeControl = {
       id: this.id,
       ref: api === null ? undefined : api.switchRef,
       role: 'switch',
@@ -87,8 +87,8 @@ export const Switch = defineComponent({
     })
   },
   setup(props, { emit }) {
-    const api = inject(GroupContext, null)
-    const id = `headlessui-switch-${useId()}`
+    let api = inject(GroupContext, null)
+    let id = `headlessui-switch-${useId()}`
 
     function toggle() {
       emit('update:modelValue', !props.modelValue)
@@ -115,11 +115,11 @@ export const Switch = defineComponent({
 
 // ---
 
-export const SwitchLabel = defineComponent({
+export let SwitchLabel = defineComponent({
   name: 'SwitchLabel',
   props: { as: { type: [Object, String], default: 'label' } },
   render() {
-    const propsWeControl = {
+    let propsWeControl = {
       id: this.id,
       ref: 'el',
       onClick: this.handleClick,
@@ -133,8 +133,8 @@ export const SwitchLabel = defineComponent({
     })
   },
   setup() {
-    const api = useGroupContext('SwitchLabel')
-    const id = `headlessui-switch-label-${useId()}`
+    let api = useGroupContext('SwitchLabel')
+    let id = `headlessui-switch-label-${useId()}`
 
     return {
       id,

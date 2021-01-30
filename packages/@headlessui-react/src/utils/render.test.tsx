@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ElementType, createRef, Ref, Fragment } from 'react'
 import { render as testRender, prettyDOM, getByTestId } from '@testing-library/react'
 
 import { suppressConsoleLogs } from '../test-utils/suppress-console-logs'
@@ -12,8 +12,8 @@ function contents() {
 }
 
 describe('Default functionality', () => {
-  const bag = {}
-  function Dummy<TTag extends React.ElementType = 'div'>(
+  let bag = {}
+  function Dummy<TTag extends ElementType = 'div'>(
     props: Props<TTag> & Partial<{ a: any; b: any; c: any }>
   ) {
     return <div data-testid="wrapper">{render(props, bag, 'div')}</div>
@@ -58,16 +58,16 @@ describe('Default functionality', () => {
   })
 
   it('should be possible to add a ref with a different name', () => {
-    const ref = React.createRef()
+    let ref = createRef()
 
-    function MyComponent<T extends React.ElementType = 'div'>({
+    function MyComponent<T extends ElementType = 'div'>({
       innerRef,
       ...props
-    }: Props<T> & { innerRef: React.Ref<HTMLDivElement> }) {
+    }: Props<T> & { innerRef: Ref<HTMLDivElement> }) {
       return <div ref={innerRef} {...props} />
     }
 
-    function OtherDummy<TTag extends React.ElementType = 'div'>(props: Props<TTag>) {
+    function OtherDummy<TTag extends ElementType = 'div'>(props: Props<TTag>) {
       return <div data-testid="wrapper">{render({ ...props, ref }, bag, 'div')}</div>
     }
 
@@ -134,8 +134,8 @@ describe('Default functionality', () => {
     `)
   })
 
-  it('should be possible to render the children only when the `as` prop is set to React.Fragment', () => {
-    testRender(<Dummy as={React.Fragment}>Contents</Dummy>)
+  it('should be possible to render the children only when the `as` prop is set to Fragment', () => {
+    testRender(<Dummy as={Fragment}>Contents</Dummy>)
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
@@ -146,9 +146,9 @@ describe('Default functionality', () => {
     `)
   })
 
-  it('should forward all the props to the first child when using an as={React.Fragment}', () => {
+  it('should forward all the props to the first child when using an as={Fragment}', () => {
     testRender(
-      <Dummy as={React.Fragment} a={1} b={1}>
+      <Dummy as={Fragment} a={1} b={1}>
         {() => <span>Contents</span>}
       </Dummy>
     )
@@ -168,14 +168,14 @@ describe('Default functionality', () => {
   })
 
   it(
-    'should error when we are rendering a React.Fragment with multiple children',
+    'should error when we are rendering a Fragment with multiple children',
     suppressConsoleLogs(() => {
       expect.assertions(1)
 
       return expect(() => {
         testRender(
-          // @ts-expect-error className cannot be applied to a React.Fragment
-          <Dummy as={React.Fragment} className="p-12">
+          // @ts-expect-error className cannot be applied to a Fragment
+          <Dummy as={Fragment} className="p-12">
             <span>Contents A</span>
             <span>Contents B</span>
           </Dummy>
@@ -184,9 +184,9 @@ describe('Default functionality', () => {
     })
   )
 
-  it("should not error when we are rendering a React.Fragment with multiple children when we don't passthrough additional props", () => {
+  it("should not error when we are rendering a Fragment with multiple children when we don't passthrough additional props", () => {
     testRender(
-      <Dummy as={React.Fragment}>
+      <Dummy as={Fragment}>
         <span>Contents A</span>
         <span>Contents B</span>
       </Dummy>
@@ -207,14 +207,14 @@ describe('Default functionality', () => {
   })
 
   it(
-    'should error when we are applying props to a React.Fragment when we do not have a dedicated element',
+    'should error when we are applying props to a Fragment when we do not have a dedicated element',
     suppressConsoleLogs(() => {
       expect.assertions(1)
 
       return expect(() => {
         testRender(
-          // @ts-expect-error className cannot be applied to a React.Fragment
-          <Dummy as={React.Fragment} className="p-12">
+          // @ts-expect-error className cannot be applied to a Fragment
+          <Dummy as={Fragment} className="p-12">
             Contents
           </Dummy>
         )
@@ -270,12 +270,12 @@ function testStaticFeature(Dummy) {
 // component in a Transition for example so that the Transition component can control the
 // showing/hiding based on the `show` prop AND the state of the transition.
 describe('Features.Static', () => {
-  const bag = {}
-  const EnabledFeatures = Features.Static
-  function Dummy<TTag extends React.ElementType = 'div'>(
+  let bag = {}
+  let EnabledFeatures = Features.Static
+  function Dummy<TTag extends ElementType = 'div'>(
     props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
   ) {
-    const { show, ...rest } = props
+    let { show, ...rest } = props
     return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
   }
 
@@ -364,12 +364,12 @@ function testRenderStrategyFeature(Dummy) {
 }
 
 describe('Features.RenderStrategy', () => {
-  const bag = {}
-  const EnabledFeatures = Features.RenderStrategy
-  function Dummy<TTag extends React.ElementType = 'div'>(
+  let bag = {}
+  let EnabledFeatures = Features.RenderStrategy
+  function Dummy<TTag extends ElementType = 'div'>(
     props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
   ) {
-    const { show, ...rest } = props
+    let { show, ...rest } = props
     return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
   }
 
@@ -380,12 +380,12 @@ describe('Features.RenderStrategy', () => {
 
 // This should enable the `static` and `unmount` features. However they can't be used together!
 describe('Features.Static | Features.RenderStrategy', () => {
-  const bag = {}
-  const EnabledFeatures = Features.Static | Features.RenderStrategy
-  function Dummy<TTag extends React.ElementType = 'div'>(
+  let bag = {}
+  let EnabledFeatures = Features.Static | Features.RenderStrategy
+  function Dummy<TTag extends ElementType = 'div'>(
     props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
   ) {
-    const { show, ...rest } = props
+    let { show, ...rest } = props
     return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
   }
 

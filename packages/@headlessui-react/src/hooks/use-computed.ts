@@ -1,9 +1,9 @@
-import * as React from 'react'
+import { useState, useRef } from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 export function useComputed<T>(cb: () => T, dependencies: React.DependencyList) {
-  const [value, setValue] = React.useState(cb)
-  const cbRef = React.useRef(cb)
+  let [value, setValue] = useState(cb)
+  let cbRef = useRef(cb)
   useIsoMorphicEffect(() => {
     cbRef.current = cb
   }, [cb])

@@ -24,7 +24,7 @@ function classNames(...classes) {
 export default {
   components: { SwitchGroup, Switch, SwitchLabel },
   setup(props, context) {
-    const state = ref(false)
+    let state = ref(false)
 
     return {
       state,

@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { Fragment, useState, useRef, useLayoutEffect } from 'react'
 import { render, fireEvent } from '@testing-library/react'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -41,7 +41,7 @@ it(
 describe('Setup API', () => {
   describe('shallow', () => {
     it('should render a div and its children by default', () => {
-      const { container } = render(<Transition show={true}>Children</Transition>)
+      let { container } = render(<Transition show={true}>Children</Transition>)
 
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div>
@@ -51,7 +51,7 @@ describe('Setup API', () => {
     })
 
     it('should passthrough all the props (that we do not use internally)', () => {
-      const { container } = render(
+      let { container } = render(
         <Transition show={true} id="root" className="text-blue-400">
           Children
         </Transition>
@@ -68,7 +68,7 @@ describe('Setup API', () => {
     })
 
     it('should render another component if the `as` prop is used and its children by default', () => {
-      const { container } = render(
+      let { container } = render(
         <Transition show={true} as="a">
           Children
         </Transition>
@@ -82,7 +82,7 @@ describe('Setup API', () => {
     })
 
     it('should passthrough all the props (that we do not use internally) even when using an `as` prop', () => {
-      const { container } = render(
+      let { container } = render(
         <Transition show={true} as="a" href="/" className="text-blue-400">
           Children
         </Transition>
@@ -99,13 +99,13 @@ describe('Setup API', () => {
     })
 
     it('should render nothing when the show prop is false', () => {
-      const { container } = render(<Transition show={false}>Children</Transition>)
+      let { container } = render(<Transition show={false}>Children</Transition>)
 
       expect(container.firstChild).toMatchInlineSnapshot(`null`)
     })
 
     it('should be possible to change the underlying DOM tag', () => {
-      const { container } = render(
+      let { container } = render(
         <Transition show={true} as="a">
           Children
         </Transition>
@@ -119,8 +119,8 @@ describe('Setup API', () => {
     })
 
     it('should be possible to use a render prop', () => {
-      const { container } = render(
-        <Transition show={true} as={React.Fragment}>
+      let { container } = render(
+        <Transition show={true} as={Fragment}>
           {() => <span>Children</span>}
         </Transition>
       )
@@ -143,7 +143,7 @@ describe('Setup API', () => {
 
         expect(() => {
           render(
-            <Transition show={true} as={React.Fragment}>
+            <Transition show={true} as={Fragment}>
               {() => <Dummy />}
             </Transition>
           )
@@ -182,7 +182,7 @@ describe('Setup API', () => {
     })
 
     it('should be possible to nest transition components', () => {
-      const { container } = render(
+      let { container } = render(
         <div className="My Page">
           <Transition show={true}>
             <Transition.Child>Sidebar</Transition.Child>
@@ -208,7 +208,7 @@ describe('Setup API', () => {
     })
 
     it('should be possible to change the underlying DOM tag of the Transition.Child components', () => {
-      const { container } = render(
+      let { container } = render(
         <div className="My Page">
           <Transition show={true}>
             <Transition.Child as="aside">Sidebar</Transition.Child>
@@ -234,7 +234,7 @@ describe('Setup API', () => {
     })
 
     it('should be possible to change the underlying DOM tag of the Transition component and Transition.Child components', () => {
-      const { container } = render(
+      let { container } = render(
         <div className="My Page">
           <Transition show={true} as="article">
             <Transition.Child as="aside">Sidebar</Transition.Child>
@@ -260,13 +260,11 @@ describe('Setup API', () => {
     })
 
     it('should be possible to use render props on the Transition.Child components', () => {
-      const { container } = render(
+      let { container } = render(
         <div className="My Page">
           <Transition show={true}>
-            <Transition.Child as={React.Fragment}>{() => <aside>Sidebar</aside>}</Transition.Child>
-            <Transition.Child as={React.Fragment}>
-              {() => <section>Content</section>}
-            </Transition.Child>
+            <Transition.Child as={Fragment}>{() => <aside>Sidebar</aside>}</Transition.Child>
+            <Transition.Child as={Fragment}>{() => <section>Content</section>}</Transition.Child>
           </Transition>
         </div>
       )
@@ -288,15 +286,13 @@ describe('Setup API', () => {
     })
 
     it('should be possible to use render props on the Transition and Transition.Child components', () => {
-      const { container } = render(
+      let { container } = render(
         <div className="My Page">
-          <Transition show={true} as={React.Fragment}>
+          <Transition show={true} as={Fragment}>
             {() => (
               <article>
-                <Transition.Child as={React.Fragment}>
-                  {() => <aside>Sidebar</aside>}
-                </Transition.Child>
-                <Transition.Child as={React.Fragment}>
+                <Transition.Child as={Fragment}>{() => <aside>Sidebar</aside>}</Transition.Child>
+                <Transition.Child as={Fragment}>
                   {() => <section>Content</section>}
                 </Transition.Child>
               </article>
@@ -334,12 +330,8 @@ describe('Setup API', () => {
           render(
             <div className="My Page">
               <Transition show={true}>
-                <Transition.Child as={React.Fragment}>
-                  {() => <Dummy>Sidebar</Dummy>}
-                </Transition.Child>
-                <Transition.Child as={React.Fragment}>
-                  {() => <Dummy>Content</Dummy>}
-                </Transition.Child>
+                <Transition.Child as={Fragment}>{() => <Dummy>Sidebar</Dummy>}</Transition.Child>
+                <Transition.Child as={Fragment}>{() => <Dummy>Content</Dummy>}</Transition.Child>
               </Transition>
             </div>
           )
@@ -361,7 +353,7 @@ describe('Setup API', () => {
         expect(() => {
           render(
             <div className="My Page">
-              <Transition show={true} as={React.Fragment}>
+              <Transition show={true} as={Fragment}>
                 {() => (
                   <Dummy>
                     <Transition.Child>{() => <aside>Sidebar</aside>}</Transition.Child>
@@ -380,7 +372,7 @@ describe('Setup API', () => {
 
   describe('transition classes', () => {
     it('should be possible to passthrough the transition classes', () => {
-      const { container } = render(
+      let { container } = render(
         <Transition
           show={true}
           enter="enter"
@@ -402,7 +394,7 @@ describe('Setup API', () => {
     })
 
     it('should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true', () => {
-      const { container } = render(
+      let { container } = render(
         <Transition
           show={true}
           appear={true}
@@ -431,10 +423,10 @@ describe('Setup API', () => {
 describe('Transitions', () => {
   describe('shallow transitions', () => {
     it('should transition in completely (duration defined in milliseconds)', async () => {
-      const enterDuration = 50
+      let enterDuration = 50
 
       function Example() {
-        const [show, setShow] = React.useState(false)
+        let [show, setShow] = useState(false)
 
         return (
           <>
@@ -451,7 +443,7 @@ describe('Transitions', () => {
         )
       }
 
-      const timeline = await executeTimeline(<Example />, [
+      let timeline = await executeTimeline(<Example />, [
         // Toggle to show
         ({ getByTestId }) => {
           fireEvent.click(getByTestId('toggle'))
@@ -480,10 +472,10 @@ describe('Transitions', () => {
     })
 
     it('should transition in completely (duration defined in seconds)', async () => {
-      const enterDuration = 50
+      let enterDuration = 50
 
       function Example() {
-        const [show, setShow] = React.useState(false)
+        let [show, setShow] = useState(false)
 
         return (
           <>
@@ -501,7 +493,7 @@ describe('Transitions', () => {
         )
       }
 
-      const timeline = await executeTimeline(<Example />, [
+      let timeline = await executeTimeline(<Example />, [
         // Toggle to show
         ({ getByTestId }) => {
           fireEvent.click(getByTestId('toggle'))
@@ -530,10 +522,10 @@ describe('Transitions', () => {
     })
 
     it('should transition in completely (duration defined in seconds) in (render strategy = hidden)', async () => {
-      const enterDuration = 50
+      let enterDuration = 50
 
       function Example() {
-        const [show, setShow] = React.useState(false)
+        let [show, setShow] = useState(false)
 
         return (
           <>
@@ -551,7 +543,7 @@ describe('Transitions', () => {
         )
       }
 
-      const timeline = await executeTimeline(<Example />, [
+      let timeline = await executeTimeline(<Example />, [
         // Toggle to show
         ({ getByTestId }) => {
           fireEvent.click(getByTestId('toggle'))
@@ -577,10 +569,10 @@ describe('Transitions', () => {
     })
 
     it('should transition in completely', async () => {
-      const enterDuration = 50
+      let enterDuration = 50
 
       function Example() {
-        const [show, setShow] = React.useState(false)
+        let [show, setShow] = useState(false)
 
         return (
           <>
@@ -597,7 +589,7 @@ describe('Transitions', () => {
         )
       }
 
-      const timeline = await executeTimeline(<Example />, [
+      let timeline = await executeTimeline(<Example />, [
         // Toggle to show
         ({ getByTestId }) => {
           fireEvent.click(getByTestId('toggle'))
@@ -628,10 +620,10 @@ describe('Transitions', () => {
     it(
       'should transition out completely',
       suppressConsoleLogs(async () => {
-        const leaveDuration = 50
+        let leaveDuration = 50
 
         function Example() {
-          const [show, setShow] = React.useState(true)
+          let [show, setShow] = useState(true)
 
           return (
             <>
@@ -648,7 +640,7 @@ describe('Transitions', () => {
           )
         }
 
-        const timeline = await executeTimeline(<Example />, [
+        let timeline = await executeTimeline(<Example />, [
           // Toggle to hide
           ({ getByTestId }) => {
             fireEvent.click(getByTestId('toggle'))
@@ -682,10 +674,10 @@ describe('Transitions', () => {
     it(
       'should transition out completely (render strategy = hidden)',
       suppressConsoleLogs(async () => {
-        const leaveDuration = 50
+        let leaveDuration = 50
 
         function Example() {
-          const [show, setShow] = React.useState(true)
+          let [show, setShow] = useState(true)
 
           return (
             <>
@@ -702,7 +694,7 @@ describe('Transitions', () => {
           )
         }
 
-        const timeline = await executeTimeline(<Example />, [
+        let timeline = await executeTimeline(<Example />, [
           // Toggle to hide
           ({ getByTestId }) => {
             fireEvent.click(getByTestId('toggle'))
@@ -733,11 +725,11 @@ describe('Transitions', () => {
     it(
       'should transition in and out completely',
       suppressConsoleLogs(async () => {
-        const enterDuration = 50
-        const leaveDuration = 75
+        let enterDuration = 50
+        let leaveDuration = 75
 
         function Example() {
-          const [show, setShow] = React.useState(false)
+          let [show, setShow] = useState(false)
 
           return (
             <>
@@ -763,7 +755,7 @@ describe('Transitions', () => {
           )
         }
 
-        const timeline = await executeTimeline(<Example />, [
+        let timeline = await executeTimeline(<Example />, [
           // Toggle to show
           ({ getByTestId }) => {
             fireEvent.click(getByTestId('toggle'))
@@ -818,11 +810,11 @@ describe('Transitions', () => {
     it(
       'should transition in and out completely (render strategy = hidden)',
       suppressConsoleLogs(async () => {
-        const enterDuration = 50
-        const leaveDuration = 75
+        let enterDuration = 50
+        let leaveDuration = 75
 
         function Example() {
-          const [show, setShow] = React.useState(false)
+          let [show, setShow] = useState(false)
 
           return (
             <>
@@ -849,7 +841,7 @@ describe('Transitions', () => {
           )
         }
 
-        const timeline = await executeTimeline(<Example />, [
+        let timeline = await executeTimeline(<Example />, [
           // Toggle to show
           ({ getByTestId }) => {
             fireEvent.click(getByTestId('toggle'))
@@ -922,11 +914,11 @@ describe('Transitions', () => {
     it(
       'should not unmount the whole tree when some children are still transitioning',
       suppressConsoleLogs(async () => {
-        const slowLeaveDuration = 150
-        const fastLeaveDuration = 50
+        let slowLeaveDuration = 150
+        let fastLeaveDuration = 50
 
         function Example() {
-          const [show, setShow] = React.useState(true)
+          let [show, setShow] = useState(true)
 
           return (
             <>
@@ -949,7 +941,7 @@ describe('Transitions', () => {
           )
         }
 
-        const timeline = await executeTimeline(<Example />, [
+        let timeline = await executeTimeline(<Example />, [
           // Toggle to hide
           ({ getByTestId }) => {
             fireEvent.click(getByTestId('toggle'))
@@ -1003,11 +995,11 @@ describe('Transitions', () => {
     it(
       'should not unmount the whole tree when some children are still transitioning',
       suppressConsoleLogs(async () => {
-        const slowLeaveDuration = 150
-        const fastLeaveDuration = 50
+        let slowLeaveDuration = 150
+        let fastLeaveDuration = 50
 
         function Example() {
-          const [show, setShow] = React.useState(true)
+          let [show, setShow] = useState(true)
 
           return (
             <>
@@ -1033,7 +1025,7 @@ describe('Transitions', () => {
           )
         }
 
-        const timeline = await executeTimeline(<Example />, [
+        let timeline = await executeTimeline(<Example />, [
           // Toggle to hide
           ({ getByTestId }) => {
             fireEvent.click(getByTestId('toggle'))
@@ -1102,15 +1094,15 @@ describe('Events', () => {
   it(
     'should fire events for all the stages',
     suppressConsoleLogs(async () => {
-      const eventHandler = jest.fn()
-      const enterDuration = 50
-      const leaveDuration = 75
+      let eventHandler = jest.fn()
+      let enterDuration = 50
+      let leaveDuration = 75
 
       function Example() {
-        const [show, setShow] = React.useState(false)
-        const start = React.useRef(Date.now())
+        let [show, setShow] = useState(false)
+        let start = useRef(Date.now())
 
-        React.useLayoutEffect(() => {
+        useLayoutEffect(() => {
           start.current = Date.now()
         }, [])
 
@@ -1144,7 +1136,7 @@ describe('Events', () => {
         )
       }
 
-      const timeline = await executeTimeline(<Example />, [
+      let timeline = await executeTimeline(<Example />, [
         // Toggle to show
         ({ getByTestId }) => {
           fireEvent.click(getByTestId('toggle'))
@@ -1202,11 +1194,11 @@ describe('Events', () => {
         'afterLeave',
       ])
 
-      const enterHookDiff = eventHandler.mock.calls[1][1] - eventHandler.mock.calls[0][1]
+      let enterHookDiff = eventHandler.mock.calls[1][1] - eventHandler.mock.calls[0][1]
       expect(enterHookDiff).toBeGreaterThanOrEqual(enterDuration)
       expect(enterHookDiff).toBeLessThanOrEqual(enterDuration * 2)
 
-      const leaveHookDiff = eventHandler.mock.calls[3][1] - eventHandler.mock.calls[2][1]
+      let leaveHookDiff = eventHandler.mock.calls[3][1] - eventHandler.mock.calls[2][1]
       expect(leaveHookDiff).toBeGreaterThanOrEqual(leaveDuration)
       expect(leaveHookDiff).toBeLessThanOrEqual(leaveDuration * 2)
     })

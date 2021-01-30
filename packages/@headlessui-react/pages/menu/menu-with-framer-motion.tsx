@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu } from '../../src/components/menu/menu'
@@ -69,7 +69,7 @@ export default function Home() {
 }
 
 function NextLink(props: PropsOf<'a'>) {
-  const { href, children, ...rest } = props
+  let { href, children, ...rest } = props
   return (
     <Link href={href}>
       <a {...rest}>{children}</a>

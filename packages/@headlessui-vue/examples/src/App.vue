@@ -87,8 +87,8 @@ export default {
     KeyCaster,
   },
   setup() {
-    const route = useRoute()
-    const sourceCode = computed(() => source[route.path])
+    let route = useRoute()
+    let sourceCode = computed(() => source[route.path])
 
     return { sourceCode }
   },
