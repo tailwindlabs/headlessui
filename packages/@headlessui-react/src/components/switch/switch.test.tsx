@@ -15,7 +15,10 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 jest.mock('../../hooks/use-id')
 
 describe('Safe guards', () => {
-  it.each([['Switch.Label', Switch.Label]])(
+  it.each([
+    ['Switch.Label', Switch.Label],
+    ['Switch.Description', Switch.Description],
+  ])(
     'should error when we are using a <%s /> without a parent <Switch.Group />',
     suppressConsoleLogs((name, Component) => {
       expect(() => render(createElement(Component))).toThrowError(
@@ -114,6 +117,44 @@ describe('Render composition', () => {
     //
     // Thus: Label A should not be part of the "label" in this case
     assertSwitch({ state: SwitchState.Off, label: 'Label B' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch and Switch.Description (before the Switch)', () => {
+    render(
+      <Switch.Group>
+        <Switch.Description>This is an important feature</Switch.Description>
+        <Switch checked={false} onChange={console.log} />
+      </Switch.Group>
+    )
+
+    assertSwitch({ state: SwitchState.Off, description: 'This is an important feature' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch and Switch.Description (after the Switch)', () => {
+    render(
+      <Switch.Group>
+        <Switch checked={false} onChange={console.log} />
+        <Switch.Description>This is an important feature</Switch.Description>
+      </Switch.Group>
+    )
+
+    assertSwitch({ state: SwitchState.Off, description: 'This is an important feature' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch, Switch.Label and Switch.Description', () => {
+    render(
+      <Switch.Group>
+        <Switch.Label>Label A</Switch.Label>
+        <Switch checked={false} onChange={console.log} />
+        <Switch.Description>This is an important feature</Switch.Description>
+      </Switch.Group>
+    )
+
+    assertSwitch({
+      state: SwitchState.Off,
+      label: 'Label A',
+      description: 'This is an important feature',
+    })
   })
 })
 
