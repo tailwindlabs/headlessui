@@ -31,7 +31,7 @@
     "react": ">=16"
   },
   "devDependencies": {
-    "@types/react": "^16.14.2",
+    "@types/react": "^17.0.0",
     "@types/react-dom": "^16.9.10",
     "@popperjs/core": "^2.6.0",
     "@testing-library/react": "^11.2.3",
