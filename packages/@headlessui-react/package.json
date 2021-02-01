@@ -36,7 +36,7 @@
     "@popperjs/core": "^2.6.0",
     "@testing-library/react": "^11.2.3",
     "framer-motion": "^2.9.5",
-    "next": "10.0.5",
+    "next": "10.0.6",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "snapshot-diff": "^0.8.1"
