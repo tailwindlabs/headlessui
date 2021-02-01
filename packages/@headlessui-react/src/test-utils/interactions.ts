@@ -166,8 +166,8 @@ export async function type(events: Partial<KeyboardEvent>[], element = document.
   }
 }
 
-export async function press(event: Partial<KeyboardEvent>) {
-  return type([event])
+export async function press(event: Partial<KeyboardEvent>, element = document.activeElement) {
+  return type([event], element)
 }
 
 export enum MouseButton {
