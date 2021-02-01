@@ -155,17 +155,13 @@ function useNesting(done?: () => void) {
 }
 
 function noop() {}
-let eventNames: (keyof TransitionEvents)[] = [
-  'beforeEnter',
-  'afterEnter',
-  'beforeLeave',
-  'afterLeave',
-]
+let eventNames = ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'] as const
 function ensureEventHooksExist(events: TransitionEvents) {
-  return eventNames.reduce((all, eventName) => {
-    all[eventName] = events[eventName] || noop
-    return all
-  }, {} as Record<keyof TransitionEvents, () => void>)
+  let result = {} as Record<keyof typeof events, () => void>
+  for (let name of eventNames) {
+    result[name] = events[name] ?? noop
+  }
+  return result
 }
 
 function useEvents(events: TransitionEvents) {
