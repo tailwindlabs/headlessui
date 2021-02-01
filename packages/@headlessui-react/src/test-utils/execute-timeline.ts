@@ -130,11 +130,29 @@ executeTimeline.fullTransition = (duration: number) => {
   ]
 }
 
-// Assuming that we run at 60 frames per second
-let frame = 1000 / 60
+let state: {
+  before: number
+  fps: number
+  handle: ReturnType<typeof requestAnimationFrame> | null
+} = {
+  before: Date.now(),
+  fps: 0,
+  handle: null,
+}
 
-function isWithinFrame(actual: number, expected: number, frames = 2) {
-  let buffer = frame * frames
+state.handle = requestAnimationFrame(function loop() {
+  let now = Date.now()
+  state.fps = Math.round(1000 / (now - state.before))
+  state.before = now
+  state.handle = requestAnimationFrame(loop)
+})
+
+afterAll(() => {
+  if (state.handle) cancelAnimationFrame(state.handle)
+})
+
+function isWithinFrame(actual: number, expected: number) {
+  let buffer = state.fps
 
   let min = expected - buffer
   let max = expected + buffer
