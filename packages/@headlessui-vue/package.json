@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@popperjs/core": "^2.5.3",
-    "@testing-library/vue": "^5.1.0",
+    "@testing-library/vue": "^5.6.1",
     "@types/debounce": "^1.2.0",
     "@vue/compiler-sfc": "3.0.1",
     "@vue/test-utils": "^2.0.0-beta.7",
