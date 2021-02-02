@@ -35,7 +35,7 @@
     "@types/react-dom": "^16.9.10",
     "@popperjs/core": "^2.6.0",
     "@testing-library/react": "^11.2.3",
-    "framer-motion": "^2.9.5",
+    "framer-motion": "^3.2.1",
     "next": "10.0.5",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
