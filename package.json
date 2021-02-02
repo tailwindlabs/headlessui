@@ -32,7 +32,7 @@
     "trailingComma": "es5"
   },
   "devDependencies": {
-    "@tailwindcss/ui": "^0.6.2",
+    "@tailwindcss/ui": "^0.7.2",
     "@testing-library/jest-dom": "^5.11.9",
     "@types/node": "^14.14.22",
     "husky": "^4.3.8",
