@@ -190,6 +190,10 @@ export async function click(
       if (!cancelled) {
         fireEvent.mouseDown(element, options)
       }
+
+      // Ensure to trigger a `focus` event if the element is focusable
+      if ((element as HTMLElement)?.matches(focusableSelector)) fireEvent.focus(element, options)
+
       fireEvent.pointerUp(element, options)
       if (!cancelled) {
         fireEvent.mouseUp(element, options)
