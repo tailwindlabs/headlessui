@@ -383,6 +383,51 @@ describe('Rendering composition', () => {
       items.forEach(item => assertMenuItem(item, { tag: 'button' }))
     })
   )
+
+  it(
+    'should mark all the elements between Menu.Items and Menu.Item with role none',
+    suppressConsoleLogs(async () => {
+      render(
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <div className="outer">
+            <Menu.Items>
+              <div className="py-1 inner">
+                <Menu.Item as="button">Item A</Menu.Item>
+                <Menu.Item as="button">Item B</Menu.Item>
+              </div>
+              <div className="py-1 inner">
+                <Menu.Item as="button">Item C</Menu.Item>
+                <Menu.Item>
+                  <div>
+                    <div className="outer">Item D</div>
+                  </div>
+                </Menu.Item>
+              </div>
+              <div className="py-1 inner">
+                <form className="inner">
+                  <Menu.Item as="button">Item E</Menu.Item>
+                </form>
+              </div>
+            </Menu.Items>
+          </div>
+        </Menu>
+      )
+
+      // Open menu
+      await click(getMenuButton())
+
+      expect.hasAssertions()
+
+      document.querySelectorAll('.outer').forEach(element => {
+        expect(element).not.toHaveAttribute('role', 'none')
+      })
+
+      document.querySelectorAll('.inner').forEach(element => {
+        expect(element).toHaveAttribute('role', 'none')
+      })
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {
