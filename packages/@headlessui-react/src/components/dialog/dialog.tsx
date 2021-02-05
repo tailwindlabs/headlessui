@@ -23,6 +23,7 @@ import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
 import { useFocusTrap } from '../../hooks/use-focus-trap'
+import { Portal } from '../../components/portal/portal'
 
 enum DialogStates {
   Open,
@@ -189,15 +190,17 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let passthroughProps = rest
 
   return (
-    <DialogContext.Provider value={contextBag}>
-      {render(
-        { ...passthroughProps, ...propsWeControl },
-        propsBag,
-        DEFAULT_DIALOG_TAG,
-        DialogRenderFeatures,
-        dialogState === DialogStates.Open
-      )}
-    </DialogContext.Provider>
+    <Portal>
+      <DialogContext.Provider value={contextBag}>
+        {render(
+          { ...passthroughProps, ...propsWeControl },
+          propsBag,
+          DEFAULT_DIALOG_TAG,
+          DialogRenderFeatures,
+          dialogState === DialogStates.Open
+        )}
+      </DialogContext.Provider>
+    </Portal>
   )
 }
 
