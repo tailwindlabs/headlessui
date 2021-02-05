@@ -23,6 +23,7 @@ import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
 import { useFocusTrap } from '../../hooks/use-focus-trap'
+import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
 
 enum DialogStates {
@@ -166,7 +167,9 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     return () => window.removeEventListener('keydown', handler)
   }, [close, dialogState])
 
-  useFocusTrap(dialogRef, props.static ? true : dialogState === DialogStates.Open)
+  let enabled = props.static ? true : dialogState === DialogStates.Open
+  useFocusTrap(dialogRef, enabled)
+  useInertOthers(dialogRef, enabled)
 
   let id = `headlessui-dialog-${useId()}`
 
