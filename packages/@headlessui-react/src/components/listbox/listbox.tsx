@@ -49,6 +49,7 @@ interface StateDefinition {
   labelRef: MutableRefObject<HTMLLabelElement | null>
   buttonRef: MutableRefObject<HTMLButtonElement | null>
   optionsRef: MutableRefObject<HTMLUListElement | null>
+  disabled: boolean
   options: { id: string; dataRef: ListboxOptionDataRef }[]
   searchQuery: string
   activeOptionIndex: number | null
@@ -57,6 +58,8 @@ interface StateDefinition {
 enum ActionTypes {
   OpenListbox,
   CloseListbox,
+
+  SetDisabled,
 
   GoToOption,
   Search,
@@ -69,6 +72,7 @@ enum ActionTypes {
 type Actions =
   | { type: ActionTypes.CloseListbox }
   | { type: ActionTypes.OpenListbox }
+  | { type: ActionTypes.SetDisabled; disabled: boolean }
   | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
   | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
   | { type: ActionTypes.Search; value: string }
@@ -82,13 +86,24 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.CloseListbox]: state => ({
-    ...state,
-    activeOptionIndex: null,
-    listboxState: ListboxStates.Closed,
-  }),
-  [ActionTypes.OpenListbox]: state => ({ ...state, listboxState: ListboxStates.Open }),
-  [ActionTypes.GoToOption]: (state, action) => {
+  [ActionTypes.CloseListbox](state) {
+    if (state.disabled) return state
+    if (state.listboxState === ListboxStates.Closed) return state
+    return { ...state, activeOptionIndex: null, listboxState: ListboxStates.Closed }
+  },
+  [ActionTypes.OpenListbox](state) {
+    if (state.disabled) return state
+    if (state.listboxState === ListboxStates.Open) return state
+    return { ...state, listboxState: ListboxStates.Open }
+  },
+  [ActionTypes.SetDisabled](state, action) {
+    if (state.disabled === action.disabled) return state
+    return { ...state, disabled: action.disabled }
+  },
+  [ActionTypes.GoToOption](state, action) {
+    if (state.disabled) return state
+    if (state.listboxState === ListboxStates.Closed) return state
+
     let activeOptionIndex = calculateActiveIndex(action, {
       resolveItems: () => state.options,
       resolveActiveIndex: () => state.activeOptionIndex,
@@ -100,6 +115,9 @@ let reducers: {
     return { ...state, searchQuery: '', activeOptionIndex }
   },
   [ActionTypes.Search]: (state, action) => {
+    if (state.disabled) return state
+    if (state.listboxState === ListboxStates.Closed) return state
+
     let searchQuery = state.searchQuery + action.value
     let match = state.options.findIndex(
       option =>
@@ -110,7 +128,12 @@ let reducers: {
     if (match === -1 || match === state.activeOptionIndex) return { ...state, searchQuery }
     return { ...state, searchQuery, activeOptionIndex: match }
   },
-  [ActionTypes.ClearSearch]: state => ({ ...state, searchQuery: '' }),
+  [ActionTypes.ClearSearch](state) {
+    if (state.disabled) return state
+    if (state.listboxState === ListboxStates.Closed) return state
+    if (state.searchQuery === '') return state
+    return { ...state, searchQuery: '' }
+  },
   [ActionTypes.RegisterOption]: (state, action) => ({
     ...state,
     options: [...state.options, { id: action.id, dataRef: action.dataRef }],
@@ -161,15 +184,17 @@ function stateReducer(state: StateDefinition, action: Actions) {
 let DEFAULT_LISTBOX_TAG = Fragment
 interface ListboxRenderPropArg {
   open: boolean
+  disabled: boolean
 }
 
 export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, TType = string>(
   props: Props<TTag, ListboxRenderPropArg, 'value' | 'onChange'> & {
     value: TType
     onChange(value: TType): void
+    disabled?: boolean
   }
 ) {
-  let { value, onChange, ...passThroughProps } = props
+  let { value, onChange, disabled = false, ...passThroughProps } = props
   let d = useDisposables()
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
@@ -177,6 +202,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
     labelRef: createRef(),
     buttonRef: createRef(),
     optionsRef: createRef(),
+    disabled,
     options: [],
     searchQuery: '',
     activeOptionIndex: null,
@@ -189,6 +215,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   useIsoMorphicEffect(() => {
     propsRef.current.onChange = onChange
   }, [onChange, propsRef])
+  useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
   useEffect(() => {
     function handler(event: MouseEvent) {
@@ -208,8 +235,8 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   }, [listboxState, optionsRef, buttonRef, d, dispatch])
 
   let propsBag = useMemo<ListboxRenderPropArg>(
-    () => ({ open: listboxState === ListboxStates.Open }),
-    [listboxState]
+    () => ({ open: listboxState === ListboxStates.Open, disabled }),
+    [listboxState, disabled]
   )
 
   return (
@@ -224,6 +251,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
 let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
+  disabled: boolean
 }
 type ButtonPropsWeControl =
   | 'id'
@@ -232,6 +260,7 @@ type ButtonPropsWeControl =
   | 'aria-controls'
   | 'aria-expanded'
   | 'aria-labelledby'
+  | 'disabled'
   | 'onKeyDown'
   | 'onClick'
 
@@ -279,7 +308,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-      if (props.disabled) return
       if (state.listboxState === ListboxStates.Open) {
         dispatch({ type: ActionTypes.CloseListbox })
         d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
@@ -289,7 +317,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         d.nextFrame(() => state.optionsRef.current?.focus({ preventScroll: true }))
       }
     },
-    [dispatch, d, state, props.disabled]
+    [dispatch, d, state]
   )
 
   let labelledby = useComputed(() => {
@@ -298,7 +326,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }, [state.labelRef.current, id])
 
   let propsBag = useMemo<ButtonRenderPropArg>(
-    () => ({ open: state.listboxState === ListboxStates.Open }),
+    () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
   let passthroughProps = props
@@ -310,6 +338,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.listboxState === ListboxStates.Open ? true : undefined,
     'aria-labelledby': labelledby,
+    disabled: state.disabled,
     onKeyDown: handleKeyDown,
     onClick: handleClick,
   }
@@ -322,6 +351,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 let DEFAULT_LABEL_TAG = 'label' as const
 interface LabelRenderPropArg {
   open: boolean
+  disabled: boolean
 }
 type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 
@@ -336,7 +366,7 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   ])
 
   let propsBag = useMemo<OptionsRenderPropArg>(
-    () => ({ open: state.listboxState === ListboxStates.Open }),
+    () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
   let propsWeControl = { ref: state.labelRef, id, onClick: handleClick }
