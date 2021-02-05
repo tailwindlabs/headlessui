@@ -423,6 +423,14 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
 
+  useIsoMorphicEffect(() => {
+    if (state.menuState !== MenuStates.Open) return
+    if (!active) return
+    let d = disposables()
+    d.nextFrame(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+    return d.dispose
+  }, [id, active, state.menuState])
+
   let bag = useRef<MenuItemDataRef['current']>({ disabled })
 
   useIsoMorphicEffect(() => {

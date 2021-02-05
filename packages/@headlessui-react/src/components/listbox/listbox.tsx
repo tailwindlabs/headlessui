@@ -537,7 +537,7 @@ function Option<
     let d = disposables()
     d.nextFrame(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     return d.dispose
-  }, [active, state.listboxState])
+  }, [id, active, state.listboxState])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {

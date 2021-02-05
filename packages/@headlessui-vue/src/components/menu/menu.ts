@@ -9,6 +9,7 @@ import {
   nextTick,
   InjectionKey,
   Ref,
+  watchEffect,
 } from 'vue'
 import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
@@ -369,6 +370,12 @@ export let MenuItem = defineComponent({
 
     onMounted(() => api.registerItem(id, dataRef))
     onUnmounted(() => api.unregisterItem(id))
+
+    watchEffect(() => {
+      if (api.menuState.value !== MenuStates.Open) return
+      if (!active.value) return
+      nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+    })
 
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault()
