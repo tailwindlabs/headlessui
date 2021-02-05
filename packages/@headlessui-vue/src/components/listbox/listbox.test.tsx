@@ -108,19 +108,13 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
-            <Listbox v-model="value">
-              {({ open }) => (
-                <>
-                  <ListboxButton>Trigger</ListboxButton>
-                  {open && (
-                    <ListboxOptions>
-                      <ListboxOption value="a">Option A</ListboxOption>
-                      <ListboxOption value="b">Option B</ListboxOption>
-                      <ListboxOption value="c">Option C</ListboxOption>
-                    </ListboxOptions>
-                  )}
-                </>
-              )}
+            <Listbox v-model="value" v-slot="{ open }">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions v-show="open">
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -139,6 +133,47 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-listbox-button-1' },
         })
         assertListbox({ state: ListboxState.Visible })
+      })
+    )
+
+    it(
+      'should be possible to disable a Listbox',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <Listbox v-model="value" disabled>
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        await click(getListboxButton())
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        await press(Keys.Enter, getListboxButton())
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
       })
     )
   })
@@ -168,7 +203,7 @@ describe('Rendering', () => {
         })
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -176,7 +211,7 @@ describe('Rendering', () => {
 
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
         assertListboxLabelLinkedWithListbox()
@@ -204,7 +239,7 @@ describe('Rendering', () => {
 
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
@@ -212,7 +247,7 @@ describe('Rendering', () => {
         await click(getListboxButton())
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
         assertListbox({ state: ListboxState.Visible })
@@ -241,7 +276,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -250,7 +285,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -276,7 +311,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -285,7 +320,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -612,8 +647,8 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
-            <Listbox v-model="value">
-              <ListboxButton disabled>Trigger</ListboxButton>
+            <Listbox v-model="value" disabled>
+              <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
@@ -1112,8 +1147,8 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
-            <Listbox v-model="value">
-              <ListboxButton disabled>Trigger</ListboxButton>
+            <Listbox v-model="value" disabled>
+              <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
@@ -1608,8 +1643,8 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
-            <Listbox v-model="value">
-              <ListboxButton disabled>Trigger</ListboxButton>
+            <Listbox v-model="value" disabled>
+              <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
@@ -1904,8 +1939,8 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: `
-            <Listbox v-model="value">
-              <ListboxButton disabled>Trigger</ListboxButton>
+            <Listbox v-model="value" disabled>
+              <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
@@ -3065,8 +3100,8 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: `
-          <Listbox v-model="value">
-            <ListboxButton disabled>Trigger</ListboxButton>
+          <Listbox v-model="value" disabled>
+            <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="a">Option A</ListboxOption>
               <ListboxOption value="b">Option B</ListboxOption>

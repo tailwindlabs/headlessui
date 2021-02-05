@@ -120,6 +120,44 @@ describe('Rendering', () => {
         assertListbox({ state: ListboxState.Visible })
       })
     )
+
+    it(
+      'should be possible to disable a Listbox',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log} disabled>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        await click(getListboxButton())
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        await press(Keys.Enter, getListboxButton())
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+      })
+    )
   })
 
   describe('Listbox.Label', () => {
@@ -144,7 +182,7 @@ describe('Rendering', () => {
         })
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -152,7 +190,7 @@ describe('Rendering', () => {
 
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
         assertListboxLabelLinkedWithListbox()
@@ -177,7 +215,7 @@ describe('Rendering', () => {
 
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
@@ -185,7 +223,7 @@ describe('Rendering', () => {
         await click(getListboxButton())
         assertListboxLabel({
           attributes: { id: 'headlessui-listbox-label-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
         assertListbox({ state: ListboxState.Visible })
@@ -211,7 +249,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -220,7 +258,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -245,7 +283,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -254,7 +292,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -559,8 +597,8 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with Enter when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
-            <Listbox.Button disabled>Trigger</Listbox.Button>
+          <Listbox value={undefined} onChange={console.log} disabled>
+            <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
               <Listbox.Option value="b">Option B</Listbox.Option>
@@ -1034,8 +1072,8 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with Space when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
-            <Listbox.Button disabled>Trigger</Listbox.Button>
+          <Listbox value={undefined} onChange={console.log} disabled>
+            <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
               <Listbox.Option value="b">Option B</Listbox.Option>
@@ -1506,8 +1544,8 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with ArrowDown when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
-            <Listbox.Button disabled>Trigger</Listbox.Button>
+          <Listbox value={undefined} onChange={console.log} disabled>
+            <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
               <Listbox.Option value="b">Option B</Listbox.Option>
@@ -1781,8 +1819,8 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with ArrowUp and the last option should be active when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
-            <Listbox.Button disabled>Trigger</Listbox.Button>
+          <Listbox value={undefined} onChange={console.log} disabled>
+            <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
               <Listbox.Option value="b">Option B</Listbox.Option>
@@ -2852,8 +2890,8 @@ describe('Mouse interactions', () => {
     'should not be possible to open the listbox on click when the button is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
-          <Listbox.Button disabled>Trigger</Listbox.Button>
+        <Listbox value={undefined} onChange={console.log} disabled>
+          <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a">Option A</Listbox.Option>
             <Listbox.Option value="b">Option B</Listbox.Option>

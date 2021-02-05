@@ -38,6 +38,7 @@ type StateDefinition = {
   labelRef: Ref<HTMLLabelElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
   optionsRef: Ref<HTMLDivElement | null>
+  disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ListboxOptionDataRef }[]>
   searchQuery: Ref<string>
   activeOptionIndex: Ref<number | null>
@@ -74,10 +75,11 @@ export let Listbox = defineComponent({
   emits: ['update:modelValue'],
   props: {
     as: { type: [Object, String], default: 'template' },
+    disabled: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean], default: null },
   },
   setup(props, { slots, attrs, emit }) {
-    let { modelValue, ...passThroughProps } = props
+    let { modelValue, disabled, ...passThroughProps } = props
     let listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
     let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
@@ -94,15 +96,25 @@ export let Listbox = defineComponent({
       labelRef,
       buttonRef,
       optionsRef,
+      disabled,
       options,
       searchQuery,
       activeOptionIndex,
-      closeListbox: () => {
+      closeListbox() {
+        if (disabled) return
+        if (listboxState.value === ListboxStates.Closed) return
         listboxState.value = ListboxStates.Closed
         activeOptionIndex.value = null
       },
-      openListbox: () => (listboxState.value = ListboxStates.Open),
+      openListbox() {
+        if (disabled) return
+        if (listboxState.value === ListboxStates.Open) return
+        listboxState.value = ListboxStates.Open
+      },
       goToOption(focus: Focus, id?: string) {
+        if (disabled) return
+        if (listboxState.value === ListboxStates.Closed) return
+
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
@@ -120,6 +132,9 @@ export let Listbox = defineComponent({
         activeOptionIndex.value = nextActiveOptionIndex
       },
       search(value: string) {
+        if (disabled) return
+        if (listboxState.value === ListboxStates.Closed) return
+
         searchQuery.value += value
 
         let match = options.value.findIndex(
@@ -131,6 +146,10 @@ export let Listbox = defineComponent({
         activeOptionIndex.value = match
       },
       clearSearch() {
+        if (disabled) return
+        if (listboxState.value === ListboxStates.Closed) return
+        if (searchQuery.value === '') return
+
         searchQuery.value = ''
       },
       registerOption(id: string, dataRef: ListboxOptionDataRef) {
@@ -154,6 +173,7 @@ export let Listbox = defineComponent({
         })()
       },
       select(value: unknown) {
+        if (disabled) return
         emit('update:modelValue', value)
       },
     }
@@ -179,7 +199,7 @@ export let Listbox = defineComponent({
     provide(ListboxContext, api)
 
     return () => {
-      let slot = { open: listboxState.value === ListboxStates.Open }
+      let slot = { open: listboxState.value === ListboxStates.Open, disabled }
       return render({ props: passThroughProps, slot, slots, attrs })
     }
   },
@@ -193,7 +213,7 @@ export let ListboxLabel = defineComponent({
   render() {
     let api = useListboxContext('ListboxLabel')
 
-    let slot = { open: api.listboxState.value === ListboxStates.Open }
+    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled }
     let propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
 
     return render({
@@ -222,13 +242,12 @@ export let ListboxLabel = defineComponent({
 export let ListboxButton = defineComponent({
   name: 'ListboxButton',
   props: {
-    disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
   },
   render() {
     let api = useListboxContext('ListboxButton')
 
-    let slot = { open: api.listboxState.value === ListboxStates.Open }
+    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled }
     let propsWeControl = {
       ref: 'el',
       id: this.id,
@@ -239,6 +258,7 @@ export let ListboxButton = defineComponent({
       'aria-labelledby': api.labelRef.value
         ? [api.labelRef.value.id, this.id].join(' ')
         : undefined,
+      disabled: api.disabled,
       onKeyDown: this.handleKeyDown,
       onClick: this.handleClick,
     }
@@ -250,7 +270,7 @@ export let ListboxButton = defineComponent({
       slots: this.$slots,
     })
   },
-  setup(props) {
+  setup() {
     let api = useListboxContext('ListboxButton')
     let id = `headlessui-listbox-button-${useId()}`
 
@@ -281,7 +301,7 @@ export let ListboxButton = defineComponent({
     }
 
     function handleClick(event: MouseEvent) {
-      if (props.disabled) return
+      if (api.disabled) return
       if (api.listboxState.value === ListboxStates.Open) {
         api.closeListbox()
         nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
