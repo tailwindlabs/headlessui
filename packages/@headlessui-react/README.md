@@ -328,17 +328,21 @@ function MyComponent({ isShowing }) {
 
 ##### Props
 
-| Prop        | Type                                  | Description                                                                           |
-| ----------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
-| `as`        | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition.Child` itself.         |
-| `appear`    | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
-| `unmount`   | Boolean _(Default: `true`)_           | Whether the element should be `unmounted` or `hidden` based on the show state.        |
-| `enter`     | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
-| `enterFrom` | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
-| `enterTo`   | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
-| `leave`     | String _(Default: '')_                | Classes to add to the transitioning element during the entire leave phase.            |
-| `leaveFrom` | String _(Default: '')_                | Classes to add to the transitioning element before the leave phase starts.            |
-| `leaveTo`   | String _(Default: '')_                | Classes to add to the transitioning element immediately after the leave phase starts. |
+| Prop          | Type                                  | Description                                                                           |
+| ------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
+| `as`          | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition.Child` itself.         |
+| `appear`      | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
+| `unmount`     | Boolean _(Default: `true`)_           | Whether the element should be `unmounted` or `hidden` based on the show state.        |
+| `enter`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
+| `enterFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
+| `enterTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
+| `leave`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire leave phase.            |
+| `leaveFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the leave phase starts.            |
+| `leaveTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the leave phase starts. |
+| `beforeEnter` | Function                              | Callback which is called before we start the enter transition.                        |
+| `afterEnter`  | Function                              | Callback which is called after we finished the enter transition.                      |
+| `beforeLeave` | Function                              | Callback which is called before we start the leave transition.                        |
+| `afterLeave`  | Function                              | Callback which is called after we finished the leave transition.                      |
 
 ##### Render prop arguments
 
@@ -1150,14 +1154,16 @@ function MyListbox() {
 | Prop       | Type                | Default                                 | Description                                              |
 | ---------- | ------------------- | --------------------------------------- | -------------------------------------------------------- |
 | `as`       | String \| Component | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
+| `disabled` | Boolean             | `false`                                 | Enable/Disable the `Listbox` component.                  |
 | `value`    | `T`                 |                                         | The selected value.                                      |
 | `onChange` | `(value: T): void`  |                                         | The function to call when a new option is selected.      |
 
 ##### Render prop object
 
-| Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
-| `open` | Boolean | Whether or not the listbox is open. |
+| Prop       | Type    | Description                             |
+| ---------- | ------- | --------------------------------------- |
+| `open`     | Boolean | Whether or not the listbox is open.     |
+| `disabled` | Boolean | Whether or not the listbox is disabled. |
 
 #### Listbox.Button
 
@@ -1180,9 +1186,10 @@ function MyListbox() {
 
 ##### Render prop object
 
-| Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
-| `open` | Boolean | Whether or not the listbox is open. |
+| Prop       | Type    | Description                             |
+| ---------- | ------- | --------------------------------------- |
+| `open`     | Boolean | Whether or not the listbox is open.     |
+| `disabled` | Boolean | Whether or not the listbox is disabled. |
 
 #### Listbox.Label
 
@@ -1195,6 +1202,13 @@ function MyListbox() {
 | Prop | Type                | Default | Description                                                    |
 | ---- | ------------------- | ------- | -------------------------------------------------------------- |
 | `as` | String \| Component | `label` | The element or component the `Listbox.Label` should render as. |
+
+##### Render prop object
+
+| Prop       | Type    | Description                             |
+| ---------- | ------- | --------------------------------------- |
+| `open`     | Boolean | Whether or not the listbox is open.     |
+| `disabled` | Boolean | Whether or not the listbox is disabled. |
 
 #### Listbox.Options
 
