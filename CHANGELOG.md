@@ -31,12 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add Transition events (`beforeEnter`, `afterEnter`, `beforeLeave` and `afterLeave`) ([#57](https://github.com/tailwindlabs/headlessui/pull/57))
 - Add render features + render strategy (`static` and `unmount={true | false}`) ([#106](https://github.com/tailwindlabs/headlessui/pull/106))
-    - Also changes the API of Transition component.
-      - We will now always render a `div` by default (unless you change this using the `as={...}` prop).
-      - The render function prop doesn't expose a `ref` anymore.
-      - Adds `unmount` prop to the `Transition` and `Transition.Child` components.
 - Add displayName to all contexts ([#175](https://github.com/tailwindlabs/headlessui/pull/175))
 - Add `disabled` prop to `Listbox` itself, instead of the `Listbox.Button` ([#229](https://github.com/tailwindlabs/headlessui/pull/229))
+
+### Changes
+
+- Changes the API of the Transition component.
+  - We will now always render a `div` by default (unless you change this using the `as={...}` prop).
+  - The render function prop doesn't expose a `ref` anymore.
+  - Adds `unmount` prop to the `Transition` and `Transition.Child` components.
     
 ## [@headlessui/vue@v0.3.0] - 2021-02-06
 
