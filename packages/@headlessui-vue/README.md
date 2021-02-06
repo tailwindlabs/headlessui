@@ -975,16 +975,18 @@ export default {
 
 ##### Props
 
-| Prop      | Type                | Default                           | Description                                              |
-| --------- | ------------------- | --------------------------------- | -------------------------------------------------------- |
-| `as`      | String \| Component | `template` _(no wrapper element_) | The element or component the `Listbox` should render as. |
-| `v-model` | `T`                 |                                   | The selected value.                                      |
+| Prop       | Type                | Default                           | Description                                              |
+| ---------- | ------------------- | --------------------------------- | -------------------------------------------------------- |
+| `as`       | String \| Component | `template` _(no wrapper element_) | The element or component the `Listbox` should render as. |
+| `v-model`  | `T`                 |                                   | The selected value.                                      |
+| `disabled` | Boolean             | `false`                           | Enable/Disable the `Listbox` component.                  |
 
 ##### Slot props
 
-| Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
-| `open` | Boolean | Whether or not the listbox is open. |
+| Prop       | Type    | Description                             |
+| ---------- | ------- | --------------------------------------- |
+| `open`     | Boolean | Whether or not the listbox is open.     |
+| `disabled` | Boolean | Whether or not the listbox is disabled. |
 
 #### ListboxButton
 
@@ -1003,9 +1005,10 @@ export default {
 
 ##### Slot props
 
-| Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
-| `open` | Boolean | Whether or not the listbox is open. |
+| Prop       | Type    | Description                             |
+| ---------- | ------- | --------------------------------------- |
+| `open`     | Boolean | Whether or not the listbox is open.     |
+| `disabled` | Boolean | Whether or not the listbox is disabled. |
 
 #### ListboxLabel
 
@@ -1018,6 +1021,13 @@ export default {
 | Prop | Type                | Default | Description                                                   |
 | ---- | ------------------- | ------- | ------------------------------------------------------------- |
 | `as` | String \| Component | `label` | The element or component the `ListboxLabel` should render as. |
+
+##### Slot props
+
+| Prop       | Type    | Description                             |
+| ---------- | ------- | --------------------------------------- |
+| `open`     | Boolean | Whether or not the listbox is open.     |
+| `disabled` | Boolean | Whether or not the listbox is disabled. |
 
 #### ListboxOptions
 
