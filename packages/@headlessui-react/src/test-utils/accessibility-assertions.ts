@@ -781,7 +781,7 @@ export function assertDialog(
         assertHidden(dialog)
 
         expect(dialog).toHaveAttribute('role', 'dialog')
-        expect(dialog).toHaveAttribute('aria-modal', 'true')
+        expect(dialog).not.toHaveAttribute('aria-modal', 'true')
 
         if (options.textContent) expect(dialog).toHaveTextContent(options.textContent)
 

@@ -203,7 +203,7 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     ref: dialogRef,
     id,
     role: 'dialog',
-    'aria-modal': true,
+    'aria-modal': dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleElement?.id,
     'aria-describedby': state.descriptionElement?.id,
   }
