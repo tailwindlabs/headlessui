@@ -167,6 +167,23 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     return () => window.removeEventListener('keydown', handler)
   }, [close, dialogState])
 
+  // Scroll lock
+  useEffect(() => {
+    if (dialogState !== DialogStates.Open) return
+
+    let overflow = document.documentElement.style.overflow
+    let paddingRight = document.documentElement.style.paddingRight
+
+    let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+
+    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.paddingRight = `${scrollbarWidth}px`
+    return () => {
+      document.documentElement.style.overflow = overflow
+      document.documentElement.style.paddingRight = paddingRight
+    }
+  }, [dialogState])
+
   let enabled = props.static ? true : dialogState === DialogStates.Open
   useFocusTrap(dialogRef, enabled)
   useInertOthers(dialogRef, enabled)
