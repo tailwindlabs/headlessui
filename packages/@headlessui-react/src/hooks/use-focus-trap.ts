@@ -40,7 +40,9 @@ export function useFocusTrap<TElement extends HTMLElement>(
   container: MutableRefObject<TElement | null>,
   enabled: boolean = true
 ) {
-  let restoreElement = useRef<HTMLElement | null>(null)
+  let restoreElement = useRef<HTMLElement | null>(
+    typeof window !== 'undefined' ? (document.activeElement as HTMLElement) : null
+  )
   let previousActiveElement = useRef<HTMLElement | null>(null)
   let mounted = useRef(false)
 
@@ -54,7 +56,11 @@ export function useFocusTrap<TElement extends HTMLElement>(
     if (!enabled) return
     mounted.current = true
 
-    restoreElement.current = document.activeElement as HTMLElement
+    let activeElement = document.activeElement as HTMLElement
+
+    if (container.current?.contains(activeElement)) return // Already focused within Dialog
+
+    restoreElement.current = activeElement
     let focusableElements = getFocusableElements()
 
     if (focusableElements.length <= 0) {
