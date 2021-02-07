@@ -12,7 +12,7 @@ import React, {
   ElementType,
   MutableRefObject,
 } from 'react'
-import { Props, Expand } from 'types'
+import { Props, Expand } from '../../types'
 
 import { useId } from '../../hooks/use-id'
 import { useIsInitialRender } from '../../hooks/use-is-initial-render'
