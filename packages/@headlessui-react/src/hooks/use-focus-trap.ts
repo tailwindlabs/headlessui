@@ -38,7 +38,8 @@ function focus(element: HTMLElement | null) {
 
 export function useFocusTrap<TElement extends HTMLElement>(
   container: MutableRefObject<TElement | null>,
-  enabled: boolean = true
+  enabled: boolean = true,
+  options: { initialFocus?: MutableRefObject<HTMLElement> } = {}
 ) {
   let restoreElement = useRef<HTMLElement | null>(
     typeof window !== 'undefined' ? (document.activeElement as HTMLElement) : null
@@ -79,7 +80,7 @@ export function useFocusTrap<TElement extends HTMLElement>(
       }
     }
 
-    tryFocus(focusableElements[0])
+    tryFocus(options.initialFocus?.current ?? focusableElements[0])
 
     return () => {
       mounted.current = false
@@ -87,7 +88,7 @@ export function useFocusTrap<TElement extends HTMLElement>(
       restoreElement.current = null
       previousActiveElement.current = null
     }
-  }, [enabled, mounted])
+  }, [enabled, mounted, options.initialFocus])
 
   // Handle Tab & Shift+Tab keyboard events
   useIsoMorphicEffect(() => {

@@ -13,6 +13,7 @@ import React, {
   useEffect,
   useRef,
   ContextType,
+  MutableRefObject,
 } from 'react'
 
 import { Props } from '../../types'
@@ -104,9 +105,10 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     PropsForFeatures<typeof DialogRenderFeatures> & {
       open: boolean
       onClose(value: boolean): void
+      initialFocus?: MutableRefObject<HTMLElement>
     }
 ) {
-  let { open, onClose, ...rest } = props
+  let { open, onClose, initialFocus, ...rest } = props
 
   let dialogRef = useRef<HTMLDivElement | null>(null)
 
@@ -185,7 +187,7 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   }, [dialogState])
 
   let enabled = props.static ? true : dialogState === DialogStates.Open
-  useFocusTrap(dialogRef, enabled)
+  useFocusTrap(dialogRef, enabled, { initialFocus })
   useInertOthers(dialogRef, enabled)
 
   let id = `headlessui-dialog-${useId()}`
