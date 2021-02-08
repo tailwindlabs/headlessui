@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Added
+
+- Add `Disclosure`, `Disclosure.Button` and `Disclosure.Panel` components ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Dialog`, `Dialog.Overlay`, `Dialog.Tile` and `Dialog.Description` components ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Portal` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Switch.Description` component, which adds the `aria-describedby` to the actual Switch ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `FocusTrap` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Flyout` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 
 ## [Unreleased - Vue]
 
