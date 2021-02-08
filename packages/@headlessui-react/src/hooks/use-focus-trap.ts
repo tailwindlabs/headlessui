@@ -111,15 +111,20 @@ export function useFocusTrap<TElement extends HTMLElement>(
       let focusableElements = getFocusableElements()
       let total = focusableElements.length
 
+      let lastFocusedElementIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
       function focusNext(offset = 0) {
         let currentIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
-        let next = focusableElements[(currentIdx + total + direction + offset) % total]
+        let nextIdx = (currentIdx + total + direction + offset) % total
+
+        let next = focusableElements[nextIdx]
 
         focus(next)
 
         // Focusing an element in the DOM that is { display: 'none' } to the user will silently fail.
-        if (next !== document.activeElement) focusNext(offset + direction)
-        else previousActiveElement.current = next
+        if (next !== document.activeElement) {
+          if (lastFocusedElementIdx === nextIdx) return // We couldn't focus, but we already looped around. Skipping more loops.
+          focusNext(offset + direction)
+        } else previousActiveElement.current = next
       }
 
       focusNext()
