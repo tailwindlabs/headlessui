@@ -29,15 +29,24 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     root.setAttribute('id', 'headlessui-portal-root')
     return document.body.appendChild(root)
   })
+  let [element] = useState<HTMLDivElement | null>(() =>
+    typeof window === 'undefined' ? null : document.createElement('div')
+  )
 
   useIsoMorphicEffect(() => {
+    if (!target) return
+    if (!element) return
+
+    target.appendChild(element)
+
     return () => {
-      // This happens *right* before we actually unmount. So if we have 1 left,
-      // it means that we will have 0 left after the actual unmount.
       if (!target) return
-      if (target.childNodes.length <= 1) document.body.removeChild(target)
+      if (!element) return
+
+      target.removeChild(element)
+      if (target.childNodes.length <= 0) document.body.removeChild(target)
     }
   }, [target])
 
-  return !target ? null : createPortal(render(props, {}, DEFAULT_PORTAL_TAG), target)
+  return !target || !element ? null : createPortal(render(props, {}, DEFAULT_PORTAL_TAG), element)
 }
