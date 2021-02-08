@@ -11,6 +11,7 @@ import {
   assertDialogTitle,
   getDialog,
   getDialogOverlay,
+  assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
 import { Props } from '../../types'
@@ -193,6 +194,42 @@ describe('Rendering', () => {
 
       assertDialog({ state: DialogState.InvisibleHidden })
     })
+
+    it(
+      'should add a scroll lock to the html tag',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+                Trigger
+              </button>
+
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                <input id="a" type="text" />
+                <input id="b" type="text" />
+                <input id="c" type="text" />
+              </Dialog>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        // No overflow yet
+        expect(document.documentElement.style.overflow).toBe('')
+
+        let btn = document.getElementById('trigger')
+
+        // Open the dialog
+        await click(btn)
+
+        // Expect overflow
+        expect(document.documentElement.style.overflow).toBe('hidden')
+      })
+    )
   })
 
   describe('Dialog.Overlay', () => {

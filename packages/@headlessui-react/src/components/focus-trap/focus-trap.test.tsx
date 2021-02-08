@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { render } from '@testing-library/react'
 
 import { FocusTrap } from './focus-trap'
@@ -14,6 +14,52 @@ it('should focus the first focusable element inside the FocusTrap', () => {
   )
 
   assertActiveElement(getByText('Trigger'))
+})
+
+it('should focus the autoFocus element inside the FocusTrap if that exists', () => {
+  render(
+    <FocusTrap>
+      <input id="a" type="text" />
+      <input id="b" type="text" autoFocus />
+      <input id="c" type="text" />
+    </FocusTrap>
+  )
+
+  assertActiveElement(document.getElementById('b'))
+})
+
+it('should focus the initialFocus element inside the FocusTrap if that exists', () => {
+  function Example() {
+    let initialFocusRef = useRef<HTMLInputElement | null>(null)
+
+    return (
+      <FocusTrap initialFocus={initialFocusRef}>
+        <input id="a" type="text" />
+        <input id="b" type="text" />
+        <input id="c" type="text" ref={initialFocusRef} />
+      </FocusTrap>
+    )
+  }
+  render(<Example />)
+
+  assertActiveElement(document.getElementById('c'))
+})
+
+it('should focus the initialFocus element inside the FocusTrap even if another element has autoFocus', () => {
+  function Example() {
+    let initialFocusRef = useRef<HTMLInputElement | null>(null)
+
+    return (
+      <FocusTrap initialFocus={initialFocusRef}>
+        <input id="a" type="text" />
+        <input id="b" type="text" autoFocus />
+        <input id="c" type="text" ref={initialFocusRef} />
+      </FocusTrap>
+    )
+  }
+  render(<Example />)
+
+  assertActiveElement(document.getElementById('c'))
 })
 
 it(

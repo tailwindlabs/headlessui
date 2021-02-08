@@ -105,7 +105,7 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     PropsForFeatures<typeof DialogRenderFeatures> & {
       open: boolean
       onClose(value: boolean): void
-      initialFocus?: MutableRefObject<HTMLElement>
+      initialFocus?: MutableRefObject<HTMLElement | null>
     }
 ) {
   let { open, onClose, initialFocus, ...rest } = props

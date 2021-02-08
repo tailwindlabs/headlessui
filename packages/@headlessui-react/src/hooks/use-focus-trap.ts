@@ -39,7 +39,7 @@ function focus(element: HTMLElement | null) {
 export function useFocusTrap<TElement extends HTMLElement>(
   container: MutableRefObject<TElement | null>,
   enabled: boolean = true,
-  options: { initialFocus?: MutableRefObject<HTMLElement> } = {}
+  options: { initialFocus?: MutableRefObject<HTMLElement | null> } = {}
 ) {
   let restoreElement = useRef<HTMLElement | null>(
     typeof window !== 'undefined' ? (document.activeElement as HTMLElement) : null
@@ -59,7 +59,13 @@ export function useFocusTrap<TElement extends HTMLElement>(
 
     let activeElement = document.activeElement as HTMLElement
 
-    if (container.current?.contains(activeElement)) return // Already focused within Dialog
+    if (options.initialFocus?.current) {
+      if (options.initialFocus?.current === activeElement) {
+        return // Initial focus ref is already the active element
+      }
+    } else if (container.current?.contains(activeElement)) {
+      return // Already focused within Dialog
+    }
 
     restoreElement.current = activeElement
     let focusableElements = getFocusableElements()
