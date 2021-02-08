@@ -100,17 +100,21 @@ type DialogPropsWeControl = 'id' | 'role' | 'aria-modal' | 'aria-describedby' | 
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
-export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
+let DialogRoot = forwardRefWithAs(function Dialog<
+  TTag extends ElementType = typeof DEFAULT_DIALOG_TAG
+>(
   props: Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
     PropsForFeatures<typeof DialogRenderFeatures> & {
       open: boolean
       onClose(value: boolean): void
       initialFocus?: MutableRefObject<HTMLElement | null>
-    }
+    },
+  ref: Ref<HTMLDivElement>
 ) {
   let { open, onClose, initialFocus, ...rest } = props
 
-  let dialogRef = useRef<HTMLDivElement | null>(null)
+  let internalDialogRef = useRef<HTMLDivElement | null>(null)
+  let dialogRef = useSyncRefs(internalDialogRef, ref)
 
   // Validations
   let hasOpen = props.hasOwnProperty('open')
@@ -187,8 +191,8 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   }, [dialogState])
 
   let enabled = props.static ? true : dialogState === DialogStates.Open
-  useFocusTrap(dialogRef, enabled, { initialFocus })
-  useInertOthers(dialogRef, enabled)
+  useFocusTrap(internalDialogRef, enabled, { initialFocus })
+  useInertOthers(internalDialogRef, enabled)
 
   let id = `headlessui-dialog-${useId()}`
 
@@ -224,7 +228,7 @@ export function Dialog<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
       </DialogContext.Provider>
     </Portal>
   )
-}
+})
 
 // ---
 
@@ -318,6 +322,4 @@ function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
 
 // ---
 
-Dialog.Overlay = Overlay
-Dialog.Title = Title
-Dialog.Description = Description
+export let Dialog = Object.assign(DialogRoot, { Overlay, Title, Description })

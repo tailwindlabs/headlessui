@@ -6,7 +6,7 @@ export function useSyncRefs<TType>(
   return useCallback(
     (value: TType) => {
       refs.forEach(ref => {
-        if (ref === null) return
+        if (ref == null) return
         if (typeof ref === 'function') return ref(value)
         ref.current = value
       })

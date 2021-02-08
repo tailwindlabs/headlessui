@@ -11,7 +11,6 @@ import {
   assertDialogTitle,
   getDialog,
   getDialogOverlay,
-  assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
 import { Props } from '../../types'
