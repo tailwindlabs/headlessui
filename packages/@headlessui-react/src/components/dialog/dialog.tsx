@@ -190,6 +190,22 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     }
   }, [dialogState])
 
+  // Trigger close when the FocusTrap gets hidden
+  useEffect(() => {
+    if (dialogState !== DialogStates.Open) return
+    if (!internalDialogRef.current) return
+
+    let observer = new IntersectionObserver(entries => {
+      for (let entry of entries) {
+        if (!entry.isIntersecting) close()
+      }
+    })
+
+    observer.observe(internalDialogRef.current)
+
+    return () => observer.disconnect()
+  }, [dialogState, internalDialogRef, close])
+
   let enabled = props.static ? true : dialogState === DialogStates.Open
   useFocusTrap(internalDialogRef, enabled, { initialFocus })
   useInertOthers(internalDialogRef, enabled)

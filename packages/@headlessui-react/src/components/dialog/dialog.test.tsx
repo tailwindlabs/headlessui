@@ -17,6 +17,12 @@ import { Props } from '../../types'
 
 jest.mock('../../hooks/use-id')
 
+// @ts-expect-error
+global.IntersectionObserver = class FakeIntersectionObserver {
+  observe() {}
+  disconnect() {}
+}
+
 afterAll(() => jest.restoreAllMocks())
 
 function TabSentinel(props: Props<'div'>) {
