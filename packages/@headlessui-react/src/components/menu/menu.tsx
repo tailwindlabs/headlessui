@@ -185,7 +185,9 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     return () => window.removeEventListener('mousedown', handler)
   }, [menuState, itemsRef, buttonRef, dispatch])
 
-  let propsBag = useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
+  let propsBag = useMemo<MenuRenderPropArg>(() => ({ open: menuState === MenuStates.Open }), [
+    menuState,
+  ])
 
   return (
     <MenuContext.Provider value={reducerBag}>
@@ -264,7 +266,10 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     [dispatch, d, state, props.disabled]
   )
 
-  let propsBag = useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
+  let propsBag = useMemo<ButtonRenderPropArg>(
+    () => ({ open: state.menuState === MenuStates.Open }),
+    [state]
+  )
   let passthroughProps = props
   let propsWeControl = {
     ref: buttonRef,
@@ -387,7 +392,10 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     [dispatch, searchDisposables, state]
   )
 
-  let propsBag = useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
+  let propsBag = useMemo<ItemsRenderPropArg>(
+    () => ({ open: state.menuState === MenuStates.Open }),
+    [state]
+  )
   let propsWeControl = {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
@@ -491,7 +499,7 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  let propsBag = useMemo(() => ({ active, disabled }), [active, disabled])
+  let propsBag = useMemo<ItemRenderPropArg>(() => ({ active, disabled }), [active, disabled])
   let propsWeControl = {
     id,
     role: 'menuitem',

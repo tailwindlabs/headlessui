@@ -596,7 +596,11 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  let propsBag = useMemo(() => ({ active, selected, disabled }), [active, selected, disabled])
+  let propsBag = useMemo<OptionRenderPropArg>(() => ({ active, selected, disabled }), [
+    active,
+    selected,
+    disabled,
+  ])
   let propsWeControl = {
     id,
     role: 'option',
