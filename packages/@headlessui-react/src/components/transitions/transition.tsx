@@ -12,7 +12,7 @@ import React, {
   ElementType,
   MutableRefObject,
 } from 'react'
-import { Props, Expand } from '../../types'
+import { Props } from '../../types'
 
 import { useId } from '../../hooks/use-id'
 import { useIsInitialRender } from '../../hooks/use-is-initial-render'
@@ -201,8 +201,10 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     leave,
     leaveFrom,
     leaveTo,
+
+    // @ts-expect-error
     ...rest
-  } = props as Expand<typeof props>
+  } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
   let [state, setState] = useState(TreeStates.Visible)
   let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
@@ -331,7 +333,8 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
 export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
   props: TransitionChildProps<TTag> & { show: boolean; appear?: boolean }
 ) {
-  let { show, appear = false, unmount, ...passthroughProps } = props as Expand<typeof props>
+  // @ts-expect-error
+  let { show, appear = false, unmount, ...passthroughProps } = props as typeof props
 
   if (![true, false].includes(show)) {
     throw new Error('A <Transition /> is used but it is missing a `show={true | false}` prop.')

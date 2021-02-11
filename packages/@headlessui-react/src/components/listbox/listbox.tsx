@@ -365,7 +365,7 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     state.buttonRef,
   ])
 
-  let propsBag = useMemo<OptionsRenderPropArg>(
+  let propsBag = useMemo<LabelRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )

@@ -88,7 +88,7 @@ export function render<TFeature extends Features, TTag extends ElementType, TBag
 }
 
 function _render<TTag extends ElementType, TBag>(
-  props: Expand<Props<TTag, TBag> & { ref?: unknown }>,
+  props: Props<TTag, TBag> & { ref?: unknown },
   bag: TBag,
   tag: ElementType
 ) {
