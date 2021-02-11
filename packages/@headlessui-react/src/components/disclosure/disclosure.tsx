@@ -69,10 +69,22 @@ let reducers: {
       [DisclosureStates.Closed]: DisclosureStates.Open,
     }),
   }),
-  [ActionTypes.LinkPanel]: state => ({ ...state, linkedPanel: true }),
-  [ActionTypes.UnlinkPanel]: state => ({ ...state, linkedPanel: false }),
-  [ActionTypes.SetButtonId]: (state, action) => ({ ...state, buttonId: action.buttonId }),
-  [ActionTypes.SetPanelId]: (state, action) => ({ ...state, panelId: action.panelId }),
+  [ActionTypes.LinkPanel](state) {
+    if (state.linkedPanel === true) return state
+    return { ...state, linkedPanel: true }
+  },
+  [ActionTypes.UnlinkPanel](state) {
+    if (state.linkedPanel === false) return state
+    return { ...state, linkedPanel: false }
+  },
+  [ActionTypes.SetButtonId](state, action) {
+    if (state.buttonId === action.buttonId) return state
+    return { ...state, buttonId: action.buttonId }
+  },
+  [ActionTypes.SetPanelId](state, action) {
+    if (state.panelId === action.panelId) return state
+    return { ...state, panelId: action.panelId }
+  },
 }
 
 let DisclosureContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
