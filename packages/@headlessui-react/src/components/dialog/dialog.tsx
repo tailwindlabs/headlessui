@@ -224,10 +224,9 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     [dialogState, state, close, setTitle, setDescription]
   )
 
-  let propsBag = useMemo<DialogRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open, close }),
-    [dialogState, close]
-  )
+  let propsBag = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
+    dialogState,
+  ])
   let propsWeControl = {
     ref: dialogRef,
     id,
