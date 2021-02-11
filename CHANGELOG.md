@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-### Fixes
-
-- Fix incorrect `types` path ([d557d50](https://github.com/tailwindlabs/headlessui/commit/d557d5013968f7bb9877f190b682318704043905))
-- Fix TypeScript render related types ([bb68793](https://github.com/tailwindlabs/headlessui/commit/bb68793f08a57833095a38519b639a744076dc69))
+- Nothing yet!
 
 ## [Unreleased - Vue]
 
 - Nothing yet!
+
+## [@headlessui/react@v0.3.1] - 2021-02-11
+
+### Fixes
+
+- Fix incorrect `types` path ([d557d50](https://github.com/tailwindlabs/headlessui/commit/d557d5013968f7bb9877f190b682318704043905))
+- Fix TypeScript render related types ([bb68793](https://github.com/tailwindlabs/headlessui/commit/bb68793f08a57833095a38519b639a744076dc69))
 
 ## [@headlessui/react@v0.3.0] - 2021-02-06
 
@@ -43,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - We will now always render a `div` by default (unless you change this using the `as={...}` prop).
   - The render function prop doesn't expose a `ref` anymore.
   - Adds `unmount` prop to the `Transition` and `Transition.Child` components.
-    
+
 ## [@headlessui/vue@v0.3.0] - 2021-02-06
 
 ### Fixes
@@ -102,8 +106,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.0...HEAD
+[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.1...HEAD
 [unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.0...HEAD
+[@headlessui/react@v0.3.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.0...@headlessui/react@v0.3.1
 [@headlessui/react@v0.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.2.0...@headlessui/react@v0.3.0
 [@headlessui/vue@v0.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.2.0...@headlessui/vue@v0.3.0
 [@headlessui/react@v0.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.1.3...@headlessui/react@v0.2.0
