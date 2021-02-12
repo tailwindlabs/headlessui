@@ -11,6 +11,7 @@ it('should expose the correct components', () => {
     'FocusTrap',
     'Listbox',
     'Menu',
+    'Popover',
     'Portal',
     'Switch',
     'Transition',
