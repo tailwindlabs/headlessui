@@ -989,6 +989,16 @@ export function assertActiveElement(element: HTMLElement | null) {
   }
 }
 
+export function assertContainsActiveElement(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+    expect(element.contains(document.activeElement)).toBe(true)
+  } catch (err) {
+    Error.captureStackTrace(err, assertContainsActiveElement)
+    throw err
+  }
+}
+
 // ---
 
 export function assertHidden(element: HTMLElement | null) {
@@ -1013,4 +1023,21 @@ export function assertVisible(element: HTMLElement | null) {
     Error.captureStackTrace(err, assertVisible)
     throw err
   }
+}
+
+// ---
+
+export function getByText(text: string): HTMLElement | null {
+  let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, {
+    acceptNode(node: HTMLElement) {
+      if (node.children.length > 0) return NodeFilter.FILTER_SKIP
+      return NodeFilter.FILTER_ACCEPT
+    },
+  })
+
+  while (walker.nextNode()) {
+    if (walker.currentNode.textContent === text) return walker.currentNode as HTMLElement
+  }
+
+  return null
 }
