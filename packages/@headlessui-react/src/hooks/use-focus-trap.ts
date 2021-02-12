@@ -11,7 +11,7 @@ import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 // Credit:
 //  - https://stackoverflow.com/a/30753870
-let focusableSelector = [
+export let focusableSelector = [
   '[contentEditable=true]',
   '[tabindex]',
   'a[href]',
@@ -32,7 +32,7 @@ let focusableSelector = [
   )
   .join(',')
 
-function focus(element: HTMLElement | null) {
+export function focus(element: HTMLElement | null) {
   if (element) element.focus({ preventScroll: true })
 }
 

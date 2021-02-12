@@ -701,6 +701,130 @@ export function assertDisclosurePanel(
 
 // ---
 
+export function getPopoverButton(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-popover-button-"]')
+}
+
+export function getPopoverPanel(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-popover-panel-"]')
+}
+
+export function getPopoverOverlay(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-popover-overlay-"]')
+}
+
+// ---
+
+export enum PopoverState {
+  /** The popover is visible to the user. */
+  Visible,
+
+  /** The popover is **not** visible to the user. It's still in the DOM, but it is hidden. */
+  InvisibleHidden,
+
+  /** The popover is **not** visible to the user. It's not in the DOM, it is unmounted. */
+  InvisibleUnmounted,
+}
+
+// ---
+
+export function assertPopoverButton(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: PopoverState
+  },
+  button = getPopoverButton()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+
+    // Ensure popover button have these properties
+    expect(button).toHaveAttribute('id')
+
+    switch (options.state) {
+      case PopoverState.Visible:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).toHaveAttribute('aria-expanded', 'true')
+        break
+
+      case PopoverState.InvisibleHidden:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      case PopoverState.InvisibleUnmounted:
+        expect(button).not.toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      default:
+        assertNever(options.state)
+    }
+
+    if (options.textContent) {
+      expect(button).toHaveTextContent(options.textContent)
+    }
+
+    // Ensure popover button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertPopoverButton)
+    throw err
+  }
+}
+
+export function assertPopoverPanel(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: PopoverState
+  },
+  panel = getPopoverPanel()
+) {
+  try {
+    switch (options.state) {
+      case PopoverState.InvisibleHidden:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertHidden(panel)
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case PopoverState.Visible:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertVisible(panel)
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case PopoverState.InvisibleUnmounted:
+        expect(panel).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertPopoverPanel)
+    throw err
+  }
+}
+
+// ---
+
 export function assertLabelValue(element: HTMLElement | null, value: string) {
   if (element === null) return expect(element).not.toBe(null)
 
