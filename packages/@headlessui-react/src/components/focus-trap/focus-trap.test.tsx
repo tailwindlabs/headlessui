@@ -167,7 +167,7 @@ it('should restore the previously focused element, before entering the FocusTrap
   assertActiveElement(document.getElementById('item-1'))
 
   // Open the modal
-  await click(document.getElementById('item-2'))
+  await click(document.getElementById('item-2')) // This will also focus this button
 
   // Ensure that the first item inside the focus trap is focused
   assertActiveElement(document.getElementById('item-3'))
@@ -176,7 +176,7 @@ it('should restore the previously focused element, before entering the FocusTrap
   await click(document.getElementById('item-3'))
 
   // Ensure that we restored focus correctly
-  assertActiveElement(document.getElementById('item-1'))
+  assertActiveElement(document.getElementById('item-2'))
 })
 
 it('should be possible tab to the next focusable element within the focus trap', async () => {

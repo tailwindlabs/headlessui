@@ -192,7 +192,9 @@ export async function click(
       }
 
       // Ensure to trigger a `focus` event if the element is focusable
-      if ((element as HTMLElement)?.matches(focusableSelector)) fireEvent.focus(element, options)
+      if ((element as HTMLElement)?.matches(focusableSelector)) {
+        ;(element as HTMLElement).focus()
+      }
 
       fireEvent.pointerUp(element, options)
       if (!cancelled) {

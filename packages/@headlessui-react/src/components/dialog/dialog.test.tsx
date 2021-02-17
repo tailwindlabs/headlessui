@@ -193,8 +193,8 @@ describe('Rendering', () => {
 
       assertDialog({ state: DialogState.Visible })
 
-      // Let's re-click the Dialog, to see if it is hidden again
-      await click(document.getElementById('trigger'))
+      // Let's close the Dialog
+      await press(Keys.Escape)
       expect(focusCounter).toHaveBeenCalledTimes(1)
 
       assertDialog({ state: DialogState.InvisibleHidden })
