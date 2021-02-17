@@ -31,6 +31,7 @@ import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { isFocusableElement } from '../../utils/focus-management'
 
 enum MenuStates {
   Open,
@@ -55,7 +56,6 @@ enum ActionTypes {
   GoToItem,
   Search,
   ClearSearch,
-
   RegisterItem,
   UnregisterItem,
 }
@@ -168,22 +168,27 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   } as StateDefinition)
   let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
 
+  // Handle outside click
   useEffect(() => {
     function handler(event: MouseEvent) {
       let target = event.target as HTMLElement
-      let active = document.activeElement
 
       if (menuState !== MenuStates.Open) return
-      if (buttonRef.current?.contains(target)) return
 
-      if (!itemsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseMenu })
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
+      if (buttonRef.current?.contains(target)) return
+      if (itemsRef.current?.contains(target)) return
+
+      dispatch({ type: ActionTypes.CloseMenu })
+
+      if (!isFocusableElement(target)) {
+        event.preventDefault()
+        buttonRef.current?.focus()
+      }
     }
 
     window.addEventListener('mousedown', handler)
     return () => window.removeEventListener('mousedown', handler)
-  }, [menuState, itemsRef, buttonRef, dispatch])
+  }, [menuState, buttonRef, itemsRef, dispatch])
 
   let propsBag = useMemo<MenuRenderPropArg>(() => ({ open: menuState === MenuStates.Open }), [
     menuState,
