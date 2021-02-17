@@ -1,40 +1,12 @@
 import {
   useRef,
-  useCallback,
-
   // Types
   MutableRefObject,
 } from 'react'
 
 import { Keys } from '../components/keyboard'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
-
-// Credit:
-//  - https://stackoverflow.com/a/30753870
-export let focusableSelector = [
-  '[contentEditable=true]',
-  '[tabindex]',
-  'a[href]',
-  'area[href]',
-  'button:not([disabled])',
-  'iframe',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-]
-  .map(
-    process.env.NODE_ENV === 'test'
-      ? // TODO: Remove this once JSDOM fixes the issue where an element that is
-        // "hidden" can be the document.activeElement, because this is not possible
-        // in real browsers.
-        selector => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
-      : selector => `${selector}:not([tabindex='-1'])`
-  )
-  .join(',')
-
-export function focus(element: HTMLElement | null) {
-  if (element) element.focus({ preventScroll: true })
-}
+import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
 
 export function useFocusTrap<TElement extends HTMLElement>(
   container: MutableRefObject<TElement | null>,
@@ -47,14 +19,11 @@ export function useFocusTrap<TElement extends HTMLElement>(
   let previousActiveElement = useRef<HTMLElement | null>(null)
   let mounted = useRef(false)
 
-  let getFocusableElements = useCallback(() => {
-    if (!container.current) return []
-    return Array.from(container.current.querySelectorAll<HTMLElement>(focusableSelector))
-  }, [container])
-
   // Handle initial focus
   useIsoMorphicEffect(() => {
     if (!enabled) return
+    if (!container.current) return
+
     mounted.current = true
 
     let activeElement = document.activeElement as HTMLElement
@@ -63,38 +32,31 @@ export function useFocusTrap<TElement extends HTMLElement>(
       if (options.initialFocus?.current === activeElement) {
         return // Initial focus ref is already the active element
       }
-    } else if (container.current?.contains(activeElement)) {
+    } else if (container.current.contains(activeElement)) {
       return // Already focused within Dialog
     }
 
     restoreElement.current = activeElement
-    let focusableElements = getFocusableElements()
 
-    if (focusableElements.length <= 0) {
-      throw new Error('There are no focusable elements inside the <FocusTrap />')
-    }
-
-    function tryFocus(element: HTMLElement | undefined) {
-      if (element === undefined) return
-
-      focus(element)
-
-      if (document.activeElement !== element) {
-        tryFocus(focusableElements[focusableElements.indexOf(element) + 1])
-      } else {
-        previousActiveElement.current = element
+    // Try to focus the initialFocus ref
+    if (options.initialFocus?.current) {
+      focusElement(options.initialFocus.current)
+    } else {
+      let result = focusIn(container.current, Focus.First)
+      if (result === FocusResult.Error) {
+        throw new Error('There are no focusable elements inside the <FocusTrap />')
       }
     }
 
-    tryFocus(options.initialFocus?.current ?? focusableElements[0])
+    previousActiveElement.current = document.activeElement as HTMLElement
 
     return () => {
       mounted.current = false
-      focus(restoreElement.current)
+      focusElement(restoreElement.current)
       restoreElement.current = null
       previousActiveElement.current = null
     }
-  }, [enabled, mounted, options.initialFocus])
+  }, [enabled, container, mounted, options.initialFocus])
 
   // Handle Tab & Shift+Tab keyboard events
   useIsoMorphicEffect(() => {
@@ -103,36 +65,23 @@ export function useFocusTrap<TElement extends HTMLElement>(
     function handler(event: KeyboardEvent) {
       if (event.key !== Keys.Tab) return
       if (!document.activeElement) return
+      if (!container.current) return
 
       event.preventDefault()
 
-      let direction = event.shiftKey ? -1 : +1
+      let result = focusIn(
+        container.current,
+        (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
+      )
 
-      let focusableElements = getFocusableElements()
-      let total = focusableElements.length
-
-      let lastFocusedElementIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
-      function focusNext(offset = 0) {
-        let currentIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
-        let nextIdx = (currentIdx + total + direction + offset) % total
-
-        let next = focusableElements[nextIdx]
-
-        focus(next)
-
-        // Focusing an element in the DOM that is { display: 'none' } to the user will silently fail.
-        if (next !== document.activeElement) {
-          if (lastFocusedElementIdx === nextIdx) return // We couldn't focus, but we already looped around. Skipping more loops.
-          focusNext(offset + direction)
-        } else previousActiveElement.current = next
+      if (result === FocusResult.Success) {
+        previousActiveElement.current = document.activeElement as HTMLElement
       }
-
-      focusNext()
     }
 
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [enabled, getFocusableElements])
+  }, [enabled])
 
   // Prevent programmatically escaping
   useIsoMorphicEffect(() => {
@@ -152,13 +101,13 @@ export function useFocusTrap<TElement extends HTMLElement>(
         if (!element.contains(toElement)) {
           event.preventDefault()
           event.stopPropagation()
-          focus(previous)
+          focusElement(previous)
         } else {
           previousActiveElement.current = toElement
-          focus(toElement)
+          focusElement(toElement)
         }
       } else {
-        focus(previousActiveElement.current)
+        focusElement(previousActiveElement.current)
       }
     }
 
