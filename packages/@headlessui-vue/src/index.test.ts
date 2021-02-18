@@ -23,5 +23,6 @@ it('should expose the correct components', () => {
     'SwitchGroup',
     'Switch',
     'SwitchLabel',
+    'SwitchDescription',
   ])
 })

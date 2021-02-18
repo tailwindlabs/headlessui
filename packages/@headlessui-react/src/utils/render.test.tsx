@@ -3,7 +3,7 @@ import { render as testRender, prettyDOM, getByTestId } from '@testing-library/r
 
 import { suppressConsoleLogs } from '../test-utils/suppress-console-logs'
 import { render, Features, PropsForFeatures } from './render'
-import { Props } from '../types'
+import { Props, Expand } from '../types'
 
 function contents() {
   return prettyDOM(getByTestId(document.body, 'wrapper'), undefined, {
@@ -273,7 +273,7 @@ describe('Features.Static', () => {
   let bag = {}
   let EnabledFeatures = Features.Static
   function Dummy<TTag extends ElementType = 'div'>(
-    props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
+    props: Expand<Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>>
   ) {
     let { show, ...rest } = props
     return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
@@ -367,7 +367,7 @@ describe('Features.RenderStrategy', () => {
   let bag = {}
   let EnabledFeatures = Features.RenderStrategy
   function Dummy<TTag extends ElementType = 'div'>(
-    props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
+    props: Expand<Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>>
   ) {
     let { show, ...rest } = props
     return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
@@ -383,7 +383,7 @@ describe('Features.Static | Features.RenderStrategy', () => {
   let bag = {}
   let EnabledFeatures = Features.Static | Features.RenderStrategy
   function Dummy<TTag extends ElementType = 'div'>(
-    props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
+    props: Expand<Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>>
   ) {
     let { show, ...rest } = props
     return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>

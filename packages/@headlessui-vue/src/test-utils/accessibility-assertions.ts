@@ -535,6 +535,7 @@ export function assertSwitch(
     tag?: string
     textContent?: string
     label?: string
+    description?: string
   },
   switchElement = getSwitch()
 ) {
@@ -554,6 +555,10 @@ export function assertSwitch(
 
     if (options.label) {
       assertLabelValue(switchElement, options.label)
+    }
+
+    if (options.description) {
+      assertDescriptionValue(switchElement, options.description)
     }
 
     switch (options.state) {
@@ -596,6 +601,15 @@ export function assertLabelValue(element: HTMLElement | null, value: string) {
   }
 
   expect(element).toHaveTextContent(value)
+}
+
+// ---
+
+export function assertDescriptionValue(element: HTMLElement | null, value: string) {
+  if (element === null) return expect(element).not.toBe(null)
+
+  let id = element.getAttribute('aria-describedby')!
+  expect(document.getElementById(id)?.textContent).toEqual(value)
 }
 
 // ---

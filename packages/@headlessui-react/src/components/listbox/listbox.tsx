@@ -31,6 +31,7 @@ import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { isFocusableElement } from '../../utils/focus-management'
 
 enum ListboxStates {
   Open,
@@ -195,7 +196,6 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   }
 ) {
   let { value, onChange, disabled = false, ...passThroughProps } = props
-  let d = useDisposables()
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
     propsRef: { current: { value, onChange } },
@@ -217,22 +217,27 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   }, [onChange, propsRef])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
+  // Handle outside click
   useEffect(() => {
     function handler(event: MouseEvent) {
       let target = event.target as HTMLElement
-      let active = document.activeElement
 
       if (listboxState !== ListboxStates.Open) return
-      if (buttonRef.current?.contains(target)) return
 
-      if (!optionsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseListbox })
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
+      if (buttonRef.current?.contains(target)) return
+      if (optionsRef.current?.contains(target)) return
+
+      dispatch({ type: ActionTypes.CloseListbox })
+
+      if (!isFocusableElement(target)) {
+        event.preventDefault()
+        buttonRef.current?.focus()
+      }
     }
 
     window.addEventListener('mousedown', handler)
     return () => window.removeEventListener('mousedown', handler)
-  }, [listboxState, optionsRef, buttonRef, d, dispatch])
+  }, [listboxState, buttonRef, optionsRef, dispatch])
 
   let propsBag = useMemo<ListboxRenderPropArg>(
     () => ({ open: listboxState === ListboxStates.Open, disabled }),
@@ -596,7 +601,11 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  let propsBag = useMemo(() => ({ active, selected, disabled }), [active, selected, disabled])
+  let propsBag = useMemo<OptionRenderPropArg>(() => ({ active, selected, disabled }), [
+    active,
+    selected,
+    disabled,
+  ])
   let propsWeControl = {
     id,
     role: 'option',

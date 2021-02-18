@@ -22,9 +22,11 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 interface StateDefinition {
   switch: HTMLButtonElement | null
   label: HTMLLabelElement | null
+  description: HTMLParagraphElement | null
 
   setSwitch(element: HTMLButtonElement): void
   setLabel(element: HTMLLabelElement): void
+  setDescription(element: HTMLParagraphElement): void
 }
 
 let GroupContext = createContext<StateDefinition | null>(null)
@@ -47,15 +49,25 @@ let DEFAULT_GROUP_TAG = Fragment
 function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props<TTag>) {
   let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
   let [labelElement, setLabelElement] = useState<HTMLLabelElement | null>(null)
+  let [descriptionElement, setDescriptionElement] = useState<HTMLParagraphElement | null>(null)
 
   let context = useMemo<StateDefinition>(
     () => ({
       switch: switchElement,
-      label: labelElement,
       setSwitch: setSwitchElement,
+      label: labelElement,
       setLabel: setLabelElement,
+      description: descriptionElement,
+      setDescription: setDescriptionElement,
     }),
-    [switchElement, setSwitchElement, labelElement, setLabelElement]
+    [
+      switchElement,
+      setSwitchElement,
+      labelElement,
+      setLabelElement,
+      descriptionElement,
+      setDescriptionElement,
+    ]
   )
 
   return (
@@ -76,6 +88,8 @@ type SwitchPropsWeControl =
   | 'role'
   | 'tabIndex'
   | 'aria-checked'
+  | 'aria-labelledby'
+  | 'aria-describedby'
   | 'onClick'
   | 'onKeyUp'
   | 'onKeyPress'
@@ -129,6 +143,7 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     className: resolvePropValue(className, propsBag),
     'aria-checked': checked,
     'aria-labelledby': groupContext?.label?.id,
+    'aria-describedby': groupContext?.description?.id,
     onClick: handleClick,
     onKeyUp: handleKeyUp,
     onKeyPress: handleKeyPress,
@@ -165,5 +180,22 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
 // ---
 
+let DEFAULT_DESCRIPTIONL_TAG = 'p' as const
+interface DescriptionRenderPropArg {}
+type DescriptionPropsWeControl = 'id' | 'ref'
+
+function Description<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+  props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
+) {
+  let state = useGroupContext([Switch.name, Description.name].join('.'))
+  let id = `headlessui-switch-description-${useId()}`
+
+  let propsWeControl = { ref: state.setDescription, id }
+  return render({ ...props, ...propsWeControl }, {}, DEFAULT_DESCRIPTIONL_TAG)
+}
+
+// ---
+
 Switch.Group = Group
 Switch.Label = Label
+Switch.Description = Description
