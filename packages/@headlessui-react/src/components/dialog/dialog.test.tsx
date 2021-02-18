@@ -11,6 +11,8 @@ import {
   assertDialogTitle,
   getDialog,
   getDialogOverlay,
+  getByText,
+  assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
 import { Props } from '../../types'
@@ -67,6 +69,17 @@ describe('Safe guards', () => {
 
 describe('Rendering', () => {
   describe('Dialog', () => {
+    it(
+      'should complain when the `open` and `onClose` prop are missing',
+      suppressConsoleLogs(async () => {
+        // @ts-expect-error
+        expect(() => render(<Dialog as="div" />)).toThrowErrorMatchingInlineSnapshot(
+          `"You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component."`
+        )
+        expect.hasAssertions()
+      })
+    )
+
     it(
       'should complain when an `open` prop is provided without an `onClose` prop',
       suppressConsoleLogs(async () => {
@@ -390,6 +403,75 @@ describe('Mouse interactions', () => {
 
       // Verify it is closed
       assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to close the dialog, and re-focus the button when we click outside on the body element',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button onClick={() => setIsOpen(v => !v)}>Trigger</button>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              Contents
+              <TabSentinel />
+            </Dialog>
+          </>
+        )
+      }
+      render(<Example />)
+
+      // Open dialog
+      await click(getByText('Trigger'))
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the body to close
+      await click(document.body)
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify the button is focused
+      assertActiveElement(getByText('Trigger'))
+    })
+  )
+
+  it(
+    'should be possible to close the dialog, and keep focus on the focusable element',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button>Hello</button>
+            <button onClick={() => setIsOpen(v => !v)}>Trigger</button>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              Contents
+              <TabSentinel />
+            </Dialog>
+          </>
+        )
+      }
+      render(<Example />)
+
+      // Open dialog
+      await click(getByText('Trigger'))
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button to close (outside click)
+      await click(getByText('Hello'))
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify the button is focused
+      assertActiveElement(getByText('Hello'))
     })
   )
 })

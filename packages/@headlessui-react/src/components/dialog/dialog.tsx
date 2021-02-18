@@ -119,6 +119,12 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // Validations
   let hasOpen = props.hasOwnProperty('open')
   let hasOnClose = props.hasOwnProperty('onClose')
+  if (!hasOpen && !hasOnClose) {
+    throw new Error(
+      `You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component.`
+    )
+  }
+
   if (!hasOpen) {
     throw new Error(
       `You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop.`
@@ -160,6 +166,21 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     (element: HTMLElement | null) => dispatch({ type: ActionTypes.SetDescriptionElement, element }),
     [dispatch]
   )
+
+  // Handle outside click
+  useEffect(() => {
+    function handler(event: MouseEvent) {
+      let target = event.target as HTMLElement
+
+      if (dialogState !== DialogStates.Open) return
+      if (internalDialogRef.current?.contains(target)) return
+
+      close()
+    }
+
+    window.addEventListener('mousedown', handler)
+    return () => window.removeEventListener('mousedown', handler)
+  }, [dialogState, internalDialogRef, close])
 
   // Handle `Escape` to close
   useEffect(() => {
