@@ -1,7 +1,7 @@
 import { defineComponent, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
-import { Switch, SwitchLabel, SwitchGroup } from './switch'
+import { Switch, SwitchLabel, SwitchDescription, SwitchGroup } from './switch'
 import {
   SwitchState,
   assertSwitch,
@@ -15,7 +15,7 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 jest.mock('../../hooks/use-id')
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
-  let defaultComponents = { Switch, SwitchLabel, SwitchGroup }
+  let defaultComponents = { Switch, SwitchLabel, SwitchDescription, SwitchGroup }
 
   if (typeof input === 'string') {
     return render(defineComponent({ template: input, components: defaultComponents }))
@@ -31,7 +31,10 @@ function renderTemplate(input: string | Partial<Parameters<typeof defineComponen
 }
 
 describe('Safe guards', () => {
-  it.each([['SwitchLabel', SwitchLabel]])(
+  it.each([
+    ['SwitchLabel', SwitchLabel],
+    ['SwitchDescription', SwitchDescription],
+  ])(
     'should error when we are using a <%s /> without a parent <SwitchGroup />',
     suppressConsoleLogs((name, Component) => {
       expect(() => render(Component)).toThrowError(
@@ -164,6 +167,59 @@ describe('Render composition', () => {
     //
     // Thus: Label A should not be part of the "label" in this case
     assertSwitch({ state: SwitchState.Off, label: 'Label B' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch and Switch.Description (before the Switch)', async () => {
+    renderTemplate({
+      template: `
+        <SwitchGroup>
+          <SwitchDescription>This is an important feature</SwitchDescription>
+          <Switch v-model="checked" />
+        </SwitchGroup>
+      `,
+      setup: () => ({ checked: ref(false) }),
+    })
+
+    await new Promise(requestAnimationFrame)
+
+    assertSwitch({ state: SwitchState.Off, description: 'This is an important feature' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch and Switch.Description (after the Switch)', async () => {
+    renderTemplate({
+      template: `
+        <SwitchGroup>
+          <Switch v-model="checked" />
+          <SwitchDescription>This is an important feature</SwitchDescription>
+        </SwitchGroup>
+      `,
+      setup: () => ({ checked: ref(false) }),
+    })
+
+    await new Promise(requestAnimationFrame)
+
+    assertSwitch({ state: SwitchState.Off, description: 'This is an important feature' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch, Switch.Label and Switch.Description', async () => {
+    renderTemplate({
+      template: `
+        <SwitchGroup>
+          <SwitchLabel>Label A</SwitchLabel>
+          <Switch v-model="checked" />
+          <SwitchDescription>This is an important feature</SwitchDescription>
+        </SwitchGroup>
+      `,
+      setup: () => ({ checked: ref(false) }),
+    })
+
+    await new Promise(requestAnimationFrame)
+
+    assertSwitch({
+      state: SwitchState.Off,
+      label: 'Label A',
+      description: 'This is an important feature',
+    })
   })
 })
 

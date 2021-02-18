@@ -190,6 +190,10 @@ export async function click(
       if (!cancelled) {
         fireEvent.mouseDown(element, options)
       }
+
+      // Ensure to trigger a `focus` event if the element is focusable
+      if ((element as HTMLElement)?.matches(focusableSelector)) fireEvent.focus(element, options)
+
       fireEvent.pointerUp(element, options)
       if (!cancelled) {
         fireEvent.mouseUp(element, options)
@@ -307,7 +311,14 @@ let focusableSelector = [
   'select:not([disabled])',
   'textarea:not([disabled])',
 ]
-  .map(selector => `${selector}:not([tabindex='-1'])`)
+  .map(
+    process.env.NODE_ENV === 'test'
+      ? // TODO: Remove this once JSDOM fixes the issue where an element that is
+        // "hidden" can be the document.activeElement, because this is not possible
+        // in real browsers.
+        selector => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
+      : selector => `${selector}:not([tabindex='-1'])`
+  )
   .join(',')
 
 function getFocusableElements(container = document.body) {

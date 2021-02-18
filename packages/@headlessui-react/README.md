@@ -31,6 +31,11 @@ _This project is still in early development. New components will be added regula
 - [Menu Button (Dropdown)](#menu-button-dropdown)
 - [Listbox (Select)](#listbox-select)
 - [Switch (Toggle)](#switch-toggle)
+- [Disclosure](#disclosure)
+- [FocusTrap](#focustrap)
+- [Portal](#portal)
+- [Dialog](#dialog)
+- [Popover](#popover)
 
 ### Roadmap
 
@@ -38,10 +43,7 @@ This project is still in early development, but the plan is to build out all of 
 
 This includes things like:
 
-- Modals
 - Tabs
-- Slide-overs
-- Mobile menus
 - Accordions
 
 ...and more in the future.
@@ -287,24 +289,24 @@ function MyComponent({ isShowing }) {
 
 ##### Props
 
-| Prop          | Type                                  | Description                                                                           |
-| ------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
-| `show`        | Boolean                               | Whether the children should be shown or hidden.                                       |
-| `as`          | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition` itself.               |
-| `appear`      | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
-| `unmount`     | Boolean _(Default: `true`)_           | Whether the element should be `unmounted` or `hidden` based on the show state.        |
-| `enter`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
-| `enterFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
-| `enterTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
-| `leave`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire leave phase.            |
-| `leaveFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the leave phase starts.            |
-| `leaveTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the leave phase starts. |
-| `beforeEnter` | Function                              | Callback which is called before we start the enter transition.                        |
-| `afterEnter`  | Function                              | Callback which is called after we finished the enter transition.                      |
-| `beforeLeave` | Function                              | Callback which is called before we start the leave transition.                        |
-| `afterLeave`  | Function                              | Callback which is called after we finished the leave transition.                      |
+| Prop          | Type                | Default | Description                                                                           |
+| :------------ | :------------------ | :------ | :------------------------------------------------------------------------------------ |
+| `show`        | Boolean             | -       | Whether the children should be shown or hidden.                                       |
+| `as`          | String \| Component | `div`   | The element or component to render in place of the `Transition` itself.               |
+| `appear`      | Boolean             | `false` | Whether the transition should run on initial mount.                                   |
+| `unmount`     | Boolean             | `true`  | Whether the element should be `unmounted` or `hidden` based on the show state.        |
+| `enter`       | String              | `''`    | Classes to add to the transitioning element during the entire enter phase.            |
+| `enterFrom`   | String              | `''`    | Classes to add to the transitioning element before the enter phase starts.            |
+| `enterTo`     | String              | `''`    | Classes to add to the transitioning element immediately after the enter phase starts. |
+| `leave`       | String              | `''`    | Classes to add to the transitioning element during the entire leave phase.            |
+| `leaveFrom`   | String              | `''`    | Classes to add to the transitioning element before the leave phase starts.            |
+| `leaveTo`     | String              | `''`    | Classes to add to the transitioning element immediately after the leave phase starts. |
+| `beforeEnter` | Function            | -       | Callback which is called before we start the enter transition.                        |
+| `afterEnter`  | Function            | -       | Callback which is called after we finished the enter transition.                      |
+| `beforeLeave` | Function            | -       | Callback which is called before we start the leave transition.                        |
+| `afterLeave`  | Function            | -       | Callback which is called after we finished the leave transition.                      |
 
-##### Render prop arguments
+##### Render prop object
 
 - None
 
@@ -328,23 +330,23 @@ function MyComponent({ isShowing }) {
 
 ##### Props
 
-| Prop          | Type                                  | Description                                                                           |
-| ------------- | ------------------------------------- | ------------------------------------------------------------------------------------- |
-| `as`          | String Component _(Default: `'div'`)_ | The element or component to render in place of the `Transition.Child` itself.         |
-| `appear`      | Boolean _(Default: `false`)_          | Whether the transition should run on initial mount.                                   |
-| `unmount`     | Boolean _(Default: `true`)_           | Whether the element should be `unmounted` or `hidden` based on the show state.        |
-| `enter`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire enter phase.            |
-| `enterFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the enter phase starts.            |
-| `enterTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the enter phase starts. |
-| `leave`       | String _(Default: '')_                | Classes to add to the transitioning element during the entire leave phase.            |
-| `leaveFrom`   | String _(Default: '')_                | Classes to add to the transitioning element before the leave phase starts.            |
-| `leaveTo`     | String _(Default: '')_                | Classes to add to the transitioning element immediately after the leave phase starts. |
-| `beforeEnter` | Function                              | Callback which is called before we start the enter transition.                        |
-| `afterEnter`  | Function                              | Callback which is called after we finished the enter transition.                      |
-| `beforeLeave` | Function                              | Callback which is called before we start the leave transition.                        |
-| `afterLeave`  | Function                              | Callback which is called after we finished the leave transition.                      |
+| Prop          | Type                | Default | Description                                                                           |
+| :------------ | :------------------ | :------ | :------------------------------------------------------------------------------------ |
+| `as`          | String \| Component | `div`   | The element or component to render in place of the `Transition.Child` itself.         |
+| `appear`      | Boolean             | `false` | Whether the transition should run on initial mount.                                   |
+| `unmount`     | Boolean             | `true`  | Whether the element should be `unmounted` or `hidden` based on the show state.        |
+| `enter`       | String              | `''`    | Classes to add to the transitioning element during the entire enter phase.            |
+| `enterFrom`   | String              | `''`    | Classes to add to the transitioning element before the enter phase starts.            |
+| `enterTo`     | String              | `''`    | Classes to add to the transitioning element immediately after the enter phase starts. |
+| `leave`       | String              | `''`    | Classes to add to the transitioning element during the entire leave phase.            |
+| `leaveFrom`   | String              | `''`    | Classes to add to the transitioning element before the leave phase starts.            |
+| `leaveTo`     | String              | `''`    | Classes to add to the transitioning element immediately after the leave phase starts. |
+| `beforeEnter` | Function            | -       | Callback which is called before we start the enter transition.                        |
+| `afterEnter`  | Function            | -       | Callback which is called after we finished the enter transition.                      |
+| `beforeLeave` | Function            | -       | Callback which is called before we start the leave transition.                        |
+| `afterLeave`  | Function            | -       | Callback which is called after we finished the leave transition.                      |
 
-##### Render prop arguments
+##### Render prop object
 
 - None
 
@@ -658,13 +660,13 @@ function MyDropdown() {
 ##### Props
 
 | Prop | Type                | Default                                 | Description                                           |
-| ---- | ------------------- | --------------------------------------- | ----------------------------------------------------- |
+| :--- | :------------------ | :-------------------------------------- | :---------------------------------------------------- |
 | `as` | String \| Component | `React.Fragment` _(no wrapper element_) | The element or component the `Menu` should render as. |
 
 ##### Render prop object
 
 | Prop   | Type    | Description                      |
-| ------ | ------- | -------------------------------- |
+| :----- | :------ | :------------------------------- |
 | `open` | Boolean | Whether or not the menu is open. |
 
 #### Menu.Button
@@ -683,13 +685,13 @@ function MyDropdown() {
 ##### Props
 
 | Prop | Type                | Default  | Description                                                  |
-| ---- | ------------------- | -------- | ------------------------------------------------------------ |
+| :--- | :------------------ | :------- | :----------------------------------------------------------- |
 | `as` | String \| Component | `button` | The element or component the `Menu.Button` should render as. |
 
 ##### Render prop object
 
 | Prop   | Type    | Description                      |
-| ------ | ------- | -------------------------------- |
+| :----- | :------ | :------------------------------- |
 | `open` | Boolean | Whether or not the menu is open. |
 
 #### Menu.Items
@@ -704,7 +706,7 @@ function MyDropdown() {
 ##### Props
 
 | Prop      | Type                | Default | Description                                                                       |
-| --------- | ------------------- | ------- | --------------------------------------------------------------------------------- |
+| :-------- | :------------------ | :------ | :-------------------------------------------------------------------------------- |
 | `as`      | String \| Component | `div`   | The element or component the `Menu.Items` should render as.                       |
 | `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
 | `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
@@ -714,7 +716,7 @@ function MyDropdown() {
 ##### Render prop object
 
 | Prop   | Type    | Description                      |
-| ------ | ------- | -------------------------------- |
+| :----- | :------ | :------------------------------- |
 | `open` | Boolean | Whether or not the menu is open. |
 
 #### Menu.Item
@@ -735,14 +737,14 @@ function MyDropdown() {
 ##### Props
 
 | Prop       | Type                | Default                                 | Description                                                                           |
-| ---------- | ------------------- | --------------------------------------- | ------------------------------------------------------------------------------------- |
+| :--------- | :------------------ | :-------------------------------------- | :------------------------------------------------------------------------------------ |
 | `as`       | String \| Component | `React.Fragment` _(no wrapper element)_ | The element or component the `Menu.Item` should render as.                            |
 | `disabled` | Boolean             | `false`                                 | Whether or not the item should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Render prop object
 
 | Prop       | Type    | Description                                                                        |
-| ---------- | ------- | ---------------------------------------------------------------------------------- |
+| :--------- | :------ | :--------------------------------------------------------------------------------- |
 | `active`   | Boolean | Whether or not the item is the active/focused item in the list.                    |
 | `disabled` | Boolean | Whether or not the item is the disabled for keyboard navigation and ARIA purposes. |
 
@@ -1152,16 +1154,16 @@ function MyListbox() {
 ##### Props
 
 | Prop       | Type                | Default                                 | Description                                              |
-| ---------- | ------------------- | --------------------------------------- | -------------------------------------------------------- |
+| :--------- | :------------------ | :-------------------------------------- | :------------------------------------------------------- |
 | `as`       | String \| Component | `React.Fragment` _(no wrapper element_) | The element or component the `Listbox` should render as. |
 | `disabled` | Boolean             | `false`                                 | Enable/Disable the `Listbox` component.                  |
-| `value`    | `T`                 |                                         | The selected value.                                      |
-| `onChange` | `(value: T): void`  |                                         | The function to call when a new option is selected.      |
+| `value`    | `T`                 | -                                       | The selected value.                                      |
+| `onChange` | `(value: T): void`  | -                                       | The function to call when a new option is selected.      |
 
 ##### Render prop object
 
 | Prop       | Type    | Description                             |
-| ---------- | ------- | --------------------------------------- |
+| :--------- | :------ | :-------------------------------------- |
 | `open`     | Boolean | Whether or not the listbox is open.     |
 | `disabled` | Boolean | Whether or not the listbox is disabled. |
 
@@ -1181,13 +1183,13 @@ function MyListbox() {
 ##### Props
 
 | Prop | Type                | Default  | Description                                                     |
-| ---- | ------------------- | -------- | --------------------------------------------------------------- |
+| :--- | :------------------ | :------- | :-------------------------------------------------------------- |
 | `as` | String \| Component | `button` | The element or component the `Listbox.Button` should render as. |
 
 ##### Render prop object
 
 | Prop       | Type    | Description                             |
-| ---------- | ------- | --------------------------------------- |
+| :--------- | :------ | :-------------------------------------- |
 | `open`     | Boolean | Whether or not the listbox is open.     |
 | `disabled` | Boolean | Whether or not the listbox is disabled. |
 
@@ -1200,13 +1202,13 @@ function MyListbox() {
 ##### Props
 
 | Prop | Type                | Default | Description                                                    |
-| ---- | ------------------- | ------- | -------------------------------------------------------------- |
+| :--- | :------------------ | :------ | :------------------------------------------------------------- |
 | `as` | String \| Component | `label` | The element or component the `Listbox.Label` should render as. |
 
 ##### Render prop object
 
 | Prop       | Type    | Description                             |
-| ---------- | ------- | --------------------------------------- |
+| :--------- | :------ | :-------------------------------------- |
 | `open`     | Boolean | Whether or not the listbox is open.     |
 | `disabled` | Boolean | Whether or not the listbox is disabled. |
 
@@ -1222,7 +1224,7 @@ function MyListbox() {
 ##### Props
 
 | Prop      | Type                | Default | Description                                                                       |
-| --------- | ------------------- | ------- | --------------------------------------------------------------------------------- |
+| :-------- | :------------------ | :------ | :-------------------------------------------------------------------------------- |
 | `as`      | String \| Component | `ul`    | The element or component the `Listbox.Options` should render as.                  |
 | `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
 | `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
@@ -1232,7 +1234,7 @@ function MyListbox() {
 ##### Render prop object
 
 | Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
+| :----- | :------ | :---------------------------------- |
 | `open` | Boolean | Whether or not the listbox is open. |
 
 #### Listbox.Option
@@ -1244,15 +1246,15 @@ function MyListbox() {
 ##### Props
 
 | Prop       | Type                | Default | Description                                                                             |
-| ---------- | ------------------- | ------- | --------------------------------------------------------------------------------------- |
+| :--------- | :------------------ | :------ | :-------------------------------------------------------------------------------------- |
 | `as`       | String \| Component | `li`    | The element or component the `Listbox.Option` should render as.                         |
-| `value`    | `T`                 |         | The option value.                                                                       |
+| `value`    | `T`                 | -       | The option value.                                                                       |
 | `disabled` | Boolean             | `false` | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Render prop object
 
 | Prop       | Type    | Description                                                                          |
-| ---------- | ------- | ------------------------------------------------------------------------------------ |
+| :--------- | :------ | :----------------------------------------------------------------------------------- |
 | `active`   | Boolean | Whether or not the option is the active/focused option in the list.                  |
 | `selected` | Boolean | Whether or not the option is the selected option in the list.                        |
 | `disabled` | Boolean | Whether or not the option is the disabled for keyboard navigation and ARIA purposes. |
@@ -1345,15 +1347,15 @@ function NotificationsToggle() {
 ##### Props
 
 | Prop       | Type                     | Default  | Description                                             |
-| ---------- | ------------------------ | -------- | ------------------------------------------------------- |
+| :--------- | :----------------------- | :------- | :------------------------------------------------------ |
 | `as`       | String \| Component      | `button` | The element or component the `Switch` should render as. |
-| `checked`  | Boolean                  |          | Whether or not the switch is checked.                   |
-| `onChange` | `(value: boolean): void` |          | The function to call when the switch is toggled.        |
+| `checked`  | Boolean                  | -        | Whether or not the switch is checked.                   |
+| `onChange` | `(value: boolean): void` | -        | The function to call when the switch is toggled.        |
 
 ##### Render prop object
 
 | Prop      | Type    | Description                           |
-| --------- | ------- | ------------------------------------- |
+| :-------- | :------ | :------------------------------------ |
 | `checked` | Boolean | Whether or not the switch is checked. |
 
 #### Switch.Label
@@ -1370,8 +1372,25 @@ function NotificationsToggle() {
 ##### Props
 
 | Prop | Type                | Default | Description                                                   |
-| ---- | ------------------- | ------- | ------------------------------------------------------------- |
+| :--- | :------------------ | :------ | :------------------------------------------------------------ |
 | `as` | String \| Component | `label` | The element or component the `Switch.Label` should render as. |
+
+#### Switch.Description
+
+```jsx
+<Switch.Group>
+  <Switch.Description>Enable notifications</Switch.Description>
+  <Switch checked={enabled} onChange={setEnabled} className="...">
+    {/* ... */}
+  </Switch>
+</Switch.Group>
+```
+
+##### Props
+
+| Prop | Type                | Default | Description                                                         |
+| :--- | :------------------ | :------ | :------------------------------------------------------------------ |
+| `as` | String \| Component | `label` | The element or component the `Switch.Description` should render as. |
 
 #### Switch.Group
 
@@ -1387,5 +1406,459 @@ function NotificationsToggle() {
 ##### Props
 
 | Prop | Type                | Default                                 | Description                                                   |
-| ---- | ------------------- | --------------------------------------- | ------------------------------------------------------------- |
+| :--- | :------------------ | :-------------------------------------- | :------------------------------------------------------------ |
 | `as` | String \| Component | `React.Fragment` _(no wrapper element)_ | The element or component the `Switch.Group` should render as. |
+
+## Disclosure
+
+A component for showing/hiding content.
+
+- [Basic example](#basic-example-4)
+- [Component API](#component-api-4)
+
+### Basic example
+
+```jsx
+<Disclosure>
+  <Disclosure.Button>Toggle</Disclosure.Button>
+  <Disclosure.Panel>Contents</Disclosure.Panel>
+</Disclosure>
+```
+
+### Component API
+
+#### Disclosure
+
+```jsx
+<Disclosure>
+  <Disclosure.Button>Toggle</Disclosure.Button>
+  <Disclosure.Panel>Contents</Disclosure.Panel>
+</Disclosure>
+```
+
+##### Props
+
+| Prop | Type                | Default                                 | Description                                                 |
+| :--- | :------------------ | :-------------------------------------- | :---------------------------------------------------------- |
+| `as` | String \| Component | `React.Fragment` _(no wrapper element_) | The element or component the `Disclosure` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+#### Disclosure.Button
+
+##### Props
+
+| Prop | Type                | Default  | Description                                                        |
+| :--- | :------------------ | :------- | :----------------------------------------------------------------- |
+| `as` | String \| Component | `button` | The element or component the `Disclosure.Button` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+#### Disclosure.Panel
+
+##### Props
+
+| Prop      | Type                | Default | Description                                                                       |
+| :-------- | :------------------ | :------ | :-------------------------------------------------------------------------------- |
+| `as`      | String \| Component | `div`   | The element or component the `Disclosure.Panel` should render as.                 |
+| `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
+| `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
+
+> **note**: `static` and `unmount` can not be used at the same time. You will get a TypeScript error if you try to do it.
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+---
+
+## FocusTrap
+
+- [Basic example](#basic-example-5)
+- [Component API](#component-api-5)
+
+A component for making sure that you can't Tab out of the contents of this
+component.
+
+Focus strategy:
+
+- An `initialFocus` prop can be passed in, this is a `ref` object, which is a ref to the element that should receive initial focus.
+- If an input element exists with an `autoFocus` prop, it will receive initial focus.
+- If none of those exists, it will try and focus the first focusable element.
+- If that doesn't exist, it will throw an error.
+
+Once the `FocusTrap` will unmount, the focus will be restored to the element that was focused _before_ the `FocusTrap` was rendered.
+
+### Basic example
+
+```jsx
+<FocusTrap>
+  <form>
+    <input type="email" name="Email" />
+    <input type="password" name="password" />
+    <button>Submit</button>
+  </form>
+</FocusTrap>
+```
+
+### Component API
+
+#### FocusTrap
+
+```jsx
+<FocusTrap>
+  <form>
+    <input type="email" name="Email" />
+    <input type="password" name="password" />
+    <button>Submit</button>
+  </form>
+</FocusTrap>
+```
+
+##### Props
+
+| Prop           | Type                   | Default     | Description                                                |
+| :------------- | :--------------------- | :---------- | :--------------------------------------------------------- |
+| `as`           | String \| Component    | `div`       | The element or component the `FocusTrap` should render as. |
+| `initialFocus` | React.MutableRefObject | `undefined` | A ref to an element that should receive focus first.       |
+
+---
+
+## Portal
+
+- [Basic example](#basic-example-6)
+- [Component API](#component-api-6)
+
+A component for rendering your contents within a Portal (at the end of `document.body`).
+
+### Basic example
+
+```jsx
+<Portal>
+  <p>This will be rendered inside a Portal, at the end of `document.body`</p>
+</Portal>
+```
+
+### Component API
+
+#### Portal
+
+```jsx
+<Portal>
+  <p>This will be rendered inside a Portal, at the end of `document.body`</p>
+</Portal>
+```
+
+##### Props
+
+| Prop | Type                | Default                                 | Description                                             |
+| :--- | :------------------ | :-------------------------------------- | :------------------------------------------------------ |
+| `as` | String \| Component | `React.Fragment` _(no wrapper element_) | The element or component the `Portal` should render as. |
+
+##### Render prop object
+
+- None
+
+---
+
+## Dialog
+
+- [Basic example](#basic-example-7)
+- [Component API](#component-api-7)
+
+This component can be used to render content inside a Dialog/Modal. This contains a ton of features:
+
+1. Renders inside a `Portal`
+2. Controlled component
+3. Uses `FocusTrap` with its features (Focus first focusable element, `autoFocus` or `initialFocus` ref)
+4. Adds a scroll lock
+5. Prevents content jumps by faking your scrollbar width
+6. Marks other elements as `inert` (hides other elements from screen readers)
+7. Closes on `escape`
+8. Closes on click outside
+9. Once the Dialog becomes hidden (e.g.: `md:hidden`) it will also trigger the `onClose`
+
+### Basic example
+
+```jsx
+function Example() {
+  let [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <Dialog open={isOpen} onClose={setIsOpen}>
+      <Dialog.Overlay />
+
+      <Dialog.Title>Deactivate account</Dialog.Title>
+      <Dialog.Description>This will permanently deactivate your account</Dialog.Description>
+
+      <p>
+        Are you sure you want to deactivate your account? All of your data will be permanently
+        removed. This action cannot be undone.
+      </p>
+
+      <button onClick={() => setIsOpen(false)}>Deactivate</button>
+      <button onClick={() => setIsOpen(false)}>Cancel</button>
+    </Dialog>
+  )
+}
+```
+
+### Component API
+
+#### Dialog
+
+```jsx
+function Example() {
+  let [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <Dialog open={isOpen} onClose={setIsOpen}>
+      <Dialog.Overlay />
+
+      <Dialog.Title>Deactivate account</Dialog.Title>
+      <Dialog.Description>This will permanently deactivate your account</Dialog.Description>
+
+      <p>
+        Are you sure you want to deactivate your account? All of your data will be permanently
+        removed. This action cannot be undone.
+      </p>
+
+      <button onClick={() => setIsOpen(false)}>Deactivate</button>
+      <button onClick={() => setIsOpen(false)}>Cancel</button>
+    </Dialog>
+  )
+}
+```
+
+##### Props
+
+| Prop           | Type                   | Default | Description                                                                                                                      |
+| :------------- | :--------------------- | :------ | :------------------------------------------------------------------------------------------------------------------------------- |
+| `open`         | Boolean                | /       | Wether the `Dialog` is open or not.                                                                                              |
+| `onClose`      | Function               | /       | Called when the `Dialog` should close. For convenience we pass in a `onClose(false)` so that you can use: `onClose={setIsOpen}`. |
+| `initialFocus` | React.MutableRefObject | /       | A ref to an element that should receive focus first.                                                                             |
+| `as`           | String \| Component    | `div`   | The element or component the `Dialog` should render as.                                                                          |
+| `static`       | Boolean                | `false` | Whether the element should ignore the internally managed open/closed state.                                                      |
+| `unmount`      | Boolean                | `true`  | Whether the element should be unmounted or hidden based on the open/closed state.                                                |
+
+> **note**: `static` and `unmount` can not be used at the same time. You will get a TypeScript error if you try to do it.
+
+##### Render prop object
+
+| Prop   | Type    | Description                        |
+| :----- | :------ | :--------------------------------- |
+| `open` | Boolean | Whether or not the dialog is open. |
+
+#### Dialog.Overlay
+
+This can be used to create an overlay for your Dialog component. Clicking on the overlay will close the Dialog.
+
+##### Props
+
+| Prop | Type                | Default | Description                                                     |
+| :--- | :------------------ | :------ | :-------------------------------------------------------------- |
+| `as` | String \| Component | `div`   | The element or component the `Dialog.Overlay` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+#### Dialog.Title
+
+This is the title for your Dialog. When this is used, it will set the `aria-labelledby` on the Dialog.
+
+##### Props
+
+| Prop | Type                | Default | Description                                                   |
+| :--- | :------------------ | :------ | :------------------------------------------------------------ |
+| `as` | String \| Component | `h2`    | The element or component the `Dialog.Title` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+#### Dialog.Description
+
+This is the description for your Dialog. When this is used, it will set the `aria-describedby` on the Dialog.
+
+##### Props
+
+| Prop | Type                | Default | Description                                                         |
+| :--- | :------------------ | :------ | :------------------------------------------------------------------ |
+| `as` | String \| Component | `p`     | The element or component the `Dialog.Description` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+---
+
+## Popover
+
+- [Basic example](#basic-example-8)
+- [Component API](#component-api-8)
+
+This component can be used for navigation menu's, mobile menu's and flyout menu's.
+
+### Basic example
+
+```jsx
+<Popover.Group>
+  <Popover>
+    <Popover.Button>Solutions</Popover.Button>
+    <Popover.Panel>
+      <a href="#">Analytics</a>
+      <a href="#">Engagement</a>
+      <a href="#">Security</a>
+      <a href="#">Integrations</a>
+      <a href="#">Automations</a>
+    </Popover.Panel>
+  </Popover>
+
+  <a href="#">Pricing</a>
+  <a href="#">Docs</a>
+
+  <Popover>
+    <Popover.Button>More</Popover.Button>
+    <Popover.Panel focus>
+      <a href="#">Help Center</a>
+      <a href="#">Guides</a>
+      <a href="#">Events</a>
+      <a href="#">Security</a>
+    </Popover.Panel>
+  </Popover>
+</Popover.Group>
+```
+
+### Component API
+
+#### Popover
+
+```jsx
+<Popover.Group>
+  <Popover>
+    <Popover.Button>Solutions</Popover.Button>
+    <Popover.Panel>
+      <a href="#">Analytics</a>
+      <a href="#">Engagement</a>
+      <a href="#">Security</a>
+      <a href="#">Integrations</a>
+      <a href="#">Automations</a>
+    </Popover.Panel>
+  </Popover>
+
+  <a href="#">Pricing</a>
+  <a href="#">Docs</a>
+
+  <Popover>
+    <Popover.Button>More</Popover.Button>
+    <Popover.Panel focus>
+      <a href="#">Help Center</a>
+      <a href="#">Guides</a>
+      <a href="#">Events</a>
+      <a href="#">Security</a>
+    </Popover.Panel>
+  </Popover>
+</Popover.Group>
+```
+
+##### Props
+
+| Prop | Type                | Default | Description                                              |
+| :--- | :------------------ | :------ | :------------------------------------------------------- |
+| `as` | String \| Component | `div`   | The element or component the `Popover` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                        |
+| :----- | :------ | :--------------------------------- |
+| `open` | Boolean | Whether or not the dialog is open. |
+
+#### Popover.Overlay
+
+This can be used to create an overlay for your Popover component. Clicking on the overlay will close the Popover.
+
+##### Props
+
+| Prop | Type                | Default | Description                                                      |
+| :--- | :------------------ | :------ | :--------------------------------------------------------------- |
+| `as` | String \| Component | `div`   | The element or component the `Popover.Overlay` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+#### Popover.Button
+
+This is the trigger component to open a Popover. You can also use this
+`Popover.Button` component inside a `Popover.Panel`, if you do so, then it will
+behave as a `close` button. We will also make sure to provide the correct
+`aria-*` attributes onto the button.
+
+##### Props
+
+| Prop | Type                | Default  | Description                                                     |
+| :--- | :------------------ | :------- | :-------------------------------------------------------------- |
+| `as` | String \| Component | `button` | The element or component the `Popover.Button` should render as. |
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+#### Popover.Panel
+
+This component contains the contents of your Popover.
+
+##### Props
+
+| Prop      | Type                | Default | Description                                                                                                                                 |
+| :-------- | :------------------ | :------ | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `as`      | String \| Component | `div`   | The element or component the `Popover.Panel` should render as.                                                                              |
+| `focus`   | Boolean             | `false` | This will force focus inside the `Popover.Panel` when the `Popover` is open. It will also close the `Popover` if focus left this component. |
+| `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.                                                                 |
+| `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state.                                                           |
+
+> **note**: `static` and `unmount` can not be used at the same time. You will get a TypeScript error if you try to do it.
+
+##### Render prop object
+
+| Prop   | Type    | Description                            |
+| :----- | :------ | :------------------------------------- |
+| `open` | Boolean | Whether or not the disclosure is open. |
+
+#### Popover.Group
+
+This allows you to wrap multiple elements and Popover's inside a group.
+
+- When you tab out of a `Popover.Panel`, it will focus the next `Popover.Button` in line.
+- If focus left the `Popover.Group` it will close all the `Popover`'s.
+
+##### Props
+
+| Prop | Type                | Default | Description                                                    |
+| :--- | :------------------ | :------ | :------------------------------------------------------------- |
+| `as` | String \| Component | `div`   | The element or component the `Popover.Group` should render as. |
+
+##### Render prop object
+
+- None
