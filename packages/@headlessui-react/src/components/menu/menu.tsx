@@ -76,12 +76,14 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.CloseMenu]: state => ({
-    ...state,
-    activeItemIndex: null,
-    menuState: MenuStates.Closed,
-  }),
-  [ActionTypes.OpenMenu]: state => ({ ...state, menuState: MenuStates.Open }),
+  [ActionTypes.CloseMenu](state) {
+    if (state.menuState === MenuStates.Closed) return state
+    return { ...state, activeItemIndex: null, menuState: MenuStates.Closed }
+  },
+  [ActionTypes.OpenMenu](state) {
+    if (state.menuState === MenuStates.Open) return state
+    return { ...state, menuState: MenuStates.Open }
+  },
   [ActionTypes.GoToItem]: (state, action) => {
     let activeItemIndex = calculateActiveIndex(action, {
       resolveItems: () => state.items,
@@ -103,7 +105,10 @@ let reducers: {
     if (match === -1 || match === state.activeItemIndex) return { ...state, searchQuery }
     return { ...state, searchQuery, activeItemIndex: match }
   },
-  [ActionTypes.ClearSearch]: state => ({ ...state, searchQuery: '' }),
+  [ActionTypes.ClearSearch](state) {
+    if (state.searchQuery === '') return state
+    return { ...state, searchQuery: '' }
+  },
   [ActionTypes.RegisterItem]: (state, action) => ({
     ...state,
     items: [...state.items, { id: action.id, dataRef: action.dataRef }],
