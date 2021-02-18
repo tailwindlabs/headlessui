@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
+### Fixes
+
+- Fixed `outside click` not re-focusing the `Menu.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Fixed `outside click` not re-focusing the `Listbox.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+
 ### Added
 
 - Add `Disclosure`, `Disclosure.Button` and `Disclosure.Panel` components ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
@@ -14,11 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `Portal` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - Add `Switch.Description` component, which adds the `aria-describedby` to the actual Switch ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - Add `FocusTrap` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
-- Add `Flyout` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Popover` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Added
+
+- Add `SwitchDescription` component, which adds the `aria-describedby` to the actual Switch ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 
 ## [@headlessui/react@v0.3.2] - 2021-04-02
 
