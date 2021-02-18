@@ -9,6 +9,7 @@ type StateDefinition = {
   // State
   switchRef: Ref<HTMLButtonElement | null>
   labelRef: Ref<HTMLLabelElement | null>
+  descriptionRef: Ref<HTMLParagraphElement | null>
 }
 
 let GroupContext = Symbol('GroupContext') as InjectionKey<StateDefinition>
@@ -35,8 +36,9 @@ export let SwitchGroup = defineComponent({
   setup(props, { slots, attrs }) {
     let switchRef = ref<StateDefinition['switchRef']['value']>(null)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
+    let descriptionRef = ref<StateDefinition['descriptionRef']['value']>(null)
 
-    let api = { switchRef, labelRef }
+    let api = { switchRef, labelRef, descriptionRef }
 
     provide(GroupContext, api)
 
@@ -60,6 +62,7 @@ export let Switch = defineComponent({
     let { class: defaultClass, className = defaultClass } = this.$props
 
     let labelledby = computed(() => api?.labelRef.value?.id)
+    let describedby = computed(() => api?.descriptionRef.value?.id)
 
     let slot = { checked: this.$props.modelValue }
     let propsWeControl = {
@@ -70,6 +73,7 @@ export let Switch = defineComponent({
       class: resolvePropValue(className, slot),
       'aria-checked': this.$props.modelValue,
       'aria-labelledby': labelledby.value,
+      'aria-describedby': describedby.value,
       onClick: this.handleClick,
       onKeyup: this.handleKeyUp,
       onKeypress: this.handleKeyPress,
@@ -143,6 +147,35 @@ export let SwitchLabel = defineComponent({
         api.switchRef.value?.click()
         api.switchRef.value?.focus({ preventScroll: true })
       },
+    }
+  },
+})
+
+// ---
+
+export let SwitchDescription = defineComponent({
+  name: 'SwitchDescription',
+  props: { as: { type: [Object, String], default: 'p' } },
+  render() {
+    let propsWeControl = {
+      id: this.id,
+      ref: 'el',
+    }
+
+    return render({
+      props: { ...this.$props, ...propsWeControl },
+      slot: {},
+      attrs: this.$attrs,
+      slots: this.$slots,
+    })
+  },
+  setup() {
+    let api = useGroupContext('SwitchDescription')
+    let id = `headlessui-switch-description-${useId()}`
+
+    return {
+      id,
+      el: api.descriptionRef,
     }
   },
 })

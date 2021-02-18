@@ -1,16 +1,22 @@
-import { useCallback } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 
 export function useSyncRefs<TType>(
   ...refs: (React.MutableRefObject<TType> | ((instance: TType) => void) | null)[]
 ) {
+  let cache = useRef(refs)
+
+  useEffect(() => {
+    cache.current = refs
+  }, [refs])
+
   return useCallback(
     (value: TType) => {
-      refs.forEach(ref => {
-        if (ref === null) return
-        if (typeof ref === 'function') return ref(value)
-        ref.current = value
-      })
+      for (let ref of cache.current) {
+        if (ref == null) continue
+        if (typeof ref === 'function') ref(value)
+        else ref.current = value
+      }
     },
-    [refs]
+    [cache]
   )
 }

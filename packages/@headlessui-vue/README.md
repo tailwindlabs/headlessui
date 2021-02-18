@@ -297,13 +297,13 @@ To tell an element to render its children directly with no wrapper element, use 
 ##### Props
 
 | Prop | Type                | Default                           | Description                                           |
-| ---- | ------------------- | --------------------------------- | ----------------------------------------------------- |
+| :--- | :------------------ | :-------------------------------- | :---------------------------------------------------- |
 | `as` | String \| Component | `template` _(no wrapper element_) | The element or component the `Menu` should render as. |
 
 ##### Slot props
 
 | Prop   | Type    | Description                      |
-| ------ | ------- | -------------------------------- |
+| :----- | :------ | :------------------------------- |
 | `open` | Boolean | Whether or not the menu is open. |
 
 #### MenuButton
@@ -318,13 +318,13 @@ To tell an element to render its children directly with no wrapper element, use 
 ##### Props
 
 | Prop | Type                | Default  | Description                                                 |
-| ---- | ------------------- | -------- | ----------------------------------------------------------- |
+| :--- | :------------------ | :------- | :---------------------------------------------------------- |
 | `as` | String \| Component | `button` | The element or component the `MenuButton` should render as. |
 
 ##### Slot props
 
 | Prop   | Type    | Description                      |
-| ------ | ------- | -------------------------------- |
+| :----- | :------ | :------------------------------- |
 | `open` | Boolean | Whether or not the menu is open. |
 
 #### MenuItems
@@ -339,7 +339,7 @@ To tell an element to render its children directly with no wrapper element, use 
 ##### Props
 
 | Prop      | Type                | Default | Description                                                                       |
-| --------- | ------------------- | ------- | --------------------------------------------------------------------------------- |
+| :-------- | :------------------ | :------ | :-------------------------------------------------------------------------------- |
 | `as`      | String \| Component | `div`   | The element or component the `MenuItems` should render as.                        |
 | `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
 | `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
@@ -347,7 +347,7 @@ To tell an element to render its children directly with no wrapper element, use 
 ##### Slot props
 
 | Prop   | Type    | Description                      |
-| ------ | ------- | -------------------------------- |
+| :----- | :------ | :------------------------------- |
 | `open` | Boolean | Whether or not the menu is open. |
 
 #### MenuItem
@@ -363,14 +363,14 @@ To tell an element to render its children directly with no wrapper element, use 
 ##### Props
 
 | Prop       | Type                | Default                           | Description                                                                           |
-| ---------- | ------------------- | --------------------------------- | ------------------------------------------------------------------------------------- |
+| :--------- | :------------------ | :-------------------------------- | :------------------------------------------------------------------------------------ |
 | `as`       | String \| Component | `template` _(no wrapper element)_ | The element or component the `MenuItem` should render as.                             |
 | `disabled` | Boolean             | `false`                           | Whether or not the item should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Slot props
 
 | Prop       | Type    | Description                                                                        |
-| ---------- | ------- | ---------------------------------------------------------------------------------- |
+| :--------- | :------ | :--------------------------------------------------------------------------------- |
 | `active`   | Boolean | Whether or not the item is the active/focused item in the list.                    |
 | `disabled` | Boolean | Whether or not the item is the disabled for keyboard navigation and ARIA purposes. |
 
@@ -976,15 +976,15 @@ export default {
 ##### Props
 
 | Prop       | Type                | Default                           | Description                                              |
-| ---------- | ------------------- | --------------------------------- | -------------------------------------------------------- |
+| :--------- | :------------------ | :-------------------------------- | :------------------------------------------------------- |
 | `as`       | String \| Component | `template` _(no wrapper element_) | The element or component the `Listbox` should render as. |
-| `v-model`  | `T`                 |                                   | The selected value.                                      |
+| `v-model`  | `T`                 | -                                 | The selected value.                                      |
 | `disabled` | Boolean             | `false`                           | Enable/Disable the `Listbox` component.                  |
 
 ##### Slot props
 
 | Prop       | Type    | Description                             |
-| ---------- | ------- | --------------------------------------- |
+| :--------- | :------ | :-------------------------------------- |
 | `open`     | Boolean | Whether or not the listbox is open.     |
 | `disabled` | Boolean | Whether or not the listbox is disabled. |
 
@@ -1000,13 +1000,13 @@ export default {
 ##### Props
 
 | Prop | Type                | Default  | Description                                                    |
-| ---- | ------------------- | -------- | -------------------------------------------------------------- |
+| :--- | :------------------ | :------- | :------------------------------------------------------------- |
 | `as` | String \| Component | `button` | The element or component the `ListboxButton` should render as. |
 
 ##### Slot props
 
 | Prop       | Type    | Description                             |
-| ---------- | ------- | --------------------------------------- |
+| :--------- | :------ | :-------------------------------------- |
 | `open`     | Boolean | Whether or not the listbox is open.     |
 | `disabled` | Boolean | Whether or not the listbox is disabled. |
 
@@ -1019,13 +1019,13 @@ export default {
 ##### Props
 
 | Prop | Type                | Default | Description                                                   |
-| ---- | ------------------- | ------- | ------------------------------------------------------------- |
+| :--- | :------------------ | :------ | :------------------------------------------------------------ |
 | `as` | String \| Component | `label` | The element or component the `ListboxLabel` should render as. |
 
 ##### Slot props
 
 | Prop       | Type    | Description                             |
-| ---------- | ------- | --------------------------------------- |
+| :--------- | :------ | :-------------------------------------- |
 | `open`     | Boolean | Whether or not the listbox is open.     |
 | `disabled` | Boolean | Whether or not the listbox is disabled. |
 
@@ -1041,7 +1041,7 @@ export default {
 ##### Props
 
 | Prop      | Type                | Default | Description                                                                       |
-| --------- | ------------------- | ------- | --------------------------------------------------------------------------------- |
+| :-------- | :------------------ | :------ | :-------------------------------------------------------------------------------- |
 | `as`      | String \| Component | `ul`    | The element or component the `ListboxOptions` should render as.                   |
 | `static`  | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
 | `unmount` | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
@@ -1049,7 +1049,7 @@ export default {
 ##### Slot props
 
 | Prop   | Type    | Description                         |
-| ------ | ------- | ----------------------------------- |
+| :----- | :------ | :---------------------------------- |
 | `open` | Boolean | Whether or not the listbox is open. |
 
 #### ListboxOption
@@ -1061,15 +1061,15 @@ export default {
 ##### Props
 
 | Prop       | Type                | Default | Description                                                                             |
-| ---------- | ------------------- | ------- | --------------------------------------------------------------------------------------- |
+| :--------- | :------------------ | :------ | :-------------------------------------------------------------------------------------- |
 | `as`       | String \| Component | `li`    | The element or component the `ListboxOption` should render as.                          |
-| `value`    | `T`                 |         | The option value.                                                                       |
+| `value`    | `T`                 | -       | The option value.                                                                       |
 | `disabled` | Boolean             | `false` | Whether or not the option should be disabled for keyboard navigation and ARIA purposes. |
 
 ##### Slot props
 
 | Prop       | Type    | Description                                                                          |
-| ---------- | ------- | ------------------------------------------------------------------------------------ |
+| :--------- | :------ | :----------------------------------------------------------------------------------- |
 | `active`   | Boolean | Whether or not the option is the active/focused option in the list.                  |
 | `selected` | Boolean | Whether or not the option is the selected option in the list.                        |
 | `disabled` | Boolean | Whether or not the option is the disabled for keyboard navigation and ARIA purposes. |
@@ -1086,7 +1086,7 @@ The `Switch` component and related child components are used to quickly build cu
 
 ### Basic example
 
-Switches are built using the `Switch` component. Optionally you can also use the `SwitchGroup` and `SwitchLabel` components.
+Switches are built using the `Switch` component. Optionally you can also use the `SwitchGroup`, `SwitchLabel` and `SwitchDescription` components.
 
 ```vue
 <template>
@@ -1106,13 +1106,14 @@ Switches are built using the `Switch` component. Optionally you can also use the
 
 <script>
 import { ref } from 'vue'
-import { SwitchGroup, Switch, SwitchLabel } from '@headlessui/vue'
+import { SwitchGroup, Switch, SwitchLabel, SwitchDescription } from '@headlessui/vue'
 
 export default {
   components: {
     SwitchGroup,
     Switch,
     SwitchLabel,
+    SwitchDescription,
   },
   setup() {
     const switchValue = ref(false)
@@ -1186,14 +1187,14 @@ export default {
 ##### Props
 
 | Prop      | Type                | Default  | Description                                             |
-| --------- | ------------------- | -------- | ------------------------------------------------------- |
+| :-------- | :------------------ | :------- | :------------------------------------------------------ |
 | `as`      | String \| Component | `button` | The element or component the `Switch` should render as. |
-| `v-model` | `T`                 |          | The switch value.                                       |
+| `v-model` | `T`                 | -        | The switch value.                                       |
 
 ##### Slot props
 
 | Prop      | Type    | Description                           |
-| --------- | ------- | ------------------------------------- |
+| :-------- | :------ | :------------------------------------ |
 | `checked` | Boolean | Whether or not the switch is checked. |
 
 #### SwitchLabel
@@ -1210,8 +1211,25 @@ export default {
 ##### Props
 
 | Prop | Type                | Default | Description                                                  |
-| ---- | ------------------- | ------- | ------------------------------------------------------------ |
+| :--- | :------------------ | :------ | :----------------------------------------------------------- |
 | `as` | String \| Component | `label` | The element or component the `SwitchLabel` should render as. |
+
+#### SwitchDescription
+
+```html
+<SwitchGroup>
+  <SwitchDescription>Enable notifications</SwitchDescription>
+  <Switch v-model="switchState">
+    <!-- ... -->
+  </Switch>
+</SwitchGroup>
+```
+
+##### Props
+
+| Prop | Type                | Default | Description                                                        |
+| :--- | :------------------ | :------ | :----------------------------------------------------------------- |
+| `as` | String \| Component | `p`     | The element or component the `SwitchDescription` should render as. |
 
 #### SwitchGroup
 
@@ -1227,5 +1245,5 @@ export default {
 ##### Props
 
 | Prop | Type                | Default                           | Description                                                  |
-| ---- | ------------------- | --------------------------------- | ------------------------------------------------------------ |
+| :--- | :------------------ | :-------------------------------- | :----------------------------------------------------------- |
 | `as` | String \| Component | `template` _(no wrapper element)_ | The element or component the `SwitchGroup` should render as. |
