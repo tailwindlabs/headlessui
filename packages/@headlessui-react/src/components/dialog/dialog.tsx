@@ -79,7 +79,7 @@ DialogContext.displayName = 'DialogContext'
 function useDialogContext(component: string) {
   let context = useContext(DialogContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Dialog.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <${Dialog.displayName} /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useDialogContext)
     throw err
   }
@@ -284,7 +284,7 @@ type OverlayPropsWeControl = 'id' | 'aria-hidden' | 'onClick'
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
 >(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
-  let [{ dialogState, close }] = useDialogContext([Dialog.name, Overlay.name].join('.'))
+  let [{ dialogState, close }] = useDialogContext([Dialog.displayName, Overlay.name].join('.'))
   let overlayRef = useSyncRefs(ref)
 
   let id = `headlessui-dialog-overlay-${useId()}`
@@ -323,7 +323,7 @@ type TitlePropsWeControl = 'id' | 'ref'
 function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   props: Props<TTag, TitleRenderPropArg, TitlePropsWeControl>
 ) {
-  let [{ dialogState, setTitle }] = useDialogContext([Dialog.name, Title.name].join('.'))
+  let [{ dialogState, setTitle }] = useDialogContext([Dialog.displayName, Title.name].join('.'))
 
   let id = `headlessui-dialog-title-${useId()}`
 
@@ -348,7 +348,7 @@ function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
   props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
 ) {
   let [{ dialogState, setDescription }] = useDialogContext(
-    [Dialog.name, Description.name].join('.')
+    [Dialog.displayName, Description.name].join('.')
   )
 
   let id = `headlessui-dialog-description-${useId()}`
