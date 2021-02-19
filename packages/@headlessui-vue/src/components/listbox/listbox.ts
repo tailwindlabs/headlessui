@@ -20,6 +20,7 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { dom } from '../../utils/dom'
 
 enum ListboxStates {
   Open,
@@ -184,11 +185,11 @@ export let Listbox = defineComponent({
         let active = document.activeElement
 
         if (listboxState.value !== ListboxStates.Open) return
-        if (buttonRef.value?.contains(target)) return
+        if (dom(buttonRef)?.contains(target)) return
 
-        if (!optionsRef.value?.contains(target)) api.closeListbox()
+        if (!dom(optionsRef)?.contains(target)) api.closeListbox()
         if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) buttonRef.value?.focus({ preventScroll: true })
+        if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
       }
 
       window.addEventListener('mousedown', handler)
@@ -231,7 +232,7 @@ export let ListboxLabel = defineComponent({
       id,
       el: api.labelRef,
       handleClick() {
-        api.buttonRef.value?.focus({ preventScroll: true })
+        dom(api.buttonRef)?.focus({ preventScroll: true })
       },
     }
   },
@@ -253,10 +254,10 @@ export let ListboxButton = defineComponent({
       id: this.id,
       type: 'button',
       'aria-haspopup': true,
-      'aria-controls': api.optionsRef.value?.id,
+      'aria-controls': dom(api.optionsRef)?.id,
       'aria-expanded': api.listboxState.value === ListboxStates.Open ? true : undefined,
       'aria-labelledby': api.labelRef.value
-        ? [api.labelRef.value.id, this.id].join(' ')
+        ? [dom(api.labelRef)?.id, this.id].join(' ')
         : undefined,
       disabled: api.disabled,
       onKeydown: this.handleKeyDown,
@@ -284,7 +285,7 @@ export let ListboxButton = defineComponent({
           event.preventDefault()
           api.openListbox()
           nextTick(() => {
-            api.optionsRef.value?.focus({ preventScroll: true })
+            dom(api.optionsRef)?.focus({ preventScroll: true })
             if (!api.value.value) api.goToOption(Focus.First)
           })
           break
@@ -293,7 +294,7 @@ export let ListboxButton = defineComponent({
           event.preventDefault()
           api.openListbox()
           nextTick(() => {
-            api.optionsRef.value?.focus({ preventScroll: true })
+            dom(api.optionsRef)?.focus({ preventScroll: true })
             if (!api.value.value) api.goToOption(Focus.Last)
           })
           break
@@ -304,11 +305,11 @@ export let ListboxButton = defineComponent({
       if (api.disabled) return
       if (api.listboxState.value === ListboxStates.Open) {
         api.closeListbox()
-        nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+        nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
         api.openListbox()
-        nextFrame(() => api.optionsRef.value?.focus({ preventScroll: true }))
+        nextFrame(() => dom(api.optionsRef)?.focus({ preventScroll: true }))
       }
     }
 
@@ -334,7 +335,7 @@ export let ListboxOptions = defineComponent({
         api.activeOptionIndex.value === null
           ? undefined
           : api.options.value[api.activeOptionIndex.value]?.id,
-      'aria-labelledby': api.labelRef.value?.id ?? api.buttonRef.value?.id,
+      'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
       id: this.id,
       onKeydown: this.handleKeyDown,
       role: 'listbox',
@@ -377,7 +378,7 @@ export let ListboxOptions = defineComponent({
             api.select(dataRef.value)
           }
           api.closeListbox()
-          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.ArrowDown:
@@ -401,7 +402,7 @@ export let ListboxOptions = defineComponent({
         case Keys.Escape:
           event.preventDefault()
           api.closeListbox()
-          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
@@ -477,7 +478,7 @@ export let ListboxOption = defineComponent({
       if (disabled) return event.preventDefault()
       api.select(value)
       api.closeListbox()
-      nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+      nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {

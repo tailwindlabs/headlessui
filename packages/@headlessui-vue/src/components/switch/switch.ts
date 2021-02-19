@@ -4,6 +4,7 @@ import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { dom } from '../../utils/dom'
 
 type StateDefinition = {
   // State
@@ -61,8 +62,8 @@ export let Switch = defineComponent({
     let api = inject(GroupContext, null)
     let { class: defaultClass, className = defaultClass } = this.$props
 
-    let labelledby = computed(() => api?.labelRef.value?.id)
-    let describedby = computed(() => api?.descriptionRef.value?.id)
+    let labelledby = computed(() => dom(api?.labelRef)?.id)
+    let describedby = computed(() => dom(api?.descriptionRef)?.id)
 
     let slot = { checked: this.$props.modelValue }
     let propsWeControl = {
@@ -144,8 +145,10 @@ export let SwitchLabel = defineComponent({
       id,
       el: api.labelRef,
       handleClick() {
-        api.switchRef.value?.click()
-        api.switchRef.value?.focus({ preventScroll: true })
+        let el = dom(api.switchRef)
+
+        el?.click()
+        el?.focus({ preventScroll: true })
       },
     }
   },

@@ -16,6 +16,7 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { dom } from '../../utils/dom'
 
 enum MenuStates {
   Open,
@@ -141,11 +142,11 @@ export let Menu = defineComponent({
         let active = document.activeElement
 
         if (menuState.value !== MenuStates.Open) return
-        if (buttonRef.value?.contains(target)) return
+        if (dom(buttonRef)?.contains(target)) return
 
-        if (!itemsRef.value?.contains(target)) api.closeMenu()
+        if (!dom(itemsRef)?.contains(target)) api.closeMenu()
         if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) buttonRef.value?.focus({ preventScroll: true })
+        if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
       }
 
       window.addEventListener('mousedown', handler)
@@ -176,7 +177,7 @@ export let MenuButton = defineComponent({
       id: this.id,
       type: 'button',
       'aria-haspopup': true,
-      'aria-controls': api.itemsRef.value?.id,
+      'aria-controls': dom(api.itemsRef)?.id,
       'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
       onKeydown: this.handleKeyDown,
       onClick: this.handleClick,
@@ -203,7 +204,7 @@ export let MenuButton = defineComponent({
           event.preventDefault()
           api.openMenu()
           nextTick(() => {
-            api.itemsRef.value?.focus({ preventScroll: true })
+            dom(api.itemsRef)?.focus({ preventScroll: true })
             api.goToItem(Focus.First)
           })
           break
@@ -212,7 +213,7 @@ export let MenuButton = defineComponent({
           event.preventDefault()
           api.openMenu()
           nextTick(() => {
-            api.itemsRef.value?.focus({ preventScroll: true })
+            dom(api.itemsRef)?.focus({ preventScroll: true })
             api.goToItem(Focus.Last)
           })
           break
@@ -223,11 +224,11 @@ export let MenuButton = defineComponent({
       if (props.disabled) return
       if (api.menuState.value === MenuStates.Open) {
         api.closeMenu()
-        nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+        nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
         api.openMenu()
-        nextFrame(() => api.itemsRef.value?.focus({ preventScroll: true }))
+        nextFrame(() => dom(api.itemsRef)?.focus({ preventScroll: true }))
       }
     }
 
@@ -255,7 +256,7 @@ export let MenuItems = defineComponent({
         api.activeItemIndex.value === null
           ? undefined
           : api.items.value[api.activeItemIndex.value]?.id,
-      'aria-labelledby': api.buttonRef.value?.id,
+      'aria-labelledby': dom(api.buttonRef)?.id,
       id: this.id,
       onKeydown: this.handleKeyDown,
       role: 'menu',
@@ -279,7 +280,7 @@ export let MenuItems = defineComponent({
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
     watchEffect(() => {
-      let container = api.itemsRef.value
+      let container = dom(api.itemsRef)
       if (!container) return
       if (api.menuState.value !== MenuStates.Open) return
 
@@ -316,7 +317,7 @@ export let MenuItems = defineComponent({
             document.getElementById(id)?.click()
           }
           api.closeMenu()
-          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.ArrowDown:
@@ -340,7 +341,7 @@ export let MenuItems = defineComponent({
         case Keys.Escape:
           event.preventDefault()
           api.closeMenu()
-          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
@@ -398,7 +399,7 @@ export let MenuItem = defineComponent({
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault()
       api.closeMenu()
-      nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+      nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {

@@ -231,6 +231,46 @@ describe('Rendering', () => {
       assertMenu({ state: MenuState.Visible })
     })
 
+    it('should be possible to render a MenuButton using a template `as` prop and a custom element', async () => {
+      renderTemplate({
+        template: `
+          <Menu>
+            <MenuButton as="template" v-slot="{ open }">
+              <MyCustomButton :data-open="open">Options</MyCustomButton>
+            </MenuButton>
+            <MenuItems>
+              <MenuItem>Item A</MenuItem>
+              <MenuItem>Item B</MenuItem>
+              <MenuItem>Item C</MenuItem>
+            </MenuItems>
+          </Menu>
+        `,
+        components: {
+          MyCustomButton: defineComponent({
+            setup(_, { slots }) {
+              return () => {
+                return h('button', slots.default?.())
+              }
+            },
+          }),
+        },
+      })
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1', 'data-open': 'false' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      await click(getMenuButton())
+
+      assertMenuButton({
+        state: MenuState.Visible,
+        attributes: { id: 'headlessui-menu-button-1', 'data-open': 'true' },
+      })
+      assertMenu({ state: MenuState.Visible })
+    })
+
     it(
       'should yell when we render a MenuButton using a template `as` prop that contains multiple children',
       suppressConsoleLogs(() => {
