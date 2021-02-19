@@ -1093,13 +1093,13 @@ Switches are built using the `Switch` component. Optionally you can also use the
   <Switch
     as="button"
     v-model="switchValue"
-    class="relative inline-flex w-8 h-6 rounded-full"
+    class="relative inline-flex items-center h-6 rounded-full w-11"
     :class="switchValue ? 'bg-blue-600' : 'bg-gray-200'"
     v-slot="{ checked }"
   >
     <span
       class="inline-block w-4 h-4 transform bg-white rounded-full"
-      :class="{ 'translate-x-5': checked, 'translate-x-0': !checked }"
+      :class="{ 'translate-x-6': checked, 'translate-x-1': !checked }"
     />
   </Switch>
 </template>
@@ -1140,13 +1140,13 @@ Clicking the label will toggle the switch state, like you'd expect from a native
     <Switch
       as="button"
       v-model="switchValue"
-      class="relative inline-flex w-8 h-6 rounded-full"
+      class="relative inline-flex items-center h-6 rounded-full w-11"
       :class="switchValue ? 'bg-blue-600' : 'bg-gray-200'"
       v-slot="{ checked }"
     >
       <span
         class="inline-block w-4 h-4 transform bg-white rounded-full"
-        :class="{ 'translate-x-5': checked, 'translate-x-0': !checked }"
+        :class="{ 'translate-x-6': checked, 'translate-x-1': !checked }"
       />
     </Switch>
   </SwitchGroup>
