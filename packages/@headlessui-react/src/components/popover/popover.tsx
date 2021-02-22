@@ -149,7 +149,7 @@ interface PopoverRenderPropArg {
 }
 
 export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
-  props: Props<TTag, { open: boolean }>
+  props: Props<TTag, PopoverRenderPropArg>
 ) {
   let buttonId = `headlessui-popover-button-${useId()}`
   let panelId = `headlessui-popover-panel-${useId()}`
