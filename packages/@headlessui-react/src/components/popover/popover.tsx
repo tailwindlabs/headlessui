@@ -143,12 +143,12 @@ function stateReducer(state: StateDefinition, action: Actions) {
 
 // ---
 
-let DEFAULT_FLYOUT_TAG = 'div' as const
+let DEFAULT_POPOVER_TAG = 'div' as const
 interface PopoverRenderPropArg {
   open: boolean
 }
 
-export function Popover<TTag extends ElementType = typeof DEFAULT_FLYOUT_TAG>(
+export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   props: Props<TTag, { open: boolean }>
 ) {
   let buttonId = `headlessui-popover-button-${useId()}`
@@ -228,7 +228,7 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_FLYOUT_TAG>(
 
   return (
     <PopoverContext.Provider value={reducerBag}>
-      {render(props, propsBag, DEFAULT_FLYOUT_TAG)}
+      {render(props, propsBag, DEFAULT_POPOVER_TAG)}
     </PopoverContext.Provider>
   )
 }
