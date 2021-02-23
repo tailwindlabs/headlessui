@@ -34,6 +34,7 @@ import {
   getListboxOptions,
   getListboxLabel,
   ListboxState,
+  getByText,
 } from '../../test-utils/accessibility-assertions'
 
 jest.mock('../../hooks/use-id')
@@ -2878,7 +2879,7 @@ describe('Mouse interactions', () => {
       })
       assertListbox({ state: ListboxState.InvisibleUnmounted })
 
-      // Try to open the menu
+      // Try to open the listbox
       await click(getListboxButton(), MouseButton.Right)
 
       // Verify it is still closed
@@ -3071,19 +3072,19 @@ describe('Mouse interactions', () => {
 
       let [button1, button2] = getListboxButtons()
 
-      // Click the first menu button
+      // Click the first listbox button
       await click(button1)
-      expect(getListboxes()).toHaveLength(1) // Only 1 menu should be visible
+      expect(getListboxes()).toHaveLength(1) // Only 1 listbox should be visible
 
-      // Ensure the open menu is linked to the first button
+      // Ensure the open listbox is linked to the first button
       assertListboxButtonLinkedWithListbox(button1, getListbox())
 
-      // Click the second menu button
+      // Click the second listbox button
       await click(button2)
 
-      expect(getListboxes()).toHaveLength(1) // Only 1 menu should be visible
+      expect(getListboxes()).toHaveLength(1) // Only 1 listbox should be visible
 
-      // Ensure the open menu is linked to the second button
+      // Ensure the open listbox is linked to the second button
       assertListboxButtonLinkedWithListbox(button2, getListbox())
     })
   )
@@ -3115,6 +3116,47 @@ describe('Mouse interactions', () => {
 
       // Verify the button is focused again
       assertActiveElement(getListboxButton())
+    })
+  )
+
+  it(
+    'should be possible to click outside of the listbox, on an element which is within a focusable element, which closes the listbox',
+    suppressConsoleLogs(async () => {
+      let focusFn = jest.fn()
+      render(
+        <div>
+          <Listbox value={undefined} onChange={console.log}>
+            <Listbox.Button onFocus={focusFn}>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">alice</Listbox.Option>
+              <Listbox.Option value="bob">bob</Listbox.Option>
+              <Listbox.Option value="charlie">charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+
+          <button id="btn">
+            <span>Next</span>
+          </button>
+        </div>
+      )
+
+      // Click the listbox button
+      await click(getListboxButton())
+
+      // Ensure the listbox is open
+      assertListbox({ state: ListboxState.Visible })
+
+      // Click the span inside the button
+      await click(getByText('Next'))
+
+      // Ensure the listbox is closed
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Ensure the outside button is focused
+      assertActiveElement(document.getElementById('btn'))
+
+      // Ensure that the focus button only got focus once (first click)
+      expect(focusFn).toHaveBeenCalledTimes(1)
     })
   )
 

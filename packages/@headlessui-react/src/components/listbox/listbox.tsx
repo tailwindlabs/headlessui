@@ -31,7 +31,7 @@ import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement } from '../../utils/focus-management'
+import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 
 enum ListboxStates {
   Open,
@@ -229,7 +229,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
 
       dispatch({ type: ActionTypes.CloseListbox })
 
-      if (!isFocusableElement(target)) {
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
         event.preventDefault()
         buttonRef.current?.focus()
       }
