@@ -1,3 +1,5 @@
+import { match } from './match'
+
 // Credit:
 //  - https://stackoverflow.com/a/30753870
 let focusableSelector = [
@@ -22,22 +24,22 @@ let focusableSelector = [
   .join(',')
 
 export enum Focus {
-  /* Focus the first non-disabled element */
+  /** Focus the first non-disabled element */
   First = 1 << 0,
 
-  /* Focus the previous non-disabled element */
+  /** Focus the previous non-disabled element */
   Previous = 1 << 1,
 
-  /* Focus the next non-disabled element */
+  /** Focus the next non-disabled element */
   Next = 1 << 2,
 
-  /* Focus the last non-disabled element */
+  /** Focus the last non-disabled element */
   Last = 1 << 3,
 
-  /* Wrap tab around */
+  /** Wrap tab around */
   WrapAround = 1 << 4,
 
-  /* Prevent scrolling the focusable elements into view */
+  /** Prevent scrolling the focusable elements into view */
   NoScroll = 1 << 5,
 }
 
@@ -58,8 +60,35 @@ export function getFocusableElements(container: HTMLElement | null = document.bo
   return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector))
 }
 
-export function isFocusableElement(element: HTMLElement) {
-  return element.matches(focusableSelector)
+export enum FocusableMode {
+  /** The element itself must be focusable. */
+  Strict,
+
+  /** The element should be inside of a focusable element. */
+  Loose,
+}
+
+export function isFocusableElement(
+  element: HTMLElement,
+  mode: FocusableMode = FocusableMode.Strict
+) {
+  if (element === document.body) return false
+
+  return match(mode, {
+    [FocusableMode.Strict]() {
+      return element.matches(focusableSelector)
+    },
+    [FocusableMode.Loose]() {
+      let next: HTMLElement | null = element
+
+      while (next !== null) {
+        if (next.matches(focusableSelector)) return true
+        next = next.parentElement
+      }
+
+      return false
+    },
+  })
 }
 
 export function focusElement(element: HTMLElement | null) {
