@@ -191,9 +191,14 @@ export async function click(
         fireEvent.mouseDown(element, options)
       }
 
-      // Ensure to trigger a `focus` event if the element is focusable
-      if ((element as HTMLElement)?.matches(focusableSelector)) {
-        ;(element as HTMLElement).focus()
+      // Ensure to trigger a `focus` event if the element is focusable, or within a focusable element
+      let next: HTMLElement | null = element as HTMLElement | null
+      while (next !== null) {
+        if (next.matches(focusableSelector)) {
+          next.focus()
+          break
+        }
+        next = next.parentElement
       }
 
       fireEvent.pointerUp(element, options)

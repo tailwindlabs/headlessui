@@ -31,7 +31,7 @@ import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement } from '../../utils/focus-management'
+import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 
 enum MenuStates {
   Open,
@@ -185,7 +185,7 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
 
       dispatch({ type: ActionTypes.CloseMenu })
 
-      if (!isFocusableElement(target)) {
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
         event.preventDefault()
         buttonRef.current?.focus()
       }

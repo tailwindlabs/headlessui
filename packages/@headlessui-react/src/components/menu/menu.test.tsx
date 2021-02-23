@@ -17,6 +17,7 @@ import {
   getMenu,
   getMenus,
   getMenuItems,
+  getByText,
 } from '../../test-utils/accessibility-assertions'
 import {
   click,
@@ -2662,6 +2663,47 @@ describe('Mouse interactions', () => {
 
       // Ensure the open menu is linked to the second button
       assertMenuButtonLinkedWithMenu(button2, getMenu())
+    })
+  )
+
+  it(
+    'should be possible to click outside of the menu, on an element which is within a focusable element, which closes the menu',
+    suppressConsoleLogs(async () => {
+      let focusFn = jest.fn()
+      render(
+        <div>
+          <Menu>
+            <Menu.Button onFocus={focusFn}>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">alice</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+              <Menu.Item as="a">charlie</Menu.Item>
+            </Menu.Items>
+          </Menu>
+
+          <button id="btn">
+            <span>Next</span>
+          </button>
+        </div>
+      )
+
+      // Click the menu button
+      await click(getMenuButton())
+
+      // Ensure the menu is open
+      assertMenu({ state: MenuState.Visible })
+
+      // Click the span inside the button
+      await click(getByText('Next'))
+
+      // Ensure the menu is closed
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Ensure the outside button is focused
+      assertActiveElement(document.getElementById('btn'))
+
+      // Ensure that the focus button only got focus once (first click)
+      expect(focusFn).toHaveBeenCalledTimes(1)
     })
   )
 
