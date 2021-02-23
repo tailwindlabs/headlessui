@@ -2879,7 +2879,7 @@ describe('Mouse interactions', () => {
       })
       assertListbox({ state: ListboxState.InvisibleUnmounted })
 
-      // Try to open the menu
+      // Try to open the listbox
       await click(getListboxButton(), MouseButton.Right)
 
       // Verify it is still closed
@@ -3072,19 +3072,19 @@ describe('Mouse interactions', () => {
 
       let [button1, button2] = getListboxButtons()
 
-      // Click the first menu button
+      // Click the first listbox button
       await click(button1)
-      expect(getListboxes()).toHaveLength(1) // Only 1 menu should be visible
+      expect(getListboxes()).toHaveLength(1) // Only 1 listbox should be visible
 
-      // Ensure the open menu is linked to the first button
+      // Ensure the open listbox is linked to the first button
       assertListboxButtonLinkedWithListbox(button1, getListbox())
 
-      // Click the second menu button
+      // Click the second listbox button
       await click(button2)
 
-      expect(getListboxes()).toHaveLength(1) // Only 1 menu should be visible
+      expect(getListboxes()).toHaveLength(1) // Only 1 listbox should be visible
 
-      // Ensure the open menu is linked to the second button
+      // Ensure the open listbox is linked to the second button
       assertListboxButtonLinkedWithListbox(button2, getListbox())
     })
   )
@@ -3120,7 +3120,7 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to click outside of the menu, on an element which is within a focusable element, which closes the menu',
+    'should be possible to click outside of the listbox, on an element which is within a focusable element, which closes the listbox',
     suppressConsoleLogs(async () => {
       let focusFn = jest.fn()
       render(
