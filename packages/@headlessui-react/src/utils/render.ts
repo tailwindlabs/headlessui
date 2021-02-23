@@ -104,6 +104,11 @@ function _render<TTag extends ElementType, TBag>(
     | ReactElement
     | ReactElement[]
 
+  // Allow for className to be a function with the bag as the contents
+  if (passThroughProps.className && typeof passThroughProps.className === 'function') {
+    ;(passThroughProps as any).className = passThroughProps.className(bag)
+  }
+
   if (Component === Fragment) {
     if (Object.keys(passThroughProps).length > 0) {
       if (Array.isArray(resolvedChildren) && resolvedChildren.length > 1) {

@@ -17,11 +17,12 @@ export type Props<
   TSlot = any,
   TOmitableProps extends keyof any = __
 > = (TOmitableProps extends __
-  ? Omit<PropsOf<TTag>, 'as' | 'children' | 'refName'>
-  : Omit<PropsOf<TTag>, TOmitableProps | 'as' | 'children' | 'refName'>) & {
+  ? Omit<PropsOf<TTag>, 'as' | 'children' | 'refName' | 'className'>
+  : Omit<PropsOf<TTag>, TOmitableProps | 'as' | 'children' | 'refName' | 'className'>) & {
   as?: TTag
   children?: ReactNode | ((bag: TSlot) => ReactElement)
   refName?: string
+  className?: string | ((bag: TSlot) => string)
 }
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
