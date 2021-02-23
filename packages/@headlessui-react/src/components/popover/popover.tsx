@@ -30,6 +30,7 @@ import {
   focusIn,
   FocusResult,
   isFocusableElement,
+  FocusableMode,
 } from '../../utils/focus-management'
 
 enum PopoverStates {
@@ -210,7 +211,7 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_FLYOUT_TAG>(
 
       dispatch({ type: ActionTypes.ClosePopover })
 
-      if (!isFocusableElement(target)) {
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
         event.preventDefault()
         button?.focus()
       }
