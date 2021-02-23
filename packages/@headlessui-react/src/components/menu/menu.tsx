@@ -240,19 +240,13 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         case Keys.ArrowDown:
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
-          d.nextFrame(() => {
-            state.itemsRef.current?.focus({ preventScroll: true })
-            dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
-          })
+          d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.First }))
           break
 
         case Keys.ArrowUp:
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenMenu })
-          d.nextFrame(() => {
-            state.itemsRef.current?.focus({ preventScroll: true })
-            dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
-          })
+          d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last }))
           break
       }
     },
@@ -269,7 +263,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenMenu })
-        d.nextFrame(() => state.itemsRef.current?.focus({ preventScroll: true }))
       }
     },
     [dispatch, d, state, props.disabled]
@@ -325,6 +318,15 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     let container = state.itemsRef.current
     if (!container) return
     if (state.menuState !== MenuStates.Open) return
+    if (container === document.activeElement) return
+
+    container.focus({ preventScroll: true })
+  }, [state.menuState, state.itemsRef])
+
+  useIsoMorphicEffect(() => {
+    let container = state.itemsRef.current
+    if (!container) return
+    if (state.menuState !== MenuStates.Open) return
 
     let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
       acceptNode(node: HTMLElement) {
@@ -337,7 +339,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     while (walker.nextNode()) {
       ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
     }
-  })
+  }, [state.menuState, state.itemsRef])
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
