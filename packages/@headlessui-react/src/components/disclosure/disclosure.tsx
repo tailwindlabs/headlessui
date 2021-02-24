@@ -1,5 +1,5 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#disclosure
-import {
+import React, {
   createContext,
   useContext,
   Fragment,
@@ -23,7 +23,6 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import React from 'react'
 
 enum DisclosureStates {
   Open,

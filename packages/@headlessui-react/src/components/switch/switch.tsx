@@ -16,7 +16,6 @@ import { Props } from '../../types'
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 
 interface StateDefinition {
@@ -95,19 +94,12 @@ type SwitchPropsWeControl =
   | 'onKeyPress'
 
 export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
-  props: Props<
-    TTag,
-    SwitchRenderPropArg,
-    SwitchPropsWeControl | 'checked' | 'onChange' | 'className'
-  > & {
+  props: Props<TTag, SwitchRenderPropArg, SwitchPropsWeControl | 'checked' | 'onChange'> & {
     checked: boolean
     onChange(checked: boolean): void
-
-    // Special treatment, can either be a string or a function that resolves to a string
-    className?: ((bag: SwitchRenderPropArg) => string) | string
   }
 ) {
-  let { checked, onChange, className, ...passThroughProps } = props
+  let { checked, onChange, ...passThroughProps } = props
   let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
 
@@ -140,7 +132,6 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     ref: groupContext === null ? undefined : groupContext.setSwitch,
     role: 'switch',
     tabIndex: 0,
-    className: resolvePropValue(className, propsBag),
     'aria-checked': checked,
     'aria-labelledby': groupContext?.label?.id,
     'aria-describedby': groupContext?.description?.id,

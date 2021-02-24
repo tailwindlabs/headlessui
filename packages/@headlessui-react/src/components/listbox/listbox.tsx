@@ -29,7 +29,6 @@ import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 
@@ -525,15 +524,12 @@ function Option<
   // But today is not that day..
   TType = Parameters<typeof Listbox>[0]['value']
 >(
-  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'className' | 'value'> & {
+  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'value'> & {
     disabled?: boolean
     value: TType
-
-    // Special treatment, can either be a string or a function that resolves to a string
-    className?: ((bag: OptionRenderPropArg) => string) | string
   }
 ) {
-  let { disabled = false, value, className, ...passthroughProps } = props
+  let { disabled = false, value, ...passthroughProps } = props
   let [state, dispatch] = useListboxContext([Listbox.name, Option.name].join('.'))
   let id = `headlessui-listbox-option-${useId()}`
   let active =
@@ -610,7 +606,6 @@ function Option<
     id,
     role: 'option',
     tabIndex: -1,
-    className: resolvePropValue(className, propsBag),
     'aria-disabled': disabled === true ? true : undefined,
     'aria-selected': selected === true ? true : undefined,
     onClick: handleClick,

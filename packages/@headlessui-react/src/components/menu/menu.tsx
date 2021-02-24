@@ -29,7 +29,6 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 
@@ -446,15 +445,12 @@ type MenuItemPropsWeControl =
   | 'onFocus'
 
 function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
-  props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl | 'className'> & {
+  props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl> & {
     disabled?: boolean
     onClick?: (event: { preventDefault: Function }) => void
-
-    // Special treatment, can either be a string or a function that resolves to a string
-    className?: ((bag: ItemRenderPropArg) => string) | string
   }
 ) {
-  let { disabled = false, className, onClick, ...passthroughProps } = props
+  let { disabled = false, onClick, ...passthroughProps } = props
   let [state, dispatch] = useMenuContext([Menu.name, Item.name].join('.'))
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
@@ -514,7 +510,6 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     id,
     role: 'menuitem',
     tabIndex: -1,
-    className: resolvePropValue(className, propsBag),
     'aria-disabled': disabled === true ? true : undefined,
     onClick: handleClick,
     onFocus: handleFocus,
