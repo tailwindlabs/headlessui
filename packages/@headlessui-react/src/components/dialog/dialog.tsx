@@ -33,18 +33,18 @@ enum DialogStates {
 }
 
 interface StateDefinition {
-  titleElement: HTMLElement | null
-  descriptionElement: HTMLElement | null
+  titleId: string | null
+  descriptionId: string | null
 }
 
 enum ActionTypes {
-  SetTitleElement,
-  SetDescriptionElement,
+  SetTitleId,
+  SetDescriptionId,
 }
 
 type Actions =
-  | { type: ActionTypes.SetTitleElement; element: HTMLElement | null }
-  | { type: ActionTypes.SetDescriptionElement; element: HTMLElement | null }
+  | { type: ActionTypes.SetTitleId; id: string | null }
+  | { type: ActionTypes.SetDescriptionId; id: string | null }
 
 let reducers: {
   [P in ActionTypes]: (
@@ -52,13 +52,13 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.SetTitleElement](state, action) {
-    if (state.titleElement === action.element) return state
-    return { ...state, titleElement: action.element }
+  [ActionTypes.SetTitleId](state, action) {
+    if (state.titleId === action.id) return state
+    return { ...state, titleId: action.id }
   },
-  [ActionTypes.SetDescriptionElement](state, action) {
-    if (state.descriptionElement === action.element) return state
-    return { ...state, descriptionElement: action.element }
+  [ActionTypes.SetDescriptionId](state, action) {
+    if (state.descriptionId === action.id) return state
+    return { ...state, descriptionId: action.id }
   },
 }
 
@@ -67,8 +67,8 @@ let DialogContext = createContext<
       {
         dialogState: DialogStates
         close(): void
-        setTitle(element: HTMLElement | null): void
-        setDescription(element: HTMLElement | null): void
+        setTitleId(id: string | null): void
+        setDescriptionId(id: string | null): void
       },
       StateDefinition
     ]
@@ -152,18 +152,18 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let dialogState = open ? DialogStates.Open : DialogStates.Closed
 
   let [state, dispatch] = useReducer(stateReducer, {
-    titleElement: null,
-    descriptionElement: null,
+    titleId: null,
+    descriptionId: null,
   } as StateDefinition)
 
   let close = useCallback(() => onClose(false), [onClose])
 
-  let setTitle = useCallback(
-    (element: HTMLElement | null) => dispatch({ type: ActionTypes.SetTitleElement, element }),
+  let setTitleId = useCallback(
+    (id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }),
     [dispatch]
   )
-  let setDescription = useCallback(
-    (element: HTMLElement | null) => dispatch({ type: ActionTypes.SetDescriptionElement, element }),
+  let setDescriptionId = useCallback(
+    (id: string | null) => dispatch({ type: ActionTypes.SetDescriptionId, id }),
     [dispatch]
   )
 
@@ -241,8 +241,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let id = `headlessui-dialog-${useId()}`
 
   let contextBag = useMemo<ContextType<typeof DialogContext>>(
-    () => [{ dialogState, close, setTitle, setDescription }, state],
-    [dialogState, state, close, setTitle, setDescription]
+    () => [{ dialogState, close, setTitleId, setDescriptionId }, state],
+    [dialogState, state, close, setTitleId, setDescriptionId]
   )
 
   let propsBag = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
@@ -253,8 +253,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     id,
     role: 'dialog',
     'aria-modal': dialogState === DialogStates.Open ? true : undefined,
-    'aria-labelledby': state.titleElement?.id,
-    'aria-describedby': state.descriptionElement?.id,
+    'aria-labelledby': state.titleId,
+    'aria-describedby': state.descriptionId,
   }
   let passthroughProps = rest
 
@@ -318,19 +318,24 @@ let DEFAULT_TITLE_TAG = 'h2' as const
 interface TitleRenderPropArg {
   open: boolean
 }
-type TitlePropsWeControl = 'id' | 'ref'
+type TitlePropsWeControl = 'id'
 
 function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   props: Props<TTag, TitleRenderPropArg, TitlePropsWeControl>
 ) {
-  let [{ dialogState, setTitle }] = useDialogContext([Dialog.displayName, Title.name].join('.'))
+  let [{ dialogState, setTitleId }] = useDialogContext([Dialog.displayName, Title.name].join('.'))
 
   let id = `headlessui-dialog-title-${useId()}`
+
+  useEffect(() => {
+    setTitleId(id)
+    return () => setTitleId(null)
+  }, [id, setTitleId])
 
   let propsBag = useMemo<TitleRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
     dialogState,
   ])
-  let propsWeControl = { ref: setTitle, id }
+  let propsWeControl = { id }
   let passthroughProps = props
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_TITLE_TAG)
@@ -347,17 +352,22 @@ type DescriptionPropsWeControl = 'id' | 'ref'
 function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
   props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
 ) {
-  let [{ dialogState, setDescription }] = useDialogContext(
+  let [{ dialogState, setDescriptionId }] = useDialogContext(
     [Dialog.displayName, Description.name].join('.')
   )
 
   let id = `headlessui-dialog-description-${useId()}`
 
+  useEffect(() => {
+    setDescriptionId(id)
+    return () => setDescriptionId(null)
+  }, [id, setDescriptionId])
+
   let propsBag = useMemo<DescriptionRenderPropArg>(
     () => ({ open: dialogState === DialogStates.Open }),
     [dialogState]
   )
-  let propsWeControl = { ref: setDescription, id }
+  let propsWeControl = { id }
   let passthroughProps = props
 
   return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_DESCRIPTION_TAG)
