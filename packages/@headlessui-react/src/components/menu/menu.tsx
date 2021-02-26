@@ -239,18 +239,20 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         case Keys.Enter:
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.First }))
           break
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.OpenMenu })
           d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last }))
           break
       }
     },
-    [dispatch, state, d]
+    [dispatch, d]
   )
 
   let handleClick = useCallback(
@@ -262,6 +264,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
+        event.stopPropagation()
         dispatch({ type: ActionTypes.OpenMenu })
       }
     },
@@ -314,7 +317,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
   let id = `headlessui-menu-items-${useId()}`
   let searchDisposables = useDisposables()
 
-  useIsoMorphicEffect(() => {
+  useEffect(() => {
     let container = state.itemsRef.current
     if (!container) return
     if (state.menuState !== MenuStates.Open) return
@@ -352,11 +355,13 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
         case Keys.Space:
           if (state.searchQuery !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return dispatch({ type: ActionTypes.Search, value: event.key })
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseMenu })
           if (state.activeItemIndex !== null) {
             let { id } = state.items[state.activeItemIndex]
@@ -367,30 +372,37 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Next })
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Previous })
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseMenu })
           disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {

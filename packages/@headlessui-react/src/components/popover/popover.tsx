@@ -289,6 +289,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           case Keys.Space:
           case Keys.Enter:
             event.preventDefault() // Prevent triggering a *click* event
+            event.stopPropagation()
             dispatch({ type: ActionTypes.ClosePopover })
             state.button?.focus() // Re-focus the original opening Button
             break
@@ -298,6 +299,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           case Keys.Space:
           case Keys.Enter:
             event.preventDefault() // Prevent triggering a *click* event
+            event.stopPropagation()
             if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId)
             dispatch({ type: ActionTypes.TogglePopover })
             break
@@ -380,6 +382,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           if (buttonIdx > previousIdx) return
 
           event.preventDefault()
+          event.stopPropagation()
           focusIn(state.panel, Focus.Last)
           break
       }
