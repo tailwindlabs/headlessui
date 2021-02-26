@@ -85,8 +85,8 @@ function KeyCaster() {
       d.setTimeout(() => setKeys(current => tap(current.slice(), clone => clone.pop())), 2000)
     }
 
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
+    window.addEventListener('keydown', handler, true)
+    return () => window.removeEventListener('keydown', handler, true)
   }, [d, KeyDisplay])
 
   if (keys.length <= 0) return null
