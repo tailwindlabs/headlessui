@@ -857,7 +857,6 @@ By default the `Listbox` will use the button contents as the label for screenrea
 ```jsx
 import { useState, Fragment } from 'react'
 import { Listbox } from '@headlessui/react'
-import CheckmarkIcon from './CheckmarkIcon'
 
 const people = [
   { id: 1, name: 'Durward Reynolds' },
