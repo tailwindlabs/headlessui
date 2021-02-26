@@ -1591,6 +1591,9 @@ This component can be used to render content inside a Dialog/Modal. This contain
 ### Basic example
 
 ```jsx
+import { useState } from 'react'
+import { Dialog } from '@headlessui/react'
+
 function Example() {
   let [isOpen, setIsOpen] = useState(true)
 
@@ -1618,6 +1621,9 @@ function Example() {
 #### Dialog
 
 ```jsx
+import { useState } from 'react'
+import { Dialog } from '@headlessui/react'
+
 function Example() {
   let [isOpen, setIsOpen] = useState(true)
 
