@@ -1706,6 +1706,43 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should be possible to close the popover, by clicking outside the popover on another element inside a focusable element',
+    suppressConsoleLogs(async () => {
+      let focusFn = jest.fn()
+      render(
+        <>
+          <Popover>
+            <Popover.Button onFocus={focusFn}>Trigger</Popover.Button>
+            <Popover.Panel>Contents</Popover.Panel>
+          </Popover>
+
+          <button id="btn">
+            <span>Different button</span>
+          </button>
+        </>
+      )
+
+      // Open popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverButton({ state: PopoverState.Visible })
+
+      // Click the span inside the extra button to close
+      await click(getByText('Different button'))
+
+      // Verify it is closed
+      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+
+      // Verify the other button is focused
+      assertActiveElement(document.getElementById('btn'))
+
+      // Ensure that the focus button only got focus once (first click)
+      expect(focusFn).toHaveBeenCalledTimes(1)
+    })
+  )
+
+  it(
     'should be possible to close the Popover by clicking on a Popover.Button inside a Popover.Panel',
     suppressConsoleLogs(async () => {
       render(

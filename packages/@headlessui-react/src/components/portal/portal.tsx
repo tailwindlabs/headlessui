@@ -1,16 +1,17 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#dialog_modal
-import {
+import React, {
   Fragment,
+  useState,
 
   // Types
   ElementType,
-  useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 
 import { Props } from '../../types'
 import { render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { createPortal } from 'react-dom'
+import { StackProvider, useElemenStack } from '../../internal/stack-context'
 
 // ---
 
@@ -33,6 +34,8 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     typeof window === 'undefined' ? null : document.createElement('div')
   )
 
+  useElemenStack(element)
+
   useIsoMorphicEffect(() => {
     if (!target) return
     if (!element) return
@@ -46,7 +49,11 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
       target.removeChild(element)
       if (target.childNodes.length <= 0) document.body.removeChild(target)
     }
-  }, [target])
+  }, [target, element])
 
-  return !target || !element ? null : createPortal(render(props, {}, DEFAULT_PORTAL_TAG), element)
+  return (
+    <StackProvider>
+      {!target || !element ? null : createPortal(render(props, {}, DEFAULT_PORTAL_TAG), element)}
+    </StackProvider>
+  )
 }

@@ -289,7 +289,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.optionsRef.current?.focus({ preventScroll: true })
             if (!state.propsRef.current.value)
               dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
           })
@@ -299,7 +298,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.optionsRef.current?.focus({ preventScroll: true })
             if (!state.propsRef.current.value)
               dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
           })
@@ -318,7 +316,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenListbox })
-        d.nextFrame(() => state.optionsRef.current?.focus({ preventScroll: true }))
       }
     },
     [dispatch, d, state]
@@ -407,6 +404,15 @@ let Options = forwardRefWithAs(function Options<
   let d = useDisposables()
   let searchDisposables = useDisposables()
 
+  useIsoMorphicEffect(() => {
+    let container = state.optionsRef.current
+    if (!container) return
+    if (state.listboxState !== ListboxStates.Open) return
+    if (container === document.activeElement) return
+
+    container.focus({ preventScroll: true })
+  }, [state.listboxState, state.optionsRef])
+
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLUListElement>) => {
       searchDisposables.dispose()
@@ -418,11 +424,13 @@ let Options = forwardRefWithAs(function Options<
         case Keys.Space:
           if (state.searchQuery !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return dispatch({ type: ActionTypes.Search, value: event.key })
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseListbox })
           if (state.activeOptionIndex !== null) {
             let { dataRef } = state.options[state.activeOptionIndex]
@@ -433,29 +441,36 @@ let Options = forwardRefWithAs(function Options<
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Next })
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Previous })
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseListbox })
           return d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {

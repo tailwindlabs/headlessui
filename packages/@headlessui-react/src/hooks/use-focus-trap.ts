@@ -7,9 +7,10 @@ import {
 import { Keys } from '../components/keyboard'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
+import { contains } from '../internal/dom-containers'
 
-export function useFocusTrap<TElement extends HTMLElement>(
-  container: MutableRefObject<TElement | null>,
+export function useFocusTrap(
+  containers: MutableRefObject<Set<HTMLElement>>,
   enabled: boolean = true,
   options: { initialFocus?: MutableRefObject<HTMLElement | null> } = {}
 ) {
@@ -22,7 +23,7 @@ export function useFocusTrap<TElement extends HTMLElement>(
   // Handle initial focus
   useIsoMorphicEffect(() => {
     if (!enabled) return
-    if (!container.current) return
+    if (containers.current.size !== 1) return
 
     mounted.current = true
 
@@ -32,7 +33,7 @@ export function useFocusTrap<TElement extends HTMLElement>(
       if (options.initialFocus?.current === activeElement) {
         return // Initial focus ref is already the active element
       }
-    } else if (container.current.contains(activeElement)) {
+    } else if (contains(containers.current, activeElement)) {
       return // Already focused within Dialog
     }
 
@@ -42,10 +43,16 @@ export function useFocusTrap<TElement extends HTMLElement>(
     if (options.initialFocus?.current) {
       focusElement(options.initialFocus.current)
     } else {
-      let result = focusIn(container.current, Focus.First)
-      if (result === FocusResult.Error) {
-        throw new Error('There are no focusable elements inside the <FocusTrap />')
+      let couldFocus = false
+      for (let container of containers.current) {
+        let result = focusIn(container, Focus.First)
+        if (result === FocusResult.Success) {
+          couldFocus = true
+          break
+        }
       }
+
+      if (!couldFocus) throw new Error('There are no focusable elements inside the <FocusTrap />')
     }
 
     previousActiveElement.current = document.activeElement as HTMLElement
@@ -56,7 +63,7 @@ export function useFocusTrap<TElement extends HTMLElement>(
       restoreElement.current = null
       previousActiveElement.current = null
     }
-  }, [enabled, container, mounted, options.initialFocus])
+  }, [enabled, containers, mounted, options.initialFocus])
 
   // Handle Tab & Shift+Tab keyboard events
   useIsoMorphicEffect(() => {
@@ -65,30 +72,31 @@ export function useFocusTrap<TElement extends HTMLElement>(
     function handler(event: KeyboardEvent) {
       if (event.key !== Keys.Tab) return
       if (!document.activeElement) return
-      if (!container.current) return
+      if (containers.current.size !== 1) return
 
       event.preventDefault()
 
-      let result = focusIn(
-        container.current,
-        (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
-      )
+      for (let element of containers.current) {
+        let result = focusIn(
+          element,
+          (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
+        )
 
-      if (result === FocusResult.Success) {
-        previousActiveElement.current = document.activeElement as HTMLElement
+        if (result === FocusResult.Success) {
+          previousActiveElement.current = document.activeElement as HTMLElement
+          break
+        }
       }
     }
 
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [enabled])
+  }, [enabled, containers])
 
   // Prevent programmatically escaping
   useIsoMorphicEffect(() => {
     if (!enabled) return
-    if (!container.current) return
-
-    let element = container.current
+    if (containers.current.size !== 1) return
 
     function handler(event: FocusEvent) {
       let previous = previousActiveElement.current
@@ -98,7 +106,7 @@ export function useFocusTrap<TElement extends HTMLElement>(
       let toElement = event.target as HTMLElement | null
 
       if (toElement && toElement instanceof HTMLElement) {
-        if (!element.contains(toElement)) {
+        if (!contains(containers.current, toElement)) {
           event.preventDefault()
           event.stopPropagation()
           focusElement(previous)
@@ -113,5 +121,5 @@ export function useFocusTrap<TElement extends HTMLElement>(
 
     window.addEventListener('focus', handler, true)
     return () => window.removeEventListener('focus', handler, true)
-  }, [enabled, mounted, container])
+  }, [enabled, mounted, containers])
 }

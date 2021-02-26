@@ -11,7 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed `outside click` not re-focusing the `Menu.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/256))
 - Fixed `outside click` not re-focusing the `Listbox.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/256))
+- Fixed `outside click` not re-focusing the `Popover` ([#261](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/261))
 - Fix incorrect type error `unique symbol` ([#248](https://github.com/tailwindlabs/headlessui/pull/248), [#240](https://github.com/tailwindlabs/headlessui/issues/240))
+- Force focus in `Menu.Items` and `Listbox.Options` from within the component itself ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
+- Fix `undefined` values in id's for the `Dialog` component ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
+- Ensue `useInertOthers` works when used in a shared parent ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
+- Stop propagating keyboard/mouse events ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
 
 ### Added
 

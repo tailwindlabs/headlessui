@@ -15,12 +15,17 @@ let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 export function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
   props: Props<TTag> & { initialFocus?: MutableRefObject<HTMLElement | null> }
 ) {
-  let containerRef = useRef<HTMLDivElement | null>(null)
+  let containers = useRef<Set<HTMLElement>>(new Set())
   let { initialFocus, ...passthroughProps } = props
 
-  useFocusTrap(containerRef, true, { initialFocus })
+  useFocusTrap(containers, true, { initialFocus })
 
-  let propsWeControl = { ref: containerRef }
+  let propsWeControl = {
+    ref(element: HTMLElement | null) {
+      if (!element) return
+      containers.current.add(element)
+    },
+  }
 
   return render({ ...passthroughProps, ...propsWeControl }, {}, DEFAULT_FOCUS_TRAP_TAG)
 }
