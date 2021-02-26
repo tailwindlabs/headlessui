@@ -30,6 +30,7 @@ import {
   focusIn,
   FocusResult,
   isFocusableElement,
+  FocusableMode,
 } from '../../utils/focus-management'
 
 enum PopoverStates {
@@ -210,7 +211,7 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_FLYOUT_TAG>(
 
       dispatch({ type: ActionTypes.ClosePopover })
 
-      if (!isFocusableElement(target)) {
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
         event.preventDefault()
         button?.focus()
       }
@@ -288,6 +289,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           case Keys.Space:
           case Keys.Enter:
             event.preventDefault() // Prevent triggering a *click* event
+            event.stopPropagation()
             dispatch({ type: ActionTypes.ClosePopover })
             state.button?.focus() // Re-focus the original opening Button
             break
@@ -297,6 +299,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           case Keys.Space:
           case Keys.Enter:
             event.preventDefault() // Prevent triggering a *click* event
+            event.stopPropagation()
             if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId)
             dispatch({ type: ActionTypes.TogglePopover })
             break
@@ -379,6 +382,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           if (buttonIdx > previousIdx) return
 
           event.preventDefault()
+          event.stopPropagation()
           focusIn(state.panel, Focus.Last)
           break
       }
