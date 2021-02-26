@@ -26,6 +26,8 @@ import { useId } from '../../hooks/use-id'
 import { useFocusTrap } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
+import { StackProvider, StackMessage } from '../../internal/stack-context'
+import { contains } from '../../internal/dom-containers'
 
 enum DialogStates {
   Open,
@@ -113,6 +115,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 ) {
   let { open, onClose, initialFocus, ...rest } = props
 
+  let containers = useRef<Set<HTMLElement>>(new Set())
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
@@ -173,20 +176,22 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       let target = event.target as HTMLElement
 
       if (dialogState !== DialogStates.Open) return
-      if (internalDialogRef.current?.contains(target)) return
+      if (containers.current.size !== 1) return
+      if (contains(containers.current, target)) return
 
       close()
     }
 
     window.addEventListener('mousedown', handler)
     return () => window.removeEventListener('mousedown', handler)
-  }, [dialogState, internalDialogRef, close])
+  }, [dialogState, containers, close])
 
   // Handle `Escape` to close
   useEffect(() => {
     function handler(event: KeyboardEvent) {
       if (event.key !== Keys.Escape) return
       if (dialogState !== DialogStates.Open) return
+      if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
       close()
     }
 
@@ -235,7 +240,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   }, [dialogState, internalDialogRef, close])
 
   let enabled = props.static ? true : dialogState === DialogStates.Open
-  useFocusTrap(internalDialogRef, enabled, { initialFocus })
+
+  useFocusTrap(containers, enabled, { initialFocus })
   useInertOthers(internalDialogRef, enabled)
 
   let id = `headlessui-dialog-${useId()}`
@@ -259,17 +265,30 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let passthroughProps = rest
 
   return (
-    <Portal>
-      <DialogContext.Provider value={contextBag}>
-        {render(
-          { ...passthroughProps, ...propsWeControl },
-          propsBag,
-          DEFAULT_DIALOG_TAG,
-          DialogRenderFeatures,
-          dialogState === DialogStates.Open
-        )}
-      </DialogContext.Provider>
-    </Portal>
+    <StackProvider
+      onUpdate={(message, element) => {
+        return match(message, {
+          [StackMessage.AddElement]() {
+            containers.current.add(element)
+          },
+          [StackMessage.RemoveElement]() {
+            containers.current.delete(element)
+          },
+        })
+      }}
+    >
+      <Portal>
+        <DialogContext.Provider value={contextBag}>
+          {render(
+            { ...passthroughProps, ...propsWeControl },
+            propsBag,
+            DEFAULT_DIALOG_TAG,
+            DialogRenderFeatures,
+            dialogState === DialogStates.Open
+          )}
+        </DialogContext.Provider>
+      </Portal>
+    </StackProvider>
   )
 })
 
