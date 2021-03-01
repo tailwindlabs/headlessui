@@ -1,19 +1,19 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#dialog_modal
 import React, {
   createContext,
-  useContext,
-  useReducer,
-  useMemo,
   useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
 
   // Types
-  ElementType,
-  Ref,
-  MouseEvent as ReactMouseEvent,
-  useEffect,
-  useRef,
   ContextType,
+  ElementType,
+  MouseEvent as ReactMouseEvent,
   MutableRefObject,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'

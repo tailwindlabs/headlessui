@@ -1,20 +1,20 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
-  useReducer,
   useEffect,
   useMemo,
-  useCallback,
-
-  // Types
-  Dispatch,
-  ElementType,
-  Ref,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
+  useReducer,
   useRef,
   useState,
+
+  // Types
   ContextType,
+  Dispatch,
+  ElementType,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
