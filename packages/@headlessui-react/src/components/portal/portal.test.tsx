@@ -6,7 +6,7 @@ import { Portal } from './portal'
 import { click } from '../../test-utils/interactions'
 
 function getPortalRoot() {
-  return document.getElementById('headlessui-portal-root')
+  return document.getElementById('headlessui-portal-root')!
 }
 
 beforeEach(() => {
@@ -139,4 +139,137 @@ it('should cleanup the Portal root when the last Portal is unmounted', async () 
 
   expect(getPortalRoot()).not.toBe(null)
   expect(getPortalRoot().childNodes).toHaveLength(1)
+})
+
+it('should be possible to render multiple portals at the same time', async () => {
+  expect(getPortalRoot()).toBe(null)
+
+  function Example() {
+    let [renderA, setRenderA] = useState(true)
+    let [renderB, setRenderB] = useState(true)
+    let [renderC, setRenderC] = useState(true)
+
+    return (
+      <main id="parent">
+        <button id="a" onClick={() => setRenderA(v => !v)}>
+          Toggle A
+        </button>
+        <button id="b" onClick={() => setRenderB(v => !v)}>
+          Toggle B
+        </button>
+        <button id="c" onClick={() => setRenderC(v => !v)}>
+          Toggle C
+        </button>
+
+        <button
+          id="double"
+          onClick={() => {
+            setRenderA(v => !v)
+            setRenderB(v => !v)
+          }}
+        >
+          Toggle A & B{' '}
+        </button>
+
+        {renderA && (
+          <Portal>
+            <p id="content1">Contents 1 ...</p>
+          </Portal>
+        )}
+
+        {renderB && (
+          <Portal>
+            <p id="content2">Contents 2 ...</p>
+          </Portal>
+        )}
+
+        {renderC && (
+          <Portal>
+            <p id="content3">Contents 3 ...</p>
+          </Portal>
+        )}
+      </main>
+    )
+  }
+
+  render(<Example />)
+
+  expect(getPortalRoot()).not.toBe(null)
+  expect(getPortalRoot().childNodes).toHaveLength(3)
+
+  // Remove Portal 1
+  await click(document.getElementById('a'))
+  expect(getPortalRoot().childNodes).toHaveLength(2)
+
+  // Remove Portal 2
+  await click(document.getElementById('b'))
+  expect(getPortalRoot().childNodes).toHaveLength(1)
+
+  // Re-add Portal 1
+  await click(document.getElementById('a'))
+  expect(getPortalRoot().childNodes).toHaveLength(2)
+
+  // Remove Portal 3
+  await click(document.getElementById('c'))
+  expect(getPortalRoot().childNodes).toHaveLength(1)
+
+  // Remove Portal 1
+  await click(document.getElementById('a'))
+  expect(getPortalRoot()).toBe(null)
+
+  // Render A and B at the same time!
+  await click(document.getElementById('double'))
+  expect(getPortalRoot().childNodes).toHaveLength(2)
+})
+
+it('should be possible to tamper with the modal root and restore correctly', async () => {
+  expect(getPortalRoot()).toBe(null)
+
+  function Example() {
+    let [renderA, setRenderA] = useState(true)
+    let [renderB, setRenderB] = useState(true)
+
+    return (
+      <main id="parent">
+        <button id="a" onClick={() => setRenderA(v => !v)}>
+          Toggle A
+        </button>
+        <button id="b" onClick={() => setRenderB(v => !v)}>
+          Toggle B
+        </button>
+
+        {renderA && (
+          <Portal>
+            <p id="content1">Contents 1 ...</p>
+          </Portal>
+        )}
+
+        {renderB && (
+          <Portal>
+            <p id="content2">Contents 2 ...</p>
+          </Portal>
+        )}
+      </main>
+    )
+  }
+
+  render(<Example />)
+
+  expect(getPortalRoot()).not.toBe(null)
+
+  // Tamper tamper
+  document.body.removeChild(document.getElementById('headlessui-portal-root')!)
+
+  // Hide Portal 1 and 2
+  await click(document.getElementById('a'))
+  await click(document.getElementById('b'))
+
+  expect(getPortalRoot()).toBe(null)
+
+  // Re-show Portal 1 and 2
+  await click(document.getElementById('a'))
+  await click(document.getElementById('b'))
+
+  expect(getPortalRoot()).not.toBe(null)
+  expect(getPortalRoot().childNodes).toHaveLength(2)
 })
