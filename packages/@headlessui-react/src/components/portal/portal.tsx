@@ -13,6 +13,16 @@ import { render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { StackProvider, useElemenStack } from '../../internal/stack-context'
 
+function resolvePortalRoot() {
+  if (typeof window === 'undefined') return null
+  let existingRoot = document.getElementById('headlessui-portal-root')
+  if (existingRoot) return existingRoot
+
+  let root = document.createElement('div')
+  root.setAttribute('id', 'headlessui-portal-root')
+  return document.body.appendChild(root)
+}
+
 // ---
 
 let DEFAULT_PORTAL_TAG = Fragment
@@ -21,15 +31,7 @@ interface PortalRenderPropArg {}
 export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   props: Props<TTag, PortalRenderPropArg>
 ) {
-  let [target] = useState(() => {
-    if (typeof window === 'undefined') return null
-    let existingRoot = document.getElementById('headlessui-portal-root')
-    if (existingRoot) return existingRoot
-
-    let root = document.createElement('div')
-    root.setAttribute('id', 'headlessui-portal-root')
-    return document.body.appendChild(root)
-  })
+  let [target, setTarget] = useState(resolvePortalRoot)
   let [element] = useState<HTMLDivElement | null>(() =>
     typeof window === 'undefined' ? null : document.createElement('div')
   )
@@ -37,7 +39,7 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   useElemenStack(element)
 
   useIsoMorphicEffect(() => {
-    if (!target) return
+    if (!target) return setTarget(resolvePortalRoot())
     if (!element) return
 
     target.appendChild(element)
@@ -47,7 +49,7 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
       if (!element) return
 
       target.removeChild(element)
-      if (target.childNodes.length <= 0) document.body.removeChild(target)
+      if (target.childNodes.length <= 0) target.parentElement?.removeChild(target)
     }
   }, [target, element])
 
