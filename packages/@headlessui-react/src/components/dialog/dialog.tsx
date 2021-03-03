@@ -27,6 +27,7 @@ import { useFocusTrap } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
+import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { contains } from '../../internal/dom-containers'
 
 enum DialogStates {
@@ -277,17 +278,23 @@ let DialogRoot = forwardRefWithAs(function Dialog<
         })
       }}
     >
-      <Portal>
-        <DialogContext.Provider value={contextBag}>
-          {render(
-            { ...passthroughProps, ...propsWeControl },
-            propsBag,
-            DEFAULT_DIALOG_TAG,
-            DialogRenderFeatures,
-            dialogState === DialogStates.Open
-          )}
-        </DialogContext.Provider>
-      </Portal>
+      <ForcePortalRoot force={true}>
+        <Portal>
+          <DialogContext.Provider value={contextBag}>
+            <Portal.Group target={internalDialogRef}>
+              <ForcePortalRoot force={false}>
+                {render(
+                  { ...passthroughProps, ...propsWeControl },
+                  propsBag,
+                  DEFAULT_DIALOG_TAG,
+                  DialogRenderFeatures,
+                  dialogState === DialogStates.Open
+                )}
+              </ForcePortalRoot>
+            </Portal.Group>
+          </DialogContext.Provider>
+        </Portal>
+      </ForcePortalRoot>
     </StackProvider>
   )
 })
