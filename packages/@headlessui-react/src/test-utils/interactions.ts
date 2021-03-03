@@ -14,7 +14,9 @@ export let Keys: Record<string, Partial<KeyboardEvent>> = {
   Escape: { key: 'Escape', keyCode: 27, charCode: 27 },
   Backspace: { key: 'Backspace', keyCode: 8 },
 
+  ArrowLeft: { key: 'ArrowLeft', keyCode: 37 },
   ArrowUp: { key: 'ArrowUp', keyCode: 38 },
+  ArrowRight: { key: 'ArrowRight', keyCode: 39 },
   ArrowDown: { key: 'ArrowDown', keyCode: 40 },
 
   Home: { key: 'Home', keyCode: 36 },
