@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `FocusTrap` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - Add `Popover` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - All components that accept a `className`, can now also receive a function with the renderProp argument ([#257](https://github.com/tailwindlabs/headlessui/pull/257))
+- Add `RadioGroup` component ([#274](https://github.com/tailwindlabs/headlessui/pull/274))
+- Add `Alert` component ([#274](https://github.com/tailwindlabs/headlessui/pull/274))
 
 ## [Unreleased - Vue]
 
