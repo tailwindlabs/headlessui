@@ -265,10 +265,11 @@ function Option<
   }
 ) {
   let optionRef = useRef<HTMLElement | null>(null)
-  let [labelledby, LabelProvider] = useLabels()
+  let id = `headlessui-radiogroup-option-${useId()}`
+
+  let [labelledby, LabelProvider] = useLabels(id)
   let [describedby, DescriptionProvider] = useDescriptions()
   let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
-  let id = `headlessui-radiogroup-option-${useId()}`
 
   let { value, ...passThroughProps } = props
   let propsRef = useRef({ value })
