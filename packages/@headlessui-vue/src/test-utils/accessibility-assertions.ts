@@ -649,3 +649,20 @@ export function assertVisible(element: HTMLElement | null) {
     throw err
   }
 }
+
+// ---
+
+export function getByText(text: string): HTMLElement | null {
+  let walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, {
+    acceptNode(node: HTMLElement) {
+      if (node.children.length > 0) return NodeFilter.FILTER_SKIP
+      return NodeFilter.FILTER_ACCEPT
+    },
+  })
+
+  while (walker.nextNode()) {
+    if (walker.currentNode.textContent === text) return walker.currentNode as HTMLElement
+  }
+
+  return null
+}
