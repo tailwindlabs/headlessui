@@ -1,3 +1,5 @@
+import { isFocusableElement, FocusableMode } from '../utils/focus-management'
+
 function assertNever(x: never): never {
   throw new Error('Unexpected object: ' + x)
 }
@@ -1103,6 +1105,48 @@ export function assertDialogOverlay(
 
 // ---
 
+export function getRadioGroup(): HTMLElement | null {
+  return document.querySelector('[role="radiogroup"]')
+}
+
+export function getRadioGroupLabel(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-label-"]')
+}
+
+export function getRadioGroupOptions(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-radiogroup-option-"]'))
+}
+
+// ---
+
+export function assertRadioGroupLabel(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+  },
+  label = getRadioGroupLabel(),
+  radioGroup = getRadioGroup()
+) {
+  try {
+    if (label === null) return expect(label).not.toBe(null)
+    if (radioGroup === null) return expect(radioGroup).not.toBe(null)
+
+    expect(label).toHaveAttribute('id')
+    expect(radioGroup).toHaveAttribute('aria-labelledby', label.id)
+
+    if (options.textContent) expect(label).toHaveTextContent(options.textContent)
+
+    for (let attributeName in options.attributes) {
+      expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertRadioGroupLabel)
+    throw err
+  }
+}
+
+// ---
+
 export function assertActiveElement(element: HTMLElement | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
@@ -1153,6 +1197,30 @@ export function assertVisible(element: HTMLElement | null) {
     expect(element).not.toHaveStyle({ display: 'none' })
   } catch (err) {
     Error.captureStackTrace(err, assertVisible)
+    throw err
+  }
+}
+
+// ---
+
+export function assertFocusable(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    expect(isFocusableElement(element, FocusableMode.Strict)).toBe(true)
+  } catch (err) {
+    Error.captureStackTrace(err, assertFocusable)
+    throw err
+  }
+}
+
+export function assertNotFocusable(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    expect(isFocusableElement(element, FocusableMode.Strict)).toBe(false)
+  } catch (err) {
+    Error.captureStackTrace(err, assertNotFocusable)
     throw err
   }
 }

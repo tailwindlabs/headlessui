@@ -1,10 +1,10 @@
 import React, {
+  Fragment,
   createContext,
   useCallback,
   useContext,
   useMemo,
   useState,
-  Fragment,
 
   // Types
   ElementType,
