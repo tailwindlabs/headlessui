@@ -1,4 +1,5 @@
 import React, {
+  Fragment,
   createContext,
   createRef,
   useCallback,
@@ -7,7 +8,6 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  Fragment,
 
   // Types
   Dispatch,

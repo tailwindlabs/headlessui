@@ -1,5 +1,6 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#menubutton
 import React, {
+  Fragment,
   createContext,
   createRef,
   useCallback,
@@ -8,7 +9,6 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  Fragment,
 
   // Types
   Dispatch,
