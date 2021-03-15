@@ -3,8 +3,8 @@ import { render } from './vue-testing-library'
 import { type, shift, Keys } from './interactions'
 import { defineComponent, h } from 'vue'
 
-type Events = 'onKeyDown' | 'onKeyUp' | 'onKeyPress' | 'onClick' | 'onBlur' | 'onFocus'
-let events: Events[] = ['onKeyDown', 'onKeyUp', 'onKeyPress', 'onClick', 'onBlur', 'onFocus']
+type Events = 'onKeydown' | 'onKeyup' | 'onKeypress' | 'onClick' | 'onBlur' | 'onFocus'
+let events: Events[] = ['onKeydown', 'onKeyup', 'onKeypress', 'onClick', 'onBlur', 'onFocus']
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   let defaultComponents = {}
@@ -81,16 +81,16 @@ describe('Keyboard', () => {
       ],
 
       // Canceling keydown
-      ['a', ['keydown', 'keyup'], new Set<Events>(['onKeyDown'])],
-      [Keys.Space, ['keydown', 'keyup'], new Set<Events>(['onKeyDown'])],
-      [Keys.Enter, ['keydown', 'keyup'], new Set<Events>(['onKeyDown'])],
-      [Keys.Tab, ['keydown', 'keyup'], new Set<Events>(['onKeyDown'])],
-      [shift(Keys.Tab), ['keydown', 'keyup'], new Set<Events>(['onKeyDown'])],
+      ['a', ['keydown', 'keyup'], new Set<Events>(['onKeydown'])],
+      [Keys.Space, ['keydown', 'keyup'], new Set<Events>(['onKeydown'])],
+      [Keys.Enter, ['keydown', 'keyup'], new Set<Events>(['onKeydown'])],
+      [Keys.Tab, ['keydown', 'keyup'], new Set<Events>(['onKeydown'])],
+      [shift(Keys.Tab), ['keydown', 'keyup'], new Set<Events>(['onKeydown'])],
 
       // Canceling keypress
-      ['a', ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeyPress'])],
-      [Keys.Space, ['keydown', 'keypress', 'keyup', 'click'], new Set<Events>(['onKeyPress'])],
-      [Keys.Enter, ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeyPress'])],
+      ['a', ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeypress'])],
+      [Keys.Space, ['keydown', 'keypress', 'keyup', 'click'], new Set<Events>(['onKeypress'])],
+      [Keys.Enter, ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeypress'])],
       [
         Keys.Tab,
         [
@@ -99,7 +99,7 @@ describe('Keyboard', () => {
           event('focus', 'after'),
           event('keyup', 'after'),
         ],
-        new Set<Events>(['onKeyPress']),
+        new Set<Events>(['onKeypress']),
       ],
       [
         shift(Keys.Tab),
@@ -109,13 +109,13 @@ describe('Keyboard', () => {
           event('focus', 'before'),
           event('keyup', 'before'),
         ],
-        new Set<Events>(['onKeyPress']),
+        new Set<Events>(['onKeypress']),
       ],
 
       // Canceling keyup
-      ['a', ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeyUp'])],
-      [Keys.Space, ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeyUp'])],
-      [Keys.Enter, ['keydown', 'keypress', 'click', 'keyup'], new Set<Events>(['onKeyUp'])],
+      ['a', ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeyup'])],
+      [Keys.Space, ['keydown', 'keypress', 'keyup'], new Set<Events>(['onKeyup'])],
+      [Keys.Enter, ['keydown', 'keypress', 'click', 'keyup'], new Set<Events>(['onKeyup'])],
       [
         Keys.Tab,
         [
@@ -124,7 +124,7 @@ describe('Keyboard', () => {
           event('focus', 'after'),
           event('keyup', 'after'),
         ],
-        new Set<Events>(['onKeyUp']),
+        new Set<Events>(['onKeyup']),
       ],
       [
         shift(Keys.Tab),
@@ -134,7 +134,7 @@ describe('Keyboard', () => {
           event('focus', 'before'),
           event('keyup', 'before'),
         ],
-        new Set<Events>(['onKeyUp']),
+        new Set<Events>(['onKeyup']),
       ],
 
       // Cancelling blur
@@ -189,7 +189,7 @@ describe('Keyboard', () => {
           Button: defineComponent({
             setup(_props, { slots, attrs }) {
               return () => {
-                return h('button', createProps(attrs.id as string), slots.default())
+                return h('button', createProps(attrs.id as string), slots.default!())
               }
             },
           }),
