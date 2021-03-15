@@ -1,19 +1,19 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#disclosure
 import React, {
-  createContext,
-  useContext,
   Fragment,
-  useReducer,
+  createContext,
+  useCallback,
+  useContext,
   useEffect,
   useMemo,
-  useCallback,
+  useReducer,
 
   // Types
   Dispatch,
   ElementType,
-  Ref,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'

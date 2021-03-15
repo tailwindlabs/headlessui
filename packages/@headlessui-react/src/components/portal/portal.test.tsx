@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { render } from '@testing-library/react'
 
 import { Portal } from './portal'
@@ -272,4 +272,33 @@ it('should be possible to tamper with the modal root and restore correctly', asy
 
   expect(getPortalRoot()).not.toBe(null)
   expect(getPortalRoot().childNodes).toHaveLength(2)
+})
+
+it('should be possable to force the Portal into a specific element using Portal.Group', async () => {
+  function Example() {
+    let container = useRef(null)
+
+    return (
+      <main>
+        <aside ref={container} id="group-1">
+          A
+        </aside>
+
+        <Portal.Group target={container}>
+          <section id="group-2">
+            <span>B</span>
+          </section>
+          <Portal>Next to A</Portal>
+        </Portal.Group>
+
+        <Portal>I am in the portal root</Portal>
+      </main>
+    )
+  }
+
+  render(<Example />)
+
+  expect(document.body.innerHTML).toMatchInlineSnapshot(
+    `"<div><main><aside id=\\"group-1\\">A<div>Next to A</div></aside><section id=\\"group-2\\"><span>B</span></section></main></div><div id=\\"headlessui-portal-root\\"><div>I am in the portal root</div></div>"`
+  )
 })

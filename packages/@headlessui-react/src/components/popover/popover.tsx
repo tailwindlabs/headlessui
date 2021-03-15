@@ -1,20 +1,20 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
-  useReducer,
   useEffect,
   useMemo,
-  useCallback,
-
-  // Types
-  Dispatch,
-  ElementType,
-  Ref,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
+  useReducer,
   useRef,
   useState,
+
+  // Types
   ContextType,
+  Dispatch,
+  ElementType,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
@@ -143,13 +143,13 @@ function stateReducer(state: StateDefinition, action: Actions) {
 
 // ---
 
-let DEFAULT_FLYOUT_TAG = 'div' as const
+let DEFAULT_POPOVER_TAG = 'div' as const
 interface PopoverRenderPropArg {
   open: boolean
 }
 
-export function Popover<TTag extends ElementType = typeof DEFAULT_FLYOUT_TAG>(
-  props: Props<TTag, { open: boolean }>
+export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
+  props: Props<TTag, PopoverRenderPropArg>
 ) {
   let buttonId = `headlessui-popover-button-${useId()}`
   let panelId = `headlessui-popover-panel-${useId()}`
@@ -228,7 +228,7 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_FLYOUT_TAG>(
 
   return (
     <PopoverContext.Provider value={reducerBag}>
-      {render(props, propsBag, DEFAULT_FLYOUT_TAG)}
+      {render(props, propsBag, DEFAULT_POPOVER_TAG)}
     </PopoverContext.Provider>
   )
 }
