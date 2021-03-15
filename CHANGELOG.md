@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `SwitchDescription` component, which adds the `aria-describedby` to the actual Switch ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Alert` component ([#279](https://github.com/tailwindlabs/headlessui/pull/279))
 
 ## [@headlessui/react@v0.3.2] - 2021-04-02
 
