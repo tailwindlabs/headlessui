@@ -46,4 +46,7 @@ Source: https://www.w3.org/TR/wai-aria-1.2/#aria-live
 
 ##### Render prop object
 
-- None
+| Prop         | Type                    | Description                                                                     |
+| :----------- | :---------------------- | :------------------------------------------------------------------------------ |
+| `importance` | `polite` \| `assertive` | The importance of the alert message when it is announced to screenreader users. |
+
