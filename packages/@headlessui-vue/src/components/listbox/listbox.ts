@@ -260,7 +260,7 @@ export let ListboxButton = defineComponent({
         ? [dom(api.labelRef)?.id, this.id].join(' ')
         : undefined,
       disabled: api.disabled,
-      onKeyDown: this.handleKeyDown,
+      onKeydown: this.handleKeyDown,
       onClick: this.handleClick,
     }
 
@@ -337,7 +337,7 @@ export let ListboxOptions = defineComponent({
           : api.options.value[api.activeOptionIndex.value]?.id,
       'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
       id: this.id,
-      onKeyDown: this.handleKeyDown,
+      onKeydown: this.handleKeyDown,
       role: 'listbox',
       tabIndex: 0,
       ref: 'el',
@@ -509,10 +509,10 @@ export let ListboxOption = defineComponent({
         'aria-selected': selected.value === true ? selected.value : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
-        onPointerMove: handleMove,
-        onMouseMove: handleMove,
-        onPointerLeave: handleLeave,
-        onMouseLeave: handleLeave,
+        onPointermove: handleMove,
+        onMousemove: handleMove,
+        onPointerleave: handleLeave,
+        onMouseleave: handleLeave,
       }
 
       return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })

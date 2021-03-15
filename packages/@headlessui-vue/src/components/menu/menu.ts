@@ -179,7 +179,7 @@ export let MenuButton = defineComponent({
       'aria-haspopup': true,
       'aria-controls': dom(api.itemsRef)?.id,
       'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
-      onKeyDown: this.handleKeyDown,
+      onKeydown: this.handleKeyDown,
       onClick: this.handleClick,
     }
 
@@ -258,7 +258,7 @@ export let MenuItems = defineComponent({
           : api.items.value[api.activeItemIndex.value]?.id,
       'aria-labelledby': dom(api.buttonRef)?.id,
       id: this.id,
-      onKeyDown: this.handleKeyDown,
+      onKeydown: this.handleKeyDown,
       role: 'menu',
       tabIndex: 0,
       ref: 'el',
@@ -429,10 +429,10 @@ export let MenuItem = defineComponent({
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
-        onPointerMove: handleMove,
-        onMouseMove: handleMove,
-        onPointerLeave: handleLeave,
-        onMouseLeave: handleLeave,
+        onPointermove: handleMove,
+        onMousemove: handleMove,
+        onPointerleave: handleLeave,
+        onMouseleave: handleLeave,
       }
 
       return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })

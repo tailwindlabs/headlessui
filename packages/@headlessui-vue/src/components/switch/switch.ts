@@ -76,8 +76,8 @@ export let Switch = defineComponent({
       'aria-labelledby': labelledby.value,
       'aria-describedby': describedby.value,
       onClick: this.handleClick,
-      onKeyUp: this.handleKeyUp,
-      onKeyPress: this.handleKeyPress,
+      onKeyup: this.handleKeyUp,
+      onKeypress: this.handleKeyPress,
     }
 
     if (this.$props.as === 'button') {
