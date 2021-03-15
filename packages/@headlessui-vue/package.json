@@ -20,7 +20,7 @@
     "access": "public"
   },
   "scripts": {
-    "playground": "vite serve examples",
+    "playground": "vite --config ./vite.config.js serve examples",
     "playground:build": "NODE_ENV=production vite build examples",
     "prepublishOnly": "npm run build",
     "build": "../../scripts/build.sh",
