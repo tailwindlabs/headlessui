@@ -9,6 +9,11 @@ it('should expose the correct components', () => {
     // Alert
     'Alert',
 
+    // Disclosure
+    'Disclosure',
+    'DisclosureButton',
+    'DisclosurePanel',
+
     // Listbox
     'Listbox',
     'ListboxLabel',
