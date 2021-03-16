@@ -581,6 +581,126 @@ export function assertSwitch(
 
 // ---
 
+export function getDisclosureButton(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-disclosure-button-"]')
+}
+
+export function getDisclosurePanel(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-disclosure-panel-"]')
+}
+
+// ---
+
+export enum DisclosureState {
+  /** The disclosure is visible to the user. */
+  Visible,
+
+  /** The disclosure is **not** visible to the user. It's still in the DOM, but it is hidden. */
+  InvisibleHidden,
+
+  /** The disclosure is **not** visible to the user. It's not in the DOM, it is unmounted. */
+  InvisibleUnmounted,
+}
+
+// ---
+
+export function assertDisclosureButton(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DisclosureState
+  },
+  button = getDisclosureButton()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+
+    // Ensure disclosure button have these properties
+    expect(button).toHaveAttribute('id')
+
+    switch (options.state) {
+      case DisclosureState.Visible:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).toHaveAttribute('aria-expanded', 'true')
+        break
+
+      case DisclosureState.InvisibleHidden:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      case DisclosureState.InvisibleUnmounted:
+        expect(button).not.toHaveAttribute('aria-controls')
+        expect(button).not.toHaveAttribute('aria-expanded')
+        break
+
+      default:
+        assertNever(options.state)
+    }
+
+    if (options.textContent) {
+      expect(button).toHaveTextContent(options.textContent)
+    }
+
+    // Ensure disclosure button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDisclosureButton)
+    throw err
+  }
+}
+
+export function assertDisclosurePanel(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DisclosureState
+  },
+  panel = getDisclosurePanel()
+) {
+  try {
+    switch (options.state) {
+      case DisclosureState.InvisibleHidden:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertHidden(panel)
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DisclosureState.Visible:
+        if (panel === null) return expect(panel).not.toBe(null)
+
+        assertVisible(panel)
+
+        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DisclosureState.InvisibleUnmounted:
+        expect(panel).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDisclosurePanel)
+    throw err
+  }
+}
+
+// ---
+
 export function assertLabelValue(element: HTMLElement | null, value: string) {
   if (element === null) return expect(element).not.toBe(null)
 
