@@ -6,11 +6,8 @@ import * as HeadlessUI from './index'
  */
 it('should expose the correct components', () => {
   expect(Object.keys(HeadlessUI)).toEqual([
-    // Menu
-    'Menu',
-    'MenuButton',
-    'MenuItems',
-    'MenuItem',
+    // Alert
+    'Alert',
 
     // Listbox
     'Listbox',
@@ -18,6 +15,12 @@ it('should expose the correct components', () => {
     'ListboxButton',
     'ListboxOptions',
     'ListboxOption',
+
+    // Menu
+    'Menu',
+    'MenuButton',
+    'MenuItems',
+    'MenuItem',
 
     // Switch
     'SwitchGroup',
