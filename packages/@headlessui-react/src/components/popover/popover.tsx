@@ -156,7 +156,6 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   let reducerBag = useReducer(stateReducer, {
     popoverState: PopoverStates.Closed,
-    linkedPanel: false,
     button: null,
     buttonId,
     panel: null,
