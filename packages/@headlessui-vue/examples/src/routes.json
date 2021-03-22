@@ -60,5 +60,16 @@
         "component": "./components/switch/switch.vue"
       }
     ]
+  },
+  {
+    "name": "Focus Trap",
+    "path": "/focus-trap",
+    "children": [
+      {
+        "name": "FocusTrap (basic)",
+        "path": "/focus-trap/focus-trap",
+        "component": "./components/focus-trap/focus-trap.vue"
+      }
+    ]
   }
 ]
