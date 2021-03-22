@@ -30,6 +30,13 @@ it('should expose the correct components', () => {
     'MenuItems',
     'MenuItem',
 
+    // Popover
+    'Popover',
+    'PopoverButton',
+    'PopoverOverlay',
+    'PopoverPanel',
+    'PopoverGroup',
+
     // Switch
     'SwitchGroup',
     'Switch',
