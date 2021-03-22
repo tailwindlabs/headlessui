@@ -18,19 +18,8 @@ body:
       required: true
   - type: input
     attributes:
-      label: What version of Node.js are you using?
-      description: 'For example: v12.0.0'
-    validations:
-      required: true  - type: input
-    attributes:
       label: What browser are you using?
       description: 'For example: Chrome, Safari, or N/A'
-    validations:
-      required: true
-  - type: input
-    attributes:
-      label: What operating system are you using?
-      description: 'For example: macOS, Windows'
     validations:
       required: true
   - type: input
