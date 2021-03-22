@@ -14,6 +14,9 @@ it('should expose the correct components', () => {
     'DisclosureButton',
     'DisclosurePanel',
 
+    // FocusTrap
+    'FocusTrap',
+
     // Listbox
     'Listbox',
     'ListboxLabel',
