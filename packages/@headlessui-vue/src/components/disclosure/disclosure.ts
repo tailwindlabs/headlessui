@@ -57,7 +57,7 @@ export let Disclosure = defineComponent({
           [DisclosureStates.Closed]: DisclosureStates.Open,
         })
       },
-    }
+    } as StateDefinition
 
     provide(DisclosureContext, api)
 
