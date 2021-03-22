@@ -33,7 +33,7 @@ function cleanup() {
   mountedWrappers.forEach(cleanupAtWrapper)
 }
 
-function cleanupAtWrapper(wrapper) {
+function cleanupAtWrapper(wrapper: any) {
   if (wrapper.element.parentNode && wrapper.element.parentNode.parentNode === document.body) {
     document.body.removeChild(wrapper.element.parentNode)
   }
