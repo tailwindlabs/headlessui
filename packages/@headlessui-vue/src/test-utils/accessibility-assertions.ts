@@ -737,9 +737,27 @@ export function assertDescriptionValue(element: HTMLElement | null, value: strin
 export function assertActiveElement(element: HTMLElement | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
-    expect(document.activeElement).toBe(element)
+    try {
+      // Jest has a weird bug:
+      //   "Cannot assign to read only property 'Symbol(impl)' of object '[object DOMImplementation]'"
+      // when this assertion fails.
+      // Therefore we will catch it when something goes wrong, and just look at the outerHTML string.
+      expect(document.activeElement).toBe(element)
+    } catch (err) {
+      expect(document.activeElement?.outerHTML).toBe(element.outerHTML)
+    }
   } catch (err) {
     Error.captureStackTrace(err, assertActiveElement)
+    throw err
+  }
+}
+
+export function assertContainsActiveElement(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+    expect(element.contains(document.activeElement)).toBe(true)
+  } catch (err) {
+    Error.captureStackTrace(err, assertContainsActiveElement)
     throw err
   }
 }
