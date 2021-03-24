@@ -11,6 +11,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { press, click, Keys } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { html } from '../../test-utils/html'
 
 jest.mock('../../hooks/use-id')
 
@@ -45,7 +46,9 @@ describe('Safe guards', () => {
 
   it('should be possible to render a Switch without crashing', () => {
     renderTemplate({
-      template: `<Switch v-model="checked"  />`,
+      template: html`
+        <Switch v-model="checked" />
+      `,
       setup: () => ({ checked: ref(false) }),
     })
   })
@@ -54,7 +57,7 @@ describe('Safe guards', () => {
 describe('Rendering', () => {
   it('should be possible to render an (on) Switch using a render prop', () => {
     renderTemplate({
-      template: `
+      template: html`
         <Switch v-model="checked">
           {({ checked }) => <span>{checked ? 'On' : 'Off'}</span>}
         </Switch>
@@ -67,7 +70,7 @@ describe('Rendering', () => {
 
   it('should be possible to render an (off) Switch using a render prop', () => {
     renderTemplate({
-      template: `
+      template: html`
         <Switch v-model="checked">
           {({ checked }) => <span>{checked ? 'On' : 'Off'}</span>}
         </Switch>
@@ -80,7 +83,9 @@ describe('Rendering', () => {
 
   it('should be possible to render an (on) Switch using an `as` prop', () => {
     renderTemplate({
-      template: `<Switch as="span" v-model="checked" />`,
+      template: html`
+        <Switch as="span" v-model="checked" />
+      `,
       setup: () => ({ checked: ref(true) }),
     })
     assertSwitch({ state: SwitchState.On, tag: 'span' })
@@ -88,7 +93,9 @@ describe('Rendering', () => {
 
   it('should be possible to render an (off) Switch using an `as` prop', () => {
     renderTemplate({
-      template: `<Switch as="span" v-model="checked" />`,
+      template: html`
+        <Switch as="span" v-model="checked" />
+      `,
       setup: () => ({ checked: ref(false) }),
     })
     assertSwitch({ state: SwitchState.Off, tag: 'span' })
@@ -96,7 +103,7 @@ describe('Rendering', () => {
 
   it('should be possible to use the switch contents as the label', () => {
     renderTemplate({
-      template: `
+      template: html`
         <Switch v-model="checked">
           <span>Enable notifications</span>
         </Switch>
@@ -111,7 +118,7 @@ describe('Rendering', () => {
 describe('Render composition', () => {
   it('should be possible to render a SwitchGroup, Switch and SwitchLabel', async () => {
     renderTemplate({
-      template: `
+      template: html`
         <SwitchGroup>
           <Switch v-model="checked" />
           <SwitchLabel>Enable notifications</SwitchLabel>
@@ -127,7 +134,7 @@ describe('Render composition', () => {
 
   it('should be possible to render a SwitchGroup, Switch and SwitchLabel (before the Switch)', async () => {
     renderTemplate({
-      template: `
+      template: html`
         <SwitchGroup>
           <SwitchLabel>Label B</SwitchLabel>
           <Switch v-model="checked">
@@ -149,7 +156,7 @@ describe('Render composition', () => {
 
   it('should be possible to render a SwitchGroup, Switch and SwitchLabel (after the Switch)', async () => {
     renderTemplate({
-      template: `
+      template: html`
         <SwitchGroup>
           <Switch v-model="checked">
             Label A
@@ -171,7 +178,7 @@ describe('Render composition', () => {
 
   it('should be possible to render a Switch.Group, Switch and Switch.Description (before the Switch)', async () => {
     renderTemplate({
-      template: `
+      template: html`
         <SwitchGroup>
           <SwitchDescription>This is an important feature</SwitchDescription>
           <Switch v-model="checked" />
@@ -187,7 +194,7 @@ describe('Render composition', () => {
 
   it('should be possible to render a Switch.Group, Switch and Switch.Description (after the Switch)', async () => {
     renderTemplate({
-      template: `
+      template: html`
         <SwitchGroup>
           <Switch v-model="checked" />
           <SwitchDescription>This is an important feature</SwitchDescription>
@@ -203,7 +210,7 @@ describe('Render composition', () => {
 
   it('should be possible to render a Switch.Group, Switch, Switch.Label and Switch.Description', async () => {
     renderTemplate({
-      template: `
+      template: html`
         <SwitchGroup>
           <SwitchLabel>Label A</SwitchLabel>
           <Switch v-model="checked" />
@@ -228,7 +235,9 @@ describe('Keyboard interactions', () => {
     it('should be possible to toggle the Switch with Space', async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: `<Switch v-model="checked" />`,
+        template: html`
+          <Switch v-model="checked" />
+        `,
         setup() {
           let checked = ref(false)
           watch([checked], () => handleChange(checked.value))
@@ -260,7 +269,9 @@ describe('Keyboard interactions', () => {
     it('should not be possible to use Enter to toggle the Switch', async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: `<Switch v-model="checked" />`,
+        template: html`
+          <Switch v-model="checked" />
+        `,
         setup() {
           let checked = ref(false)
           watch([checked], () => handleChange(checked.value))
@@ -284,7 +295,7 @@ describe('Keyboard interactions', () => {
   describe('`Tab` key', () => {
     it('should be possible to tab away from the Switch', async () => {
       renderTemplate({
-        template: `
+        template: html`
           <div>
             <Switch v-model="checked" />
             <button id="btn">Other element</button>
@@ -315,7 +326,9 @@ describe('Mouse interactions', () => {
   it('should be possible to toggle the Switch with a click', async () => {
     let handleChange = jest.fn()
     renderTemplate({
-      template: `<Switch v-model="checked" />`,
+      template: html`
+        <Switch v-model="checked" />
+      `,
       setup() {
         let checked = ref(false)
         watch([checked], () => handleChange(checked.value))
@@ -342,7 +355,7 @@ describe('Mouse interactions', () => {
   it('should be possible to toggle the Switch with a click on the Label', async () => {
     let handleChange = jest.fn()
     renderTemplate({
-      template: `
+      template: html`
         <SwitchGroup>
           <Switch v-model="checked" />
           <SwitchLabel>The label</SwitchLabel>
