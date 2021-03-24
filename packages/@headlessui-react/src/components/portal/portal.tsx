@@ -1,4 +1,3 @@
-// WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#dialog_modal
 import React, {
   Fragment,
   createContext,
