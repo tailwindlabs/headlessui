@@ -71,5 +71,16 @@
         "component": "./components/focus-trap/focus-trap.vue"
       }
     ]
+  },
+  {
+    "name": "Portal",
+    "path": "/portal",
+    "children": [
+      {
+        "name": "Portal (group)",
+        "path": "/portal/portal",
+        "component": "./components/portal/portal.vue"
+      }
+    ]
   }
 ]
