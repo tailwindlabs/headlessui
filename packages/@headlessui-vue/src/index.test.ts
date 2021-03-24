@@ -37,6 +37,10 @@ it('should expose the correct components', () => {
     'PopoverPanel',
     'PopoverGroup',
 
+    // Portal
+    'Portal',
+    'PortalGroup',
+
     // Switch
     'SwitchGroup',
     'Switch',
