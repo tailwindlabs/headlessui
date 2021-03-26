@@ -14,7 +14,7 @@ import { createPortal } from 'react-dom'
 import { Props } from '../../types'
 import { render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useElemenStack, StackProvider } from '../../internal/stack-context'
+import { useElementStack, StackProvider } from '../../internal/stack-context'
 import { usePortalRoot } from '../../internal/portal-force-root'
 
 function usePortalTarget(): HTMLElement | null {
@@ -57,7 +57,7 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     typeof window === 'undefined' ? null : document.createElement('div')
   )
 
-  useElemenStack(element)
+  useElementStack(element)
 
   useIsoMorphicEffect(() => {
     if (!target) return

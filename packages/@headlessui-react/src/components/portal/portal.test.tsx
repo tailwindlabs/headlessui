@@ -274,7 +274,7 @@ it('should be possible to tamper with the modal root and restore correctly', asy
   expect(getPortalRoot().childNodes).toHaveLength(2)
 })
 
-it('should be possable to force the Portal into a specific element using Portal.Group', async () => {
+it('should be possible to force the Portal into a specific element using Portal.Group', async () => {
   function Example() {
     let container = useRef(null)
 
