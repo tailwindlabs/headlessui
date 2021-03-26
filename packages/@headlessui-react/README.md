@@ -1331,6 +1331,24 @@ function NotificationsToggle() {
 }
 ```
 
+When passing a component to `<Switch.Label as={YourOwnComponent}>`, we expect that you pass the `ref`, `id` and `onClick` props to the underlying `<label>` element.
+
+```jsx
+import { forwardRef } from 'react';
+ 
+const CustomLabel = forwardRef((props, ref) => {
+  return <label ref={ref} id={props.id} onClick={props.onClick}>{props.children}</label>
+})
+```
+```jsx
+<Switch.Group>
+  <Switch.Label as={CustomLabel}>Enable notifications</Switch.Label>
+  <Switch checked={enabled} onChange={setEnabled} className="...">
+    {/* ... */}
+  </Switch>
+</Switch.Group>
+```
+
 ### Component API
 
 #### Switch
