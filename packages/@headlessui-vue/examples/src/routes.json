@@ -82,5 +82,16 @@
         "component": "./components/portal/portal.vue"
       }
     ]
+  },
+  {
+    "name": "Popover",
+    "path": "/popover",
+    "children": [
+      {
+        "name": "Popover",
+        "path": "/popover/popover",
+        "component": "./components/popover/popover.vue"
+      }
+    ]
   }
 ]
