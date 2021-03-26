@@ -858,6 +858,251 @@ export function assertDescriptionValue(element: HTMLElement | null, value: strin
 
 // ---
 
+export function getDialog(): HTMLElement | null {
+  return document.querySelector('[role="dialog"]')
+}
+
+export function getDialogTitle(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-dialog-title-"]')
+}
+
+export function getDialogDescription(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-dialog-description-"]')
+}
+
+export function getDialogOverlay(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-dialog-overlay-"]')
+}
+
+// ---
+
+export enum DialogState {
+  /** The dialog is visible to the user. */
+  Visible,
+
+  /** The dialog is **not** visible to the user. It's still in the DOM, but it is hidden. */
+  InvisibleHidden,
+
+  /** The dialog is **not** visible to the user. It's not in the DOM, it is unmounted. */
+  InvisibleUnmounted,
+}
+
+// ---
+
+export function assertDialog(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DialogState
+  },
+  dialog = getDialog()
+) {
+  try {
+    switch (options.state) {
+      case DialogState.InvisibleHidden:
+        if (dialog === null) return expect(dialog).not.toBe(null)
+
+        assertHidden(dialog)
+
+        expect(dialog).toHaveAttribute('role', 'dialog')
+        expect(dialog).not.toHaveAttribute('aria-modal', 'true')
+
+        if (options.textContent) expect(dialog).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(dialog).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.Visible:
+        if (dialog === null) return expect(dialog).not.toBe(null)
+
+        assertVisible(dialog)
+
+        expect(dialog).toHaveAttribute('role', 'dialog')
+        expect(dialog).toHaveAttribute('aria-modal', 'true')
+
+        if (options.textContent) expect(dialog).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(dialog).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.InvisibleUnmounted:
+        expect(dialog).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDialog)
+    throw err
+  }
+}
+
+export function assertDialogTitle(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DialogState
+  },
+  title = getDialogTitle(),
+  dialog = getDialog()
+) {
+  try {
+    switch (options.state) {
+      case DialogState.InvisibleHidden:
+        if (title === null) return expect(title).not.toBe(null)
+        if (dialog === null) return expect(dialog).not.toBe(null)
+
+        assertHidden(title)
+
+        expect(title).toHaveAttribute('id')
+        expect(dialog).toHaveAttribute('aria-labelledby', title.id)
+
+        if (options.textContent) expect(title).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(title).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.Visible:
+        if (title === null) return expect(title).not.toBe(null)
+        if (dialog === null) return expect(dialog).not.toBe(null)
+
+        assertVisible(title)
+
+        expect(title).toHaveAttribute('id')
+        expect(dialog).toHaveAttribute('aria-labelledby', title.id)
+
+        if (options.textContent) expect(title).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(title).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.InvisibleUnmounted:
+        expect(title).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDialogTitle)
+    throw err
+  }
+}
+
+export function assertDialogDescription(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DialogState
+  },
+  description = getDialogDescription(),
+  dialog = getDialog()
+) {
+  try {
+    switch (options.state) {
+      case DialogState.InvisibleHidden:
+        if (description === null) return expect(description).not.toBe(null)
+        if (dialog === null) return expect(dialog).not.toBe(null)
+
+        assertHidden(description)
+
+        expect(description).toHaveAttribute('id')
+        expect(dialog).toHaveAttribute('aria-describedby', description.id)
+
+        if (options.textContent) expect(description).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(description).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.Visible:
+        if (description === null) return expect(description).not.toBe(null)
+        if (dialog === null) return expect(dialog).not.toBe(null)
+
+        assertVisible(description)
+
+        expect(description).toHaveAttribute('id')
+        expect(dialog).toHaveAttribute('aria-describedby', description.id)
+
+        if (options.textContent) expect(description).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(description).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.InvisibleUnmounted:
+        expect(description).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDialogDescription)
+    throw err
+  }
+}
+
+export function assertDialogOverlay(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: DialogState
+  },
+  overlay = getDialogOverlay()
+) {
+  try {
+    switch (options.state) {
+      case DialogState.InvisibleHidden:
+        if (overlay === null) return expect(overlay).not.toBe(null)
+
+        assertHidden(overlay)
+
+        if (options.textContent) expect(overlay).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.Visible:
+        if (overlay === null) return expect(overlay).not.toBe(null)
+
+        assertVisible(overlay)
+
+        if (options.textContent) expect(overlay).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case DialogState.InvisibleUnmounted:
+        expect(overlay).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertDialogOverlay)
+    throw err
+  }
+}
+
+// ---
+
 export function assertActiveElement(element: HTMLElement | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
