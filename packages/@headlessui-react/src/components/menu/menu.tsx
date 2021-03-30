@@ -312,13 +312,20 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     if (!container) return
     if (state.menuState !== MenuStates.Open) return
 
-    let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-      acceptNode(node: HTMLElement) {
-        if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
-        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
-        return NodeFilter.FILTER_ACCEPT
-      },
-    }, false)
+    function acceptNode(node: HTMLElement) {
+      if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
+      if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+      return NodeFilter.FILTER_ACCEPT
+    }
+  
+    // Work around Internet Explorer wanting a function instead of an object.
+    // IE also *requires* this argument where other browsers don't.
+    function safeFilter(node: HTMLElement) {
+        return acceptNode(node);
+    }
+    safeFilter.acceptNode = acceptNode;
+
+    let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, safeFilter, false)
 
     while (walker.nextNode()) {
       ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
