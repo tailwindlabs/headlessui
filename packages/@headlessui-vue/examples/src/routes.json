@@ -93,5 +93,16 @@
         "component": "./components/popover/popover.vue"
       }
     ]
+  },
+  {
+    "name": "Dialog",
+    "path": "/dialog",
+    "children": [
+      {
+        "name": "Dialog",
+        "path": "/dialog/dialog",
+        "component": "./components/dialog/dialog.vue"
+      }
+    ]
   }
 ]
