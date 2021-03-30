@@ -318,7 +318,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
         if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
         return NodeFilter.FILTER_ACCEPT
       },
-    })
+    }, false)
 
     while (walker.nextNode()) {
       ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
