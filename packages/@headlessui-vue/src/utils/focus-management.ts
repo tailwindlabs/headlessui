@@ -142,5 +142,14 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
     offset += direction
   } while (next !== document.activeElement)
 
+  // This is a little weird, but let me try and explain: There are a few scenario's
+  // in chrome for example where a focused `<a>` tag does not get the default focus
+  // styles and sometimes they do. This highly depends on wether you started by
+  // clicking or by using your keyboard. When you programmatically add focus `anchor.focus()`
+  // then the active element (document.activeElement) is this anchor, which is expected.
+  // However in that case the default focus styles are not applied *unless* you
+  // also add this tabindex.
+  if (!next.hasAttribute('tabindex')) next.setAttribute('tabindex', '0')
+
   return FocusResult.Success
 }
