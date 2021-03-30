@@ -368,11 +368,13 @@ export let ListboxOptions = defineComponent({
         case Keys.Space:
           if (api.searchQuery.value !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return api.search(event.key)
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           if (api.activeOptionIndex.value !== null) {
             let { dataRef } = api.options.value[api.activeOptionIndex.value]
             api.select(dataRef.value)
@@ -383,30 +385,37 @@ export let ListboxOptions = defineComponent({
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.Next)
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.Previous)
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           api.closeListbox()
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {

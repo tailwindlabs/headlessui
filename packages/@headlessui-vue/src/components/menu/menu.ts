@@ -202,6 +202,7 @@ export let MenuButton = defineComponent({
         case Keys.Enter:
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           api.openMenu()
           nextTick(() => {
             dom(api.itemsRef)?.focus({ preventScroll: true })
@@ -211,6 +212,7 @@ export let MenuButton = defineComponent({
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           api.openMenu()
           nextTick(() => {
             dom(api.itemsRef)?.focus({ preventScroll: true })
@@ -227,6 +229,7 @@ export let MenuButton = defineComponent({
         nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
+        event.stopPropagation()
         api.openMenu()
         nextFrame(() => dom(api.itemsRef)?.focus({ preventScroll: true }))
       }
@@ -307,11 +310,13 @@ export let MenuItems = defineComponent({
         case Keys.Space:
           if (api.searchQuery.value !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return api.search(event.key)
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           if (api.activeItemIndex.value !== null) {
             let { id } = api.items.value[api.activeItemIndex.value]
             document.getElementById(id)?.click()
@@ -322,30 +327,37 @@ export let MenuItems = defineComponent({
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Next)
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Previous)
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           api.closeMenu()
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {
