@@ -447,9 +447,15 @@ interface OverlayRenderPropArg {
 }
 type OverlayPropsWeControl = 'id' | 'aria-hidden' | 'onClick'
 
+let OverlayRenderFeatures = Features.RenderStrategy | Features.Static
+
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
->(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
+>(
+  props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl> &
+    PropsForFeatures<typeof OverlayRenderFeatures>,
+  ref: Ref<HTMLDivElement>
+) {
   let [{ popoverState }, dispatch] = usePopoverContext([Popover.name, Overlay.name].join('.'))
   let overlayRef = useSyncRefs(ref)
 
@@ -475,7 +481,13 @@ let Overlay = forwardRefWithAs(function Overlay<
   }
   let passthroughProps = props
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OVERLAY_TAG)
+  return render(
+    { ...passthroughProps, ...propsWeControl },
+    propsBag,
+    DEFAULT_OVERLAY_TAG,
+    OverlayRenderFeatures,
+    popoverState === PopoverStates.Open
+  )
 })
 
 // ---
