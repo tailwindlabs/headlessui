@@ -335,6 +335,7 @@ export let PopoverButton = defineComponent({
           dom(api.button)?.focus() // Re-focus the original opening Button
         } else {
           if (api.popoverState.value === PopoverStates.Closed) closeOthers?.(api.buttonId)
+          dom(api.button)?.focus()
           api.togglePopover()
         }
       },
