@@ -1,4 +1,3 @@
-export * from './components/alert/alert'
 export * from './components/dialog/dialog'
 export * from './components/disclosure/disclosure'
 export * from './components/focus-trap/focus-trap'

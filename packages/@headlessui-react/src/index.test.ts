@@ -6,7 +6,6 @@ import * as HeadlessUI from './index'
  */
 it('should expose the correct components', () => {
   expect(Object.keys(HeadlessUI)).toEqual([
-    'Alert',
     'Dialog',
     'Disclosure',
     'FocusTrap',

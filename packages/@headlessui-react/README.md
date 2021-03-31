@@ -37,7 +37,6 @@ _This project is still in early development. New components will be added regula
 - [Dialog](./src/components/dialog/README.md)
 - [Popover](./src/components/popover/README.md)
 - [Radio Group](./src/components/radio-group/README.md)
-- [Alert](./src/components/alert/README.md)
 
 ### Roadmap
 
