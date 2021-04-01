@@ -163,10 +163,10 @@ export let Dialog = defineComponent({
 
     let dialogState = computed(() => (props.open ? DialogStates.Open : DialogStates.Closed))
     let internalDialogRef = ref<HTMLDivElement | null>(null)
-    let enabled = ref(props.static ? true : dialogState.value === DialogStates.Open)
+    let enabled = ref(dialogState.value === DialogStates.Open)
 
     onUpdated(() => {
-      enabled.value = props.static ? true : dialogState.value === DialogStates.Open
+      enabled.value = dialogState.value === DialogStates.Open
     })
 
     let id = `headlessui-dialog-${useId()}`

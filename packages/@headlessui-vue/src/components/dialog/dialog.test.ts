@@ -211,7 +211,31 @@ describe('Rendering', () => {
       })
     )
 
-    it('should be possible to always render the Dialog if we provide it a `static` prop', async () => {
+    it('should be possible to always render the Dialog if we provide it a `static` prop (and enable focus trapping based on `open`)', async () => {
+      let focusCounter = jest.fn()
+      renderTemplate({
+        template: `
+          <div>
+            <button>Trigger</button>
+            <Dialog :open="true" :onClose="() => {}" static>
+              <p>Contents</p>
+              <TabSentinel @focus="focusCounter" />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          return { focusCounter }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Let's verify that the Dialog is already there
+      expect(getDialog()).not.toBe(null)
+      expect(focusCounter).toHaveBeenCalledTimes(1)
+    })
+
+    it('should be possible to always render the Dialog if we provide it a `static` prop (and disable focus trapping based on `open`)', async () => {
       let focusCounter = jest.fn()
       renderTemplate({
         template: `
@@ -232,7 +256,7 @@ describe('Rendering', () => {
 
       // Let's verify that the Dialog is already there
       expect(getDialog()).not.toBe(null)
-      expect(focusCounter).toHaveBeenCalledTimes(1)
+      expect(focusCounter).toHaveBeenCalledTimes(0)
     })
 
     it('should be possible to use a different render strategy for the Dialog', async () => {

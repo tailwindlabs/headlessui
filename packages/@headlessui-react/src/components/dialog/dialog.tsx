@@ -240,7 +240,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     return () => observer.disconnect()
   }, [dialogState, internalDialogRef, close])
 
-  let enabled = props.static ? true : dialogState === DialogStates.Open
+  let enabled = dialogState === DialogStates.Open
 
   useFocusTrap(containers, enabled, { initialFocus })
   useInertOthers(internalDialogRef, enabled)
