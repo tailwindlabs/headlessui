@@ -22,6 +22,9 @@ export function render(TestComponent: any, options?: Parameters<typeof mount>[1]
   mountedWrappers.add(wrapper)
 
   return {
+    get container() {
+      return wrapper.element
+    },
     debug(element = wrapper.element) {
       logDOM(element)
     },
