@@ -44,6 +44,12 @@ it('should expose the correct components', () => {
     'Portal',
     'PortalGroup',
 
+    // RadioGroup
+    'RadioGroup',
+    'RadioGroupOption',
+    'RadioGroupLabel',
+    'RadioGroupDescription',
+
     // Switch
     'SwitchGroup',
     'Switch',
