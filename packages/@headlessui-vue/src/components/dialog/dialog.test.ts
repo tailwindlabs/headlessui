@@ -211,6 +211,36 @@ describe('Rendering', () => {
       })
     )
 
+    it('should be possible to pass props to the Dialog itself', async () => {
+      renderTemplate({
+        template: `
+          <div>
+            <button id="trigger" @click="setIsOpen(true)">
+              Trigger
+            </button>
+            <Dialog :open="isOpen" :onClose="setIsOpen" class="relative bg-blue-500">
+              <TabSentinel />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(false)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible, attributes: { class: 'relative bg-blue-500' } })
+    })
+
     it('should be possible to always render the Dialog if we provide it a `static` prop (and enable focus trapping based on `open`)', async () => {
       let focusCounter = jest.fn()
       renderTemplate({

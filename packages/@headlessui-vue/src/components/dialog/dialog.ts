@@ -65,6 +65,7 @@ let Missing = 'DC8F892D-2EBD-447C-A4C8-A03058436FF4'
 
 export let Dialog = defineComponent({
   name: 'Dialog',
+  inheritAttrs: false, // Manually handling this
   props: {
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
@@ -81,6 +82,9 @@ export let Dialog = defineComponent({
       'aria-modal': this.dialogState === DialogStates.Open ? true : undefined,
       'aria-labelledby': this.titleId,
       'aria-describedby': this.descriptionId,
+      // Manually passthrough the attributes, because Vue can't automatically pass
+      // it to the underlying div because of all the wrapper components below.
+      ...this.$attrs,
     }
     let { open, onClose, initialFocus, ...passThroughProps } = this.$props
     let containers = this.containers
