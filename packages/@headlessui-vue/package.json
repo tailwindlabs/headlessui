@@ -1,6 +1,6 @@
 {
   "name": "@headlessui/vue",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "module": "dist/headlessui.esm.js",
