@@ -104,5 +104,16 @@
         "component": "./components/dialog/dialog.vue"
       }
     ]
+  },
+  {
+    "name": "RadioGroup",
+    "path": "/radio-group",
+    "children": [
+      {
+        "name": "RadioGroup",
+        "path": "/radio-group/radio-group",
+        "component": "./components/radio-group/radio-group.vue"
+      }
+    ]
   }
 ]
