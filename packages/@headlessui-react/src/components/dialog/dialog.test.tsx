@@ -35,7 +35,6 @@ describe('Safe guards', () => {
   it.each([
     ['Dialog.Overlay', Dialog.Overlay],
     ['Dialog.Title', Dialog.Title],
-    ['Dialog.Description', Dialog.Description],
   ])(
     'should error when we are using a <%s /> without a parent <Dialog />',
     suppressConsoleLogs((name, Component) => {

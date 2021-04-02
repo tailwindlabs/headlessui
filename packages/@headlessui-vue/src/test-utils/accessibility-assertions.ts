@@ -869,7 +869,7 @@ export function getDialogTitle(): HTMLElement | null {
 }
 
 export function getDialogDescription(): HTMLElement | null {
-  return document.querySelector('[id^="headlessui-dialog-description-"]')
+  return document.querySelector('[id^="headlessui-description-"]')
 }
 
 export function getDialogOverlay(): HTMLElement | null {

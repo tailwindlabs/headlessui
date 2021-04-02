@@ -25,10 +25,11 @@ import { useFocusTrap } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { contains } from '../../internal/dom-containers'
 import { useWindowEvent } from '../../hooks/use-window-event'
-import { Portal, PortalGroup } from '../../components/portal/portal'
+import { Portal, PortalGroup } from '../portal/portal'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { match } from '../../utils/match'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
+import { Description, useDescriptions } from '../description/description'
 
 enum DialogStates {
   Open,
@@ -39,10 +40,8 @@ interface StateDefinition {
   dialogState: Ref<DialogStates>
 
   titleId: Ref<string | null>
-  descriptionId: Ref<string | null>
 
   setTitleId(id: string | null): void
-  setDescriptionId(id: string | null): void
 
   close(): void
 }
@@ -81,7 +80,7 @@ export let Dialog = defineComponent({
       role: 'dialog',
       'aria-modal': this.dialogState === DialogStates.Open ? true : undefined,
       'aria-labelledby': this.titleId,
-      'aria-describedby': this.descriptionId,
+      'aria-describedby': this.describedby,
       // Manually passthrough the attributes, because Vue can't automatically pass
       // it to the underlying div because of all the wrapper components below.
       ...this.$attrs,
@@ -108,14 +107,16 @@ export let Dialog = defineComponent({
           h(Portal, {}, () => [
             h(PortalGroup, { target: this.dialogRef }, () => [
               h(ForcePortalRoot, { force: false }, () => [
-                render({
-                  props: { ...passThroughProps, ...propsWeControl },
-                  slot: { open: this.dialogState === DialogStates.Open },
-                  attrs: this.$attrs,
-                  slots: this.$slots,
-                  visible: open,
-                  features: Features.RenderStrategy | Features.Static,
-                }),
+                h(this.DescriptionProvider, () => [
+                  render({
+                    props: { ...passThroughProps, ...propsWeControl },
+                    slot: { open: this.dialogState === DialogStates.Open },
+                    attrs: this.$attrs,
+                    slots: this.$slots,
+                    visible: open,
+                    features: Features.RenderStrategy | Features.Static,
+                  }),
+                ]),
               ]),
             ]),
           ]),
@@ -178,21 +179,16 @@ export let Dialog = defineComponent({
 
     useFocusTrap(containers, enabled, focusTrapOptions)
     useInertOthers(internalDialogRef, enabled)
+    let [describedby, DescriptionProvider] = useDescriptions()
 
     let titleId = ref<StateDefinition['titleId']['value']>(null)
-    let descriptionId = ref<StateDefinition['descriptionId']['value']>(null)
 
     let api = {
       titleId,
-      descriptionId,
       dialogState,
       setTitleId(id: string | null) {
         if (titleId.value === id) return
         titleId.value = id
-      },
-      setDescriptionId(id: string | null) {
-        if (descriptionId.value === id) return
-        descriptionId.value = id
       },
       close() {
         props.onClose!(false)
@@ -271,7 +267,8 @@ export let Dialog = defineComponent({
       containers,
       dialogState,
       titleId,
-      descriptionId,
+      describedby,
+      DescriptionProvider,
     }
   },
 })
@@ -347,32 +344,4 @@ export let DialogTitle = defineComponent({
 
 // ---
 
-export let DialogDescription = defineComponent({
-  name: 'DialogDescription',
-  props: {
-    as: { type: [Object, String], default: 'p' },
-  },
-  render() {
-    let api = useDialogContext('DialogDescription')
-    let propsWeControl = { id: this.id }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot: { open: api.dialogState.value === DialogStates.Open },
-      attrs: this.$attrs,
-      slots: this.$slots,
-    })
-  },
-  setup() {
-    let api = useDialogContext('DialogDescription')
-    let id = `headlessui-dialog-description-${useId()}`
-
-    onMounted(() => {
-      api.setDescriptionId(id)
-      onUnmounted(() => api.setDescriptionId(null))
-    })
-
-    return { id }
-  },
-})
+export let DialogDescription = Description
