@@ -141,9 +141,9 @@ describe('Rendering', () => {
                 Trigger
               </button>
               <Dialog open={isOpen} onClose={setIsOpen}>
-                {({ open }) => (
+                {data => (
                   <>
-                    Dialog is: {open ? 'open' : 'closed'}
+                    <pre>{JSON.stringify(data)}</pre>
                     <TabSentinel />
                   </>
                 )}
@@ -157,7 +157,7 @@ describe('Rendering', () => {
 
         await click(document.getElementById('trigger'))
 
-        assertDialog({ state: DialogState.Visible, textContent: 'Dialog is: open' })
+        assertDialog({ state: DialogState.Visible, textContent: JSON.stringify({ open: true }) })
       })
     )
 
@@ -310,7 +310,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Dialog open={true} onClose={console.log}>
-            <Dialog.Title>Deactivate account</Dialog.Title>
+            <Dialog.Title>{JSON.stringify}</Dialog.Title>
             <TabSentinel />
           </Dialog>
         )
@@ -319,7 +319,10 @@ describe('Rendering', () => {
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
         })
-        assertDialogTitle({ state: DialogState.Visible })
+        assertDialogTitle({
+          state: DialogState.Visible,
+          textContent: JSON.stringify({ open: true }),
+        })
       })
     )
   })
@@ -330,7 +333,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Dialog open={true} onClose={console.log}>
-            <Dialog.Description>Deactivate account</Dialog.Description>
+            <Dialog.Description>{JSON.stringify}</Dialog.Description>
             <TabSentinel />
           </Dialog>
         )
@@ -339,7 +342,10 @@ describe('Rendering', () => {
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
         })
-        assertDialogDescription({ state: DialogState.Visible })
+        assertDialogDescription({
+          state: DialogState.Visible,
+          textContent: JSON.stringify({ open: true }),
+        })
       })
     )
   })

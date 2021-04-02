@@ -8,6 +8,7 @@ import React, {
   // Types
   ElementType,
   ReactNode,
+  ContextType,
 } from 'react'
 
 import { Props } from '../../types'
@@ -17,10 +18,14 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
 // ---
 
-let DescriptionContext = createContext<{ register(value: string): () => void }>({
+let DescriptionContext = createContext<{
+  register(value: string): () => void
+  bag: Record<string, any>
+}>({
   register() {
     return () => {}
   },
+  bag: {},
 })
 
 function useDescriptionContext() {
@@ -29,7 +34,7 @@ function useDescriptionContext() {
 
 export function useDescriptions(): [
   string | undefined,
-  (props: { children: ReactNode }) => JSX.Element
+  (props: { children: ReactNode; bag?: Record<string, any> }) => JSX.Element
 ] {
   let [descriptionIds, setDescriptionIds] = useState<string[]>([])
 
@@ -39,7 +44,10 @@ export function useDescriptions(): [
 
     // The provider component
     useMemo(() => {
-      return function DescriptionProvider(props: { children: ReactNode }) {
+      return function DescriptionProvider(props: {
+        children: ReactNode
+        bag?: Record<string, any>
+      }) {
         let register = useCallback((value: string) => {
           setDescriptionIds(existing => [...existing, value])
 
@@ -52,7 +60,10 @@ export function useDescriptions(): [
             })
         }, [])
 
-        let contextBag = useMemo(() => ({ register }), [register])
+        let contextBag = useMemo<ContextType<typeof DescriptionContext>>(
+          () => ({ register, bag: props.bag ?? {} }),
+          [register, props.bag]
+        )
 
         return (
           <DescriptionContext.Provider value={contextBag}>
@@ -73,14 +84,13 @@ type DescriptionPropsWeControl = 'id'
 export function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
   props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
 ) {
-  let { register } = useDescriptionContext()
+  let { register, bag } = useDescriptionContext()
   let id = `headlessui-description-${useId()}`
 
   useIsoMorphicEffect(() => register(id), [id, register])
 
   let passThroughProps = props
   let propsWeControl = { id }
-  let bag = useMemo<DescriptionRenderPropArg>(() => ({}), [])
 
   return render({ ...passThroughProps, ...propsWeControl }, bag, DEFAULT_DESCRIPTION_TAG)
 }

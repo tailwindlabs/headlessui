@@ -19,6 +19,7 @@ import { render } from '../../utils/render'
 
 let DescriptionContext = Symbol('DescriptionContext') as InjectionKey<{
   register(value: string): () => void
+  slot: Record<string, any>
 }>
 
 function useDescriptionContext() {
@@ -26,6 +27,7 @@ function useDescriptionContext() {
     register() {
       return () => {}
     },
+    slot: {},
   })
 }
 
@@ -42,7 +44,8 @@ export function useDescriptions(): [
     // The provider component
     defineComponent({
       name: 'DescriptionProvider',
-      setup(_props, { slots }) {
+      props: ['slot'],
+      setup(props, { slots }) {
         function register(value: string) {
           descriptionIds.value.push(value)
 
@@ -53,7 +56,9 @@ export function useDescriptions(): [
           }
         }
 
-        provide(DescriptionContext, { register })
+        let slot = computed(() => props.slot)
+
+        provide(DescriptionContext, { register, slot })
 
         return () => slots.default!()
       },
@@ -74,17 +79,17 @@ export let Description = defineComponent({
 
     return render({
       props: { ...passThroughProps, ...propsWeControl },
-      slot: {},
+      slot: this.slot,
       attrs: this.$attrs,
       slots: this.$slots,
     })
   },
   setup() {
-    let { register } = useDescriptionContext()
+    let { register, slot } = useDescriptionContext()
     let id = `headlessui-description-${useId()}`
 
     onMounted(() => onUnmounted(register(id)))
 
-    return { id }
+    return { id, slot }
   },
 })

@@ -185,8 +185,8 @@ describe('Rendering', () => {
               <button id="trigger" @click="setIsOpen(true)">
                 Trigger
               </button>
-              <Dialog :open="isOpen" :onClose="setIsOpen" v-slot="{ open }">
-                Dialog is: {{open ? 'open' : 'closed'}}
+              <Dialog :open="isOpen" :onClose="setIsOpen" v-slot="data">
+                <pre>{{JSON.stringify(data)}}</pre>
                 <TabSentinel />
               </Dialog>
             </div>
@@ -206,7 +206,7 @@ describe('Rendering', () => {
 
         await click(document.getElementById('trigger'))
 
-        assertDialog({ state: DialogState.Visible, textContent: 'Dialog is: open' })
+        assertDialog({ state: DialogState.Visible, textContent: JSON.stringify({ open: true }) })
       })
     )
 
@@ -428,7 +428,7 @@ describe('Rendering', () => {
         renderTemplate(
           `
             <Dialog :open="true" :onClose="() => {}">
-              <DialogTitle>Deactivate account</DialogTitle>
+              <DialogTitle v-slot="data">{{JSON.stringify(data)}}</DialogTitle>
               <TabSentinel />
             </Dialog>
           `
@@ -440,7 +440,10 @@ describe('Rendering', () => {
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
         })
-        assertDialogTitle({ state: DialogState.Visible })
+        assertDialogTitle({
+          state: DialogState.Visible,
+          textContent: JSON.stringify({ open: true }),
+        })
       })
     )
   })
@@ -452,7 +455,7 @@ describe('Rendering', () => {
         renderTemplate(
           `
             <Dialog :open="true" :onClose="() => {}">
-              <DialogDescription>Deactivate account</DialogDescription>
+              <DialogDescription v-slot="data">{{JSON.stringify(data)}}</DialogDescription>
               <TabSentinel />
             </Dialog>
           `
@@ -464,7 +467,10 @@ describe('Rendering', () => {
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
         })
-        assertDialogDescription({ state: DialogState.Visible })
+        assertDialogDescription({
+          state: DialogState.Visible,
+          textContent: JSON.stringify({ open: true }),
+        })
       })
     )
   })

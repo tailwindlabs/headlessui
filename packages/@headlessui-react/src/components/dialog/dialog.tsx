@@ -235,6 +235,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let propsBag = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
     dialogState,
   ])
+
   let propsWeControl = {
     ref: dialogRef,
     id,
@@ -263,7 +264,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
           <DialogContext.Provider value={contextBag}>
             <Portal.Group target={internalDialogRef}>
               <ForcePortalRoot force={false}>
-                <DescriptionProvider>
+                <DescriptionProvider bag={propsBag}>
                   {render(
                     { ...passthroughProps, ...propsWeControl },
                     propsBag,

@@ -88,6 +88,8 @@ export let Dialog = defineComponent({
     let { open, onClose, initialFocus, ...passThroughProps } = this.$props
     let containers = this.containers
 
+    let slot = { open: this.dialogState === DialogStates.Open }
+
     return h(
       StackProvider,
       {
@@ -107,10 +109,10 @@ export let Dialog = defineComponent({
           h(Portal, {}, () => [
             h(PortalGroup, { target: this.dialogRef }, () => [
               h(ForcePortalRoot, { force: false }, () => [
-                h(this.DescriptionProvider, () => [
+                h(this.DescriptionProvider, { slot }, () => [
                   render({
                     props: { ...passThroughProps, ...propsWeControl },
-                    slot: { open: this.dialogState === DialogStates.Open },
+                    slot,
                     attrs: this.$attrs,
                     slots: this.$slots,
                     visible: open,
