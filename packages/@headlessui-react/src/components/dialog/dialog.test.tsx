@@ -15,7 +15,7 @@ import {
   assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
-import { Props } from '../../types'
+import { PropsOf } from '../../types'
 
 jest.mock('../../hooks/use-id')
 
@@ -27,7 +27,7 @@ global.IntersectionObserver = class FakeIntersectionObserver {
 
 afterAll(() => jest.restoreAllMocks())
 
-function TabSentinel(props: Props<'div'>) {
+function TabSentinel(props: PropsOf<'div'>) {
   return <div tabIndex={0} {...props} />
 }
 
