@@ -315,18 +315,7 @@ describe('Rendering', () => {
     })
 
     it('should yell when we render MenuItems using a template `as` prop that contains multiple children', async () => {
-      let state = {
-        resolve(_value: Error | PromiseLike<Error>) {},
-        done(error: unknown) {
-          state.resolve(error as Error)
-          return true
-        },
-        promise: new Promise<Error>(() => {}),
-      }
-
-      state.promise = new Promise<Error>(resolve => {
-        state.resolve = resolve
-      })
+      expect.assertions(1)
 
       renderTemplate({
         template: `
@@ -339,14 +328,15 @@ describe('Rendering', () => {
             </MenuItems>
           </Menu>
         `,
-        errorCaptured: state.done,
+        errorCaptured(err: unknown) {
+          expect((err as Error).message).toMatchInlineSnapshot(
+            `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+          )
+          return false
+        },
       })
 
       await click(getMenuButton())
-      let error = await state.promise
-      expect(error.message).toMatchInlineSnapshot(
-        `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
-      )
     })
 
     it('should be possible to always render the MenuItems if we provide it a `static` prop', () => {
@@ -469,18 +459,7 @@ describe('Rendering', () => {
     })
 
     it('should yell when we render a MenuItem using a template `as` prop that contains multiple children', async () => {
-      let state = {
-        resolve(_value: Error | PromiseLike<Error>) {},
-        done(error: unknown) {
-          state.resolve(error as Error)
-          return true
-        },
-        promise: new Promise<Error>(() => {}),
-      }
-
-      state.promise = new Promise<Error>(resolve => {
-        state.resolve = resolve
-      })
+      expect.assertions(1)
 
       renderTemplate({
         template: `
@@ -496,14 +475,16 @@ describe('Rendering', () => {
             </MenuItems>
           </Menu>
         `,
-        errorCaptured: state.done,
+        errorCaptured(err: unknown) {
+          expect((err as Error).message).toMatchInlineSnapshot(
+            `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+          )
+
+          return false
+        },
       })
 
       await click(getMenuButton())
-      let error = await state.promise
-      expect(error.message).toMatchInlineSnapshot(
-        `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
-      )
     })
   })
 })
