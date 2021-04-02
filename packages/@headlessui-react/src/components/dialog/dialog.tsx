@@ -30,6 +30,7 @@ import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { contains } from '../../internal/dom-containers'
 import { Description, useDescriptions } from '../description/description'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum DialogStates {
   Open,
@@ -160,33 +161,23 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   )
 
   // Handle outside click
-  useEffect(() => {
-    function handler(event: MouseEvent) {
-      let target = event.target as HTMLElement
+  useWindowEvent('mousedown', event => {
+    let target = event.target as HTMLElement
 
-      if (dialogState !== DialogStates.Open) return
-      if (containers.current.size !== 1) return
-      if (contains(containers.current, target)) return
+    if (dialogState !== DialogStates.Open) return
+    if (containers.current.size !== 1) return
+    if (contains(containers.current, target)) return
 
-      close()
-    }
-
-    window.addEventListener('mousedown', handler)
-    return () => window.removeEventListener('mousedown', handler)
-  }, [dialogState, containers, close])
+    close()
+  })
 
   // Handle `Escape` to close
-  useEffect(() => {
-    function handler(event: KeyboardEvent) {
-      if (event.key !== Keys.Escape) return
-      if (dialogState !== DialogStates.Open) return
-      if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
-      close()
-    }
-
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [close, dialogState])
+  useWindowEvent('keydown', event => {
+    if (event.key !== Keys.Escape) return
+    if (dialogState !== DialogStates.Open) return
+    if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
+    close()
+  })
 
   // Scroll lock
   useEffect(() => {

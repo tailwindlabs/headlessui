@@ -4,7 +4,6 @@ import React, {
   createRef,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -31,6 +30,7 @@ import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum ListboxStates {
   Open,
@@ -217,26 +217,21 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
   // Handle outside click
-  useEffect(() => {
-    function handler(event: MouseEvent) {
-      let target = event.target as HTMLElement
+  useWindowEvent('mousedown', event => {
+    let target = event.target as HTMLElement
 
-      if (listboxState !== ListboxStates.Open) return
+    if (listboxState !== ListboxStates.Open) return
 
-      if (buttonRef.current?.contains(target)) return
-      if (optionsRef.current?.contains(target)) return
+    if (buttonRef.current?.contains(target)) return
+    if (optionsRef.current?.contains(target)) return
 
-      dispatch({ type: ActionTypes.CloseListbox })
+    dispatch({ type: ActionTypes.CloseListbox })
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        buttonRef.current?.focus()
-      }
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      buttonRef.current?.focus()
     }
-
-    window.addEventListener('mousedown', handler)
-    return () => window.removeEventListener('mousedown', handler)
-  }, [listboxState, buttonRef, optionsRef, dispatch])
+  })
 
   let propsBag = useMemo<ListboxRenderPropArg>(
     () => ({ open: listboxState === ListboxStates.Open, disabled }),

@@ -21,6 +21,7 @@ import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum ListboxStates {
   Open,
@@ -179,21 +180,16 @@ export let Listbox = defineComponent({
       },
     }
 
-    onMounted(() => {
-      function handler(event: MouseEvent) {
-        let target = event.target as HTMLElement
-        let active = document.activeElement
+    useWindowEvent('mousedown', event => {
+      let target = event.target as HTMLElement
+      let active = document.activeElement
 
-        if (listboxState.value !== ListboxStates.Open) return
-        if (dom(buttonRef)?.contains(target)) return
+      if (listboxState.value !== ListboxStates.Open) return
+      if (dom(buttonRef)?.contains(target)) return
 
-        if (!dom(optionsRef)?.contains(target)) api.closeListbox()
-        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
-      }
-
-      window.addEventListener('mousedown', handler)
-      onUnmounted(() => window.removeEventListener('mousedown', handler))
+      if (!dom(optionsRef)?.contains(target)) api.closeListbox()
+      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
