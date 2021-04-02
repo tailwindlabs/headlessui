@@ -1,6 +1,6 @@
 ## Listbox (Select)
 
-[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuivue-listbox-example-mi67g?file=/src/App.vue)
+[View live demo on CodeSandbox](https://codesandbox.io/s/headlessuivue-listbox-example-forked-070j0?file=/src/App.vue)
 
 The `Listbox` component and related child components are used to quickly build custom listbox components that are fully accessible out of the box, including correct ARIA attribute management and robust keyboard navigation support.
 
