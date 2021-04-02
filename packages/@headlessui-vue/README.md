@@ -32,6 +32,12 @@ _This project is still in early development. New components will be added regula
 - [Menu Button (Dropdown)](./src/components/menu/README.md)
 - [Listbox (Select)](./src/components/listbox/README.md)
 - [Switch (Toggle)](./src/components/switch/README.md)
+- [Disclosure](./src/components/disclosure/README.md)
+- [FocusTrap](./src/components/focus-trap/README.md)
+- [Portal](./src/components/portal/README.md)
+- [Dialog](./src/components/dialog/README.md)
+- [Popover](./src/components/popover/README.md)
+- [Radio Group](./src/components/radio-group/README.md)
 
 ### Roadmap
 
@@ -39,10 +45,7 @@ This project is still in early development, but the plan is to build out all of 
 
 This includes things like:
 
-- Modals
 - Tabs
-- Slide-overs
-- Mobile menus
 - Accordions
 
 ...and more in the future.
