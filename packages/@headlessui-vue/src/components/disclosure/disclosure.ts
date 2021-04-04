@@ -63,7 +63,7 @@ export let Disclosure = defineComponent({
 
     return () => {
       let slot = { open: disclosureState.value === DisclosureStates.Open }
-      return render({ props: passThroughProps, slot, slots, attrs })
+      return render({ props: passThroughProps, slot, slots, attrs, name: 'Disclosure' })
     }
   },
 })
@@ -94,6 +94,7 @@ export let DisclosureButton = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'DisclosureButton',
     })
   },
   setup(props) {
@@ -145,6 +146,7 @@ export let DisclosurePanel = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'DisclosurePanel',
     })
   },
   setup() {

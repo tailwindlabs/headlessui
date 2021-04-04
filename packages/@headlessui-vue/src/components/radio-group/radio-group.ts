@@ -83,6 +83,7 @@ export let RadioGroup = defineComponent({
           slot: {},
           attrs: this.$attrs,
           slots: this.$slots,
+          name: 'RadioGroup',
         }),
       ]),
     ])
@@ -264,6 +265,7 @@ export let RadioGroupOption = defineComponent({
           slot,
           attrs: this.$attrs,
           slots: this.$slots,
+          name: 'RadioGroupOption',
         }),
       ]),
     ])

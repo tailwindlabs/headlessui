@@ -197,7 +197,7 @@ export let Listbox = defineComponent({
 
     return () => {
       let slot = { open: listboxState.value === ListboxStates.Open, disabled }
-      return render({ props: passThroughProps, slot, slots, attrs })
+      return render({ props: passThroughProps, slot, slots, attrs, name: 'Listbox' })
     }
   },
 })
@@ -218,6 +218,7 @@ export let ListboxLabel = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'ListboxLabel',
     })
   },
   setup() {
@@ -265,6 +266,7 @@ export let ListboxButton = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'ListboxButton',
     })
   },
   setup() {
@@ -347,6 +349,7 @@ export let ListboxOptions = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'ListboxOptions',
     })
   },
   setup() {
@@ -520,7 +523,13 @@ export let ListboxOption = defineComponent({
         onMouseleave: handleLeave,
       }
 
-      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'ListboxOption',
+      })
     }
   },
 })

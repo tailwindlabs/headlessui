@@ -67,7 +67,7 @@ export let Portal = defineComponent({
       if (myTarget.value === null) return null
       return h(StackProvider, {}, () => [
         h(Teleport, { to: myTarget.value }, [
-          h('div', { ref: element }, [render({ props, slot: {}, attrs, slots })]),
+          h('div', { ref: element }, [render({ props, slot: {}, attrs, slots, name: 'Portal' })]),
         ]),
       ])
     }
@@ -98,7 +98,7 @@ export let PortalGroup = defineComponent({
     return () => {
       let { target: _, ...passThroughProps } = props
 
-      return render({ props: passThroughProps, slot: {}, attrs, slots })
+      return render({ props: passThroughProps, slot: {}, attrs, slots, name: 'PortalGroup' })
     }
   },
 })

@@ -63,6 +63,7 @@ function useMenuContext(component: string) {
 }
 
 export let Menu = defineComponent({
+  name: 'Menu',
   props: { as: { type: [Object, String], default: 'template' } },
   setup(props, { slots, attrs }) {
     let menuState = ref<StateDefinition['menuState']['value']>(MenuStates.Closed)
@@ -154,12 +155,13 @@ export let Menu = defineComponent({
 
     return () => {
       let slot = { open: menuState.value === MenuStates.Open }
-      return render({ props, slot, slots, attrs })
+      return render({ props, slot, slots, attrs, name: 'Menu' })
     }
   },
 })
 
 export let MenuButton = defineComponent({
+  name: 'MenuButton',
   props: {
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
@@ -184,6 +186,7 @@ export let MenuButton = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'MenuButton',
     })
   },
   setup(props) {
@@ -241,6 +244,7 @@ export let MenuButton = defineComponent({
 })
 
 export let MenuItems = defineComponent({
+  name: 'MenuItems',
   props: {
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
@@ -271,6 +275,7 @@ export let MenuItems = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'MenuItems',
     })
   },
   setup() {
@@ -369,6 +374,7 @@ export let MenuItems = defineComponent({
 })
 
 export let MenuItem = defineComponent({
+  name: 'MenuItem',
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
@@ -443,7 +449,13 @@ export let MenuItem = defineComponent({
         onMouseleave: handleLeave,
       }
 
-      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'MenuItem',
+      })
     }
   },
 })

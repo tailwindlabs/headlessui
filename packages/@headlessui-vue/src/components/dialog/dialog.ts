@@ -117,6 +117,7 @@ export let Dialog = defineComponent({
                     slots: this.$slots,
                     visible: open,
                     features: Features.RenderStrategy | Features.Static,
+                    name: 'Dialog',
                   }),
                 ]),
               ]),
@@ -297,6 +298,7 @@ export let DialogOverlay = defineComponent({
       slot: { open: api.dialogState.value === DialogStates.Open },
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'DialogOverlay',
     })
   },
   setup() {
@@ -329,6 +331,7 @@ export let DialogTitle = defineComponent({
       slot: { open: api.dialogState.value === DialogStates.Open },
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'DialogTitle',
     })
   },
   setup() {

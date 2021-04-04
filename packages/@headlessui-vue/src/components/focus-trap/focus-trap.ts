@@ -27,6 +27,7 @@ export let FocusTrap = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'FocusTrap',
     })
   },
   setup(props) {

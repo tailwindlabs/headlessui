@@ -82,6 +82,7 @@ export let Description = defineComponent({
       slot: this.slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'Description',
     })
   },
   setup() {

@@ -164,8 +164,20 @@ describe('Rendering', () => {
               </MenuItems>
             </Menu>
           `)
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+        ).toThrowError(
+          new Error(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <Menu /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - class',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
+          )
         )
       })
     )
@@ -289,8 +301,28 @@ describe('Rendering', () => {
               </MenuItems>
             </Menu>
           `)
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+        ).toThrowError(
+          new Error(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <MenuButton /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - disabled',
+              '  - ref',
+              '  - id',
+              '  - type',
+              '  - aria-haspopup',
+              '  - aria-controls',
+              '  - aria-expanded',
+              '  - onKeydown',
+              '  - onClick',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
+          )
         )
       })
     )
@@ -370,8 +402,24 @@ describe('Rendering', () => {
           </Menu>
         `,
         errorCaptured(err: unknown) {
-          expect((err as Error).message).toMatchInlineSnapshot(
-            `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+          expect((err as Error).message).toEqual(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <MenuItems /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - aria-activedescendant',
+              '  - aria-labelledby',
+              '  - id',
+              '  - onKeydown',
+              '  - role',
+              '  - tabIndex',
+              '  - ref',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
           )
           return false
         },
@@ -517,8 +565,29 @@ describe('Rendering', () => {
           </Menu>
         `,
         errorCaptured(err: unknown) {
-          expect((err as Error).message).toMatchInlineSnapshot(
-            `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+          expect((err as Error).message).toEqual(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <MenuItem /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - disabled',
+              '  - id',
+              '  - role',
+              '  - tabIndex',
+              '  - class',
+              '  - aria-disabled',
+              '  - onClick',
+              '  - onFocus',
+              '  - onPointermove',
+              '  - onMousemove',
+              '  - onPointerleave',
+              '  - onMouseleave',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
           )
 
           return false

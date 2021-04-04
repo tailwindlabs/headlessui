@@ -74,6 +74,7 @@ export let Label = defineComponent({
       slot: {},
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'Label',
     })
   },
   setup() {

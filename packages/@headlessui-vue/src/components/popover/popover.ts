@@ -168,7 +168,7 @@ export let Popover = defineComponent({
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open }
-      return render({ props: passThroughProps, slot, slots, attrs })
+      return render({ props: passThroughProps, slot, slots, attrs, name: 'Popover' })
     }
   },
 })
@@ -207,6 +207,7 @@ export let PopoverButton = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'PopoverButton',
     })
   },
   setup(props) {
@@ -371,6 +372,7 @@ export let PopoverOverlay = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'PopoverOverlay',
     })
   },
   setup() {
@@ -412,6 +414,7 @@ export let PopoverPanel = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'PopoverPanel',
     })
   },
   setup(props) {
@@ -523,6 +526,7 @@ export let PopoverGroup = defineComponent({
       slot: {},
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'PopoverGroup',
     })
   },
   setup() {
