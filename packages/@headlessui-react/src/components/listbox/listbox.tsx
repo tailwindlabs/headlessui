@@ -233,14 +233,19 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
     }
   })
 
-  let propsBag = useMemo<ListboxRenderPropArg>(
+  let slot = useMemo<ListboxRenderPropArg>(
     () => ({ open: listboxState === ListboxStates.Open, disabled }),
     [listboxState, disabled]
   )
 
   return (
     <ListboxContext.Provider value={reducerBag}>
-      {render(passThroughProps, propsBag, DEFAULT_LISTBOX_TAG)}
+      {render({
+        props: passThroughProps,
+        slot,
+        defaultTag: DEFAULT_LISTBOX_TAG,
+        name: 'Listbox',
+      })}
     </ListboxContext.Provider>
   )
 }
@@ -321,7 +326,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     return [state.labelRef.current.id, id].join(' ')
   }, [state.labelRef.current, id])
 
-  let propsBag = useMemo<ButtonRenderPropArg>(
+  let slot = useMemo<ButtonRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
@@ -339,7 +344,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     onClick: handleClick,
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_BUTTON_TAG,
+    name: 'Listbox.Button',
+  })
 })
 
 // ---
@@ -361,12 +371,17 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     state.buttonRef,
   ])
 
-  let propsBag = useMemo<LabelRenderPropArg>(
+  let slot = useMemo<LabelRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
   let propsWeControl = { ref: state.labelRef, id, onClick: handleClick }
-  return render({ ...props, ...propsWeControl }, propsBag, DEFAULT_LABEL_TAG)
+  return render({
+    props: { ...props, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_LABEL_TAG,
+    name: 'Listbox.Label',
+  })
 }
 
 // ---
@@ -483,7 +498,7 @@ let Options = forwardRefWithAs(function Options<
     state.buttonRef.current,
   ])
 
-  let propsBag = useMemo<OptionsRenderPropArg>(
+  let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
     [state]
   )
@@ -499,13 +514,14 @@ let Options = forwardRefWithAs(function Options<
   }
   let passthroughProps = props
 
-  return render(
-    { ...passthroughProps, ...propsWeControl },
-    propsBag,
-    DEFAULT_OPTIONS_TAG,
-    OptionsRenderFeatures,
-    state.listboxState === ListboxStates.Open
-  )
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OPTIONS_TAG,
+    features: OptionsRenderFeatures,
+    visible: state.listboxState === ListboxStates.Open,
+    name: 'Listbox.Options',
+  })
 })
 
 // ---
@@ -607,7 +623,7 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  let propsBag = useMemo<OptionRenderPropArg>(() => ({ active, selected, disabled }), [
+  let slot = useMemo<OptionRenderPropArg>(() => ({ active, selected, disabled }), [
     active,
     selected,
     disabled,
@@ -626,7 +642,12 @@ function Option<
     onMouseLeave: handleLeave,
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OPTION_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OPTION_TAG,
+    name: 'Listbox.Option',
+  })
 }
 
 // ---

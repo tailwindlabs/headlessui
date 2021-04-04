@@ -214,14 +214,18 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     }
   })
 
-  let propsBag = useMemo<PopoverRenderPropArg>(
-    () => ({ open: popoverState === PopoverStates.Open }),
-    [popoverState]
-  )
+  let slot = useMemo<PopoverRenderPropArg>(() => ({ open: popoverState === PopoverStates.Open }), [
+    popoverState,
+  ])
 
   return (
     <PopoverContext.Provider value={reducerBag}>
-      {render(props, propsBag, DEFAULT_POPOVER_TAG)}
+      {render({
+        props,
+        slot,
+        defaultTag: DEFAULT_POPOVER_TAG,
+        name: 'Popover',
+      })}
     </PopoverContext.Provider>
   )
 }
@@ -406,7 +410,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     ]
   )
 
-  let propsBag = useMemo<ButtonRenderPropArg>(
+  let slot = useMemo<ButtonRenderPropArg>(
     () => ({ open: state.popoverState === PopoverStates.Open }),
     [state]
   )
@@ -429,7 +433,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         onClick: handleClick,
       }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_BUTTON_TAG,
+    name: 'Popover.Button',
+  })
 })
 
 // ---
@@ -462,10 +471,9 @@ let Overlay = forwardRefWithAs(function Overlay<
     [dispatch]
   )
 
-  let propsBag = useMemo<OverlayRenderPropArg>(
-    () => ({ open: popoverState === PopoverStates.Open }),
-    [popoverState]
-  )
+  let slot = useMemo<OverlayRenderPropArg>(() => ({ open: popoverState === PopoverStates.Open }), [
+    popoverState,
+  ])
   let propsWeControl = {
     ref: overlayRef,
     id,
@@ -474,13 +482,14 @@ let Overlay = forwardRefWithAs(function Overlay<
   }
   let passthroughProps = props
 
-  return render(
-    { ...passthroughProps, ...propsWeControl },
-    propsBag,
-    DEFAULT_OVERLAY_TAG,
-    OverlayRenderFeatures,
-    popoverState === PopoverStates.Open
-  )
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OVERLAY_TAG,
+    features: OverlayRenderFeatures,
+    visible: popoverState === PopoverStates.Open,
+    name: 'Popover.Overlay',
+  })
 })
 
 // ---
@@ -598,7 +607,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     true
   )
 
-  let propsBag = useMemo<PanelRenderPropArg>(
+  let slot = useMemo<PanelRenderPropArg>(
     () => ({ open: state.popoverState === PopoverStates.Open }),
     [state]
   )
@@ -610,13 +619,14 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   return (
     <PopoverPanelContext.Provider value={state.panelId}>
-      {render(
-        { ...passthroughProps, ...propsWeControl },
-        propsBag,
-        DEFAULT_PANEL_TAG,
-        PanelRenderFeatures,
-        state.popoverState === PopoverStates.Open
-      )}
+      {render({
+        props: { ...passthroughProps, ...propsWeControl },
+        slot,
+        defaultTag: DEFAULT_PANEL_TAG,
+        features: PanelRenderFeatures,
+        visible: state.popoverState === PopoverStates.Open,
+        name: 'Popover.Panel',
+      })}
     </PopoverPanelContext.Provider>
   )
 })
@@ -689,13 +699,18 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     [registerPopover, unregisterPopover, isFocusWithinPopoverGroup, closeOthers]
   )
 
-  let propsBag = useMemo<GroupRenderPropArg>(() => ({}), [])
+  let slot = useMemo<GroupRenderPropArg>(() => ({}), [])
   let propsWeControl = { ref: groupRef }
   let passthroughProps = props
 
   return (
     <PopoverGroupContext.Provider value={contextBag}>
-      {render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_GROUP_TAG)}
+      {render({
+        props: { ...passthroughProps, ...propsWeControl },
+        slot,
+        defaultTag: DEFAULT_GROUP_TAG,
+        name: 'Popover.Group',
+      })}
     </PopoverGroupContext.Provider>
   )
 }

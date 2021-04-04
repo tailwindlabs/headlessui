@@ -232,7 +232,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     [dialogState, state, close, setTitleId]
   )
 
-  let propsBag = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
+  let slot = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
     dialogState,
   ])
 
@@ -264,14 +264,15 @@ let DialogRoot = forwardRefWithAs(function Dialog<
           <DialogContext.Provider value={contextBag}>
             <Portal.Group target={internalDialogRef}>
               <ForcePortalRoot force={false}>
-                <DescriptionProvider bag={propsBag}>
-                  {render(
-                    { ...passthroughProps, ...propsWeControl },
-                    propsBag,
-                    DEFAULT_DIALOG_TAG,
-                    DialogRenderFeatures,
-                    dialogState === DialogStates.Open
-                  )}
+                <DescriptionProvider slot={slot}>
+                  {render({
+                    props: { ...passthroughProps, ...propsWeControl },
+                    slot,
+                    defaultTag: DEFAULT_DIALOG_TAG,
+                    features: DialogRenderFeatures,
+                    visible: dialogState === DialogStates.Open,
+                    name: 'Dialog',
+                  })}
                 </DescriptionProvider>
               </ForcePortalRoot>
             </Portal.Group>
@@ -306,10 +307,9 @@ let Overlay = forwardRefWithAs(function Overlay<
     [close]
   )
 
-  let propsBag = useMemo<OverlayRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
-    [dialogState]
-  )
+  let slot = useMemo<OverlayRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
+    dialogState,
+  ])
   let propsWeControl = {
     ref: overlayRef,
     id,
@@ -318,7 +318,12 @@ let Overlay = forwardRefWithAs(function Overlay<
   }
   let passthroughProps = props
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OVERLAY_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OVERLAY_TAG,
+    name: 'Dialog.Overlay',
+  })
 })
 
 // ---
@@ -341,13 +346,18 @@ function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     return () => setTitleId(null)
   }, [id, setTitleId])
 
-  let propsBag = useMemo<TitleRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
+  let slot = useMemo<TitleRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
     dialogState,
   ])
   let propsWeControl = { id }
   let passthroughProps = props
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_TITLE_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_TITLE_TAG,
+    name: 'Dialog.Title',
+  })
 }
 
 // ---

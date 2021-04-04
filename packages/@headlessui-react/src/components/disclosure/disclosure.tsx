@@ -127,14 +127,19 @@ export function Disclosure<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_
   useEffect(() => dispatch({ type: ActionTypes.SetButtonId, buttonId }), [buttonId, dispatch])
   useEffect(() => dispatch({ type: ActionTypes.SetPanelId, panelId }), [panelId, dispatch])
 
-  let propsBag = useMemo<DisclosureRenderPropArg>(
+  let slot = useMemo<DisclosureRenderPropArg>(
     () => ({ open: disclosureState === DisclosureStates.Open }),
     [disclosureState]
   )
 
   return (
     <DisclosureContext.Provider value={reducerBag}>
-      {render(props, propsBag, DEFAULT_DISCLOSURE_TAG)}
+      {render({
+        props,
+        slot,
+        defaultTag: DEFAULT_DISCLOSURE_TAG,
+        name: 'Disclosure',
+      })}
     </DisclosureContext.Provider>
   )
 }
@@ -182,7 +187,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     [dispatch, props.disabled]
   )
 
-  let propsBag = useMemo<ButtonRenderPropArg>(
+  let slot = useMemo<ButtonRenderPropArg>(
     () => ({ open: state.disclosureState === DisclosureStates.Open }),
     [state]
   )
@@ -198,7 +203,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     onClick: handleClick,
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_BUTTON_TAG,
+    name: 'Disclosure.Button',
+  })
 })
 
 // ---
@@ -232,7 +242,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     }
   }, [state.disclosureState, props.unmount, dispatch])
 
-  let propsBag = useMemo<PanelRenderPropArg>(
+  let slot = useMemo<PanelRenderPropArg>(
     () => ({ open: state.disclosureState === DisclosureStates.Open }),
     [state]
   )
@@ -242,13 +252,14 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   }
   let passthroughProps = props
 
-  return render(
-    { ...passthroughProps, ...propsWeControl },
-    propsBag,
-    DEFAULT_PANEL_TAG,
-    PanelRenderFeatures,
-    state.disclosureState === DisclosureStates.Open
-  )
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_PANEL_TAG,
+    features: PanelRenderFeatures,
+    visible: state.disclosureState === DisclosureStates.Open,
+    name: 'Disclosure.Panel',
+  })
 })
 
 // ---

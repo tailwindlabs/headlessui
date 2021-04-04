@@ -81,7 +81,14 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     <StackProvider>
       {!target || !element
         ? null
-        : createPortal(render(passthroughProps, {}, DEFAULT_PORTAL_TAG), element)}
+        : createPortal(
+            render({
+              props: passthroughProps,
+              defaultTag: DEFAULT_PORTAL_TAG,
+              name: 'Portal',
+            }),
+            element
+          )}
     </StackProvider>
   )
 }
@@ -102,7 +109,11 @@ function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
 
   return (
     <PortalGroupContext.Provider value={target}>
-      {render(passthroughProps, {}, DEFAULT_GROUP_TAG)}
+      {render({
+        props: passthroughProps,
+        defaultTag: DEFAULT_GROUP_TAG,
+        name: 'Popover.Group',
+      })}
     </PortalGroupContext.Provider>
   )
 }

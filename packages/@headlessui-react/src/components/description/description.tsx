@@ -20,12 +20,12 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
 let DescriptionContext = createContext<{
   register(value: string): () => void
-  bag: Record<string, any>
+  slot: Record<string, any>
 }>({
   register() {
     return () => {}
   },
-  bag: {},
+  slot: {},
 })
 
 function useDescriptionContext() {
@@ -34,7 +34,7 @@ function useDescriptionContext() {
 
 export function useDescriptions(): [
   string | undefined,
-  (props: { children: ReactNode; bag?: Record<string, any> }) => JSX.Element
+  (props: { children: ReactNode; slot?: Record<string, any> }) => JSX.Element
 ] {
   let [descriptionIds, setDescriptionIds] = useState<string[]>([])
 
@@ -46,7 +46,7 @@ export function useDescriptions(): [
     useMemo(() => {
       return function DescriptionProvider(props: {
         children: ReactNode
-        bag?: Record<string, any>
+        slot?: Record<string, any>
       }) {
         let register = useCallback((value: string) => {
           setDescriptionIds(existing => [...existing, value])
@@ -61,8 +61,8 @@ export function useDescriptions(): [
         }, [])
 
         let contextBag = useMemo<ContextType<typeof DescriptionContext>>(
-          () => ({ register, bag: props.bag ?? {} }),
-          [register, props.bag]
+          () => ({ register, slot: props.slot ?? {} }),
+          [register, props.slot]
         )
 
         return (
@@ -84,7 +84,7 @@ type DescriptionPropsWeControl = 'id'
 export function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
   props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
 ) {
-  let { register, bag } = useDescriptionContext()
+  let { register, slot: slot } = useDescriptionContext()
   let id = `headlessui-description-${useId()}`
 
   useIsoMorphicEffect(() => register(id), [id, register])
@@ -92,5 +92,10 @@ export function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTIO
   let passThroughProps = props
   let propsWeControl = { id }
 
-  return render({ ...passThroughProps, ...propsWeControl }, bag, DEFAULT_DESCRIPTION_TAG)
+  return render({
+    props: { ...passThroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_DESCRIPTION_TAG,
+    name: 'Description',
+  })
 }

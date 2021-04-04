@@ -71,7 +71,11 @@ function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props
 
   return (
     <GroupContext.Provider value={context}>
-      {render(props, {}, DEFAULT_GROUP_TAG)}
+      {render({
+        props,
+        defaultTag: DEFAULT_GROUP_TAG,
+        name: 'Switch.Group',
+      })}
     </GroupContext.Provider>
   )
 }
@@ -126,7 +130,7 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     []
   )
 
-  let propsBag = useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
+  let slot = useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
   let propsWeControl = {
     id,
     ref: groupContext === null ? undefined : groupContext.setSwitch,
@@ -144,7 +148,12 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     Object.assign(propsWeControl, { type: 'button' })
   }
 
-  return render({ ...passThroughProps, ...propsWeControl }, propsBag, DEFAULT_SWITCH_TAG)
+  return render({
+    props: { ...passThroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_SWITCH_TAG,
+    name: 'Switch',
+  })
 }
 
 // ---
@@ -166,7 +175,11 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   }, [state.switch])
 
   let propsWeControl = { ref: state.setLabel, id, onClick: handleClick }
-  return render({ ...props, ...propsWeControl }, {}, DEFAULT_LABEL_TAG)
+  return render({
+    props: { ...props, ...propsWeControl },
+    defaultTag: DEFAULT_LABEL_TAG,
+    name: 'Switch.Label',
+  })
 }
 
 // ---
@@ -182,7 +195,11 @@ function Description<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   let id = `headlessui-switch-description-${useId()}`
 
   let propsWeControl = { ref: state.setDescription, id }
-  return render({ ...props, ...propsWeControl }, {}, DEFAULT_DESCRIPTIONL_TAG)
+  return render({
+    props: { ...props, ...propsWeControl },
+    defaultTag: DEFAULT_DESCRIPTIONL_TAG,
+    name: 'Switch.Description',
+  })
 }
 
 // ---

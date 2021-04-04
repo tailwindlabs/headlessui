@@ -73,7 +73,10 @@ export function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
   let passThroughProps = props
   let propsWeControl = { id }
-  let bag = useMemo<LabelRenderPropArg>(() => ({}), [])
 
-  return render({ ...passThroughProps, ...propsWeControl }, bag, DEFAULT_LABEL_TAG)
+  return render({
+    props: { ...passThroughProps, ...propsWeControl },
+    defaultTag: DEFAULT_LABEL_TAG,
+    name: 'Label',
+  })
 }
