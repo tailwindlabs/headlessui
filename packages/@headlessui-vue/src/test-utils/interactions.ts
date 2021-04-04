@@ -14,7 +14,9 @@ export let Keys: Record<string, Partial<KeyboardEvent>> = {
   Escape: { key: 'Escape', keyCode: 27, charCode: 27 },
   Backspace: { key: 'Backspace', keyCode: 8 },
 
+  ArrowLeft: { key: 'ArrowLeft', keyCode: 37 },
   ArrowUp: { key: 'ArrowUp', keyCode: 38 },
+  ArrowRight: { key: 'ArrowRight', keyCode: 39 },
   ArrowDown: { key: 'ArrowDown', keyCode: 40 },
 
   Home: { key: 'Home', keyCode: 36 },
@@ -191,8 +193,15 @@ export async function click(
         fireEvent.mouseDown(element, options)
       }
 
-      // Ensure to trigger a `focus` event if the element is focusable
-      if ((element as HTMLElement)?.matches(focusableSelector)) fireEvent.focus(element, options)
+      // Ensure to trigger a `focus` event if the element is focusable, or within a focusable element
+      let next: HTMLElement | null = element as HTMLElement | null
+      while (next !== null) {
+        if (next.matches(focusableSelector)) {
+          next.focus()
+          break
+        }
+        next = next.parentElement
+      }
 
       fireEvent.pointerUp(element, options)
       if (!cancelled) {

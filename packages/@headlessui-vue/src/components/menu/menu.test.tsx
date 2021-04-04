@@ -29,6 +29,7 @@ import {
   word,
   MouseButton,
 } from '../../test-utils/interactions'
+import { jsx } from '../../test-utils/html'
 
 jest.mock('../../hooks/use-id')
 
@@ -70,7 +71,7 @@ describe('Safe guards', () => {
   )
 
   it('should be possible to render a Menu without crashing', () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -92,7 +93,7 @@ describe('Safe guards', () => {
 describe('Rendering', () => {
   describe('Menu', () => {
     it('should be possible to render a Menu using a default render prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu v-slot="{ open }">
           <MenuButton>Trigger {{ open ? "visible" : "hidden" }}</MenuButton>
           <MenuItems>
@@ -121,7 +122,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to render a Menu using a template `as` prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu as="template">
           <div>
             <MenuButton>Trigger</MenuButton>
@@ -153,7 +154,7 @@ describe('Rendering', () => {
       'should yell when we render a Menu using a template `as` prop (default) that contains multiple children (if we passthrough props)',
       suppressConsoleLogs(() => {
         expect(() =>
-          renderTemplate(`
+          renderTemplate(jsx`
             <Menu class="relative">
               <MenuButton>Trigger</MenuButton>
               <MenuItems>
@@ -163,8 +164,20 @@ describe('Rendering', () => {
               </MenuItems>
             </Menu>
           `)
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+        ).toThrowError(
+          new Error(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <Menu /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - class',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
+          )
         )
       })
     )
@@ -172,7 +185,7 @@ describe('Rendering', () => {
 
   describe('MenuButton', () => {
     it('should be possible to render a MenuButton using a default render prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton v-slot="{ open }">
             Trigger {{ open ? "visible" : "hidden" }}
@@ -203,7 +216,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to render a MenuButton using a template `as` prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton as="template" v-slot="{ open }">
             <button :data-open="open">Trigger</button>
@@ -233,7 +246,7 @@ describe('Rendering', () => {
 
     it('should be possible to render a MenuButton using a template `as` prop and a custom element', async () => {
       renderTemplate({
-        template: `
+        template: jsx`
           <Menu>
             <MenuButton as="template" v-slot="{ open }">
               <MyCustomButton :data-open="open">Options</MyCustomButton>
@@ -275,7 +288,7 @@ describe('Rendering', () => {
       'should yell when we render a MenuButton using a template `as` prop that contains multiple children',
       suppressConsoleLogs(() => {
         expect(() =>
-          renderTemplate(`
+          renderTemplate(jsx`
             <Menu>
               <MenuButton as="template">
                 <span>Trigger</span>
@@ -288,8 +301,28 @@ describe('Rendering', () => {
               </MenuItems>
             </Menu>
           `)
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+        ).toThrowError(
+          new Error(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <MenuButton /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - disabled',
+              '  - ref',
+              '  - id',
+              '  - type',
+              '  - aria-haspopup',
+              '  - aria-controls',
+              '  - aria-expanded',
+              '  - onKeydown',
+              '  - onClick',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
+          )
         )
       })
     )
@@ -297,7 +330,7 @@ describe('Rendering', () => {
 
   describe('MenuItems', () => {
     it('should be possible to render MenuItems using a default render prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems v-slot="{ open }">
@@ -326,7 +359,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to render MenuItems using a template `as` prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems as="template" v-slot="{ open }">
@@ -358,7 +391,7 @@ describe('Rendering', () => {
       expect.assertions(1)
 
       renderTemplate({
-        template: `
+        template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems as="template">
@@ -369,8 +402,24 @@ describe('Rendering', () => {
           </Menu>
         `,
         errorCaptured(err: unknown) {
-          expect((err as Error).message).toMatchInlineSnapshot(
-            `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+          expect((err as Error).message).toEqual(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <MenuItems /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - aria-activedescendant',
+              '  - aria-labelledby',
+              '  - id',
+              '  - onKeydown',
+              '  - role',
+              '  - tabIndex',
+              '  - ref',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
           )
           return false
         },
@@ -380,7 +429,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to always render the MenuItems if we provide it a `static` prop', () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems static>
@@ -396,7 +445,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to use a different render strategy for the MenuItems', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems :unmount="false">
@@ -420,7 +469,7 @@ describe('Rendering', () => {
 
   describe('MenuItem', () => {
     it('should be possible to render MenuItem using a default render prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -452,7 +501,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to render a MenuItem using a template `as` prop', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -502,7 +551,7 @@ describe('Rendering', () => {
       expect.assertions(1)
 
       renderTemplate({
-        template: `
+        template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
@@ -516,8 +565,29 @@ describe('Rendering', () => {
           </Menu>
         `,
         errorCaptured(err: unknown) {
-          expect((err as Error).message).toMatchInlineSnapshot(
-            `"You should only render 1 child or use the \`as=\\"...\\"\` prop"`
+          expect((err as Error).message).toEqual(
+            [
+              'Passing props on "Fragment"!',
+              '',
+              'The current component <MenuItem /> is rendering a "Fragment".',
+              'However we need to passthrough the following props:',
+              '  - disabled',
+              '  - id',
+              '  - role',
+              '  - tabIndex',
+              '  - class',
+              '  - aria-disabled',
+              '  - onClick',
+              '  - onFocus',
+              '  - onPointermove',
+              '  - onMousemove',
+              '  - onPointerleave',
+              '  - onMouseleave',
+              '',
+              'You can apply a few solutions:',
+              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              '  - Render a single element as the child so that we can forward the props onto that element.',
+            ].join('\n')
           )
 
           return false
@@ -531,7 +601,7 @@ describe('Rendering', () => {
 
 describe('Rendering composition', () => {
   it('should be possible to conditionally render classNames (aka className can be a function?!)', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -594,7 +664,7 @@ describe('Rendering composition', () => {
       })
 
       renderTemplate({
-        template: `
+        template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
@@ -628,7 +698,7 @@ describe('Rendering composition', () => {
     'should mark all the elements between Menu.Items and Menu.Item with role none',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <div className="outer">
@@ -675,7 +745,7 @@ describe('Rendering composition', () => {
 describe('Keyboard interactions', () => {
   describe('`Enter` key', () => {
     it('should be possible to open the menu with Enter', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -716,7 +786,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to open the menu with Enter when the button is disabled', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton disabled>Trigger</MenuButton>
           <MenuItems>
@@ -748,7 +818,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems />
@@ -768,7 +838,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should focus the first non disabled menu item when opening with Enter', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -798,7 +868,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should focus the first non disabled menu item when opening with Enter (jump over multiple disabled ones)', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -828,7 +898,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item upon Enter key press, when there are no non-disabled menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -855,7 +925,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to close the menu with Enter when there is no active menuitem', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -892,7 +962,7 @@ describe('Keyboard interactions', () => {
     it('should be possible to close the menu with Enter and invoke the active menu item', async () => {
       let clickHandler = jest.fn()
       renderTemplate({
-        template: `
+        template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
@@ -940,7 +1010,7 @@ describe('Keyboard interactions', () => {
     let clickHandler = jest.fn()
 
     renderTemplate({
-      template: `
+      template: jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1004,7 +1074,7 @@ describe('Keyboard interactions', () => {
 
   describe('`Space` key', () => {
     it('should be possible to open the menu with Space', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1043,7 +1113,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to open the menu with Space when the button is disabled', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton disabled>Trigger</MenuButton>
           <MenuItems>
@@ -1075,7 +1145,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems />
@@ -1095,7 +1165,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should focus the first non disabled menu item when opening with Space', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1125,7 +1195,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should focus the first non disabled menu item when opening with Space (jump over multiple disabled ones)', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1155,7 +1225,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item upon Space key press, when there are no non-disabled menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1184,7 +1254,7 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the menu with Space when there is no active menuitem',
       suppressConsoleLogs(async () => {
-        renderTemplate(`
+        renderTemplate(jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
@@ -1201,13 +1271,13 @@ describe('Keyboard interactions', () => {
         })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
-        // Open menu
+        // Open Menu
         await click(getMenuButton())
 
         // Verify it is open
         assertMenuButton({ state: MenuState.Visible })
 
-        // Close menu
+        // Close Menu
         await press(Keys.Space)
 
         // Verify it is closed
@@ -1224,7 +1294,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         let clickHandler = jest.fn()
         renderTemplate({
-          template: `
+          template: jsx`
             <Menu>
               <MenuButton>Trigger</MenuButton>
               <MenuItems>
@@ -1271,7 +1341,7 @@ describe('Keyboard interactions', () => {
 
   describe('`Escape` key', () => {
     it('should be possible to close an open menu with Escape', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1310,7 +1380,7 @@ describe('Keyboard interactions', () => {
 
   describe('`Tab` key', () => {
     it('should focus trap when we use Tab', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1356,7 +1426,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should focus trap when we use Shift+Tab', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1404,7 +1474,7 @@ describe('Keyboard interactions', () => {
 
   describe('`ArrowDown` key', () => {
     it('should be possible to open the menu with ArrowDown', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1445,7 +1515,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to open the menu with ArrowDown when the button is disabled', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton disabled>Trigger</MenuButton>
           <MenuItems>
@@ -1477,7 +1547,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems />
@@ -1497,7 +1567,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use ArrowDown to navigate the menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1540,7 +1610,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use ArrowDown to navigate the menu items and skip the first disabled one', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1575,7 +1645,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use ArrowDown to navigate the menu items and jump to the first non-disabled one', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1608,7 +1678,7 @@ describe('Keyboard interactions', () => {
 
   describe('`ArrowUp` key', () => {
     it('should be possible to open the menu with ArrowUp and the last item should be active', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1649,7 +1719,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item when there are no menu items at all', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems />
@@ -1669,7 +1739,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use ArrowUp to navigate the menu items and jump to the first non-disabled one', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1700,7 +1770,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to navigate up or down if there is only a single non-disabled item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1739,7 +1809,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use ArrowUp to navigate the menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1792,7 +1862,7 @@ describe('Keyboard interactions', () => {
 
   describe('`End` key', () => {
     it('should be possible to use the End key to go to the last menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1820,7 +1890,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the End key to go to the last non disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1849,7 +1919,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the End key to go to the first menu item if that is the only non-disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1875,7 +1945,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item upon End key press, when there are no non-disabled menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1902,7 +1972,7 @@ describe('Keyboard interactions', () => {
 
   describe('`PageDown` key', () => {
     it('should be possible to use the PageDown key to go to the last menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1930,7 +2000,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the PageDown key to go to the last non disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1959,7 +2029,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the PageDown key to go to the first menu item if that is the only non-disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -1985,7 +2055,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item upon PageDown key press, when there are no non-disabled menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2012,7 +2082,7 @@ describe('Keyboard interactions', () => {
 
   describe('`Home` key', () => {
     it('should be possible to use the Home key to go to the first menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2040,7 +2110,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the Home key to go to the first non disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2068,7 +2138,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the Home key to go to the last menu item if that is the only non-disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2094,7 +2164,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item upon Home key press, when there are no non-disabled menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2121,7 +2191,7 @@ describe('Keyboard interactions', () => {
 
   describe('`PageUp` key', () => {
     it('should be possible to use the PageUp key to go to the first menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2149,7 +2219,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the PageUp key to go to the first non disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2177,7 +2247,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to use the PageUp key to go to the last menu item if that is the only non-disabled menu item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2203,7 +2273,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should have no active menu item upon PageUp key press, when there are no non-disabled menu items', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2230,7 +2300,7 @@ describe('Keyboard interactions', () => {
 
   describe('`Any` key aka search', () => {
     it('should be possible to type a full word that has a perfect match', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2260,7 +2330,7 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to type a partial of a word', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2298,7 +2368,7 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to type words with spaces',
       suppressConsoleLogs(async () => {
-        renderTemplate(`
+        renderTemplate(jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
@@ -2335,7 +2405,7 @@ describe('Keyboard interactions', () => {
     )
 
     it('should not be possible to search for a disabled item', async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2368,7 +2438,7 @@ describe('Keyboard interactions', () => {
 
 describe('Mouse interactions', () => {
   it('should be possible to open a menu on click', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2405,7 +2475,7 @@ describe('Mouse interactions', () => {
   it(
     'should not be possible to open a menu on right click',
     suppressConsoleLogs(async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2431,7 +2501,7 @@ describe('Mouse interactions', () => {
   )
 
   it('should not be possible to open a menu on click when the button is disabled', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton disabled>Trigger</MenuButton>
         <MenuItems>
@@ -2460,7 +2530,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to close a menu on click', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2486,7 +2556,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be a no-op when we click outside of a closed menu', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2508,7 +2578,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to click outside of the menu which should close the menu', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2534,7 +2604,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to click outside of the menu which should close the menu (even if we press the menu button)', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2562,7 +2632,7 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click outside of the menu on another menu button which should close the current menu and open the new menu',
     suppressConsoleLogs(async () => {
-      renderTemplate(`
+      renderTemplate(jsx`
         <div>
           <Menu>
             <MenuButton>Trigger</MenuButton>
@@ -2604,7 +2674,7 @@ describe('Mouse interactions', () => {
   )
 
   it('should be possible to hover an item and make it active', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2633,7 +2703,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should make a menu item active when you move the mouse over it', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2654,7 +2724,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be a no-op when we move the mouse and the menu item is already active', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2681,7 +2751,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be a no-op when we move the mouse and the menu item is disabled', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2702,7 +2772,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should not be possible to hover an item that is disabled', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2726,7 +2796,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to mouse leave an item and make it inactive', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2765,7 +2835,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to mouse leave a disabled item and be a no-op', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2792,7 +2862,7 @@ describe('Mouse interactions', () => {
   it('should be possible to click a menu item, which closes the menu', async () => {
     let clickHandler = jest.fn()
     renderTemplate({
-      template: `
+      template: jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2821,7 +2891,7 @@ describe('Mouse interactions', () => {
   it('should be possible to click a menu item, which closes the menu and invokes the @click handler', async () => {
     let clickHandler = jest.fn()
     renderTemplate({
-      template: `
+      template: jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
@@ -2859,7 +2929,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible to click a disabled menu item, which is a no-op', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2882,7 +2952,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should be possible focus a menu item, so that it becomes active', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2908,7 +2978,7 @@ describe('Mouse interactions', () => {
   })
 
   it('should not be possible to focus a menu item which is disabled', async () => {
-    renderTemplate(`
+    renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
@@ -2934,7 +3004,7 @@ describe('Mouse interactions', () => {
     let clickHandler = jest.fn()
 
     renderTemplate({
-      template: `
+      template: jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>

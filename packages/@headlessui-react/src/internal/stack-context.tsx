@@ -15,7 +15,7 @@ export function useStackContext() {
   return useContext(StackContext)
 }
 
-export function useElemenStack(element: HTMLElement | null) {
+export function useElementStack(element: HTMLElement | null) {
   let notify = useStackContext()
 
   useIsoMorphicEffect(() => {

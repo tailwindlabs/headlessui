@@ -32,6 +32,7 @@ import {
   isFocusableElement,
   FocusableMode,
 } from '../../utils/focus-management'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum PopoverStates {
   Open,
@@ -156,7 +157,6 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   let reducerBag = useReducer(stateReducer, {
     popoverState: PopoverStates.Closed,
-    linkedPanel: false,
     button: null,
     buttonId,
     panel: null,
@@ -184,51 +184,48 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   useEffect(() => registerPopover?.(registerBag), [registerPopover, registerBag])
 
   // Handle focus out
-  useEffect(() => {
-    if (popoverState !== PopoverStates.Open) return
-
-    function handler() {
+  useWindowEvent(
+    'focus',
+    () => {
+      if (popoverState !== PopoverStates.Open) return
       if (isFocusWithinPopoverGroup()) return
       if (!button) return
       if (!panel) return
 
       dispatch({ type: ActionTypes.ClosePopover })
-    }
-
-    window.addEventListener('focus', handler, true)
-    return () => window.removeEventListener('focus', handler, true)
-  }, [popoverState, isFocusWithinPopoverGroup, groupContext, button, panel, dispatch])
+    },
+    true
+  )
 
   // Handle outside click
-  useEffect(() => {
-    function handler(event: MouseEvent) {
-      let target = event.target as HTMLElement
+  useWindowEvent('mousedown', event => {
+    let target = event.target as HTMLElement
 
-      if (popoverState !== PopoverStates.Open) return
+    if (popoverState !== PopoverStates.Open) return
 
-      if (button?.contains(target)) return
-      if (panel?.contains(target)) return
+    if (button?.contains(target)) return
+    if (panel?.contains(target)) return
 
-      dispatch({ type: ActionTypes.ClosePopover })
+    dispatch({ type: ActionTypes.ClosePopover })
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        button?.focus()
-      }
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      button?.focus()
     }
+  })
 
-    window.addEventListener('mousedown', handler)
-    return () => window.removeEventListener('mousedown', handler)
-  }, [popoverState, button, panel, dispatch])
-
-  let propsBag = useMemo<PopoverRenderPropArg>(
-    () => ({ open: popoverState === PopoverStates.Open }),
-    [popoverState]
-  )
+  let slot = useMemo<PopoverRenderPropArg>(() => ({ open: popoverState === PopoverStates.Open }), [
+    popoverState,
+  ])
 
   return (
     <PopoverContext.Provider value={reducerBag}>
-      {render(props, propsBag, DEFAULT_POPOVER_TAG)}
+      {render({
+        props,
+        slot,
+        defaultTag: DEFAULT_POPOVER_TAG,
+        name: 'Popover',
+      })}
     </PopoverContext.Provider>
   )
 }
@@ -271,15 +268,14 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let previousActiveElementRef = useRef<Element | null>(
     typeof window === 'undefined' ? null : document.activeElement
   )
-  useEffect(() => {
-    function handler() {
+  useWindowEvent(
+    'focus',
+    () => {
       previousActiveElementRef.current = activeElementRef.current
       activeElementRef.current = document.activeElement
-    }
-
-    window.addEventListener('focus', handler, true)
-    return () => window.removeEventListener('focus', handler, true)
-  }, [previousActiveElementRef, activeElementRef])
+    },
+    true
+  )
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -399,6 +395,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         state.button?.focus() // Re-focus the original opening Button
       } else {
         if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId)
+        state.button?.focus()
         dispatch({ type: ActionTypes.TogglePopover })
       }
     },
@@ -413,7 +410,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     ]
   )
 
-  let propsBag = useMemo<ButtonRenderPropArg>(
+  let slot = useMemo<ButtonRenderPropArg>(
     () => ({ open: state.popoverState === PopoverStates.Open }),
     [state]
   )
@@ -436,7 +433,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         onClick: handleClick,
       }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_BUTTON_TAG,
+    name: 'Popover.Button',
+  })
 })
 
 // ---
@@ -447,9 +449,15 @@ interface OverlayRenderPropArg {
 }
 type OverlayPropsWeControl = 'id' | 'aria-hidden' | 'onClick'
 
+let OverlayRenderFeatures = Features.RenderStrategy | Features.Static
+
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
->(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
+>(
+  props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl> &
+    PropsForFeatures<typeof OverlayRenderFeatures>,
+  ref: Ref<HTMLDivElement>
+) {
   let [{ popoverState }, dispatch] = usePopoverContext([Popover.name, Overlay.name].join('.'))
   let overlayRef = useSyncRefs(ref)
 
@@ -463,10 +471,9 @@ let Overlay = forwardRefWithAs(function Overlay<
     [dispatch]
   )
 
-  let propsBag = useMemo<OverlayRenderPropArg>(
-    () => ({ open: popoverState === PopoverStates.Open }),
-    [popoverState]
-  )
+  let slot = useMemo<OverlayRenderPropArg>(() => ({ open: popoverState === PopoverStates.Open }), [
+    popoverState,
+  ])
   let propsWeControl = {
     ref: overlayRef,
     id,
@@ -475,7 +482,14 @@ let Overlay = forwardRefWithAs(function Overlay<
   }
   let passthroughProps = props
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OVERLAY_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OVERLAY_TAG,
+    features: OverlayRenderFeatures,
+    visible: popoverState === PopoverStates.Open,
+    name: 'Popover.Overlay',
+  })
 })
 
 // ---
@@ -540,67 +554,60 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   }, [focus, internalPanelRef, state.popoverState])
 
   // Handle Tab / Shift+Tab focus positioning
-  useEffect(() => {
+  useWindowEvent('keydown', event => {
     if (state.popoverState !== PopoverStates.Open) return
     if (!internalPanelRef.current) return
+    if (event.key !== Keys.Tab) return
+    if (!document.activeElement) return
+    if (!internalPanelRef.current) return
+    if (!internalPanelRef.current.contains(document.activeElement)) return
 
-    function handler(event: KeyboardEvent) {
-      if (event.key !== Keys.Tab) return
-      if (!document.activeElement) return
-      if (!internalPanelRef.current) return
-      if (!internalPanelRef.current.contains(document.activeElement)) return
+    // We will take-over the default tab behaviour so that we have a bit
+    // control over what is focused next. It will behave exactly the same,
+    // but it will also "fix" some issues based on wether you are using a
+    // Portal or not.
+    event.preventDefault()
 
-      // We will take-over the default tab behaviour so that we have a bit
-      // control over what is focused next. It will behave exactly the same,
-      // but it will also "fix" some issues based on wether you are using a
-      // Portal or not.
-      event.preventDefault()
+    let result = focusIn(internalPanelRef.current, event.shiftKey ? Focus.Previous : Focus.Next)
 
-      let result = focusIn(internalPanelRef.current, event.shiftKey ? Focus.Previous : Focus.Next)
+    if (result === FocusResult.Underflow) {
+      return state.button?.focus()
+    } else if (result === FocusResult.Overflow) {
+      if (!state.button) return
 
-      if (result === FocusResult.Underflow) {
-        return state.button?.focus()
-      } else if (result === FocusResult.Overflow) {
-        if (!state.button) return
+      let elements = getFocusableElements()
+      let buttonIdx = elements.indexOf(state.button)
 
-        let elements = getFocusableElements()
-        let buttonIdx = elements.indexOf(state.button)
+      let nextElements = elements
+        .splice(buttonIdx + 1) // Elements after button
+        .filter(element => !internalPanelRef.current?.contains(element)) // Ignore items in panel
 
-        let nextElements = elements
-          .splice(buttonIdx + 1) // Elements after button
-          .filter(element => !internalPanelRef.current?.contains(element)) // Ignore items in panel
-
-        // Try to focus the next element, however it could fail if we are in a
-        // Portal that happens to be the very last one in the DOM. In that
-        // case we would Error (because nothing after the button is
-        // focusable). Therefore we will try and focus the very first item in
-        // the document.body.
-        if (focusIn(nextElements, Focus.First) === FocusResult.Error) {
-          focusIn(document.body, Focus.First)
-        }
+      // Try to focus the next element, however it could fail if we are in a
+      // Portal that happens to be the very last one in the DOM. In that
+      // case we would Error (because nothing after the button is
+      // focusable). Therefore we will try and focus the very first item in
+      // the document.body.
+      if (focusIn(nextElements, Focus.First) === FocusResult.Error) {
+        focusIn(document.body, Focus.First)
       }
     }
-
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [focus, internalPanelRef, state.popoverState, state.button])
+  })
 
   // Handle focus out when we are in special "focus" mode
-  useEffect(() => {
-    if (!focus) return
-    if (state.popoverState !== PopoverStates.Open) return
-    if (!internalPanelRef.current) return
+  useWindowEvent(
+    'focus',
+    () => {
+      if (!focus) return
+      if (state.popoverState !== PopoverStates.Open) return
+      if (!internalPanelRef.current) return
 
-    function handler() {
       if (internalPanelRef.current?.contains(document.activeElement as HTMLElement)) return
       dispatch({ type: ActionTypes.ClosePopover })
-    }
+    },
+    true
+  )
 
-    window.addEventListener('focus', handler, true)
-    return () => window.removeEventListener('focus', handler, true)
-  }, [focus, state.popoverState, dispatch])
-
-  let propsBag = useMemo<PanelRenderPropArg>(
+  let slot = useMemo<PanelRenderPropArg>(
     () => ({ open: state.popoverState === PopoverStates.Open }),
     [state]
   )
@@ -612,13 +619,14 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   return (
     <PopoverPanelContext.Provider value={state.panelId}>
-      {render(
-        { ...passthroughProps, ...propsWeControl },
-        propsBag,
-        DEFAULT_PANEL_TAG,
-        PanelRenderFeatures,
-        state.popoverState === PopoverStates.Open
-      )}
+      {render({
+        props: { ...passthroughProps, ...propsWeControl },
+        slot,
+        defaultTag: DEFAULT_PANEL_TAG,
+        features: PanelRenderFeatures,
+        visible: state.popoverState === PopoverStates.Open,
+        name: 'Popover.Panel',
+      })}
     </PopoverPanelContext.Provider>
   )
 })
@@ -691,13 +699,18 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     [registerPopover, unregisterPopover, isFocusWithinPopoverGroup, closeOthers]
   )
 
-  let propsBag = useMemo<GroupRenderPropArg>(() => ({}), [])
+  let slot = useMemo<GroupRenderPropArg>(() => ({}), [])
   let propsWeControl = { ref: groupRef }
   let passthroughProps = props
 
   return (
     <PopoverGroupContext.Provider value={contextBag}>
-      {render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_GROUP_TAG)}
+      {render({
+        props: { ...passthroughProps, ...propsWeControl },
+        slot,
+        defaultTag: DEFAULT_GROUP_TAG,
+        name: 'Popover.Group',
+      })}
     </PopoverGroupContext.Provider>
   )
 }

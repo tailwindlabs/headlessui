@@ -43,7 +43,7 @@ export let SwitchGroup = defineComponent({
 
     provide(GroupContext, api)
 
-    return () => render({ props, slot: {}, slots, attrs })
+    return () => render({ props, slot: {}, slots, attrs, name: 'SwitchGroup' })
   },
 })
 
@@ -89,6 +89,7 @@ export let Switch = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'Switch',
     })
   },
   setup(props, { emit }) {
@@ -135,6 +136,7 @@ export let SwitchLabel = defineComponent({
       slot: {},
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'SwitchLabel',
     })
   },
   setup() {
@@ -170,6 +172,7 @@ export let SwitchDescription = defineComponent({
       slot: {},
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'SwitchDescription',
     })
   },
   setup() {

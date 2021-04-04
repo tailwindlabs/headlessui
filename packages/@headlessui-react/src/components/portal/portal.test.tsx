@@ -30,7 +30,7 @@ it('should be possible to use a Portal', () => {
   expect(getPortalRoot()).not.toBe(null)
 
   // Ensure the content is not part of the parent
-  expect(parent).not.toContain(content)
+  expect(parent).not.toContainElement(content)
 
   // Ensure the content does exist
   expect(content).not.toBe(null)
@@ -59,10 +59,10 @@ it('should be possible to use multiple Portal elements', () => {
   expect(getPortalRoot()).not.toBe(null)
 
   // Ensure the content1 is not part of the parent
-  expect(parent).not.toContain(content1)
+  expect(parent).not.toContainElement(content1)
 
   // Ensure the content2 is not part of the parent
-  expect(parent).not.toContain(content2)
+  expect(parent).not.toContainElement(content2)
 
   // Ensure the content does exist
   expect(content1).not.toBe(null)
@@ -274,7 +274,7 @@ it('should be possible to tamper with the modal root and restore correctly', asy
   expect(getPortalRoot().childNodes).toHaveLength(2)
 })
 
-it('should be possable to force the Portal into a specific element using Portal.Group', async () => {
+it('should be possible to force the Portal into a specific element using Portal.Group', async () => {
   function Example() {
     let container = useRef(null)
 

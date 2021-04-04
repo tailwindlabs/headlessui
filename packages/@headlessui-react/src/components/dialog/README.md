@@ -120,7 +120,7 @@ This can be used to create an overlay for your Dialog component. Clicking on the
 
 | Prop   | Type    | Description                            |
 | :----- | :------ | :------------------------------------- |
-| `open` | Boolean | Whether or not the disclosure is open. |
+| `open` | Boolean | Whether or not the dialog is open. |
 
 #### Dialog.Title
 
@@ -136,7 +136,7 @@ This is the title for your Dialog. When this is used, it will set the `aria-labe
 
 | Prop   | Type    | Description                            |
 | :----- | :------ | :------------------------------------- |
-| `open` | Boolean | Whether or not the disclosure is open. |
+| `open` | Boolean | Whether or not the dialog is open. |
 
 #### Dialog.Description
 
@@ -152,4 +152,4 @@ This is the description for your Dialog. When this is used, it will set the `ari
 
 | Prop   | Type    | Description                            |
 | :----- | :------ | :------------------------------------- |
-| `open` | Boolean | Whether or not the disclosure is open. |
+| `open` | Boolean | Whether or not the dialog is open. |

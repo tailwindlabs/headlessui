@@ -60,5 +60,60 @@
         "component": "./components/switch/switch.vue"
       }
     ]
+  },
+  {
+    "name": "Focus Trap",
+    "path": "/focus-trap",
+    "children": [
+      {
+        "name": "FocusTrap (basic)",
+        "path": "/focus-trap/focus-trap",
+        "component": "./components/focus-trap/focus-trap.vue"
+      }
+    ]
+  },
+  {
+    "name": "Portal",
+    "path": "/portal",
+    "children": [
+      {
+        "name": "Portal (group)",
+        "path": "/portal/portal",
+        "component": "./components/portal/portal.vue"
+      }
+    ]
+  },
+  {
+    "name": "Popover",
+    "path": "/popover",
+    "children": [
+      {
+        "name": "Popover",
+        "path": "/popover/popover",
+        "component": "./components/popover/popover.vue"
+      }
+    ]
+  },
+  {
+    "name": "Dialog",
+    "path": "/dialog",
+    "children": [
+      {
+        "name": "Dialog",
+        "path": "/dialog/dialog",
+        "component": "./components/dialog/dialog.vue"
+      }
+    ]
+  },
+  {
+    "name": "RadioGroup",
+    "path": "/radio-group",
+    "children": [
+      {
+        "name": "RadioGroup",
+        "path": "/radio-group/radio-group",
+        "component": "./components/radio-group/radio-group.vue"
+      }
+    ]
   }
 ]

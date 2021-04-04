@@ -22,13 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `Disclosure`, `Disclosure.Button` and `Disclosure.Panel` components ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - Add `Dialog`, `Dialog.Overlay`, `Dialog.Tile` and `Dialog.Description` components ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
-- Add `Portal` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Portal` and `Portal.Group` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - Add `Switch.Description` component, which adds the `aria-describedby` to the actual Switch ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - Add `FocusTrap` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
-- Add `Popover` component ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Popover`, `Popover.Button`, `Popover.Overlay`, `Popover.Panel` and `Popover.Group` components ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
 - All components that accept a `className`, can now also receive a function with the renderProp argument ([#257](https://github.com/tailwindlabs/headlessui/pull/257))
-- Add `RadioGroup` component ([#274](https://github.com/tailwindlabs/headlessui/pull/274))
-- Add `Alert` component ([#274](https://github.com/tailwindlabs/headlessui/pull/274))
+- Add `RadioGroup`, `RadioGroup.Option`, `RadioGroup.Label` and `RadioGroup.Description` components ([#274](https://github.com/tailwindlabs/headlessui/pull/274))
 
 ## [Unreleased - Vue]
 
@@ -36,10 +35,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix incorrect `DOM` node from ref ([#249](https://github.com/tailwindlabs/headlessui/pull/249))
 - Fix broken behaviour since Vue 3.0.5 ([#279](https://github.com/tailwindlabs/headlessui/pull/279))
+- Stop propagating keyboard/mouse events ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
 
 ### Added
 
 - Add `SwitchDescription` component, which adds the `aria-describedby` to the actual Switch ([#220](https://github.com/tailwindlabs/headlessui/pull/220))
+- Add `Disclosure`, `DisclosureButton`, `DisclosurePanel` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
+- Add `Dialog`, `DialogOverlay`, `DialogTitle` and `DialogDescription` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
+- Add `Portal` and `PortalGroup` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
+- Add `FocusTrap` component ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
+- Add `Popover`, `PopoverButton`, `PopoverOverlay`, `PopoverPanel` and `PopoverGroup` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
+- Add `RadioGroup`, `RadioGroupOption`, `RadioGroupLabel` and `RadioGroupDescription` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
 
 ## [@headlessui/react@v0.3.2] - 2021-04-02
 

@@ -29,6 +29,8 @@ import { Portal } from '../../components/portal/portal'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { contains } from '../../internal/dom-containers'
+import { Description, useDescriptions } from '../description/description'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum DialogStates {
   Open,
@@ -37,17 +39,13 @@ enum DialogStates {
 
 interface StateDefinition {
   titleId: string | null
-  descriptionId: string | null
 }
 
 enum ActionTypes {
   SetTitleId,
-  SetDescriptionId,
 }
 
-type Actions =
-  | { type: ActionTypes.SetTitleId; id: string | null }
-  | { type: ActionTypes.SetDescriptionId; id: string | null }
+type Actions = { type: ActionTypes.SetTitleId; id: string | null }
 
 let reducers: {
   [P in ActionTypes]: (
@@ -59,10 +57,6 @@ let reducers: {
     if (state.titleId === action.id) return state
     return { ...state, titleId: action.id }
   },
-  [ActionTypes.SetDescriptionId](state, action) {
-    if (state.descriptionId === action.id) return state
-    return { ...state, descriptionId: action.id }
-  },
 }
 
 let DialogContext = createContext<
@@ -71,7 +65,6 @@ let DialogContext = createContext<
         dialogState: DialogStates
         close(): void
         setTitleId(id: string | null): void
-        setDescriptionId(id: string | null): void
       },
       StateDefinition
     ]
@@ -166,39 +159,25 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     (id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }),
     [dispatch]
   )
-  let setDescriptionId = useCallback(
-    (id: string | null) => dispatch({ type: ActionTypes.SetDescriptionId, id }),
-    [dispatch]
-  )
 
   // Handle outside click
-  useEffect(() => {
-    function handler(event: MouseEvent) {
-      let target = event.target as HTMLElement
+  useWindowEvent('mousedown', event => {
+    let target = event.target as HTMLElement
 
-      if (dialogState !== DialogStates.Open) return
-      if (containers.current.size !== 1) return
-      if (contains(containers.current, target)) return
+    if (dialogState !== DialogStates.Open) return
+    if (containers.current.size !== 1) return
+    if (contains(containers.current, target)) return
 
-      close()
-    }
-
-    window.addEventListener('mousedown', handler)
-    return () => window.removeEventListener('mousedown', handler)
-  }, [dialogState, containers, close])
+    close()
+  })
 
   // Handle `Escape` to close
-  useEffect(() => {
-    function handler(event: KeyboardEvent) {
-      if (event.key !== Keys.Escape) return
-      if (dialogState !== DialogStates.Open) return
-      if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
-      close()
-    }
-
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [close, dialogState])
+  useWindowEvent('keydown', event => {
+    if (event.key !== Keys.Escape) return
+    if (dialogState !== DialogStates.Open) return
+    if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
+    close()
+  })
 
   // Scroll lock
   useEffect(() => {
@@ -240,28 +219,30 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     return () => observer.disconnect()
   }, [dialogState, internalDialogRef, close])
 
-  let enabled = props.static ? true : dialogState === DialogStates.Open
+  let enabled = dialogState === DialogStates.Open
 
   useFocusTrap(containers, enabled, { initialFocus })
   useInertOthers(internalDialogRef, enabled)
+  let [describedby, DescriptionProvider] = useDescriptions()
 
   let id = `headlessui-dialog-${useId()}`
 
   let contextBag = useMemo<ContextType<typeof DialogContext>>(
-    () => [{ dialogState, close, setTitleId, setDescriptionId }, state],
-    [dialogState, state, close, setTitleId, setDescriptionId]
+    () => [{ dialogState, close, setTitleId }, state],
+    [dialogState, state, close, setTitleId]
   )
 
-  let propsBag = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
+  let slot = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
     dialogState,
   ])
+
   let propsWeControl = {
     ref: dialogRef,
     id,
     role: 'dialog',
     'aria-modal': dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
-    'aria-describedby': state.descriptionId,
+    'aria-describedby': describedby,
   }
   let passthroughProps = rest
 
@@ -283,13 +264,16 @@ let DialogRoot = forwardRefWithAs(function Dialog<
           <DialogContext.Provider value={contextBag}>
             <Portal.Group target={internalDialogRef}>
               <ForcePortalRoot force={false}>
-                {render(
-                  { ...passthroughProps, ...propsWeControl },
-                  propsBag,
-                  DEFAULT_DIALOG_TAG,
-                  DialogRenderFeatures,
-                  dialogState === DialogStates.Open
-                )}
+                <DescriptionProvider slot={slot}>
+                  {render({
+                    props: { ...passthroughProps, ...propsWeControl },
+                    slot,
+                    defaultTag: DEFAULT_DIALOG_TAG,
+                    features: DialogRenderFeatures,
+                    visible: dialogState === DialogStates.Open,
+                    name: 'Dialog',
+                  })}
+                </DescriptionProvider>
               </ForcePortalRoot>
             </Portal.Group>
           </DialogContext.Provider>
@@ -323,10 +307,9 @@ let Overlay = forwardRefWithAs(function Overlay<
     [close]
   )
 
-  let propsBag = useMemo<OverlayRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
-    [dialogState]
-  )
+  let slot = useMemo<OverlayRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
+    dialogState,
+  ])
   let propsWeControl = {
     ref: overlayRef,
     id,
@@ -335,7 +318,12 @@ let Overlay = forwardRefWithAs(function Overlay<
   }
   let passthroughProps = props
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OVERLAY_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OVERLAY_TAG,
+    name: 'Dialog.Overlay',
+  })
 })
 
 // ---
@@ -358,45 +346,18 @@ function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     return () => setTitleId(null)
   }, [id, setTitleId])
 
-  let propsBag = useMemo<TitleRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
+  let slot = useMemo<TitleRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
     dialogState,
   ])
   let propsWeControl = { id }
   let passthroughProps = props
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_TITLE_TAG)
-}
-
-// ---
-
-let DEFAULT_DESCRIPTION_TAG = 'p' as const
-interface DescriptionRenderPropArg {
-  open: boolean
-}
-type DescriptionPropsWeControl = 'id' | 'ref'
-
-function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
-  props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
-) {
-  let [{ dialogState, setDescriptionId }] = useDialogContext(
-    [Dialog.displayName, Description.name].join('.')
-  )
-
-  let id = `headlessui-dialog-description-${useId()}`
-
-  useEffect(() => {
-    setDescriptionId(id)
-    return () => setDescriptionId(null)
-  }, [id, setDescriptionId])
-
-  let propsBag = useMemo<DescriptionRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
-    [dialogState]
-  )
-  let propsWeControl = { id }
-  let passthroughProps = props
-
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_DESCRIPTION_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_TITLE_TAG,
+    name: 'Dialog.Title',
+  })
 }
 
 // ---

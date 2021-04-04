@@ -8,6 +8,7 @@ import { Keys } from '../components/keyboard'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
 import { contains } from '../internal/dom-containers'
+import { useWindowEvent } from './use-window-event'
 
 export function useFocusTrap(
   containers: MutableRefObject<Set<HTMLElement>>,
@@ -66,39 +67,34 @@ export function useFocusTrap(
   }, [enabled, containers, mounted, options.initialFocus])
 
   // Handle Tab & Shift+Tab keyboard events
-  useIsoMorphicEffect(() => {
+  useWindowEvent('keydown', event => {
     if (!enabled) return
-
-    function handler(event: KeyboardEvent) {
-      if (event.key !== Keys.Tab) return
-      if (!document.activeElement) return
-      if (containers.current.size !== 1) return
-
-      event.preventDefault()
-
-      for (let element of containers.current) {
-        let result = focusIn(
-          element,
-          (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
-        )
-
-        if (result === FocusResult.Success) {
-          previousActiveElement.current = document.activeElement as HTMLElement
-          break
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [enabled, containers])
-
-  // Prevent programmatically escaping
-  useIsoMorphicEffect(() => {
-    if (!enabled) return
+    if (event.key !== Keys.Tab) return
+    if (!document.activeElement) return
     if (containers.current.size !== 1) return
 
-    function handler(event: FocusEvent) {
+    event.preventDefault()
+
+    for (let element of containers.current) {
+      let result = focusIn(
+        element,
+        (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
+      )
+
+      if (result === FocusResult.Success) {
+        previousActiveElement.current = document.activeElement as HTMLElement
+        break
+      }
+    }
+  })
+
+  // Prevent programmatically escaping
+  useWindowEvent(
+    'focus',
+    event => {
+      if (!enabled) return
+      if (containers.current.size !== 1) return
+
       let previous = previousActiveElement.current
       if (!previous) return
       if (!mounted.current) return
@@ -117,9 +113,7 @@ export function useFocusTrap(
       } else {
         focusElement(previousActiveElement.current)
       }
-    }
-
-    window.addEventListener('focus', handler, true)
-    return () => window.removeEventListener('focus', handler, true)
-  }, [enabled, mounted, containers])
+    },
+    true
+  )
 }

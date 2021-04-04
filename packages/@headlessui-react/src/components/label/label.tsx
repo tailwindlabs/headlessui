@@ -27,15 +27,12 @@ function useLabelContext() {
   return useContext(LabelContext)
 }
 
-export function useLabels(
-  id?: string
-): [string | undefined, (props: { children: ReactNode }) => JSX.Element] {
+export function useLabels(): [string | undefined, (props: { children: ReactNode }) => JSX.Element] {
   let [labelIds, setLabelIds] = useState<string[]>([])
 
   return [
-    // The actual id's as string or undefined. If there are labels defined and
-    // we got an id passed in, let's add it as well!
-    labelIds.length > 0 ? (id ? [id, ...labelIds].join(' ') : labelIds.join(' ')) : undefined,
+    // The actual id's as string or undefined.
+    labelIds.length > 0 ? labelIds.join(' ') : undefined,
 
     // The provider component
     useMemo(() => {
@@ -76,7 +73,10 @@ export function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
   let passThroughProps = props
   let propsWeControl = { id }
-  let bag = useMemo<LabelRenderPropArg>(() => ({}), [])
 
-  return render({ ...passThroughProps, ...propsWeControl }, bag, DEFAULT_LABEL_TAG)
+  return render({
+    props: { ...passThroughProps, ...propsWeControl },
+    defaultTag: DEFAULT_LABEL_TAG,
+    name: 'Label',
+  })
 }

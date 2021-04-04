@@ -21,6 +21,7 @@ import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum ListboxStates {
   Open,
@@ -179,21 +180,16 @@ export let Listbox = defineComponent({
       },
     }
 
-    onMounted(() => {
-      function handler(event: MouseEvent) {
-        let target = event.target as HTMLElement
-        let active = document.activeElement
+    useWindowEvent('mousedown', event => {
+      let target = event.target as HTMLElement
+      let active = document.activeElement
 
-        if (listboxState.value !== ListboxStates.Open) return
-        if (dom(buttonRef)?.contains(target)) return
+      if (listboxState.value !== ListboxStates.Open) return
+      if (dom(buttonRef)?.contains(target)) return
 
-        if (!dom(optionsRef)?.contains(target)) api.closeListbox()
-        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
-      }
-
-      window.addEventListener('mousedown', handler)
-      onUnmounted(() => window.removeEventListener('mousedown', handler))
+      if (!dom(optionsRef)?.contains(target)) api.closeListbox()
+      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -201,7 +197,7 @@ export let Listbox = defineComponent({
 
     return () => {
       let slot = { open: listboxState.value === ListboxStates.Open, disabled }
-      return render({ props: passThroughProps, slot, slots, attrs })
+      return render({ props: passThroughProps, slot, slots, attrs, name: 'Listbox' })
     }
   },
 })
@@ -222,6 +218,7 @@ export let ListboxLabel = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'ListboxLabel',
     })
   },
   setup() {
@@ -269,6 +266,7 @@ export let ListboxButton = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'ListboxButton',
     })
   },
   setup() {
@@ -351,6 +349,7 @@ export let ListboxOptions = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'ListboxOptions',
     })
   },
   setup() {
@@ -368,11 +367,13 @@ export let ListboxOptions = defineComponent({
         case Keys.Space:
           if (api.searchQuery.value !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return api.search(event.key)
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           if (api.activeOptionIndex.value !== null) {
             let { dataRef } = api.options.value[api.activeOptionIndex.value]
             api.select(dataRef.value)
@@ -383,30 +384,37 @@ export let ListboxOptions = defineComponent({
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.Next)
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.Previous)
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToOption(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           api.closeListbox()
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {
@@ -515,7 +523,13 @@ export let ListboxOption = defineComponent({
         onMouseleave: handleLeave,
       }
 
-      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'ListboxOption',
+      })
     }
   },
 })

@@ -3,28 +3,30 @@ import { logDOM, fireEvent } from '@testing-library/dom'
 
 let mountedWrappers = new Set()
 
-export function render(
-  TestComponent: any,
-  options?: Omit<Parameters<typeof mount>[1], 'attachTo'>
-) {
+function resolveContainer(): HTMLElement {
   let div = document.createElement('div')
   let baseElement = document.body
   let container = baseElement.appendChild(div)
 
   let attachTo = document.createElement('div')
   container.appendChild(attachTo)
+  return attachTo
+}
 
+export function render(TestComponent: any, options?: Parameters<typeof mount>[1] | undefined) {
   let wrapper = mount(TestComponent, {
     ...options,
-    attachTo,
+    attachTo: options?.attachTo ?? resolveContainer(),
   })
 
   mountedWrappers.add(wrapper)
-  container.appendChild(wrapper.element)
 
   return {
-    debug() {
-      logDOM(div)
+    get container() {
+      return wrapper.element
+    },
+    debug(element = wrapper.element) {
+      logDOM(element)
     },
   }
 }
@@ -33,7 +35,7 @@ function cleanup() {
   mountedWrappers.forEach(cleanupAtWrapper)
 }
 
-function cleanupAtWrapper(wrapper) {
+function cleanupAtWrapper(wrapper: any) {
   if (wrapper.element.parentNode && wrapper.element.parentNode.parentNode === document.body) {
     document.body.removeChild(wrapper.element.parentNode)
   }

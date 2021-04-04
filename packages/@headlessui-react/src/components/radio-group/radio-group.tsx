@@ -219,13 +219,16 @@ export function RadioGroup<
     'aria-labelledby': labelledby,
     'aria-describedby': describedby,
   }
-  let bag = useMemo<RadioGroupRenderPropArg>(() => ({}), [])
 
   return (
     <DescriptionProvider>
       <LabelProvider>
         <RadioGroupContext.Provider value={reducerBag}>
-          {render({ ...passThroughProps, ...propsWeControl }, bag, DEFAULT_RADIO_GROUP_TAG)}
+          {render({
+            props: { ...passThroughProps, ...propsWeControl },
+            defaultTag: DEFAULT_RADIO_GROUP_TAG,
+            name: 'RadioGroup',
+          })}
         </RadioGroupContext.Provider>
       </LabelProvider>
     </DescriptionProvider>
@@ -267,7 +270,7 @@ function Option<
   let optionRef = useRef<HTMLElement | null>(null)
   let id = `headlessui-radiogroup-option-${useId()}`
 
-  let [labelledby, LabelProvider] = useLabels(id)
+  let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
   let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
 
@@ -312,15 +315,20 @@ function Option<
     onFocus: handleFocus,
     onBlur: handleBlur,
   }
-  let bag = useMemo<OptionRenderPropArg>(() => ({ checked, active: hasFlag(OptionState.Active) }), [
-    checked,
-    hasFlag,
-  ])
+  let slot = useMemo<OptionRenderPropArg>(
+    () => ({ checked, active: hasFlag(OptionState.Active) }),
+    [checked, hasFlag]
+  )
 
   return (
     <DescriptionProvider>
       <LabelProvider>
-        {render({ ...passThroughProps, ...propsWeControl }, bag, DEFAULT_OPTION_TAG)}
+        {render({
+          props: { ...passThroughProps, ...propsWeControl },
+          slot,
+          defaultTag: DEFAULT_OPTION_TAG,
+          name: 'RadioGroup.Option',
+        })}
       </LabelProvider>
     </DescriptionProvider>
   )

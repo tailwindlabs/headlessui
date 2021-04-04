@@ -1,4 +1,3 @@
-// WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#dialog_modal
 import React, {
   Fragment,
   createContext,
@@ -15,7 +14,7 @@ import { createPortal } from 'react-dom'
 import { Props } from '../../types'
 import { render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useElemenStack, StackProvider } from '../../internal/stack-context'
+import { useElementStack, StackProvider } from '../../internal/stack-context'
 import { usePortalRoot } from '../../internal/portal-force-root'
 
 function usePortalTarget(): HTMLElement | null {
@@ -58,7 +57,7 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     typeof window === 'undefined' ? null : document.createElement('div')
   )
 
-  useElemenStack(element)
+  useElementStack(element)
 
   useIsoMorphicEffect(() => {
     if (!target) return
@@ -82,7 +81,14 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     <StackProvider>
       {!target || !element
         ? null
-        : createPortal(render(passthroughProps, {}, DEFAULT_PORTAL_TAG), element)}
+        : createPortal(
+            render({
+              props: passthroughProps,
+              defaultTag: DEFAULT_PORTAL_TAG,
+              name: 'Portal',
+            }),
+            element
+          )}
     </StackProvider>
   )
 }
@@ -103,7 +109,11 @@ function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
 
   return (
     <PortalGroupContext.Provider value={target}>
-      {render(passthroughProps, {}, DEFAULT_GROUP_TAG)}
+      {render({
+        props: passthroughProps,
+        defaultTag: DEFAULT_GROUP_TAG,
+        name: 'Popover.Group',
+      })}
     </PortalGroupContext.Provider>
   )
 }

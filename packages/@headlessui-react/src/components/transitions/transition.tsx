@@ -309,19 +309,18 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     leaveToClasses,
   ])
 
-  let propsBag = {}
   let propsWeControl = { ref: container }
   let passthroughProps = rest
 
   return (
     <NestingContext.Provider value={nesting}>
-      {render(
-        { ...passthroughProps, ...propsWeControl },
-        propsBag,
-        DEFAULT_TRANSITION_CHILD_TAG,
-        TransitionChildRenderFeatures,
-        state === TreeStates.Visible
-      )}
+      {render({
+        props: { ...passthroughProps, ...propsWeControl },
+        defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
+        features: TransitionChildRenderFeatures,
+        visible: state === TreeStates.Visible,
+        name: 'Transition.Child',
+      })}
     </NestingContext.Provider>
   )
 }
@@ -357,22 +356,21 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }, [show, nestingBag])
 
   let sharedProps = { unmount }
-  let propsBag = {}
 
   return (
     <NestingContext.Provider value={nestingBag}>
       <TransitionContext.Provider value={transitionBag}>
-        {render(
-          {
+        {render({
+          props: {
             ...sharedProps,
             as: Fragment,
             children: <TransitionChild {...sharedProps} {...passthroughProps} />,
           },
-          propsBag,
-          Fragment,
-          TransitionChildRenderFeatures,
-          state === TreeStates.Visible
-        )}
+          defaultTag: Fragment,
+          features: TransitionChildRenderFeatures,
+          visible: state === TreeStates.Visible,
+          name: 'Transition',
+        })}
       </TransitionContext.Provider>
     </NestingContext.Provider>
   )

@@ -35,6 +35,7 @@ export function render({
   slot: Record<string, any>
   attrs: Record<string, any>
   slots: Slots
+  name: string
 } & {
   features?: Features
   visible?: boolean
@@ -72,22 +73,44 @@ function _render({
   attrs,
   slots,
   slot,
+  name,
 }: {
   props: Record<string, any>
   slot: Record<string, any>
   attrs: Record<string, any>
   slots: Slots
+  name: string
 }) {
   let { as, ...passThroughProps } = omit(props, ['unmount', 'static'])
 
   let children = slots.default?.(slot)
 
   if (as === 'template') {
-    if (Object.keys(passThroughProps).length > 0 || 'class' in attrs) {
+    if (Object.keys(passThroughProps).length > 0 || Object.keys(attrs).length > 0) {
       let [firstChild, ...other] = children ?? []
 
-      if (other.length > 0)
-        throw new Error('You should only render 1 child or use the `as="..."` prop')
+      if (other.length > 0) {
+        throw new Error(
+          [
+            'Passing props on "Fragment"!',
+            '',
+            `The current component <${name} /> is rendering a "Fragment".`,
+            `However we need to passthrough the following props:`,
+            Object.keys(passThroughProps)
+              .concat(Object.keys(attrs))
+              .map(line => `  - ${line}`)
+              .join('\n'),
+            '',
+            'You can apply a few solutions:',
+            [
+              'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              'Render a single element as the child so that we can forward the props onto that element.',
+            ]
+              .map(line => `  - ${line}`)
+              .join('\n'),
+          ].join('\n')
+        )
+      }
 
       return cloneVNode(firstChild, passThroughProps as Record<string, any>)
     }

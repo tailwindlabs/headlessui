@@ -15,7 +15,7 @@ import {
   assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
-import { Props } from '../../types'
+import { PropsOf } from '../../types'
 
 jest.mock('../../hooks/use-id')
 
@@ -27,7 +27,7 @@ global.IntersectionObserver = class FakeIntersectionObserver {
 
 afterAll(() => jest.restoreAllMocks())
 
-function TabSentinel(props: Props<'div'>) {
+function TabSentinel(props: PropsOf<'div'>) {
   return <div tabIndex={0} {...props} />
 }
 
@@ -35,7 +35,6 @@ describe('Safe guards', () => {
   it.each([
     ['Dialog.Overlay', Dialog.Overlay],
     ['Dialog.Title', Dialog.Title],
-    ['Dialog.Description', Dialog.Description],
   ])(
     'should error when we are using a <%s /> without a parent <Dialog />',
     suppressConsoleLogs((name, Component) => {
@@ -142,9 +141,9 @@ describe('Rendering', () => {
                 Trigger
               </button>
               <Dialog open={isOpen} onClose={setIsOpen}>
-                {({ open }) => (
+                {data => (
                   <>
-                    Dialog is: {open ? 'open' : 'closed'}
+                    <pre>{JSON.stringify(data)}</pre>
                     <TabSentinel />
                   </>
                 )}
@@ -158,11 +157,28 @@ describe('Rendering', () => {
 
         await click(document.getElementById('trigger'))
 
-        assertDialog({ state: DialogState.Visible, textContent: 'Dialog is: open' })
+        assertDialog({ state: DialogState.Visible, textContent: JSON.stringify({ open: true }) })
       })
     )
 
-    it('should be possible to always render the Dialog if we provide it a `static` prop', () => {
+    it('should be possible to always render the Dialog if we provide it a `static` prop (and enable focus trapping based on `open`)', () => {
+      let focusCounter = jest.fn()
+      render(
+        <>
+          <button>Trigger</button>
+          <Dialog open={true} onClose={console.log} static>
+            <p>Contents</p>
+            <TabSentinel onFocus={focusCounter} />
+          </Dialog>
+        </>
+      )
+
+      // Let's verify that the Dialog is already there
+      expect(getDialog()).not.toBe(null)
+      expect(focusCounter).toHaveBeenCalledTimes(1)
+    })
+
+    it('should be possible to always render the Dialog if we provide it a `static` prop (and disable focus trapping based on `open`)', () => {
       let focusCounter = jest.fn()
       render(
         <>
@@ -176,7 +192,7 @@ describe('Rendering', () => {
 
       // Let's verify that the Dialog is already there
       expect(getDialog()).not.toBe(null)
-      expect(focusCounter).toHaveBeenCalledTimes(1)
+      expect(focusCounter).toHaveBeenCalledTimes(0)
     })
 
     it('should be possible to use a different render strategy for the Dialog', async () => {
@@ -294,7 +310,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Dialog open={true} onClose={console.log}>
-            <Dialog.Title>Deactivate account</Dialog.Title>
+            <Dialog.Title>{JSON.stringify}</Dialog.Title>
             <TabSentinel />
           </Dialog>
         )
@@ -303,7 +319,10 @@ describe('Rendering', () => {
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
         })
-        assertDialogTitle({ state: DialogState.Visible })
+        assertDialogTitle({
+          state: DialogState.Visible,
+          textContent: JSON.stringify({ open: true }),
+        })
       })
     )
   })
@@ -314,7 +333,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Dialog open={true} onClose={console.log}>
-            <Dialog.Description>Deactivate account</Dialog.Description>
+            <Dialog.Description>{JSON.stringify}</Dialog.Description>
             <TabSentinel />
           </Dialog>
         )
@@ -323,7 +342,10 @@ describe('Rendering', () => {
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
         })
-        assertDialogDescription({ state: DialogState.Visible })
+        assertDialogDescription({
+          state: DialogState.Visible,
+          textContent: JSON.stringify({ open: true }),
+        })
       })
     )
   })

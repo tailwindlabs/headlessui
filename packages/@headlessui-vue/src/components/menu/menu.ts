@@ -17,6 +17,7 @@ import { Keys } from '../../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum MenuStates {
   Open,
@@ -62,6 +63,7 @@ function useMenuContext(component: string) {
 }
 
 export let Menu = defineComponent({
+  name: 'Menu',
   props: { as: { type: [Object, String], default: 'template' } },
   setup(props, { slots, attrs }) {
     let menuState = ref<StateDefinition['menuState']['value']>(MenuStates.Closed)
@@ -136,21 +138,16 @@ export let Menu = defineComponent({
       },
     }
 
-    onMounted(() => {
-      function handler(event: MouseEvent) {
-        let target = event.target as HTMLElement
-        let active = document.activeElement
+    useWindowEvent('mousedown', event => {
+      let target = event.target as HTMLElement
+      let active = document.activeElement
 
-        if (menuState.value !== MenuStates.Open) return
-        if (dom(buttonRef)?.contains(target)) return
+      if (menuState.value !== MenuStates.Open) return
+      if (dom(buttonRef)?.contains(target)) return
 
-        if (!dom(itemsRef)?.contains(target)) api.closeMenu()
-        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
-      }
-
-      window.addEventListener('mousedown', handler)
-      onUnmounted(() => window.removeEventListener('mousedown', handler))
+      if (!dom(itemsRef)?.contains(target)) api.closeMenu()
+      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -158,12 +155,13 @@ export let Menu = defineComponent({
 
     return () => {
       let slot = { open: menuState.value === MenuStates.Open }
-      return render({ props, slot, slots, attrs })
+      return render({ props, slot, slots, attrs, name: 'Menu' })
     }
   },
 })
 
 export let MenuButton = defineComponent({
+  name: 'MenuButton',
   props: {
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
@@ -188,6 +186,7 @@ export let MenuButton = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'MenuButton',
     })
   },
   setup(props) {
@@ -202,6 +201,7 @@ export let MenuButton = defineComponent({
         case Keys.Enter:
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           api.openMenu()
           nextTick(() => {
             dom(api.itemsRef)?.focus({ preventScroll: true })
@@ -211,6 +211,7 @@ export let MenuButton = defineComponent({
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           api.openMenu()
           nextTick(() => {
             dom(api.itemsRef)?.focus({ preventScroll: true })
@@ -227,6 +228,7 @@ export let MenuButton = defineComponent({
         nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
+        event.stopPropagation()
         api.openMenu()
         nextFrame(() => dom(api.itemsRef)?.focus({ preventScroll: true }))
       }
@@ -242,6 +244,7 @@ export let MenuButton = defineComponent({
 })
 
 export let MenuItems = defineComponent({
+  name: 'MenuItems',
   props: {
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
@@ -272,6 +275,7 @@ export let MenuItems = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'MenuItems',
     })
   },
   setup() {
@@ -307,11 +311,13 @@ export let MenuItems = defineComponent({
         case Keys.Space:
           if (api.searchQuery.value !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return api.search(event.key)
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           if (api.activeItemIndex.value !== null) {
             let { id } = api.items.value[api.activeItemIndex.value]
             document.getElementById(id)?.click()
@@ -322,30 +328,37 @@ export let MenuItems = defineComponent({
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Next)
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Previous)
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           api.closeMenu()
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {
@@ -361,6 +374,7 @@ export let MenuItems = defineComponent({
 })
 
 export let MenuItem = defineComponent({
+  name: 'MenuItem',
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
@@ -435,7 +449,13 @@ export let MenuItem = defineComponent({
         onMouseleave: handleLeave,
       }
 
-      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'MenuItem',
+      })
     }
   },
 })

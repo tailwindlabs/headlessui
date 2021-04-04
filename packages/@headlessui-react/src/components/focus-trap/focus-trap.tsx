@@ -27,5 +27,9 @@ export function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_T
     },
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, {}, DEFAULT_FOCUS_TRAP_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    defaultTag: DEFAULT_FOCUS_TRAP_TAG,
+    name: 'FocusTrap',
+  })
 }
