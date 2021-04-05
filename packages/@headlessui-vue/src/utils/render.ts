@@ -89,12 +89,12 @@ function _render({
     if (Object.keys(passThroughProps).length > 0 || Object.keys(attrs).length > 0) {
       let [firstChild, ...other] = children ?? []
 
-      if (other.length > 0) {
+      if (!isValidElement(firstChild) || other.length > 0) {
         throw new Error(
           [
-            'Passing props on "Fragment"!',
+            'Passing props on "template"!',
             '',
-            `The current component <${name} /> is rendering a "Fragment".`,
+            `The current component <${name} /> is rendering a "template".`,
             `However we need to passthrough the following props:`,
             Object.keys(passThroughProps)
               .concat(Object.keys(attrs))
@@ -103,7 +103,7 @@ function _render({
             '',
             'You can apply a few solutions:',
             [
-              'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              'Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
               'Render a single element as the child so that we can forward the props onto that element.',
             ]
               .map(line => `  - ${line}`)
@@ -127,4 +127,11 @@ function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) 
     if (key in clone) delete clone[key]
   }
   return clone
+}
+
+function isValidElement(input: any): boolean {
+  if (input == null) return false // No children
+  if (typeof input.type === 'string') return true // 'div', 'span', ...
+  if (typeof input.type === 'object') return true // Other components
+  return false // Comments, strings, ...
 }

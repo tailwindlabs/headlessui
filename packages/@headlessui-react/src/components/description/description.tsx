@@ -84,7 +84,7 @@ type DescriptionPropsWeControl = 'id'
 export function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
   props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
 ) {
-  let { register, slot: slot } = useDescriptionContext()
+  let { register, slot } = useDescriptionContext()
   let id = `headlessui-description-${useId()}`
 
   useIsoMorphicEffect(() => register(id), [id, register])
