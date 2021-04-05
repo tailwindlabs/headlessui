@@ -75,9 +75,9 @@ describe('Safe guards', () => {
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
-          <MenuItem>Item A</MenuItem>
-          <MenuItem>Item B</MenuItem>
-          <MenuItem>Item C</MenuItem>
+          <MenuItem as="a">Item A</MenuItem>
+          <MenuItem as="a">Item B</MenuItem>
+          <MenuItem as="a">Item C</MenuItem>
         </MenuItems>
       </Menu>
     `)
@@ -97,9 +97,9 @@ describe('Rendering', () => {
         <Menu v-slot="{ open }">
           <MenuButton>Trigger {{ open ? "visible" : "hidden" }}</MenuButton>
           <MenuItems>
-            <MenuItem>Item A</MenuItem>
-            <MenuItem>Item B</MenuItem>
-            <MenuItem>Item C</MenuItem>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -127,9 +127,9 @@ describe('Rendering', () => {
           <div>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
-              <MenuItem>Item A</MenuItem>
-              <MenuItem>Item B</MenuItem>
-              <MenuItem>Item C</MenuItem>
+              <MenuItem as="a">Item A</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
             </MenuItems>
           </div>
         </Menu>
@@ -153,32 +153,39 @@ describe('Rendering', () => {
     it(
       'should yell when we render a Menu using a template `as` prop (default) that contains multiple children (if we passthrough props)',
       suppressConsoleLogs(() => {
-        expect(() =>
-          renderTemplate(jsx`
-            <Menu class="relative">
-              <MenuButton>Trigger</MenuButton>
-              <MenuItems>
-                <MenuItem>Item A</MenuItem>
-                <MenuItem>Item B</MenuItem>
-                <MenuItem>Item C</MenuItem>
-              </MenuItems>
-            </Menu>
-          `)
-        ).toThrowError(
-          new Error(
-            [
-              'Passing props on "Fragment"!',
-              '',
-              'The current component <Menu /> is rendering a "Fragment".',
-              'However we need to passthrough the following props:',
-              '  - class',
-              '',
-              'You can apply a few solutions:',
-              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
-              '  - Render a single element as the child so that we can forward the props onto that element.',
-            ].join('\n')
-          )
-        )
+        expect.hasAssertions()
+
+        renderTemplate({
+          template: jsx`
+              <Menu class="relative">
+                <MenuButton>Trigger</MenuButton>
+                <MenuItems>
+                  <MenuItem as="a">Item A</MenuItem>
+                  <MenuItem as="a">Item B</MenuItem>
+                  <MenuItem as="a">Item C</MenuItem>
+                </MenuItems>
+              </Menu>
+            `,
+          errorCaptured(err) {
+            expect(err as Error).toEqual(
+              new Error(
+                [
+                  'Passing props on "template"!',
+                  '',
+                  'The current component <Menu /> is rendering a "template".',
+                  'However we need to passthrough the following props:',
+                  '  - class',
+                  '',
+                  'You can apply a few solutions:',
+                  '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
+                  '  - Render a single element as the child so that we can forward the props onto that element.',
+                ].join('\n')
+              )
+            )
+
+            return false
+          },
+        })
       })
     )
   })
@@ -191,9 +198,9 @@ describe('Rendering', () => {
             Trigger {{ open ? "visible" : "hidden" }}
           </MenuButton>
           <MenuItems>
-            <MenuItem>Item A</MenuItem>
-            <MenuItem>Item B</MenuItem>
-            <MenuItem>Item C</MenuItem>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -222,9 +229,9 @@ describe('Rendering', () => {
             <button :data-open="open">Trigger</button>
           </MenuButton>
           <MenuItems>
-            <MenuItem>Item A</MenuItem>
-            <MenuItem>Item B</MenuItem>
-            <MenuItem>Item C</MenuItem>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -252,9 +259,9 @@ describe('Rendering', () => {
               <MyCustomButton :data-open="open">Options</MyCustomButton>
             </MenuButton>
             <MenuItems>
-              <MenuItem>Item A</MenuItem>
-              <MenuItem>Item B</MenuItem>
-              <MenuItem>Item C</MenuItem>
+              <MenuItem as="a">Item A</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
             </MenuItems>
           </Menu>
         `,
@@ -287,43 +294,50 @@ describe('Rendering', () => {
     it(
       'should yell when we render a MenuButton using a template `as` prop that contains multiple children',
       suppressConsoleLogs(() => {
-        expect(() =>
-          renderTemplate(jsx`
+        expect.hasAssertions()
+
+        renderTemplate({
+          template: jsx`
             <Menu>
               <MenuButton as="template">
                 <span>Trigger</span>
                 <svg />
               </MenuButton>
               <MenuItems>
-                <MenuItem>Item A</MenuItem>
-                <MenuItem>Item B</MenuItem>
-                <MenuItem>Item C</MenuItem>
+                <MenuItem as="a">Item A</MenuItem>
+                <MenuItem as="a">Item B</MenuItem>
+                <MenuItem as="a">Item C</MenuItem>
               </MenuItems>
             </Menu>
-          `)
-        ).toThrowError(
-          new Error(
-            [
-              'Passing props on "Fragment"!',
-              '',
-              'The current component <MenuButton /> is rendering a "Fragment".',
-              'However we need to passthrough the following props:',
-              '  - disabled',
-              '  - ref',
-              '  - id',
-              '  - type',
-              '  - aria-haspopup',
-              '  - aria-controls',
-              '  - aria-expanded',
-              '  - onKeydown',
-              '  - onClick',
-              '',
-              'You can apply a few solutions:',
-              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
-              '  - Render a single element as the child so that we can forward the props onto that element.',
-            ].join('\n')
-          )
-        )
+          `,
+          errorCaptured(err) {
+            expect(err as Error).toEqual(
+              new Error(
+                [
+                  'Passing props on "template"!',
+                  '',
+                  'The current component <MenuButton /> is rendering a "template".',
+                  'However we need to passthrough the following props:',
+                  '  - disabled',
+                  '  - ref',
+                  '  - id',
+                  '  - type',
+                  '  - aria-haspopup',
+                  '  - aria-controls',
+                  '  - aria-expanded',
+                  '  - onKeydown',
+                  '  - onClick',
+                  '',
+                  'You can apply a few solutions:',
+                  '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
+                  '  - Render a single element as the child so that we can forward the props onto that element.',
+                ].join('\n')
+              )
+            )
+
+            return false
+          },
+        })
       })
     )
   })
@@ -335,9 +349,9 @@ describe('Rendering', () => {
           <MenuButton>Trigger</MenuButton>
           <MenuItems v-slot="{ open }">
             <span>{{ open ? "visible" : "hidden" }}</span>
-            <MenuItem>Item A</MenuItem>
-            <MenuItem>Item B</MenuItem>
-            <MenuItem>Item C</MenuItem>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -364,9 +378,9 @@ describe('Rendering', () => {
           <MenuButton>Trigger</MenuButton>
           <MenuItems as="template" v-slot="{ open }">
             <div :data-open="open">
-              <MenuItem>Item A</MenuItem>
-              <MenuItem>Item B</MenuItem>
-              <MenuItem>Item C</MenuItem>
+              <MenuItem as="a">Item A</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
             </div>
           </MenuItems>
         </Menu>
@@ -395,32 +409,35 @@ describe('Rendering', () => {
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems as="template">
-              <MenuItem>Item A</MenuItem>
-              <MenuItem>Item B</MenuItem>
-              <MenuItem>Item C</MenuItem>
+              <MenuItem as="a">Item A</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
             </MenuItems>
           </Menu>
         `,
-        errorCaptured(err: unknown) {
-          expect((err as Error).message).toEqual(
-            [
-              'Passing props on "Fragment"!',
-              '',
-              'The current component <MenuItems /> is rendering a "Fragment".',
-              'However we need to passthrough the following props:',
-              '  - aria-activedescendant',
-              '  - aria-labelledby',
-              '  - id',
-              '  - onKeydown',
-              '  - role',
-              '  - tabIndex',
-              '  - ref',
-              '',
-              'You can apply a few solutions:',
-              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
-              '  - Render a single element as the child so that we can forward the props onto that element.',
-            ].join('\n')
+        errorCaptured(err) {
+          expect(err as Error).toEqual(
+            new Error(
+              [
+                'Passing props on "template"!',
+                '',
+                'The current component <MenuItems /> is rendering a "template".',
+                'However we need to passthrough the following props:',
+                '  - aria-activedescendant',
+                '  - aria-labelledby',
+                '  - id',
+                '  - onKeydown',
+                '  - role',
+                '  - tabIndex',
+                '  - ref',
+                '',
+                'You can apply a few solutions:',
+                '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
+                '  - Render a single element as the child so that we can forward the props onto that element.',
+              ].join('\n')
+            )
           )
+
           return false
         },
       })
@@ -476,8 +493,8 @@ describe('Rendering', () => {
             <MenuItem v-slot="{ active, disabled }">
               <span>Item A - {{ JSON.stringify({ active, disabled }) }}</span>
             </MenuItem>
-            <MenuItem>Item B</MenuItem>
-            <MenuItem>Item C</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -548,46 +565,48 @@ describe('Rendering', () => {
     })
 
     it('should yell when we render a MenuItem using a template `as` prop that contains multiple children', async () => {
-      expect.assertions(1)
+      expect.hasAssertions()
 
       renderTemplate({
         template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
-              <MenuItem>
+              <MenuItem as="template">
                 <span>Item A</span>
                 <svg />
               </MenuItem>
-              <MenuItem>Item B</MenuItem>
-              <MenuItem>Item C</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
             </MenuItems>
           </Menu>
         `,
-        errorCaptured(err: unknown) {
-          expect((err as Error).message).toEqual(
-            [
-              'Passing props on "Fragment"!',
-              '',
-              'The current component <MenuItem /> is rendering a "Fragment".',
-              'However we need to passthrough the following props:',
-              '  - disabled',
-              '  - id',
-              '  - role',
-              '  - tabIndex',
-              '  - class',
-              '  - aria-disabled',
-              '  - onClick',
-              '  - onFocus',
-              '  - onPointermove',
-              '  - onMousemove',
-              '  - onPointerleave',
-              '  - onMouseleave',
-              '',
-              'You can apply a few solutions:',
-              '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
-              '  - Render a single element as the child so that we can forward the props onto that element.',
-            ].join('\n')
+        errorCaptured(err) {
+          expect(err as Error).toEqual(
+            new Error(
+              [
+                'Passing props on "template"!',
+                '',
+                'The current component <MenuItem /> is rendering a "template".',
+                'However we need to passthrough the following props:',
+                '  - disabled',
+                '  - id',
+                '  - role',
+                '  - tabIndex',
+                '  - class',
+                '  - aria-disabled',
+                '  - onClick',
+                '  - onFocus',
+                '  - onPointermove',
+                '  - onMousemove',
+                '  - onPointerleave',
+                '  - onMouseleave',
+                '',
+                'You can apply a few solutions:',
+                '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
+                '  - Render a single element as the child so that we can forward the props onto that element.',
+              ].join('\n')
+            )
           )
 
           return false
@@ -902,9 +921,9 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem disabled>Item A</MenuItem>
-            <MenuItem disabled>Item B</MenuItem>
-            <MenuItem disabled>Item C</MenuItem>
+            <MenuItem as="a" disabled>Item A</MenuItem>
+            <MenuItem as="a" disabled>Item B</MenuItem>
+            <MenuItem as="a" disabled>Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -929,9 +948,9 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem>Item A</MenuItem>
-            <MenuItem>Item B</MenuItem>
-            <MenuItem>Item C</MenuItem>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -1229,9 +1248,9 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem disabled>Item A</MenuItem>
-            <MenuItem disabled>Item B</MenuItem>
-            <MenuItem disabled>Item C</MenuItem>
+            <MenuItem as="a" disabled>Item A</MenuItem>
+            <MenuItem as="a" disabled>Item B</MenuItem>
+            <MenuItem as="a" disabled>Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -1258,9 +1277,9 @@ describe('Keyboard interactions', () => {
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
-              <MenuItem>Item A</MenuItem>
-              <MenuItem>Item B</MenuItem>
-              <MenuItem>Item C</MenuItem>
+              <MenuItem as="a">Item A</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
             </MenuItems>
           </Menu>
         `)
@@ -1345,9 +1364,9 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem>Item A</MenuItem>
-            <MenuItem>Item B</MenuItem>
-            <MenuItem>Item C</MenuItem>
+            <MenuItem as="a">Item A</MenuItem>
+            <MenuItem as="a">Item B</MenuItem>
+            <MenuItem as="a">Item C</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -1949,10 +1968,10 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem disabled>Item A</MenuItem>
-            <MenuItem disabled>Item B</MenuItem>
-            <MenuItem disabled>Item C</MenuItem>
-            <MenuItem disabled>Item D</MenuItem>
+            <MenuItem as="a" disabled>Item A</MenuItem>
+            <MenuItem as="a" disabled>Item B</MenuItem>
+            <MenuItem as="a" disabled>Item C</MenuItem>
+            <MenuItem as="a" disabled>Item D</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -2059,10 +2078,10 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem disabled>Item A</MenuItem>
-            <MenuItem disabled>Item B</MenuItem>
-            <MenuItem disabled>Item C</MenuItem>
-            <MenuItem disabled>Item D</MenuItem>
+            <MenuItem as="a" disabled>Item A</MenuItem>
+            <MenuItem as="a" disabled>Item B</MenuItem>
+            <MenuItem as="a" disabled>Item C</MenuItem>
+            <MenuItem as="a" disabled>Item D</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -2168,10 +2187,10 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem disabled>Item A</MenuItem>
-            <MenuItem disabled>Item B</MenuItem>
-            <MenuItem disabled>Item C</MenuItem>
-            <MenuItem disabled>Item D</MenuItem>
+            <MenuItem as="a" disabled>Item A</MenuItem>
+            <MenuItem as="a" disabled>Item B</MenuItem>
+            <MenuItem as="a" disabled>Item C</MenuItem>
+            <MenuItem as="a" disabled>Item D</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -2277,10 +2296,10 @@ describe('Keyboard interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem disabled>Item A</MenuItem>
-            <MenuItem disabled>Item B</MenuItem>
-            <MenuItem disabled>Item C</MenuItem>
-            <MenuItem disabled>Item D</MenuItem>
+            <MenuItem as="a" disabled>Item A</MenuItem>
+            <MenuItem as="a" disabled>Item B</MenuItem>
+            <MenuItem as="a" disabled>Item C</MenuItem>
+            <MenuItem as="a" disabled>Item D</MenuItem>
           </MenuItems>
         </Menu>
       `)
@@ -2534,9 +2553,9 @@ describe('Mouse interactions', () => {
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
-          <MenuItem>Item A</MenuItem>
-          <MenuItem>Item B</MenuItem>
-          <MenuItem>Item C</MenuItem>
+          <MenuItem as="a">Item A</MenuItem>
+          <MenuItem as="a">Item B</MenuItem>
+          <MenuItem as="a">Item C</MenuItem>
         </MenuItems>
       </Menu>
     `)
@@ -2560,9 +2579,9 @@ describe('Mouse interactions', () => {
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
-          <MenuItem>alice</MenuItem>
-          <MenuItem>bob</MenuItem>
-          <MenuItem>charlie</MenuItem>
+          <MenuItem as="a">alice</MenuItem>
+          <MenuItem as="a">bob</MenuItem>
+          <MenuItem as="a">charlie</MenuItem>
         </MenuItems>
       </Menu>
     `)
@@ -2582,9 +2601,9 @@ describe('Mouse interactions', () => {
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
-          <MenuItem>alice</MenuItem>
-          <MenuItem>bob</MenuItem>
-          <MenuItem>charlie</MenuItem>
+          <MenuItem as="a">alice</MenuItem>
+          <MenuItem as="a">bob</MenuItem>
+          <MenuItem as="a">charlie</MenuItem>
         </MenuItems>
       </Menu>
     `)
@@ -2608,9 +2627,9 @@ describe('Mouse interactions', () => {
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
-          <MenuItem>alice</MenuItem>
-          <MenuItem>bob</MenuItem>
-          <MenuItem>charlie</MenuItem>
+          <MenuItem as="a">alice</MenuItem>
+          <MenuItem as="a">bob</MenuItem>
+          <MenuItem as="a">charlie</MenuItem>
         </MenuItems>
       </Menu>
     `)
@@ -2637,18 +2656,18 @@ describe('Mouse interactions', () => {
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
-              <MenuItem>alice</MenuItem>
-              <MenuItem>bob</MenuItem>
-              <MenuItem>charlie</MenuItem>
+              <MenuItem as="a">alice</MenuItem>
+              <MenuItem as="a">bob</MenuItem>
+              <MenuItem as="a">charlie</MenuItem>
             </MenuItems>
           </Menu>
 
           <Menu>
             <MenuButton>Trigger</MenuButton>
             <MenuItems>
-              <MenuItem>alice</MenuItem>
-              <MenuItem>bob</MenuItem>
-              <MenuItem>charlie</MenuItem>
+              <MenuItem as="a">alice</MenuItem>
+              <MenuItem as="a">bob</MenuItem>
+              <MenuItem as="a">charlie</MenuItem>
             </MenuItems>
           </Menu>
         </div>
