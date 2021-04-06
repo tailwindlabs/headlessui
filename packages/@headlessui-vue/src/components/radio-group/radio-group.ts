@@ -7,6 +7,7 @@ import {
   onUnmounted,
   provide,
   ref,
+  toRaw,
   watchEffect,
 
   // Types
@@ -241,18 +242,17 @@ export let RadioGroupOption = defineComponent({
     let api = useRadioGroupContext('RadioGroupOption')
 
     let firstRadio = api.options.value?.[0]?.id === this.id
-    let checked = api.value.value === value
 
-    let slot = { checked, active: Boolean(this.state & OptionState.Active) }
+    let slot = { checked: this.checked, active: Boolean(this.state & OptionState.Active) }
     let propsWeControl = {
       id: this.id,
       ref: 'el',
       role: 'radio',
       class: resolvePropValue(className, slot),
-      'aria-checked': checked ? 'true' : 'false',
+      'aria-checked': this.checked ? 'true' : 'false',
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,
-      tabIndex: checked ? 0 : api.value.value === undefined && firstRadio ? 0 : -1,
+      tabIndex: this.checked ? 0 : api.value.value === undefined && firstRadio ? 0 : -1,
       onClick: this.handleClick,
       onFocus: this.handleFocus,
       onBlur: this.handleBlur,
@@ -291,6 +291,7 @@ export let RadioGroupOption = defineComponent({
       state,
       LabelProvider,
       DescriptionProvider,
+      checked: computed(() => toRaw(api.value.value) === toRaw(props.value)),
       handleClick() {
         let value = props.value
         if (api.value.value === value) return

@@ -192,6 +192,58 @@ describe('Rendering', () => {
       `Pickup - ${JSON.stringify({ checked: false, active: false })}`
     )
   })
+
+  it('should set the checked v-slot info to true for the selected item (testing with objects, because Vue proxies)', async () => {
+    renderTemplate({
+      template: html`
+        <RadioGroup v-model="deliveryMethod">
+          <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+          <RadioGroupOption v-for="option in options" key="option.id" :value="option" v-slot="data"
+            >{{option.label}} - {{JSON.stringify(data)}}</RadioGroupOption
+          >
+        </RadioGroup>
+      `,
+      setup() {
+        let deliveryMethod = ref(undefined)
+        let options = ref([
+          { id: 1, label: 'Pickup' },
+          { id: 2, label: 'Home delivery' },
+          { id: 3, label: 'Dine in' },
+        ])
+        return { deliveryMethod, options }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    let [pickup, homeDelivery, dineIn] = Array.from(
+      document.querySelectorAll('[id^="headlessui-radiogroup-option-"]')
+    )
+    expect(pickup).toHaveTextContent(
+      `Pickup - ${JSON.stringify({ checked: false, active: false })}`
+    )
+    expect(homeDelivery).toHaveTextContent(
+      `Home delivery - ${JSON.stringify({ checked: false, active: false })}`
+    )
+    expect(dineIn).toHaveTextContent(
+      `Dine in - ${JSON.stringify({ checked: false, active: false })}`
+    )
+
+    await click(homeDelivery)
+    ;[pickup, homeDelivery, dineIn] = Array.from(
+      document.querySelectorAll('[id^="headlessui-radiogroup-option-"]')
+    )
+
+    expect(pickup).toHaveTextContent(
+      `Pickup - ${JSON.stringify({ checked: false, active: false })}`
+    )
+    expect(homeDelivery).toHaveTextContent(
+      `Home delivery - ${JSON.stringify({ checked: true, active: true })}`
+    )
+    expect(dineIn).toHaveTextContent(
+      `Dine in - ${JSON.stringify({ checked: false, active: false })}`
+    )
+  })
 })
 
 describe('Keyboard interactions', () => {
