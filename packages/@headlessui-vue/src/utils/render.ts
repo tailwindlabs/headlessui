@@ -133,5 +133,6 @@ function isValidElement(input: any): boolean {
   if (input == null) return false // No children
   if (typeof input.type === 'string') return true // 'div', 'span', ...
   if (typeof input.type === 'object') return true // Other components
+  if (typeof input.type === 'function') return true // Built-ins like Transition
   return false // Comments, strings, ...
 }
