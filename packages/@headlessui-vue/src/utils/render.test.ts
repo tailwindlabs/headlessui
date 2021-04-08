@@ -1,4 +1,4 @@
-import { defineComponent, h } from 'vue'
+import { defineComponent } from 'vue'
 import { render as testRender } from '../test-utils/vue-testing-library'
 
 import { render } from './render'

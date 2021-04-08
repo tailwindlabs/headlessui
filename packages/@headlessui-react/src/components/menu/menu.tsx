@@ -251,19 +251,16 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     [dispatch, d]
   )
 
-  let handleKeyUp = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-      switch (event.key) {
-        case Keys.Space:
-          // Required for firefox, event.preventDefault() in handleKeyDown for
-          // the Space key doesn't cancel the handleKeyUp, which in turn
-          // triggers a *click*.
-          event.preventDefault()
-          break
-      }
-    },
-    [dispatch]
-  )
+  let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    switch (event.key) {
+      case Keys.Space:
+        // Required for firefox, event.preventDefault() in handleKeyDown for
+        // the Space key doesn't cancel the handleKeyUp, which in turn
+        // triggers a *click*.
+        event.preventDefault()
+        break
+    }
+  }, [])
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
@@ -430,19 +427,16 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     [dispatch, searchDisposables, state]
   )
 
-  let handleKeyUp = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-      switch (event.key) {
-        case Keys.Space:
-          // Required for firefox, event.preventDefault() in handleKeyDown for
-          // the Space key doesn't cancel the handleKeyUp, which in turn
-          // triggers a *click*.
-          event.preventDefault()
-          break
-      }
-    },
-    [dispatch]
-  )
+  let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    switch (event.key) {
+      case Keys.Space:
+        // Required for firefox, event.preventDefault() in handleKeyDown for
+        // the Space key doesn't cancel the handleKeyUp, which in turn
+        // triggers a *click*.
+        event.preventDefault()
+        break
+    }
+  }, [])
 
   let slot = useMemo<ItemsRenderPropArg>(() => ({ open: state.menuState === MenuStates.Open }), [
     state,
