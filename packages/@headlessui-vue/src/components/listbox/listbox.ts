@@ -258,6 +258,7 @@ export let ListboxButton = defineComponent({
         : undefined,
       disabled: api.disabled,
       onKeydown: this.handleKeyDown,
+      onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
     }
 
@@ -299,6 +300,17 @@ export let ListboxButton = defineComponent({
       }
     }
 
+    function handleKeyUp(event: KeyboardEvent) {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
+          break
+      }
+    }
+
     function handleClick(event: MouseEvent) {
       if (api.disabled) return
       if (api.listboxState.value === ListboxStates.Open) {
@@ -311,7 +323,7 @@ export let ListboxButton = defineComponent({
       }
     }
 
-    return { id, el: api.buttonRef, handleKeyDown, handleClick }
+    return { id, el: api.buttonRef, handleKeyDown, handleKeyUp, handleClick }
   },
 })
 

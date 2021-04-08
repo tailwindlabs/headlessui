@@ -178,6 +178,7 @@ export let MenuButton = defineComponent({
       'aria-controls': dom(api.itemsRef)?.id,
       'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
       onKeydown: this.handleKeyDown,
+      onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
     }
 
@@ -221,6 +222,17 @@ export let MenuButton = defineComponent({
       }
     }
 
+    function handleKeyUp(event: KeyboardEvent) {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
+          break
+      }
+    }
+
     function handleClick(event: MouseEvent) {
       if (props.disabled) return
       if (api.menuState.value === MenuStates.Open) {
@@ -234,12 +246,7 @@ export let MenuButton = defineComponent({
       }
     }
 
-    return {
-      id,
-      el: api.buttonRef,
-      handleKeyDown,
-      handleClick,
-    }
+    return { id, el: api.buttonRef, handleKeyDown, handleKeyUp, handleClick }
   },
 })
 
@@ -262,6 +269,7 @@ export let MenuItems = defineComponent({
       'aria-labelledby': dom(api.buttonRef)?.id,
       id: this.id,
       onKeydown: this.handleKeyDown,
+      onKeyup: this.handleKeyUp,
       role: 'menu',
       tabIndex: 0,
       ref: 'el',
@@ -369,7 +377,18 @@ export let MenuItems = defineComponent({
       }
     }
 
-    return { id, el: api.itemsRef, handleKeyDown }
+    function handleKeyUp(event: KeyboardEvent) {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
+          break
+      }
+    }
+
+    return { id, el: api.itemsRef, handleKeyDown, handleKeyUp }
   },
 })
 

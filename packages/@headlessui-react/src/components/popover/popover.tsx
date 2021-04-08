@@ -357,6 +357,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let handleKeyUp = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
       if (isWithinPanel) return
+      if (event.key === Keys.Space) {
+        // Required for firefox, event.preventDefault() in handleKeyDown for
+        // the Space key doesn't cancel the handleKeyUp, which in turn
+        // triggers a *click*.
+        event.preventDefault()
+      }
       if (state.popoverState !== PopoverStates.Open) return
       if (!state.panel) return
       if (!state.button) return

@@ -303,6 +303,12 @@ export let PopoverButton = defineComponent({
       },
       handleKeyUp(event: KeyboardEvent) {
         if (isWithinPanel) return
+        if (event.key === Keys.Space) {
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
+        }
         if (api.popoverState.value !== PopoverStates.Open) return
         if (!api.panel) return
         if (!api.button) return

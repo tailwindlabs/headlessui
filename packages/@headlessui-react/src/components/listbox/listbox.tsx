@@ -307,6 +307,20 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     [dispatch, state, d]
   )
 
+  let handleKeyUp = useCallback(
+    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
+          break
+      }
+    },
+    [dispatch]
+  )
+
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
@@ -341,6 +355,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
+    onKeyUp: handleKeyUp,
     onClick: handleClick,
   }
 

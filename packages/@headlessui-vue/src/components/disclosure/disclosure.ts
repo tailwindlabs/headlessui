@@ -87,6 +87,7 @@ export let DisclosureButton = defineComponent({
       'aria-controls': this.ariaControls,
       onClick: this.handleClick,
       onKeydown: this.handleKeyDown,
+      onKeyup: this.handleKeyUp,
     }
 
     return render({
@@ -116,7 +117,18 @@ export let DisclosureButton = defineComponent({
           case Keys.Space:
           case Keys.Enter:
             event.preventDefault()
+            event.stopPropagation()
             api.toggleDisclosure()
+            break
+        }
+      },
+      handleKeyUp(event: KeyboardEvent) {
+        switch (event.key) {
+          case Keys.Space:
+            // Required for firefox, event.preventDefault() in handleKeyDown for
+            // the Space key doesn't cancel the handleKeyUp, which in turn
+            // triggers a *click*.
+            event.preventDefault()
             break
         }
       },

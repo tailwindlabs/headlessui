@@ -22,7 +22,6 @@ import { useId } from '../../hooks/use-id'
 import { render } from '../../utils/render'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
-import { useWindowEvent } from '../../hooks/use-window-event'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 
 interface Option {
@@ -75,6 +74,7 @@ export let RadioGroup = defineComponent({
       role: 'radiogroup',
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,
+      onKeydown: this.handleKeyDown,
     }
 
     return h(this.DescriptionProvider, () => [
@@ -143,7 +143,7 @@ export let RadioGroup = defineComponent({
       }
     })
 
-    useWindowEvent('keydown', event => {
+    function handleKeyDown(event: KeyboardEvent) {
       if (!radioGroupRef.value) return
       if (!radioGroupRef.value.contains(event.target as HTMLElement)) return
 
@@ -200,7 +200,7 @@ export let RadioGroup = defineComponent({
           }
           break
       }
-    })
+    }
 
     let id = `headlessui-radiogroup-${useId()}`
 
@@ -209,6 +209,7 @@ export let RadioGroup = defineComponent({
       labelledby,
       describedby,
       el: radioGroupRef,
+      handleKeyDown,
       LabelProvider,
       DescriptionProvider,
     }
