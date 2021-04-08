@@ -121,9 +121,10 @@ function NotificationsToggle() {
 
 ##### Props
 
-| Prop | Type                | Default | Description                                                   |
-| :--- | :------------------ | :------ | :------------------------------------------------------------ |
-| `as` | String \| Component | `label` | The element or component the `Switch.Label` should render as. |
+| Prop        | Type                | Default | Description                                                       |
+| :---------- | :------------------ | :------ | :---------------------------------------------------------------- |
+| `as`        | String \| Component | `label` | The element or component the `Switch.Label` should render as.     |
+| `clickable` | Boolean             | `false` | Wether or not to toggle the `Switch` when you click on the label. |
 
 #### Switch.Description
 

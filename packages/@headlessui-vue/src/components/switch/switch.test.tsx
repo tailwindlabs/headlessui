@@ -10,7 +10,6 @@ import {
   getSwitchLabel,
 } from '../../test-utils/accessibility-assertions'
 import { press, click, Keys } from '../../test-utils/interactions'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { html } from '../../test-utils/html'
 
 jest.mock('../../hooks/use-id')
@@ -32,18 +31,6 @@ function renderTemplate(input: string | Partial<Parameters<typeof defineComponen
 }
 
 describe('Safe guards', () => {
-  it.each([
-    ['SwitchLabel', SwitchLabel],
-    ['SwitchDescription', SwitchDescription],
-  ])(
-    'should error when we are using a <%s /> without a parent <SwitchGroup />',
-    suppressConsoleLogs((name, Component) => {
-      expect(() => render(Component)).toThrowError(
-        `<${name} /> is missing a parent <SwitchGroup /> component.`
-      )
-    })
-  )
-
   it('should be possible to render a Switch without crashing', () => {
     renderTemplate({
       template: html`
@@ -352,13 +339,13 @@ describe('Mouse interactions', () => {
     assertSwitch({ state: SwitchState.Off })
   })
 
-  it('should be possible to toggle the Switch with a click on the Label', async () => {
+  it('should be possible to toggle the Switch with a click on the Label (clickable passed)', async () => {
     let handleChange = jest.fn()
     renderTemplate({
       template: html`
         <SwitchGroup>
           <Switch v-model="checked" />
-          <SwitchLabel>The label</SwitchLabel>
+          <SwitchLabel clickable>The label</SwitchLabel>
         </SwitchGroup>
       `,
       setup() {
@@ -387,6 +374,32 @@ describe('Mouse interactions', () => {
     assertActiveElement(getSwitch())
 
     // Ensure state is off
+    assertSwitch({ state: SwitchState.Off })
+  })
+
+  it('should not be possible to toggle the Switch with a click on the Label', async () => {
+    let handleChange = jest.fn()
+    renderTemplate({
+      template: html`
+        <SwitchGroup>
+          <Switch v-model="checked" />
+          <SwitchLabel>The label</SwitchLabel>
+        </SwitchGroup>
+      `,
+      setup() {
+        let checked = ref(false)
+        watch([checked], () => handleChange(checked.value))
+        return { checked }
+      },
+    })
+
+    // Ensure checkbox is off
+    assertSwitch({ state: SwitchState.Off })
+
+    // Toggle
+    await click(getSwitchLabel())
+
+    // Ensure state is still Off
     assertSwitch({ state: SwitchState.Off })
   })
 })

@@ -264,7 +264,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
           <DialogContext.Provider value={contextBag}>
             <Portal.Group target={internalDialogRef}>
               <ForcePortalRoot force={false}>
-                <DescriptionProvider slot={slot}>
+                <DescriptionProvider slot={slot} name="Dialog.Description">
                   {render({
                     props: { ...passthroughProps, ...propsWeControl },
                     slot,

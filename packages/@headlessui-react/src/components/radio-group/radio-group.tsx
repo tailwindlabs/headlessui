@@ -220,8 +220,8 @@ export function RadioGroup<
   }
 
   return (
-    <DescriptionProvider>
-      <LabelProvider>
+    <DescriptionProvider name="RadioGroup.Description">
+      <LabelProvider name="RadioGroup.Label">
         <RadioGroupContext.Provider value={reducerBag}>
           {render({
             props: { ...passThroughProps, ...propsWeControl },
@@ -320,8 +320,8 @@ function Option<
   )
 
   return (
-    <DescriptionProvider>
-      <LabelProvider>
+    <DescriptionProvider name="RadioGroup.Description">
+      <LabelProvider name="RadioGroup.Label">
         {render({
           props: { ...passThroughProps, ...propsWeControl },
           slot,

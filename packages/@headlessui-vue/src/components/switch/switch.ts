@@ -1,31 +1,30 @@
-import { computed, defineComponent, inject, InjectionKey, provide, ref, Ref } from 'vue'
+import {
+  defineComponent,
+  h,
+  inject,
+  provide,
+  ref,
+
+  // Types
+  InjectionKey,
+  Ref,
+} from 'vue'
 
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
-import { dom } from '../../utils/dom'
+import { Label, useLabels } from '../label/label'
+import { Description, useDescriptions } from '../description/description'
 
 type StateDefinition = {
   // State
   switchRef: Ref<HTMLButtonElement | null>
-  labelRef: Ref<HTMLLabelElement | null>
-  descriptionRef: Ref<HTMLParagraphElement | null>
+  labelledby: Ref<string | undefined>
+  describedby: Ref<string | undefined>
 }
 
 let GroupContext = Symbol('GroupContext') as InjectionKey<StateDefinition>
-
-function useGroupContext(component: string) {
-  let context = inject(GroupContext, null)
-
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <SwitchGroup /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useGroupContext)
-    throw err
-  }
-
-  return context
-}
 
 // ---
 
@@ -36,14 +35,30 @@ export let SwitchGroup = defineComponent({
   },
   setup(props, { slots, attrs }) {
     let switchRef = ref<StateDefinition['switchRef']['value']>(null)
-    let labelRef = ref<StateDefinition['labelRef']['value']>(null)
-    let descriptionRef = ref<StateDefinition['descriptionRef']['value']>(null)
+    let [labelledby, LabelProvider] = useLabels()
+    let [describedby, DescriptionProvider] = useDescriptions()
 
-    let api = { switchRef, labelRef, descriptionRef }
+    let api = { switchRef, labelledby, describedby }
 
     provide(GroupContext, api)
 
-    return () => render({ props, slot: {}, slots, attrs, name: 'SwitchGroup' })
+    return () =>
+      h(DescriptionProvider, { name: 'SwitchDescription' }, () => [
+        h(
+          LabelProvider,
+          {
+            name: 'SwitchLabel',
+            props: {
+              onClick() {
+                if (!switchRef.value) return
+                switchRef.value.click()
+                switchRef.value.focus({ preventScroll: true })
+              },
+            },
+          },
+          () => [render({ props, slot: {}, slots, attrs, name: 'SwitchGroup' })]
+        ),
+      ])
   },
 })
 
@@ -62,9 +77,6 @@ export let Switch = defineComponent({
     let api = inject(GroupContext, null)
     let { class: defaultClass, className = defaultClass } = this.$props
 
-    let labelledby = computed(() => dom(api?.labelRef)?.id)
-    let describedby = computed(() => dom(api?.descriptionRef)?.id)
-
     let slot = { checked: this.$props.modelValue }
     let propsWeControl = {
       id: this.id,
@@ -73,8 +85,8 @@ export let Switch = defineComponent({
       tabIndex: 0,
       class: resolvePropValue(className, slot),
       'aria-checked': this.$props.modelValue,
-      'aria-labelledby': labelledby.value,
-      'aria-describedby': describedby.value,
+      'aria-labelledby': this.labelledby,
+      'aria-describedby': this.describedby,
       onClick: this.handleClick,
       onKeyup: this.handleKeyUp,
       onKeypress: this.handleKeyPress,
@@ -103,6 +115,8 @@ export let Switch = defineComponent({
     return {
       id,
       el: api?.switchRef,
+      labelledby: api?.labelledby,
+      describedby: api?.describedby,
       handleClick(event: MouseEvent) {
         event.preventDefault()
         toggle()
@@ -121,67 +135,5 @@ export let Switch = defineComponent({
 
 // ---
 
-export let SwitchLabel = defineComponent({
-  name: 'SwitchLabel',
-  props: { as: { type: [Object, String], default: 'label' } },
-  render() {
-    let propsWeControl = {
-      id: this.id,
-      ref: 'el',
-      onClick: this.handleClick,
-    }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot: {},
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'SwitchLabel',
-    })
-  },
-  setup() {
-    let api = useGroupContext('SwitchLabel')
-    let id = `headlessui-switch-label-${useId()}`
-
-    return {
-      id,
-      el: api.labelRef,
-      handleClick() {
-        let el = dom(api.switchRef)
-
-        el?.click()
-        el?.focus({ preventScroll: true })
-      },
-    }
-  },
-})
-
-// ---
-
-export let SwitchDescription = defineComponent({
-  name: 'SwitchDescription',
-  props: { as: { type: [Object, String], default: 'p' } },
-  render() {
-    let propsWeControl = {
-      id: this.id,
-      ref: 'el',
-    }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot: {},
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'SwitchDescription',
-    })
-  },
-  setup() {
-    let api = useGroupContext('SwitchDescription')
-    let id = `headlessui-switch-description-${useId()}`
-
-    return {
-      id,
-      el: api.descriptionRef,
-    }
-  },
-})
+export let SwitchLabel = Label
+export let SwitchDescription = Description
