@@ -8,7 +8,6 @@ import React, {
   // Types
   ElementType,
   ReactNode,
-  ContextType,
 } from 'react'
 
 import { Props } from '../../types'
@@ -18,23 +17,35 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
 // ---
 
-let DescriptionContext = createContext<{
-  register(value: string): () => void
-  slot: Record<string, any>
-}>({
-  register() {
-    return () => {}
-  },
-  slot: {},
-})
+interface SharedData {
+  slot?: {}
+  name?: string
+  props?: {}
+}
+
+let DescriptionContext = createContext<
+  ({ register(value: string): () => void } & SharedData) | null
+>(null)
 
 function useDescriptionContext() {
-  return useContext(DescriptionContext)
+  let context = useContext(DescriptionContext)
+  if (context === null) {
+    let err = new Error(
+      'You used a <Description /> component, but it is not inside a relevant parent.'
+    )
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useDescriptionContext)
+    throw err
+  }
+  return context
+}
+
+interface DescriptionProviderProps extends SharedData {
+  children: ReactNode
 }
 
 export function useDescriptions(): [
   string | undefined,
-  (props: { children: ReactNode; slot?: Record<string, any> }) => JSX.Element
+  (props: DescriptionProviderProps) => JSX.Element
 ] {
   let [descriptionIds, setDescriptionIds] = useState<string[]>([])
 
@@ -44,10 +55,7 @@ export function useDescriptions(): [
 
     // The provider component
     useMemo(() => {
-      return function DescriptionProvider(props: {
-        children: ReactNode
-        slot?: Record<string, any>
-      }) {
+      return function DescriptionProvider(props: DescriptionProviderProps) {
         let register = useCallback((value: string) => {
           setDescriptionIds(existing => [...existing, value])
 
@@ -60,9 +68,9 @@ export function useDescriptions(): [
             })
         }, [])
 
-        let contextBag = useMemo<ContextType<typeof DescriptionContext>>(
-          () => ({ register, slot: props.slot ?? {} }),
-          [register, props.slot]
+        let contextBag = useMemo(
+          () => ({ register, slot: props.slot, name: props.name, props: props.props }),
+          [register, props.slot, props.name, props.props]
         )
 
         return (
@@ -84,18 +92,18 @@ type DescriptionPropsWeControl = 'id'
 export function Description<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
   props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
 ) {
-  let { register, slot } = useDescriptionContext()
+  let context = useDescriptionContext()
   let id = `headlessui-description-${useId()}`
 
-  useIsoMorphicEffect(() => register(id), [id, register])
+  useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
   let passThroughProps = props
-  let propsWeControl = { id }
+  let propsWeControl = { ...context.props, id }
 
   return render({
     props: { ...passThroughProps, ...propsWeControl },
-    slot,
+    slot: context.slot || {},
     defaultTag: DEFAULT_DESCRIPTION_TAG,
-    name: 'Description',
+    name: context.name || 'Description',
   })
 }

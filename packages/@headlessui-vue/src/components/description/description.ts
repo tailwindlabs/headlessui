@@ -10,6 +10,7 @@ import {
   // Types
   ComputedRef,
   InjectionKey,
+  Ref,
 } from 'vue'
 
 import { useId } from '../../hooks/use-id'
@@ -19,16 +20,17 @@ import { render } from '../../utils/render'
 
 let DescriptionContext = Symbol('DescriptionContext') as InjectionKey<{
   register(value: string): () => void
-  slot: Record<string, any>
+  slot: Ref<Record<string, any>>
+  name: Ref<string>
+  props: Ref<Record<string, any>>
 }>
 
 function useDescriptionContext() {
-  return inject(DescriptionContext, {
-    register() {
-      return () => {}
-    },
-    slot: {},
-  })
+  let context = inject(DescriptionContext, null)
+  if (context === null) {
+    throw new Error('Missing parent')
+  }
+  return context
 }
 
 export function useDescriptions(): [
@@ -44,7 +46,7 @@ export function useDescriptions(): [
     // The provider component
     defineComponent({
       name: 'DescriptionProvider',
-      props: ['slot'],
+      props: ['slot', 'name', 'props'],
       setup(props, { slots }) {
         function register(value: string) {
           descriptionIds.value.push(value)
@@ -56,9 +58,12 @@ export function useDescriptions(): [
           }
         }
 
-        let slot = computed(() => props.slot)
-
-        provide(DescriptionContext, { register, slot })
+        provide(DescriptionContext, {
+          register,
+          slot: computed(() => props.slot),
+          name: computed(() => props.name),
+          props: computed(() => props.props),
+        })
 
         return () => slots.default!()
       },
@@ -75,22 +80,22 @@ export let Description = defineComponent({
   },
   render() {
     let passThroughProps = this.$props
-    let propsWeControl = { id: this.id }
+    let propsWeControl = { ...this.props, id: this.id }
 
     return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot: this.slot,
+      props: { ...this.props, ...passThroughProps, ...propsWeControl },
+      slot: this.slot || {},
       attrs: this.$attrs,
       slots: this.$slots,
-      name: 'Description',
+      name: this.name || 'Description',
     })
   },
   setup() {
-    let { register, slot } = useDescriptionContext()
+    let { register, slot, name, props } = useDescriptionContext()
     let id = `headlessui-description-${useId()}`
 
     onMounted(() => onUnmounted(register(id)))
 
-    return { id, slot }
+    return { id, slot, name, props }
   },
 })
