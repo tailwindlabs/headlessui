@@ -147,9 +147,10 @@ export default {
 
 ##### Props
 
-| Prop | Type                | Default | Description                                                  |
-| :--- | :------------------ | :------ | :----------------------------------------------------------- |
-| `as` | String \| Component | `label` | The element or component the `SwitchLabel` should render as. |
+| Prop        | Type                | Default | Description                                                       |
+| :---------- | :------------------ | :------ | :---------------------------------------------------------------- |
+| `as`        | String \| Component | `label` | The element or component the `SwitchLabel` should render as.      |
+| `clickable` | Boolean             | `false` | Wether or not to toggle the `Switch` when you click on the label. |
 
 #### SwitchDescription
 
