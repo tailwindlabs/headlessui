@@ -17,29 +17,18 @@ import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { Label, useLabels } from '../label/label'
+import { Description, useDescriptions } from '../description/description'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null
-  label: HTMLLabelElement | null
-  description: HTMLParagraphElement | null
-
   setSwitch(element: HTMLButtonElement): void
-  setLabel(element: HTMLLabelElement): void
-  setDescription(element: HTMLParagraphElement): void
+  labelledby: string | undefined
+  describedby: string | undefined
 }
 
 let GroupContext = createContext<StateDefinition | null>(null)
 GroupContext.displayName = 'GroupContext'
-
-function useGroupContext(component: string) {
-  let context = useContext(GroupContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Switch.Group /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useGroupContext)
-    throw err
-  }
-  return context
-}
 
 // ---
 
@@ -47,36 +36,31 @@ let DEFAULT_GROUP_TAG = Fragment
 
 function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props<TTag>) {
   let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
-  let [labelElement, setLabelElement] = useState<HTMLLabelElement | null>(null)
-  let [descriptionElement, setDescriptionElement] = useState<HTMLParagraphElement | null>(null)
+  let [labelledby, LabelProvider] = useLabels()
+  let [describedby, DescriptionProvider] = useDescriptions()
 
   let context = useMemo<StateDefinition>(
-    () => ({
-      switch: switchElement,
-      setSwitch: setSwitchElement,
-      label: labelElement,
-      setLabel: setLabelElement,
-      description: descriptionElement,
-      setDescription: setDescriptionElement,
-    }),
-    [
-      switchElement,
-      setSwitchElement,
-      labelElement,
-      setLabelElement,
-      descriptionElement,
-      setDescriptionElement,
-    ]
+    () => ({ switch: switchElement, setSwitch: setSwitchElement, labelledby, describedby }),
+    [switchElement, setSwitchElement, labelledby, describedby]
   )
 
   return (
-    <GroupContext.Provider value={context}>
-      {render({
-        props,
-        defaultTag: DEFAULT_GROUP_TAG,
-        name: 'Switch.Group',
-      })}
-    </GroupContext.Provider>
+    <DescriptionProvider name="Switch.Description">
+      <LabelProvider
+        name="Switch.Label"
+        props={{
+          onClick() {
+            if (!switchElement) return
+            switchElement.click()
+            switchElement.focus({ preventScroll: true })
+          },
+        }}
+      >
+        <GroupContext.Provider value={context}>
+          {render({ props, defaultTag: DEFAULT_GROUP_TAG, name: 'Switch.Group' })}
+        </GroupContext.Provider>
+      </LabelProvider>
+    </DescriptionProvider>
   )
 }
 
@@ -137,8 +121,8 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     role: 'switch',
     tabIndex: 0,
     'aria-checked': checked,
-    'aria-labelledby': groupContext?.label?.id,
-    'aria-describedby': groupContext?.description?.id,
+    'aria-labelledby': groupContext?.labelledby,
+    'aria-describedby': groupContext?.describedby,
     onClick: handleClick,
     onKeyUp: handleKeyUp,
     onKeyPress: handleKeyPress,
@@ -153,52 +137,6 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     slot,
     defaultTag: DEFAULT_SWITCH_TAG,
     name: 'Switch',
-  })
-}
-
-// ---
-
-let DEFAULT_LABEL_TAG = 'label' as const
-interface LabelRenderPropArg {}
-type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
-
-function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
-) {
-  let state = useGroupContext([Switch.name, Label.name].join('.'))
-  let id = `headlessui-switch-label-${useId()}`
-
-  let handleClick = useCallback(() => {
-    if (!state.switch) return
-    state.switch.click()
-    state.switch.focus({ preventScroll: true })
-  }, [state.switch])
-
-  let propsWeControl = { ref: state.setLabel, id, onClick: handleClick }
-  return render({
-    props: { ...props, ...propsWeControl },
-    defaultTag: DEFAULT_LABEL_TAG,
-    name: 'Switch.Label',
-  })
-}
-
-// ---
-
-let DEFAULT_DESCRIPTIONL_TAG = 'p' as const
-interface DescriptionRenderPropArg {}
-type DescriptionPropsWeControl = 'id' | 'ref'
-
-function Description<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, DescriptionRenderPropArg, DescriptionPropsWeControl>
-) {
-  let state = useGroupContext([Switch.name, Description.name].join('.'))
-  let id = `headlessui-switch-description-${useId()}`
-
-  let propsWeControl = { ref: state.setDescription, id }
-  return render({
-    props: { ...props, ...propsWeControl },
-    defaultTag: DEFAULT_DESCRIPTIONL_TAG,
-    name: 'Switch.Description',
   })
 }
 
