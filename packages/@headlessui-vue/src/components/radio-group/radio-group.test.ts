@@ -244,6 +244,55 @@ describe('Rendering', () => {
       `Dine in - ${JSON.stringify({ checked: false, active: false })}`
     )
   })
+
+  it('should be possible to put classes on a RadioGroup', async () => {
+    renderTemplate({
+      template: html`
+        <RadioGroup v-model="deliveryMethod" as="div" class="abc">
+          <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+          <RadioGroupOption v-for="option in options" key="option.id" :value="option" v-slot="data"
+            >{{option.label}}</RadioGroupOption
+          >
+        </RadioGroup>
+      `,
+      setup() {
+        let deliveryMethod = ref(undefined)
+        let options = ref([{ id: 1, label: 'Pickup' }])
+        return { deliveryMethod, options }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    expect(document.querySelector('[id^="headlessui-radiogroup-"]')).toHaveClass('abc')
+  })
+
+  it('should be possible to put classes on a RadioGroupOption', async () => {
+    renderTemplate({
+      template: html`
+        <RadioGroup v-model="deliveryMethod">
+          <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+          <RadioGroupOption
+            v-for="option in options"
+            key="option.id"
+            :value="option"
+            v-slot="data"
+            class="abc"
+            >{{option.label}}</RadioGroupOption
+          >
+        </RadioGroup>
+      `,
+      setup() {
+        let deliveryMethod = ref(undefined)
+        let options = ref([{ id: 1, label: 'Pickup' }])
+        return { deliveryMethod, options }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    expect(getByText('Pickup')).toHaveClass('abc')
+  })
 })
 
 describe('Keyboard interactions', () => {

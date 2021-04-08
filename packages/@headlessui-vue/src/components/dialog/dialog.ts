@@ -75,15 +75,15 @@ export let Dialog = defineComponent({
   },
   render() {
     let propsWeControl = {
+      // Manually passthrough the attributes, because Vue can't automatically pass
+      // it to the underlying div because of all the wrapper components below.
+      ...this.$attrs,
       ref: 'el',
       id: this.id,
       role: 'dialog',
       'aria-modal': this.dialogState === DialogStates.Open ? true : undefined,
       'aria-labelledby': this.titleId,
       'aria-describedby': this.describedby,
-      // Manually passthrough the attributes, because Vue can't automatically pass
-      // it to the underlying div because of all the wrapper components below.
-      ...this.$attrs,
     }
     let { open, onClose, initialFocus, ...passThroughProps } = this.$props
     let containers = this.containers

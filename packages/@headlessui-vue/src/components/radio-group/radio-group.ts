@@ -60,6 +60,7 @@ function useRadioGroupContext(component: string) {
 export let RadioGroup = defineComponent({
   name: 'RadioGroup',
   emits: ['update:modelValue'],
+  inheritAttrs: false, // Manually handling this
   props: {
     as: { type: [Object, String], default: 'div' },
     disabled: { type: [Boolean], default: false },
@@ -69,6 +70,9 @@ export let RadioGroup = defineComponent({
     let { modelValue, disabled, ...passThroughProps } = this.$props
 
     let propsWeControl = {
+      // Manually passthrough the attributes, because Vue can't automatically pass
+      // it to the underlying div because of all the wrapper components below.
+      ...this.$attrs,
       ref: 'el',
       id: this.id,
       role: 'radiogroup',
@@ -225,6 +229,7 @@ enum OptionState {
 
 export let RadioGroupOption = defineComponent({
   name: 'RadioGroupOption',
+  inheritAttrs: false, // Manually handling this
   props: {
     as: { type: [Object, String], default: 'div' },
     value: { type: [Object, String] },
@@ -246,6 +251,9 @@ export let RadioGroupOption = defineComponent({
 
     let slot = { checked: this.checked, active: Boolean(this.state & OptionState.Active) }
     let propsWeControl = {
+      // Manually passthrough the attributes, because Vue can't automatically pass
+      // it to the underlying div because of all the wrapper components below.
+      ...this.$attrs,
       id: this.id,
       ref: 'el',
       role: 'radio',

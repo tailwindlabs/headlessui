@@ -30,6 +30,7 @@ let GroupContext = Symbol('GroupContext') as InjectionKey<StateDefinition>
 
 export let SwitchGroup = defineComponent({
   name: 'SwitchGroup',
+  inheritAttrs: false, // Manually handling this
   props: {
     as: { type: [Object, String], default: 'template' },
   },
@@ -56,7 +57,20 @@ export let SwitchGroup = defineComponent({
               },
             },
           },
-          () => [render({ props, slot: {}, slots, attrs, name: 'SwitchGroup' })]
+          () => [
+            render({
+              props: {
+                // Manually passthrough the attributes, because Vue can't automatically pass
+                // it to the underlying div because of all the wrapper components below.
+                ...attrs,
+                ...props,
+              },
+              slot: {},
+              slots,
+              attrs,
+              name: 'SwitchGroup',
+            }),
+          ]
         ),
       ])
   },

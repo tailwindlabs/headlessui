@@ -8,6 +8,7 @@ import {
   getSwitch,
   assertActiveElement,
   getSwitchLabel,
+  getByText,
 } from '../../test-utils/accessibility-assertions'
 import { press, click, Keys } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
@@ -214,6 +215,65 @@ describe('Render composition', () => {
       label: 'Label A',
       description: 'This is an important feature',
     })
+  })
+
+  it('should be possible to put classes on a SwitchLabel', async () => {
+    renderTemplate({
+      template: html`
+        <SwitchGroup>
+          <SwitchLabel class="abc">Label A</SwitchLabel>
+          <Switch v-model="checked" />
+        </SwitchGroup>
+      `,
+      setup: () => ({ checked: ref(false) }),
+    })
+
+    await new Promise(requestAnimationFrame)
+
+    assertSwitch({
+      state: SwitchState.Off,
+      label: 'Label A',
+    })
+
+    expect(getByText('Label A')).toHaveClass('abc')
+  })
+
+  it('should be possible to put classes on a SwitchDescription', async () => {
+    renderTemplate({
+      template: html`
+        <SwitchGroup>
+          <SwitchDescription class="abc">Description A</SwitchDescription>
+          <Switch v-model="checked" />
+        </SwitchGroup>
+      `,
+      setup: () => ({ checked: ref(false) }),
+    })
+
+    await new Promise(requestAnimationFrame)
+
+    assertSwitch({
+      state: SwitchState.Off,
+      description: 'Description A',
+    })
+
+    expect(getByText('Description A')).toHaveClass('abc')
+  })
+
+  it('should be possible to put classes on a SwitchGroup', async () => {
+    renderTemplate({
+      template: html`
+        <SwitchGroup as="div" class="abc" id="group">
+          <Switch v-model="checked" />
+        </SwitchGroup>
+      `,
+      setup: () => ({ checked: ref(false) }),
+    })
+
+    await new Promise(requestAnimationFrame)
+
+    assertSwitch({ state: SwitchState.Off })
+
+    expect(document.getElementById('group')).toHaveClass('abc')
   })
 })
 
