@@ -2,7 +2,6 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -11,6 +10,7 @@ import React, {
   Dispatch,
   ElementType,
   MutableRefObject,
+  KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
 
 import { Props, Expand } from '../../types'
@@ -148,11 +148,11 @@ export function RadioGroup<
     }
   }, [radioGroupRef])
 
-  useEffect(() => {
-    let container = radioGroupRef.current
-    if (!container) return
+  let handleKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+      let container = radioGroupRef.current
+      if (!container) return
 
-    function handler(event: KeyboardEvent) {
       switch (event.key) {
         case Keys.ArrowLeft:
         case Keys.ArrowUp:
@@ -206,11 +206,9 @@ export function RadioGroup<
           }
           break
       }
-    }
-
-    container.addEventListener('keydown', handler)
-    return () => container!.removeEventListener('keydown', handler)
-  }, [radioGroupRef, options, triggerChange])
+    },
+    [radioGroupRef, options, triggerChange]
+  )
 
   let propsWeControl = {
     ref: radioGroupRef,
@@ -218,6 +216,7 @@ export function RadioGroup<
     role: 'radiogroup',
     'aria-labelledby': labelledby,
     'aria-describedby': describedby,
+    onKeyDown: handleKeyDown,
   }
 
   return (

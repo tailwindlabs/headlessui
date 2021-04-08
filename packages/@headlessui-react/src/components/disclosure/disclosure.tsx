@@ -171,7 +171,22 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         case Keys.Space:
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.ToggleDisclosure })
+          break
+      }
+    },
+    [dispatch]
+  )
+
+  let handleKeyUp = useCallback(
+    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
           break
       }
     },
@@ -200,6 +215,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     'aria-expanded': state.disclosureState === DisclosureStates.Open ? true : undefined,
     'aria-controls': state.linkedPanel ? state.panelId : undefined,
     onKeyDown: handleKeyDown,
+    onKeyUp: handleKeyUp,
     onClick: handleClick,
   }
 
