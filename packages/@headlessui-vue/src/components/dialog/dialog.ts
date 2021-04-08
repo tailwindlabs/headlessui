@@ -109,17 +109,15 @@ export let Dialog = defineComponent({
           h(Portal, {}, () => [
             h(PortalGroup, { target: this.dialogRef }, () => [
               h(ForcePortalRoot, { force: false }, () => [
-                h(this.DescriptionProvider, { slot }, () => [
-                  render({
-                    props: { ...passThroughProps, ...propsWeControl },
-                    slot,
-                    attrs: this.$attrs,
-                    slots: this.$slots,
-                    visible: open,
-                    features: Features.RenderStrategy | Features.Static,
-                    name: 'Dialog',
-                  }),
-                ]),
+                render({
+                  props: { ...passThroughProps, ...propsWeControl },
+                  slot,
+                  attrs: this.$attrs,
+                  slots: this.$slots,
+                  visible: open,
+                  features: Features.RenderStrategy | Features.Static,
+                  name: 'Dialog',
+                }),
               ]),
             ]),
           ]),
@@ -182,7 +180,10 @@ export let Dialog = defineComponent({
 
     useFocusTrap(containers, enabled, focusTrapOptions)
     useInertOthers(internalDialogRef, enabled)
-    let [describedby, DescriptionProvider] = useDescriptions()
+    let describedby = useDescriptions({
+      name: 'DialogDescription',
+      slot: { open: props.open },
+    })
 
     let titleId = ref<StateDefinition['titleId']['value']>(null)
 
@@ -271,7 +272,6 @@ export let Dialog = defineComponent({
       dialogState,
       titleId,
       describedby,
-      DescriptionProvider,
     }
   },
 })

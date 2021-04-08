@@ -6,11 +6,11 @@ import {
   onUnmounted,
   provide,
   ref,
+  unref,
 
   // Types
   ComputedRef,
   InjectionKey,
-  Ref,
 } from 'vue'
 
 import { useId } from '../../hooks/use-id'
@@ -20,9 +20,9 @@ import { render } from '../../utils/render'
 
 let DescriptionContext = Symbol('DescriptionContext') as InjectionKey<{
   register(value: string): () => void
-  slot: Ref<Record<string, any>>
-  name: Ref<string>
-  props: Ref<Record<string, any>>
+  slot: Record<string, any>
+  name: string
+  props: Record<string, any>
 }>
 
 function useDescriptionContext() {
@@ -33,42 +33,33 @@ function useDescriptionContext() {
   return context
 }
 
-export function useDescriptions(): [
-  ComputedRef<string | undefined>,
-  ReturnType<typeof defineComponent>
-] {
+export function useDescriptions({
+  slot = {},
+  name = 'Description',
+  props = {},
+}: {
+  slot?: Record<string, unknown>
+  name?: string
+  props?: Record<string, unknown>
+} = {}): ComputedRef<string | undefined> {
   let descriptionIds = ref<string[]>([])
 
-  return [
-    // The actual id's as string or undefined.
-    computed(() => (descriptionIds.value.length > 0 ? descriptionIds.value.join(' ') : undefined)),
+  function register(value: string) {
+    descriptionIds.value.push(value)
 
-    // The provider component
-    defineComponent({
-      name: 'DescriptionProvider',
-      props: ['slot', 'name', 'props'],
-      setup(props, { slots }) {
-        function register(value: string) {
-          descriptionIds.value.push(value)
+    return () => {
+      let idx = descriptionIds.value.indexOf(value)
+      if (idx === -1) return
+      descriptionIds.value.splice(idx, 1)
+    }
+  }
 
-          return () => {
-            let idx = descriptionIds.value.indexOf(value)
-            if (idx === -1) return
-            descriptionIds.value.splice(idx, 1)
-          }
-        }
+  provide(DescriptionContext, { register, slot, name, props })
 
-        provide(DescriptionContext, {
-          register,
-          slot: computed(() => props.slot),
-          name: computed(() => props.name),
-          props: computed(() => props.props),
-        })
-
-        return () => slots.default!()
-      },
-    }),
-  ]
+  // The actual id's as string or undefined.
+  return computed(() =>
+    descriptionIds.value.length > 0 ? descriptionIds.value.join(' ') : undefined
+  )
 }
 
 // ---
@@ -79,23 +70,30 @@ export let Description = defineComponent({
     as: { type: [Object, String], default: 'p' },
   },
   render() {
+    let { name = 'Description', slot = {}, props = {} } = this.context
     let passThroughProps = this.$props
-    let propsWeControl = { ...this.props, id: this.id }
+    let propsWeControl = {
+      ...Object.entries(props).reduce(
+        (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
+        {}
+      ),
+      id: this.id,
+    }
 
     return render({
-      props: { ...this.props, ...passThroughProps, ...propsWeControl },
-      slot: this.slot || {},
+      props: { ...passThroughProps, ...propsWeControl },
+      slot,
       attrs: this.$attrs,
       slots: this.$slots,
-      name: this.name || 'Description',
+      name,
     })
   },
   setup() {
-    let { register, slot, name, props } = useDescriptionContext()
+    let context = useDescriptionContext()
     let id = `headlessui-description-${useId()}`
 
-    onMounted(() => onUnmounted(register(id)))
+    onMounted(() => onUnmounted(context.register(id)))
 
-    return { id, slot, name, props }
+    return { id, context }
   },
 })

@@ -1,6 +1,5 @@
 import {
   defineComponent,
-  h,
   inject,
   provide,
   ref,
@@ -30,49 +29,28 @@ let GroupContext = Symbol('GroupContext') as InjectionKey<StateDefinition>
 
 export let SwitchGroup = defineComponent({
   name: 'SwitchGroup',
-  inheritAttrs: false, // Manually handling this
   props: {
     as: { type: [Object, String], default: 'template' },
   },
   setup(props, { slots, attrs }) {
     let switchRef = ref<StateDefinition['switchRef']['value']>(null)
-    let [labelledby, LabelProvider] = useLabels()
-    let [describedby, DescriptionProvider] = useDescriptions()
+    let labelledby = useLabels({
+      name: 'SwitchLabel',
+      props: {
+        onClick() {
+          if (!switchRef.value) return
+          switchRef.value.click()
+          switchRef.value.focus({ preventScroll: true })
+        },
+      },
+    })
+    let describedby = useDescriptions({ name: 'SwitchDescription' })
 
     let api = { switchRef, labelledby, describedby }
 
     provide(GroupContext, api)
 
-    return () =>
-      h(DescriptionProvider, { name: 'SwitchDescription' }, () => [
-        h(
-          LabelProvider,
-          {
-            name: 'SwitchLabel',
-            props: {
-              onClick() {
-                if (!switchRef.value) return
-                switchRef.value.click()
-                switchRef.value.focus({ preventScroll: true })
-              },
-            },
-          },
-          () => [
-            render({
-              props: {
-                // Manually passthrough the attributes, because Vue can't automatically pass
-                // it to the underlying div because of all the wrapper components below.
-                ...attrs,
-                ...props,
-              },
-              slot: {},
-              slots,
-              attrs,
-              name: 'SwitchGroup',
-            }),
-          ]
-        ),
-      ])
+    return () => render({ props, slot: {}, slots, attrs, name: 'SwitchGroup' })
   },
 })
 
