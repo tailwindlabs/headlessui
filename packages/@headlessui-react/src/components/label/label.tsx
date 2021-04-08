@@ -17,17 +17,31 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
 // ---
 
-let LabelContext = createContext<{ register(value: string): () => void }>({
-  register() {
-    return () => {}
-  },
-})
-
-function useLabelContext() {
-  return useContext(LabelContext)
+interface SharedData {
+  slot?: {}
+  name?: string
+  props?: {}
 }
 
-export function useLabels(): [string | undefined, (props: { children: ReactNode }) => JSX.Element] {
+let LabelContext = createContext<({ register(value: string): () => void } & SharedData) | null>(
+  null
+)
+
+function useLabelContext() {
+  let context = useContext(LabelContext)
+  if (context === null) {
+    let err = new Error('You used a <Label /> component, but it is not inside a relevant parent.')
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useLabelContext)
+    throw err
+  }
+  return context
+}
+
+interface LabelProviderProps extends SharedData {
+  children: ReactNode
+}
+
+export function useLabels(): [string | undefined, (props: LabelProviderProps) => JSX.Element] {
   let [labelIds, setLabelIds] = useState<string[]>([])
 
   return [
@@ -36,7 +50,7 @@ export function useLabels(): [string | undefined, (props: { children: ReactNode 
 
     // The provider component
     useMemo(() => {
-      return function LabelProvider(props: { children: ReactNode }) {
+      return function LabelProvider(props: LabelProviderProps) {
         let register = useCallback((value: string) => {
           setLabelIds(existing => [...existing, value])
 
@@ -49,7 +63,10 @@ export function useLabels(): [string | undefined, (props: { children: ReactNode 
             })
         }, [])
 
-        let contextBag = useMemo(() => ({ register }), [register])
+        let contextBag = useMemo(
+          () => ({ register, slot: props.slot, name: props.name, props: props.props }),
+          [register, props.slot, props.name, props.props]
+        )
 
         return <LabelContext.Provider value={contextBag}>{props.children}</LabelContext.Provider>
       }
@@ -64,19 +81,27 @@ interface LabelRenderPropArg {}
 type LabelPropsWeControl = 'id'
 
 export function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
+  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl> & {
+    clickable?: boolean
+  }
 ) {
-  let { register } = useLabelContext()
+  let { clickable = false, ...passThroughProps } = props
+  let context = useLabelContext()
   let id = `headlessui-label-${useId()}`
 
-  useIsoMorphicEffect(() => register(id), [id, register])
+  useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let passThroughProps = props
-  let propsWeControl = { id }
+  let propsWeControl = { ...context.props, id }
+
+  let allProps = { ...passThroughProps, ...propsWeControl }
+  // @ts-expect-error props are dynamic via context, some components will
+  //                  provide an onClick then we can delete it.
+  if (!clickable) delete allProps['onClick']
 
   return render({
-    props: { ...passThroughProps, ...propsWeControl },
+    props: allProps,
+    slot: context.slot || {},
     defaultTag: DEFAULT_LABEL_TAG,
-    name: 'Label',
+    name: context.name || 'Label',
   })
 }
