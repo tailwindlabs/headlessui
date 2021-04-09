@@ -23,6 +23,7 @@ import { focusIn, Focus, FocusResult } from '../../utils/focus-management'
 import { useFlags } from '../../hooks/use-flags'
 import { Label, useLabels } from '../../components/label/label'
 import { Description, useDescriptions } from '../../components/description/description'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 interface Option {
   id: string
@@ -131,22 +132,17 @@ export function RadioGroup<
     [onChange, value]
   )
 
-  useIsoMorphicEffect(() => {
-    let container = radioGroupRef.current
-    if (!container) return
-
-    let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-      acceptNode(node: HTMLElement) {
-        if (node.getAttribute('role') === 'radio') return NodeFilter.FILTER_REJECT
-        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
-        return NodeFilter.FILTER_ACCEPT
-      },
-    })
-
-    while (walker.nextNode()) {
-      ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
-    }
-  }, [radioGroupRef])
+  useTreeWalker({
+    container: radioGroupRef.current,
+    accept(node) {
+      if (node.getAttribute('role') === 'radio') return NodeFilter.FILTER_REJECT
+      if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+      return NodeFilter.FILTER_ACCEPT
+    },
+    walk(node) {
+      node.setAttribute('role', 'none')
+    },
+  })
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {

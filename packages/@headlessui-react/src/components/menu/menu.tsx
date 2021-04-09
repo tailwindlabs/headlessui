@@ -32,6 +32,7 @@ import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 enum MenuStates {
   Open,
@@ -338,23 +339,18 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     container.focus({ preventScroll: true })
   }, [state.menuState, state.itemsRef])
 
-  useIsoMorphicEffect(() => {
-    let container = state.itemsRef.current
-    if (!container) return
-    if (state.menuState !== MenuStates.Open) return
-
-    let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-      acceptNode(node: HTMLElement) {
-        if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
-        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
-        return NodeFilter.FILTER_ACCEPT
-      },
-    })
-
-    while (walker.nextNode()) {
-      ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
-    }
-  }, [state.menuState, state.itemsRef])
+  useTreeWalker({
+    container: state.itemsRef.current,
+    enabled: state.menuState === MenuStates.Open,
+    accept(node) {
+      if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
+      if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+      return NodeFilter.FILTER_ACCEPT
+    },
+    walk(node) {
+      node.setAttribute('role', 'none')
+    },
+  })
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
