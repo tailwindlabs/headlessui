@@ -70,9 +70,9 @@ export let Dialog = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
     open: { type: Boolean, default: Missing },
-    onClose: { type: Function, default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
+  emits: ['close'],
   render() {
     let propsWeControl = {
       // Manually passthrough the attributes, because Vue can't automatically pass
@@ -85,7 +85,7 @@ export let Dialog = defineComponent({
       'aria-labelledby': this.titleId,
       'aria-describedby': this.describedby,
     }
-    let { open, onClose, initialFocus, ...passThroughProps } = this.$props
+    let { open, initialFocus, ...passThroughProps } = this.$props
     let containers = this.containers
 
     let slot = { open: this.dialogState === DialogStates.Open }
@@ -125,44 +125,21 @@ export let Dialog = defineComponent({
       ]
     )
   },
-  setup(props) {
+  setup(props, { emit }) {
     let containers = ref<Set<HTMLElement>>(new Set())
 
     // Validations
     // @ts-expect-error We are comparing to a uuid stirng at runtime
     let hasOpen = props.open !== Missing
-    // @ts-expect-error We are comparing to a uuid string at runtime
-    let hasOnClose = props.onClose !== Missing
-    if (!hasOpen && !hasOnClose) {
-      throw new Error(
-        `You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component.`
-      )
-    }
 
     if (!hasOpen) {
-      throw new Error(
-        `You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop.`
-      )
-    }
-
-    if (!hasOnClose) {
-      throw new Error(
-        `You provided an \`open\` prop to the \`Dialog\`, but forgot an \`onClose\` prop.`
-      )
+      throw new Error(`You forgot to provide an \`open\` prop to the \`Dialog\`.`)
     }
 
     if (typeof props.open !== 'boolean') {
       throw new Error(
         `You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${
           props.open === Missing ? undefined : props.open
-        }`
-      )
-    }
-
-    if (typeof props.onClose !== 'function') {
-      throw new Error(
-        `You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${
-          props.onClose === Missing ? undefined : props.onClose
         }`
       )
     }
@@ -195,7 +172,7 @@ export let Dialog = defineComponent({
         titleId.value = id
       },
       close() {
-        props.onClose!(false)
+        emit('close', false)
       },
     }
 

@@ -76,7 +76,7 @@ describe('Safe guards', () => {
     suppressConsoleLogs(async () => {
       renderTemplate(
         `
-          <Dialog :open="false" :onClose="() => {}">
+          <Dialog :open="false" @close="() => {}">
             <button>Trigger</button>
             <DialogOverlay />
             <DialogTitle />
@@ -97,48 +97,16 @@ describe('Safe guards', () => {
 describe('Rendering', () => {
   describe('Dialog', () => {
     it(
-      'should complain when the `open` and `onClose` prop are missing',
+      'should complain when an `open` prop is missing',
       suppressConsoleLogs(async () => {
         expect(() =>
           renderTemplate(
             `
-              <Dialog as="div" />
+              <Dialog as="div" @close="() => {}" />
             `
           )
         ).toThrowErrorMatchingInlineSnapshot(
-          `"You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component."`
-        )
-        expect.hasAssertions()
-      })
-    )
-
-    it(
-      'should complain when an `open` prop is provided without an `onClose` prop',
-      suppressConsoleLogs(async () => {
-        expect(() =>
-          renderTemplate(
-            `
-              <Dialog as="div" :open="false" />
-            `
-          )
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"You provided an \`open\` prop to the \`Dialog\`, but forgot an \`onClose\` prop."`
-        )
-        expect.hasAssertions()
-      })
-    )
-
-    it(
-      'should complain when an `onClose` prop is provided without an `open` prop',
-      suppressConsoleLogs(async () => {
-        expect(() =>
-          renderTemplate(
-            `
-              <Dialog as="div" :onClose="() => {}" />
-            `
-          )
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop."`
+          `"You forgot to provide an \`open\` prop to the \`Dialog\`."`
         )
         expect.hasAssertions()
       })
@@ -150,27 +118,11 @@ describe('Rendering', () => {
         expect(() =>
           renderTemplate(
             `
-              <Dialog as="div" :open="null" :onClose="() => {}" />
+              <Dialog as="div" :open="null" @close="() => {}" />
             `
           )
         ).toThrowErrorMatchingInlineSnapshot(
           `"You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: null"`
-        )
-        expect.hasAssertions()
-      })
-    )
-
-    it(
-      'should complain when an `onClose` prop is not a function',
-      suppressConsoleLogs(async () => {
-        expect(() =>
-          renderTemplate(
-            `
-              <Dialog as="div" :open="false" :onClose="null" />
-            `
-          )
-        ).toThrowErrorMatchingInlineSnapshot(
-          `"You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: null"`
         )
         expect.hasAssertions()
       })
@@ -185,7 +137,7 @@ describe('Rendering', () => {
               <button id="trigger" @click="setIsOpen(true)">
                 Trigger
               </button>
-              <Dialog :open="isOpen" :onClose="setIsOpen" v-slot="data">
+              <Dialog :open="isOpen" @close="setIsOpen" v-slot="data">
                 <pre>{{JSON.stringify(data)}}</pre>
                 <TabSentinel />
               </Dialog>
@@ -217,7 +169,7 @@ describe('Rendering', () => {
             <button id="trigger" @click="setIsOpen(true)">
               Trigger
             </button>
-            <Dialog :open="isOpen" :onClose="setIsOpen" class="relative bg-blue-500">
+            <Dialog :open="isOpen" @close="setIsOpen" class="relative bg-blue-500">
               <TabSentinel />
             </Dialog>
           </div>
@@ -246,7 +198,7 @@ describe('Rendering', () => {
         template: `
           <div>
             <button>Trigger</button>
-            <Dialog :open="true" :onClose="() => {}" static>
+            <Dialog :open="true" @close="() => {}" static>
               <p>Contents</p>
               <TabSentinel @focus="focusCounter" />
             </Dialog>
@@ -270,7 +222,7 @@ describe('Rendering', () => {
         template: `
           <div>
             <button>Trigger</button>
-            <Dialog :open="false" :onClose="() => {}" static>
+            <Dialog :open="false" @close="() => {}" static>
               <p>Contents</p>
               <TabSentinel @focus="focusCounter" />
             </Dialog>
@@ -294,7 +246,7 @@ describe('Rendering', () => {
         template: `
           <div>
             <button id="trigger" @click="isOpen = !isOpen">Trigger</button>
-            <Dialog :open="isOpen" :onClose="setIsOpen" :unmount="false">
+            <Dialog :open="isOpen" @close="setIsOpen" :unmount="false">
               <TabSentinel @focus="focusCounter" />
             </Dialog>
           </div>
@@ -340,7 +292,7 @@ describe('Rendering', () => {
                 Trigger
               </button>
 
-              <Dialog :open="isOpen" :onClose="setIsOpen">
+              <Dialog :open="isOpen" @close="setIsOpen">
                 <input id="a" type="text" />
                 <input id="b" type="text" />
                 <input id="c" type="text" />
@@ -385,7 +337,7 @@ describe('Rendering', () => {
               <button id="trigger" @click="toggleOpen">
                 Trigger
               </button>
-              <Dialog :open="isOpen" :onClose="setIsOpen">
+              <Dialog :open="isOpen" @close="setIsOpen">
                 <DialogOverlay v-slot="data">{{JSON.stringify(data)}}</DialogOverlay>
                 <TabSentinel />
               </Dialog>
@@ -427,7 +379,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         renderTemplate(
           `
-            <Dialog :open="true" :onClose="() => {}">
+            <Dialog :open="true" @close="() => {}">
               <DialogTitle v-slot="data">{{JSON.stringify(data)}}</DialogTitle>
               <TabSentinel />
             </Dialog>
@@ -454,7 +406,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         renderTemplate(
           `
-            <Dialog :open="true" :onClose="() => {}">
+            <Dialog :open="true" @close="() => {}">
               <DialogDescription v-slot="data">{{JSON.stringify(data)}}</DialogDescription>
               <TabSentinel />
             </Dialog>
@@ -487,7 +439,7 @@ describe('Keyboard interactions', () => {
               <button id="trigger" @click="toggleOpen">
                 Trigger
               </button>
-              <Dialog :open="isOpen" :onClose="setIsOpen">
+              <Dialog :open="isOpen" @close="setIsOpen">
                 Contents
                 <TabSentinel />
               </Dialog>
@@ -538,7 +490,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" @click="toggleOpen">
               Trigger
             </button>
-            <Dialog :open="isOpen" :onClose="setIsOpen">
+            <Dialog :open="isOpen" @close="setIsOpen">
               <DialogOverlay />
               Contents
               <TabSentinel />
@@ -580,7 +532,7 @@ describe('Mouse interactions', () => {
         template: `
           <div>
             <button @click="isOpen = !isOpen">Trigger</button>
-            <Dialog :open="isOpen" :onClose="setIsOpen">
+            <Dialog :open="isOpen" @close="setIsOpen">
               Contents
               <TabSentinel />
             </Dialog>
@@ -622,7 +574,7 @@ describe('Mouse interactions', () => {
           <div>
             <button>Hello</button>
             <button @click="isOpen = !isOpen">Trigger</button>
-            <Dialog v-if="true" :open="isOpen" :onClose="setIsOpen">
+            <Dialog v-if="true" :open="isOpen" @close="setIsOpen">
               Contents
               <TabSentinel />
             </Dialog>
