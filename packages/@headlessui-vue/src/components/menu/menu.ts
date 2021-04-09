@@ -18,6 +18,7 @@ import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 enum MenuStates {
   Open,
@@ -291,22 +292,17 @@ export let MenuItems = defineComponent({
     let id = `headlessui-menu-items-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
-    watchEffect(() => {
-      let container = dom(api.itemsRef)
-      if (!container) return
-      if (api.menuState.value !== MenuStates.Open) return
-
-      let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-        acceptNode(node: HTMLElement) {
-          if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
-          if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
-          return NodeFilter.FILTER_ACCEPT
-        },
-      })
-
-      while (walker.nextNode()) {
-        ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
-      }
+    useTreeWalker({
+      container: computed(() => dom(api.itemsRef)),
+      enabled: computed(() => api.menuState.value === MenuStates.Open),
+      accept(node) {
+        if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
+        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+        return NodeFilter.FILTER_ACCEPT
+      },
+      walk(node) {
+        node.setAttribute('role', 'none')
+      },
     })
 
     function handleKeyDown(event: KeyboardEvent) {

@@ -7,7 +7,6 @@ import {
   provide,
   ref,
   toRaw,
-  watchEffect,
 
   // Types
   InjectionKey,
@@ -22,6 +21,7 @@ import { render } from '../../utils/render'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 interface Option {
   id: string
@@ -121,21 +121,16 @@ export let RadioGroup = defineComponent({
     // @ts-expect-error ...
     provide(RadioGroupContext, api)
 
-    watchEffect(() => {
-      let container = dom(radioGroupRef)
-      if (!container) return
-
-      let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-        acceptNode(node: HTMLElement) {
-          if (node.getAttribute('role') === 'radio') return NodeFilter.FILTER_REJECT
-          if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
-          return NodeFilter.FILTER_ACCEPT
-        },
-      })
-
-      while (walker.nextNode()) {
-        ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
-      }
+    useTreeWalker({
+      container: computed(() => dom(radioGroupRef)),
+      accept(node) {
+        if (node.getAttribute('role') === 'radio') return NodeFilter.FILTER_REJECT
+        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+        return NodeFilter.FILTER_ACCEPT
+      },
+      walk(node) {
+        node.setAttribute('role', 'none')
+      },
     })
 
     function handleKeyDown(event: KeyboardEvent) {
