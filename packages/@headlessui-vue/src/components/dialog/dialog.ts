@@ -106,21 +106,32 @@ export let Dialog = defineComponent({
       },
       () => [
         h(ForcePortalRoot, { force: true }, () => [
-          h(Portal, {}, () => [
-            h(PortalGroup, { target: this.dialogRef }, () => [
-              h(ForcePortalRoot, { force: false }, () => [
-                render({
-                  props: { ...passThroughProps, ...propsWeControl },
-                  slot,
-                  attrs: this.$attrs,
-                  slots: this.$slots,
-                  visible: open,
-                  features: Features.RenderStrategy | Features.Static,
-                  name: 'Dialog',
-                }),
+          h(
+            Portal,
+            {
+              visible:
+                passThroughProps.static === true
+                  ? true
+                  : passThroughProps.unmount === true
+                  ? open
+                  : true,
+            },
+            () => [
+              h(PortalGroup, { target: this.dialogRef }, () => [
+                h(ForcePortalRoot, { force: false }, () => [
+                  render({
+                    props: { ...passThroughProps, ...propsWeControl },
+                    slot,
+                    attrs: this.$attrs,
+                    slots: this.$slots,
+                    visible: open,
+                    features: Features.RenderStrategy | Features.Static,
+                    name: 'Dialog',
+                  }),
+                ]),
               ]),
-            ]),
-          ]),
+            ]
+          ),
         ]),
       ]
     )
