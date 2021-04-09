@@ -14,7 +14,7 @@ import {
   PropType,
 } from 'vue'
 import { render } from '../../utils/render'
-import { StackProvider, useElemenStack } from '../../internal/stack-context'
+import { useElemenStack, useStackProvider } from '../../internal/stack-context'
 import { usePortalRoot } from '../../internal/portal-force-root'
 
 // ---
@@ -31,7 +31,8 @@ function getPortalRoot() {
 export let Portal = defineComponent({
   name: 'Portal',
   props: {
-    as: { type: [Object, String], default: 'template' },
+    as: { type: [Object, String], default: 'div' },
+    visible: { type: [Boolean], default: true },
   },
   setup(props, { slots, attrs }) {
     let forcePortalRoot = usePortalRoot()
@@ -63,13 +64,30 @@ export let Portal = defineComponent({
       }
     })
 
+    useStackProvider()
+
     return () => {
+      let { visible, ...passThroughProps } = props
       if (myTarget.value === null) return null
-      return h(StackProvider, {}, () => [
-        h(Teleport, { to: myTarget.value }, [
-          h('div', { ref: element }, [render({ props, slot: {}, attrs, slots, name: 'Portal' })]),
-        ]),
-      ])
+      if (!visible) return null
+
+      let propsWeControl = {
+        ref: element,
+      }
+
+      return h(
+        // @ts-expect-error Children can be an object, but TypeScript is not happy
+        // with it. Once this is fixed upstream we can remove this assertion.
+        Teleport,
+        { to: myTarget.value },
+        render({
+          props: { ...passThroughProps, ...propsWeControl },
+          slot: {},
+          attrs,
+          slots,
+          name: 'Portal',
+        })
+      )
     }
   },
 })

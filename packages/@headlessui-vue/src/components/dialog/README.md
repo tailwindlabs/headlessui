@@ -17,7 +17,7 @@ This component can be used to render content inside a Dialog/Modal. This contain
 6. Marks other elements as `inert` (hides other elements from screen readers)
 7. Closes on `escape`
 8. Closes on click outside
-9. Once the Dialog becomes hidden (e.g.: `md:hidden`) it will also trigger the `onClose`
+9. Once the Dialog becomes hidden (e.g.: `md:hidden`) it will also emit the `close` event
 
 ### Installation
 
@@ -33,7 +33,7 @@ yarn add @headlessui/vue
 
 ```vue
 <template>
-  <Dialog :open="isOpen" :onClose="setIsOpen">
+  <Dialog :open="isOpen" @close="setIsOpen">
     <DialogOverlay />
 
     <DialogTitle>Deactivate account</DialogTitle>
@@ -75,7 +75,7 @@ export default {
 
 ```vue
 <template>
-  <Dialog :open="isOpen" :onClose="setIsOpen">
+  <Dialog :open="isOpen" @close="setIsOpen">
     <DialogOverlay />
 
     <DialogTitle>Deactivate account</DialogTitle>
@@ -113,16 +113,21 @@ export default {
 
 ##### Props
 
-| Prop           | Type                | Default | Description                                                                                                                       |
-| :------------- | :------------------ | :------ | :-------------------------------------------------------------------------------------------------------------------------------- |
-| `open`         | Boolean             | /       | Wether the `Dialog` is open or not.                                                                                               |
-| `onClose`      | Function            | /       | Called when the `Dialog` should close. For convenience we pass in a `onClose(false)` so that you can use: `:onClose="setIsOpen"`. |
-| `initialFocus` | HTMLElement         | /       | A ref to an element that should receive focus first.                                                                              |
-| `as`           | String \| Component | `div`   | The element or component the `Dialog` should render as.                                                                           |
-| `static`       | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.                                                       |
-| `unmount`      | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state.                                                 |
+| Prop           | Type                | Default | Description                                                                       |
+| :------------- | :------------------ | :------ | :-------------------------------------------------------------------------------- |
+| `open`         | Boolean             | /       | Wether the `Dialog` is open or not.                                               |
+| `initialFocus` | HTMLElement         | /       | A ref to an element that should receive focus first.                              |
+| `as`           | String \| Component | `div`   | The element or component the `Dialog` should render as.                           |
+| `static`       | Boolean             | `false` | Whether the element should ignore the internally managed open/closed state.       |
+| `unmount`      | Boolean             | `true`  | Whether the element should be unmounted or hidden based on the open/closed state. |
 
 > **note**: `static` and `unmount` can not be used at the same time. You will get a TypeScript error if you try to do it.
+
+##### Events
+
+| Event Name | Description                                                                                                                          |
+| :--------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `@close`   | Called when the `Dialog` should close. For convenience we emit `false` as the event value so that you can use: `@close="setIsOpen"`. |
 
 ##### Render prop object
 
@@ -142,8 +147,8 @@ This can be used to create an overlay for your Dialog component. Clicking on the
 
 ##### Render prop object
 
-| Prop   | Type    | Description                            |
-| :----- | :------ | :------------------------------------- |
+| Prop   | Type    | Description                        |
+| :----- | :------ | :--------------------------------- |
 | `open` | Boolean | Whether or not the dialog is open. |
 
 #### DialogTitle
@@ -158,8 +163,8 @@ This is the title for your Dialog. When this is used, it will set the `aria-labe
 
 ##### Render prop object
 
-| Prop   | Type    | Description                            |
-| :----- | :------ | :------------------------------------- |
+| Prop   | Type    | Description                        |
+| :----- | :------ | :--------------------------------- |
 | `open` | Boolean | Whether or not the dialog is open. |
 
 #### DialogDescription
@@ -174,6 +179,6 @@ This is the description for your Dialog. When this is used, it will set the `ari
 
 ##### Render prop object
 
-| Prop   | Type    | Description                            |
-| :----- | :------ | :------------------------------------- |
+| Prop   | Type    | Description                        |
+| :----- | :------ | :--------------------------------- |
 | `open` | Boolean | Whether or not the dialog is open. |

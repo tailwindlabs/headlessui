@@ -115,6 +115,10 @@ function _render({
       return cloneVNode(firstChild, passThroughProps as Record<string, any>)
     }
 
+    if (Array.isArray(children) && children.length === 1) {
+      return children[0]
+    }
+
     return children
   }
 

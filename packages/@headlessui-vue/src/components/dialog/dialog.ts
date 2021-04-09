@@ -26,7 +26,7 @@ import { useInertOthers } from '../../hooks/use-inert-others'
 import { contains } from '../../internal/dom-containers'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { Portal, PortalGroup } from '../portal/portal'
-import { StackProvider, StackMessage } from '../../internal/stack-context'
+import { StackMessage, useStackProvider } from '../../internal/stack-context'
 import { match } from '../../utils/match'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
@@ -70,9 +70,9 @@ export let Dialog = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
     open: { type: Boolean, default: Missing },
-    onClose: { type: Function, default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
+  emits: ['close'],
   render() {
     let propsWeControl = {
       // Manually passthrough the attributes, because Vue can't automatically pass
@@ -85,84 +85,52 @@ export let Dialog = defineComponent({
       'aria-labelledby': this.titleId,
       'aria-describedby': this.describedby,
     }
-    let { open, onClose, initialFocus, ...passThroughProps } = this.$props
-    let containers = this.containers
-
+    let { open, initialFocus, ...passThroughProps } = this.$props
     let slot = { open: this.dialogState === DialogStates.Open }
 
-    return h(
-      StackProvider,
-      {
-        onUpdate(message, element) {
-          return match(message, {
-            [StackMessage.AddElement]() {
-              containers.add(element)
-            },
-            [StackMessage.RemoveElement]() {
-              containers.delete(element)
-            },
-          })
+    return h(ForcePortalRoot, { force: true }, () =>
+      h(
+        Portal,
+        {
+          visible:
+            passThroughProps.static === true
+              ? true
+              : passThroughProps.unmount === true
+              ? open
+              : true,
         },
-      },
-      () => [
-        h(ForcePortalRoot, { force: true }, () => [
-          h(Portal, {}, () => [
-            h(PortalGroup, { target: this.dialogRef }, () => [
-              h(ForcePortalRoot, { force: false }, () => [
-                render({
-                  props: { ...passThroughProps, ...propsWeControl },
-                  slot,
-                  attrs: this.$attrs,
-                  slots: this.$slots,
-                  visible: open,
-                  features: Features.RenderStrategy | Features.Static,
-                  name: 'Dialog',
-                }),
-              ]),
-            ]),
-          ]),
-        ]),
-      ]
+        () =>
+          h(PortalGroup, { target: this.dialogRef }, () =>
+            h(ForcePortalRoot, { force: false }, () =>
+              render({
+                props: { ...passThroughProps, ...propsWeControl },
+                slot,
+                attrs: this.$attrs,
+                slots: this.$slots,
+                visible: open,
+                features: Features.RenderStrategy | Features.Static,
+                name: 'Dialog',
+              })
+            )
+          )
+      )
     )
   },
-  setup(props) {
+  setup(props, { emit }) {
     let containers = ref<Set<HTMLElement>>(new Set())
 
     // Validations
     // @ts-expect-error We are comparing to a uuid stirng at runtime
     let hasOpen = props.open !== Missing
-    // @ts-expect-error We are comparing to a uuid string at runtime
-    let hasOnClose = props.onClose !== Missing
-    if (!hasOpen && !hasOnClose) {
-      throw new Error(
-        `You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component.`
-      )
-    }
 
     if (!hasOpen) {
-      throw new Error(
-        `You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop.`
-      )
-    }
-
-    if (!hasOnClose) {
-      throw new Error(
-        `You provided an \`open\` prop to the \`Dialog\`, but forgot an \`onClose\` prop.`
-      )
+      throw new Error(`You forgot to provide an \`open\` prop to the \`Dialog\`.`)
     }
 
     if (typeof props.open !== 'boolean') {
       throw new Error(
         `You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${
           props.open === Missing ? undefined : props.open
-        }`
-      )
-    }
-
-    if (typeof props.onClose !== 'function') {
-      throw new Error(
-        `You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${
-          props.onClose === Missing ? undefined : props.onClose
         }`
       )
     }
@@ -180,6 +148,17 @@ export let Dialog = defineComponent({
 
     useFocusTrap(containers, enabled, focusTrapOptions)
     useInertOthers(internalDialogRef, enabled)
+    useStackProvider((message, element) => {
+      return match(message, {
+        [StackMessage.AddElement]() {
+          containers.value.add(element)
+        },
+        [StackMessage.RemoveElement]() {
+          containers.value.delete(element)
+        },
+      })
+    })
+
     let describedby = useDescriptions({
       name: 'DialogDescription',
       slot: { open: props.open },
@@ -195,7 +174,7 @@ export let Dialog = defineComponent({
         titleId.value = id
       },
       close() {
-        props.onClose!(false)
+        emit('close', false)
       },
     }
 
