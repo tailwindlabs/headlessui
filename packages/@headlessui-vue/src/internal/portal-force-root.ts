@@ -6,6 +6,7 @@ import {
   // Types
   InjectionKey,
 } from 'vue'
+import { render } from '../utils/render'
 
 let ForcePortalRootContext = Symbol('ForcePortalRootContext') as InjectionKey<Boolean>
 
@@ -16,11 +17,15 @@ export function usePortalRoot() {
 export let ForcePortalRoot = defineComponent({
   name: 'ForcePortalRoot',
   props: {
+    as: { type: [Object, String], default: 'template' },
     force: { type: Boolean, default: false },
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     provide(ForcePortalRootContext, props.force)
 
-    return () => slots.default!()
+    return () => {
+      let { force, ...passThroughProps } = props
+      return render({ props: passThroughProps, slot: {}, slots, attrs, name: 'ForcePortalRoot' })
+    }
   },
 })

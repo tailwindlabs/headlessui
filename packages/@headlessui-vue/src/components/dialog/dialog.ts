@@ -26,7 +26,7 @@ import { useInertOthers } from '../../hooks/use-inert-others'
 import { contains } from '../../internal/dom-containers'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { Portal, PortalGroup } from '../portal/portal'
-import { StackProvider, StackMessage } from '../../internal/stack-context'
+import { StackMessage, useStackProvider } from '../../internal/stack-context'
 import { match } from '../../utils/match'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
@@ -86,54 +86,34 @@ export let Dialog = defineComponent({
       'aria-describedby': this.describedby,
     }
     let { open, initialFocus, ...passThroughProps } = this.$props
-    let containers = this.containers
-
     let slot = { open: this.dialogState === DialogStates.Open }
 
-    return h(
-      StackProvider,
-      {
-        onUpdate(message, element) {
-          return match(message, {
-            [StackMessage.AddElement]() {
-              containers.add(element)
-            },
-            [StackMessage.RemoveElement]() {
-              containers.delete(element)
-            },
-          })
+    return h(ForcePortalRoot, { force: true }, () =>
+      h(
+        Portal,
+        {
+          visible:
+            passThroughProps.static === true
+              ? true
+              : passThroughProps.unmount === true
+              ? open
+              : true,
         },
-      },
-      () => [
-        h(ForcePortalRoot, { force: true }, () => [
-          h(
-            Portal,
-            {
-              visible:
-                passThroughProps.static === true
-                  ? true
-                  : passThroughProps.unmount === true
-                  ? open
-                  : true,
-            },
-            () => [
-              h(PortalGroup, { target: this.dialogRef }, () => [
-                h(ForcePortalRoot, { force: false }, () => [
-                  render({
-                    props: { ...passThroughProps, ...propsWeControl },
-                    slot,
-                    attrs: this.$attrs,
-                    slots: this.$slots,
-                    visible: open,
-                    features: Features.RenderStrategy | Features.Static,
-                    name: 'Dialog',
-                  }),
-                ]),
-              ]),
-            ]
-          ),
-        ]),
-      ]
+        () =>
+          h(PortalGroup, { target: this.dialogRef }, () =>
+            h(ForcePortalRoot, { force: false }, () =>
+              render({
+                props: { ...passThroughProps, ...propsWeControl },
+                slot,
+                attrs: this.$attrs,
+                slots: this.$slots,
+                visible: open,
+                features: Features.RenderStrategy | Features.Static,
+                name: 'Dialog',
+              })
+            )
+          )
+      )
     )
   },
   setup(props, { emit }) {
@@ -168,6 +148,17 @@ export let Dialog = defineComponent({
 
     useFocusTrap(containers, enabled, focusTrapOptions)
     useInertOthers(internalDialogRef, enabled)
+    useStackProvider((message, element) => {
+      return match(message, {
+        [StackMessage.AddElement]() {
+          containers.value.add(element)
+        },
+        [StackMessage.RemoveElement]() {
+          containers.value.delete(element)
+        },
+      })
+    })
+
     let describedby = useDescriptions({
       name: 'DialogDescription',
       slot: { open: props.open },

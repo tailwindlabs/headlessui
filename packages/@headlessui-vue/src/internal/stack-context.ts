@@ -1,12 +1,10 @@
 import {
-  defineComponent,
   inject,
   provide,
   watchEffect,
 
   // Types
   InjectionKey,
-  PropType,
   Ref,
 } from 'vue'
 
@@ -35,24 +33,16 @@ export function useElemenStack(element: Ref<HTMLElement | null> | null) {
   })
 }
 
-export let StackProvider = defineComponent({
-  name: 'StackProvider',
-  props: {
-    onUpdate: { type: Function as PropType<OnUpdate>, default: undefined },
-  },
-  setup(props, { slots }) {
-    let parentUpdate = useStackContext()
+export function useStackProvider(onUpdate?: OnUpdate) {
+  let parentUpdate = useStackContext()
 
-    function notify(...args: Parameters<OnUpdate>) {
-      // Notify our layer
-      props.onUpdate?.(...args)
+  function notify(...args: Parameters<OnUpdate>) {
+    // Notify our layer
+    onUpdate?.(...args)
 
-      // Notify the parent
-      parentUpdate(...args)
-    }
+    // Notify the parent
+    parentUpdate(...args)
+  }
 
-    provide(StackContext, notify)
-
-    return () => slots.default!()
-  },
-})
+  provide(StackContext, notify)
+}
