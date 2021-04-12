@@ -32,7 +32,6 @@ export let Portal = defineComponent({
   name: 'Portal',
   props: {
     as: { type: [Object, String], default: 'div' },
-    visible: { type: [Boolean], default: true },
   },
   setup(props, { slots, attrs }) {
     let forcePortalRoot = usePortalRoot()
@@ -67,9 +66,7 @@ export let Portal = defineComponent({
     useStackProvider()
 
     return () => {
-      let { visible, ...passThroughProps } = props
       if (myTarget.value === null) return null
-      if (!visible) return null
 
       let propsWeControl = {
         ref: element,
@@ -81,7 +78,7 @@ export let Portal = defineComponent({
         Teleport,
         { to: myTarget.value },
         render({
-          props: { ...passThroughProps, ...propsWeControl },
+          props: { ...props, ...propsWeControl },
           slot: {},
           attrs,
           slots,
