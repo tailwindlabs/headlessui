@@ -30,6 +30,7 @@ import { StackMessage, useStackProvider } from '../../internal/stack-context'
 import { match } from '../../utils/match'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
+import { dom } from '../../utils/dom'
 
 enum DialogStates {
   Open,
@@ -89,30 +90,20 @@ export let Dialog = defineComponent({
     let slot = { open: this.dialogState === DialogStates.Open }
 
     return h(ForcePortalRoot, { force: true }, () =>
-      h(
-        Portal,
-        {
-          visible:
-            passThroughProps.static === true
-              ? true
-              : passThroughProps.unmount === true
-              ? open
-              : true,
-        },
-        () =>
-          h(PortalGroup, { target: this.dialogRef }, () =>
-            h(ForcePortalRoot, { force: false }, () =>
-              render({
-                props: { ...passThroughProps, ...propsWeControl },
-                slot,
-                attrs: this.$attrs,
-                slots: this.$slots,
-                visible: open,
-                features: Features.RenderStrategy | Features.Static,
-                name: 'Dialog',
-              })
-            )
+      h(Portal, () =>
+        h(PortalGroup, { target: this.dialogRef }, () =>
+          h(ForcePortalRoot, { force: false }, () =>
+            render({
+              props: { ...passThroughProps, ...propsWeControl },
+              slot,
+              attrs: this.$attrs,
+              slots: this.$slots,
+              visible: open,
+              features: Features.RenderStrategy | Features.Static,
+              name: 'Dialog',
+            })
           )
+        )
       )
     )
   },
@@ -189,9 +180,7 @@ export let Dialog = defineComponent({
       if (contains(containers.value, target)) return
 
       api.close()
-      nextTick(() => {
-        target?.focus()
-      })
+      nextTick(() => target?.focus())
     })
 
     // Handle `Escape` to close
@@ -223,7 +212,8 @@ export let Dialog = defineComponent({
     // Trigger close when the FocusTrap gets hidden
     watchEffect(onInvalidate => {
       if (dialogState.value !== DialogStates.Open) return
-      if (!internalDialogRef.value) return
+      let container = dom(internalDialogRef)
+      if (!container) return
 
       let observer = new IntersectionObserver(entries => {
         for (let entry of entries) {
@@ -238,7 +228,7 @@ export let Dialog = defineComponent({
         }
       })
 
-      observer.observe(internalDialogRef.value)
+      observer.observe(container)
 
       onInvalidate(() => observer.disconnect())
     })
