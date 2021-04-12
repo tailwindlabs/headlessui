@@ -1,5 +1,6 @@
+import { defineComponent } from 'vue'
 import snapshotDiff from 'snapshot-diff'
-import { render } from '@testing-library/react'
+import { render } from './vue-testing-library'
 
 import { disposables } from '../utils/disposables'
 import { reportChanges } from './report-dom-node-changes'
@@ -24,11 +25,11 @@ function redentSnapshot(input: string) {
 }
 
 export async function executeTimeline(
-  element: JSX.Element,
+  element: ReturnType<typeof defineComponent>,
   steps: ((tools: ReturnType<typeof render>) => (null | number)[])[]
 ) {
   let d = disposables()
-  let snapshots: { content: DocumentFragment; recordedAt: bigint }[] = []
+  let snapshots: { content: Node; recordedAt: bigint }[] = []
 
   //
   let tools = render(element)
@@ -55,7 +56,7 @@ export async function executeTimeline(
   await steps.reduce(async (chain, step) => {
     await chain
 
-    let durations = step(tools)
+    let durations = await step(tools)
 
     // Note: The following calls are just in place to ensure that **we** waited long enough for the
     // transitions to take place. This has no impact on the actual transitions. Above where the

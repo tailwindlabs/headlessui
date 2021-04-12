@@ -23,10 +23,15 @@ export function render(TestComponent: any, options?: Parameters<typeof mount>[1]
 
   return {
     get container() {
-      return wrapper.element
+      return wrapper.element.parentElement!
     },
-    debug(element = wrapper.element) {
+    debug(element = wrapper.element.parentElement!) {
       logDOM(element)
+    },
+    asFragment() {
+      let template = document.createElement('template')
+      template.innerHTML = wrapper.element.parentElement!.innerHTML
+      return template.content
     },
   }
 }

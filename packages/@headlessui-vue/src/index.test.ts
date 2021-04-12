@@ -55,5 +55,9 @@ it('should expose the correct components', () => {
     'Switch',
     'SwitchLabel',
     'SwitchDescription',
+
+    // Transition
+    'TransitionChild',
+    'Transition',
   ])
 })
