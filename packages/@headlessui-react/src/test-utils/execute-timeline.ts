@@ -4,6 +4,25 @@ import { render } from '@testing-library/react'
 import { disposables } from '../utils/disposables'
 import { reportChanges } from './report-dom-node-changes'
 
+function redentSnapshot(input: string) {
+  let minSpaces = Infinity
+  let lines = input.split('\n')
+  for (let line of lines) {
+    if (line.trim() === '---') continue
+    let spacesInLine = (line.match(/^[+-](\s+)/g) || []).pop()!.length - 1
+    minSpaces = Math.min(minSpaces, spacesInLine)
+  }
+
+  let replacer = new RegExp(`^([+-])\\s{${minSpaces}}(.*)`, 'g')
+
+  return input
+    .split('\n')
+    .map(line =>
+      line.trim() === '---' ? line : line.replace(replacer, (_, sign, rest) => `${sign}  ${rest}`)
+    )
+    .join('\n')
+}
+
 export async function executeTimeline(
   element: JSX.Element,
   steps: ((tools: ReturnType<typeof render>) => (null | number)[])[]
@@ -95,16 +114,18 @@ export async function executeTimeline(
                 ? 'yes'
                 : `no, it took ${call.relativeToPreviousSnapshot}ms`
             })`
-      }\n${snapshotDiff(uniqueSnapshots[i - 1].content, call.content, {
-        aAnnotation: '__REMOVE_ME__',
-        bAnnotation: '__REMOVE_ME__',
-        contextLines: 0,
-      })
-        // Just to do some cleanup
-        .replace(/\n\n@@([^@@]*)@@/g, '') // Top level @@ signs
-        .replace(/@@([^@@]*)@@/g, '---') // In between @@ signs
-        .replace(/[-+] __REMOVE_ME__\n/g, '')
-        .replace(/Snapshot Diff:\n/g, '')
+      }\n${redentSnapshot(
+        snapshotDiff(uniqueSnapshots[i - 1].content, call.content, {
+          aAnnotation: '__REMOVE_ME__',
+          bAnnotation: '__REMOVE_ME__',
+          contextLines: 0,
+        })
+          // Just to do some cleanup
+          .replace(/\n\n@@([^@@]*)@@/g, '') // Top level @@ signs
+          .replace(/@@([^@@]*)@@/g, '---') // In between @@ signs
+          .replace(/[-+] __REMOVE_ME__\n/g, '')
+          .replace(/Snapshot Diff:\n/g, '')
+      )
         .split('\n')
         .map(line => `    ${line}`)
         .join('\n')}`
