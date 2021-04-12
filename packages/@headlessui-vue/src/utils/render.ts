@@ -21,7 +21,7 @@ export enum Features {
   Static = 2,
 }
 
-enum RenderStrategy {
+export enum RenderStrategy {
   Unmount,
   Hidden,
 }
