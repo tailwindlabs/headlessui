@@ -68,7 +68,9 @@ function useTransitionContext() {
   let context = useContext(TransitionContext)
 
   if (context === null) {
-    throw new Error('A <Transition.Child /> is used but it is missing a parent <Transition />.')
+    throw new Error(
+      'A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />.'
+    )
   }
 
   return context
@@ -78,7 +80,9 @@ function useParentNesting() {
   let context = useContext(NestingContext)
 
   if (context === null) {
-    throw new Error('A <Transition.Child /> is used but it is missing a parent <Transition />.')
+    throw new Error(
+      'A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />.'
+    )
   }
 
   return context
@@ -377,3 +381,4 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 }
 
 Transition.Child = TransitionChild
+Transition.Root = Transition

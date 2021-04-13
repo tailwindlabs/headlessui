@@ -167,7 +167,7 @@ describe('Setup API', () => {
             </div>
           )
         }).toThrowErrorMatchingInlineSnapshot(
-          `"A <Transition.Child /> is used but it is missing a parent <Transition />."`
+          `"A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />."`
         )
       })
     )
@@ -177,6 +177,15 @@ describe('Setup API', () => {
         <Transition show={true}>
           <Transition.Child className="transition" />
         </Transition>
+      )
+      expect(document.getElementsByClassName('transition')).not.toBeNull()
+    })
+
+    it('should be possible to use a Transition.Root and a Transition.Child', () => {
+      render(
+        <Transition.Root show={true}>
+          <Transition.Child className="transition" />
+        </Transition.Root>
       )
       expect(document.getElementsByClassName('transition')).not.toBeNull()
     })
