@@ -176,7 +176,7 @@ import {
   MenuItems,
   MenuItem,
   Portal,
-  Transition,
+  TransitionRoot,
   TransitionChild,
 } from '@headlessui/vue'
 import { usePopper } from '../../playground-utils/hooks/use-popper'
@@ -203,7 +203,7 @@ export default {
     MenuItems,
     MenuItem,
     Portal,
-    TransitionRoot: Transition,
+    TransitionRoot,
     TransitionChild,
   },
   setup() {

@@ -58,6 +58,6 @@ it('should expose the correct components', () => {
 
     // Transition
     'TransitionChild',
-    'Transition',
+    'TransitionRoot',
   ])
 })
