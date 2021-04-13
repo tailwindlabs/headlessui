@@ -43,7 +43,7 @@ function useTransitionContext() {
   let context = inject(TransitionContext, null)
 
   if (context === null) {
-    throw new Error('A <TransitionChild /> is used but it is missing a parent <Transition />.')
+    throw new Error('A <TransitionChild /> is used but it is missing a parent <TransitionRoot />.')
   }
 
   return context
@@ -53,7 +53,7 @@ function useParentNesting() {
   let context = inject(NestingContext, null)
 
   if (context === null) {
-    throw new Error('A <TransitionChild /> is used but it is missing a parent <Transition />.')
+    throw new Error('A <TransitionChild /> is used but it is missing a parent <TransitionRoot />.')
   }
 
   return context
@@ -287,7 +287,7 @@ export let TransitionChild = defineComponent({
 
 // ---
 
-export let Transition = defineComponent({
+export let TransitionRoot = defineComponent({
   inheritAttrs: false,
   props: {
     as: { type: [Object, String], default: 'div' },

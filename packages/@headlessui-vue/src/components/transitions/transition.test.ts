@@ -1,8 +1,8 @@
-import { defineComponent, ref, onMounted, h } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { render, fireEvent } from '../../test-utils/vue-testing-library'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { Transition, TransitionChild } from './transition'
+import { TransitionRoot, TransitionChild } from './transition'
 
 import { executeTimeline } from '../../test-utils/execute-timeline'
 import { html } from '../../test-utils/html'
@@ -12,7 +12,7 @@ jest.mock('../../hooks/use-id')
 afterAll(() => jest.restoreAllMocks())
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
-  let defaultComponents = { TransitionRoot: Transition, TransitionChild }
+  let defaultComponents = { TransitionRoot, TransitionChild }
 
   if (typeof input === 'string') {
     return render(defineComponent({ template: input, components: defaultComponents }))
@@ -198,7 +198,9 @@ describe('Setup API', () => {
           `,
           errorCaptured(err) {
             expect(err as Error).toEqual(
-              new Error('A <TransitionChild /> is used but it is missing a parent <Transition />.')
+              new Error(
+                'A <TransitionChild /> is used but it is missing a parent <TransitionRoot />.'
+              )
             )
             return false
           },
@@ -375,7 +377,7 @@ describe('Setup API', () => {
         })
 
         renderTemplate({
-          components: { TransitionRoot: Transition, TransitionChild, Dummy },
+          components: { TransitionRoot, TransitionChild, Dummy },
           template: html`
             <div class="My Page">
               <TransitionRoot :show="true">
@@ -398,7 +400,7 @@ describe('Setup API', () => {
   describe('transition classes', () => {
     it('should be possible to passthrough the transition classes', () => {
       let { container } = renderTemplate({
-        components: { TransitionRoot: Transition },
+        components: { TransitionRoot },
         template: html`
           <TransitionRoot
             :show="true"
@@ -462,7 +464,7 @@ describe('Transitions', () => {
       `)
 
       let Example = defineComponent({
-        components: { TransitionRoot: Transition },
+        components: { TransitionRoot },
         template: html`
           <TransitionRoot :show="show" enter="enter" enterFrom="from" enterTo="to">
             <span>Hello!</span>
@@ -517,7 +519,7 @@ describe('Transitions', () => {
       `)
 
       let Example = defineComponent({
-        components: { TransitionRoot: Transition },
+        components: { TransitionRoot },
         template: html`
           <TransitionRoot :show="show" enter="enter" enterFrom="from" enterTo="to">
             <span>Hello!</span>
@@ -572,7 +574,7 @@ describe('Transitions', () => {
       `)
 
       let Example = defineComponent({
-        components: { TransitionRoot: Transition },
+        components: { TransitionRoot },
         template: html`
           <TransitionRoot :show="show" :unmount="false" enter="enter" enterFrom="from" enterTo="to">
             <span>Hello!</span>
@@ -622,7 +624,7 @@ describe('Transitions', () => {
       `)
 
       let Example = defineComponent({
-        components: { TransitionRoot: Transition },
+        components: { TransitionRoot },
         template: html`
           <TransitionRoot :show="show" enter="enter" enterFrom="from" enterTo="to">
             <span>Hello!</span>
@@ -679,7 +681,7 @@ describe('Transitions', () => {
         `)
 
         let Example = defineComponent({
-          components: { TransitionRoot: Transition },
+          components: { TransitionRoot },
           template: html`
             <TransitionRoot :show="show" leave="leave" leaveFrom="from" leaveTo="to">
               <span>Hello!</span>
@@ -739,7 +741,7 @@ describe('Transitions', () => {
         `)
 
         let Example = defineComponent({
-          components: { TransitionRoot: Transition },
+          components: { TransitionRoot },
           template: html`
             <TransitionRoot
               :show="show"
@@ -806,7 +808,7 @@ describe('Transitions', () => {
         `)
 
         let Example = defineComponent({
-          components: { TransitionRoot: Transition },
+          components: { TransitionRoot },
           template: html`
             <TransitionRoot
               :show="show"
@@ -901,7 +903,7 @@ describe('Transitions', () => {
         `)
 
         let Example = defineComponent({
-          components: { TransitionRoot: Transition },
+          components: { TransitionRoot },
           template: html`
             <TransitionRoot
               :show="show"
@@ -1008,7 +1010,7 @@ describe('Transitions', () => {
         `)
 
         let Example = defineComponent({
-          components: { TransitionRoot: Transition, TransitionChild },
+          components: { TransitionRoot, TransitionChild },
           template: html`
             <TransitionRoot :show="show">
               <TransitionChild leave="leave-fast" leaveFrom="leave-from" leaveTo="leave-to">
@@ -1097,7 +1099,7 @@ describe('Transitions', () => {
         `)
 
         let Example = defineComponent({
-          components: { TransitionRoot: Transition, TransitionChild },
+          components: { TransitionRoot, TransitionChild },
           template: html`
             <TransitionRoot :show="show">
               <TransitionChild leave="leave-fast" leaveFrom="leave-from" leaveTo="leave-to">
@@ -1207,7 +1209,7 @@ describe('Events', () => {
       `)
 
       let Example = defineComponent({
-        components: { TransitionRoot: Transition },
+        components: { TransitionRoot },
         template: html`
           <TransitionRoot
             :show="show"
