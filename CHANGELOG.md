@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `outside click` not re-focusing the `Menu.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/256))
 - Fixed `outside click` not re-focusing the `Listbox.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/256))
 - Fixed `outside click` not re-focusing the `Popover` ([#261](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/261))
-- Fix incorrect type error `unique symbol` ([#248](https://github.com/tailwindlabs/headlessui/pull/248), [#240](https://github.com/tailwindlabs/headlessui/issues/240))
 - Force focus in `Menu.Items` and `Listbox.Options` from within the component itself ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
 - Fix `undefined` values in id's for the `Dialog` component ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
 - Ensure `useInertOthers` works when used in a shared parent ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
@@ -34,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Fix incorrect `DOM` node from ref ([#249](https://github.com/tailwindlabs/headlessui/pull/249))
-- Fix broken behaviour since Vue 3.0.5 ([#279](https://github.com/tailwindlabs/headlessui/pull/279))
 - Stop propagating keyboard/mouse events ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
 
 ### Added
@@ -46,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `FocusTrap` component ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
 - Add `Popover`, `PopoverButton`, `PopoverOverlay`, `PopoverPanel` and `PopoverGroup` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
 - Add `RadioGroup`, `RadioGroupOption`, `RadioGroupLabel` and `RadioGroupDescription` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
+- Add `TransitionRoot` and `TransitionChild` components ([#326](https://github.com/tailwindlabs/headlessui/pull/326))
 
 ## [@headlessui/react@v0.3.2] - 2021-04-02
 
