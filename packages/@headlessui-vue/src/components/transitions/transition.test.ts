@@ -1,4 +1,4 @@
-import { defineComponent, ref, onMounted, h } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { render, fireEvent } from '../../test-utils/vue-testing-library'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
