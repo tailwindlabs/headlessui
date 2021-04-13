@@ -82,10 +82,10 @@ type LabelPropsWeControl = 'id'
 
 export function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl> & {
-    clickable?: boolean
+    passive?: boolean
   }
 ) {
-  let { clickable = false, ...passThroughProps } = props
+  let { passive = false, ...passThroughProps } = props
   let context = useLabelContext()
   let id = `headlessui-label-${useId()}`
 
@@ -96,7 +96,7 @@ export function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   let allProps = { ...passThroughProps, ...propsWeControl }
   // @ts-expect-error props are dynamic via context, some components will
   //                  provide an onClick then we can delete it.
-  if (!clickable) delete allProps['onClick']
+  if (passive) delete allProps['onClick']
 
   return render({
     props: allProps,
