@@ -399,13 +399,13 @@ describe('Mouse interactions', () => {
     assertSwitch({ state: SwitchState.Off })
   })
 
-  it('should be possible to toggle the Switch with a click on the Label (clickable passed)', async () => {
+  it('should be possible to toggle the Switch with a click on the Label', async () => {
     let handleChange = jest.fn()
     renderTemplate({
       template: html`
         <SwitchGroup>
           <Switch v-model="checked" />
-          <SwitchLabel clickable>The label</SwitchLabel>
+          <SwitchLabel>The label</SwitchLabel>
         </SwitchGroup>
       `,
       setup() {
@@ -437,13 +437,13 @@ describe('Mouse interactions', () => {
     assertSwitch({ state: SwitchState.Off })
   })
 
-  it('should not be possible to toggle the Switch with a click on the Label', async () => {
+  it('should not be possible to toggle the Switch with a click on the Label (passive)', async () => {
     let handleChange = jest.fn()
     renderTemplate({
       template: html`
         <SwitchGroup>
           <Switch v-model="checked" />
-          <SwitchLabel>The label</SwitchLabel>
+          <SwitchLabel passive>The label</SwitchLabel>
         </SwitchGroup>
       `,
       setup() {

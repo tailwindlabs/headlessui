@@ -67,11 +67,11 @@ export let Label = defineComponent({
   name: 'Label',
   props: {
     as: { type: [Object, String], default: 'label' },
-    clickable: { type: [Boolean], default: false },
+    passive: { type: [Boolean], default: false },
   },
   render() {
     let { name = 'Label', slot = {}, props = {} } = this.context
-    let { clickable, ...passThroughProps } = this.$props
+    let { passive, ...passThroughProps } = this.$props
     let propsWeControl = {
       ...Object.entries(props).reduce(
         (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
@@ -83,7 +83,7 @@ export let Label = defineComponent({
 
     // @ts-expect-error props are dynamic via context, some components will
     //                  provide an onClick then we can delete it.
-    if (!clickable) delete allProps['onClick']
+    if (passive) delete allProps['onClick']
 
     return render({
       props: allProps,
