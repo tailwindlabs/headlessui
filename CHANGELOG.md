@@ -7,14 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
+- Nothing yet!
+
+## [Unreleased - Vue]
+
+- Nothing yet!
+
+## [@headlessui/react@v1.0.0] - 2021-04-14
+
 ### Fixes
 
 - Fixed `outside click` not re-focusing the `Menu.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/256))
 - Fixed `outside click` not re-focusing the `Listbox.Button` ([#220](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/256))
-- Fixed `outside click` not re-focusing the `Popover` ([#261](https://github.com/tailwindlabs/headlessui/pull/220), [#256](https://github.com/tailwindlabs/headlessui/pull/261))
 - Force focus in `Menu.Items` and `Listbox.Options` from within the component itself ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
-- Fix `undefined` values in id's for the `Dialog` component ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
-- Ensure `useInertOthers` works when used in a shared parent ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
 - Stop propagating keyboard/mouse events ([#261](https://github.com/tailwindlabs/headlessui/pull/261))
 
 ### Added
@@ -28,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All components that accept a `className`, can now also receive a function with the renderProp argument ([#257](https://github.com/tailwindlabs/headlessui/pull/257))
 - Add `RadioGroup`, `RadioGroup.Option`, `RadioGroup.Label` and `RadioGroup.Description` components ([#274](https://github.com/tailwindlabs/headlessui/pull/274))
 
-## [Unreleased - Vue]
+## [@headlessui/vue@v1.0.0] - 2021-04-14
 
 ### Fixes
 
@@ -151,8 +156,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.2...HEAD
-[unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.1...HEAD
+[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.0.0...HEAD
+[unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.0.0...HEAD
+[@headlessui/react@v1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.2...@headlessui/react@v1.0.0
+[@headlessui/vue@v1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.1...@headlessui/vue@v1.0.0
 [@headlessui/react@v0.3.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.1...@headlessui/react@v0.3.2
 [@headlessui/vue@v0.3.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.0...@headlessui/vue@v0.3.1
 [@headlessui/react@v0.3.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.0...@headlessui/react@v0.3.1
