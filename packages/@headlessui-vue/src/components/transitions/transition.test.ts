@@ -1303,11 +1303,11 @@ describe('Events', () => {
 
       let enterHookDiff = eventHandler.mock.calls[1][1] - eventHandler.mock.calls[0][1]
       expect(enterHookDiff).toBeGreaterThanOrEqual(enterDuration)
-      expect(enterHookDiff).toBeLessThanOrEqual(enterDuration * 2)
+      expect(enterHookDiff).toBeLessThanOrEqual(enterDuration * 3)
 
       let leaveHookDiff = eventHandler.mock.calls[3][1] - eventHandler.mock.calls[2][1]
       expect(leaveHookDiff).toBeGreaterThanOrEqual(leaveDuration)
-      expect(leaveHookDiff).toBeLessThanOrEqual(leaveDuration * 2)
+      expect(leaveHookDiff).toBeLessThanOrEqual(leaveDuration * 3)
     })
   )
 })
