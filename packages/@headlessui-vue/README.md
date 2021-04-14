@@ -33,7 +33,7 @@ For full documentation, visit [headlessui.dev](https://headlessui.dev/vue).
 
 For help, discussion about best practices, or any other conversation that would benefit from being searchable:
 
-[Discuss Headless UI on GitHub](https://github.com/tailwindlabs/tailwindcss/discussions)
+[Discuss Headless UI on GitHub](https://github.com/tailwindlabs/headlessui/discussions)
 
 For casual chit-chat with others using the library:
 
