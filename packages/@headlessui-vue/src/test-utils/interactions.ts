@@ -14,7 +14,9 @@ export let Keys: Record<string, Partial<KeyboardEvent>> = {
   Escape: { key: 'Escape', keyCode: 27, charCode: 27 },
   Backspace: { key: 'Backspace', keyCode: 8 },
 
+  ArrowLeft: { key: 'ArrowLeft', keyCode: 37 },
   ArrowUp: { key: 'ArrowUp', keyCode: 38 },
+  ArrowRight: { key: 'ArrowRight', keyCode: 39 },
   ArrowDown: { key: 'ArrowDown', keyCode: 40 },
 
   Home: { key: 'Home', keyCode: 36 },
@@ -190,6 +192,17 @@ export async function click(
       if (!cancelled) {
         fireEvent.mouseDown(element, options)
       }
+
+      // Ensure to trigger a `focus` event if the element is focusable, or within a focusable element
+      let next: HTMLElement | null = element as HTMLElement | null
+      while (next !== null) {
+        if (next.matches(focusableSelector)) {
+          next.focus()
+          break
+        }
+        next = next.parentElement
+      }
+
       fireEvent.pointerUp(element, options)
       if (!cancelled) {
         fireEvent.mouseUp(element, options)
@@ -307,7 +320,14 @@ let focusableSelector = [
   'select:not([disabled])',
   'textarea:not([disabled])',
 ]
-  .map(selector => `${selector}:not([tabindex='-1'])`)
+  .map(
+    process.env.NODE_ENV === 'test'
+      ? // TODO: Remove this once JSDOM fixes the issue where an element that is
+        // "hidden" can be the document.activeElement, because this is not possible
+        // in real browsers.
+        selector => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
+      : selector => `${selector}:not([tabindex='-1'])`
+  )
   .join(',')
 
 function getFocusableElements(container = document.body) {

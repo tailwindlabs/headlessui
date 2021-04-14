@@ -12,17 +12,34 @@ export type PropsOf<TTag = any> = TTag extends React.ElementType
   ? React.ComponentProps<TTag>
   : never
 
-export type Props<
-  TTag,
-  TSlot = any,
-  TOmitableProps extends keyof any = __
-> = (TOmitableProps extends __
-  ? Omit<PropsOf<TTag>, 'as' | 'children' | 'refName'>
-  : Omit<PropsOf<TTag>, TOmitableProps | 'as' | 'children' | 'refName'>) & {
+type PropsWeControl = 'as' | 'children' | 'refName' | 'className'
+
+// Resolve the props of the component, but ensure to omit certain props that we control
+type CleanProps<TTag, TOmitableProps extends keyof any = __> = TOmitableProps extends __
+  ? Omit<PropsOf<TTag>, PropsWeControl>
+  : Omit<PropsOf<TTag>, TOmitableProps | PropsWeControl>
+
+// Add certain props that we control
+type OurProps<TTag, TSlot = any> = {
   as?: TTag
   children?: ReactNode | ((bag: TSlot) => ReactElement)
   refName?: string
 }
+
+// Conditionally override the `className`, to also allow for a function
+// if and only if the PropsOf<TTag> already define `className`.
+// This will allow us to have a TS error on as={Fragment}
+type ClassNameOverride<TTag, TSlot = any> = PropsOf<TTag> extends { className?: any }
+  ? { className?: string | ((bag: TSlot) => string) }
+  : {}
+
+// Provide clean TypeScript props, which exposes some of our custom API's.
+export type Props<TTag, TSlot = any, TOmitableProps extends keyof any = __> = CleanProps<
+  TTag,
+  TOmitableProps
+> &
+  OurProps<TTag, TSlot> &
+  ClassNameOverride<TTag, TSlot>
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 export type XOR<T, U> = T | U extends __

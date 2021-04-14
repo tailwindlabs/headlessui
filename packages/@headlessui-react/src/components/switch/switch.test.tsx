@@ -1,4 +1,4 @@
-import React, { createElement, useState } from 'react'
+import React, { useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Switch } from './switch'
@@ -10,20 +10,10 @@ import {
   getSwitchLabel,
 } from '../../test-utils/accessibility-assertions'
 import { press, click, Keys } from '../../test-utils/interactions'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
 
 describe('Safe guards', () => {
-  it.each([['Switch.Label', Switch.Label]])(
-    'should error when we are using a <%s /> without a parent <Switch.Group />',
-    suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement(Component))).toThrowError(
-        `<${name} /> is missing a parent <Switch.Group /> component.`
-      )
-    })
-  )
-
   it('should be possible to render a Switch without crashing', () => {
     render(<Switch checked={false} onChange={console.log} />)
   })
@@ -114,6 +104,44 @@ describe('Render composition', () => {
     //
     // Thus: Label A should not be part of the "label" in this case
     assertSwitch({ state: SwitchState.Off, label: 'Label B' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch and Switch.Description (before the Switch)', async () => {
+    render(
+      <Switch.Group>
+        <Switch.Description>This is an important feature</Switch.Description>
+        <Switch checked={false} onChange={console.log} />
+      </Switch.Group>
+    )
+
+    assertSwitch({ state: SwitchState.Off, description: 'This is an important feature' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch and Switch.Description (after the Switch)', () => {
+    render(
+      <Switch.Group>
+        <Switch checked={false} onChange={console.log} />
+        <Switch.Description>This is an important feature</Switch.Description>
+      </Switch.Group>
+    )
+
+    assertSwitch({ state: SwitchState.Off, description: 'This is an important feature' })
+  })
+
+  it('should be possible to render a Switch.Group, Switch, Switch.Label and Switch.Description', () => {
+    render(
+      <Switch.Group>
+        <Switch.Label>Label A</Switch.Label>
+        <Switch checked={false} onChange={console.log} />
+        <Switch.Description>This is an important feature</Switch.Description>
+      </Switch.Group>
+    )
+
+    assertSwitch({
+      state: SwitchState.Off,
+      label: 'Label A',
+      description: 'This is an important feature',
+    })
   })
 })
 
@@ -274,6 +302,36 @@ describe('Mouse interactions', () => {
     assertActiveElement(getSwitch())
 
     // Ensure state is off
+    assertSwitch({ state: SwitchState.Off })
+  })
+
+  it('should not be possible to toggle the Switch with a click on the Label (passive)', async () => {
+    let handleChange = jest.fn()
+    function Example() {
+      let [state, setState] = useState(false)
+      return (
+        <Switch.Group>
+          <Switch
+            checked={state}
+            onChange={value => {
+              setState(value)
+              handleChange(value)
+            }}
+          />
+          <Switch.Label passive>The label</Switch.Label>
+        </Switch.Group>
+      )
+    }
+
+    render(<Example />)
+
+    // Ensure checkbox is off
+    assertSwitch({ state: SwitchState.Off })
+
+    // Toggle
+    await click(getSwitchLabel())
+
+    // Ensure state is still off
     assertSwitch({ state: SwitchState.Off })
   })
 })

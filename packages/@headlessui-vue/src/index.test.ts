@@ -6,11 +6,19 @@ import * as HeadlessUI from './index'
  */
 it('should expose the correct components', () => {
   expect(Object.keys(HeadlessUI)).toEqual([
-    // Menu
-    'Menu',
-    'MenuButton',
-    'MenuItems',
-    'MenuItem',
+    // Dialog
+    'Dialog',
+    'DialogOverlay',
+    'DialogTitle',
+    'DialogDescription',
+
+    // Disclosure
+    'Disclosure',
+    'DisclosureButton',
+    'DisclosurePanel',
+
+    // FocusTrap
+    'FocusTrap',
 
     // Listbox
     'Listbox',
@@ -19,9 +27,37 @@ it('should expose the correct components', () => {
     'ListboxOptions',
     'ListboxOption',
 
+    // Menu
+    'Menu',
+    'MenuButton',
+    'MenuItems',
+    'MenuItem',
+
+    // Popover
+    'Popover',
+    'PopoverButton',
+    'PopoverOverlay',
+    'PopoverPanel',
+    'PopoverGroup',
+
+    // Portal
+    'Portal',
+    'PortalGroup',
+
+    // RadioGroup
+    'RadioGroup',
+    'RadioGroupOption',
+    'RadioGroupLabel',
+    'RadioGroupDescription',
+
     // Switch
     'SwitchGroup',
     'Switch',
     'SwitchLabel',
+    'SwitchDescription',
+
+    // Transition
+    'TransitionChild',
+    'TransitionRoot',
   ])
 })

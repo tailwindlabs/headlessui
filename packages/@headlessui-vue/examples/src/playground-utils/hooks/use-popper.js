@@ -7,6 +7,9 @@ export function usePopper(options) {
 
   onMounted(() => {
     watchEffect(onInvalidate => {
+      if (!popper.value) return
+      if (!reference.value) return
+
       let popperEl = popper.value.el || popper.value
       let referenceEl = reference.value.el || reference.value
 

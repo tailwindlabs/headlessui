@@ -1,12 +1,12 @@
 import React, {
-  useMemo,
-  createContext,
-  useContext,
-  useRef,
-  useEffect,
-  useCallback,
-  useState,
   Fragment,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 
   // Types
   ElementType,
@@ -68,7 +68,9 @@ function useTransitionContext() {
   let context = useContext(TransitionContext)
 
   if (context === null) {
-    throw new Error('A <Transition.Child /> is used but it is missing a parent <Transition />.')
+    throw new Error(
+      'A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />.'
+    )
   }
 
   return context
@@ -78,7 +80,9 @@ function useParentNesting() {
   let context = useContext(NestingContext)
 
   if (context === null) {
-    throw new Error('A <Transition.Child /> is used but it is missing a parent <Transition />.')
+    throw new Error(
+      'A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />.'
+    )
   }
 
   return context
@@ -155,17 +159,13 @@ function useNesting(done?: () => void) {
 }
 
 function noop() {}
-let eventNames: (keyof TransitionEvents)[] = [
-  'beforeEnter',
-  'afterEnter',
-  'beforeLeave',
-  'afterLeave',
-]
+let eventNames = ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'] as const
 function ensureEventHooksExist(events: TransitionEvents) {
-  return eventNames.reduce((all, eventName) => {
-    all[eventName] = events[eventName] || noop
-    return all
-  }, {} as Record<keyof TransitionEvents, () => void>)
+  let result = {} as Record<keyof typeof events, () => void>
+  for (let name of eventNames) {
+    result[name] = events[name] ?? noop
+  }
+  return result
 }
 
 function useEvents(events: TransitionEvents) {
@@ -313,19 +313,18 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     leaveToClasses,
   ])
 
-  let propsBag = {}
   let propsWeControl = { ref: container }
   let passthroughProps = rest
 
   return (
     <NestingContext.Provider value={nesting}>
-      {render(
-        { ...passthroughProps, ...propsWeControl },
-        propsBag,
-        DEFAULT_TRANSITION_CHILD_TAG,
-        TransitionChildRenderFeatures,
-        state === TreeStates.Visible
-      )}
+      {render({
+        props: { ...passthroughProps, ...propsWeControl },
+        defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
+        features: TransitionChildRenderFeatures,
+        visible: state === TreeStates.Visible,
+        name: 'Transition.Child',
+      })}
     </NestingContext.Provider>
   )
 }
@@ -361,25 +360,25 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }, [show, nestingBag])
 
   let sharedProps = { unmount }
-  let propsBag = {}
 
   return (
     <NestingContext.Provider value={nestingBag}>
       <TransitionContext.Provider value={transitionBag}>
-        {render(
-          {
+        {render({
+          props: {
             ...sharedProps,
             as: Fragment,
             children: <TransitionChild {...sharedProps} {...passthroughProps} />,
           },
-          propsBag,
-          Fragment,
-          TransitionChildRenderFeatures,
-          state === TreeStates.Visible
-        )}
+          defaultTag: Fragment,
+          features: TransitionChildRenderFeatures,
+          visible: state === TreeStates.Visible,
+          name: 'Transition',
+        })}
       </TransitionContext.Provider>
     </NestingContext.Provider>
   )
 }
 
 Transition.Child = TransitionChild
+Transition.Root = Transition

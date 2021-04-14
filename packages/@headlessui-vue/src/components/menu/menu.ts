@@ -16,6 +16,9 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
+import { dom } from '../../utils/dom'
+import { useWindowEvent } from '../../hooks/use-window-event'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 enum MenuStates {
   Open,
@@ -61,6 +64,7 @@ function useMenuContext(component: string) {
 }
 
 export let Menu = defineComponent({
+  name: 'Menu',
   props: { as: { type: [Object, String], default: 'template' } },
   setup(props, { slots, attrs }) {
     let menuState = ref<StateDefinition['menuState']['value']>(MenuStates.Closed)
@@ -135,21 +139,16 @@ export let Menu = defineComponent({
       },
     }
 
-    onMounted(() => {
-      function handler(event: MouseEvent) {
-        let target = event.target as HTMLElement
-        let active = document.activeElement
+    useWindowEvent('mousedown', event => {
+      let target = event.target as HTMLElement
+      let active = document.activeElement
 
-        if (menuState.value !== MenuStates.Open) return
-        if (buttonRef.value?.contains(target)) return
+      if (menuState.value !== MenuStates.Open) return
+      if (dom(buttonRef)?.contains(target)) return
 
-        if (!itemsRef.value?.contains(target)) api.closeMenu()
-        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-        if (!event.defaultPrevented) buttonRef.value?.focus({ preventScroll: true })
-      }
-
-      window.addEventListener('mousedown', handler)
-      onUnmounted(() => window.removeEventListener('mousedown', handler))
+      if (!dom(itemsRef)?.contains(target)) api.closeMenu()
+      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -157,12 +156,13 @@ export let Menu = defineComponent({
 
     return () => {
       let slot = { open: menuState.value === MenuStates.Open }
-      return render({ props, slot, slots, attrs })
+      return render({ props, slot, slots, attrs, name: 'Menu' })
     }
   },
 })
 
 export let MenuButton = defineComponent({
+  name: 'MenuButton',
   props: {
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
@@ -176,9 +176,10 @@ export let MenuButton = defineComponent({
       id: this.id,
       type: 'button',
       'aria-haspopup': true,
-      'aria-controls': api.itemsRef.value?.id,
+      'aria-controls': dom(api.itemsRef)?.id,
       'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
       onKeydown: this.handleKeyDown,
+      onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
     }
 
@@ -187,6 +188,7 @@ export let MenuButton = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
+      name: 'MenuButton',
     })
   },
   setup(props) {
@@ -201,20 +203,33 @@ export let MenuButton = defineComponent({
         case Keys.Enter:
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           api.openMenu()
           nextTick(() => {
-            api.itemsRef.value?.focus({ preventScroll: true })
+            dom(api.itemsRef)?.focus({ preventScroll: true })
             api.goToItem(Focus.First)
           })
           break
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           api.openMenu()
           nextTick(() => {
-            api.itemsRef.value?.focus({ preventScroll: true })
+            dom(api.itemsRef)?.focus({ preventScroll: true })
             api.goToItem(Focus.Last)
           })
+          break
+      }
+    }
+
+    function handleKeyUp(event: KeyboardEvent) {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
           break
       }
     }
@@ -223,24 +238,21 @@ export let MenuButton = defineComponent({
       if (props.disabled) return
       if (api.menuState.value === MenuStates.Open) {
         api.closeMenu()
-        nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+        nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
+        event.stopPropagation()
         api.openMenu()
-        nextFrame(() => api.itemsRef.value?.focus({ preventScroll: true }))
+        nextFrame(() => dom(api.itemsRef)?.focus({ preventScroll: true }))
       }
     }
 
-    return {
-      id,
-      el: api.buttonRef,
-      handleKeyDown,
-      handleClick,
-    }
+    return { id, el: api.buttonRef, handleKeyDown, handleKeyUp, handleClick }
   },
 })
 
 export let MenuItems = defineComponent({
+  name: 'MenuItems',
   props: {
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
@@ -255,9 +267,10 @@ export let MenuItems = defineComponent({
         api.activeItemIndex.value === null
           ? undefined
           : api.items.value[api.activeItemIndex.value]?.id,
-      'aria-labelledby': api.buttonRef.value?.id,
+      'aria-labelledby': dom(api.buttonRef)?.id,
       id: this.id,
       onKeydown: this.handleKeyDown,
+      onKeyup: this.handleKeyUp,
       role: 'menu',
       tabIndex: 0,
       ref: 'el',
@@ -271,6 +284,7 @@ export let MenuItems = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: slot.open,
+      name: 'MenuItems',
     })
   },
   setup() {
@@ -278,22 +292,17 @@ export let MenuItems = defineComponent({
     let id = `headlessui-menu-items-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
-    watchEffect(() => {
-      let container = api.itemsRef.value
-      if (!container) return
-      if (api.menuState.value !== MenuStates.Open) return
-
-      let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-        acceptNode(node: HTMLElement) {
-          if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
-          if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
-          return NodeFilter.FILTER_ACCEPT
-        },
-      })
-
-      while (walker.nextNode()) {
-        ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
-      }
+    useTreeWalker({
+      container: computed(() => dom(api.itemsRef)),
+      enabled: computed(() => api.menuState.value === MenuStates.Open),
+      accept(node) {
+        if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
+        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+        return NodeFilter.FILTER_ACCEPT
+      },
+      walk(node) {
+        node.setAttribute('role', 'none')
+      },
     })
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -306,45 +315,54 @@ export let MenuItems = defineComponent({
         case Keys.Space:
           if (api.searchQuery.value !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return api.search(event.key)
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           if (api.activeItemIndex.value !== null) {
             let { id } = api.items.value[api.activeItemIndex.value]
             document.getElementById(id)?.click()
           }
           api.closeMenu()
-          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Next)
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Previous)
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return api.goToItem(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           api.closeMenu()
-          nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {
@@ -355,11 +373,23 @@ export let MenuItems = defineComponent({
       }
     }
 
-    return { id, el: api.itemsRef, handleKeyDown }
+    function handleKeyUp(event: KeyboardEvent) {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
+          break
+      }
+    }
+
+    return { id, el: api.itemsRef, handleKeyDown, handleKeyUp }
   },
 })
 
 export let MenuItem = defineComponent({
+  name: 'MenuItem',
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
@@ -398,7 +428,7 @@ export let MenuItem = defineComponent({
     function handleClick(event: MouseEvent) {
       if (disabled) return event.preventDefault()
       api.closeMenu()
-      nextTick(() => api.buttonRef.value?.focus({ preventScroll: true }))
+      nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {
@@ -434,7 +464,13 @@ export let MenuItem = defineComponent({
         onMouseleave: handleLeave,
       }
 
-      return render({ props: { ...props, ...propsWeControl }, slot, attrs, slots })
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'MenuItem',
+      })
     }
   },
 })

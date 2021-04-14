@@ -21,7 +21,7 @@ export enum Features {
   Static = 2,
 }
 
-enum RenderStrategy {
+export enum RenderStrategy {
   Unmount,
   Hidden,
 }
@@ -35,6 +35,7 @@ export function render({
   slot: Record<string, any>
   attrs: Record<string, any>
   slots: Slots
+  name: string
 } & {
   features?: Features
   visible?: boolean
@@ -72,24 +73,50 @@ function _render({
   attrs,
   slots,
   slot,
+  name,
 }: {
   props: Record<string, any>
   slot: Record<string, any>
   attrs: Record<string, any>
   slots: Slots
+  name: string
 }) {
   let { as, ...passThroughProps } = omit(props, ['unmount', 'static'])
 
   let children = slots.default?.(slot)
 
   if (as === 'template') {
-    if (Object.keys(passThroughProps).length > 0 || 'class' in attrs) {
+    if (Object.keys(passThroughProps).length > 0 || Object.keys(attrs).length > 0) {
       let [firstChild, ...other] = children ?? []
 
-      if (other.length > 0)
-        throw new Error('You should only render 1 child or use the `as="..."` prop')
+      if (!isValidElement(firstChild) || other.length > 0) {
+        throw new Error(
+          [
+            'Passing props on "template"!',
+            '',
+            `The current component <${name} /> is rendering a "template".`,
+            `However we need to passthrough the following props:`,
+            Object.keys(passThroughProps)
+              .concat(Object.keys(attrs))
+              .map(line => `  - ${line}`)
+              .join('\n'),
+            '',
+            'You can apply a few solutions:',
+            [
+              'Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
+              'Render a single element as the child so that we can forward the props onto that element.',
+            ]
+              .map(line => `  - ${line}`)
+              .join('\n'),
+          ].join('\n')
+        )
+      }
 
       return cloneVNode(firstChild, passThroughProps as Record<string, any>)
+    }
+
+    if (Array.isArray(children) && children.length === 1) {
+      return children[0]
     }
 
     return children
@@ -104,4 +131,12 @@ function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) 
     if (key in clone) delete clone[key]
   }
   return clone
+}
+
+function isValidElement(input: any): boolean {
+  if (input == null) return false // No children
+  if (typeof input.type === 'string') return true // 'div', 'span', ...
+  if (typeof input.type === 'object') return true // Other components
+  if (typeof input.type === 'function') return true // Built-ins like Transition
+  return false // Comments, strings, ...
 }

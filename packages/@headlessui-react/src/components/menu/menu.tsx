@@ -1,5 +1,6 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#menubutton
 import React, {
+  Fragment,
   createContext,
   createRef,
   useCallback,
@@ -8,7 +9,6 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  Fragment,
 
   // Types
   Dispatch,
@@ -29,8 +29,10 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
+import { useWindowEvent } from '../../hooks/use-window-event'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 enum MenuStates {
   Open,
@@ -55,7 +57,6 @@ enum ActionTypes {
   GoToItem,
   Search,
   ClearSearch,
-
   RegisterItem,
   UnregisterItem,
 }
@@ -76,12 +77,14 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.CloseMenu]: state => ({
-    ...state,
-    activeItemIndex: null,
-    menuState: MenuStates.Closed,
-  }),
-  [ActionTypes.OpenMenu]: state => ({ ...state, menuState: MenuStates.Open }),
+  [ActionTypes.CloseMenu](state) {
+    if (state.menuState === MenuStates.Closed) return state
+    return { ...state, activeItemIndex: null, menuState: MenuStates.Closed }
+  },
+  [ActionTypes.OpenMenu](state) {
+    if (state.menuState === MenuStates.Open) return state
+    return { ...state, menuState: MenuStates.Open }
+  },
   [ActionTypes.GoToItem]: (state, action) => {
     let activeItemIndex = calculateActiveIndex(action, {
       resolveItems: () => state.items,
@@ -103,7 +106,10 @@ let reducers: {
     if (match === -1 || match === state.activeItemIndex) return { ...state, searchQuery }
     return { ...state, searchQuery, activeItemIndex: match }
   },
-  [ActionTypes.ClearSearch]: state => ({ ...state, searchQuery: '' }),
+  [ActionTypes.ClearSearch](state) {
+    if (state.searchQuery === '') return state
+    return { ...state, searchQuery: '' }
+  },
   [ActionTypes.RegisterItem]: (state, action) => ({
     ...state,
     items: [...state.items, { id: action.id, dataRef: action.dataRef }],
@@ -168,28 +174,30 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   } as StateDefinition)
   let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
 
-  useEffect(() => {
-    function handler(event: MouseEvent) {
-      let target = event.target as HTMLElement
-      let active = document.activeElement
+  // Handle outside click
+  useWindowEvent('mousedown', event => {
+    let target = event.target as HTMLElement
 
-      if (menuState !== MenuStates.Open) return
-      if (buttonRef.current?.contains(target)) return
+    if (menuState !== MenuStates.Open) return
 
-      if (!itemsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseMenu })
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
+    if (buttonRef.current?.contains(target)) return
+    if (itemsRef.current?.contains(target)) return
+
+    dispatch({ type: ActionTypes.CloseMenu })
+
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      buttonRef.current?.focus()
     }
+  })
 
-    window.addEventListener('mousedown', handler)
-    return () => window.removeEventListener('mousedown', handler)
-  }, [menuState, itemsRef, buttonRef, dispatch])
-
-  let propsBag = useMemo(() => ({ open: menuState === MenuStates.Open }), [menuState])
+  let slot = useMemo<MenuRenderPropArg>(() => ({ open: menuState === MenuStates.Open }), [
+    menuState,
+  ])
 
   return (
     <MenuContext.Provider value={reducerBag}>
-      {render(props, propsBag, DEFAULT_MENU_TAG)}
+      {render({ props, slot, defaultTag: DEFAULT_MENU_TAG, name: 'Menu' })}
     </MenuContext.Provider>
   )
 }
@@ -228,25 +236,32 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         case Keys.Enter:
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.OpenMenu })
-          d.nextFrame(() => {
-            state.itemsRef.current?.focus({ preventScroll: true })
-            dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
-          })
+          d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.First }))
           break
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.OpenMenu })
-          d.nextFrame(() => {
-            state.itemsRef.current?.focus({ preventScroll: true })
-            dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
-          })
+          d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last }))
           break
       }
     },
-    [dispatch, state, d]
+    [dispatch, d]
   )
+
+  let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    switch (event.key) {
+      case Keys.Space:
+        // Required for firefox, event.preventDefault() in handleKeyDown for
+        // the Space key doesn't cancel the handleKeyUp, which in turn
+        // triggers a *click*.
+        event.preventDefault()
+        break
+    }
+  }, [])
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
@@ -257,14 +272,16 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
+        event.stopPropagation()
         dispatch({ type: ActionTypes.OpenMenu })
-        d.nextFrame(() => state.itemsRef.current?.focus({ preventScroll: true }))
       }
     },
     [dispatch, d, state, props.disabled]
   )
 
-  let propsBag = useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
+  let slot = useMemo<ButtonRenderPropArg>(() => ({ open: state.menuState === MenuStates.Open }), [
+    state,
+  ])
   let passthroughProps = props
   let propsWeControl = {
     ref: buttonRef,
@@ -274,10 +291,16 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     'aria-controls': state.itemsRef.current?.id,
     'aria-expanded': state.menuState === MenuStates.Open ? true : undefined,
     onKeyDown: handleKeyDown,
+    onKeyUp: handleKeyUp,
     onClick: handleClick,
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_BUTTON_TAG,
+    name: 'Menu.Button',
+  })
 })
 
 // ---
@@ -307,22 +330,26 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
   let id = `headlessui-menu-items-${useId()}`
   let searchDisposables = useDisposables()
 
-  useIsoMorphicEffect(() => {
+  useEffect(() => {
     let container = state.itemsRef.current
     if (!container) return
     if (state.menuState !== MenuStates.Open) return
+    if (container === document.activeElement) return
 
-    let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, {
-      acceptNode(node: HTMLElement) {
-        if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
-        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
-        return NodeFilter.FILTER_ACCEPT
-      },
-    })
+    container.focus({ preventScroll: true })
+  }, [state.menuState, state.itemsRef])
 
-    while (walker.nextNode()) {
-      ;(walker.currentNode as HTMLElement).setAttribute('role', 'none')
-    }
+  useTreeWalker({
+    container: state.itemsRef.current,
+    enabled: state.menuState === MenuStates.Open,
+    accept(node) {
+      if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
+      if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+      return NodeFilter.FILTER_ACCEPT
+    },
+    walk(node) {
+      node.setAttribute('role', 'none')
+    },
   })
 
   let handleKeyDown = useCallback(
@@ -336,11 +363,13 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
         case Keys.Space:
           if (state.searchQuery !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return dispatch({ type: ActionTypes.Search, value: event.key })
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseMenu })
           if (state.activeItemIndex !== null) {
             let { id } = state.items[state.activeItemIndex]
@@ -351,30 +380,37 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Next })
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Previous })
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseMenu })
           disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {
@@ -387,26 +423,41 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     [dispatch, searchDisposables, state]
   )
 
-  let propsBag = useMemo(() => ({ open: state.menuState === MenuStates.Open }), [state])
+  let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    switch (event.key) {
+      case Keys.Space:
+        // Required for firefox, event.preventDefault() in handleKeyDown for
+        // the Space key doesn't cancel the handleKeyUp, which in turn
+        // triggers a *click*.
+        event.preventDefault()
+        break
+    }
+  }, [])
+
+  let slot = useMemo<ItemsRenderPropArg>(() => ({ open: state.menuState === MenuStates.Open }), [
+    state,
+  ])
   let propsWeControl = {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
     'aria-labelledby': state.buttonRef.current?.id,
     id,
     onKeyDown: handleKeyDown,
+    onKeyUp: handleKeyUp,
     role: 'menu',
     tabIndex: 0,
     ref: itemsRef,
   }
   let passthroughProps = props
 
-  return render(
-    { ...passthroughProps, ...propsWeControl },
-    propsBag,
-    DEFAULT_ITEMS_TAG,
-    ItemsRenderFeatures,
-    state.menuState === MenuStates.Open
-  )
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_ITEMS_TAG,
+    features: ItemsRenderFeatures,
+    visible: state.menuState === MenuStates.Open,
+    name: 'Menu.Items',
+  })
 })
 
 // ---
@@ -428,15 +479,12 @@ type MenuItemPropsWeControl =
   | 'onFocus'
 
 function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
-  props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl | 'className'> & {
+  props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl> & {
     disabled?: boolean
     onClick?: (event: { preventDefault: Function }) => void
-
-    // Special treatment, can either be a string or a function that resolves to a string
-    className?: ((bag: ItemRenderPropArg) => string) | string
   }
 ) {
-  let { disabled = false, className, onClick, ...passthroughProps } = props
+  let { disabled = false, onClick, ...passthroughProps } = props
   let [state, dispatch] = useMenuContext([Menu.name, Item.name].join('.'))
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
@@ -491,12 +539,11 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  let propsBag = useMemo(() => ({ active, disabled }), [active, disabled])
+  let slot = useMemo<ItemRenderPropArg>(() => ({ active, disabled }), [active, disabled])
   let propsWeControl = {
     id,
     role: 'menuitem',
     tabIndex: -1,
-    className: resolvePropValue(className, propsBag),
     'aria-disabled': disabled === true ? true : undefined,
     onClick: handleClick,
     onFocus: handleFocus,
@@ -506,7 +553,12 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     onMouseLeave: handleLeave,
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_ITEM_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_ITEM_TAG,
+    name: 'Menu.Item',
+  })
 }
 
 // ---

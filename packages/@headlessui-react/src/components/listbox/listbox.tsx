@@ -1,13 +1,12 @@
 import React, {
+  Fragment,
   createContext,
   createRef,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   useRef,
-  Fragment,
 
   // Types
   Dispatch,
@@ -29,8 +28,9 @@ import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
+import { useWindowEvent } from '../../hooks/use-window-event'
 
 enum ListboxStates {
   Open,
@@ -195,7 +195,6 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   }
 ) {
   let { value, onChange, disabled = false, ...passThroughProps } = props
-  let d = useDisposables()
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
     propsRef: { current: { value, onChange } },
@@ -217,31 +216,36 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   }, [onChange, propsRef])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
-  useEffect(() => {
-    function handler(event: MouseEvent) {
-      let target = event.target as HTMLElement
-      let active = document.activeElement
+  // Handle outside click
+  useWindowEvent('mousedown', event => {
+    let target = event.target as HTMLElement
 
-      if (listboxState !== ListboxStates.Open) return
-      if (buttonRef.current?.contains(target)) return
+    if (listboxState !== ListboxStates.Open) return
 
-      if (!optionsRef.current?.contains(target)) dispatch({ type: ActionTypes.CloseListbox })
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) buttonRef.current?.focus({ preventScroll: true })
+    if (buttonRef.current?.contains(target)) return
+    if (optionsRef.current?.contains(target)) return
+
+    dispatch({ type: ActionTypes.CloseListbox })
+
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      buttonRef.current?.focus()
     }
+  })
 
-    window.addEventListener('mousedown', handler)
-    return () => window.removeEventListener('mousedown', handler)
-  }, [listboxState, optionsRef, buttonRef, d, dispatch])
-
-  let propsBag = useMemo<ListboxRenderPropArg>(
+  let slot = useMemo<ListboxRenderPropArg>(
     () => ({ open: listboxState === ListboxStates.Open, disabled }),
     [listboxState, disabled]
   )
 
   return (
     <ListboxContext.Provider value={reducerBag}>
-      {render(passThroughProps, propsBag, DEFAULT_LISTBOX_TAG)}
+      {render({
+        props: passThroughProps,
+        slot,
+        defaultTag: DEFAULT_LISTBOX_TAG,
+        name: 'Listbox',
+      })}
     </ListboxContext.Provider>
   )
 }
@@ -285,7 +289,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.optionsRef.current?.focus({ preventScroll: true })
             if (!state.propsRef.current.value)
               dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
           })
@@ -295,7 +298,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            state.optionsRef.current?.focus({ preventScroll: true })
             if (!state.propsRef.current.value)
               dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
           })
@@ -304,6 +306,17 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     },
     [dispatch, state, d]
   )
+
+  let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    switch (event.key) {
+      case Keys.Space:
+        // Required for firefox, event.preventDefault() in handleKeyDown for
+        // the Space key doesn't cancel the handleKeyUp, which in turn
+        // triggers a *click*.
+        event.preventDefault()
+        break
+    }
+  }, [])
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
@@ -314,7 +327,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       } else {
         event.preventDefault()
         dispatch({ type: ActionTypes.OpenListbox })
-        d.nextFrame(() => state.optionsRef.current?.focus({ preventScroll: true }))
       }
     },
     [dispatch, d, state]
@@ -325,7 +337,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     return [state.labelRef.current.id, id].join(' ')
   }, [state.labelRef.current, id])
 
-  let propsBag = useMemo<ButtonRenderPropArg>(
+  let slot = useMemo<ButtonRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
@@ -340,10 +352,16 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
+    onKeyUp: handleKeyUp,
     onClick: handleClick,
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_BUTTON_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_BUTTON_TAG,
+    name: 'Listbox.Button',
+  })
 })
 
 // ---
@@ -365,12 +383,17 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     state.buttonRef,
   ])
 
-  let propsBag = useMemo<LabelRenderPropArg>(
+  let slot = useMemo<LabelRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
   let propsWeControl = { ref: state.labelRef, id, onClick: handleClick }
-  return render({ ...props, ...propsWeControl }, propsBag, DEFAULT_LABEL_TAG)
+  return render({
+    props: { ...props, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_LABEL_TAG,
+    name: 'Listbox.Label',
+  })
 }
 
 // ---
@@ -403,6 +426,15 @@ let Options = forwardRefWithAs(function Options<
   let d = useDisposables()
   let searchDisposables = useDisposables()
 
+  useIsoMorphicEffect(() => {
+    let container = state.optionsRef.current
+    if (!container) return
+    if (state.listboxState !== ListboxStates.Open) return
+    if (container === document.activeElement) return
+
+    container.focus({ preventScroll: true })
+  }, [state.listboxState, state.optionsRef])
+
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLUListElement>) => {
       searchDisposables.dispose()
@@ -414,11 +446,13 @@ let Options = forwardRefWithAs(function Options<
         case Keys.Space:
           if (state.searchQuery !== '') {
             event.preventDefault()
+            event.stopPropagation()
             return dispatch({ type: ActionTypes.Search, value: event.key })
           }
         // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseListbox })
           if (state.activeOptionIndex !== null) {
             let { dataRef } = state.options[state.activeOptionIndex]
@@ -429,29 +463,36 @@ let Options = forwardRefWithAs(function Options<
 
         case Keys.ArrowDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Next })
 
         case Keys.ArrowUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Previous })
 
         case Keys.Home:
         case Keys.PageUp:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
+          event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
 
         case Keys.Escape:
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.CloseListbox })
           return d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
 
         case Keys.Tab:
-          return event.preventDefault()
+          event.preventDefault()
+          event.stopPropagation()
+          break
 
         default:
           if (event.key.length === 1) {
@@ -469,7 +510,7 @@ let Options = forwardRefWithAs(function Options<
     state.buttonRef.current,
   ])
 
-  let propsBag = useMemo<OptionsRenderPropArg>(
+  let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
     [state]
   )
@@ -485,13 +526,14 @@ let Options = forwardRefWithAs(function Options<
   }
   let passthroughProps = props
 
-  return render(
-    { ...passthroughProps, ...propsWeControl },
-    propsBag,
-    DEFAULT_OPTIONS_TAG,
-    OptionsRenderFeatures,
-    state.listboxState === ListboxStates.Open
-  )
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OPTIONS_TAG,
+    features: OptionsRenderFeatures,
+    visible: state.listboxState === ListboxStates.Open,
+    name: 'Listbox.Options',
+  })
 })
 
 // ---
@@ -520,15 +562,12 @@ function Option<
   // But today is not that day..
   TType = Parameters<typeof Listbox>[0]['value']
 >(
-  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'className' | 'value'> & {
+  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'value'> & {
     disabled?: boolean
     value: TType
-
-    // Special treatment, can either be a string or a function that resolves to a string
-    className?: ((bag: OptionRenderPropArg) => string) | string
   }
 ) {
-  let { disabled = false, value, className, ...passthroughProps } = props
+  let { disabled = false, value, ...passthroughProps } = props
   let [state, dispatch] = useListboxContext([Listbox.name, Option.name].join('.'))
   let id = `headlessui-listbox-option-${useId()}`
   let active =
@@ -596,12 +635,15 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  let propsBag = useMemo(() => ({ active, selected, disabled }), [active, selected, disabled])
+  let slot = useMemo<OptionRenderPropArg>(() => ({ active, selected, disabled }), [
+    active,
+    selected,
+    disabled,
+  ])
   let propsWeControl = {
     id,
     role: 'option',
     tabIndex: -1,
-    className: resolvePropValue(className, propsBag),
     'aria-disabled': disabled === true ? true : undefined,
     'aria-selected': selected === true ? true : undefined,
     onClick: handleClick,
@@ -612,7 +654,12 @@ function Option<
     onMouseLeave: handleLeave,
   }
 
-  return render({ ...passthroughProps, ...propsWeControl }, propsBag, DEFAULT_OPTION_TAG)
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OPTION_TAG,
+    name: 'Listbox.Option',
+  })
 }
 
 // ---

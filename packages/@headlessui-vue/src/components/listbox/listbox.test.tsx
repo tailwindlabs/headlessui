@@ -34,6 +34,7 @@ import {
   Keys,
   MouseButton,
 } from '../../test-utils/interactions'
+import { html } from '../../test-utils/html'
 
 jest.mock('../../hooks/use-id')
 
@@ -79,7 +80,7 @@ describe('safeguards', () => {
     'should be possible to render a Listbox without crashing',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -107,7 +108,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox using a render prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value" v-slot="{ open }">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions v-show="open">
@@ -140,7 +141,7 @@ describe('Rendering', () => {
       'should be possible to disable a Listbox',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value" disabled>
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -183,7 +184,7 @@ describe('Rendering', () => {
       'should be possible to render a ListboxLabel using a render prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxLabel v-slot="data">{{JSON.stringify(data)}}</ListboxLabel>
               <ListboxButton>Trigger</ListboxButton>
@@ -223,7 +224,7 @@ describe('Rendering', () => {
       'should be possible to render a ListboxLabel using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxLabel as="p" v-slot="data">{{JSON.stringify(data)}}</ListboxLabel>
               <ListboxButton>Trigger</ListboxButton>
@@ -260,7 +261,7 @@ describe('Rendering', () => {
       'should be possible to render a ListboxButton using a render prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton v-slot="data">{{JSON.stringify(data)}}</ListboxButton>
               <ListboxOptions>
@@ -295,9 +296,11 @@ describe('Rendering', () => {
       'should be possible to render a ListboxButton using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
-              <ListboxButton as="div" role="button" v-slot="data">{{JSON.stringify(data)}}</ListboxButton>
+              <ListboxButton as="div" role="button" v-slot="data"
+                >{{JSON.stringify(data)}}</ListboxButton
+              >
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
@@ -330,7 +333,7 @@ describe('Rendering', () => {
       'should be possible to render a ListboxButton and a ListboxLabel and see them linked together',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxLabel>Label</ListboxLabel>
               <ListboxButton>Trigger</ListboxButton>
@@ -361,7 +364,7 @@ describe('Rendering', () => {
       'should be possible to render ListboxOptions using a render prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions v-slot="data">
@@ -394,7 +397,7 @@ describe('Rendering', () => {
 
     it('should be possible to always render the ListboxOptions if we provide it a `static` prop', () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions static>
@@ -413,7 +416,7 @@ describe('Rendering', () => {
 
     it('should be possible to use a different render strategy for the ListboxOptions', async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions :unmount="false">
@@ -442,7 +445,7 @@ describe('Rendering', () => {
       'should be possible to render a ListboxOption using a render prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -479,7 +482,7 @@ describe('Rendering composition', () => {
     'should be possible to conditionally render classNames (aka className can be a function?!)',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -557,7 +560,7 @@ describe('Rendering composition', () => {
     'should be possible to swap the Listbox option with a button for example',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -597,7 +600,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Enter',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -646,7 +649,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with Enter when the button is disabled',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value" disabled>
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -684,7 +687,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Enter, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -732,7 +735,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Enter, and focus the selected option (when using the `hidden` render strategy)',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions :unmount="false">
@@ -798,11 +801,13 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Enter, and focus the selected option (with a list of objects)',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption v-for="option in options" key="option.id" :value="option">{{ option.name }}</ListboxOption>
+                <ListboxOption v-for="option in options" key="option.id" :value="option"
+                  >{{ option.name }}</ListboxOption
+                >
               </ListboxOptions>
             </Listbox>
           `,
@@ -853,7 +858,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions />
@@ -880,7 +885,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Enter',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -918,7 +923,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Enter (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -958,7 +963,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon Enter key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -997,7 +1002,7 @@ describe('Keyboard interactions', () => {
       'should be possible to close the listbox with Enter when there is no active listboxoption',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1039,7 +1044,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         let handleChange = jest.fn()
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1100,7 +1105,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Space',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1146,7 +1151,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with Space when the button is disabled',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value" disabled>
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1184,7 +1189,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Space, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1232,7 +1237,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions />
@@ -1259,7 +1264,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Space',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1297,7 +1302,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Space (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1337,7 +1342,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon Space key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1377,7 +1382,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         let handleChange = jest.fn()
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1438,7 +1443,7 @@ describe('Keyboard interactions', () => {
       'should be possible to close an open listbox with Escape',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1484,7 +1489,7 @@ describe('Keyboard interactions', () => {
       'should focus trap when we use Tab',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1538,7 +1543,7 @@ describe('Keyboard interactions', () => {
       'should focus trap when we use Shift+Tab',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1594,7 +1599,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowDown',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1642,7 +1647,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with ArrowDown when the button is disabled',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value" disabled>
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1680,7 +1685,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowDown, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1728,7 +1733,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions />
@@ -1755,7 +1760,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1804,7 +1809,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the listbox options and skip the first disabled one',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1847,7 +1852,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the listbox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1890,7 +1895,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowUp and the last option should be active',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1938,7 +1943,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with ArrowUp and the last option should be active when the button is disabled',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value" disabled>
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -1976,7 +1981,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowUp, and focus the selected option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2024,7 +2029,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions />
@@ -2051,7 +2056,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowUp to navigate the listbox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2092,7 +2097,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to navigate up or down if there is only a single non-disabled option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2141,7 +2146,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowUp to navigate the listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2201,7 +2206,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the last listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2235,7 +2240,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the last non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2274,7 +2279,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the first listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2312,7 +2317,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon End key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2353,7 +2358,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the last listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2387,7 +2392,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the last non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2426,7 +2431,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the first listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2464,7 +2469,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon PageDown key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2505,7 +2510,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the first listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2539,7 +2544,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the first non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2577,7 +2582,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the last listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2615,7 +2620,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon Home key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2656,7 +2661,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the first listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2690,7 +2695,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the first non disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2728,7 +2733,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the last listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2766,7 +2771,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon PageUp key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2807,7 +2812,7 @@ describe('Keyboard interactions', () => {
       'should be possible to type a full word that has a perfect match',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2843,7 +2848,7 @@ describe('Keyboard interactions', () => {
       'should be possible to type a partial of a word',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2885,7 +2890,7 @@ describe('Keyboard interactions', () => {
       'should be possible to type words with spaces',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2927,7 +2932,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to search for a disabled option',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: `
+          template: html`
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
@@ -2968,7 +2973,7 @@ describe('Mouse interactions', () => {
     'should focus the ListboxButton when we click the ListboxLabel',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxLabel>Label</ListboxLabel>
             <ListboxButton>Trigger</ListboxButton>
@@ -2997,7 +3002,7 @@ describe('Mouse interactions', () => {
     'should not focus the ListboxButton when we right click the ListboxLabel',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxLabel>Label</ListboxLabel>
             <ListboxButton>Trigger</ListboxButton>
@@ -3026,7 +3031,7 @@ describe('Mouse interactions', () => {
     'should be possible to open the listbox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3068,7 +3073,7 @@ describe('Mouse interactions', () => {
     'should not be possible to open the listbox on right click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3099,7 +3104,7 @@ describe('Mouse interactions', () => {
     'should not be possible to open the listbox on click when the button is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value" disabled>
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3134,7 +3139,7 @@ describe('Mouse interactions', () => {
     'should be possible to open the listbox on click, and focus the selected option',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3179,7 +3184,7 @@ describe('Mouse interactions', () => {
     'should be possible to close a listbox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3211,7 +3216,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we click outside of a closed listbox',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3239,7 +3244,7 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the listbox which should close the listbox',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3272,7 +3277,7 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the listbox on another listbox button which should close the current listbox and open the new listbox',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <div>
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
@@ -3319,7 +3324,7 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the listbox which should close the listbox (even if we press the listbox button)',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3352,7 +3357,7 @@ describe('Mouse interactions', () => {
     'should be possible to hover an option and make it active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3387,7 +3392,7 @@ describe('Mouse interactions', () => {
     'should make a listbox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3414,7 +3419,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the listbox option is already active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3447,7 +3452,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the listbox option is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3476,7 +3481,7 @@ describe('Mouse interactions', () => {
     'should not be possible to hover an option that is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3508,7 +3513,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3553,7 +3558,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave a disabled option and be a no-op',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3587,7 +3592,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3633,7 +3638,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3680,7 +3685,7 @@ describe('Mouse interactions', () => {
     'should be possible focus a listbox option, so that it becomes active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
@@ -3713,7 +3718,7 @@ describe('Mouse interactions', () => {
     'should not be possible to focus a listbox option which is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: `
+        template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>

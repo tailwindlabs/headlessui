@@ -46,15 +46,23 @@ export type PropsForFeatures<T extends Features> = XOR<
   PropsForFeature<T, Features.RenderStrategy, { unmount?: boolean }>
 >
 
-export function render<TFeature extends Features, TTag extends ElementType, TBag>(
-  props: Expand<Props<TTag, TBag, any> & PropsForFeatures<TFeature>>,
-  propsBag: TBag,
-  defaultTag: ElementType,
-  features?: TFeature,
-  visible: boolean = true
-) {
+export function render<TFeature extends Features, TTag extends ElementType, TSlot>({
+  props,
+  slot,
+  defaultTag,
+  features,
+  visible = true,
+  name,
+}: {
+  props: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  slot?: TSlot
+  defaultTag: ElementType
+  features?: TFeature
+  visible?: boolean
+  name: string
+}) {
   // Visible always render
-  if (visible) return _render(props, propsBag, defaultTag)
+  if (visible) return _render(props, slot, defaultTag, name)
 
   let featureFlags = features ?? Features.None
 
@@ -62,7 +70,7 @@ export function render<TFeature extends Features, TTag extends ElementType, TBag
     let { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
 
     // When the `static` prop is passed as `true`, then the user is in control, thus we don't care about anything else
-    if (isStatic) return _render(rest, propsBag, defaultTag)
+    if (isStatic) return _render(rest, slot, defaultTag, name)
   }
 
   if (featureFlags & Features.RenderStrategy) {
@@ -76,21 +84,23 @@ export function render<TFeature extends Features, TTag extends ElementType, TBag
       [RenderStrategy.Hidden]() {
         return _render(
           { ...rest, ...{ hidden: true, style: { display: 'none' } } },
-          propsBag,
-          defaultTag
+          slot,
+          defaultTag,
+          name
         )
       },
     })
   }
 
   // No features enabled, just render
-  return _render(props, propsBag, defaultTag)
+  return _render(props, slot, defaultTag, name)
 }
 
-function _render<TTag extends ElementType, TBag>(
-  props: Props<TTag, TBag> & { ref?: unknown },
-  bag: TBag,
-  tag: ElementType
+function _render<TTag extends ElementType, TSlot>(
+  props: Props<TTag, TSlot> & { ref?: unknown },
+  slot: TSlot = {} as TSlot,
+  tag: ElementType,
+  name: string
 ) {
   let { as: Component = tag, children, refName = 'ref', ...passThroughProps } = omit(props, [
     'unmount',
@@ -100,24 +110,40 @@ function _render<TTag extends ElementType, TBag>(
   // This allows us to use `<HeadlessUIComponent as={MyComopnent} refName="innerRef" />`
   let refRelatedProps = props.ref !== undefined ? { [refName]: props.ref } : {}
 
-  let resolvedChildren = (typeof children === 'function' ? children(bag) : children) as
+  let resolvedChildren = (typeof children === 'function' ? children(slot) : children) as
     | ReactElement
     | ReactElement[]
 
+  // Allow for className to be a function with the slot as the contents
+  if (passThroughProps.className && typeof passThroughProps.className === 'function') {
+    ;(passThroughProps as any).className = passThroughProps.className(slot)
+  }
+
   if (Component === Fragment) {
     if (Object.keys(passThroughProps).length > 0) {
-      if (Array.isArray(resolvedChildren) && resolvedChildren.length > 1) {
-        let err = new Error('You should only render 1 child')
-        if (Error.captureStackTrace) Error.captureStackTrace(err, _render)
-        throw err
-      }
-
-      if (!isValidElement(resolvedChildren)) {
-        let err = new Error(
-          `You should render an element as a child. Did you forget the as="..." prop?`
+      if (
+        !isValidElement(resolvedChildren) ||
+        (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
+      ) {
+        throw new Error(
+          [
+            'Passing props on "Fragment"!',
+            '',
+            `The current component <${name} /> is rendering a "Fragment".`,
+            `However we need to passthrough the following props:`,
+            Object.keys(passThroughProps)
+              .map(line => `  - ${line}`)
+              .join('\n'),
+            '',
+            'You can apply a few solutions:',
+            [
+              'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+              'Render a single element as the child so that we can forward the props onto that element.',
+            ]
+              .map(line => `  - ${line}`)
+              .join('\n'),
+          ].join('\n')
         )
-        if (Error.captureStackTrace) Error.captureStackTrace(err, _render)
-        throw err
       }
 
       return cloneElement(
@@ -182,8 +208,12 @@ function mergeEventFunctions(
  * This is a hack, but basically we want to keep the full 'API' of the component, but we do want to
  * wrap it in a forwardRef so that we _can_ passthrough the ref
  */
-export function forwardRefWithAs<T>(component: T): T {
-  return forwardRef((component as unknown) as any) as any
+export function forwardRefWithAs<T extends { name: string; displayName?: string }>(
+  component: T
+): T & { displayName: string } {
+  return Object.assign(forwardRef((component as unknown) as any) as any, {
+    displayName: component.displayName ?? component.name,
+  })
 }
 
 function compact<T extends Record<any, any>>(object: T) {

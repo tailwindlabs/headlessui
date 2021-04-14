@@ -3,7 +3,7 @@ import { render as testRender, prettyDOM, getByTestId } from '@testing-library/r
 
 import { suppressConsoleLogs } from '../test-utils/suppress-console-logs'
 import { render, Features, PropsForFeatures } from './render'
-import { Props } from '../types'
+import { Props, Expand } from '../types'
 
 function contents() {
   return prettyDOM(getByTestId(document.body, 'wrapper'), undefined, {
@@ -12,11 +12,20 @@ function contents() {
 }
 
 describe('Default functionality', () => {
-  let bag = {}
+  let slot = {}
   function Dummy<TTag extends ElementType = 'div'>(
     props: Props<TTag> & Partial<{ a: any; b: any; c: any }>
   ) {
-    return <div data-testid="wrapper">{render(props, bag, 'div')}</div>
+    return (
+      <div data-testid="wrapper">
+        {render({
+          props,
+          slot,
+          defaultTag: 'div',
+          name: 'Dummy',
+        })}
+      </div>
+    )
   }
 
   it('should be possible to render a dummy component', () => {
@@ -37,7 +46,7 @@ describe('Default functionality', () => {
     testRender(
       <Dummy>
         {data => {
-          expect(data).toBe(bag)
+          expect(data).toBe(slot)
 
           return <span>Contents</span>
         }}
@@ -68,7 +77,16 @@ describe('Default functionality', () => {
     }
 
     function OtherDummy<TTag extends ElementType = 'div'>(props: Props<TTag>) {
-      return <div data-testid="wrapper">{render({ ...props, ref }, bag, 'div')}</div>
+      return (
+        <div data-testid="wrapper">
+          {render({
+            props: { ...props, ref },
+            slot,
+            defaultTag: 'div',
+            name: 'OtherDummy',
+          })}
+        </div>
+      )
     }
 
     testRender(
@@ -180,7 +198,21 @@ describe('Default functionality', () => {
             <span>Contents B</span>
           </Dummy>
         )
-      }).toThrowErrorMatchingInlineSnapshot(`"You should only render 1 child"`)
+      }).toThrowError(
+        new Error(
+          [
+            'Passing props on "Fragment"!',
+            '',
+            'The current component <Dummy /> is rendering a "Fragment".',
+            'However we need to passthrough the following props:',
+            '  - className',
+            '',
+            'You can apply a few solutions:',
+            '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+            '  - Render a single element as the child so that we can forward the props onto that element.',
+          ].join('\n')
+        )
+      )
     })
   )
 
@@ -218,8 +250,20 @@ describe('Default functionality', () => {
             Contents
           </Dummy>
         )
-      }).toThrowErrorMatchingInlineSnapshot(
-        `"You should render an element as a child. Did you forget the as=\\"...\\" prop?"`
+      }).toThrowError(
+        new Error(
+          [
+            'Passing props on "Fragment"!',
+            '',
+            'The current component <Dummy /> is rendering a "Fragment".',
+            'However we need to passthrough the following props:',
+            '  - className',
+            '',
+            'You can apply a few solutions:',
+            '  - Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+            '  - Render a single element as the child so that we can forward the props onto that element.',
+          ].join('\n')
+        )
       )
     })
   )
@@ -227,7 +271,7 @@ describe('Default functionality', () => {
 
 // ---
 
-function testStaticFeature(Dummy) {
+function testStaticFeature(Dummy: Function) {
   it('should be possible to render a `static` dummy component (show = true)', () => {
     testRender(
       <Dummy show={true} static>
@@ -270,13 +314,24 @@ function testStaticFeature(Dummy) {
 // component in a Transition for example so that the Transition component can control the
 // showing/hiding based on the `show` prop AND the state of the transition.
 describe('Features.Static', () => {
-  let bag = {}
+  let slot = {}
   let EnabledFeatures = Features.Static
   function Dummy<TTag extends ElementType = 'div'>(
-    props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
+    props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
     let { show, ...rest } = props
-    return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
+    return (
+      <div data-testid="wrapper">
+        {render({
+          props: rest,
+          slot,
+          defaultTag: 'div',
+          features: EnabledFeatures,
+          visible: show,
+          name: 'Dummy',
+        })}
+      </div>
+    )
   }
 
   testStaticFeature(Dummy)
@@ -284,7 +339,7 @@ describe('Features.Static', () => {
 
 // ---
 
-function testRenderStrategyFeature(Dummy) {
+function testRenderStrategyFeature(Dummy: Function) {
   describe('Unmount render strategy', () => {
     it('should be possible to render an `unmount` dummy component (show = true)', () => {
       testRender(
@@ -364,13 +419,24 @@ function testRenderStrategyFeature(Dummy) {
 }
 
 describe('Features.RenderStrategy', () => {
-  let bag = {}
+  let slot = {}
   let EnabledFeatures = Features.RenderStrategy
   function Dummy<TTag extends ElementType = 'div'>(
-    props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
+    props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
     let { show, ...rest } = props
-    return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
+    return (
+      <div data-testid="wrapper">
+        {render({
+          props: rest,
+          slot,
+          defaultTag: 'div',
+          features: EnabledFeatures,
+          visible: show,
+          name: 'Dummy',
+        })}
+      </div>
+    )
   }
 
   testRenderStrategyFeature(Dummy)
@@ -380,13 +446,24 @@ describe('Features.RenderStrategy', () => {
 
 // This should enable the `static` and `unmount` features. However they can't be used together!
 describe('Features.Static | Features.RenderStrategy', () => {
-  let bag = {}
+  let slot = {}
   let EnabledFeatures = Features.Static | Features.RenderStrategy
   function Dummy<TTag extends ElementType = 'div'>(
-    props: Props<TTag> & { show: boolean } & PropsForFeatures<typeof EnabledFeatures>
+    props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
     let { show, ...rest } = props
-    return <div data-testid="wrapper">{render(rest, bag, 'div', EnabledFeatures, show)}</div>
+    return (
+      <div data-testid="wrapper">
+        {render({
+          props: rest,
+          slot,
+          defaultTag: 'div',
+          features: EnabledFeatures,
+          visible: show,
+          name: 'Dummy',
+        })}
+      </div>
+    )
   }
 
   // TODO: Can we "legit" test this? 🤔

@@ -5,5 +5,16 @@ import * as HeadlessUI from './index'
  * the outside world that we didn't want!
  */
 it('should expose the correct components', () => {
-  expect(Object.keys(HeadlessUI)).toEqual(['Transition', 'Menu', 'Listbox', 'Switch'])
+  expect(Object.keys(HeadlessUI)).toEqual([
+    'Dialog',
+    'Disclosure',
+    'FocusTrap',
+    'Listbox',
+    'Menu',
+    'Popover',
+    'Portal',
+    'RadioGroup',
+    'Switch',
+    'Transition',
+  ])
 })
