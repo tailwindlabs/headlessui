@@ -179,7 +179,7 @@ export let TransitionChild = defineComponent({
 
     let nesting = useNesting(() => {
       // When all children have been unmounted we can only hide ourselves if and only if we are not
-      // transitioning ourserlves. Otherwise we would unmount before the transitions are finished.
+      // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
       if (!isTransitioning.value) {
         state.value = TreeStates.Hidden
         unregister(id)
