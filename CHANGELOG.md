@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Fixes
+
+- Fixed transitions being cancelled because of focus auto scroll ([#356](https://github.com/tailwindlabs/headlessui/pull/356))
 
 ## [Unreleased - Vue]
 

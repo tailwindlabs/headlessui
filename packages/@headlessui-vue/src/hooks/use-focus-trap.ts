@@ -46,7 +46,7 @@ export function useFocusTrap(
     } else {
       let couldFocus = false
       for (let container of containers.value) {
-        let result = focusIn(container, Focus.First)
+        let result = focusIn(container, Focus.First | Focus.NoScroll)
         if (result === FocusResult.Success) {
           couldFocus = true
           break
