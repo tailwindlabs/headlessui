@@ -219,7 +219,7 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
 
   let nesting = useNesting(() => {
     // When all children have been unmounted we can only hide ourselves if and only if we are not
-    // transitioning ourserlves. Otherwise we would unmount before the transitions are finished.
+    // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
     if (!isTransitioning.current) {
       setState(TreeStates.Hidden)
       unregister(id)

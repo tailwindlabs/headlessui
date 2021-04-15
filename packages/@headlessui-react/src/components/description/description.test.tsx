@@ -64,7 +64,7 @@ it('should be possible to use a DescriptionProvider and a single Description, an
   `)
 })
 
-it('should be possible to use a DescriptionProvider and multiple Description ocmponents, and have them linked', async () => {
+it('should be possible to use a DescriptionProvider and multiple Description components, and have them linked', async () => {
   function Component(props: { children: ReactNode }) {
     let [describedby, DescriptionProvider] = useDescriptions()
 
