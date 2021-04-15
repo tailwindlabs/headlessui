@@ -39,7 +39,7 @@ it('should be possible to transition', async () => {
   expect(snapshots[1].content).toEqual('<div class="enter enterFrom"></div>')
 
   // NOTE: There is no `enter enterTo`, because we didn't define a duration. Therefore it is not
-  // necessary to put the classes on the element and immediatley remove them.
+  // necessary to put the classes on the element and immediately remove them.
 
   // Cleanup phase
   expect(snapshots[2].content).toEqual('<div class=""></div>')
