@@ -2965,6 +2965,42 @@ describe('Keyboard interactions', () => {
         assertActiveListboxOption(options[2])
       })
     )
+
+    it(
+      'should be possible to search for a word (case insensitive)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="alice">alice</ListboxOption>
+                <ListboxOption value="bob">bob</ListboxOption>
+                <ListboxOption value="charlie">charlie</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.ArrowUp)
+
+        let options = getListboxOptions()
+
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
+
+        // Search for bob in a different casing
+        await type(word('BO'))
+
+        // We should be on `bob`
+        assertActiveListboxOption(options[1])
+      })
+    )
   })
 })
 

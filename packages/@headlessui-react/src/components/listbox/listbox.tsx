@@ -118,7 +118,7 @@ let reducers: {
     if (state.disabled) return state
     if (state.listboxState === ListboxStates.Closed) return state
 
-    let searchQuery = state.searchQuery + action.value
+    let searchQuery = state.searchQuery + action.value.toLowerCase()
     let match = state.options.findIndex(
       option =>
         !option.dataRef.current.disabled &&
