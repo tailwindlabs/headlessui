@@ -2454,6 +2454,36 @@ describe('Keyboard interactions', () => {
       // We should still be on the last item
       assertMenuLinkedWithMenuItem(items[2])
     })
+
+    it('should be possible to search for a word (case insensitive)', async () => {
+      renderTemplate(jsx`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">alice</MenuItem>
+            <MenuItem as="a">bob</MenuItem>
+            <MenuItem as="a">charlie</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      // Focus the button
+      getMenuButton()?.focus()
+
+      // Open menu
+      await press(Keys.ArrowUp)
+
+      let items = getMenuItems()
+
+      // We should be on the last item
+      assertMenuLinkedWithMenuItem(items[2])
+
+      // Search for bob in a different casing
+      await type(word('BO'))
+
+      // We should be on `bob`
+      assertMenuLinkedWithMenuItem(items[1])
+    })
   })
 })
 

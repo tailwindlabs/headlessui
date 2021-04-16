@@ -137,7 +137,7 @@ export let Listbox = defineComponent({
         if (disabled) return
         if (listboxState.value === ListboxStates.Closed) return
 
-        searchQuery.value += value
+        searchQuery.value += value.toLowerCase()
 
         let match = options.value.findIndex(
           option =>

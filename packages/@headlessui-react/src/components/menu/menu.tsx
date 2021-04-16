@@ -97,7 +97,7 @@ let reducers: {
     return { ...state, searchQuery: '', activeItemIndex }
   },
   [ActionTypes.Search]: (state, action) => {
-    let searchQuery = state.searchQuery + action.value
+    let searchQuery = state.searchQuery + action.value.toLowerCase()
     let match = state.items.findIndex(
       item =>
         item.dataRef.current.textValue?.startsWith(searchQuery) && !item.dataRef.current.disabled
