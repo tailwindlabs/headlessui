@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Fixes
+
+- Improve search, make searching case insensitive ([#385](https://github.com/tailwindlabs/headlessui/pull/385))
 
 ## [Unreleased - Vue]
 
