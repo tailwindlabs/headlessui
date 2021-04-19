@@ -38,6 +38,7 @@ export function render(TestComponent: any, options?: Parameters<typeof mount>[1]
 
 function cleanup() {
   mountedWrappers.forEach(cleanupAtWrapper)
+  document.body.innerHTML = ''
 }
 
 function cleanupAtWrapper(wrapper: any) {

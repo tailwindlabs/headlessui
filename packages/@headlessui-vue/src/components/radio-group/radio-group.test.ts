@@ -88,7 +88,7 @@ describe('Safe guards', () => {
 })
 
 describe('Rendering', () => {
-  it('should be possible to render a RadioGroup, where the first element is tabbable', async () => {
+  it('should be possible to render a RadioGroup, where the first element is tabbable (value is undefined)', async () => {
     renderTemplate({
       template: html`
         <RadioGroup v-model="deliveryMethod">
@@ -100,6 +100,31 @@ describe('Rendering', () => {
       `,
       setup() {
         let deliveryMethod = ref(undefined)
+        return { deliveryMethod }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    expect(getRadioGroupOptions()).toHaveLength(3)
+
+    assertFocusable(getByText('Pickup'))
+    assertNotFocusable(getByText('Home delivery'))
+    assertNotFocusable(getByText('Dine in'))
+  })
+
+  it('should be possible to render a RadioGroup, where the first element is tabbable (value is null)', async () => {
+    renderTemplate({
+      template: html`
+        <RadioGroup v-model="deliveryMethod">
+          <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+          <RadioGroupOption value="pickup">Pickup</RadioGroupOption>
+          <RadioGroupOption value="home-delivery">Home delivery</RadioGroupOption>
+          <RadioGroupOption value="dine-in">Dine in</RadioGroupOption>
+        </RadioGroup>
+      `,
+      setup() {
+        let deliveryMethod = ref(null)
         return { deliveryMethod }
       },
     })
@@ -189,7 +214,7 @@ describe('Rendering', () => {
     await new Promise<void>(nextTick)
 
     expect(document.querySelector('[id^="headlessui-radiogroup-option-"]')).toHaveTextContent(
-      `Pickup - ${JSON.stringify({ checked: false, active: false })}`
+      `Pickup - ${JSON.stringify({ checked: false, disabled: false, active: false })}`
     )
   })
 
@@ -220,13 +245,13 @@ describe('Rendering', () => {
       document.querySelectorAll('[id^="headlessui-radiogroup-option-"]')
     )
     expect(pickup).toHaveTextContent(
-      `Pickup - ${JSON.stringify({ checked: false, active: false })}`
+      `Pickup - ${JSON.stringify({ checked: false, disabled: false, active: false })}`
     )
     expect(homeDelivery).toHaveTextContent(
-      `Home delivery - ${JSON.stringify({ checked: false, active: false })}`
+      `Home delivery - ${JSON.stringify({ checked: false, disabled: false, active: false })}`
     )
     expect(dineIn).toHaveTextContent(
-      `Dine in - ${JSON.stringify({ checked: false, active: false })}`
+      `Dine in - ${JSON.stringify({ checked: false, disabled: false, active: false })}`
     )
 
     await click(homeDelivery)
@@ -235,13 +260,13 @@ describe('Rendering', () => {
     )
 
     expect(pickup).toHaveTextContent(
-      `Pickup - ${JSON.stringify({ checked: false, active: false })}`
+      `Pickup - ${JSON.stringify({ checked: false, disabled: false, active: false })}`
     )
     expect(homeDelivery).toHaveTextContent(
-      `Home delivery - ${JSON.stringify({ checked: true, active: true })}`
+      `Home delivery - ${JSON.stringify({ checked: true, disabled: false, active: true })}`
     )
     expect(dineIn).toHaveTextContent(
-      `Dine in - ${JSON.stringify({ checked: false, active: false })}`
+      `Dine in - ${JSON.stringify({ checked: false, disabled: false, active: false })}`
     )
   })
 
@@ -292,6 +317,126 @@ describe('Rendering', () => {
     await new Promise<void>(nextTick)
 
     expect(getByText('Pickup')).toHaveClass('abc')
+  })
+
+  it('should be possible to disable a RadioGroup', async () => {
+    let changeFn = jest.fn()
+    renderTemplate({
+      template: html`
+        <button @click="disabled = !disabled">Toggle</button>
+        <RadioGroup v-model="deliveryMethod" :disabled="disabled">
+          <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+          <RadioGroupOption value="pickup">Pickup</RadioGroupOption>
+          <RadioGroupOption value="home-delivery">Home delivery</RadioGroupOption>
+          <RadioGroupOption value="dine-in">Dine in</RadioGroupOption>
+          <RadioGroupOption value="render-prop" data-value="render-prop" v-slot="data">
+            {{JSON.stringify(data)}}
+          </RadioGroupOption>
+        </RadioGroup>
+      `,
+      setup() {
+        let deliveryMethod = ref(undefined)
+        let disabled = ref(true)
+        watch([deliveryMethod], () => changeFn(deliveryMethod.value))
+        return { deliveryMethod, disabled }
+      },
+    })
+
+    // Try to click one a few options
+    await click(getByText('Pickup'))
+    await click(getByText('Dine in'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: true,
+        active: false,
+      })
+    )
+
+    // Make sure that the onChange handler never got called
+    expect(changeFn).toHaveBeenCalledTimes(0)
+
+    // Toggle the disabled state
+    await click(getByText('Toggle'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: false,
+        active: false,
+      })
+    )
+
+    // Try to click one a few options
+    await click(getByText('Pickup'))
+
+    // Make sure that the onChange handler got called
+    expect(changeFn).toHaveBeenCalledTimes(1)
+  })
+
+  it('should be possible to disable a RadioGroup.Option', async () => {
+    let changeFn = jest.fn()
+    renderTemplate({
+      template: html`
+        <button @click="disabled = !disabled">Toggle</button>
+        <RadioGroup v-model="deliveryMethod">
+          <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+          <RadioGroupOption value="pickup">Pickup</RadioGroupOption>
+          <RadioGroupOption value="home-delivery">Home delivery</RadioGroupOption>
+          <RadioGroupOption value="dine-in">Dine in</RadioGroupOption>
+          <RadioGroupOption
+            value="render-prop"
+            :disabled="disabled"
+            data-value="render-prop"
+            v-slot="data"
+          >
+            {{JSON.stringify(data)}}
+          </RadioGroupOption>
+        </RadioGroup>
+      `,
+      setup() {
+        let deliveryMethod = ref(undefined)
+        let disabled = ref(true)
+        watch([deliveryMethod], () => changeFn(deliveryMethod.value))
+        return { deliveryMethod, disabled }
+      },
+    })
+
+    // Try to click the disabled option
+    await click(document.querySelector('[data-value="render-prop"]'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: true,
+        active: false,
+      })
+    )
+
+    // Make sure that the onChange handler never got called
+    expect(changeFn).toHaveBeenCalledTimes(0)
+
+    // Toggle the disabled state
+    await click(getByText('Toggle'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: false,
+        active: false,
+      })
+    )
+
+    // Try to click one a few options
+    await click(document.querySelector('[data-value="render-prop"]'))
+
+    // Make sure that the onChange handler got called
+    expect(changeFn).toHaveBeenCalledTimes(1)
   })
 })
 
