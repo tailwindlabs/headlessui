@@ -10,10 +10,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Improve search, make searching case insensitive ([#385](https://github.com/tailwindlabs/headlessui/pull/385))
+- Fix unreachable `RadioGroup` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
+
+### Added
+
+- Add `disabled` prop to `RadioGroup` and `RadioGroup.Option` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Fixes
+
+- Improve search, make searching case insensitive ([#385](https://github.com/tailwindlabs/headlessui/pull/385))
+- Fix unreachable `RadioGroup` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
+
+### Added
+
+- Add `disabled` prop to `RadioGroup` and `RadioGroupOption` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
 
 ## [@headlessui/react@v1.0.0] - 2021-04-14
 
