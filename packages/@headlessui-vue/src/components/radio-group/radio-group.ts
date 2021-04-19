@@ -231,7 +231,7 @@ export let RadioGroupOption = defineComponent({
   name: 'RadioGroupOption',
   props: {
     as: { type: [Object, String], default: 'div' },
-    value: { type: [Object, String] },
+    value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
     className: { type: [String, Function], required: false },
