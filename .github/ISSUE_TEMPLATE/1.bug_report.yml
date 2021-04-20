@@ -1,6 +1,6 @@
 name: Bug Report
 description: Create a bug report for Headless UI.
-title: ''
+title: "[Bug]: "
 labels: []
 issue_body: true
 body:
