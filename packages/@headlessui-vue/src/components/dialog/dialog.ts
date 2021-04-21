@@ -85,6 +85,7 @@ export let Dialog = defineComponent({
       'aria-modal': this.dialogState === DialogStates.Open ? true : undefined,
       'aria-labelledby': this.titleId,
       'aria-describedby': this.describedby,
+      onClick: this.handleClick,
     }
     let { open, initialFocus, ...passThroughProps } = this.$props
     let slot = { open: this.dialogState === DialogStates.Open }
@@ -188,6 +189,8 @@ export let Dialog = defineComponent({
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
       if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
+      event.preventDefault()
+      event.stopPropagation()
       api.close()
     })
 
@@ -241,6 +244,10 @@ export let Dialog = defineComponent({
       dialogState,
       titleId,
       describedby,
+      handleClick(event: MouseEvent) {
+        event.preventDefault()
+        event.stopPropagation()
+      },
     }
   },
 })
@@ -276,7 +283,9 @@ export let DialogOverlay = defineComponent({
 
     return {
       id,
-      handleClick() {
+      handleClick(event: MouseEvent) {
+        event.preventDefault()
+        event.stopPropagation()
         api.close()
       },
     }

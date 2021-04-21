@@ -607,4 +607,90 @@ describe('Mouse interactions', () => {
       assertActiveElement(getByText('Hello'))
     })
   )
+
+  it(
+    'should stop propagating click events when clicking on the Dialog.Overlay',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      renderTemplate({
+        template: `
+          <div @click="wrapperFn">
+            <Dialog v-if="true" :open="isOpen" @close="setIsOpen">
+              Contents
+              <DialogOverlay />
+              <TabSentinel />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            isOpen,
+            wrapperFn,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the Dialog.Overlay to close the Dialog
+      await click(getDialogOverlay())
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
+
+  it(
+    'should stop propagating click events when clicking on an element inside the Dialog',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      renderTemplate({
+        template: `
+          <div @click="wrapperFn">
+            <Dialog v-if="true" :open="isOpen" @close="setIsOpen">
+              Contents
+              <button @click="setIsOpen(false)">Inside</button>
+              <TabSentinel />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            isOpen,
+            wrapperFn,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the button inside the the Dialog
+      await click(getByText('Inside'))
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
 })

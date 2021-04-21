@@ -496,4 +496,74 @@ describe('Mouse interactions', () => {
       assertActiveElement(getByText('Hello'))
     })
   )
+
+  it(
+    'should stop propagating click events when clicking on the Dialog.Overlay',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+        return (
+          <div onClick={wrapperFn}>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              Contents
+              <Dialog.Overlay />
+              <TabSentinel />
+            </Dialog>
+          </div>
+        )
+      }
+      render(<Example />)
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the Dialog.Overlay to close the Dialog
+      await click(getDialogOverlay())
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
+
+  it(
+    'should stop propagating click events when clicking on an element inside the Dialog',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+        return (
+          <div onClick={wrapperFn}>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              Contents
+              <button onClick={() => setIsOpen(false)}>Inside</button>
+              <TabSentinel />
+            </Dialog>
+          </div>
+        )
+      }
+      render(<Example />)
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the button inside the the Dialog
+      await click(getByText('Inside'))
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
 })
