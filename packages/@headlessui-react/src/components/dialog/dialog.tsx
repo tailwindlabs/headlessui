@@ -92,7 +92,13 @@ let DEFAULT_DIALOG_TAG = 'div' as const
 interface DialogRenderPropArg {
   open: boolean
 }
-type DialogPropsWeControl = 'id' | 'role' | 'aria-modal' | 'aria-describedby' | 'aria-labelledby'
+type DialogPropsWeControl =
+  | 'id'
+  | 'role'
+  | 'aria-modal'
+  | 'aria-describedby'
+  | 'aria-labelledby'
+  | 'onClick'
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -176,6 +182,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     if (event.key !== Keys.Escape) return
     if (dialogState !== DialogStates.Open) return
     if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
+    event.preventDefault()
+    event.stopPropagation()
     close()
   })
 
@@ -243,6 +251,10 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     'aria-modal': dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,
+    onClick(event: ReactMouseEvent) {
+      event.preventDefault()
+      event.stopPropagation()
+    },
   }
   let passthroughProps = rest
 
@@ -302,6 +314,8 @@ let Overlay = forwardRefWithAs(function Overlay<
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+      event.preventDefault()
+      event.stopPropagation()
       close()
     },
     [close]

@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { logDOM, fireEvent } from '@testing-library/dom'
+import { logDOM, fireEvent, screen } from '@testing-library/dom'
 
 let mountedWrappers = new Set()
 
@@ -58,4 +58,4 @@ if (typeof afterEach === 'function') {
   afterEach(() => cleanup())
 }
 
-export { fireEvent }
+export { fireEvent, screen }
