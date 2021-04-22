@@ -12,6 +12,7 @@ import React, {
   ContextType,
   ElementType,
   MouseEvent as ReactMouseEvent,
+  KeyboardEvent as ReactKeyboardEvent,
   MutableRefObject,
   Ref,
 } from 'react'
@@ -177,16 +178,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     close()
   })
 
-  // Handle `Escape` to close
-  useWindowEvent('keydown', event => {
-    if (event.key !== Keys.Escape) return
-    if (dialogState !== DialogStates.Open) return
-    if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
-    event.preventDefault()
-    event.stopPropagation()
-    close()
-  })
-
   // Scroll lock
   useEffect(() => {
     if (dialogState !== DialogStates.Open) return
@@ -198,6 +189,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
     document.documentElement.style.overflow = 'hidden'
     document.documentElement.style.paddingRight = `${scrollbarWidth}px`
+
     return () => {
       document.documentElement.style.overflow = overflow
       document.documentElement.style.paddingRight = paddingRight
@@ -254,6 +246,16 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     onClick(event: ReactMouseEvent) {
       event.preventDefault()
       event.stopPropagation()
+    },
+
+    // Handle `Escape` to close
+    onKeyDown(event: ReactKeyboardEvent) {
+      if (event.key !== Keys.Escape) return
+      if (dialogState !== DialogStates.Open) return
+      if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
+      event.preventDefault()
+      event.stopPropagation()
+      close()
     },
   }
   let passthroughProps = rest
