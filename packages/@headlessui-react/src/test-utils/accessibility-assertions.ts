@@ -864,6 +864,10 @@ export function getDialog(): HTMLElement | null {
   return document.querySelector('[role="dialog"]')
 }
 
+export function getDialogs(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="dialog"]'))
+}
+
 export function getDialogTitle(): HTMLElement | null {
   return document.querySelector('[id^="headlessui-dialog-title-"]')
 }
