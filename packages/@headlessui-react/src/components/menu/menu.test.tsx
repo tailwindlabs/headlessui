@@ -3115,4 +3115,45 @@ describe('Mouse interactions', () => {
       expect(clickHandler).not.toHaveBeenCalled()
     })
   )
+
+  it(
+    'should not close the menu when enter clicked and keepMenuOpenOnClick is true and keepMenuOpenOnItemClick',
+    suppressConsoleLogs(async () => {
+      let clickHandler = jest.fn()
+
+      render(
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Menu.Items keepMenuOpenOnItemClick>
+            <Menu.Item keepMenuOpenOnClick as="a" onClick={clickHandler}>
+              alice
+            </Menu.Item>
+            <Menu.Item as="a" onClick={clickHandler}>
+              bob
+            </Menu.Item>
+            <Menu.Item>
+              <button onClick={clickHandler}>charlie</button>
+            </Menu.Item>
+          </Menu.Items>
+        </Menu>
+      )
+
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Open menu
+      await click(getMenuButton())
+      assertMenu({ state: MenuState.Visible })
+
+      let items = getMenuItems()
+
+      await focus(items[0])
+      await click(items[0])
+      expect(clickHandler).toHaveBeenCalled()
+      assertMenu({ state: MenuState.Visible })
+
+      await focus(items[1])
+      await click(items[1])
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+    })
+  )
 })
