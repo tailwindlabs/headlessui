@@ -85,6 +85,8 @@ export let Dialog = defineComponent({
       'aria-modal': this.dialogState === DialogStates.Open ? true : undefined,
       'aria-labelledby': this.titleId,
       'aria-describedby': this.describedby,
+      onClick: this.handleClick,
+      onKeydown: this.handleKeyDown,
     }
     let { open, initialFocus, ...passThroughProps } = this.$props
     let slot = { open: this.dialogState === DialogStates.Open }
@@ -183,14 +185,6 @@ export let Dialog = defineComponent({
       nextTick(() => target?.focus())
     })
 
-    // Handle `Escape` to close
-    useWindowEvent('keydown', event => {
-      if (event.key !== Keys.Escape) return
-      if (dialogState.value !== DialogStates.Open) return
-      if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
-      api.close()
-    })
-
     // Scroll lock
     watchEffect(onInvalidate => {
       if (dialogState.value !== DialogStates.Open) return
@@ -241,6 +235,20 @@ export let Dialog = defineComponent({
       dialogState,
       titleId,
       describedby,
+      handleClick(event: MouseEvent) {
+        event.preventDefault()
+        event.stopPropagation()
+      },
+
+      // Handle `Escape` to close
+      handleKeyDown(event: KeyboardEvent) {
+        if (event.key !== Keys.Escape) return
+        if (dialogState.value !== DialogStates.Open) return
+        if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
+        event.preventDefault()
+        event.stopPropagation()
+        api.close()
+      },
     }
   },
 })
@@ -276,7 +284,9 @@ export let DialogOverlay = defineComponent({
 
     return {
       id,
-      handleClick() {
+      handleClick(event: MouseEvent) {
+        event.preventDefault()
+        event.stopPropagation()
         api.close()
       },
     }

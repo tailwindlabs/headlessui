@@ -25,7 +25,7 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   let [durationMs, delaysMs] = [transitionDuration, transitionDelay].map(value => {
     let [resolvedValue = 0] = value
       .split(',')
-      // Remove falseys we can't work with
+      // Remove falsy we can't work with
       .filter(Boolean)
       // Values are returned as `0.3s` or `75ms`
       .map(v => (v.includes('ms') ? parseFloat(v) : parseFloat(v) * 1000))

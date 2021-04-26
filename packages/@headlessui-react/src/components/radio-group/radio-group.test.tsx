@@ -55,9 +55,26 @@ describe('Safe guards', () => {
 })
 
 describe('Rendering', () => {
-  it('should be possible to render a RadioGroup, where the first element is tabbable', async () => {
+  it('should be possible to render a RadioGroup, where the first element is tabbable (value is undefined)', async () => {
     render(
       <RadioGroup value={undefined} onChange={console.log}>
+        <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
+        <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
+        <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
+        <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
+      </RadioGroup>
+    )
+
+    expect(getRadioGroupOptions()).toHaveLength(3)
+
+    assertFocusable(getByText('Pickup'))
+    assertNotFocusable(getByText('Home delivery'))
+    assertNotFocusable(getByText('Dine in'))
+  })
+
+  it('should be possible to render a RadioGroup, where the first element is tabbable (value is null)', async () => {
+    render(
+      <RadioGroup value={null} onChange={console.log}>
         <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
         <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
         <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
@@ -119,6 +136,121 @@ describe('Rendering', () => {
 
     await press(Keys.ArrowUp) // Up again
     assertActiveElement(getByText('Home delivery'))
+  })
+
+  it('should be possible to disable a RadioGroup', async () => {
+    let changeFn = jest.fn()
+
+    function Example() {
+      let [disabled, setDisabled] = useState(true)
+      return (
+        <>
+          <button onClick={() => setDisabled(v => !v)}>Toggle</button>
+          <RadioGroup value={undefined} onChange={changeFn} disabled={disabled}>
+            <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
+            <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
+            <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
+            <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
+            <RadioGroup.Option value="render-prop" data-value="render-prop">
+              {JSON.stringify}
+            </RadioGroup.Option>
+          </RadioGroup>
+        </>
+      )
+    }
+
+    render(<Example />)
+
+    // Try to click one a few options
+    await click(getByText('Pickup'))
+    await click(getByText('Dine in'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: true,
+        active: false,
+      })
+    )
+
+    // Make sure that the onChange handler never got called
+    expect(changeFn).toHaveBeenCalledTimes(0)
+
+    // Toggle the disabled state
+    await click(getByText('Toggle'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: false,
+        active: false,
+      })
+    )
+
+    // Try to click one a few options
+    await click(getByText('Pickup'))
+
+    // Make sure that the onChange handler got called
+    expect(changeFn).toHaveBeenCalledTimes(1)
+  })
+
+  it('should be possible to disable a RadioGroup.Option', async () => {
+    let changeFn = jest.fn()
+
+    function Example() {
+      let [disabled, setDisabled] = useState(true)
+      return (
+        <>
+          <button onClick={() => setDisabled(v => !v)}>Toggle</button>
+          <RadioGroup value={undefined} onChange={changeFn}>
+            <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
+            <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
+            <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
+            <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
+            <RadioGroup.Option value="render-prop" disabled={disabled} data-value="render-prop">
+              {JSON.stringify}
+            </RadioGroup.Option>
+          </RadioGroup>
+        </>
+      )
+    }
+
+    render(<Example />)
+
+    // Try to click the disabled option
+    await click(document.querySelector('[data-value="render-prop"]'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: true,
+        active: false,
+      })
+    )
+
+    // Make sure that the onChange handler never got called
+    expect(changeFn).toHaveBeenCalledTimes(0)
+
+    // Toggle the disabled state
+    await click(getByText('Toggle'))
+
+    // Verify that the RadioGroup.Option gets the disabled state
+    expect(document.querySelector('[data-value="render-prop"]')).toHaveTextContent(
+      JSON.stringify({
+        checked: false,
+        disabled: false,
+        active: false,
+      })
+    )
+
+    // Try to click one a few options
+    await click(document.querySelector('[data-value="render-prop"]'))
+
+    // Make sure that the onChange handler got called
+    expect(changeFn).toHaveBeenCalledTimes(1)
   })
 })
 

@@ -144,7 +144,7 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
 
   // This is a little weird, but let me try and explain: There are a few scenario's
   // in chrome for example where a focused `<a>` tag does not get the default focus
-  // styles and sometimes they do. This highly depends on wether you started by
+  // styles and sometimes they do. This highly depends on whether you started by
   // clicking or by using your keyboard. When you programmatically add focus `anchor.focus()`
   // then the active element (document.activeElement) is this anchor, which is expected.
   // However in that case the default focus styles are not applied *unless* you

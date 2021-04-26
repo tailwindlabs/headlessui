@@ -79,6 +79,29 @@ describe('Rendering', () => {
         assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
       })
     )
+
+    it('should be possible to render a Disclosure in an open state by default', async () => {
+      render(
+        <Disclosure defaultOpen>
+          {({ open }) => (
+            <>
+              <Disclosure.Button>Trigger</Disclosure.Button>
+              <Disclosure.Panel>Panel is: {open ? 'open' : 'closed'}</Disclosure.Panel>
+            </>
+          )}
+        </Disclosure>
+      )
+
+      assertDisclosureButton({
+        state: DisclosureState.Visible,
+        attributes: { id: 'headlessui-disclosure-button-1' },
+      })
+      assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
+
+      await click(getDisclosureButton())
+
+      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+    })
   })
 
   describe('Disclosure.Button', () => {

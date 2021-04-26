@@ -104,7 +104,7 @@ export let Menu = defineComponent({
         activeItemIndex.value = nextActiveItemIndex
       },
       search(value: string) {
-        searchQuery.value += value
+        searchQuery.value += value.toLowerCase()
 
         let match = items.value.findIndex(
           item => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled

@@ -111,13 +111,16 @@ interface DisclosureRenderPropArg {
 }
 
 export function Disclosure<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
-  props: Props<TTag, DisclosureRenderPropArg>
+  props: Props<TTag, DisclosureRenderPropArg> & {
+    defaultOpen?: boolean
+  }
 ) {
+  let { defaultOpen = false, ...passthroughProps } = props
   let buttonId = `headlessui-disclosure-button-${useId()}`
   let panelId = `headlessui-disclosure-panel-${useId()}`
 
   let reducerBag = useReducer(stateReducer, {
-    disclosureState: DisclosureStates.Closed,
+    disclosureState: defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed,
     linkedPanel: false,
     buttonId,
     panelId,
@@ -135,7 +138,7 @@ export function Disclosure<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_
   return (
     <DisclosureContext.Provider value={reducerBag}>
       {render({
-        props,
+        props: passthroughProps,
         slot,
         defaultTag: DEFAULT_DISCLOSURE_TAG,
         name: 'Disclosure',

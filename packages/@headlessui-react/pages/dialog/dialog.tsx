@@ -19,10 +19,10 @@ function Nested({ onClose, level = 0 }) {
 
   return (
     <>
-      <Dialog open={true} onClose={onClose} className="fixed z-10 inset-0 pointer-events-none">
+      <Dialog open={true} onClose={onClose} className="fixed z-10 inset-0">
         {true && <Dialog.Overlay className="fixed inset-0 bg-gray-500 opacity-25" />}
         <div
-          className="z-10 fixed left-12 top-24 bg-white w-96 p-4 pointer-events-auto"
+          className="z-10 fixed left-12 top-24 bg-white w-96 p-4"
           style={{
             transform: `translate(calc(50px * ${level}), calc(50px * ${level}))`,
           }}

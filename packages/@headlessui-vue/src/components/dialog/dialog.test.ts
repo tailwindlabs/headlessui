@@ -1,4 +1,4 @@
-import { defineComponent, ref, nextTick } from 'vue'
+import { defineComponent, ref, nextTick, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Dialog, DialogOverlay, DialogTitle, DialogDescription } from './dialog'
@@ -13,6 +13,7 @@ import {
   getDialogOverlay,
   getByText,
   assertActiveElement,
+  getDialogs,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
@@ -607,4 +608,191 @@ describe('Mouse interactions', () => {
       assertActiveElement(getByText('Hello'))
     })
   )
+
+  it(
+    'should stop propagating click events when clicking on the Dialog.Overlay',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      renderTemplate({
+        template: `
+          <div @click="wrapperFn">
+            <Dialog v-if="true" :open="isOpen" @close="setIsOpen">
+              Contents
+              <DialogOverlay />
+              <TabSentinel />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            isOpen,
+            wrapperFn,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the Dialog.Overlay to close the Dialog
+      await click(getDialogOverlay())
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
+
+  it(
+    'should stop propagating click events when clicking on an element inside the Dialog',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      renderTemplate({
+        template: `
+          <div @click="wrapperFn">
+            <Dialog v-if="true" :open="isOpen" @close="setIsOpen">
+              Contents
+              <button @click="setIsOpen(false)">Inside</button>
+              <TabSentinel />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            isOpen,
+            wrapperFn,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the button inside the the Dialog
+      await click(getByText('Inside'))
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
+})
+
+describe('Nesting', () => {
+  it('should be possible to open nested Dialog components and close them with `Escape`', async () => {
+    let Nested = defineComponent({
+      components: { Dialog },
+      emits: ['close'],
+      props: ['level'],
+      render() {
+        let level = this.$props.level ?? 1
+        return h(Dialog, { open: true, onClose: this.onClose }, () => [
+          h('div', [
+            h('p', `Level: ${level}`),
+            h(
+              'button',
+              {
+                onClick: () => {
+                  this.showChild = true
+                },
+              },
+              `Open ${level + 1}`
+            ),
+          ]),
+          this.showChild &&
+            h(Nested, {
+              onClose: () => {
+                this.showChild = false
+              },
+              level: level + 1,
+            }),
+        ])
+      },
+      setup(_props, { emit }) {
+        let showChild = ref(false)
+
+        return {
+          showChild,
+          onClose() {
+            emit('close', false)
+          },
+        }
+      },
+    })
+
+    renderTemplate({
+      components: { Nested },
+      template: `
+        <button @click="isOpen = true">Open 1</button>
+        <Nested v-if="isOpen" @close="isOpen = false" />
+      `,
+      setup() {
+        let isOpen = ref(false)
+        return { isOpen }
+      },
+    })
+
+    // Verify we have no open dialogs
+    expect(getDialogs()).toHaveLength(0)
+
+    // Open Dialog 1
+    await click(getByText('Open 1'))
+
+    // Verify that we have 1 open dialog
+    expect(getDialogs()).toHaveLength(1)
+
+    // Open Dialog 2
+    await click(getByText('Open 2'))
+
+    // Verify that we have 2 open dialogs
+    expect(getDialogs()).toHaveLength(2)
+
+    // Press escape to close the top most Dialog
+    await press(Keys.Escape)
+
+    // Verify that we have 1 open dialog
+    expect(getDialogs()).toHaveLength(1)
+
+    // Open Dialog 2
+    await click(getByText('Open 2'))
+
+    // Verify that we have 2 open dialogs
+    expect(getDialogs()).toHaveLength(2)
+
+    // Open Dialog 3
+    await click(getByText('Open 3'))
+
+    // Verify that we have 3 open dialogs
+    expect(getDialogs()).toHaveLength(3)
+
+    // Press escape to close the top most Dialog
+    await press(Keys.Escape)
+
+    // Verify that we have 2 open dialogs
+    expect(getDialogs()).toHaveLength(2)
+
+    // Press escape to close the top most Dialog
+    await press(Keys.Escape)
+
+    // Verify that we have 1 open dialog
+    expect(getDialogs()).toHaveLength(1)
+  })
 })

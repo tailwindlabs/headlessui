@@ -107,7 +107,7 @@ function _render<TTag extends ElementType, TSlot>(
     'static',
   ])
 
-  // This allows us to use `<HeadlessUIComponent as={MyComopnent} refName="innerRef" />`
+  // This allows us to use `<HeadlessUIComponent as={MyComponent} refName="innerRef" />`
   let refRelatedProps = props.ref !== undefined ? { [refName]: props.ref } : {}
 
   let resolvedChildren = (typeof children === 'function' ? children(slot) : children) as

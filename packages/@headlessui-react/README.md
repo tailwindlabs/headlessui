@@ -25,7 +25,7 @@ yarn add @headlessui/react
 
 ## Documentation
 
-For full documentation, visit [headlessui.dev](https://headlessui.dev/react).
+For full documentation, visit [headlessui.dev](https://headlessui.dev/react/menu).
 
 ## Community
 

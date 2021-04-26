@@ -7,10 +7,10 @@ import React, {
   useRef,
 
   // Types
-  Dispatch,
   ElementType,
   MutableRefObject,
   KeyboardEvent as ReactKeyboardEvent,
+  ContextType,
 } from 'react'
 
 import { Props, Expand } from '../../types'
@@ -28,11 +28,10 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 interface Option {
   id: string
   element: MutableRefObject<HTMLElement | null>
-  propsRef: MutableRefObject<{ value: unknown }>
+  propsRef: MutableRefObject<{ value: unknown; disabled: boolean }>
 }
 
 interface StateDefinition {
-  propsRef: MutableRefObject<{ value: unknown; onChange(value: unknown): void }>
   options: Option[]
 }
 
@@ -69,7 +68,14 @@ let reducers: {
   },
 }
 
-let RadioGroupContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
+let RadioGroupContext = createContext<{
+  registerOption(option: Option): () => void
+  change(value: unknown): boolean
+  value: unknown
+  firstOption?: Option
+  containsCheckedOption: boolean
+  disabled: boolean
+} | null>(null)
 RadioGroupContext.displayName = 'RadioGroupContext'
 
 function useRadioGroupContext(component: string) {
@@ -106,30 +112,40 @@ export function RadioGroup<
     disabled?: boolean
   }
 ) {
-  let { value, onChange, ...passThroughProps } = props
-  let reducerBag = useReducer(stateReducer, {
-    propsRef: { current: { value, onChange } },
+  let { value, onChange, disabled = false, ...passThroughProps } = props
+  let [{ options }, dispatch] = useReducer(stateReducer, {
     options: [],
   } as StateDefinition)
-  let [{ propsRef, options }] = reducerBag
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
   let id = `headlessui-radiogroup-${useId()}`
   let radioGroupRef = useRef<HTMLElement | null>(null)
 
-  useIsoMorphicEffect(() => {
-    propsRef.current.value = value
-  }, [value, propsRef])
-  useIsoMorphicEffect(() => {
-    propsRef.current.onChange = onChange
-  }, [onChange, propsRef])
+  let firstOption = useMemo(
+    () =>
+      options.find(option => {
+        if (option.propsRef.current.disabled) return false
+        return true
+      }),
+    [options]
+  )
+  let containsCheckedOption = useMemo(
+    () => options.some(option => option.propsRef.current.value === value),
+    [options, value]
+  )
 
   let triggerChange = useCallback(
     nextValue => {
-      if (nextValue === value) return
-      return onChange(nextValue)
+      if (disabled) return false
+      if (nextValue === value) return false
+      let nextOption = options.find(option => option.propsRef.current.value === nextValue)?.propsRef
+        .current
+      if (nextOption?.disabled) return false
+
+      onChange(nextValue)
+      return true
     },
-    [onChange, value]
+    [onChange, value, disabled, options]
   )
 
   useTreeWalker({
@@ -149,6 +165,10 @@ export function RadioGroup<
       let container = radioGroupRef.current
       if (!container) return
 
+      let all = options
+        .filter(option => option.propsRef.current.disabled === false)
+        .map(radio => radio.element.current) as HTMLElement[]
+
       switch (event.key) {
         case Keys.ArrowLeft:
         case Keys.ArrowUp:
@@ -156,10 +176,7 @@ export function RadioGroup<
             event.preventDefault()
             event.stopPropagation()
 
-            let result = focusIn(
-              options.map(radio => radio.element.current) as HTMLElement[],
-              Focus.Previous | Focus.WrapAround
-            )
+            let result = focusIn(all, Focus.Previous | Focus.WrapAround)
 
             if (result === FocusResult.Success) {
               let activeOption = options.find(
@@ -176,10 +193,7 @@ export function RadioGroup<
             event.preventDefault()
             event.stopPropagation()
 
-            let result = focusIn(
-              options.map(option => option.element.current) as HTMLElement[],
-              Focus.Next | Focus.WrapAround
-            )
+            let result = focusIn(all, Focus.Next | Focus.WrapAround)
 
             if (result === FocusResult.Success) {
               let activeOption = options.find(
@@ -206,6 +220,26 @@ export function RadioGroup<
     [radioGroupRef, options, triggerChange]
   )
 
+  let registerOption = useCallback(
+    (option: Option) => {
+      dispatch({ type: ActionTypes.RegisterOption, ...option })
+      return () => dispatch({ type: ActionTypes.UnregisterOption, id: option.id })
+    },
+    [dispatch]
+  )
+
+  let api = useMemo<ContextType<typeof RadioGroupContext>>(
+    () => ({
+      registerOption,
+      firstOption,
+      containsCheckedOption,
+      change: triggerChange,
+      disabled,
+      value,
+    }),
+    [registerOption, firstOption, containsCheckedOption, triggerChange, disabled, value]
+  )
+
   let propsWeControl = {
     ref: radioGroupRef,
     id,
@@ -218,7 +252,7 @@ export function RadioGroup<
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
-        <RadioGroupContext.Provider value={reducerBag}>
+        <RadioGroupContext.Provider value={api}>
           {render({
             props: { ...passThroughProps, ...propsWeControl },
             defaultTag: DEFAULT_RADIO_GROUP_TAG,
@@ -241,6 +275,7 @@ let DEFAULT_OPTION_TAG = 'div' as const
 interface OptionRenderPropArg {
   checked: boolean
   active: boolean
+  disabled: boolean
 }
 type RadioPropsWeControl =
   | 'aria-checked'
@@ -258,8 +293,9 @@ function Option<
   // But today is not that day..
   TType = Parameters<typeof RadioGroup>[0]['value']
 >(
-  props: Props<TTag, OptionRenderPropArg, RadioPropsWeControl | 'value'> & {
+  props: Props<TTag, OptionRenderPropArg, RadioPropsWeControl | 'value' | 'disabled'> & {
     value: TType
+    disabled?: boolean
   }
 ) {
   let optionRef = useRef<HTMLElement | null>(null)
@@ -269,35 +305,46 @@ function Option<
   let [describedby, DescriptionProvider] = useDescriptions()
   let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
 
-  let { value, ...passThroughProps } = props
-  let propsRef = useRef({ value })
+  let { value, disabled = false, ...passThroughProps } = props
+  let propsRef = useRef({ value, disabled })
 
   useIsoMorphicEffect(() => {
     propsRef.current.value = value
   }, [value, propsRef])
-
-  let [{ propsRef: radioGroupPropsRef, options }, dispatch] = useRadioGroupContext(
-    [RadioGroup.name, Option.name].join('.')
-  )
-
   useIsoMorphicEffect(() => {
-    dispatch({ type: ActionTypes.RegisterOption, id, element: optionRef, propsRef })
-    return () => dispatch({ type: ActionTypes.UnregisterOption, id })
-  }, [id, dispatch, optionRef, props])
+    propsRef.current.disabled = disabled
+  }, [disabled, propsRef])
+
+  let {
+    registerOption,
+    disabled: radioGroupDisabled,
+    change,
+    firstOption,
+    containsCheckedOption,
+    value: radioGroupValue,
+  } = useRadioGroupContext([RadioGroup.name, Option.name].join('.'))
+
+  useIsoMorphicEffect(() => registerOption({ id, element: optionRef, propsRef }), [
+    id,
+    registerOption,
+    optionRef,
+    props,
+  ])
 
   let handleClick = useCallback(() => {
-    if (radioGroupPropsRef.current.value === value) return
+    if (!change(value)) return
 
     addFlag(OptionState.Active)
-    radioGroupPropsRef.current.onChange(value)
     optionRef.current?.focus()
-  }, [addFlag, radioGroupPropsRef, value])
+  }, [addFlag, change, value])
 
   let handleFocus = useCallback(() => addFlag(OptionState.Active), [addFlag])
   let handleBlur = useCallback(() => removeFlag(OptionState.Active), [removeFlag])
 
-  let firstRadio = options?.[0]?.id === id
-  let checked = radioGroupPropsRef.current.value === value
+  let isFirstOption = firstOption?.id === id
+  let isDisabled = radioGroupDisabled || disabled
+
+  let checked = radioGroupValue === value
   let propsWeControl = {
     ref: optionRef,
     id,
@@ -305,14 +352,19 @@ function Option<
     'aria-checked': checked ? 'true' : 'false',
     'aria-labelledby': labelledby,
     'aria-describedby': describedby,
-    tabIndex: checked ? 0 : radioGroupPropsRef.current.value === undefined && firstRadio ? 0 : -1,
-    onClick: handleClick,
-    onFocus: handleFocus,
-    onBlur: handleBlur,
+    tabIndex: (() => {
+      if (isDisabled) return -1
+      if (checked) return 0
+      if (!containsCheckedOption && isFirstOption) return 0
+      return -1
+    })(),
+    onClick: isDisabled ? undefined : handleClick,
+    onFocus: isDisabled ? undefined : handleFocus,
+    onBlur: isDisabled ? undefined : handleBlur,
   }
   let slot = useMemo<OptionRenderPropArg>(
-    () => ({ checked, active: hasFlag(OptionState.Active) }),
-    [checked, hasFlag]
+    () => ({ checked, disabled: isDisabled, active: hasFlag(OptionState.Active) }),
+    [checked, isDisabled, hasFlag]
   )
 
   return (

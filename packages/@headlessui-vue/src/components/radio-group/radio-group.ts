@@ -26,16 +26,19 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 interface Option {
   id: string
   element: Ref<HTMLElement | null>
-  propsRef: Ref<{ value: unknown }>
+  propsRef: Ref<{ value: unknown; disabled: boolean }>
 }
 
 interface StateDefinition {
   // State
   options: Ref<Option[]>
   value: Ref<unknown>
+  disabled: Ref<boolean>
+  firstOption: Ref<Option | undefined>
+  containsCheckedOption: Ref<boolean>
 
   // State mutators
-  change(nextValue: unknown): void
+  change(nextValue: unknown): boolean
   registerOption(action: Option): void
   unregisterOption(id: Option['id']): void
 }
@@ -95,10 +98,25 @@ export let RadioGroup = defineComponent({
     let api = {
       options,
       value,
+      disabled: computed(() => props.disabled),
+      firstOption: computed(() =>
+        options.value.find(option => {
+          if (option.propsRef.disabled) return false
+          return true
+        })
+      ),
+      containsCheckedOption: computed(() =>
+        options.value.some(option => toRaw(option.propsRef.value) === toRaw(props.modelValue))
+      ),
       change(nextValue: unknown) {
-        if (props.disabled) return
-        if (value.value === nextValue) return
+        if (props.disabled) return false
+        if (value.value === nextValue) return false
+        let nextOption = options.value.find(
+          option => toRaw(option.propsRef.value) === toRaw(nextValue)
+        )?.propsRef
+        if (nextOption?.disabled) return false
         emit('update:modelValue', nextValue)
+        return true
       },
       registerOption(action: UnwrapRef<Option>) {
         let orderMap = Array.from(
@@ -137,6 +155,10 @@ export let RadioGroup = defineComponent({
       if (!radioGroupRef.value) return
       if (!radioGroupRef.value.contains(event.target as HTMLElement)) return
 
+      let all = options.value
+        .filter(option => option.propsRef.disabled === false)
+        .map(radio => radio.element) as HTMLElement[]
+
       switch (event.key) {
         case Keys.ArrowLeft:
         case Keys.ArrowUp:
@@ -144,10 +166,7 @@ export let RadioGroup = defineComponent({
             event.preventDefault()
             event.stopPropagation()
 
-            let result = focusIn(
-              options.value.map(radio => radio.element) as HTMLElement[],
-              Focus.Previous | Focus.WrapAround
-            )
+            let result = focusIn(all, Focus.Previous | Focus.WrapAround)
 
             if (result === FocusResult.Success) {
               let activeOption = options.value.find(
@@ -164,10 +183,7 @@ export let RadioGroup = defineComponent({
             event.preventDefault()
             event.stopPropagation()
 
-            let result = focusIn(
-              options.value.map(option => option.element) as HTMLElement[],
-              Focus.Next | Focus.WrapAround
-            )
+            let result = focusIn(all, Focus.Next | Focus.WrapAround)
 
             if (result === FocusResult.Success) {
               let activeOption = options.value.find(
@@ -215,7 +231,7 @@ export let RadioGroupOption = defineComponent({
   name: 'RadioGroupOption',
   props: {
     as: { type: [Object, String], default: 'div' },
-    value: { type: [Object, String] },
+    value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
     className: { type: [String, Function], required: false },
@@ -228,11 +244,13 @@ export let RadioGroupOption = defineComponent({
       className = defaultClass,
       ...passThroughProps
     } = this.$props
-    let api = useRadioGroupContext('RadioGroupOption')
 
-    let firstRadio = api.options.value?.[0]?.id === this.id
+    let slot = {
+      checked: this.checked,
+      disabled: this.disabled,
+      active: Boolean(this.state & OptionState.Active),
+    }
 
-    let slot = { checked: this.checked, active: Boolean(this.state & OptionState.Active) }
     let propsWeControl = {
       id: this.id,
       ref: 'el',
@@ -241,10 +259,10 @@ export let RadioGroupOption = defineComponent({
       'aria-checked': this.checked ? 'true' : 'false',
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,
-      tabIndex: this.checked ? 0 : api.value.value === undefined && firstRadio ? 0 : -1,
-      onClick: this.handleClick,
-      onFocus: this.handleFocus,
-      onBlur: this.handleBlur,
+      tabIndex: this.tabIndex,
+      onClick: this.disabled ? undefined : this.handleClick,
+      onFocus: this.disabled ? undefined : this.handleFocus,
+      onBlur: this.disabled ? undefined : this.handleBlur,
     }
 
     return render({
@@ -262,11 +280,15 @@ export let RadioGroupOption = defineComponent({
     let describedby = useDescriptions({ name: 'RadioGroupDescription' })
 
     let optionRef = ref<HTMLElement | null>(null)
-    let propsRef = computed(() => ({ value: props.value }))
+    let propsRef = computed(() => ({ value: props.value, disabled: props.disabled }))
     let state = ref(OptionState.Empty)
 
     onMounted(() => api.registerOption({ id, element: optionRef, propsRef }))
     onUnmounted(() => api.unregisterOption(id))
+
+    let isFirstOption = computed(() => api.firstOption.value?.id === id)
+    let disabled = computed(() => api.disabled.value || props.disabled)
+    let checked = computed(() => toRaw(api.value.value) === toRaw(props.value))
 
     return {
       id,
@@ -274,14 +296,18 @@ export let RadioGroupOption = defineComponent({
       labelledby,
       describedby,
       state,
-      checked: computed(() => toRaw(api.value.value) === toRaw(props.value)),
+      disabled,
+      checked,
+      tabIndex: computed(() => {
+        if (disabled.value) return -1
+        if (checked.value) return 0
+        if (!api.containsCheckedOption.value && isFirstOption.value) return 0
+        return -1
+      }),
       handleClick() {
-        let value = props.value
-        if (api.value.value === value) return
+        if (!api.change(props.value)) return
 
         state.value |= OptionState.Active
-
-        api.change(value)
         optionRef.value?.focus()
       },
       handleFocus() {

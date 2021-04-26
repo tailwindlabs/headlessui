@@ -13,6 +13,7 @@ import {
   getDialogOverlay,
   getByText,
   assertActiveElement,
+  getDialogs,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
@@ -496,4 +497,152 @@ describe('Mouse interactions', () => {
       assertActiveElement(getByText('Hello'))
     })
   )
+
+  it(
+    'should stop propagating click events when clicking on the Dialog.Overlay',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+        return (
+          <div onClick={wrapperFn}>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              Contents
+              <Dialog.Overlay />
+              <TabSentinel />
+            </Dialog>
+          </div>
+        )
+      }
+      render(<Example />)
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the Dialog.Overlay to close the Dialog
+      await click(getDialogOverlay())
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
+
+  it(
+    'should stop propagating click events when clicking on an element inside the Dialog',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+        return (
+          <div onClick={wrapperFn}>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              Contents
+              <button onClick={() => setIsOpen(false)}>Inside</button>
+              <TabSentinel />
+            </Dialog>
+          </div>
+        )
+      }
+      render(<Example />)
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the button inside the the Dialog
+      await click(getByText('Inside'))
+
+      // Verify it is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
+})
+
+describe('Nesting', () => {
+  it('should be possible to open nested Dialog components and close them with `Escape`', async () => {
+    function Nested({ onClose, level = 1 }: { onClose: (value: boolean) => void; level?: number }) {
+      let [showChild, setShowChild] = useState(false)
+
+      return (
+        <>
+          <Dialog open={true} onClose={onClose}>
+            <div>
+              <p>Level: {level}</p>
+              <button onClick={() => setShowChild(true)}>Open {level + 1}</button>
+            </div>
+            {showChild && <Nested onClose={setShowChild} level={level + 1} />}
+          </Dialog>
+        </>
+      )
+    }
+
+    function Example() {
+      let [open, setOpen] = useState(false)
+
+      return (
+        <>
+          <button onClick={() => setOpen(true)}>Open 1</button>
+          {open && <Nested onClose={setOpen} />}
+        </>
+      )
+    }
+
+    render(<Example />)
+
+    // Verify we have no open dialogs
+    expect(getDialogs()).toHaveLength(0)
+
+    // Open Dialog 1
+    await click(getByText('Open 1'))
+
+    // Verify that we have 1 open dialog
+    expect(getDialogs()).toHaveLength(1)
+
+    // Open Dialog 2
+    await click(getByText('Open 2'))
+
+    // Verify that we have 2 open dialogs
+    expect(getDialogs()).toHaveLength(2)
+
+    // Press escape to close the top most Dialog
+    await press(Keys.Escape)
+
+    // Verify that we have 1 open dialog
+    expect(getDialogs()).toHaveLength(1)
+
+    // Open Dialog 2
+    await click(getByText('Open 2'))
+
+    // Verify that we have 2 open dialogs
+    expect(getDialogs()).toHaveLength(2)
+
+    // Open Dialog 3
+    await click(getByText('Open 3'))
+
+    // Verify that we have 3 open dialogs
+    expect(getDialogs()).toHaveLength(3)
+
+    // Press escape to close the top most Dialog
+    await press(Keys.Escape)
+
+    // Verify that we have 2 open dialogs
+    expect(getDialogs()).toHaveLength(2)
+
+    // Press escape to close the top most Dialog
+    await press(Keys.Escape)
+
+    // Verify that we have 1 open dialog
+    expect(getDialogs()).toHaveLength(1)
+  })
 })

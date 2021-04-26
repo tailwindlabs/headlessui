@@ -153,13 +153,13 @@ it(
 
     let [a, b, c, d] = Array.from(document.querySelectorAll('input'))
 
-    // Ensure that input-b is the active elememt
+    // Ensure that input-b is the active element
     assertActiveElement(b)
 
     // Tab to the next item
     await press(Keys.Tab)
 
-    // Ensure that input-c is the active elememt
+    // Ensure that input-c is the active element
     assertActiveElement(c)
 
     // Try to move focus

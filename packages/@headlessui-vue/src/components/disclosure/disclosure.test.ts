@@ -100,6 +100,29 @@ describe('Rendering', () => {
         assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
       })
     )
+
+    it('should be possible to render a Disclosure in an open state by default', async () => {
+      renderTemplate(
+        html`
+          <Disclosure v-slot="{ open }" defaultOpen>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>Panel is: {{open ? 'open' : 'closed'}}</DisclosurePanel>
+          </Disclosure>
+        `
+      )
+
+      await new Promise<void>(nextTick)
+
+      assertDisclosureButton({
+        state: DisclosureState.Visible,
+        attributes: { id: 'headlessui-disclosure-button-1' },
+      })
+      assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
+
+      await click(getDisclosureButton())
+
+      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+    })
   })
 
   describe('DisclosureButton', () => {

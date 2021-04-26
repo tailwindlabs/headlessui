@@ -570,7 +570,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
     // We will take-over the default tab behaviour so that we have a bit
     // control over what is focused next. It will behave exactly the same,
-    // but it will also "fix" some issues based on wether you are using a
+    // but it will also "fix" some issues based on whether you are using a
     // Portal or not.
     event.preventDefault()
 
