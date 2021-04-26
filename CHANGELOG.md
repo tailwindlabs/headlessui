@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet!
 
-## [@headlessui/react@v1.1.0 - Vue] - 2021-04-26
+## [@headlessui/react@v1.1.0] - 2021-04-26
 
 ### Fixes
 
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `disabled` prop to `RadioGroup` and `RadioGroup.Option` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
 - Add `defaultOpen` prop to the `Disclosure` component ([#447](https://github.com/tailwindlabs/headlessui/pull/447))
 
-## [@headlessui/vue@v1.1.0 - Vue] - 2021-04-26
+## [@headlessui/vue@v1.1.0] - 2021-04-26
 
 ### Fixes
 
