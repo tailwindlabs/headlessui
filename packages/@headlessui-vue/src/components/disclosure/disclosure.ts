@@ -41,11 +41,12 @@ export let Disclosure = defineComponent({
   name: 'Disclosure',
   props: {
     as: { type: [Object, String], default: 'template' },
+    defaultOpen: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs }) {
-    let { ...passThroughProps } = props
-
-    let disclosureState = ref<StateDefinition['disclosureState']['value']>(DisclosureStates.Closed)
+    let disclosureState = ref<StateDefinition['disclosureState']['value']>(
+      props.defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed
+    )
     let panelRef = ref<StateDefinition['panelRef']['value']>(null)
 
     let api = {
@@ -62,6 +63,7 @@ export let Disclosure = defineComponent({
     provide(DisclosureContext, api)
 
     return () => {
+      let { defaultOpen: _, ...passThroughProps } = props
       let slot = { open: disclosureState.value === DisclosureStates.Open }
       return render({ props: passThroughProps, slot, slots, attrs, name: 'Disclosure' })
     }
