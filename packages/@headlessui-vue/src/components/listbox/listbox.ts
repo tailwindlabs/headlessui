@@ -78,7 +78,7 @@ export let Listbox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
-    modelValue: { type: [Object, String, Number, Boolean], default: null },
+    modelValue: { type: [Object, String, Number, Boolean] },
   },
   setup(props, { slots, attrs, emit }) {
     let { modelValue, disabled, ...passThroughProps } = props
@@ -445,7 +445,7 @@ export let ListboxOption = defineComponent({
   name: 'ListboxOption',
   props: {
     as: { type: [Object, String], default: 'li' },
-    value: { type: [Object, String], default: null },
+    value: { type: [Object, String] },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
     className: { type: [String, Function], required: false },

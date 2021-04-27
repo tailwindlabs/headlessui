@@ -61,7 +61,7 @@ export let Switch = defineComponent({
   emits: ['update:modelValue'],
   props: {
     as: { type: [Object, String], default: 'button' },
-    modelValue: { type: [Object, Boolean], default: null },
+    modelValue: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
     className: { type: [String, Function], required: false },
   },
