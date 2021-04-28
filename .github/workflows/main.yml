@@ -1,43 +1,73 @@
 name: CI
+
 on: [push]
+
+env:
+  NODE_VERSION: 12.x
+
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
 
     steps:
       - name: Begin CI...
         uses: actions/checkout@v2
-
-      - name: Use Node 12
+      - name: Use Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v2
         with:
-          node-version: 12
-
-      # - name: Use cached node_modules
-      #   id: cache
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: node_modules
-      #     key: nodeModules-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       nodeModules-
-
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
-        # if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
         env:
           CI: true
 
+  lint:
+    runs-on: ubuntu-latest
+    needs: [install]
+
+    steps:
+      - name: Begin CI...
+        uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Lint
         run: yarn lint
         env:
           CI: true
 
+  test:
+    runs-on: ubuntu-latest
+    needs: [install]
+
+    steps:
+      - name: Begin CI...
+        uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Test
         run: yarn test
         env:
           CI: true
 
+  build:
+    runs-on: ubuntu-latest
+    needs: [install]
+
+    steps:
+      - name: Begin CI...
+        uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Build
         run: yarn build
         env:
