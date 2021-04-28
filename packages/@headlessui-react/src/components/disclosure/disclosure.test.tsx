@@ -1,4 +1,4 @@
-import React, { createElement } from 'react'
+import React, { createElement, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Disclosure } from './disclosure'
@@ -11,10 +11,21 @@ import {
   getDisclosurePanel,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton } from '../../test-utils/interactions'
+import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
 
 afterAll(() => jest.restoreAllMocks())
+
+function nextFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
 
 describe('Safe guards', () => {
   it.each([
@@ -230,6 +241,63 @@ describe('Rendering', () => {
       assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
     })
   })
+})
+
+describe('Composition', () => {
+  function Debug({ fn, name }: { fn: (text: string) => void; name: string }) {
+    useEffect(() => {
+      fn(`Mounting - ${name}`)
+      return () => {
+        fn(`Unmounting - ${name}`)
+      }
+    }, [fn, name])
+    return null
+  }
+
+  it(
+    'should be possible to control the Disclosure.Panel by wrapping it in a Transition component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Disclosure>
+          <Disclosure.Button>Trigger</Disclosure.Button>
+          <Debug name="Disclosure" fn={orderFn} />
+          <Transition>
+            <Debug name="Transition" fn={orderFn} />
+            <Disclosure.Panel>
+              <Transition.Child>
+                <Debug name="Transition.Child" fn={orderFn} />
+              </Transition.Child>
+            </Disclosure.Panel>
+          </Transition>
+        </Disclosure>
+      )
+
+      // Verify the Disclosure is hidden
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Open the Disclosure component
+      await click(getDisclosureButton())
+
+      // Verify the Disclosure is visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      // Unmount the full tree
+      await click(getDisclosureButton())
+
+      // Wait for all transitions to finish
+      await nextFrame()
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Disclosure'],
+        ['Mounting - Transition'],
+        ['Mounting - Transition.Child'],
+        ['Unmounting - Transition.Child'],
+        ['Unmounting - Transition'],
+      ])
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {
