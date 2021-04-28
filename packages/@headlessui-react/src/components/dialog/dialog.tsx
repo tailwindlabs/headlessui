@@ -32,6 +32,7 @@ import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { contains } from '../../internal/dom-containers'
 import { Description, useDescriptions } from '../description/description'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosed, State } from '../../internal/open-closed'
 
 enum DialogStates {
   Open,
@@ -108,7 +109,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 >(
   props: Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
     PropsForFeatures<typeof DialogRenderFeatures> & {
-      open: boolean
+      open?: boolean
       onClose(value: boolean): void
       initialFocus?: MutableRefObject<HTMLElement | null>
     },
@@ -116,12 +117,21 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 ) {
   let { open, onClose, initialFocus, ...rest } = props
 
+  let usesOpenClosedState = useOpenClosed()
+  if (open === undefined && usesOpenClosedState !== null) {
+    // Update the `open` prop based on the open closed state
+    open = match(usesOpenClosedState, {
+      [State.Open]: true,
+      [State.Closed]: false,
+    })
+  }
+
   let containers = useRef<Set<HTMLElement>>(new Set())
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
   // Validations
-  let hasOpen = props.hasOwnProperty('open')
+  let hasOpen = props.hasOwnProperty('open') || usesOpenClosedState !== null
   let hasOnClose = props.hasOwnProperty('onClose')
   if (!hasOpen && !hasOnClose) {
     throw new Error(
@@ -152,8 +162,14 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       `You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${onClose}`
     )
   }
-
   let dialogState = open ? DialogStates.Open : DialogStates.Closed
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return dialogState === DialogStates.Open
+  })()
 
   let [state, dispatch] = useReducer(stateReducer, {
     titleId: null,
@@ -283,7 +299,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
                     slot,
                     defaultTag: DEFAULT_DIALOG_TAG,
                     features: DialogRenderFeatures,
-                    visible: dialogState === DialogStates.Open,
+                    visible,
                     name: 'Dialog',
                   })}
                 </DescriptionProvider>
