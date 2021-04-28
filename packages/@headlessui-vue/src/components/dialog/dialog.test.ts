@@ -653,6 +653,43 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should be possible to submit a form inside a Dialog',
+    suppressConsoleLogs(async () => {
+      let submitFn = jest.fn()
+      renderTemplate({
+        template: `
+          <Dialog v-if="true" :open="isOpen" @close="setIsOpen">
+            <form @submit.prevent="submitFn">
+              <input type="hidden" value="abc" />
+              <button type="submit">Submit</button>
+            </form>
+            <TabSentinel />
+          </Dialog>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            isOpen,
+            submitFn,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Submit the form
+      await click(getByText('Submit'))
+
+      // Verify that the submitFn function has been called
+      expect(submitFn).toHaveBeenCalledTimes(1)
+    })
+  )
+
+  it(
     'should stop propagating click events when clicking on an element inside the Dialog',
     suppressConsoleLogs(async () => {
       let wrapperFn = jest.fn()
