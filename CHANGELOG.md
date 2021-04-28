@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Fixes
+
+- Fix form submission within Dialog ([#460](https://github.com/tailwindlabs/headlessui/pull/460))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Fixes
+
+- Fix form submission within Dialog ([#460](https://github.com/tailwindlabs/headlessui/pull/460))
+- Fix TypeScript types for `Listbox` and `Switch` ([#459](https://github.com/tailwindlabs/headlessui/pull/459), [#461](https://github.com/tailwindlabs/headlessui/pull/461))
 
 ## [@headlessui/react@v1.1.0] - 2021-04-26
 

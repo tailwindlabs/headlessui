@@ -236,7 +236,6 @@ export let Dialog = defineComponent({
       titleId,
       describedby,
       handleClick(event: MouseEvent) {
-        event.preventDefault()
         event.stopPropagation()
       },
 
