@@ -244,7 +244,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,
     onClick(event: ReactMouseEvent) {
-      event.preventDefault()
       event.stopPropagation()
     },
 
