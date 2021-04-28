@@ -31,6 +31,7 @@ import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 
 enum ListboxStates {
   Open,
@@ -240,12 +241,19 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
 
   return (
     <ListboxContext.Provider value={reducerBag}>
-      {render({
-        props: passThroughProps,
-        slot,
-        defaultTag: DEFAULT_LISTBOX_TAG,
-        name: 'Listbox',
-      })}
+      <OpenClosedProvider
+        value={match(listboxState, {
+          [ListboxStates.Open]: State.Open,
+          [ListboxStates.Closed]: State.Closed,
+        })}
+      >
+        {render({
+          props: passThroughProps,
+          slot,
+          defaultTag: DEFAULT_LISTBOX_TAG,
+          name: 'Listbox',
+        })}
+      </OpenClosedProvider>
     </ListboxContext.Provider>
   )
 }
@@ -426,6 +434,15 @@ let Options = forwardRefWithAs(function Options<
   let d = useDisposables()
   let searchDisposables = useDisposables()
 
+  let usesOpenClosedState = useOpenClosed()
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return state.listboxState === ListboxStates.Open
+  })()
+
   useIsoMorphicEffect(() => {
     let container = state.optionsRef.current
     if (!container) return
@@ -531,7 +548,7 @@ let Options = forwardRefWithAs(function Options<
     slot,
     defaultTag: DEFAULT_OPTIONS_TAG,
     features: OptionsRenderFeatures,
-    visible: state.listboxState === ListboxStates.Open,
+    visible,
     name: 'Listbox.Options',
   })
 })
