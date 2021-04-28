@@ -33,6 +33,7 @@ import {
   FocusableMode,
 } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 enum PopoverStates {
   Open,
@@ -220,12 +221,19 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   return (
     <PopoverContext.Provider value={reducerBag}>
-      {render({
-        props,
-        slot,
-        defaultTag: DEFAULT_POPOVER_TAG,
-        name: 'Popover',
-      })}
+      <OpenClosedProvider
+        value={match(popoverState, {
+          [PopoverStates.Open]: State.Open,
+          [PopoverStates.Closed]: State.Closed,
+        })}
+      >
+        {render({
+          props,
+          slot,
+          defaultTag: DEFAULT_POPOVER_TAG,
+          name: 'Popover',
+        })}
+      </OpenClosedProvider>
     </PopoverContext.Provider>
   )
 }
@@ -469,6 +477,15 @@ let Overlay = forwardRefWithAs(function Overlay<
 
   let id = `headlessui-popover-overlay-${useId()}`
 
+  let usesOpenClosedState = useOpenClosed()
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return popoverState === PopoverStates.Open
+  })()
+
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
@@ -493,7 +510,7 @@ let Overlay = forwardRefWithAs(function Overlay<
     slot,
     defaultTag: DEFAULT_OVERLAY_TAG,
     features: OverlayRenderFeatures,
-    visible: popoverState === PopoverStates.Open,
+    visible,
     name: 'Popover.Overlay',
   })
 })
@@ -520,6 +537,15 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let panelRef = useSyncRefs(internalPanelRef, ref, panel => {
     dispatch({ type: ActionTypes.SetPanel, panel })
   })
+
+  let usesOpenClosedState = useOpenClosed()
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return state.popoverState === PopoverStates.Open
+  })()
 
   let handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -630,7 +656,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
         slot,
         defaultTag: DEFAULT_PANEL_TAG,
         features: PanelRenderFeatures,
-        visible: state.popoverState === PopoverStates.Open,
+        visible,
         name: 'Popover.Panel',
       })}
     </PopoverPanelContext.Provider>
