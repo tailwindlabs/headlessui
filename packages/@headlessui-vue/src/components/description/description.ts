@@ -11,6 +11,7 @@ import {
   // Types
   ComputedRef,
   InjectionKey,
+  Ref,
 } from 'vue'
 
 import { useId } from '../../hooks/use-id'
@@ -20,7 +21,7 @@ import { render } from '../../utils/render'
 
 let DescriptionContext = Symbol('DescriptionContext') as InjectionKey<{
   register(value: string): () => void
-  slot: Record<string, any>
+  slot: Ref<Record<string, any>>
   name: string
   props: Record<string, any>
 }>
@@ -34,11 +35,11 @@ function useDescriptionContext() {
 }
 
 export function useDescriptions({
-  slot = {},
+  slot = ref({}),
   name = 'Description',
   props = {},
 }: {
-  slot?: Record<string, unknown>
+  slot?: Ref<Record<string, unknown>>
   name?: string
   props?: Record<string, unknown>
 } = {}): ComputedRef<string | undefined> {
@@ -70,7 +71,7 @@ export let Description = defineComponent({
     as: { type: [Object, String], default: 'p' },
   },
   render() {
-    let { name = 'Description', slot = {}, props = {} } = this.context
+    let { name = 'Description', slot = ref({}), props = {} } = this.context
     let passThroughProps = this.$props
     let propsWeControl = {
       ...Object.entries(props).reduce(
@@ -82,7 +83,7 @@ export let Description = defineComponent({
 
     return render({
       props: { ...passThroughProps, ...propsWeControl },
-      slot,
+      slot: slot.value,
       attrs: this.$attrs,
       slots: this.$slots,
       name,
