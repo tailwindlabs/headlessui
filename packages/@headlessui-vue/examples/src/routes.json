@@ -95,6 +95,17 @@
     ]
   },
   {
+    "name": "Disclosure",
+    "path": "/disclosure",
+    "children": [
+      {
+        "name": "Disclosure",
+        "path": "/disclosure/disclosure",
+        "component": "./components/disclosure/disclosure.vue"
+      }
+    ]
+  },
+  {
     "name": "Dialog",
     "path": "/dialog",
     "children": [
