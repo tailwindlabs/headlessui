@@ -1,4 +1,4 @@
-import { defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -11,13 +11,9 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
-
-beforeAll(() => {
-  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
-  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
-})
 
 afterAll(() => jest.restoreAllMocks())
 
@@ -264,6 +260,120 @@ describe('Rendering', () => {
       assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
     })
   })
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the DisclosurePanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: `
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <OpenClosedWrite :open="true">
+              <DisclosurePanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </DisclosurePanel>
+            </OpenClosedWrite>
+          </Disclosure>
+        `,
+      })
+
+      // Verify the Disclosure is visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      // Let's try and open the Disclosure
+      await click(getDisclosureButton())
+
+      // Verify the Disclosure is still visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+    })
+  )
+
+  it(
+    'should always close the DisclosurePanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: `
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <OpenClosedWrite :open="false">
+              <DisclosurePanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </DisclosurePanel>
+            </OpenClosedWrite>
+          </Disclosure>
+        `,
+      })
+
+      // Verify the Disclosure is hidden
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Let's try and open the Disclosure
+      await click(getDisclosureButton())
+
+      // Verify the Disclosure is still hidden
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: `
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <OpenClosedRead @read="readFn">
+              <DisclosurePanel></DisclosurePanel>
+            </OpenClosedRead>
+          </Disclosure>
+        `,
+        setup() {
+          return { readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Disclosure is hidden
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Let's toggle the Disclosure 3 times
+      await click(getDisclosureButton())
+      await click(getDisclosureButton())
+      await click(getDisclosureButton())
+
+      // Verify the Disclosure is visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {
