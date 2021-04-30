@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Added 
+
+- Introduce Open/Closed state, to simplify component communication ([#466](https://github.com/tailwindlabs/headlessui/pull/466))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Added 
+
+- Introduce Open/Closed state, to simplify component communication ([#466](https://github.com/tailwindlabs/headlessui/pull/466))
 
 ## [@headlessui/react@v1.1.1] - 2021-04-28
 
