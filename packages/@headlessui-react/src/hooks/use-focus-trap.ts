@@ -2,10 +2,10 @@ import {
   useRef,
   // Types
   MutableRefObject,
+  useEffect,
 } from 'react'
 
 import { Keys } from '../components/keyboard'
-import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
 import { contains } from '../internal/dom-containers'
 import { useWindowEvent } from './use-window-event'
@@ -22,7 +22,7 @@ export function useFocusTrap(
   let mounted = useRef(false)
 
   // Handle initial focus
-  useIsoMorphicEffect(() => {
+  useEffect(() => {
     if (!enabled) return
     if (containers.current.size !== 1) return
 
