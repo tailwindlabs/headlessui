@@ -1,4 +1,4 @@
-import React, { createElement, useState } from 'react'
+import React, { createElement, useState, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Listbox } from './listbox'
@@ -36,6 +36,7 @@ import {
   ListboxState,
   getByText,
 } from '../../test-utils/accessibility-assertions'
+import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
 
@@ -542,6 +543,72 @@ describe('Rendering composition', () => {
 
       // Verify options are buttons now
       getListboxOptions().forEach(option => assertListboxOption(option, { tag: 'button' }))
+    })
+  )
+})
+
+describe('Composition', () => {
+  function Debug({ fn, name }: { fn: (text: string) => void; name: string }) {
+    useEffect(() => {
+      fn(`Mounting - ${name}`)
+      return () => {
+        fn(`Unmounting - ${name}`)
+      }
+    }, [fn, name])
+    return null
+  }
+
+  it(
+    'should be possible to wrap the Listbox.Options with a Transition component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Listbox value={undefined} onChange={console.log}>
+          <Listbox.Button>Trigger</Listbox.Button>
+          <Debug name="Listbox" fn={orderFn} />
+          <Transition>
+            <Debug name="Transition" fn={orderFn} />
+            <Listbox.Options>
+              <Listbox.Option value="a">
+                {data => (
+                  <>
+                    {JSON.stringify(data)}
+                    <Debug name="Listbox.Option" fn={orderFn} />
+                  </>
+                )}
+              </Listbox.Option>
+            </Listbox.Options>
+          </Transition>
+        </Listbox>
+      )
+
+      assertListboxButton({
+        state: ListboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      await click(getListboxButton())
+
+      assertListboxButton({
+        state: ListboxState.Visible,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({
+        state: ListboxState.Visible,
+        textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
+      })
+
+      await click(getListboxButton())
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Listbox'],
+        ['Mounting - Transition'],
+        ['Mounting - Listbox.Option'],
+        ['Unmounting - Transition'],
+        ['Unmounting - Listbox.Option'],
+      ])
     })
   )
 })

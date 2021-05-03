@@ -20,7 +20,7 @@ function Nested({ onClose, level = 0 }) {
   return (
     <>
       <Dialog open={true} onClose={onClose} className="fixed z-10 inset-0">
-        {true && <Dialog.Overlay className="fixed inset-0 bg-gray-500 opacity-25" />}
+        <Dialog.Overlay className="fixed inset-0 bg-gray-500 opacity-25" />
         <div
           className="z-10 fixed left-12 top-24 bg-white w-96 p-4"
           style={{
@@ -69,8 +69,8 @@ export default function Home() {
       <button onClick={() => setNested(true)}>Show nested</button>
       {nested && <Nested onClose={() => setNested(false)} />}
 
-      <Transition show={isOpen} as={Fragment}>
-        <Dialog open={isOpen} onClose={setIsOpen} static>
+      <Transition show={isOpen} as={Fragment} afterLeave={() => console.log('done')}>
+        <Dialog onClose={setIsOpen}>
           <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <Transition.Child
@@ -136,96 +136,78 @@ export default function Home() {
                           </p>
                           <div className="relative inline-block text-left mt-10">
                             <Menu>
-                              {({ open }) => (
-                                <>
-                                  <span className="rounded-md shadow-sm">
-                                    <Menu.Button
-                                      ref={trigger}
-                                      className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800"
-                                    >
-                                      <span>Choose a reason</span>
-                                      <svg
-                                        className="w-5 h-5 ml-2 -mr-1"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                          clipRule="evenodd"
-                                        />
-                                      </svg>
-                                    </Menu.Button>
-                                  </span>
-
-                                  <Transition
-                                    show={open}
-                                    enter="transition duration-100 ease-out"
-                                    enterFrom="transform scale-95 opacity-0"
-                                    enterTo="transform scale-100 opacity-100"
-                                    leave="transition duration-75 ease-out"
-                                    leaveFrom="transform scale-100 opacity-100"
-                                    leaveTo="transform scale-95 opacity-0"
+                              <span className="rounded-md shadow-sm">
+                                <Menu.Button
+                                  ref={trigger}
+                                  className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800"
+                                >
+                                  <span>Choose a reason</span>
+                                  <svg
+                                    className="w-5 h-5 ml-2 -mr-1"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
                                   >
-                                    <Portal>
-                                      <Menu.Items
-                                        ref={container}
-                                        static
-                                        className="z-20 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </Menu.Button>
+                              </span>
+
+                              <Transition
+                                enter="transition duration-300 ease-out"
+                                enterFrom="transform scale-95 opacity-0"
+                                enterTo="transform scale-100 opacity-100"
+                                leave="transition duration-75 ease-out"
+                                leaveFrom="transform scale-100 opacity-100"
+                                leaveTo="transform scale-95 opacity-0"
+                              >
+                                <Portal>
+                                  <Menu.Items
+                                    ref={container}
+                                    className="z-20 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+                                  >
+                                    <div className="px-4 py-3">
+                                      <p className="text-sm leading-5">Signed in as</p>
+                                      <p className="text-sm font-medium leading-5 text-gray-900 truncate">
+                                        tom@example.com
+                                      </p>
+                                    </div>
+
+                                    <div className="py-1">
+                                      <Menu.Item
+                                        as="a"
+                                        href="#account-settings"
+                                        className={resolveClass}
                                       >
-                                        <div className="px-4 py-3">
-                                          <p className="text-sm leading-5">Signed in as</p>
-                                          <p className="text-sm font-medium leading-5 text-gray-900 truncate">
-                                            tom@example.com
-                                          </p>
-                                        </div>
+                                        Account settings
+                                      </Menu.Item>
+                                      <Menu.Item as="a" href="#support" className={resolveClass}>
+                                        Support
+                                      </Menu.Item>
+                                      <Menu.Item
+                                        as="a"
+                                        disabled
+                                        href="#new-feature"
+                                        className={resolveClass}
+                                      >
+                                        New feature (soon)
+                                      </Menu.Item>
+                                      <Menu.Item as="a" href="#license" className={resolveClass}>
+                                        License
+                                      </Menu.Item>
+                                    </div>
 
-                                        <div className="py-1">
-                                          <Menu.Item
-                                            as="a"
-                                            href="#account-settings"
-                                            className={resolveClass}
-                                          >
-                                            Account settings
-                                          </Menu.Item>
-                                          <Menu.Item
-                                            as="a"
-                                            href="#support"
-                                            className={resolveClass}
-                                          >
-                                            Support
-                                          </Menu.Item>
-                                          <Menu.Item
-                                            as="a"
-                                            disabled
-                                            href="#new-feature"
-                                            className={resolveClass}
-                                          >
-                                            New feature (soon)
-                                          </Menu.Item>
-                                          <Menu.Item
-                                            as="a"
-                                            href="#license"
-                                            className={resolveClass}
-                                          >
-                                            License
-                                          </Menu.Item>
-                                        </div>
-
-                                        <div className="py-1">
-                                          <Menu.Item
-                                            as="a"
-                                            href="#sign-out"
-                                            className={resolveClass}
-                                          >
-                                            Sign out
-                                          </Menu.Item>
-                                        </div>
-                                      </Menu.Items>
-                                    </Portal>
-                                  </Transition>
-                                </>
-                              )}
+                                    <div className="py-1">
+                                      <Menu.Item as="a" href="#sign-out" className={resolveClass}>
+                                        Sign out
+                                      </Menu.Item>
+                                    </div>
+                                  </Menu.Items>
+                                </Portal>
+                              </Transition>
                             </Menu>
                           </div>
                         </div>

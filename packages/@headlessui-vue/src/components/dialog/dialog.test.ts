@@ -2,6 +2,7 @@ import { defineComponent, ref, nextTick, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Dialog, DialogOverlay, DialogTitle, DialogDescription } from './dialog'
+import { TransitionRoot } from '../transitions/transition'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   DialogState,
@@ -427,6 +428,52 @@ describe('Rendering', () => {
       })
     )
   })
+})
+
+describe('Composition', () => {
+  it(
+    'should be possible to open the Dialog via a Transition component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { TransitionRoot },
+        template: `
+          <TransitionRoot show>
+            <Dialog @close="() => {}">
+              <DialogDescription v-slot="data">{{JSON.stringify(data)}}</DialogDescription>
+              <TabSentinel />
+            </Dialog>
+          </Transition>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertDialog({ state: DialogState.Visible })
+      assertDialogDescription({
+        state: DialogState.Visible,
+        textContent: JSON.stringify({ open: true }),
+      })
+    })
+  )
+
+  it(
+    'should be possible to close the Dialog via a Transition component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { TransitionRoot },
+        template: `
+          <TransitionRoot :show="false">
+            <Dialog @close="() => {}">
+              <DialogDescription v-slot="data">{{JSON.stringify(data)}}</DialogDescription>
+              <TabSentinel />
+            </Dialog>
+          </Transition>
+        `,
+      })
+
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {

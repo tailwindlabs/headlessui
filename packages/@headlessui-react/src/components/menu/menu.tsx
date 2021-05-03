@@ -33,6 +33,7 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 
 enum MenuStates {
   Open,
@@ -197,7 +198,14 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
 
   return (
     <MenuContext.Provider value={reducerBag}>
-      {render({ props, slot, defaultTag: DEFAULT_MENU_TAG, name: 'Menu' })}
+      <OpenClosedProvider
+        value={match(menuState, {
+          [MenuStates.Open]: State.Open,
+          [MenuStates.Closed]: State.Closed,
+        })}
+      >
+        {render({ props, slot, defaultTag: DEFAULT_MENU_TAG, name: 'Menu' })}
+      </OpenClosedProvider>
     </MenuContext.Provider>
   )
 }
@@ -330,6 +338,15 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
   let id = `headlessui-menu-items-${useId()}`
   let searchDisposables = useDisposables()
 
+  let usesOpenClosedState = useOpenClosed()
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return state.menuState === MenuStates.Open
+  })()
+
   useEffect(() => {
     let container = state.itemsRef.current
     if (!container) return
@@ -455,7 +472,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     slot,
     defaultTag: DEFAULT_ITEMS_TAG,
     features: ItemsRenderFeatures,
-    visible: state.menuState === MenuStates.Open,
+    visible,
     name: 'Menu.Items',
   })
 })

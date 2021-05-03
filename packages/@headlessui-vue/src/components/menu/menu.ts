@@ -19,6 +19,8 @@ import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { match } from '../../utils/match'
 
 enum MenuStates {
   Open,
@@ -153,6 +155,14 @@ export let Menu = defineComponent({
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(MenuContext, api)
+    useOpenClosedProvider(
+      computed(() =>
+        match(menuState.value, {
+          [MenuStates.Open]: State.Open,
+          [MenuStates.Closed]: State.Closed,
+        })
+      )
+    )
 
     return () => {
       let slot = { open: menuState.value === MenuStates.Open }
@@ -283,7 +293,7 @@ export let MenuItems = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'MenuItems',
     })
   },
@@ -384,7 +394,16 @@ export let MenuItems = defineComponent({
       }
     }
 
-    return { id, el: api.itemsRef, handleKeyDown, handleKeyUp }
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.menuState.value === MenuStates.Open
+    })
+
+    return { id, el: api.itemsRef, handleKeyDown, handleKeyUp, visible }
   },
 })
 

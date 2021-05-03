@@ -17,6 +17,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
+import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
 
@@ -95,7 +96,6 @@ describe('Rendering', () => {
       'should complain when an `onClose` prop is provided without an `open` prop',
       suppressConsoleLogs(async () => {
         expect(() =>
-          // @ts-expect-error
           render(<Dialog as="div" onClose={() => {}} />)
         ).toThrowErrorMatchingInlineSnapshot(
           `"You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop."`
@@ -350,6 +350,44 @@ describe('Rendering', () => {
       })
     )
   })
+})
+
+describe('Composition', () => {
+  it(
+    'should be possible to open the Dialog via a Transition component',
+    suppressConsoleLogs(async () => {
+      render(
+        <Transition show={true}>
+          <Dialog onClose={console.log}>
+            <Dialog.Description>{JSON.stringify}</Dialog.Description>
+            <TabSentinel />
+          </Dialog>
+        </Transition>
+      )
+
+      assertDialog({ state: DialogState.Visible })
+      assertDialogDescription({
+        state: DialogState.Visible,
+        textContent: JSON.stringify({ open: true }),
+      })
+    })
+  )
+
+  it(
+    'should be possible to close the Dialog via a Transition component',
+    suppressConsoleLogs(async () => {
+      render(
+        <Transition show={false}>
+          <Dialog onClose={console.log}>
+            <Dialog.Description>{JSON.stringify}</Dialog.Description>
+            <TabSentinel />
+          </Dialog>
+        </Transition>
+      )
+
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {

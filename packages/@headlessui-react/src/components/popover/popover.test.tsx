@@ -1,4 +1,4 @@
-import React, { createElement } from 'react'
+import React, { createElement, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Popover } from './popover'
@@ -16,10 +16,21 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton, shift } from '../../test-utils/interactions'
 import { Portal } from '../portal/portal'
+import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
 
 afterAll(() => jest.restoreAllMocks())
+
+function nextFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
 
 describe('Safe guards', () => {
   it.each([
@@ -374,6 +385,57 @@ describe('Rendering', () => {
       })
     )
   })
+})
+
+describe('Composition', () => {
+  function Debug({ fn, name }: { fn: (text: string) => void; name: string }) {
+    useEffect(() => {
+      fn(`Mounting - ${name}`)
+      return () => {
+        fn(`Unmounting - ${name}`)
+      }
+    }, [fn, name])
+    return null
+  }
+
+  it(
+    'should be possible to wrap the Popover.Panel with a Transition component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Popover>
+          <Popover.Button>Trigger</Popover.Button>
+          <Debug name="Popover" fn={orderFn} />
+          <Transition>
+            <Debug name="Transition" fn={orderFn} />
+            <Popover.Panel>
+              <Transition.Child>
+                <Debug name="Transition.Child" fn={orderFn} />
+              </Transition.Child>
+            </Popover.Panel>
+          </Transition>
+        </Popover>
+      )
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Close the popover
+      await click(getPopoverButton())
+
+      // Wait for all transitions to finish
+      await nextFrame()
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Popover'],
+        ['Mounting - Transition'],
+        ['Mounting - Transition.Child'],
+        ['Unmounting - Transition.Child'],
+        ['Unmounting - Transition'],
+      ])
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {

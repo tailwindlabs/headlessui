@@ -22,6 +22,8 @@ import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
+import { match } from '../../utils/match'
 
 enum ListboxStates {
   Open,
@@ -194,6 +196,14 @@ export let Listbox = defineComponent({
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ListboxContext, api)
+    useOpenClosedProvider(
+      computed(() =>
+        match(listboxState.value, {
+          [ListboxStates.Open]: State.Open,
+          [ListboxStates.Closed]: State.Closed,
+        })
+      )
+    )
 
     return () => {
       let slot = { open: listboxState.value === ListboxStates.Open, disabled }
@@ -360,7 +370,7 @@ export let ListboxOptions = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'ListboxOptions',
     })
   },
@@ -437,7 +447,16 @@ export let ListboxOptions = defineComponent({
       }
     }
 
-    return { id, el: api.optionsRef, handleKeyDown }
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.listboxState.value === ListboxStates.Open
+    })
+
+    return { id, el: api.optionsRef, handleKeyDown, visible }
   },
 })
 
