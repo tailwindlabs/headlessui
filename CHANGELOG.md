@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Introduce Open/Closed state, to simplify component communication ([#466](https://github.com/tailwindlabs/headlessui/pull/466))
 
+### Fixes
+
+- Improve SSR for `Dialog` ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
+- Delay focus trap initialization ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
+
 ## [Unreleased - Vue]
 
 ### Added 
