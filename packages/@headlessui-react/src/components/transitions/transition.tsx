@@ -23,6 +23,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { Features, PropsForFeatures, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 
 type ID = ReturnType<typeof useId>
 
@@ -260,11 +261,13 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
 
   let events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
 
+  let ready = useServerHandoffComplete()
+
   useEffect(() => {
-    if (state === TreeStates.Visible && container.current === null) {
+    if (ready && state === TreeStates.Visible && container.current === null) {
       throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
     }
-  }, [container, state])
+  }, [container, state, ready])
 
   // Skipping initial transition
   let skip = initial && !appear

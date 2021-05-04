@@ -33,6 +33,7 @@ import { contains } from '../../internal/dom-containers'
 import { Description, useDescriptions } from '../description/description'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State } from '../../internal/open-closed'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 
 enum DialogStates {
   Open,
@@ -235,7 +236,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     return () => observer.disconnect()
   }, [dialogState, internalDialogRef, close])
 
-  let enabled = dialogState === DialogStates.Open
+  let ready = useServerHandoffComplete()
+  let enabled = ready && dialogState === DialogStates.Open
 
   useFocusTrap(containers, enabled, { initialFocus })
   useInertOthers(internalDialogRef, enabled)
