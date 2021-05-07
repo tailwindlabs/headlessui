@@ -14,7 +14,6 @@ import { createPortal } from 'react-dom'
 import { Props } from '../../types'
 import { render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useElementStack, StackProvider } from '../../internal/stack-context'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 
@@ -60,8 +59,6 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
 
   let ready = useServerHandoffComplete()
 
-  useElementStack(element)
-
   useIsoMorphicEffect(() => {
     if (!target) return
     if (!element) return
@@ -82,16 +79,12 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
 
   if (!ready) return null
 
-  return (
-    <StackProvider>
-      {!target || !element
-        ? null
-        : createPortal(
-            render({ props: passthroughProps, defaultTag: DEFAULT_PORTAL_TAG, name: 'Portal' }),
-            element
-          )}
-    </StackProvider>
-  )
+  return !target || !element
+    ? null
+    : createPortal(
+        render({ props: passthroughProps, defaultTag: DEFAULT_PORTAL_TAG, name: 'Portal' }),
+        element
+      )
 }
 
 // ---
