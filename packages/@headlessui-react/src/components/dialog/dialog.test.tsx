@@ -14,6 +14,7 @@ import {
   getByText,
   assertActiveElement,
   getDialogs,
+  getDialogOverlays,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
@@ -637,79 +638,205 @@ describe('Mouse interactions', () => {
 })
 
 describe('Nesting', () => {
-  it('should be possible to open nested Dialog components and close them with `Escape`', async () => {
-    function Nested({ onClose, level = 1 }: { onClose: (value: boolean) => void; level?: number }) {
-      let [showChild, setShowChild] = useState(false)
+  function Nested({ onClose, level = 1 }: { onClose: (value: boolean) => void; level?: number }) {
+    let [showChild, setShowChild] = useState(false)
 
-      return (
-        <>
-          <Dialog open={true} onClose={onClose}>
-            <div>
-              <p>Level: {level}</p>
-              <button onClick={() => setShowChild(true)}>Open {level + 1}</button>
-            </div>
-            {showChild && <Nested onClose={setShowChild} level={level + 1} />}
-          </Dialog>
-        </>
-      )
+    return (
+      <>
+        <Dialog open={true} onClose={onClose}>
+          <Dialog.Overlay />
+
+          <div>
+            <p>Level: {level}</p>
+            <button onClick={() => setShowChild(true)}>Open {level + 1} a</button>
+            <button onClick={() => setShowChild(true)}>Open {level + 1} b</button>
+            <button onClick={() => setShowChild(true)}>Open {level + 1} c</button>
+          </div>
+          {showChild && <Nested onClose={setShowChild} level={level + 1} />}
+        </Dialog>
+      </>
+    )
+  }
+
+  function Example() {
+    let [open, setOpen] = useState(false)
+
+    return (
+      <>
+        <button onClick={() => setOpen(true)}>Open 1</button>
+        {open && <Nested onClose={setOpen} />}
+      </>
+    )
+  }
+
+  it.each`
+    strategy                            | action
+    ${'with `Escape`'}                  | ${() => press(Keys.Escape)}
+    ${'with `Outside Click`'}           | ${() => click(document.body)}
+    ${'with `Click on Dialog.Overlay`'} | ${() => click(getDialogOverlays().pop()!)}
+  `(
+    'should be possible to open nested Dialog components and close them $strategy',
+    async ({ action }) => {
+      render(<Example />)
+
+      // Verify we have no open dialogs
+      expect(getDialogs()).toHaveLength(0)
+
+      // Open Dialog 1
+      await click(getByText('Open 1'))
+
+      // Verify that we have 1 open dialog
+      expect(getDialogs()).toHaveLength(1)
+
+      // Verify that the `Open 2 a` has focus
+      assertActiveElement(getByText('Open 2 a'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 b'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 c'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 a'))
+
+      // Open Dialog 2 via the second button
+      await click(getByText('Open 2 b'))
+
+      // Verify that we have 2 open dialogs
+      expect(getDialogs()).toHaveLength(2)
+
+      // Verify that the `Open 3 a` has focus
+      assertActiveElement(getByText('Open 3 a'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 b'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 c'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 a'))
+
+      // Close the top most Dialog
+      await action()
+
+      // Verify that we have 1 open dialog
+      expect(getDialogs()).toHaveLength(1)
+
+      // Verify that the `Open 2 b` button got focused again
+      assertActiveElement(getByText('Open 2 b'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 c'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 a'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 b'))
+
+      // Open Dialog 2 via button b
+      await click(getByText('Open 2 b'))
+
+      // Verify that the `Open 3 a` has focus
+      assertActiveElement(getByText('Open 3 a'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 b'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 c'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 a'))
+
+      // Verify that we have 2 open dialogs
+      expect(getDialogs()).toHaveLength(2)
+
+      // Open Dialog 3 via button c
+      await click(getByText('Open 3 c'))
+
+      // Verify that the `Open 4 a` has focus
+      assertActiveElement(getByText('Open 4 a'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 4 b'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 4 c'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 4 a'))
+
+      // Verify that we have 3 open dialogs
+      expect(getDialogs()).toHaveLength(3)
+
+      // Close the top most Dialog
+      await action()
+
+      // Verify that the `Open 3 c` button got focused again
+      assertActiveElement(getByText('Open 3 c'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 a'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 b'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 3 c'))
+
+      // Verify that we have 2 open dialogs
+      expect(getDialogs()).toHaveLength(2)
+
+      // Close the top most Dialog
+      await action()
+
+      // Verify that we have 1 open dialog
+      expect(getDialogs()).toHaveLength(1)
+
+      // Verify that the `Open 2 b` button got focused again
+      assertActiveElement(getByText('Open 2 b'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 c'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 a'))
+
+      // Verify that we can tab around
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open 2 b'))
+
+      // Close the top most Dialog
+      await action()
+
+      // Verify that we have 0 open dialogs
+      expect(getDialogs()).toHaveLength(0)
+
+      // Verify that the `Open 1` button got focused again
+      assertActiveElement(getByText('Open 1'))
     }
-
-    function Example() {
-      let [open, setOpen] = useState(false)
-
-      return (
-        <>
-          <button onClick={() => setOpen(true)}>Open 1</button>
-          {open && <Nested onClose={setOpen} />}
-        </>
-      )
-    }
-
-    render(<Example />)
-
-    // Verify we have no open dialogs
-    expect(getDialogs()).toHaveLength(0)
-
-    // Open Dialog 1
-    await click(getByText('Open 1'))
-
-    // Verify that we have 1 open dialog
-    expect(getDialogs()).toHaveLength(1)
-
-    // Open Dialog 2
-    await click(getByText('Open 2'))
-
-    // Verify that we have 2 open dialogs
-    expect(getDialogs()).toHaveLength(2)
-
-    // Press escape to close the top most Dialog
-    await press(Keys.Escape)
-
-    // Verify that we have 1 open dialog
-    expect(getDialogs()).toHaveLength(1)
-
-    // Open Dialog 2
-    await click(getByText('Open 2'))
-
-    // Verify that we have 2 open dialogs
-    expect(getDialogs()).toHaveLength(2)
-
-    // Open Dialog 3
-    await click(getByText('Open 3'))
-
-    // Verify that we have 3 open dialogs
-    expect(getDialogs()).toHaveLength(3)
-
-    // Press escape to close the top most Dialog
-    await press(Keys.Escape)
-
-    // Verify that we have 2 open dialogs
-    expect(getDialogs()).toHaveLength(2)
-
-    // Press escape to close the top most Dialog
-    await press(Keys.Escape)
-
-    // Verify that we have 1 open dialog
-    expect(getDialogs()).toHaveLength(1)
-  })
+  )
 })
