@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improve SSR for `Dialog` ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
 - Delay focus trap initialization ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
+- Improve incorrect behaviour for nesting `Dialog` components ([#560](https://github.com/tailwindlabs/headlessui/pull/560))
 
 ## [Unreleased - Vue]
 

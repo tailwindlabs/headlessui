@@ -44,9 +44,16 @@ export enum Focus {
 }
 
 export enum FocusResult {
+  /** Something went wrong while trying to focus. */
   Error,
+
+  /** When `Focus.WrapAround` is enabled, going from position `N` to `N+1` where `N` is the last index in the array, then we overflow. */
   Overflow,
+
+  /** Focus was successful. */
   Success,
+
+  /** When `Focus.WrapAround` is enabled, going from position `N` to `N-1` where `N` is the first index in the array, then we underflow. */
   Underflow,
 }
 

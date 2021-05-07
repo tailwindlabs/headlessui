@@ -15,6 +15,7 @@ import React, {
   KeyboardEvent as ReactKeyboardEvent,
   MutableRefObject,
   Ref,
+  useState,
 } from 'react'
 
 import { Props } from '../../types'
@@ -24,16 +25,15 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
-import { useFocusTrap } from '../../hooks/use-focus-trap'
+import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
-import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
-import { contains } from '../../internal/dom-containers'
 import { Description, useDescriptions } from '../description/description'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { StackProvider, StackMessage } from '../../internal/stack-context'
 
 enum DialogStates {
   Open,
@@ -117,6 +117,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   ref: Ref<HTMLDivElement>
 ) {
   let { open, onClose, initialFocus, ...rest } = props
+  let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
   if (open === undefined && usesOpenClosedState !== null) {
@@ -127,7 +128,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     })
   }
 
-  let containers = useRef<Set<HTMLElement>>(new Set())
+  let containers = useRef<Set<MutableRefObject<HTMLElement | null>>>(new Set())
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
@@ -184,13 +185,34 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     [dispatch]
   )
 
+  let ready = useServerHandoffComplete()
+  let enabled = ready && dialogState === DialogStates.Open
+  let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
+  let hasParentDialog = useContext(DialogContext) !== null
+
+  // If there are multiple dialogs, then you can be the root, the leaf or one
+  // in between. We only care abou whether you are the top most one or not.
+  let position = !hasNestedDialogs ? 'leaf' : 'parent'
+
+  useFocusTrap(
+    internalDialogRef,
+    enabled
+      ? match(position, {
+          parent: FocusTrapFeatures.RestoreFocus,
+          leaf: FocusTrapFeatures.All,
+        })
+      : FocusTrapFeatures.None,
+    { initialFocus, containers }
+  )
+  useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
+
   // Handle outside click
   useWindowEvent('mousedown', event => {
     let target = event.target as HTMLElement
 
     if (dialogState !== DialogStates.Open) return
-    if (containers.current.size !== 1) return
-    if (contains(containers.current, target)) return
+    if (hasNestedDialogs) return
+    if (internalDialogRef.current?.contains(target)) return
 
     close()
   })
@@ -198,6 +220,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // Scroll lock
   useEffect(() => {
     if (dialogState !== DialogStates.Open) return
+    if (hasParentDialog) return
 
     let overflow = document.documentElement.style.overflow
     let paddingRight = document.documentElement.style.paddingRight
@@ -211,7 +234,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       document.documentElement.style.overflow = overflow
       document.documentElement.style.paddingRight = paddingRight
     }
-  }, [dialogState])
+  }, [dialogState, hasParentDialog])
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
@@ -236,11 +259,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     return () => observer.disconnect()
   }, [dialogState, internalDialogRef, close])
 
-  let ready = useServerHandoffComplete()
-  let enabled = ready && dialogState === DialogStates.Open
-
-  useFocusTrap(containers, enabled, { initialFocus })
-  useInertOthers(internalDialogRef, enabled)
   let [describedby, DescriptionProvider] = useDescriptions()
 
   let id = `headlessui-dialog-${useId()}`
@@ -269,7 +287,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     onKeyDown(event: ReactKeyboardEvent) {
       if (event.key !== Keys.Escape) return
       if (dialogState !== DialogStates.Open) return
-      if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
+      if (hasNestedDialogs) return
       event.preventDefault()
       event.stopPropagation()
       close()
@@ -279,16 +297,22 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   return (
     <StackProvider
-      onUpdate={(message, element) => {
-        return match(message, {
-          [StackMessage.AddElement]() {
+      type="Dialog"
+      element={internalDialogRef}
+      onUpdate={useCallback((message, type, element) => {
+        if (type !== 'Dialog') return
+
+        match(message, {
+          [StackMessage.Add]() {
             containers.current.add(element)
+            setNestedDialogCount(count => count + 1)
           },
-          [StackMessage.RemoveElement]() {
-            containers.current.delete(element)
+          [StackMessage.Remove]() {
+            containers.current.add(element)
+            setNestedDialogCount(count => count - 1)
           },
         })
-      }}
+      }, [])}
     >
       <ForcePortalRoot force={true}>
         <Portal>

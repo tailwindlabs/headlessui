@@ -8,7 +8,7 @@ import {
 
 import { Props } from '../../types'
 import { render } from '../../utils/render'
-import { useFocusTrap } from '../../hooks/use-focus-trap'
+import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 
 let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
@@ -16,17 +16,14 @@ let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 export function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
   props: Props<TTag> & { initialFocus?: MutableRefObject<HTMLElement | null> }
 ) {
-  let containers = useRef<Set<HTMLElement>>(new Set())
+  let container = useRef<HTMLElement | null>(null)
   let { initialFocus, ...passthroughProps } = props
 
   let ready = useServerHandoffComplete()
-  useFocusTrap(containers, ready, { initialFocus })
+  useFocusTrap(container, ready ? FocusTrapFeatures.All : FocusTrapFeatures.None, { initialFocus })
 
   let propsWeControl = {
-    ref(element: HTMLElement | null) {
-      if (!element) return
-      containers.current.add(element)
-    },
+    ref: container,
   }
 
   return render({

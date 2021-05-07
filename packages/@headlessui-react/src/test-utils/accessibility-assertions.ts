@@ -880,6 +880,10 @@ export function getDialogOverlay(): HTMLElement | null {
   return document.querySelector('[id^="headlessui-dialog-overlay-"]')
 }
 
+export function getDialogOverlays(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-dialog-overlay-"]'))
+}
+
 // ---
 
 export enum DialogState {
