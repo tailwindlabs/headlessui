@@ -1,6 +1,7 @@
 import { defineComponent, h, nextTick, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
+import { TransitionChild } from '../transitions/transition'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   MenuState,
@@ -40,6 +41,16 @@ beforeAll(() => {
 })
 
 afterAll(() => jest.restoreAllMocks())
+
+function nextFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   let defaultComponents = { Menu, MenuButton, MenuItems, MenuItem }
@@ -880,6 +891,56 @@ describe('Composition', () => {
       expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
     })
   )
+
+  it('should be possible to render a TransitionChild that inherits state from the Menu', async () => {
+    let readFn = jest.fn()
+    renderTemplate({
+      components: { TransitionChild },
+      template: jsx`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <TransitionChild
+            as="template"
+            @beforeEnter="readFn('enter')"
+            @beforeLeave="readFn('leave')"
+          >
+            <MenuItems>
+              <MenuItem as="button">I am a button</MenuItem>
+            </MenuItems>
+          </TransitionChild>
+        </Menu>
+      `,
+      setup() {
+        return { readFn }
+      },
+    })
+
+    // Verify the Menu is hidden
+    assertMenu({ state: MenuState.InvisibleUnmounted })
+
+    // Let's toggle the Menu
+    await click(getMenuButton())
+
+    // Verify that our transition fired
+    expect(readFn).toHaveBeenCalledTimes(1)
+    expect(readFn).toHaveBeenNthCalledWith(1, 'enter')
+
+    // Verify the Menu is visible
+    assertMenu({ state: MenuState.Visible })
+
+    // Let's toggle the Menu
+    await click(getMenuButton())
+
+    // Verify that our transition fired
+    expect(readFn).toHaveBeenCalledTimes(2)
+    expect(readFn).toHaveBeenNthCalledWith(2, 'leave')
+
+    // Wait for the transitions to finish
+    await nextFrame()
+
+    // Verify the Menu is hidden
+    assertMenu({ state: MenuState.InvisibleUnmounted })
+  })
 })
 
 describe('Keyboard interactions', () => {

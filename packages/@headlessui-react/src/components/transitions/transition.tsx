@@ -400,5 +400,16 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   )
 }
 
-Transition.Child = TransitionChild
+Transition.Child = function Child<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+  props: TransitionChildProps<TTag>
+) {
+  let hasTransitionContext = useContext(TransitionContext) !== null
+  let hasOpenClosedContext = useOpenClosed() !== null
+
+  return !hasTransitionContext && hasOpenClosedContext ? (
+    <Transition {...props} />
+  ) : (
+    <TransitionChild {...props} />
+  )
+}
 Transition.Root = Transition
