@@ -21,7 +21,12 @@ import { match } from '../../utils/match'
 import { Features, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 import { dom } from '../../utils/dom'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import {
+  useOpenClosedProvider,
+  State,
+  useOpenClosed,
+  hasOpenClosed,
+} from '../../internal/open-closed'
 
 type ID = ReturnType<typeof useId>
 
@@ -38,6 +43,10 @@ let TransitionContext = Symbol('TransitionContext') as InjectionKey<TransitionCo
 enum TreeStates {
   Visible = 'visible',
   Hidden = 'hidden',
+}
+
+function hasTransitionContext() {
+  return inject(TransitionContext, null) !== null
 }
 
 function useTransitionContext() {
@@ -137,6 +146,20 @@ export let TransitionChild = defineComponent({
   },
   emits: ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'],
   render() {
+    if (this.renderAsRoot) {
+      return h(
+        TransitionRoot,
+        {
+          ...this.$props,
+          onBeforeEnter: () => this.$emit('beforeEnter'),
+          onAfterEnter: () => this.$emit('afterEnter'),
+          onBeforeLeave: () => this.$emit('beforeLeave'),
+          onAfterLeave: () => this.$emit('afterLeave'),
+        },
+        this.$slots
+      )
+    }
+
     let {
       appear,
       show,
@@ -165,6 +188,12 @@ export let TransitionChild = defineComponent({
     })
   },
   setup(props, { emit }) {
+    if (!hasTransitionContext() && hasOpenClosed()) {
+      return {
+        renderAsRoot: true,
+      }
+    }
+
     let container = ref<HTMLElement | null>(null)
     let state = ref(TreeStates.Visible)
     let strategy = computed(() => (props.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden))
@@ -289,7 +318,7 @@ export let TransitionChild = defineComponent({
       )
     )
 
-    return { el: container, state }
+    return { el: container, renderAsRoot: false, state }
   },
 })
 
@@ -325,7 +354,15 @@ export let TransitionRoot = defineComponent({
         default: () => [
           h(
             TransitionChild,
-            { ...this.$attrs, ...sharedProps, ...passThroughProps },
+            {
+              onBeforeEnter: () => this.$emit('beforeEnter'),
+              onAfterEnter: () => this.$emit('afterEnter'),
+              onBeforeLeave: () => this.$emit('beforeLeave'),
+              onAfterLeave: () => this.$emit('afterLeave'),
+              ...this.$attrs,
+              ...sharedProps,
+              ...passThroughProps,
+            },
             this.$slots.default
           ),
         ],

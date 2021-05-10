@@ -496,6 +496,60 @@ describe('Composition', () => {
       ])
     })
   )
+
+  it(
+    'should be possible to wrap the Menu.Items with a Transition.Child component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Debug name="Menu" fn={orderFn} />
+          <Transition.Child>
+            <Debug name="Transition" fn={orderFn} />
+            <Menu.Items>
+              <Menu.Item as="a">
+                {data => (
+                  <>
+                    {JSON.stringify(data)}
+                    <Debug name="Menu.Item" fn={orderFn} />
+                  </>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition.Child>
+        </Menu>
+      )
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      await click(getMenuButton())
+
+      assertMenuButton({
+        state: MenuState.Visible,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({
+        state: MenuState.Visible,
+        textContent: JSON.stringify({ active: false, disabled: false }),
+      })
+
+      await click(getMenuButton())
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Menu'],
+        ['Mounting - Transition'],
+        ['Mounting - Menu.Item'],
+        ['Unmounting - Transition'],
+        ['Unmounting - Menu.Item'],
+      ])
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {
