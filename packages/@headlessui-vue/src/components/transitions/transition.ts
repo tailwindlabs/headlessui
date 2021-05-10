@@ -21,6 +21,7 @@ import { match } from '../../utils/match'
 import { Features, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 import { dom } from '../../utils/dom'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 type ID = ReturnType<typeof useId>
 
@@ -277,9 +278,16 @@ export let TransitionChild = defineComponent({
         { immediate: true }
       )
     })
-    // onUpdated(() => executeTransition(() => {}))
 
     provide(NestingContext, nesting)
+    useOpenClosedProvider(
+      computed(() =>
+        match(state.value, {
+          [TreeStates.Visible]: State.Open,
+          [TreeStates.Hidden]: State.Closed,
+        })
+      )
+    )
 
     return { el: container, state }
   },
@@ -329,13 +337,26 @@ export let TransitionRoot = defineComponent({
     })
   },
   setup(props) {
+    let usesOpenClosedState = useOpenClosed()
+
+    let show = computed(() => {
+      if (props.show === null && usesOpenClosedState !== null) {
+        return match(usesOpenClosedState.value, {
+          [State.Open]: true,
+          [State.Closed]: false,
+        })
+      }
+
+      return props.show
+    })
+
     watchEffect(() => {
-      if (![true, false].includes(props.show)) {
+      if (![true, false].includes(show.value)) {
         throw new Error('A <Transition /> is used but it is missing a `:show="true | false"` prop.')
       }
     })
 
-    let state = ref(props.show ? TreeStates.Visible : TreeStates.Hidden)
+    let state = ref(show.value ? TreeStates.Visible : TreeStates.Hidden)
 
     let nestingBag = useNesting(() => {
       state.value = TreeStates.Hidden
@@ -343,7 +364,7 @@ export let TransitionRoot = defineComponent({
 
     let initial = { value: true }
     let transitionBag = {
-      show: computed(() => props.show),
+      show,
       appear: computed(() => props.appear || !initial.value),
     }
 
@@ -351,7 +372,7 @@ export let TransitionRoot = defineComponent({
       watchEffect(() => {
         initial.value = false
 
-        if (props.show) {
+        if (show.value) {
           state.value = TreeStates.Visible
         } else if (!hasChildren(nestingBag)) {
           state.value = TreeStates.Hidden
@@ -362,6 +383,6 @@ export let TransitionRoot = defineComponent({
     provide(NestingContext, nestingBag)
     provide(TransitionContext, transitionBag)
 
-    return { state }
+    return { state, show }
   },
 })

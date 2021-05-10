@@ -9,6 +9,7 @@ import {
   // Types
   InjectionKey,
   Ref,
+  computed,
 } from 'vue'
 
 import { match } from '../../utils/match'
@@ -25,6 +26,7 @@ import {
 } from '../../utils/focus-management'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 enum PopoverStates {
   Open,
@@ -113,6 +115,14 @@ export let Popover = defineComponent({
     } as StateDefinition
 
     provide(PopoverContext, api)
+    useOpenClosedProvider(
+      computed(() =>
+        match(popoverState.value, {
+          [PopoverStates.Open]: State.Open,
+          [PopoverStates.Closed]: State.Closed,
+        })
+      )
+    )
 
     let registerBag = {
       buttonId,
@@ -377,18 +387,28 @@ export let PopoverOverlay = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'PopoverOverlay',
     })
   },
   setup() {
     let api = usePopoverContext('PopoverOverlay')
 
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.popoverState.value === PopoverStates.Open
+    })
+
     return {
       id: `headlessui-popover-overlay-${useId()}`,
       handleClick() {
         api.closePopover()
       },
+      visible,
     }
   },
 })
@@ -419,7 +439,7 @@ export let PopoverPanel = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'PopoverPanel',
     })
   },
@@ -498,6 +518,15 @@ export let PopoverPanel = defineComponent({
       true
     )
 
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.popoverState.value === PopoverStates.Open
+    })
+
     return {
       id: api.panelId,
       el: api.panel,
@@ -513,6 +542,7 @@ export let PopoverPanel = defineComponent({
             break
         }
       },
+      visible,
     }
   },
 })

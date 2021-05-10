@@ -1,37 +1,42 @@
-import React, { ReactNode, createContext, useContext, useCallback } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+
+  // Types
+  MutableRefObject,
+  ReactNode,
+} from 'react'
 import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect'
 
-type OnUpdate = (message: StackMessage, element: HTMLElement) => void
+type OnUpdate = (
+  message: StackMessage,
+  type: string,
+  element: MutableRefObject<HTMLElement | null>
+) => void
 
 let StackContext = createContext<OnUpdate>(() => {})
 StackContext.displayName = 'StackContext'
 
 export enum StackMessage {
-  AddElement,
-  RemoveElement,
+  Add,
+  Remove,
 }
 
 export function useStackContext() {
   return useContext(StackContext)
 }
 
-export function useElementStack(element: HTMLElement | null) {
-  let notify = useStackContext()
-
-  useIsoMorphicEffect(() => {
-    if (!element) return
-
-    notify(StackMessage.AddElement, element)
-    return () => notify(StackMessage.RemoveElement, element)
-  }, [element])
-}
-
 export function StackProvider({
   children,
   onUpdate,
+  type,
+  element,
 }: {
   children: ReactNode
   onUpdate?: OnUpdate
+  type: string
+  element: MutableRefObject<HTMLElement | null>
 }) {
   let parentUpdate = useStackContext()
 
@@ -45,6 +50,11 @@ export function StackProvider({
     },
     [parentUpdate, onUpdate]
   )
+
+  useIsoMorphicEffect(() => {
+    notify(StackMessage.Add, type, element)
+    return () => notify(StackMessage.Remove, type, element)
+  }, [notify, type, element])
 
   return <StackContext.Provider value={notify}>{children}</StackContext.Provider>
 }

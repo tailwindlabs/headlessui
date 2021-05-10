@@ -6,6 +6,7 @@ import { match } from '../../utils/match'
 import { render, Features } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { dom } from '../../utils/dom'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 enum DisclosureStates {
   Open,
@@ -61,6 +62,14 @@ export let Disclosure = defineComponent({
     } as StateDefinition
 
     provide(DisclosureContext, api)
+    useOpenClosedProvider(
+      computed(() => {
+        return match(disclosureState.value, {
+          [DisclosureStates.Open]: State.Open,
+          [DisclosureStates.Closed]: State.Closed,
+        })
+      })
+    )
 
     return () => {
       let { defaultOpen: _, ...passThroughProps } = props
@@ -159,7 +168,7 @@ export let DisclosurePanel = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'DisclosurePanel',
     })
   },
@@ -167,6 +176,15 @@ export let DisclosurePanel = defineComponent({
     let api = useDisclosureContext('DisclosurePanel')
     let panelId = `headlessui-disclosure-panel-${useId()}`
 
-    return { id: panelId, el: api.panelRef }
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.disclosureState.value === DisclosureStates.Open
+    })
+
+    return { id: panelId, el: api.panelRef, visible }
   },
 })

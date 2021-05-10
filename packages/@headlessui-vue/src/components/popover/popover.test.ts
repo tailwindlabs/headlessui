@@ -1,4 +1,4 @@
-import { defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
@@ -17,6 +17,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton, shift } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
 
@@ -427,6 +428,124 @@ describe('Rendering', () => {
       })
     )
   })
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the PopoverPanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <OpenClosedWrite :open="true">
+              <PopoverPanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </PopoverPanel>
+            </OpenClosedWrite>
+          </Popover>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Popover is visible
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Let's try and open the Popover
+      await click(getPopoverButton())
+
+      // Verify the Popover is still visible
+      assertPopoverPanel({ state: PopoverState.Visible })
+    })
+  )
+
+  it(
+    'should always close the PopoverPanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <OpenClosedWrite :open="false">
+              <PopoverPanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </PopoverPanel>
+            </OpenClosedWrite>
+          </Popover>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Popover is hidden
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+      // Let's try and open the Popover
+      await click(getPopoverButton())
+
+      // Verify the Popover is still hidden
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <OpenClosedRead @read="readFn">
+              <PopoverPanel></PopoverPanel>
+            </OpenClosedRead>
+          </Popover>
+        `,
+        setup() {
+          return { readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Popover is hidden
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+      // Let's toggle the Popover 3 times
+      await click(getPopoverButton())
+      await click(getPopoverButton())
+      await click(getPopoverButton())
+
+      // Verify the Popover is visible
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {

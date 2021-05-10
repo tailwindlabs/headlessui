@@ -1,4 +1,4 @@
-import React, { createElement } from 'react'
+import React, { createElement, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Menu } from './menu'
@@ -31,6 +31,7 @@ import {
   Keys,
   MouseButton,
 } from '../../test-utils/interactions'
+import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
 
@@ -427,6 +428,72 @@ describe('Rendering composition', () => {
       document.querySelectorAll('.inner').forEach(element => {
         expect(element).toHaveAttribute('role', 'none')
       })
+    })
+  )
+})
+
+describe('Composition', () => {
+  function Debug({ fn, name }: { fn: (text: string) => void; name: string }) {
+    useEffect(() => {
+      fn(`Mounting - ${name}`)
+      return () => {
+        fn(`Unmounting - ${name}`)
+      }
+    }, [fn, name])
+    return null
+  }
+
+  it(
+    'should be possible to wrap the Menu.Items with a Transition component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Debug name="Menu" fn={orderFn} />
+          <Transition>
+            <Debug name="Transition" fn={orderFn} />
+            <Menu.Items>
+              <Menu.Item as="a">
+                {data => (
+                  <>
+                    {JSON.stringify(data)}
+                    <Debug name="Menu.Item" fn={orderFn} />
+                  </>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition>
+        </Menu>
+      )
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      await click(getMenuButton())
+
+      assertMenuButton({
+        state: MenuState.Visible,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({
+        state: MenuState.Visible,
+        textContent: JSON.stringify({ active: false, disabled: false }),
+      })
+
+      await click(getMenuButton())
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Menu'],
+        ['Mounting - Transition'],
+        ['Mounting - Menu.Item'],
+        ['Unmounting - Transition'],
+        ['Unmounting - Menu.Item'],
+      ])
     })
   )
 })

@@ -8,7 +8,7 @@
   </button>
 
   <TransitionRoot :show="isOpen" as="template">
-    <Dialog :open="isOpen" @close="setIsOpen" static>
+    <Dialog @close="setIsOpen">
       <div class="fixed z-10 inset-0 overflow-y-auto">
         <div
           class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
@@ -74,7 +74,7 @@
                         permanently removed. This action cannot be undone.
                       </p>
                       <div class="relative inline-block text-left mt-10">
-                        <Menu v-slot="{ open }">
+                        <Menu>
                           <span class="rounded-md shadow-sm">
                             <MenuButton
                               ref="trigger"
@@ -95,9 +95,16 @@
                             </MenuButton>
                           </span>
 
-                          <Portal v-if="open">
+                              <TransitionRoot
+                                enter="transition duration-300 ease-out"
+                                enterFrom="transform scale-95 opacity-0"
+                                enterTo="transform scale-100 opacity-100"
+                                leave="transition duration-75 ease-out"
+                                leaveFrom="transform scale-100 opacity-100"
+                                leaveTo="transform scale-95 opacity-0"
+                              >
+                          <Portal>
                             <MenuItems
-                              static
                               ref="container"
                               class="z-20 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
                             >
@@ -135,6 +142,7 @@
                               </div>
                             </MenuItems>
                           </Portal>
+                              </TransitionRoot>
                         </Menu>
                       </div>
                     </div>

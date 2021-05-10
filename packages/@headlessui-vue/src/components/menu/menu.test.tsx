@@ -1,4 +1,4 @@
-import { defineComponent, h, nextTick } from 'vue'
+import { defineComponent, h, nextTick, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -30,6 +30,7 @@ import {
   MouseButton,
 } from '../../test-utils/interactions'
 import { jsx } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
 
@@ -759,6 +760,124 @@ describe('Rendering composition', () => {
       document.querySelectorAll('.inner').forEach(element => {
         expect(element).toHaveAttribute('role', 'none')
       })
+    })
+  )
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the MenuItems because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: jsx`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <OpenClosedWrite :open="true">
+              <MenuItems v-slot="data">
+                {{JSON.stringify(data)}}
+              </MenuItems>
+            </OpenClosedWrite>
+          </Menu>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Menu is visible
+      assertMenu({ state: MenuState.Visible })
+
+      // Let's try and open the Menu
+      await click(getMenuButton())
+
+      // Verify the Menu is still visible
+      assertMenu({ state: MenuState.Visible })
+    })
+  )
+
+  it(
+    'should always close the MenuItems because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: jsx`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <OpenClosedWrite :open="false">
+              <MenuItems v-slot="data">
+                {{JSON.stringify(data)}}
+              </MenuItems>
+            </OpenClosedWrite>
+          </Menu>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Menu is hidden
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Let's try and open the Menu
+      await click(getMenuButton())
+
+      // Verify the Menu is still hidden
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: jsx`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <OpenClosedRead @read="readFn">
+              <MenuItems></MenuItems>
+            </OpenClosedRead>
+          </Menu>
+        `,
+        setup() {
+          return { readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Menu is hidden
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Let's toggle the Menu 3 times
+      await click(getMenuButton())
+      await click(getMenuButton())
+      await click(getMenuButton())
+
+      // Verify the Menu is visible
+      assertMenu({ state: MenuState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
     })
   )
 })

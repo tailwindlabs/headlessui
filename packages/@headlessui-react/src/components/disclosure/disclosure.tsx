@@ -23,6 +23,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 enum DisclosureStates {
   Open,
@@ -137,12 +138,19 @@ export function Disclosure<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_
 
   return (
     <DisclosureContext.Provider value={reducerBag}>
-      {render({
-        props: passthroughProps,
-        slot,
-        defaultTag: DEFAULT_DISCLOSURE_TAG,
-        name: 'Disclosure',
-      })}
+      <OpenClosedProvider
+        value={match(disclosureState, {
+          [DisclosureStates.Open]: State.Open,
+          [DisclosureStates.Closed]: State.Closed,
+        })}
+      >
+        {render({
+          props: passthroughProps,
+          slot,
+          defaultTag: DEFAULT_DISCLOSURE_TAG,
+          name: 'Disclosure',
+        })}
+      </OpenClosedProvider>
     </DisclosureContext.Provider>
   )
 }
@@ -248,6 +256,15 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     dispatch({ type: ActionTypes.LinkPanel })
   })
 
+  let usesOpenClosedState = useOpenClosed()
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return state.disclosureState === DisclosureStates.Open
+  })()
+
   // Unlink on "unmount" myself
   useEffect(() => () => dispatch({ type: ActionTypes.UnlinkPanel }), [dispatch])
 
@@ -273,7 +290,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     slot,
     defaultTag: DEFAULT_PANEL_TAG,
     features: PanelRenderFeatures,
-    visible: state.disclosureState === DisclosureStates.Open,
+    visible,
     name: 'Disclosure.Panel',
   })
 })

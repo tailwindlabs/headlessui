@@ -2,98 +2,129 @@ import {
   useRef,
   // Types
   MutableRefObject,
+  useEffect,
 } from 'react'
 
 import { Keys } from '../components/keyboard'
-import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
-import { contains } from '../internal/dom-containers'
 import { useWindowEvent } from './use-window-event'
+import { useIsMounted } from './use-is-mounted'
+
+export enum Features {
+  /** No features enabled for the `useFocusTrap` hook. */
+  None = 1 << 0,
+
+  /** Ensure that we move focus initially into the container. */
+  InitialFocus = 1 << 1,
+
+  /** Ensure that pressing `Tab` and `Shift+Tab` is trapped within the container. */
+  TabLock = 1 << 2,
+
+  /** Ensure that programmatically moving focus outside of the container is disallowed. */
+  FocusLock = 1 << 3,
+
+  /** Ensure that we restore the focus when unmounting the component that uses this `useFocusTrap` hook. */
+  RestoreFocus = 1 << 4,
+
+  /** Enable all features. */
+  All = InitialFocus | TabLock | FocusLock | RestoreFocus,
+}
 
 export function useFocusTrap(
-  containers: MutableRefObject<Set<HTMLElement>>,
-  enabled: boolean = true,
-  options: { initialFocus?: MutableRefObject<HTMLElement | null> } = {}
+  container: MutableRefObject<HTMLElement | null>,
+  features: Features = Features.All,
+  {
+    initialFocus,
+    containers,
+  }: {
+    initialFocus?: MutableRefObject<HTMLElement | null>
+    containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
+  } = {}
 ) {
   let restoreElement = useRef<HTMLElement | null>(
     typeof window !== 'undefined' ? (document.activeElement as HTMLElement) : null
   )
   let previousActiveElement = useRef<HTMLElement | null>(null)
-  let mounted = useRef(false)
+  let mounted = useIsMounted()
+
+  let featuresRestoreFocus = Boolean(features & Features.RestoreFocus)
+  let featuresInitialFocus = Boolean(features & Features.InitialFocus)
+
+  // Capture the currently focused element, before we enable the focus trap.
+  useEffect(() => {
+    if (!featuresRestoreFocus) return
+
+    restoreElement.current = document.activeElement as HTMLElement
+  }, [featuresRestoreFocus])
+
+  // Restore the focus when we unmount the component.
+  useEffect(() => {
+    if (!featuresRestoreFocus) return
+
+    return () => {
+      focusElement(restoreElement.current)
+      restoreElement.current = null
+    }
+  }, [featuresRestoreFocus])
 
   // Handle initial focus
-  useIsoMorphicEffect(() => {
-    if (!enabled) return
-    if (containers.current.size !== 1) return
-
-    mounted.current = true
+  useEffect(() => {
+    if (!featuresInitialFocus) return
+    if (!container.current) return
 
     let activeElement = document.activeElement as HTMLElement
 
-    if (options.initialFocus?.current) {
-      if (options.initialFocus?.current === activeElement) {
+    if (initialFocus?.current) {
+      if (initialFocus?.current === activeElement) {
+        previousActiveElement.current = activeElement
         return // Initial focus ref is already the active element
       }
-    } else if (contains(containers.current, activeElement)) {
+    } else if (container.current.contains(activeElement)) {
+      previousActiveElement.current = activeElement
       return // Already focused within Dialog
     }
 
-    restoreElement.current = activeElement
-
     // Try to focus the initialFocus ref
-    if (options.initialFocus?.current) {
-      focusElement(options.initialFocus.current)
+    if (initialFocus?.current) {
+      focusElement(initialFocus.current)
     } else {
-      let couldFocus = false
-      for (let container of containers.current) {
-        let result = focusIn(container, Focus.First)
-        if (result === FocusResult.Success) {
-          couldFocus = true
-          break
-        }
+      if (focusIn(container.current, Focus.First) === FocusResult.Error) {
+        throw new Error('There are no focusable elements inside the <FocusTrap />')
       }
-
-      if (!couldFocus) throw new Error('There are no focusable elements inside the <FocusTrap />')
     }
 
     previousActiveElement.current = document.activeElement as HTMLElement
+  }, [container, initialFocus, featuresInitialFocus])
 
-    return () => {
-      mounted.current = false
-      focusElement(restoreElement.current)
-      restoreElement.current = null
-      previousActiveElement.current = null
-    }
-  }, [enabled, containers, mounted, options.initialFocus])
-
-  // Handle Tab & Shift+Tab keyboard events
+  // Handle `Tab` & `Shift+Tab` keyboard events
   useWindowEvent('keydown', event => {
-    if (!enabled) return
+    if (!(features & Features.TabLock)) return
+
+    if (!container.current) return
     if (event.key !== Keys.Tab) return
-    if (!document.activeElement) return
-    if (containers.current.size !== 1) return
 
     event.preventDefault()
 
-    for (let element of containers.current) {
-      let result = focusIn(
-        element,
+    if (
+      focusIn(
+        container.current,
         (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
-      )
-
-      if (result === FocusResult.Success) {
-        previousActiveElement.current = document.activeElement as HTMLElement
-        break
-      }
+      ) === FocusResult.Success
+    ) {
+      previousActiveElement.current = document.activeElement as HTMLElement
     }
   })
 
-  // Prevent programmatically escaping
+  // Prevent programmatically escaping the container
   useWindowEvent(
     'focus',
     event => {
-      if (!enabled) return
-      if (containers.current.size !== 1) return
+      if (!(features & Features.FocusLock)) return
+
+      let allContainers = new Set(containers?.current)
+      allContainers.add(container)
+
+      if (!allContainers.size) return
 
       let previous = previousActiveElement.current
       if (!previous) return
@@ -102,7 +133,7 @@ export function useFocusTrap(
       let toElement = event.target as HTMLElement | null
 
       if (toElement && toElement instanceof HTMLElement) {
-        if (!contains(containers.current, toElement)) {
+        if (!contains(allContainers, toElement)) {
           event.preventDefault()
           event.stopPropagation()
           focusElement(previous)
@@ -116,4 +147,12 @@ export function useFocusTrap(
     },
     true
   )
+}
+
+function contains(containers: Set<MutableRefObject<HTMLElement | null>>, element: HTMLElement) {
+  for (let container of containers) {
+    if (container.current?.contains(element)) return true
+  }
+
+  return false
 }

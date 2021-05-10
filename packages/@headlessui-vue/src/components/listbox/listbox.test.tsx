@@ -35,6 +35,7 @@ import {
   MouseButton,
 } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
 
@@ -590,6 +591,126 @@ describe('Rendering composition', () => {
 
       // Verify options are buttons now
       getListboxOptions().forEach(option => assertListboxOption(option, { tag: 'button' }))
+    })
+  )
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the ListboxOptions because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Listbox>
+            <ListboxButton>Trigger</ListboxButton>
+            <OpenClosedWrite :open="true">
+              <ListboxOptions v-slot="data">
+                {{JSON.stringify(data)}}
+              </ListboxOptions>
+            </OpenClosedWrite>
+          </Listbox>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Listbox is visible
+      assertListbox({ state: ListboxState.Visible })
+
+      // Let's try and open the Listbox
+      await click(getListboxButton())
+
+      // Verify the Listbox is still visible
+      assertListbox({ state: ListboxState.Visible })
+    })
+  )
+
+  it(
+    'should always close the ListboxOptions because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Listbox>
+            <ListboxButton>Trigger</ListboxButton>
+            <OpenClosedWrite :open="false">
+              <ListboxOptions v-slot="data">
+                {{JSON.stringify(data)}}
+              </ListboxOptions>
+            </OpenClosedWrite>
+          </Listbox>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Listbox is hidden
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Let's try and open the Listbox
+      await click(getListboxButton())
+
+      // Verify the Listbox is still hidden
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: html`
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <OpenClosedRead @read="readFn">
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+              </ListboxOptions>
+            </OpenClosedRead>
+          </Listbox>
+        `,
+        setup() {
+          return { value: ref(null), readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Listbox is hidden
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Let's toggle the Listbox 3 times
+      await click(getListboxButton())
+      await click(getListboxButton())
+      await click(getListboxButton())
+
+      // Verify the Listbox is visible
+      assertListbox({ state: ListboxState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
     })
   )
 })

@@ -22,6 +22,8 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
 import { Features, PropsForFeatures, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 
 type ID = ReturnType<typeof useId>
 
@@ -259,11 +261,13 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
 
   let events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
 
+  let ready = useServerHandoffComplete()
+
   useEffect(() => {
-    if (state === TreeStates.Visible && container.current === null) {
+    if (ready && state === TreeStates.Visible && container.current === null) {
       throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
     }
-  }, [container, state])
+  }, [container, state, ready])
 
   // Skipping initial transition
   let skip = initial && !appear
@@ -318,24 +322,40 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
 
   return (
     <NestingContext.Provider value={nesting}>
-      {render({
-        props: { ...passthroughProps, ...propsWeControl },
-        defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
-        features: TransitionChildRenderFeatures,
-        visible: state === TreeStates.Visible,
-        name: 'Transition.Child',
-      })}
+      <OpenClosedProvider
+        value={match(state, {
+          [TreeStates.Visible]: State.Open,
+          [TreeStates.Hidden]: State.Closed,
+        })}
+      >
+        {render({
+          props: { ...passthroughProps, ...propsWeControl },
+          defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
+          features: TransitionChildRenderFeatures,
+          visible: state === TreeStates.Visible,
+          name: 'Transition.Child',
+        })}
+      </OpenClosedProvider>
     </NestingContext.Provider>
   )
 }
 
 export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: TransitionChildProps<TTag> & { show: boolean; appear?: boolean }
+  props: TransitionChildProps<TTag> & { show?: boolean; appear?: boolean }
 ) {
   // @ts-expect-error
   let { show, appear = false, unmount, ...passthroughProps } = props as typeof props
 
-  if (![true, false].includes(show)) {
+  let usesOpenClosedState = useOpenClosed()
+
+  if (show === undefined && usesOpenClosedState !== null) {
+    show = match(usesOpenClosedState, {
+      [State.Open]: true,
+      [State.Closed]: false,
+    })
+  }
+
+  if (![true, false].includes((show as unknown) as boolean)) {
     throw new Error('A <Transition /> is used but it is missing a `show={true | false}` prop.')
   }
 
@@ -347,7 +367,7 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   let initial = useIsInitialRender()
   let transitionBag = useMemo<TransitionContextValues>(
-    () => ({ show, appear: appear || !initial }),
+    () => ({ show: show as boolean, appear: appear || !initial }),
     [show, appear, initial]
   )
 
