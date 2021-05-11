@@ -17,14 +17,13 @@
             as="template"
             enter="ease-out duration-300"
             enterFrom="opacity-0"
-            enterTo="opacity-100"
+            enterTo="opacity-75"
             leave="ease-in duration-200"
-            leaveFrom="opacity-100"
+            leaveFrom="opacity-75"
             leaveTo="opacity-0"
+            entered="opacity-75"
           >
-            <DialogOverlay class="fixed inset-0 transition-opacity">
-              <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </DialogOverlay>
+            <DialogOverlay className="fixed inset-0 bg-gray-500 transition-opacity" />
           </TransitionChild>
 
           <TransitionChild
