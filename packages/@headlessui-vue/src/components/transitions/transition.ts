@@ -140,6 +140,7 @@ export let TransitionChild = defineComponent({
     enter: { type: [String], default: '' },
     enterFrom: { type: [String], default: '' },
     enterTo: { type: [String], default: '' },
+    entered: { type: [String], default: '' },
     leave: { type: [String], default: '' },
     leaveFrom: { type: [String], default: '' },
     leaveTo: { type: [String], default: '' },
@@ -168,6 +169,7 @@ export let TransitionChild = defineComponent({
       enter,
       enterFrom,
       enterTo,
+      entered,
       leave,
       leaveFrom,
       leaveTo,
@@ -243,6 +245,8 @@ export let TransitionChild = defineComponent({
     let enterFromClasses = splitClasses(props.enterFrom)
     let enterToClasses = splitClasses(props.enterTo)
 
+    let enteredClasses = splitClasses(props.entered)
+
     let leaveClasses = splitClasses(props.leave)
     let leaveFromClasses = splitClasses(props.leaveFrom)
     let leaveToClasses = splitClasses(props.leaveTo)
@@ -277,23 +281,37 @@ export let TransitionChild = defineComponent({
 
       onInvalidate(
         show.value
-          ? transition(node, enterClasses, enterFromClasses, enterToClasses, reason => {
-              isTransitioning.value = false
-              if (reason === Reason.Finished) emit('afterEnter')
-            })
-          : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, reason => {
-              isTransitioning.value = false
-
-              if (reason !== Reason.Finished) return
-
-              // When we don't have children anymore we can safely unregister from the parent and hide
-              // ourselves.
-              if (!hasChildren(nesting)) {
-                state.value = TreeStates.Hidden
-                unregister(id)
-                emit('afterLeave')
+          ? transition(
+              node,
+              enterClasses,
+              enterFromClasses,
+              enterToClasses,
+              enteredClasses,
+              reason => {
+                isTransitioning.value = false
+                if (reason === Reason.Finished) emit('afterEnter')
               }
-            })
+            )
+          : transition(
+              node,
+              leaveClasses,
+              leaveFromClasses,
+              leaveToClasses,
+              enteredClasses,
+              reason => {
+                isTransitioning.value = false
+
+                if (reason !== Reason.Finished) return
+
+                // When we don't have children anymore we can safely unregister from the parent and hide
+                // ourselves.
+                if (!hasChildren(nesting)) {
+                  state.value = TreeStates.Hidden
+                  unregister(id)
+                  emit('afterLeave')
+                }
+              }
+            )
       )
     }
 
@@ -334,6 +352,7 @@ export let TransitionRoot = defineComponent({
     enter: { type: [String], default: '' },
     enterFrom: { type: [String], default: '' },
     enterTo: { type: [String], default: '' },
+    entered: { type: [String], default: '' },
     leave: { type: [String], default: '' },
     leaveFrom: { type: [String], default: '' },
     leaveTo: { type: [String], default: '' },

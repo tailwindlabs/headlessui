@@ -27,7 +27,7 @@ it('should be possible to transition', async () => {
   )
 
   await new Promise(resolve => {
-    transition(element, ['enter'], ['enterFrom'], ['enterTo'], resolve)
+    transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
   })
 
   await new Promise(resolve => d.nextFrame(resolve))
@@ -42,7 +42,7 @@ it('should be possible to transition', async () => {
   // necessary to put the classes on the element and immediately remove them.
 
   // Cleanup phase
-  expect(snapshots[2].content).toEqual('<div class=""></div>')
+  expect(snapshots[2].content).toEqual('<div class="entered"></div>')
 
   d.dispose()
 })
@@ -71,7 +71,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
   )
 
   let reason = await new Promise(resolve => {
-    transition(element, ['enter'], ['enterFrom'], ['enterTo'], resolve)
+    transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
   })
 
   await new Promise(resolve => d.nextFrame(resolve))
@@ -98,7 +98,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
 
   // Cleanup phase
   expect(snapshots[3].content).toEqual(
-    `<div style="transition-duration: ${duration}ms;" class=""></div>`
+    `<div style="transition-duration: ${duration}ms;" class="entered"></div>`
   )
 })
 
@@ -128,7 +128,7 @@ it('should keep the delay time into account', async () => {
   )
 
   let reason = await new Promise(resolve => {
-    transition(element, ['enter'], ['enterFrom'], ['enterTo'], resolve)
+    transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
   })
 
   await new Promise(resolve => d.nextFrame(resolve))
@@ -178,7 +178,7 @@ it('should be possible to cancel a transition at any time', async () => {
   expect.assertions(2)
 
   // Setup the transition
-  let cancel = transition(element, ['enter'], ['enterFrom'], ['enterTo'], reason => {
+  let cancel = transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], reason => {
     expect(reason).toBe(Reason.Cancelled)
   })
 
