@@ -193,7 +193,7 @@ export function assertMenuItem(
 
     // Check that we have the correct values for certain attributes
     expect(item).toHaveAttribute('role', 'menuitem')
-    expect(item).toHaveAttribute('tabindex', '-1')
+    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure menu button has the following attributes
     if (options) {
@@ -483,7 +483,7 @@ export function assertListboxOption(
 
     // Check that we have the correct values for certain attributes
     expect(item).toHaveAttribute('role', 'option')
-    expect(item).toHaveAttribute('tabindex', '-1')
+    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure listbox button has the following attributes
     if (!options) return

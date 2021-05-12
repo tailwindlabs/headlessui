@@ -418,7 +418,6 @@ export let MenuItem = defineComponent({
   setup(props, { slots, attrs }) {
     let api = useMenuContext('MenuItem')
     let id = `headlessui-menu-item-${useId()}`
-    let { disabled, class: defaultClass, className = defaultClass } = props
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null
@@ -426,7 +425,7 @@ export let MenuItem = defineComponent({
         : false
     })
 
-    let dataRef = ref<MenuItemDataRef['value']>({ disabled, textValue: '' })
+    let dataRef = ref<MenuItemDataRef['value']>({ disabled: props.disabled, textValue: '' })
     onMounted(() => {
       let textValue = document
         .getElementById(id)
@@ -445,34 +444,35 @@ export let MenuItem = defineComponent({
     })
 
     function handleClick(event: MouseEvent) {
-      if (disabled) return event.preventDefault()
+      if (props.disabled) return event.preventDefault()
       api.closeMenu()
       nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {
-      if (disabled) return api.goToItem(Focus.Nothing)
+      if (props.disabled) return api.goToItem(Focus.Nothing)
       api.goToItem(Focus.Specific, id)
     }
 
     function handleMove() {
-      if (disabled) return
+      if (props.disabled) return
       if (active.value) return
       api.goToItem(Focus.Specific, id)
     }
 
     function handleLeave() {
-      if (disabled) return
+      if (props.disabled) return
       if (!active.value) return
       api.goToItem(Focus.Nothing)
     }
 
     return () => {
+      let { disabled, class: defaultClass, className = defaultClass } = props
       let slot = { active: active.value, disabled }
       let propsWeControl = {
         id,
         role: 'menuitem',
-        tabIndex: -1,
+        tabIndex: disabled === true ? undefined : -1,
         class: resolvePropValue(className, slot),
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,

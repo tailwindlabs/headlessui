@@ -40,6 +40,7 @@
                   :key="person.id"
                   :value="person"
                   :className="resolveListboxOptionClassName"
+                  :disabled="person.disabled"
                   v-slot="{ active, selected }"
                 >
                   <span
@@ -98,7 +99,7 @@ export default {
       { id: 2, name: 'Arlene Mccoy' },
       { id: 3, name: 'Devon Webb' },
       { id: 4, name: 'Tom Cook' },
-      { id: 5, name: 'Tanya Fox' },
+      { id: 5, name: 'Tanya Fox', disabled: true },
       { id: 6, name: 'Hellen Schmidt' },
       { id: 7, name: 'Caroline Schultz' },
       { id: 8, name: 'Mason Heaney' },
@@ -112,10 +113,11 @@ export default {
       people,
       active,
       classNames,
-      resolveListboxOptionClassName({ active }) {
+      resolveListboxOptionClassName({ active, disabled }) {
         return classNames(
           'relative py-2 pl-3 cursor-default select-none pr-9 focus:outline-none',
-          active ? 'text-white bg-indigo-600' : 'text-gray-900'
+          active ? 'text-white bg-indigo-600' : 'text-gray-900',
+          disabled && 'bg-gray-50 text-gray-300'
         )
       },
     }

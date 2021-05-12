@@ -660,9 +660,10 @@ function Option<
   let propsWeControl = {
     id,
     role: 'option',
-    tabIndex: -1,
+    tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
     'aria-selected': selected === true ? true : undefined,
+    disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
     onPointerMove: handleMove,
