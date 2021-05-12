@@ -74,16 +74,16 @@ export default function Home() {
           <div className="fixed z-10 inset-0 overflow-y-auto">
             <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <Transition.Child
+                as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0"
-                enterTo="opacity-100"
+                enterTo="opacity-75"
                 leave="ease-in duration-200"
-                leaveFrom="opacity-100"
+                leaveFrom="opacity-75"
                 leaveTo="opacity-0"
+                entered="opacity-75"
               >
-                <Dialog.Overlay className="fixed inset-0 transition-opacity">
-                  <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </Dialog.Overlay>
+                <Dialog.Overlay className="fixed inset-0 bg-gray-500 transition-opacity" />
               </Transition.Child>
 
               <Transition.Child
