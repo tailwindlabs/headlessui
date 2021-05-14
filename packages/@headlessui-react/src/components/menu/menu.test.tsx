@@ -3116,3 +3116,300 @@ describe('Mouse interactions', () => {
     })
   )
 })
+
+describe('Controlled menu', () => {
+  const ControlledMenu = ({
+    isOpen: isOpenProp,
+    onOpen = () => {},
+    onClose = () => {},
+    onInnerMenuStateChange = () => {},
+    onItemClick,
+  }: {
+    isOpen?: boolean
+    onOpen?: () => void
+    onClose?: () => void
+    onInnerMenuStateChange?: ({ open }: { open: boolean }) => void
+    onItemClick?: () => void
+  }) => {
+    const [isOpen, setIsOpen] = React.useState(isOpenProp)
+
+    return (
+      <Menu
+        onInnerMenuStateChange={({ open }: { open: boolean }) => {
+          setIsOpen(open)
+
+          open ? onOpen() : onClose()
+          onInnerMenuStateChange({ open })
+        }}
+        isControlled
+        isOpen={isOpen}
+        as={'div'}
+      >
+        <Menu.Button onClick={() => setIsOpen(!isOpen)}>Trigger</Menu.Button>
+        {isOpen && (
+          <Menu.Items>
+            <Menu.Item as="a" onClick={onItemClick}>
+              alice
+            </Menu.Item>
+            <Menu.Item as="a" onClick={onItemClick}>
+              bob
+            </Menu.Item>
+            <Menu.Item as="a" onClick={onItemClick}>
+              john
+            </Menu.Item>
+          </Menu.Items>
+        )}
+      </Menu>
+    )
+  }
+
+  it(
+    'should show menu when isOpen prop is true, and close it on button click - controlled menu',
+    suppressConsoleLogs(async () => {
+      let onOpen = jest.fn()
+      let onClose = jest.fn()
+      let onInnerMenuStateChange = jest.fn()
+
+      render(
+        <ControlledMenu
+          onInnerMenuStateChange={onInnerMenuStateChange}
+          onOpen={onOpen}
+          onClose={onClose}
+          isOpen={true}
+        />
+      )
+      assertMenu({ state: MenuState.Visible })
+      expect(onOpen).toHaveBeenCalled()
+      expect(onInnerMenuStateChange).toHaveBeenCalledWith({ open: true })
+      // Open menu
+      onInnerMenuStateChange.mockReset()
+      await click(getMenuButton())
+      expect(onClose).toHaveBeenCalled()
+      expect(onInnerMenuStateChange).toHaveBeenCalledWith({ open: false })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should not show menu when isOpen prop is false, and open it on button click - controlled menu',
+    suppressConsoleLogs(async () => {
+      let onOpen = jest.fn()
+      let onInnerMenuStateChange = jest.fn()
+
+      render(
+        <ControlledMenu
+          onInnerMenuStateChange={onInnerMenuStateChange}
+          onOpen={onOpen}
+          isOpen={false}
+        />
+      )
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await click(getMenuButton())
+      expect(onOpen).toHaveBeenCalled()
+      expect(onInnerMenuStateChange).toHaveBeenCalledWith({ open: true })
+
+      assertMenu({ state: MenuState.Visible })
+    })
+  )
+
+  it(
+    'should keep menu open on item click - controlled menu',
+    suppressConsoleLogs(async () => {
+      let clickHandler = jest.fn()
+      let onInnerMenuStateChange = jest.fn()
+
+      render(
+        <ControlledMenu
+          onInnerMenuStateChange={onInnerMenuStateChange}
+          onItemClick={clickHandler}
+          isOpen={true}
+        />
+      )
+
+      let items = getMenuItems()
+
+      onInnerMenuStateChange.mockReset()
+      await focus(items[0])
+      await click(items[1])
+      expect(clickHandler).toHaveBeenCalled()
+      expect(onInnerMenuStateChange).not.toHaveBeenCalled()
+      assertMenu({ state: MenuState.Visible })
+    })
+  )
+
+  it(
+    'should keep menu open on Enter is pressed - controlled menu',
+    suppressConsoleLogs(async () => {
+      let clickHandler = jest.fn()
+      let onInnerMenuStateChange = jest.fn()
+
+      render(
+        <ControlledMenu
+          onInnerMenuStateChange={onInnerMenuStateChange}
+          onItemClick={clickHandler}
+          isOpen={true}
+        />
+      )
+
+      onInnerMenuStateChange.mockReset()
+      let items = getMenuItems()
+
+      await mouseMove(items[0])
+
+      // invoke the item
+      await press(Keys.Enter)
+
+      // Verify it is open
+      assertMenu({ state: MenuState.Visible })
+
+      expect(onInnerMenuStateChange).not.toHaveBeenCalled()
+
+      expect(clickHandler).toHaveBeenCalled()
+    })
+  )
+
+  it(
+    'should keep menu open on item click, close it when clicking outside the menu and open it again - controlled menu',
+    suppressConsoleLogs(async () => {
+      let clickHandler = jest.fn()
+      let onOpen = jest.fn()
+      let onClose = jest.fn()
+
+      render(
+        <ControlledMenu
+          onOpen={onOpen}
+          onClose={onClose}
+          onItemClick={clickHandler}
+          isOpen={true}
+        />
+      )
+
+      let items = getMenuItems()
+
+      await focus(items[0])
+      await click(items[1])
+      expect(clickHandler).toHaveBeenCalled()
+      assertMenu({ state: MenuState.Visible })
+
+      // Click something that is not related to the menu
+      await click(document.body)
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await click(getMenuButton())
+      assertMenu({ state: MenuState.Visible })
+    })
+  )
+
+  it(
+    'should call onClose when escape is clicked - controlled menu',
+    suppressConsoleLogs(async () => {
+      let onOpen = jest.fn()
+      let onClose = jest.fn()
+
+      render(<ControlledMenu onOpen={onOpen} onClose={onClose} isOpen={true} />)
+
+      // Close menu
+      await press(Keys.Escape)
+
+      expect(onClose).toHaveBeenCalled()
+    })
+  )
+
+  it(
+    'should close menu when clicking outside',
+    suppressConsoleLogs(async () => {
+      let onOpen = jest.fn()
+      let onClose = jest.fn()
+      let onInnerMenuStateChange = jest.fn()
+
+      render(
+        <ControlledMenu
+          onInnerMenuStateChange={onInnerMenuStateChange}
+          onOpen={onOpen}
+          onClose={onClose}
+          isOpen={true}
+        />
+      )
+
+      onInnerMenuStateChange.mockReset()
+
+      // Click something that is not related to the menu
+      await click(document.body)
+
+      expect(onClose).toHaveBeenCalled()
+      expect(onInnerMenuStateChange).toHaveBeenCalledWith({ open: false })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should open menu on key down press after focusing the button',
+    suppressConsoleLogs(async () => {
+      render(<ControlledMenu isOpen={false} />)
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Focus the button
+      getMenuButton()?.focus()
+
+      // Open menu
+      await press(Keys.ArrowDown)
+
+      // Verify it is open
+      assertMenuButton({ state: MenuState.Visible })
+      assertMenu({
+        state: MenuState.Visible,
+        attributes: { id: 'headlessui-menu-items-2' },
+      })
+      assertMenuButtonLinkedWithMenu()
+
+      // Verify we have menu items
+      let items = getMenuItems()
+      expect(items).toHaveLength(3)
+      items.forEach(item => assertMenuItem(item))
+
+      // Verify that the first menu item is active
+      assertMenuLinkedWithMenuItem(items[0])
+    })
+  )
+
+  it(
+    'should be possible to use ArrowDown to navigate the menu items',
+    suppressConsoleLogs(async () => {
+      render(<ControlledMenu isOpen={false} />)
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Focus the button
+      getMenuButton()?.focus()
+
+      // Open menu
+      await press(Keys.Enter)
+
+      // Verify we have menu items
+      let items = getMenuItems()
+      expect(items).toHaveLength(3)
+      items.forEach(item => assertMenuItem(item))
+      assertMenuLinkedWithMenuItem(items[0])
+
+      // We should be able to go down once
+      await press(Keys.ArrowDown)
+      assertMenuLinkedWithMenuItem(items[1])
+
+      // We should be able to go down again
+      await press(Keys.ArrowDown)
+      assertMenuLinkedWithMenuItem(items[2])
+
+      // We should NOT be able to go down again (because last item). Current implementation won't go around.
+      await press(Keys.ArrowDown)
+      assertMenuLinkedWithMenuItem(items[2])
+    })
+  )
+})

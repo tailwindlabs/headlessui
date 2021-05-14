@@ -55,7 +55,7 @@ export default function Home() {
   )
 }
 
-function CustomMenuItem(props: PropsOf<typeof Menu.Item>) {
+export function CustomMenuItem(props: PropsOf<typeof Menu.Item>) {
   return (
     <Menu.Item {...props}>
       {({ active, disabled }) => (

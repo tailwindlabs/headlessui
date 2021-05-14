@@ -30,6 +30,8 @@ export enum Features {
    * you want to transition based on some state.
    */
   Static = 2,
+
+  Controlled = 3,
 }
 
 export enum RenderStrategy {
@@ -42,7 +44,11 @@ type PropsForFeature<TPassedInFeatures extends Features, TForFeature extends Fea
 }[TPassedInFeatures]
 
 export type PropsForFeatures<T extends Features> = XOR<
-  PropsForFeature<T, Features.Static, { static?: boolean }>,
+  PropsForFeature<
+    T,
+    Features.Static | Features.Controlled,
+    { static?: boolean; isControlled?: boolean }
+  >,
   PropsForFeature<T, Features.RenderStrategy, { unmount?: boolean }>
 >
 
@@ -66,11 +72,13 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
 
   let featureFlags = features ?? Features.None
 
-  if (featureFlags & Features.Static) {
-    let { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
+  if (featureFlags & (Features.Static || Features.Controlled)) {
+    let { static: isStatic = false, isControlled = false, ...rest } = props as PropsForFeatures<
+      Features.Static | Features.Controlled
+    >
 
-    // When the `static` prop is passed as `true`, then the user is in control, thus we don't care about anything else
-    if (isStatic) return _render(rest, slot, defaultTag, name)
+    // When the `static` prop is passed as `true` or the `isControlled` prop passed as `true`, then the user is in control, thus we don't care about anything else
+    if (isStatic || isControlled) return _render(rest, slot, defaultTag, name)
   }
 
   if (featureFlags & Features.RenderStrategy) {
@@ -105,6 +113,7 @@ function _render<TTag extends ElementType, TSlot>(
   let { as: Component = tag, children, refName = 'ref', ...passThroughProps } = omit(props, [
     'unmount',
     'static',
+    'isControlled',
   ])
 
   // This allows us to use `<HeadlessUIComponent as={MyComopnent} refName="innerRef" />`
