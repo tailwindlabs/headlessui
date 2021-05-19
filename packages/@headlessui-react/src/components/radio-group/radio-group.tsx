@@ -352,6 +352,7 @@ function Option<
     'aria-checked': checked ? 'true' : 'false',
     'aria-labelledby': labelledby,
     'aria-describedby': describedby,
+    'aria-disabled': isDisabled ? true : undefined,
     tabIndex: (() => {
       if (isDisabled) return -1
       if (checked) return 0

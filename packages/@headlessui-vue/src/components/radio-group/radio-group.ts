@@ -259,6 +259,7 @@ export let RadioGroupOption = defineComponent({
       'aria-checked': this.checked ? 'true' : 'false',
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,
+      'aria-disabled': this.disabled ? true : undefined,
       tabIndex: this.tabIndex,
       onClick: this.disabled ? undefined : this.handleClick,
       onFocus: this.disabled ? undefined : this.handleFocus,
