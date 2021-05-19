@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 - Ensure that you can use `Transition.Child` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
 
 ### Fixes
 
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 - Ensure that you can use `TransitionChild` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
 
 ### Fixes
 
