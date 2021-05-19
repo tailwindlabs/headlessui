@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve React peer dependency version range ([#544](https://github.com/tailwindlabs/headlessui/pull/544))
 
 ## [Unreleased - Vue]
 
