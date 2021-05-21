@@ -71,7 +71,7 @@ export let Dialog = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    open: { type: Boolean, default: Missing },
+    open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
   emits: ['close'],
@@ -116,7 +116,6 @@ export let Dialog = defineComponent({
 
     let usesOpenClosedState = useOpenClosed()
     let open = computed(() => {
-      // @ts-expect-error We are comparing to a uuid stirng at runtime
       if (props.open === Missing && usesOpenClosedState !== null) {
         // Update the `open` prop based on the open closed state
         return match(usesOpenClosedState.value, {
@@ -128,7 +127,6 @@ export let Dialog = defineComponent({
     })
 
     // Validations
-    // @ts-expect-error We are comparing to a uuid stirng at runtime
     let hasOpen = props.open !== Missing || usesOpenClosedState !== null
 
     if (!hasOpen) {
