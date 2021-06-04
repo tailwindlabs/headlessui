@@ -203,8 +203,11 @@ export let PopoverButton = defineComponent({
           ref: 'el',
           id: api.buttonId,
           type: 'button',
-          'aria-expanded': api.popoverState.value === PopoverStates.Open ? true : undefined,
+          'aria-expanded': this.$props.disabled
+            ? undefined
+            : api.popoverState.value === PopoverStates.Open,
           'aria-controls': dom(api.panel) ? api.panelId : undefined,
+          disabled: this.$props.disabled ? true : undefined,
           onKeydown: this.handleKeyDown,
           onKeyup: this.handleKeyUp,
           onClick: this.handleClick,

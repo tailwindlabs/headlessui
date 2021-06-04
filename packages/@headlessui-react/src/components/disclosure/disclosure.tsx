@@ -220,7 +220,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     ref: buttonRef,
     id: state.buttonId,
     type: 'button',
-    'aria-expanded': state.disclosureState === DisclosureStates.Open ? true : undefined,
+    'aria-expanded': props.disabled ? undefined : state.disclosureState === DisclosureStates.Open,
     'aria-controls': state.linkedPanel ? state.panelId : undefined,
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
