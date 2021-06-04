@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
 - Improve React peer dependency version range ([#544](https://github.com/tailwindlabs/headlessui/pull/544))
 - Improve types for the `open` prop in the `Dialog` component ([#550](https://github.com/tailwindlabs/headlessui/pull/550))
+- Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
 
 ## [Unreleased - Vue]
 
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
 - Improve reactivity when destructuring from props ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
 
 ## [@headlessui/react@v1.2.0] - 2021-05-10
 
