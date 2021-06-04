@@ -356,7 +356,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     type: 'button',
     'aria-haspopup': true,
     'aria-controls': state.optionsRef.current?.id,
-    'aria-expanded': state.listboxState === ListboxStates.Open ? true : undefined,
+    'aria-expanded': state.disabled ? undefined : state.listboxState === ListboxStates.Open,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
