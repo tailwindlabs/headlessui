@@ -98,6 +98,7 @@ export let DisclosureButton = defineComponent({
         ? undefined
         : api.disclosureState.value === DisclosureStates.Open,
       'aria-controls': this.ariaControls,
+      disabled: this.$props.disabled ? true : undefined,
       onClick: this.handleClick,
       onKeydown: this.handleKeyDown,
       onKeyup: this.handleKeyUp,

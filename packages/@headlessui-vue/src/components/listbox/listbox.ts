@@ -273,7 +273,7 @@ export let ListboxButton = defineComponent({
       'aria-labelledby': api.labelRef.value
         ? [dom(api.labelRef)?.id, this.id].join(' ')
         : undefined,
-      disabled: api.disabled.value,
+      disabled: api.disabled.value === true ? true : undefined,
       onKeydown: this.handleKeyDown,
       onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
