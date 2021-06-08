@@ -4,12 +4,13 @@
   "description": "A set of completely unstyled, fully accessible UI components for React, designed to integrate beautifully with Tailwind CSS.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/headlessui.esm.js",
+  "module": "dist/index.esm.js",
   "license": "MIT",
   "files": [
     "README.md",
     "dist"
   ],
+  "sideEffects": false,
   "engines": {
     "node": ">=10"
   },
