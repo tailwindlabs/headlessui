@@ -633,60 +633,6 @@ describe('Rendering', () => {
 })
 
 describe('Rendering composition', () => {
-  it('should be possible to conditionally render classNames (aka className can be a function?!)', async () => {
-    renderTemplate(jsx`
-      <Menu>
-        <MenuButton>Trigger</MenuButton>
-        <MenuItems>
-          <MenuItem as="a" :className="JSON.stringify">Item A</MenuItem>
-          <MenuItem as="a" disabled :className="JSON.stringify">Item B</MenuItem>
-          <MenuItem as="a" class="no-special-treatment">Item C</MenuItem>
-        </MenuItems>
-      </Menu>
-    `)
-
-    assertMenuButton({
-      state: MenuState.InvisibleUnmounted,
-      attributes: { id: 'headlessui-menu-button-1' },
-    })
-    assertMenu({ state: MenuState.InvisibleUnmounted })
-
-    // Open menu
-    await click(getMenuButton())
-
-    let items = getMenuItems()
-
-    // Verify correct classNames
-    expect('' + items[0].classList).toEqual(JSON.stringify({ active: false, disabled: false }))
-    expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
-    expect('' + items[2].classList).toEqual('no-special-treatment')
-
-    // Double check that nothing is active
-    assertNoActiveMenuItem()
-
-    // Make the first item active
-    await press(Keys.ArrowDown)
-
-    // Verify the classNames
-    expect('' + items[0].classList).toEqual(JSON.stringify({ active: true, disabled: false }))
-    expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
-    expect('' + items[2].classList).toEqual('no-special-treatment')
-
-    // Double check that the first item is the active one
-    assertMenuLinkedWithMenuItem(items[0])
-
-    // Let's go down, this should go to the third item since the second item is disabled!
-    await press(Keys.ArrowDown)
-
-    // Verify the classNames
-    expect('' + items[0].classList).toEqual(JSON.stringify({ active: false, disabled: false }))
-    expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
-    expect('' + items[2].classList).toEqual('no-special-treatment')
-
-    // Double check that the last item is the active one
-    assertMenuLinkedWithMenuItem(items[2])
-  })
-
   it(
     'should be possible to swap the menu item with a button for example',
     suppressConsoleLogs(async () => {
@@ -734,22 +680,22 @@ describe('Rendering composition', () => {
         template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
-            <div className="outer">
+            <div class="outer">
               <MenuItems>
-                <div className="py-1 inner">
+                <div class="py-1 inner">
                   <MenuItem as="button">Item A</MenuItem>
                   <MenuItem as="button">Item B</MenuItem>
                 </div>
-                <div className="py-1 inner">
+                <div class="py-1 inner">
                   <MenuItem as="button">Item C</MenuItem>
                   <MenuItem>
                     <div>
-                      <div className="outer">Item D</div>
+                      <div class="outer">Item D</div>
                     </div>
                   </MenuItem>
                 </div>
-                <div className="py-1 inner">
-                  <form className="inner">
+                <div class="py-1 inner">
+                  <form class="inner">
                     <MenuItem as="button">Item E</MenuItem>
                   </form>
                 </div>

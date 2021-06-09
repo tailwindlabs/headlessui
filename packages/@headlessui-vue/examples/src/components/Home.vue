@@ -1,6 +1,6 @@
 <template>
-  <div className="container my-24">
-    <div className="prose">
+  <div class="container my-24">
+    <div class="prose">
       <h2>Examples</h2>
       <Examples :examples="examples" />
     </div>

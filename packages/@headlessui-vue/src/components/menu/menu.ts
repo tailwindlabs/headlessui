@@ -15,7 +15,6 @@ import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
@@ -413,7 +412,6 @@ export let MenuItem = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useMenuContext('MenuItem')
@@ -467,13 +465,13 @@ export let MenuItem = defineComponent({
     }
 
     return () => {
-      let { disabled, class: defaultClass, className = defaultClass } = props
+      let { disabled, class: defaultClass } = props
       let slot = { active: active.value, disabled }
       let propsWeControl = {
         id,
         role: 'menuitem',
         tabIndex: disabled === true ? undefined : -1,
-        class: resolvePropValue(className, slot),
+        class: defaultClass,
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,

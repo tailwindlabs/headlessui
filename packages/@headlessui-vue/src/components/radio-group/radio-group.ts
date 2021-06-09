@@ -20,7 +20,6 @@ import { useId } from '../../hooks/use-id'
 import { render } from '../../utils/render'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 interface Option {
@@ -234,16 +233,9 @@ export let RadioGroupOption = defineComponent({
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   render() {
-    let {
-      value,
-      disabled,
-      class: defaultClass,
-      className = defaultClass,
-      ...passThroughProps
-    } = this.$props
+    let { value, disabled, class: defaultClass, ...passThroughProps } = this.$props
 
     let slot = {
       checked: this.checked,
@@ -255,7 +247,7 @@ export let RadioGroupOption = defineComponent({
       id: this.id,
       ref: 'el',
       role: 'radio',
-      class: resolvePropValue(className, slot),
+      class: defaultClass,
       'aria-checked': this.checked ? 'true' : 'false',
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,
