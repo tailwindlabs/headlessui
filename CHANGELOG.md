@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve React peer dependency version range ([#544](https://github.com/tailwindlabs/headlessui/pull/544))
 - Improve types for the `open` prop in the `Dialog` component ([#550](https://github.com/tailwindlabs/headlessui/pull/550))
 - Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
+- Remove undocumented `:className` prop ([#607](https://github.com/tailwindlabs/headlessui/pull/607))
 
 ## [Unreleased - Vue]
 
