@@ -19,7 +19,6 @@ import { Features, render, omit } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
@@ -474,7 +473,6 @@ export let ListboxOption = defineComponent({
     value: { type: [Object, String] },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useListboxContext('ListboxOption')
@@ -548,13 +546,13 @@ export let ListboxOption = defineComponent({
     }
 
     return () => {
-      let { disabled, class: defaultClass, className = defaultClass } = props
+      let { disabled, class: defaultClass } = props
       let slot = { active: active.value, selected: selected.value, disabled }
       let propsWeControl = {
         id,
         role: 'option',
         tabIndex: disabled === true ? undefined : -1,
-        class: resolvePropValue(className, slot),
+        class: defaultClass,
         'aria-disabled': disabled === true ? true : undefined,
         'aria-selected': selected.value === true ? selected.value : undefined,
         disabled: undefined, // Never forward the `disabled` prop
