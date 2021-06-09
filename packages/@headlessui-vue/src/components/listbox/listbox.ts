@@ -470,7 +470,7 @@ export let ListboxOption = defineComponent({
   name: 'ListboxOption',
   props: {
     as: { type: [Object, String], default: 'li' },
-    value: { type: [Object, String] },
+    value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
   },
