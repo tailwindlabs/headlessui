@@ -29,19 +29,19 @@
             </div>
 
             <div class="py-1">
-              <MenuItem as="a" href="#account-settings" :className="resolveClass">
+              <MenuItem as="a" href="#account-settings" :class="resolveClass">
                 Account settings
               </MenuItem>
               <MenuItem v-slot="data">
                 <a href="#support" :class="resolveClass(data)">Support</a>
               </MenuItem>
-              <MenuItem as="a" disabled href="#new-feature" :className="resolveClass">
+              <MenuItem as="a" disabled href="#new-feature" :class="resolveClass">
                 New feature (soon)
               </MenuItem>
-              <MenuItem as="a" href="#license" :className="resolveClass">License</MenuItem>
+              <MenuItem as="a" href="#license" :class="resolveClass">License</MenuItem>
             </div>
             <div class="py-1">
-              <MenuItem as="a" href="#sign-out" :className="resolveClass">Sign out</MenuItem>
+              <MenuItem as="a" href="#sign-out" :class="resolveClass">Sign out</MenuItem>
             </div>
           </MenuItems>
         </teleport>

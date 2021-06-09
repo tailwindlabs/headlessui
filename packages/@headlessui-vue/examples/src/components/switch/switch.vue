@@ -3,7 +3,7 @@
     <SwitchGroup as="div" class="flex items-center space-x-4">
       <SwitchLabel>Enable notifications</SwitchLabel>
 
-      <Switch as="button" v-model="state" :className="resolveSwitchClass" v-slot="{ checked }">
+      <Switch as="button" v-model="state" :class="resolveSwitchClass" v-slot="{ checked }">
         <span
           class="inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full"
           :class="{ 'translate-x-5': checked, 'translate-x-0': !checked }"

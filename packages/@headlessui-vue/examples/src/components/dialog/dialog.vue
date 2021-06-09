@@ -116,27 +116,27 @@
                               </div>
 
                               <div class="py-1">
-                                <MenuItem as="a" href="#account-settings" :className="resolveClass">
+                                <MenuItem as="a" href="#account-settings" :class="resolveClass">
                                   Account settings
                                 </MenuItem>
-                                <MenuItem as="a" href="#support" :className="resolveClass">
+                                <MenuItem as="a" href="#support" :class="resolveClass">
                                   Support
                                 </MenuItem>
                                 <MenuItem
                                   as="a"
                                   disabled
                                   href="#new-feature"
-                                  :className="resolveClass"
+                                  :class="resolveClass"
                                 >
                                   New feature (soon)
                                 </MenuItem>
-                                <MenuItem as="a" href="#license" :className="resolveClass">
+                                <MenuItem as="a" href="#license" :class="resolveClass">
                                   License
                                 </MenuItem>
                               </div>
 
                               <div class="py-1">
-                                <MenuItem as="a" href="#sign-out" :className="resolveClass">
+                                <MenuItem as="a" href="#sign-out" :class="resolveClass">
                                   Sign out
                                 </MenuItem>
                               </div>

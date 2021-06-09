@@ -39,7 +39,7 @@
                   v-for="person in people"
                   :key="person.id"
                   :value="person"
-                  :className="resolveListboxOptionClassName"
+                  :class="resolveListboxOptionClassName"
                   v-slot="{ active, selected }"
                 >
                   <span

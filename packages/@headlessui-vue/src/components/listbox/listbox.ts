@@ -467,12 +467,11 @@ export let ListboxOption = defineComponent({
     value: { type: [Object, String] },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useListboxContext('ListboxOption')
     let id = `headlessui-listbox-option-${useId()}`
-    let { disabled, class: defaultClass, className = defaultClass, value } = props
+    let { disabled, class: defaultClass, value } = props
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
@@ -543,7 +542,7 @@ export let ListboxOption = defineComponent({
         id,
         role: 'option',
         tabIndex: -1,
-        class: resolvePropValue(className, slot),
+        class: resolvePropValue(defaultClass, slot),
         'aria-disabled': disabled === true ? true : undefined,
         'aria-selected': selected.value === true ? selected.value : undefined,
         onClick: handleClick,

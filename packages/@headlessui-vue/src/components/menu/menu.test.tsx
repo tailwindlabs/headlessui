@@ -622,13 +622,13 @@ describe('Rendering', () => {
 })
 
 describe('Rendering composition', () => {
-  it('should be possible to conditionally render classNames (aka className can be a function?!)', async () => {
+  it('should be possible to conditionally render classes (aka class can be a function?!)', async () => {
     renderTemplate(jsx`
       <Menu>
         <MenuButton>Trigger</MenuButton>
         <MenuItems>
-          <MenuItem as="a" :className="JSON.stringify">Item A</MenuItem>
-          <MenuItem as="a" disabled :className="JSON.stringify">Item B</MenuItem>
+          <MenuItem as="a" :class="JSON.stringify">Item A</MenuItem>
+          <MenuItem as="a" disabled :class="JSON.stringify">Item B</MenuItem>
           <MenuItem as="a" class="no-special-treatment">Item C</MenuItem>
         </MenuItems>
       </Menu>
@@ -645,7 +645,7 @@ describe('Rendering composition', () => {
 
     let items = getMenuItems()
 
-    // Verify correct classNames
+    // Verify correct classes
     expect('' + items[0].classList).toEqual(JSON.stringify({ active: false, disabled: false }))
     expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
     expect('' + items[2].classList).toEqual('no-special-treatment')
@@ -656,7 +656,7 @@ describe('Rendering composition', () => {
     // Make the first item active
     await press(Keys.ArrowDown)
 
-    // Verify the classNames
+    // Verify the classes
     expect('' + items[0].classList).toEqual(JSON.stringify({ active: true, disabled: false }))
     expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
     expect('' + items[2].classList).toEqual('no-special-treatment')
@@ -667,7 +667,7 @@ describe('Rendering composition', () => {
     // Let's go down, this should go to the third item since the second item is disabled!
     await press(Keys.ArrowDown)
 
-    // Verify the classNames
+    // Verify the classes
     expect('' + items[0].classList).toEqual(JSON.stringify({ active: false, disabled: false }))
     expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
     expect('' + items[2].classList).toEqual('no-special-treatment')

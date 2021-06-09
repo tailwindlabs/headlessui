@@ -13,7 +13,7 @@
             :key="id"
             :value="id"
             v-slot="{ active, checked }"
-            :className="
+            :class="
               ({ active }) =>
                 classNames(
                   // Rounded corners

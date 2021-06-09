@@ -480,20 +480,20 @@ describe('Rendering', () => {
 
 describe('Rendering composition', () => {
   it(
-    'should be possible to conditionally render classNames (aka className can be a function?!)',
+    'should be possible to conditionally render classes (aka class can be a function?!)',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
-              <ListboxOption value="a" :className="JSON.stringify">
+              <ListboxOption value="a" :class="JSON.stringify">
                 Option A
               </ListboxOption>
-              <ListboxOption value="b" disabled :className="JSON.stringify">
+              <ListboxOption value="b" disabled :class="JSON.stringify">
                 Option B
               </ListboxOption>
-              <ListboxOption value="c" className="no-special-treatment">
+              <ListboxOption value="c" class="no-special-treatment">
                 Option C
               </ListboxOption>
             </ListboxOptions>
@@ -513,7 +513,7 @@ describe('Rendering composition', () => {
 
       let options = getListboxOptions()
 
-      // Verify correct classNames
+      // Verify correct classes
       expect('' + options[0].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: false })
       )
@@ -528,7 +528,7 @@ describe('Rendering composition', () => {
       // Make the first option active
       await press(Keys.ArrowDown)
 
-      // Verify the classNames
+      // Verify the classes
       expect('' + options[0].classList).toEqual(
         JSON.stringify({ active: true, selected: false, disabled: false })
       )
@@ -543,7 +543,7 @@ describe('Rendering composition', () => {
       // Let's go down, this should go to the third option since the second option is disabled!
       await press(Keys.ArrowDown)
 
-      // Verify the classNames
+      // Verify the classes
       expect('' + options[0].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: false })
       )

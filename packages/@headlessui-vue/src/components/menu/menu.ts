@@ -413,12 +413,11 @@ export let MenuItem = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
     class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useMenuContext('MenuItem')
     let id = `headlessui-menu-item-${useId()}`
-    let { disabled, class: defaultClass, className = defaultClass } = props
+    let { disabled, class: defaultClass } = props
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null
@@ -473,7 +472,7 @@ export let MenuItem = defineComponent({
         id,
         role: 'menuitem',
         tabIndex: -1,
-        class: resolvePropValue(className, slot),
+        class: resolvePropValue(defaultClass, slot),
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
