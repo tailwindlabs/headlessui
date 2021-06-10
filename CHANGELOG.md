@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
 - Remove undocumented `:className` prop ([#607](https://github.com/tailwindlabs/headlessui/pull/607))
 - Improve types for `Listbox` component ([#576](https://github.com/tailwindlabs/headlessui/pull/576))
+- Remove explicit `:class` prop ([#608](https://github.com/tailwindlabs/headlessui/pull/608))
 
 ## [Unreleased - Vue]
 

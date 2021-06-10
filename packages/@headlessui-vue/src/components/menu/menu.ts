@@ -411,7 +411,6 @@ export let MenuItem = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useMenuContext('MenuItem')
@@ -465,13 +464,12 @@ export let MenuItem = defineComponent({
     }
 
     return () => {
-      let { disabled, class: defaultClass } = props
+      let { disabled } = props
       let slot = { active: active.value, disabled }
       let propsWeControl = {
         id,
         role: 'menuitem',
         tabIndex: disabled === true ? undefined : -1,
-        class: defaultClass,
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
