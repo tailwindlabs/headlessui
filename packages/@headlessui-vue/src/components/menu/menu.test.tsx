@@ -607,7 +607,6 @@ describe('Rendering', () => {
                 '  - id',
                 '  - role',
                 '  - tabIndex',
-                '  - class',
                 '  - aria-disabled',
                 '  - onClick',
                 '  - onFocus',
