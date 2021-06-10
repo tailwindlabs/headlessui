@@ -61,11 +61,9 @@ export let Switch = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
   },
   render() {
     let api = inject(GroupContext, null)
-    let { class: defaultClass } = this.$props
 
     let slot = { checked: this.$props.modelValue }
     let propsWeControl = {
@@ -73,7 +71,6 @@ export let Switch = defineComponent({
       ref: api === null ? undefined : api.switchRef,
       role: 'switch',
       tabIndex: 0,
-      class: defaultClass,
       'aria-checked': this.$props.modelValue,
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,

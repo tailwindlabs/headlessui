@@ -472,7 +472,6 @@ export let ListboxOption = defineComponent({
     as: { type: [Object, String], default: 'li' },
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useListboxContext('ListboxOption')
@@ -546,13 +545,12 @@ export let ListboxOption = defineComponent({
     }
 
     return () => {
-      let { disabled, class: defaultClass } = props
+      let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
       let propsWeControl = {
         id,
         role: 'option',
         tabIndex: disabled === true ? undefined : -1,
-        class: defaultClass,
         'aria-disabled': disabled === true ? true : undefined,
         'aria-selected': selected.value === true ? selected.value : undefined,
         disabled: undefined, // Never forward the `disabled` prop

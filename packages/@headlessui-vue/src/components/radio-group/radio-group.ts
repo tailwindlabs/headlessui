@@ -232,10 +232,9 @@ export let RadioGroupOption = defineComponent({
     as: { type: [Object, String], default: 'div' },
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
   },
   render() {
-    let { value, disabled, class: defaultClass, ...passThroughProps } = this.$props
+    let { value, disabled, ...passThroughProps } = this.$props
 
     let slot = {
       checked: this.checked,
@@ -247,7 +246,6 @@ export let RadioGroupOption = defineComponent({
       id: this.id,
       ref: 'el',
       role: 'radio',
-      class: defaultClass,
       'aria-checked': this.checked ? 'true' : 'false',
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,
