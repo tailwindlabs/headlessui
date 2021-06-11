@@ -43,6 +43,8 @@ interface StateDefinition {
 
   titleId: Ref<string | null>
 
+  backdrop: Ref<string | null>
+
   setTitleId(id: string | null): void
 
   close(): void
@@ -69,9 +71,10 @@ export let Dialog = defineComponent({
   inheritAttrs: false, // Manually handling this
   props: {
     as: { type: [Object, String], default: 'div' },
+    backdrop: { type: String, default: 'normal' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    open: { type: Boolean, default: Missing },
+    open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
   emits: ['close'],
@@ -116,7 +119,6 @@ export let Dialog = defineComponent({
 
     let usesOpenClosedState = useOpenClosed()
     let open = computed(() => {
-      // @ts-expect-error We are comparing to a uuid stirng at runtime
       if (props.open === Missing && usesOpenClosedState !== null) {
         // Update the `open` prop based on the open closed state
         return match(usesOpenClosedState.value, {
@@ -128,7 +130,6 @@ export let Dialog = defineComponent({
     })
 
     // Validations
-    // @ts-expect-error We are comparing to a uuid stirng at runtime
     let hasOpen = props.open !== Missing || usesOpenClosedState !== null
 
     if (!hasOpen) {
@@ -137,13 +138,13 @@ export let Dialog = defineComponent({
 
     if (typeof open.value !== 'boolean') {
       throw new Error(
-        `You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${
-          open.value === Missing ? undefined : props.open
+        `You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${open.value === Missing ? undefined : props.open
         }`
       )
     }
 
     let dialogState = computed(() => (props.open ? DialogStates.Open : DialogStates.Closed))
+    let backdrop = computed(() => (props.backdrop))
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
         return usesOpenClosedState.value === State.Open
@@ -184,6 +185,7 @@ export let Dialog = defineComponent({
     let api = {
       titleId,
       dialogState,
+      backdrop,
       setTitleId(id: string | null) {
         if (titleId.value === id) return
         titleId.value = id
@@ -196,16 +198,20 @@ export let Dialog = defineComponent({
     provide(DialogContext, api)
 
     // Handle outside click
-    useWindowEvent('mousedown', event => {
-      let target = event.target as HTMLElement
 
-      if (dialogState.value !== DialogStates.Open) return
-      if (containers.value.size !== 1) return
-      if (contains(containers.value, target)) return
+    if (backdrop.value !== 'static') {
+      useWindowEvent('mousedown', event => {
+        let target = event.target as HTMLElement
 
-      api.close()
-      nextTick(() => target?.focus())
-    })
+        if (dialogState.value !== DialogStates.Open) return
+        if (containers.value.size !== 1) return
+        if (contains(containers.value, target)) return
+
+
+        api.close()
+        nextTick(() => target?.focus())
+      })
+    }
 
     // Scroll lock
     watchEffect(onInvalidate => {
@@ -259,6 +265,7 @@ export let Dialog = defineComponent({
       describedby,
       visible,
       open,
+      backdrop,
       handleClick(event: MouseEvent) {
         event.stopPropagation()
       },
@@ -302,12 +309,14 @@ export let DialogOverlay = defineComponent({
     })
   },
   setup() {
+    const { backdrop } = useDialogContext('DialogContext');
     let api = useDialogContext('DialogOverlay')
     let id = `headlessui-dialog-overlay-${useId()}`
 
     return {
       id,
       handleClick(event: MouseEvent) {
+        if (backdrop.value == 'static') return;
         event.preventDefault()
         event.stopPropagation()
         api.close()
