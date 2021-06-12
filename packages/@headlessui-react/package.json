@@ -30,7 +30,8 @@
     "lint": "../../scripts/lint.sh"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": ">=16",
+    "react-dom": ">=16"
   },
   "devDependencies": {
     "@types/react": "^16.14.2",
