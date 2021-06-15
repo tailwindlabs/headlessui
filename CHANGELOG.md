@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve types for `Listbox` component ([#576](https://github.com/tailwindlabs/headlessui/pull/576))
 - Remove explicit `:class` prop ([#608](https://github.com/tailwindlabs/headlessui/pull/608))
 - Improve tree shaking ([#602](https://github.com/tailwindlabs/headlessui/pull/602))
+- Improve peer dependencies for `react-dom`, and for the future version `18` ([#622](https://github.com/tailwindlabs/headlessui/pull/622))
 
 ## [Unreleased - Vue]
 
