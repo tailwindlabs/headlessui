@@ -31,7 +31,8 @@
     "lint": "../../scripts/lint.sh"
   },
   "peerDependencies": {
-    "react": "^16 || ^17"
+    "react": "^16 || ^17 || ^18",
+    "react-dom": "^16 || ^17 || ^18"
   },
   "devDependencies": {
     "@types/react": "^16.14.2",
