@@ -49,6 +49,7 @@ export interface TransitionClasses {
   enter?: string
   enterFrom?: string
   enterTo?: string
+  entered?: string
   leave?: string
   leaveFrom?: string
   leaveTo?: string
@@ -200,6 +201,7 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     enter,
     enterFrom,
     enterTo,
+    entered,
     leave,
     leaveFrom,
     leaveTo,
@@ -255,6 +257,8 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
   let enterFromClasses = useSplitClasses(enterFrom)
   let enterToClasses = useSplitClasses(enterTo)
 
+  let enteredClasses = useSplitClasses(entered)
+
   let leaveClasses = useSplitClasses(leave)
   let leaveFromClasses = useSplitClasses(leaveFrom)
   let leaveToClasses = useSplitClasses(leaveTo)
@@ -283,11 +287,11 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     if (!show) events.current.beforeLeave()
 
     return show
-      ? transition(node, enterClasses, enterFromClasses, enterToClasses, reason => {
+      ? transition(node, enterClasses, enterFromClasses, enterToClasses, enteredClasses, reason => {
           isTransitioning.current = false
           if (reason === Reason.Finished) events.current.afterEnter()
         })
-      : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, reason => {
+      : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, enteredClasses, reason => {
           isTransitioning.current = false
 
           if (reason !== Reason.Finished) return
@@ -400,5 +404,16 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   )
 }
 
-Transition.Child = TransitionChild
+Transition.Child = function Child<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+  props: TransitionChildProps<TTag>
+) {
+  let hasTransitionContext = useContext(TransitionContext) !== null
+  let hasOpenClosedContext = useOpenClosed() !== null
+
+  return !hasTransitionContext && hasOpenClosedContext ? (
+    <Transition {...props} />
+  ) : (
+    <TransitionChild {...props} />
+  )
+}
 Transition.Root = Transition

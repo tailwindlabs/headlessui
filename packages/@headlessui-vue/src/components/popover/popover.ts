@@ -87,8 +87,6 @@ export let Popover = defineComponent({
     as: { type: [Object, String], default: 'div' },
   },
   setup(props, { slots, attrs }) {
-    let { ...passThroughProps } = props
-
     let buttonId = `headlessui-popover-button-${useId()}`
     let panelId = `headlessui-popover-panel-${useId()}`
 
@@ -178,7 +176,7 @@ export let Popover = defineComponent({
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open }
-      return render({ props: passThroughProps, slot, slots, attrs, name: 'Popover' })
+      return render({ props, slot, slots, attrs, name: 'Popover' })
     }
   },
 })
@@ -205,8 +203,11 @@ export let PopoverButton = defineComponent({
           ref: 'el',
           id: api.buttonId,
           type: 'button',
-          'aria-expanded': api.popoverState.value === PopoverStates.Open ? true : undefined,
+          'aria-expanded': this.$props.disabled
+            ? undefined
+            : api.popoverState.value === PopoverStates.Open,
           'aria-controls': dom(api.panel) ? api.panelId : undefined,
+          disabled: this.$props.disabled ? true : undefined,
           onKeydown: this.handleKeyDown,
           onKeyup: this.handleKeyUp,
           onClick: this.handleClick,

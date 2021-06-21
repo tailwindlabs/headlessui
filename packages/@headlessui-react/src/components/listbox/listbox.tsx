@@ -356,7 +356,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     type: 'button',
     'aria-haspopup': true,
     'aria-controls': state.optionsRef.current?.id,
-    'aria-expanded': state.listboxState === ListboxStates.Open ? true : undefined,
+    'aria-expanded': state.disabled ? undefined : state.listboxState === ListboxStates.Open,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
@@ -660,9 +660,10 @@ function Option<
   let propsWeControl = {
     id,
     role: 'option',
-    tabIndex: -1,
+    tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
     'aria-selected': selected === true ? true : undefined,
+    disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
     onPointerMove: handleMove,

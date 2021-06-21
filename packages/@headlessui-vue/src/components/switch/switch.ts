@@ -12,7 +12,6 @@ import {
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 
@@ -62,12 +61,9 @@ export let Switch = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   render() {
     let api = inject(GroupContext, null)
-    let { class: defaultClass, className = defaultClass } = this.$props
 
     let slot = { checked: this.$props.modelValue }
     let propsWeControl = {
@@ -75,7 +71,6 @@ export let Switch = defineComponent({
       ref: api === null ? undefined : api.switchRef,
       role: 'switch',
       tabIndex: 0,
-      class: resolvePropValue(className, slot),
       'aria-checked': this.$props.modelValue,
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,

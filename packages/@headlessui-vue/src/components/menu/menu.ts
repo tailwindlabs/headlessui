@@ -15,7 +15,6 @@ import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
@@ -187,7 +186,7 @@ export let MenuButton = defineComponent({
       type: 'button',
       'aria-haspopup': true,
       'aria-controls': dom(api.itemsRef)?.id,
-      'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
+      'aria-expanded': this.$props.disabled ? undefined : api.menuState.value === MenuStates.Open,
       onKeydown: this.handleKeyDown,
       onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
@@ -412,13 +411,10 @@ export let MenuItem = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useMenuContext('MenuItem')
     let id = `headlessui-menu-item-${useId()}`
-    let { disabled, class: defaultClass, className = defaultClass } = props
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null
@@ -426,7 +422,7 @@ export let MenuItem = defineComponent({
         : false
     })
 
-    let dataRef = ref<MenuItemDataRef['value']>({ disabled, textValue: '' })
+    let dataRef = ref<MenuItemDataRef['value']>({ disabled: props.disabled, textValue: '' })
     onMounted(() => {
       let textValue = document
         .getElementById(id)
@@ -445,35 +441,35 @@ export let MenuItem = defineComponent({
     })
 
     function handleClick(event: MouseEvent) {
-      if (disabled) return event.preventDefault()
+      if (props.disabled) return event.preventDefault()
       api.closeMenu()
       nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {
-      if (disabled) return api.goToItem(Focus.Nothing)
+      if (props.disabled) return api.goToItem(Focus.Nothing)
       api.goToItem(Focus.Specific, id)
     }
 
     function handleMove() {
-      if (disabled) return
+      if (props.disabled) return
       if (active.value) return
       api.goToItem(Focus.Specific, id)
     }
 
     function handleLeave() {
-      if (disabled) return
+      if (props.disabled) return
       if (!active.value) return
       api.goToItem(Focus.Nothing)
     }
 
     return () => {
+      let { disabled } = props
       let slot = { active: active.value, disabled }
       let propsWeControl = {
         id,
         role: 'menuitem',
-        tabIndex: -1,
-        class: resolvePropValue(className, slot),
+        tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,

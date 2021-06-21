@@ -14,6 +14,10 @@ export enum State {
   Closed,
 }
 
+export function hasOpenClosed() {
+  return useOpenClosed() !== null
+}
+
 export function useOpenClosed() {
   return inject(Context, null)
 }

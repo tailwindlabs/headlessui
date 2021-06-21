@@ -358,6 +358,11 @@ describe('Rendering', () => {
     // Make sure that the onChange handler never got called
     expect(changeFn).toHaveBeenCalledTimes(0)
 
+    // Make sure that all the options get an `aria-disabled`
+    let options = getRadioGroupOptions()
+    expect(options).toHaveLength(4)
+    for (let option of options) expect(option).toHaveAttribute('aria-disabled', 'true')
+
     // Toggle the disabled state
     await click(getByText('Toggle'))
 
@@ -419,6 +424,17 @@ describe('Rendering', () => {
 
     // Make sure that the onChange handler never got called
     expect(changeFn).toHaveBeenCalledTimes(0)
+
+    // Make sure that the option with value "render-prop" gets an `aria-disabled`
+    let options = getRadioGroupOptions()
+    expect(options).toHaveLength(4)
+    for (let option of options) {
+      if (option.dataset.value) {
+        expect(option).toHaveAttribute('aria-disabled', 'true')
+      } else {
+        expect(option).not.toHaveAttribute('aria-disabled')
+      }
+    }
 
     // Toggle the disabled state
     await click(getByText('Toggle'))

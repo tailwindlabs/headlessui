@@ -440,7 +440,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         ref: buttonRef,
         id: state.buttonId,
         type: 'button',
-        'aria-expanded': state.popoverState === PopoverStates.Open ? true : undefined,
+        'aria-expanded': props.disabled ? undefined : state.popoverState === PopoverStates.Open,
         'aria-controls': state.panel ? state.panelId : undefined,
         onKeyDown: handleKeyDown,
         onKeyUp: handleKeyUp,

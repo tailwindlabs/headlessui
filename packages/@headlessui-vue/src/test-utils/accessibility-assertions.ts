@@ -62,12 +62,20 @@ export function assertMenuButton(
 
       case MenuState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case MenuState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:
@@ -193,7 +201,7 @@ export function assertMenuItem(
 
     // Check that we have the correct values for certain attributes
     expect(item).toHaveAttribute('role', 'menuitem')
-    expect(item).toHaveAttribute('tabindex', '-1')
+    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure menu button has the following attributes
     if (options) {
@@ -326,12 +334,20 @@ export function assertListboxButton(
 
       case ListboxState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case ListboxState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:
@@ -483,7 +499,7 @@ export function assertListboxOption(
 
     // Check that we have the correct values for certain attributes
     expect(item).toHaveAttribute('role', 'option')
-    expect(item).toHaveAttribute('tabindex', '-1')
+    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure listbox button has the following attributes
     if (!options) return
@@ -628,12 +644,20 @@ export function assertDisclosureButton(
 
       case DisclosureState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case DisclosureState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:
@@ -752,12 +776,20 @@ export function assertPopoverButton(
 
       case PopoverState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case PopoverState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:

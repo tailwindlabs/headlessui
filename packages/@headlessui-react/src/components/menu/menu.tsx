@@ -297,7 +297,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     type: 'button',
     'aria-haspopup': true,
     'aria-controls': state.itemsRef.current?.id,
-    'aria-expanded': state.menuState === MenuStates.Open ? true : undefined,
+    'aria-expanded': props.disabled ? undefined : state.menuState === MenuStates.Open,
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
     onClick: handleClick,
@@ -560,8 +560,9 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   let propsWeControl = {
     id,
     role: 'menuitem',
-    tabIndex: -1,
+    tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
+    disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
     onPointerMove: handleMove,

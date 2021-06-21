@@ -7,11 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Added 
+
+- Ensure that you can use `Transition.Child` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
+
+### Fixes
+
+- Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve React peer dependency version range ([#544](https://github.com/tailwindlabs/headlessui/pull/544))
+- Improve types for the `open` prop in the `Dialog` component ([#550](https://github.com/tailwindlabs/headlessui/pull/550))
+- Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
+- Remove undocumented `:className` prop ([#607](https://github.com/tailwindlabs/headlessui/pull/607))
+- Improve types for `Listbox` component ([#576](https://github.com/tailwindlabs/headlessui/pull/576))
+- Remove explicit `:class` prop ([#608](https://github.com/tailwindlabs/headlessui/pull/608))
+- Improve tree shaking ([#602](https://github.com/tailwindlabs/headlessui/pull/602))
+- Improve peer dependencies for `react-dom`, and for the future version `18` ([#622](https://github.com/tailwindlabs/headlessui/pull/622))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Added 
+
+- Ensure that you can use `TransitionChild` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
+
+### Fixes
+
+- Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve reactivity when destructuring from props ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
 
 ## [@headlessui/react@v1.2.0] - 2021-05-10
 
