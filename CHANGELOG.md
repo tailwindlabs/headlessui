@@ -18,10 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 - Ensure that you can use `Transition.Child` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
-- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
+- Add new `entered` prop for `Transition` and `Transition.Child` components ([#504](https://github.com/tailwindlabs/headlessui/pull/504))
 
 ### Fixes
 
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
 - Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
 - Improve React peer dependency version range ([#544](https://github.com/tailwindlabs/headlessui/pull/544))
 - Improve types for the `open` prop in the `Dialog` component ([#550](https://github.com/tailwindlabs/headlessui/pull/550))
@@ -37,10 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 - Ensure that you can use `TransitionChild` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
-- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
+- Add new `entered` prop for `Transition` and `TransitionChild` components ([#504](https://github.com/tailwindlabs/headlessui/pull/504))
 
 ### Fixes
 
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
 - Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
 - Improve reactivity when destructuring from props ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
 - Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
