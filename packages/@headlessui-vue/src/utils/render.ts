@@ -1,4 +1,4 @@
-import { h, cloneVNode, Slots } from 'vue'
+import { h, cloneVNode, Slots, resolveComponent } from 'vue'
 import { match } from './match'
 
 export enum Features {
@@ -121,8 +121,10 @@ function _render({
 
     return children
   }
+  
+  let component = resolveComponent(as)
 
-  return h(as, passThroughProps, children)
+  return h(component || as, passThroughProps, children)
 }
 
 export function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) {
