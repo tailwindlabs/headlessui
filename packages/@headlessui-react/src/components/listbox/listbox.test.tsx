@@ -3636,3 +3636,72 @@ describe('Mouse interactions', () => {
     })
   )
 })
+
+describe('Multi-select', () => {
+  it(
+    'should be possible to pass multiple values to the Listbox component',
+    suppressConsoleLogs(async () => {
+      let handleChange = jest.fn()
+      function Example() {
+        let [value, setValue] = useState([])
+
+        return (
+          <Listbox
+            value={value}
+            onChange={value => {
+              setValue(value)
+              handleChange(value)
+            }}
+          >
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">alice</Listbox.Option>
+              <Listbox.Option value="bob">bob</Listbox.Option>
+              <Listbox.Option value="charlie">charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open listbox
+      await click(getListboxButton())
+      assertListbox({ state: ListboxState.Visible })
+      assertActiveElement(getListbox())
+
+      let options = getListboxOptions()
+
+      // We should be able to click the first option (the options should still be shown in multiple mode)
+      await click(options[0])
+      assertListbox({ state: ListboxState.Visible })
+      expect(handleChange).toHaveBeenCalledTimes(1)
+      expect(handleChange).toHaveBeenCalledWith(['alice'])
+      assertListboxOption(options[0], { selected: true })
+      assertNoActiveListboxOption()
+
+      // The listbox itself should still be active
+      assertActiveElement(getListbox())
+
+      // Let's select the third option
+      handleChange.mockReset()
+      await click(options[2])
+      expect(handleChange).toHaveBeenCalledTimes(1)
+      expect(handleChange).toHaveBeenCalledWith(['alice', 'charlie'])
+      assertListboxOption(options[2], { selected: true })
+      assertNoActiveListboxOption()
+
+      // Close/Hide the listbox
+      await press(Keys.Escape)
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Verify the active option is the previously selected one
+      await click(getListboxButton())
+      assertNoActiveListboxOption()
+
+      assertListboxOption(options[0], { selected: true })
+      assertListboxOption(options[1], { selected: false })
+      assertListboxOption(options[2], { selected: true })
+    })
+  )
+})

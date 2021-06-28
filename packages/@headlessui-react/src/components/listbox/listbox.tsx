@@ -45,6 +45,7 @@ type ListboxOptionDataRef = MutableRefObject<{
 }>
 
 interface StateDefinition {
+  value: unknown
   listboxState: ListboxStates
   propsRef: MutableRefObject<{ value: unknown; onChange(value: unknown): void }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
@@ -68,6 +69,8 @@ enum ActionTypes {
 
   RegisterOption,
   UnregisterOption,
+
+  ChangeValue,
 }
 
 type Actions =
@@ -80,6 +83,7 @@ type Actions =
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef }
   | { type: ActionTypes.UnregisterOption; id: string }
+  | { type: ActionTypes.ChangeValue; value: unknown }
 
 let reducers: {
   [P in ActionTypes]: (
@@ -161,6 +165,12 @@ let reducers: {
       })(),
     }
   },
+  [ActionTypes.ChangeValue]: (state, action) => {
+    return {
+      ...state,
+      value: action.value,
+    }
+  },
 }
 
 let ListboxContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
@@ -186,17 +196,34 @@ let DEFAULT_LISTBOX_TAG = Fragment
 interface ListboxRenderPropArg {
   open: boolean
   disabled: boolean
+  onChange: Function
 }
 
-export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, TType = string>(
+export function Listbox<
+  TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
+  TType = string | Array<string>
+>(
   props: Props<TTag, ListboxRenderPropArg, 'value' | 'onChange'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
   }
 ) {
-  let { value, onChange, disabled = false, ...passThroughProps } = props
+  let { value, onChange: _onChange, disabled = false, ...passThroughProps } = props
+  // Handle value change for single and multiple values
+  const onChange = useCallback(
+    changedOption => {
+      const newValue = Array.isArray(value)
+        ? value.includes(changedOption)
+          ? value.filter(option => option !== changedOption)
+          : [...value, changedOption]
+        : changedOption
+      _onChange(newValue)
+    },
+    [value, _onChange]
+  )
   let reducerBag = useReducer(stateReducer, {
+    value,
     listboxState: ListboxStates.Closed,
     propsRef: { current: { value, onChange } },
     labelRef: createRef(),
@@ -210,8 +237,8 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   let [{ listboxState, propsRef, optionsRef, buttonRef }, dispatch] = reducerBag
 
   useIsoMorphicEffect(() => {
-    propsRef.current.value = value
-  }, [value, propsRef])
+    dispatch({ type: ActionTypes.ChangeValue, value })
+  }, [value])
   useIsoMorphicEffect(() => {
     propsRef.current.onChange = onChange
   }, [onChange, propsRef])
@@ -235,8 +262,8 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   })
 
   let slot = useMemo<ListboxRenderPropArg>(
-    () => ({ open: listboxState === ListboxStates.Open, disabled }),
-    [listboxState, disabled]
+    () => ({ open: listboxState === ListboxStates.Open, disabled, onChange }),
+    [listboxState, disabled, onChange]
   )
 
   return (
@@ -297,8 +324,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            if (!state.propsRef.current.value)
-              dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
+            if (!state.value) dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
           })
           break
 
@@ -306,8 +332,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           dispatch({ type: ActionTypes.OpenListbox })
           d.nextFrame(() => {
-            if (!state.propsRef.current.value)
-              dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
+            if (!state.value) dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
           })
           break
       }
@@ -470,12 +495,18 @@ let Options = forwardRefWithAs(function Options<
         case Keys.Enter:
           event.preventDefault()
           event.stopPropagation()
-          dispatch({ type: ActionTypes.CloseListbox })
+          if (!Array.isArray(state.value)) {
+            // Close only for single-value mode
+            dispatch({ type: ActionTypes.CloseListbox })
+          }
           if (state.activeOptionIndex !== null) {
             let { dataRef } = state.options[state.activeOptionIndex]
             state.propsRef.current.onChange(dataRef.current.value)
           }
-          disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+          if (!Array.isArray(state.value)) {
+            // Focus only for single-value mode
+            disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+          }
           break
 
         case Keys.ArrowDown:
@@ -589,7 +620,8 @@ function Option<
   let id = `headlessui-listbox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
-  let selected = state.propsRef.current.value === value
+
+  let selected = Array.isArray(state.value) ? state.value.includes(value) : state.value === value
 
   let bag = useRef<ListboxOptionDataRef['current']>({ disabled, value })
 
@@ -603,7 +635,9 @@ function Option<
     bag.current.textValue = document.getElementById(id)?.textContent?.toLowerCase()
   }, [bag, id])
 
-  let select = useCallback(() => state.propsRef.current.onChange(value), [state.propsRef, value])
+  let select = useCallback(() => {
+    state.propsRef.current.onChange(value)
+  }, [state.propsRef, value])
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.RegisterOption, id, dataRef: bag })
@@ -613,8 +647,10 @@ function Option<
   useIsoMorphicEffect(() => {
     if (state.listboxState !== ListboxStates.Open) return
     if (!selected) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-    document.getElementById(id)?.focus?.()
+    if (!Array.isArray(state.value)) {
+      dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+      document.getElementById(id)?.focus?.()
+    }
   }, [state.listboxState])
 
   useIsoMorphicEffect(() => {
@@ -629,10 +665,12 @@ function Option<
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
       select()
-      dispatch({ type: ActionTypes.CloseListbox })
-      disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+      if (!Array.isArray(state.value)) {
+        dispatch({ type: ActionTypes.CloseListbox })
+        disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+      }
     },
-    [dispatch, state.buttonRef, disabled, select]
+    [dispatch, state.buttonRef, state.value, disabled, select]
   )
 
   let handleFocus = useCallback(() => {
