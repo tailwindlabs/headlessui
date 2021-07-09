@@ -122,9 +122,11 @@ function _render({
     return children
   }
   
-  let component = resolveComponent(as)
+  let component = as;
+  
+  try { component = resolveComponent(as) } catch(e) {}
 
-  return h(component || as, passThroughProps, children)
+  return h(component, passThroughProps, children)
 }
 
 export function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) {
