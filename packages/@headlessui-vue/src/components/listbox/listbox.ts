@@ -79,7 +79,7 @@ function useListboxContext(component: string) {
 
 export let Listbox = defineComponent({
   name: 'Listbox',
-  emits: ['update:modelValue'],
+  emits: { 'update:modelValue': (_value: any) => true },
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
