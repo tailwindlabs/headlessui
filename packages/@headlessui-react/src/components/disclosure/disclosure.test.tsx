@@ -9,6 +9,8 @@ import {
   assertDisclosureButton,
   getDisclosureButton,
   getDisclosurePanel,
+  assertActiveElement,
+  getByText,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton } from '../../test-utils/interactions'
 import { Transition } from '../transitions/transition'
@@ -617,6 +619,38 @@ describe('Mouse interactions', () => {
       // Verify it is closed
       assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
       assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to close the Disclosure by clicking on a Disclosure.Button inside a Disclosure.Panel',
+    suppressConsoleLogs(async () => {
+      render(
+        <Disclosure>
+          <Disclosure.Button>Open</Disclosure.Button>
+          <Disclosure.Panel>
+            <Disclosure.Button>Close</Disclosure.Button>
+          </Disclosure.Panel>
+        </Disclosure>
+      )
+
+      // Open the disclosure
+      await click(getDisclosureButton())
+
+      let closeBtn = getByText('Close')
+
+      expect(closeBtn).not.toHaveAttribute('id')
+      expect(closeBtn).not.toHaveAttribute('aria-controls')
+      expect(closeBtn).not.toHaveAttribute('aria-expanded')
+
+      // The close button should close the disclosure
+      await click(closeBtn)
+
+      // Verify it is closed
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Verify we restored the Open button
+      assertActiveElement(getDisclosureButton())
     })
   )
 })
