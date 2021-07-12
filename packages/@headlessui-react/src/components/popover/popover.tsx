@@ -15,6 +15,7 @@ import React, {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   Ref,
+  MutableRefObject,
 } from 'react'
 
 import { Props } from '../../types'
@@ -115,6 +116,21 @@ function usePopoverContext(component: string) {
   return context
 }
 
+let PopoverAPIContext = createContext<{
+  close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
+} | null>(null)
+PopoverAPIContext.displayName = 'PopoverAPIContext'
+
+function usePopoverAPIContext(component: string) {
+  let context = useContext(PopoverAPIContext)
+  if (context === null) {
+    let err = new Error(`<${component} /> is missing a parent <${Popover.name} /> component.`)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, usePopoverAPIContext)
+    throw err
+  }
+  return context
+}
+
 let PopoverGroupContext = createContext<{
   registerPopover(registerbag: PopoverRegisterBag): void
   unregisterPopover(registerbag: PopoverRegisterBag): void
@@ -148,6 +164,7 @@ function stateReducer(state: StateDefinition, action: Actions) {
 let DEFAULT_POPOVER_TAG = 'div' as const
 interface PopoverRenderPropArg {
   open: boolean
+  close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
 }
 
 export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
@@ -215,25 +232,47 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     }
   })
 
-  let slot = useMemo<PopoverRenderPropArg>(() => ({ open: popoverState === PopoverStates.Open }), [
-    popoverState,
-  ])
+  let close = useCallback(
+    (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
+      dispatch({ type: ActionTypes.ClosePopover })
+
+      let restoreElement = (() => {
+        if (!focusableElement) return button
+        if (focusableElement instanceof HTMLElement) return focusableElement
+        if (focusableElement.current instanceof HTMLElement) return focusableElement.current
+
+        return button
+      })()
+
+      restoreElement?.focus()
+    },
+    [dispatch, button]
+  )
+
+  let api = useMemo<ContextType<typeof PopoverAPIContext>>(() => ({ close }), [close])
+
+  let slot = useMemo<PopoverRenderPropArg>(
+    () => ({ open: popoverState === PopoverStates.Open, close }),
+    [popoverState, close]
+  )
 
   return (
     <PopoverContext.Provider value={reducerBag}>
-      <OpenClosedProvider
-        value={match(popoverState, {
-          [PopoverStates.Open]: State.Open,
-          [PopoverStates.Closed]: State.Closed,
-        })}
-      >
-        {render({
-          props,
-          slot,
-          defaultTag: DEFAULT_POPOVER_TAG,
-          name: 'Popover',
-        })}
-      </OpenClosedProvider>
+      <PopoverAPIContext.Provider value={api}>
+        <OpenClosedProvider
+          value={match(popoverState, {
+            [PopoverStates.Open]: State.Open,
+            [PopoverStates.Closed]: State.Closed,
+          })}
+        >
+          {render({
+            props,
+            slot,
+            defaultTag: DEFAULT_POPOVER_TAG,
+            name: 'Popover',
+          })}
+        </OpenClosedProvider>
+      </PopoverAPIContext.Provider>
     </PopoverContext.Provider>
   )
 }
@@ -520,6 +559,7 @@ let Overlay = forwardRefWithAs(function Overlay<
 let DEFAULT_PANEL_TAG = 'div' as const
 interface PanelRenderPropArg {
   open: boolean
+  close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
 }
 type PanelPropsWeControl = 'id' | 'onKeyDown'
 
@@ -527,12 +567,16 @@ let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
-    PropsForFeatures<typeof PanelRenderFeatures> & { focus?: boolean },
+    PropsForFeatures<typeof PanelRenderFeatures> & {
+      focus?: boolean
+    },
   ref: Ref<HTMLDivElement>
 ) {
   let { focus = false, ...passthroughProps } = props
 
   let [state, dispatch] = usePopoverContext([Popover.name, Panel.name].join('.'))
+  let { close } = usePopoverAPIContext([Popover.name, Panel.name].join('.'))
+
   let internalPanelRef = useRef<HTMLDivElement | null>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref, panel => {
     dispatch({ type: ActionTypes.SetPanel, panel })
@@ -640,8 +684,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   )
 
   let slot = useMemo<PanelRenderPropArg>(
-    () => ({ open: state.popoverState === PopoverStates.Open }),
-    [state]
+    () => ({ open: state.popoverState === PopoverStates.Open, close }),
+    [state, close]
   )
   let propsWeControl = {
     ref: panelRef,
