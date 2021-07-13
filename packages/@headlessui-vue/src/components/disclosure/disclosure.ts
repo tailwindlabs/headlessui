@@ -16,7 +16,10 @@ enum DisclosureStates {
 interface StateDefinition {
   // State
   disclosureState: Ref<DisclosureStates>
-  panelRef: Ref<HTMLElement | null>
+  panel: Ref<HTMLElement | null>
+  panelId: string
+  button: Ref<HTMLButtonElement | null>
+  buttonId: string
 
   // State mutators
   toggleDisclosure(): void
@@ -36,6 +39,11 @@ function useDisclosureContext(component: string) {
   return context
 }
 
+let DisclosurePanelContext = Symbol('DisclosurePanelContext') as InjectionKey<string | null>
+function useDisclosurePanelContext() {
+  return inject(DisclosurePanelContext, null)
+}
+
 // ---
 
 export let Disclosure = defineComponent({
@@ -45,14 +53,21 @@ export let Disclosure = defineComponent({
     defaultOpen: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs }) {
+    let buttonId = `headlessui-disclosure-button-${useId()}`
+    let panelId = `headlessui-disclosure-panel-${useId()}`
+
     let disclosureState = ref<StateDefinition['disclosureState']['value']>(
       props.defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed
     )
-    let panelRef = ref<StateDefinition['panelRef']['value']>(null)
+    let panelRef = ref<StateDefinition['panel']['value']>(null)
+    let buttonRef = ref<StateDefinition['button']['value']>(null)
 
     let api = {
+      buttonId,
+      panelId,
       disclosureState,
-      panelRef,
+      panel: panelRef,
+      button: buttonRef,
       toggleDisclosure() {
         disclosureState.value = match(disclosureState.value, {
           [DisclosureStates.Open]: DisclosureStates.Closed,
@@ -91,18 +106,25 @@ export let DisclosureButton = defineComponent({
     let api = useDisclosureContext('DisclosureButton')
 
     let slot = { open: api.disclosureState.value === DisclosureStates.Open }
-    let propsWeControl = {
-      id: this.id,
-      type: 'button',
-      'aria-expanded': this.$props.disabled
-        ? undefined
-        : api.disclosureState.value === DisclosureStates.Open,
-      'aria-controls': this.ariaControls,
-      disabled: this.$props.disabled ? true : undefined,
-      onClick: this.handleClick,
-      onKeydown: this.handleKeyDown,
-      onKeyup: this.handleKeyUp,
-    }
+    let propsWeControl = this.isWithinPanel
+      ? {
+          type: 'button',
+          onClick: this.handleClick,
+          onKeydown: this.handleKeyDown,
+        }
+      : {
+          id: this.id,
+          ref: 'el',
+          type: 'button',
+          'aria-expanded': this.$props.disabled
+            ? undefined
+            : api.disclosureState.value === DisclosureStates.Open,
+          'aria-controls': dom(api.panel) ? api.panelId : undefined,
+          disabled: this.$props.disabled ? true : undefined,
+          onClick: this.handleClick,
+          onKeydown: this.handleKeyDown,
+          onKeyup: this.handleKeyUp,
+        }
 
     return render({
       props: { ...this.$props, ...propsWeControl },
@@ -114,26 +136,46 @@ export let DisclosureButton = defineComponent({
   },
   setup(props) {
     let api = useDisclosureContext('DisclosureButton')
-    let buttonId = `headlessui-disclosure-button-${useId()}`
-    let ariaControls = computed(() => dom(api.panelRef)?.id ?? undefined)
+
+    let panelContext = useDisclosurePanelContext()
+    let isWithinPanel = panelContext === null ? false : panelContext === api.panelId
 
     return {
-      id: buttonId,
-      ariaControls,
+      isWithinPanel,
+      id: api.buttonId,
+      el: isWithinPanel ? undefined : api.button,
       handleClick() {
         if (props.disabled) return
-        api.toggleDisclosure()
+
+        if (isWithinPanel) {
+          api.toggleDisclosure()
+          dom(api.button)?.focus()
+        } else {
+          api.toggleDisclosure()
+        }
       },
       handleKeyDown(event: KeyboardEvent) {
         if (props.disabled) return
 
-        switch (event.key) {
-          case Keys.Space:
-          case Keys.Enter:
-            event.preventDefault()
-            event.stopPropagation()
-            api.toggleDisclosure()
-            break
+        if (isWithinPanel) {
+          switch (event.key) {
+            case Keys.Space:
+            case Keys.Enter:
+              event.preventDefault()
+              event.stopPropagation()
+              api.toggleDisclosure()
+              dom(api.button)?.focus()
+              break
+          }
+        } else {
+          switch (event.key) {
+            case Keys.Space:
+            case Keys.Enter:
+              event.preventDefault()
+              event.stopPropagation()
+              api.toggleDisclosure()
+              break
+          }
         }
       },
       handleKeyUp(event: KeyboardEvent) {
@@ -177,7 +219,8 @@ export let DisclosurePanel = defineComponent({
   },
   setup() {
     let api = useDisclosureContext('DisclosurePanel')
-    let panelId = `headlessui-disclosure-panel-${useId()}`
+
+    provide(DisclosurePanelContext, api.panelId)
 
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
@@ -188,6 +231,6 @@ export let DisclosurePanel = defineComponent({
       return api.disclosureState.value === DisclosureStates.Open
     })
 
-    return { id: panelId, el: api.panelRef, visible }
+    return { id: api.panelId, el: api.panel, visible }
   },
 })

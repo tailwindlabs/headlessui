@@ -100,6 +100,13 @@ function useDisclosureContext(component: string) {
   return context
 }
 
+let DisclosurePanelContext = createContext<string | null>(null)
+DisclosurePanelContext.displayName = 'DisclosurePanelContext'
+
+function useDisclosurePanelContext() {
+  return useContext(DisclosurePanelContext)
+}
+
 function stateReducer(state: StateDefinition, action: Actions) {
   return match(action.type, reducers, state, action)
 }
@@ -176,18 +183,35 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let [state, dispatch] = useDisclosureContext([Disclosure.name, Button.name].join('.'))
   let buttonRef = useSyncRefs(ref)
 
+  let panelContext = useDisclosurePanelContext()
+  let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
+
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-      switch (event.key) {
-        case Keys.Space:
-        case Keys.Enter:
-          event.preventDefault()
-          event.stopPropagation()
-          dispatch({ type: ActionTypes.ToggleDisclosure })
-          break
+      if (isWithinPanel) {
+        if (state.disclosureState === DisclosureStates.Closed) return
+
+        switch (event.key) {
+          case Keys.Space:
+          case Keys.Enter:
+            event.preventDefault()
+            event.stopPropagation()
+            dispatch({ type: ActionTypes.ToggleDisclosure })
+            document.getElementById(state.buttonId)?.focus()
+            break
+        }
+      } else {
+        switch (event.key) {
+          case Keys.Space:
+          case Keys.Enter:
+            event.preventDefault()
+            event.stopPropagation()
+            dispatch({ type: ActionTypes.ToggleDisclosure })
+            break
+        }
       }
     },
-    [dispatch]
+    [dispatch, isWithinPanel, state.disclosureState]
   )
 
   let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -205,9 +229,15 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return
       if (props.disabled) return
-      dispatch({ type: ActionTypes.ToggleDisclosure })
+
+      if (isWithinPanel) {
+        dispatch({ type: ActionTypes.ToggleDisclosure })
+        document.getElementById(state.buttonId)?.focus()
+      } else {
+        dispatch({ type: ActionTypes.ToggleDisclosure })
+      }
     },
-    [dispatch, props.disabled]
+    [dispatch, props.disabled, state.buttonId, isWithinPanel]
   )
 
   let slot = useMemo<ButtonRenderPropArg>(
@@ -216,16 +246,20 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   )
 
   let passthroughProps = props
-  let propsWeControl = {
-    ref: buttonRef,
-    id: state.buttonId,
-    type: 'button',
-    'aria-expanded': props.disabled ? undefined : state.disclosureState === DisclosureStates.Open,
-    'aria-controls': state.linkedPanel ? state.panelId : undefined,
-    onKeyDown: handleKeyDown,
-    onKeyUp: handleKeyUp,
-    onClick: handleClick,
-  }
+  let propsWeControl = isWithinPanel
+    ? { type: 'button', onKeyDown: handleKeyDown, onClick: handleClick }
+    : {
+        ref: buttonRef,
+        id: state.buttonId,
+        type: 'button',
+        'aria-expanded': props.disabled
+          ? undefined
+          : state.disclosureState === DisclosureStates.Open,
+        'aria-controls': state.linkedPanel ? state.panelId : undefined,
+        onKeyDown: handleKeyDown,
+        onKeyUp: handleKeyUp,
+        onClick: handleClick,
+      }
 
   return render({
     props: { ...passthroughProps, ...propsWeControl },
@@ -285,14 +319,18 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   }
   let passthroughProps = props
 
-  return render({
-    props: { ...passthroughProps, ...propsWeControl },
-    slot,
-    defaultTag: DEFAULT_PANEL_TAG,
-    features: PanelRenderFeatures,
-    visible,
-    name: 'Disclosure.Panel',
-  })
+  return (
+    <DisclosurePanelContext.Provider value={state.panelId}>
+      {render({
+        props: { ...passthroughProps, ...propsWeControl },
+        slot,
+        defaultTag: DEFAULT_PANEL_TAG,
+        features: PanelRenderFeatures,
+        visible,
+        name: 'Disclosure.Panel',
+      })}
+    </DisclosurePanelContext.Provider>
+  )
 })
 
 // ---
