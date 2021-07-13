@@ -15,6 +15,7 @@ it('should expose the correct components', () => {
     'Portal',
     'RadioGroup',
     'Switch',
+    'Tabs',
     'Transition',
   ])
 })

@@ -56,6 +56,13 @@ it('should expose the correct components', () => {
     'SwitchLabel',
     'SwitchDescription',
 
+    // Tabs
+    'Tabs',
+    'TabsList',
+    'TabsTab',
+    'TabsPanels',
+    'TabsPanel',
+
     // Transition
     'TransitionChild',
     'TransitionRoot',

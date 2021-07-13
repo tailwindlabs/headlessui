@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Added
+
+- Add new `Tabs` component ([#674](https://github.com/tailwindlabs/headlessui/pull/674))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Added
+
+- Add new `Tabs` component ([#674](https://github.com/tailwindlabs/headlessui/pull/674))
 
 ## [@headlessui/react@v1.3.0] - 2021-06-21
 
