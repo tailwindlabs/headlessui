@@ -1933,6 +1933,57 @@ describe('Keyboard interactions', () => {
     )
   })
 
+  describe('`ArrowRight` key', () => {
+    it(
+      'should be possible to use ArrowRight to navigate the listbox options',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value" horizontal>
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.Enter)
+
+        // Verify we have listbox options
+        let options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
+
+        // We should be able to go right once
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[1])
+
+        // We should be able to go right again
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[2])
+
+        // We should NOT be able to go right again (because last option). Current implementation won't go around.
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[2])
+      })
+    )
+  })
+
   describe('`ArrowUp` key', () => {
     it(
       'should be possible to open the listbox with ArrowUp and the last option should be active',
@@ -2239,6 +2290,67 @@ describe('Keyboard interactions', () => {
 
         // We should NOT be able to go up again (because first option). Current implementation won't go around.
         await press(Keys.ArrowUp)
+        assertActiveListboxOption(options[0])
+      })
+    )
+  })
+
+  describe('`ArrowLeft` key', () => {
+    it(
+      'should be possible to use ArrowLeft to navigate the listbox options',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value" horizontal>
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.ArrowUp)
+
+        // Verify it is visible
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({
+          state: ListboxState.Visible,
+          attributes: { id: 'headlessui-listbox-options-2' },
+          orientation: 'horizontal',
+        })
+        assertActiveElement(getListbox())
+        assertListboxButtonLinkedWithListbox()
+
+        // Verify we have listbox options
+        let options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[2])
+
+        // We should be able to go left once
+        await press(Keys.ArrowLeft)
+        assertActiveListboxOption(options[1])
+
+        // We should be able to go left again
+        await press(Keys.ArrowLeft)
+        assertActiveListboxOption(options[0])
+
+        // We should NOT be able to go left again (because first option). Current implementation won't go around.
+        await press(Keys.ArrowLeft)
         assertActiveListboxOption(options[0])
       })
     )
