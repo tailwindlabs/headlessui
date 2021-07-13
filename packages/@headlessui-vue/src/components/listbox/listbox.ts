@@ -38,9 +38,12 @@ type StateDefinition = {
   // State
   listboxState: Ref<ListboxStates>
   value: ComputedRef<unknown>
+  orientation: Ref<'vertical' | 'horizontal'>
+
   labelRef: Ref<HTMLLabelElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
   optionsRef: Ref<HTMLDivElement | null>
+
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ListboxOptionDataRef }[]>
   searchQuery: Ref<string>
@@ -79,6 +82,7 @@ export let Listbox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
+    horizontal: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
   },
   setup(props, { slots, attrs, emit }) {
@@ -95,6 +99,7 @@ export let Listbox = defineComponent({
     let api = {
       listboxState,
       value,
+      orientation: computed(() => (props.horizontal ? 'horizontal' : 'vertical')),
       labelRef,
       buttonRef,
       optionsRef,
@@ -206,7 +211,7 @@ export let Listbox = defineComponent({
     return () => {
       let slot = { open: listboxState.value === ListboxStates.Open, disabled: props.disabled }
       return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled']),
+        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
         slot,
         slots,
         attrs,
@@ -362,6 +367,7 @@ export let ListboxOptions = defineComponent({
           ? undefined
           : api.options.value[api.activeOptionIndex.value]?.id,
       'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+      'aria-orientation': api.orientation.value,
       id: this.id,
       onKeydown: this.handleKeyDown,
       role: 'listbox',
@@ -410,12 +416,15 @@ export let ListboxOptions = defineComponent({
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
-        case Keys.ArrowDown:
+        case match(api.orientation.value, {
+          vertical: Keys.ArrowDown,
+          horizontal: Keys.ArrowRight,
+        }):
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.Next)
 
-        case Keys.ArrowUp:
+        case match(api.orientation.value, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.Previous)

@@ -263,9 +263,12 @@ export function assertListbox(
     attributes?: Record<string, string | null>
     textContent?: string
     state: ListboxState
+    orientation?: 'horizontal' | 'vertical'
   },
   listbox = getListbox()
 ) {
+  let { orientation = 'vertical' } = options
+
   try {
     switch (options.state) {
       case ListboxState.InvisibleHidden:
@@ -274,6 +277,7 @@ export function assertListbox(
         assertHidden(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
@@ -289,6 +293,7 @@ export function assertListbox(
         assertVisible(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
