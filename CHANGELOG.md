@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add new `Tabs` component ([#674](https://github.com/tailwindlabs/headlessui/pull/674))
+- Make `Disclosure.Button` close the disclosure inside a `Disclosure.Panel` ([#682](https://github.com/tailwindlabs/headlessui/pull/682))
 
 ## [Unreleased - Vue]
 
 ### Added
 
 - Add new `Tabs` component ([#674](https://github.com/tailwindlabs/headlessui/pull/674))
+- Make `DisclosureButton` close the disclosure inside a `DisclosurePanel` ([#682](https://github.com/tailwindlabs/headlessui/pull/682))
 
 ## [@headlessui/react@v1.3.0] - 2021-06-21
 
