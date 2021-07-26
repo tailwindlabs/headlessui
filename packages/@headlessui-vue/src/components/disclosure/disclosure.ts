@@ -23,6 +23,10 @@ interface StateDefinition {
 
   // State mutators
   toggleDisclosure(): void
+  closeDisclosure(): void
+
+  // Exposed functions
+  close(focusableElement: HTMLElement | Ref<HTMLElement | null>): void
 }
 
 let DisclosureContext = Symbol('DisclosureContext') as InjectionKey<StateDefinition>
@@ -74,6 +78,23 @@ export let Disclosure = defineComponent({
           [DisclosureStates.Closed]: DisclosureStates.Open,
         })
       },
+      closeDisclosure() {
+        if (disclosureState.value === DisclosureStates.Closed) return
+        disclosureState.value = DisclosureStates.Closed
+      },
+      close(focusableElement: HTMLElement | Ref<HTMLElement | null>) {
+        api.closeDisclosure()
+
+        let restoreElement = (() => {
+          if (!focusableElement) return dom(api.button)
+          if (focusableElement instanceof HTMLElement) return focusableElement
+          if (focusableElement.value instanceof HTMLElement) return dom(focusableElement)
+
+          return dom(api.button)
+        })()
+
+        restoreElement?.focus()
+      },
     } as StateDefinition
 
     provide(DisclosureContext, api)
@@ -88,7 +109,7 @@ export let Disclosure = defineComponent({
 
     return () => {
       let { defaultOpen: _, ...passThroughProps } = props
-      let slot = { open: disclosureState.value === DisclosureStates.Open }
+      let slot = { open: disclosureState.value === DisclosureStates.Open, close: api.close }
       return render({ props: passThroughProps, slot, slots, attrs, name: 'Disclosure' })
     }
   },
@@ -204,7 +225,7 @@ export let DisclosurePanel = defineComponent({
   render() {
     let api = useDisclosureContext('DisclosurePanel')
 
-    let slot = { open: api.disclosureState.value === DisclosureStates.Open }
+    let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
     let propsWeControl = { id: this.id, ref: 'el' }
 
     return render({
@@ -231,6 +252,10 @@ export let DisclosurePanel = defineComponent({
       return api.disclosureState.value === DisclosureStates.Open
     })
 
-    return { id: api.panelId, el: api.panel, visible }
+    return {
+      id: api.panelId,
+      el: api.panel,
+      visible,
+    }
   },
 })
