@@ -44,6 +44,9 @@ interface StateDefinition {
   // State mutators
   togglePopover(): void
   closePopover(): void
+
+  // Exposed functions
+  close(focusableElement: HTMLElement | Ref<HTMLElement | null>): void
 }
 
 let PopoverContext = Symbol('PopoverContext') as InjectionKey<StateDefinition>
@@ -110,6 +113,19 @@ export let Popover = defineComponent({
         if (popoverState.value === PopoverStates.Closed) return
         popoverState.value = PopoverStates.Closed
       },
+      close(focusableElement: HTMLElement | Ref<HTMLElement | null>) {
+        api.closePopover()
+
+        let restoreElement = (() => {
+          if (!focusableElement) return dom(api.button)
+          if (focusableElement instanceof HTMLElement) return focusableElement
+          if (focusableElement.value instanceof HTMLElement) return dom(focusableElement)
+
+          return dom(api.button)
+        })()
+
+        restoreElement?.focus()
+      },
     } as StateDefinition
 
     provide(PopoverContext, api)
@@ -175,7 +191,7 @@ export let Popover = defineComponent({
     })
 
     return () => {
-      let slot = { open: popoverState.value === PopoverStates.Open }
+      let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }
       return render({ props, slot, slots, attrs, name: 'Popover' })
     }
   },
@@ -427,7 +443,11 @@ export let PopoverPanel = defineComponent({
   render() {
     let api = usePopoverContext('PopoverPanel')
 
-    let slot = { open: api.popoverState.value === PopoverStates.Open }
+    let slot = {
+      open: api.popoverState.value === PopoverStates.Open,
+      close: api.close,
+    }
+
     let propsWeControl = {
       ref: 'el',
       id: this.id,
