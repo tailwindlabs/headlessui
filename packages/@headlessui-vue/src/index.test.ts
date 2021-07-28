@@ -57,11 +57,11 @@ it('should expose the correct components', () => {
     'SwitchDescription',
 
     // Tabs
-    'Tabs',
-    'TabsList',
-    'TabsTab',
-    'TabsPanels',
-    'TabsPanel',
+    'TabGroup',
+    'TabList',
+    'Tab',
+    'TabPanels',
+    'TabPanel',
 
     // Transition
     'TransitionChild',

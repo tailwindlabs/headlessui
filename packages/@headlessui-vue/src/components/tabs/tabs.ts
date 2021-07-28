@@ -40,7 +40,7 @@ function useTabsContext(component: string) {
   let context = inject(TabsContext, null)
 
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Tabs /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <TabGroup /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useTabsContext)
     throw err
   }
@@ -50,8 +50,8 @@ function useTabsContext(component: string) {
 
 // ---
 
-export let Tabs = defineComponent({
-  name: 'Tabs',
+export let TabGroup = defineComponent({
+  name: 'TabGroup',
   emits: ['change'],
   props: {
     as: { type: [Object, String], default: 'template' },
@@ -130,7 +130,7 @@ export let Tabs = defineComponent({
         slot,
         slots,
         attrs,
-        name: 'Tabs',
+        name: 'TabGroup',
       })
     }
   },
@@ -138,13 +138,13 @@ export let Tabs = defineComponent({
 
 // ---
 
-export let TabsList = defineComponent({
-  name: 'TabsList',
+export let TabList = defineComponent({
+  name: 'TabList',
   props: {
     as: { type: [Object, String], default: 'div' },
   },
   setup(props, { attrs, slots }) {
-    let api = useTabsContext('TabsList')
+    let api = useTabsContext('TabList')
 
     return () => {
       let slot = { selectedIndex: api.selectedIndex.value }
@@ -160,7 +160,7 @@ export let TabsList = defineComponent({
         slot,
         attrs,
         slots,
-        name: 'TabsList',
+        name: 'TabList',
       })
     }
   },
@@ -168,14 +168,14 @@ export let TabsList = defineComponent({
 
 // ---
 
-export let TabsTab = defineComponent({
-  name: 'TabsTab',
+export let Tab = defineComponent({
+  name: 'Tab',
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
   },
   render() {
-    let api = useTabsContext('TabsTab')
+    let api = useTabsContext('Tab')
 
     let slot = { selected: this.selected }
     let propsWeControl = {
@@ -201,11 +201,11 @@ export let TabsTab = defineComponent({
       slot,
       attrs: this.$attrs,
       slots: this.$slots,
-      name: 'TabsTab',
+      name: 'Tab',
     })
   },
   setup(props, { attrs }) {
-    let api = useTabsContext('TabsTab')
+    let api = useTabsContext('Tab')
     let id = `headlessui-tabs-tab-${useId()}`
 
     let tabRef = ref()
@@ -284,13 +284,13 @@ export let TabsTab = defineComponent({
 
 // ---
 
-export let TabsPanels = defineComponent({
-  name: 'TabsPanels',
+export let TabPanels = defineComponent({
+  name: 'TabPanels',
   props: {
     as: { type: [Object, String], default: 'div' },
   },
   setup(props, { slots, attrs }) {
-    let api = useTabsContext('TabsPanels')
+    let api = useTabsContext('TabPanels')
 
     return () => {
       let slot = { selectedIndex: api.selectedIndex.value }
@@ -300,21 +300,21 @@ export let TabsPanels = defineComponent({
         slot,
         attrs,
         slots,
-        name: 'TabsPanels',
+        name: 'TabPanels',
       })
     }
   },
 })
 
-export let TabsPanel = defineComponent({
-  name: 'TabsPanel',
+export let TabPanel = defineComponent({
+  name: 'TabPanel',
   props: {
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = useTabsContext('TabsPanel')
+    let api = useTabsContext('TabPanel')
 
     let slot = { selected: this.selected }
     let propsWeControl = {
@@ -336,11 +336,11 @@ export let TabsPanel = defineComponent({
       slots: this.$slots,
       features: Features.Static | Features.RenderStrategy,
       visible: this.selected,
-      name: 'TabsPanel',
+      name: 'TabPanel',
     })
   },
   setup() {
-    let api = useTabsContext('TabsPanel')
+    let api = useTabsContext('TabPanel')
     let id = `headlessui-tabs-panel-${useId()}`
 
     let panelRef = ref()
