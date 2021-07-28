@@ -1,6 +1,6 @@
 import { defineComponent, nextTick } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
-import { Tabs, TabsList, TabsTab, TabsPanels, TabsPanel } from './tabs'
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   assertActiveElement,
@@ -21,7 +21,7 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
-  let defaultComponents = { Tabs, TabsList, TabsTab, TabsPanels, TabsPanel }
+  let defaultComponents = { TabGroup, TabList, Tab, TabPanels, TabPanel }
 
   if (typeof input === 'string') {
     return render(defineComponent({ template: input, components: defaultComponents }))
@@ -38,35 +38,35 @@ function renderTemplate(input: string | Partial<Parameters<typeof defineComponen
 
 describe('safeguards', () => {
   it.each([
-    ['TabsList', TabsList],
-    ['TabsTab', TabsTab],
-    ['TabsPanels', TabsPanels],
-    ['TabsPanel', TabsPanel],
+    ['TabList', TabList],
+    ['Tab', Tab],
+    ['TabPanels', TabPanels],
+    ['TabPanel', TabPanel],
   ])(
-    'should error when we are using a <%s /> without a parent <Tabs /> component',
+    'should error when we are using a <%s /> without a parent <TabGroup /> component',
     suppressConsoleLogs((name, Component) => {
       expect(() => render(Component)).toThrowError(
-        `<${name} /> is missing a parent <Tabs /> component.`
+        `<${name} /> is missing a parent <TabGroup /> component.`
       )
     })
   )
 
-  it('should be possible to render Tabs without crashing', async () => {
+  it('should be possible to render TabGroup without crashing', async () => {
     renderTemplate(
       html`
-        <Tabs>
-          <TabsList>
-            <TabsTab>Tab 1</TabsTab>
-            <TabsTab>Tab 2</TabsTab>
-            <TabsTab>Tab 3</TabsTab>
-          </TabsList>
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-          <TabsPanels>
-            <TabsPanel>Content 1</TabsPanel>
-            <TabsPanel>Content 2</TabsPanel>
-            <TabsPanel>Content 3</TabsPanel>
-          </TabsPanels>
-        </Tabs>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
       `
     )
 
@@ -77,22 +77,22 @@ describe('safeguards', () => {
 })
 
 describe('Rendering', () => {
-  it('should be possible to render the TabsPanels first, then the TabsList', async () => {
+  it('should be possible to render the TabPanels first, then the TabList', async () => {
     renderTemplate(
       html`
-        <Tabs>
-          <TabsPanels>
-            <TabsPanel>Content 1</TabsPanel>
-            <TabsPanel>Content 2</TabsPanel>
-            <TabsPanel>Content 3</TabsPanel>
-          </TabsPanels>
+        <TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
 
-          <TabsList>
-            <TabsTab>Tab 1</TabsTab>
-            <TabsTab>Tab 2</TabsTab>
-            <TabsTab>Tab 3</TabsTab>
-          </TabsList>
-        </Tabs>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+        </TabGroup>
       `
     )
 
@@ -105,21 +105,21 @@ describe('Rendering', () => {
     it('should expose the `selectedIndex` on the `Tabs` component', async () => {
       renderTemplate(
         html`
-          <Tabs v-slot="data">
+          <TabGroup v-slot="data">
             <pre id="exposed">{{JSON.stringify(data)}}</pre>
 
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
         `
       )
 
@@ -136,23 +136,23 @@ describe('Rendering', () => {
       )
     })
 
-    it('should expose the `selectedIndex` on the `TabsList` component', async () => {
+    it('should expose the `selectedIndex` on the `TabList` component', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList v-slot="data">
+          <TabGroup>
+            <TabList v-slot="data">
               <pre id="exposed">{{JSON.stringify(data)}}</pre>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
         `
       )
 
@@ -169,23 +169,23 @@ describe('Rendering', () => {
       )
     })
 
-    it('should expose the `selectedIndex` on the `TabsPanels` component', async () => {
+    it('should expose the `selectedIndex` on the `TabPanels` component', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels v-slot="data">
+            <TabPanels v-slot="data">
               <pre id="exposed">{{JSON.stringify(data)}}</pre>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
         `
       )
 
@@ -202,31 +202,31 @@ describe('Rendering', () => {
       )
     })
 
-    it('should expose the `selected` state on the `TabsTab` components', async () => {
+    it('should expose the `selected` state on the `Tab` components', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab v-slot="data">
+          <TabGroup>
+            <TabList>
+              <Tab v-slot="data">
                 <pre data-tab="0">{{JSON.stringify(data)}}</pre>
                 <span>Tab 1</span>
-              </TabsTab>
-              <TabsTab v-slot="data">
+              </Tab>
+              <Tab v-slot="data">
                 <pre data-tab="1">{{JSON.stringify(data)}}</pre>
                 <span>Tab 2</span>
-              </TabsTab>
-              <TabsTab v-slot="data">
+              </Tab>
+              <Tab v-slot="data">
                 <pre data-tab="2">{{JSON.stringify(data)}}</pre>
                 <span>Tab 3</span>
-              </TabsTab>
-            </TabsList>
+              </Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
         `
       )
 
@@ -255,31 +255,31 @@ describe('Rendering', () => {
       )
     })
 
-    it('should expose the `selected` state on the `TabsPanel` components', async () => {
+    it('should expose the `selected` state on the `TabPanel` components', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel :unmount="false" v-slot="data">
+            <TabPanels>
+              <TabPanel :unmount="false" v-slot="data">
                 <pre data-panel="0">{{JSON.stringify(data)}}</pre>
                 <span>Content 1</span>
-              </TabsPanel>
-              <TabsPanel :unmount="false" v-slot="data">
+              </TabPanel>
+              <TabPanel :unmount="false" v-slot="data">
                 <pre data-panel="1">{{JSON.stringify(data)}}</pre>
                 <span>Content 2</span>
-              </TabsPanel>
-              <TabsPanel :unmount="false" v-slot="data">
+              </TabPanel>
+              <TabPanel :unmount="false" v-slot="data">
                 <pre data-panel="2">{{JSON.stringify(data)}}</pre>
                 <span>Content 3</span>
-              </TabsPanel>
-            </TabsPanels>
-          </Tabs>
+              </TabPanel>
+            </TabPanels>
+          </TabGroup>
         `
       )
 
@@ -313,19 +313,19 @@ describe('Rendering', () => {
     it('should jump to the nearest tab when the defaultIndex is out of bounds (-2)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="-2">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="-2">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -344,19 +344,19 @@ describe('Rendering', () => {
     it('should jump to the nearest tab when the defaultIndex is out of bounds (+5)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="5">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="5">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -375,19 +375,19 @@ describe('Rendering', () => {
     it('should jump to the next available tab when the defaultIndex is a disabled tab', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="0">
-            <TabsList>
-              <TabsTab disabled>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="0">
+            <TabList>
+              <Tab disabled>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -406,19 +406,19 @@ describe('Rendering', () => {
     it('should jump to the next available tab when the defaultIndex is a disabled tab and wrap around', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab disabled>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab disabled>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -441,19 +441,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to tab to the default initial first tab', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -484,19 +484,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to tab to the default index tab', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -529,19 +529,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the next item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -564,19 +564,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the next item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -603,19 +603,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the end (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -644,19 +644,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the end (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -693,19 +693,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go right when in vertical mode (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -726,19 +726,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go right when in vertical mode (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -763,19 +763,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the previous item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -798,19 +798,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the previous item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2" manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2" manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -837,19 +837,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the beginning (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -878,19 +878,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the beginning (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2" manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2" manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -927,19 +927,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go left when in vertical mode (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -960,19 +960,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go left when in vertical mode (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -998,19 +998,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the next item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1033,19 +1033,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the next item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1072,19 +1072,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the end (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1113,19 +1113,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the end (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs vertical manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup vertical manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1162,19 +1162,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go down when in horizontal mode (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1195,19 +1195,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go down when in horizontal mode (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1233,19 +1233,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the previous item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2" vertical>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2" vertical>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1268,19 +1268,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the previous item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2" vertical manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2" vertical manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1307,19 +1307,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the beginning (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2" vertical>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2" vertical>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1348,19 +1348,19 @@ describe('Keyboard interactions', () => {
     it('should wrap around at the beginning (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="2" vertical manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="2" vertical manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1397,19 +1397,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go left when in vertical mode (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1430,19 +1430,19 @@ describe('Keyboard interactions', () => {
     it('should not be possible to go left when in vertical mode (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1468,19 +1468,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1500,19 +1500,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1" manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1" manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1536,19 +1536,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1568,19 +1568,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1" manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1" manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1604,19 +1604,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1636,19 +1636,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1" manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1" manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1672,19 +1672,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1">
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1704,19 +1704,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
       renderTemplate(
         html`
-          <Tabs :defaultIndex="1" manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup :defaultIndex="1" manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1740,19 +1740,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to activate the focused tab', async () => {
       renderTemplate(
         html`
-          <Tabs manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1776,19 +1776,19 @@ describe('Keyboard interactions', () => {
     it('should be possible to activate the focused tab', async () => {
       renderTemplate(
         html`
-          <Tabs manual>
-            <TabsList>
-              <TabsTab>Tab 1</TabsTab>
-              <TabsTab>Tab 2</TabsTab>
-              <TabsTab>Tab 3</TabsTab>
-            </TabsList>
+          <TabGroup manual>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
 
-            <TabsPanels>
-              <TabsPanel>Content 1</TabsPanel>
-              <TabsPanel>Content 2</TabsPanel>
-              <TabsPanel>Content 3</TabsPanel>
-            </TabsPanels>
-          </Tabs>
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
 
           <button>after</button>
         `
@@ -1813,19 +1813,19 @@ describe('Mouse interactions', () => {
   it('should be possible to click on a tab to focus it', async () => {
     renderTemplate(
       html`
-        <Tabs :defaultIndex="1">
-          <TabsList>
-            <TabsTab>Tab 1</TabsTab>
-            <TabsTab>Tab 2</TabsTab>
-            <TabsTab>Tab 3</TabsTab>
-          </TabsList>
+        <TabGroup :defaultIndex="1">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-          <TabsPanels>
-            <TabsPanel>Content 1</TabsPanel>
-            <TabsPanel>Content 2</TabsPanel>
-            <TabsPanel>Content 3</TabsPanel>
-          </TabsPanels>
-        </Tabs>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
         <button>after</button>
       `
@@ -1850,19 +1850,19 @@ describe('Mouse interactions', () => {
   it('should be a no-op when clicking on a disabled tab', async () => {
     renderTemplate(
       html`
-        <Tabs :defaultIndex="1">
-          <TabsList>
-            <TabsTab disabled>Tab 1</TabsTab>
-            <TabsTab>Tab 2</TabsTab>
-            <TabsTab>Tab 3</TabsTab>
-          </TabsList>
+        <TabGroup :defaultIndex="1">
+          <TabList>
+            <Tab disabled>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-          <TabsPanels>
-            <TabsPanel>Content 1</TabsPanel>
-            <TabsPanel>Content 2</TabsPanel>
-            <TabsPanel>Content 3</TabsPanel>
-          </TabsPanels>
-        </Tabs>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
         <button>after</button>
       `
@@ -1885,19 +1885,19 @@ it('should trigger the `onChange` when the tab changes', async () => {
 
   renderTemplate({
     template: html`
-      <Tabs @change="changes">
-        <TabsList>
-          <TabsTab>Tab 1</TabsTab>
-          <TabsTab>Tab 2</TabsTab>
-          <TabsTab>Tab 3</TabsTab>
-        </TabsList>
+      <TabGroup @change="changes">
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-        <TabsPanels>
-          <TabsPanel>Content 1</TabsPanel>
-          <TabsPanel>Content 2</TabsPanel>
-          <TabsPanel>Content 3</TabsPanel>
-        </TabsPanels>
-      </Tabs>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
       <button>after</button>
     `,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Tabs, Switch } from '@headlessui/react'
+import { Tab, Switch } from '@headlessui/react'
 
 import { classNames } from '../../src/utils/class-names'
 
@@ -11,7 +11,7 @@ export default function Home() {
     { name: 'Billing', content: 'Tab content for billing' },
   ]
 
-  let [manual, setManual] = useState(true)
+  let [manual, setManual] = useState(false)
 
   return (
     <div className="flex flex-col items-start w-screen h-full p-12 bg-gray-50 space-y-12">
@@ -40,10 +40,10 @@ export default function Home() {
         </Switch>
       </Switch.Group>
 
-      <Tabs className="flex flex-col max-w-3xl w-full" as="div" manual={manual}>
-        <Tabs.List className="relative z-0 rounded-lg shadow flex divide-x divide-gray-200">
+      <Tab.Group className="flex flex-col max-w-3xl w-full" as="div" manual={manual}>
+        <Tab.List className="relative z-0 rounded-lg shadow flex divide-x divide-gray-200">
           {tabs.map((tab, tabIdx) => (
-            <Tabs.Tab
+            <Tab
               key={tab.name}
               disabled={tab.disabled}
               className={({ selected }) =>
@@ -69,18 +69,18 @@ export default function Home() {
                   />
                 </>
               )}
-            </Tabs.Tab>
+            </Tab>
           ))}
-        </Tabs.List>
+        </Tab.List>
 
-        <Tabs.Panels className="mt-4">
+        <Tab.Panels className="mt-4">
           {tabs.map(tab => (
-            <Tabs.Panel className="bg-white rounded-lg p-4 shadow" key={tab.name}>
+            <Tab.Panel className="bg-white rounded-lg p-4 shadow" key={tab.name}>
               {tab.content}
-            </Tabs.Panel>
+            </Tab.Panel>
           ))}
-        </Tabs.Panels>
-      </Tabs>
+        </Tab.Panels>
+      </Tab.Group>
     </div>
   )
 }
