@@ -104,7 +104,7 @@ TabsContext.displayName = 'TabsContext'
 function useTabsContext(component: string) {
   let context = useContext(TabsContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Tabs.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Tab.Group /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useTabsContext)
     throw err
   }
@@ -122,7 +122,7 @@ interface TabsRenderPropArg {
   selectedIndex: number
 }
 
-export function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
+function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
   props: Props<TTag, TabsRenderPropArg> & {
     defaultIndex?: number
     onChange?: (index: number) => void
@@ -230,7 +230,7 @@ type ListPropsWeControl = 'role' | 'aria-orientation'
 function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
   props: Props<TTag, ListRenderPropArg, ListPropsWeControl> & {}
 ) {
-  let [{ selectedIndex, orientation }] = useTabsContext([Tabs.name, List.name].join('.'))
+  let [{ selectedIndex, orientation }] = useTabsContext([Tab.name, List.name].join('.'))
 
   let slot = { selectedIndex }
   let propsWeControl = {
@@ -255,7 +255,7 @@ interface TabRenderPropArg {
 }
 type TabPropsWeControl = 'id' | 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
 
-function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
+export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   props: Props<TTag, TabRenderPropArg, TabPropsWeControl>
 ) {
   let id = `headlessui-tabs-tab-${useId()}`
@@ -263,7 +263,7 @@ function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   let [
     { selectedIndex, tabs, panels, orientation, activation },
     { dispatch, change },
-  ] = useTabsContext([Tabs.name, Tab.name].join('.'))
+  ] = useTabsContext(Tab.name)
 
   let internalTabRef = useRef<HTMLElement>(null)
   let tabRef = useSyncRefs(internalTabRef, element => {
@@ -371,7 +371,7 @@ interface PanelsRenderPropArg {
 function Panels<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
   props: Props<TTag, PanelsRenderPropArg>
 ) {
-  let [{ selectedIndex }] = useTabsContext([Tabs.name, Panels.name].join('.'))
+  let [{ selectedIndex }] = useTabsContext([Tab.name, Panels.name].join('.'))
 
   let slot = useMemo(() => ({ selectedIndex }), [selectedIndex])
 
@@ -397,7 +397,7 @@ function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     PropsForFeatures<typeof PanelRenderFeatures>
 ) {
   let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext(
-    [Tabs.name, Panel.name].join('.')
+    [Tab.name, Panel.name].join('.')
   )
 
   let id = `headlessui-tabs-panel-${useId()}`
@@ -442,7 +442,7 @@ function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
 // ---
 
-Tabs.List = List
-Tabs.Tab = Tab
-Tabs.Panels = Panels
-Tabs.Panel = Panel
+Tab.Group = Tabs
+Tab.List = List
+Tab.Panels = Panels
+Tab.Panel = Panel
