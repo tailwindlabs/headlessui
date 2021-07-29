@@ -8,6 +8,8 @@ import {
   assertDisclosureButton,
   getDisclosureButton,
   getDisclosurePanel,
+  getByText,
+  assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
@@ -119,6 +121,112 @@ describe('Rendering', () => {
 
       assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
     })
+
+    it(
+      'should expose a close function that closes the disclosure',
+      suppressConsoleLogs(async () => {
+        renderTemplate(
+          html`
+            <Disclosure v-slot="{ close }">
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel>
+                <button @click="close()">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `
+        )
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the Disclosure.Button got the restored focus
+        assertActiveElement(getByText('Trigger'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a specific element',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button id="test">restoreable</button>
+            <Disclosure v-slot="{ close }">
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel>
+                <button @click="close(document.getElementById('test'))">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ document }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a ref',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button ref="elementRef">restoreable</button>
+            <Disclosure v-slot="{ close }">
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel>
+                <button @click="close(elementRef)">Close me</button>}
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ elementRef: ref() }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
   })
 
   describe('DisclosureButton', () => {
@@ -259,6 +367,112 @@ describe('Rendering', () => {
       assertDisclosureButton({ state: DisclosureState.InvisibleHidden })
       assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
     })
+
+    it(
+      'should expose a close function that closes the disclosure',
+      suppressConsoleLogs(async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel v-slot="{ close }">
+                <button @click="close()">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `
+        )
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the Disclosure.Button got the restored focus
+        assertActiveElement(getByText('Trigger'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a specific element',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button id="test">restoreable</button>
+            <Disclosure>
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel v-slot="{ close }">
+                <button @click="close(document.getElementById('test'))">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ document }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a ref',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button ref="elementRef">restoreable</button>
+            <Disclosure>
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel v-slot="{ close }">
+                <button @click="close(elementRef)">Close me</button>}
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ elementRef: ref() }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
   })
 })
 
@@ -713,6 +927,40 @@ describe('Mouse interactions', () => {
       // Verify it is closed
       assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
       assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to close the Disclosure by clicking on a DisclosureButton inside a DisclosurePanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate(
+        html`
+          <Disclosure>
+            <DisclosureButton>Open</DisclosureButton>
+            <DisclosurePanel>
+              <DisclosureButton>Close</DisclosureButton>
+            </DisclosurePanel>
+          </Disclosure>
+        `
+      )
+
+      // Open the disclosure
+      await click(getDisclosureButton())
+
+      let closeBtn = getByText('Close')
+
+      expect(closeBtn).not.toHaveAttribute('id')
+      expect(closeBtn).not.toHaveAttribute('aria-controls')
+      expect(closeBtn).not.toHaveAttribute('aria-expanded')
+
+      // The close button should close the disclosure
+      await click(closeBtn)
+
+      // Verify it is closed
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Verify we restored the Open button
+      assertActiveElement(getDisclosureButton())
     })
   )
 })

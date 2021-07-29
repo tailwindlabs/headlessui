@@ -263,9 +263,12 @@ export function assertListbox(
     attributes?: Record<string, string | null>
     textContent?: string
     state: ListboxState
+    orientation?: 'horizontal' | 'vertical'
   },
   listbox = getListbox()
 ) {
+  let { orientation = 'vertical' } = options
+
   try {
     switch (options.state) {
       case ListboxState.InvisibleHidden:
@@ -274,6 +277,7 @@ export function assertListbox(
         assertHidden(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
@@ -289,6 +293,7 @@ export function assertListbox(
         assertVisible(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
@@ -1181,6 +1186,88 @@ export function assertRadioGroupLabel(
     }
   } catch (err) {
     Error.captureStackTrace(err, assertRadioGroupLabel)
+    throw err
+  }
+}
+
+// ---
+
+export function getTabList(): HTMLElement | null {
+  return document.querySelector('[role="tablist"]')
+}
+
+export function getTabs(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-tabs-tab-"]'))
+}
+
+export function getPanels(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-tabs-panel-"]'))
+}
+
+// ---
+
+export function assertTabs(
+  {
+    active,
+    orientation = 'horizontal',
+  }: {
+    active: number
+    orientation?: 'vertical' | 'horizontal'
+  },
+  list = getTabList(),
+  tabs = getTabs(),
+  panels = getPanels()
+) {
+  try {
+    if (list === null) return expect(list).not.toBe(null)
+
+    expect(list).toHaveAttribute('role', 'tablist')
+    expect(list).toHaveAttribute('aria-orientation', orientation)
+
+    let activeTab = tabs.find(tab => tab.dataset.headlessuiIndex === '' + active)
+    let activePanel = panels.find(panel => panel.dataset.headlessuiIndex === '' + active)
+
+    for (let tab of tabs) {
+      expect(tab).toHaveAttribute('id')
+      expect(tab).toHaveAttribute('role', 'tab')
+      expect(tab).toHaveAttribute('type', 'button')
+
+      if (tab === activeTab) {
+        expect(tab).toHaveAttribute('aria-selected', 'true')
+        expect(tab).toHaveAttribute('tabindex', '0')
+      } else {
+        expect(tab).toHaveAttribute('aria-selected', 'false')
+        expect(tab).toHaveAttribute('tabindex', '-1')
+      }
+
+      if (tab.hasAttribute('aria-controls')) {
+        let controlsId = tab.getAttribute('aria-controls')!
+        let panel = document.getElementById(controlsId)
+
+        expect(panel).not.toBe(null)
+        expect(panels).toContain(panel)
+        expect(panel).toHaveAttribute('aria-labelledby', tab.id)
+      }
+    }
+
+    for (let panel of panels) {
+      expect(panel).toHaveAttribute('id')
+      expect(panel).toHaveAttribute('role', 'tabpanel')
+
+      let controlledById = panel.getAttribute('aria-labelledby')!
+      let tab = document.getElementById(controlledById)
+
+      expect(tabs).toContain(tab)
+      expect(tab).toHaveAttribute('aria-controls', panel.id)
+
+      if (panel === activePanel) {
+        expect(panel).toHaveAttribute('tabindex', '0')
+      } else {
+        expect(panel).toHaveAttribute('tabindex', '-1')
+      }
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertTabs)
     throw err
   }
 }
