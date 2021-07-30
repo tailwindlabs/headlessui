@@ -7,7 +7,7 @@ function assertNever(x: never): never {
 // ---
 
 export function getMenuButton(): HTMLElement | null {
-  return document.querySelector('button,[role="button"]')
+  return document.querySelector('button,[role="button"],[id^="headlessui-menu-button-"]')
 }
 
 export function getMenuButtons(): HTMLElement[] {
@@ -226,7 +226,7 @@ export function getListboxLabel(): HTMLElement | null {
 }
 
 export function getListboxButton(): HTMLElement | null {
-  return document.querySelector('button,[role="button"]')
+  return document.querySelector('button,[role="button"],[id^="headlessui-listbox-button-"]')
 }
 
 export function getListboxButtons(): HTMLElement[] {

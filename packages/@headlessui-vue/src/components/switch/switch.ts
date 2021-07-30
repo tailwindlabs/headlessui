@@ -7,6 +7,7 @@ import {
   // Types
   InjectionKey,
   Ref,
+  computed,
 } from 'vue'
 
 import { render } from '../../utils/render'
@@ -14,6 +15,7 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 type StateDefinition = {
   // State
@@ -63,13 +65,12 @@ export let Switch = defineComponent({
     modelValue: { type: Boolean, default: false },
   },
   render() {
-    let api = inject(GroupContext, null)
-
     let slot = { checked: this.$props.modelValue }
     let propsWeControl = {
       id: this.id,
-      ref: api === null ? undefined : api.switchRef,
+      ref: 'el',
       role: 'switch',
+      type: this.type,
       tabIndex: 0,
       'aria-checked': this.$props.modelValue,
       'aria-labelledby': this.labelledby,
@@ -77,10 +78,6 @@ export let Switch = defineComponent({
       onClick: this.handleClick,
       onKeyup: this.handleKeyUp,
       onKeypress: this.handleKeyPress,
-    }
-
-    if (this.$props.as === 'button') {
-      Object.assign(propsWeControl, { type: 'button' })
     }
 
     return render({
@@ -91,7 +88,7 @@ export let Switch = defineComponent({
       name: 'Switch',
     })
   },
-  setup(props, { emit }) {
+  setup(props, { emit, attrs }) {
     let api = inject(GroupContext, null)
     let id = `headlessui-switch-${useId()}`
 
@@ -99,9 +96,16 @@ export let Switch = defineComponent({
       emit('update:modelValue', !props.modelValue)
     }
 
+    let internalSwitchRef = ref(null)
+    let switchRef = api === null ? internalSwitchRef : api.switchRef
+
     return {
       id,
-      el: api?.switchRef,
+      el: switchRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        switchRef
+      ),
       labelledby: api?.labelledby,
       describedby: api?.describedby,
       handleClick(event: MouseEvent) {

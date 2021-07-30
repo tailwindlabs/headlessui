@@ -20,6 +20,7 @@ import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { match } from '../../utils/match'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum MenuStates {
   Open,
@@ -183,7 +184,7 @@ export let MenuButton = defineComponent({
     let propsWeControl = {
       ref: 'el',
       id: this.id,
-      type: 'button',
+      type: this.type,
       'aria-haspopup': true,
       'aria-controls': dom(api.itemsRef)?.id,
       'aria-expanded': this.$props.disabled ? undefined : api.menuState.value === MenuStates.Open,
@@ -200,7 +201,7 @@ export let MenuButton = defineComponent({
       name: 'MenuButton',
     })
   },
-  setup(props) {
+  setup(props, { attrs }) {
     let api = useMenuContext('MenuButton')
     let id = `headlessui-menu-button-${useId()}`
 
@@ -256,7 +257,17 @@ export let MenuButton = defineComponent({
       }
     }
 
-    return { id, el: api.buttonRef, handleKeyDown, handleKeyUp, handleClick }
+    return {
+      id,
+      el: api.buttonRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        api.buttonRef
+      ),
+      handleKeyDown,
+      handleKeyUp,
+      handleClick,
+    }
   },
 })
 

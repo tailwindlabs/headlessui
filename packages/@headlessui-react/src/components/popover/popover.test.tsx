@@ -23,7 +23,7 @@ jest.mock('../../hooks/use-id')
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -319,6 +319,66 @@ describe('Rendering', () => {
         assertPopoverPanel({ state: PopoverState.Visible })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        render(
+          <Popover>
+            <Popover.Button>Trigger</Popover.Button>
+          </Popover>
+        )
+
+        expect(getPopoverButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        render(
+          <Popover>
+            <Popover.Button type="submit">Trigger</Popover.Button>
+          </Popover>
+        )
+
+        expect(getPopoverButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+        let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+          <button ref={ref} {...props} />
+        ))
+
+        render(
+          <Popover>
+            <Popover.Button as={CustomButton}>Trigger</Popover.Button>
+          </Popover>
+        )
+
+        expect(getPopoverButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        render(
+          <Popover>
+            <Popover.Button as="div">Trigger</Popover.Button>
+          </Popover>
+        )
+
+        expect(getPopoverButton()).not.toHaveAttribute('type')
+      })
+
+      it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+        let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+          <div ref={ref} {...props} />
+        ))
+
+        render(
+          <Popover>
+            <Popover.Button as={CustomButton}>Trigger</Popover.Button>
+          </Popover>
+        )
+
+        expect(getPopoverButton()).not.toHaveAttribute('type')
+      })
+    })
   })
 
   describe('Popover.Panel', () => {

@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
 
   // Types
   Dispatch,
@@ -26,6 +27,7 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum DisclosureStates {
   Open,
@@ -226,7 +228,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   ref: Ref<HTMLButtonElement>
 ) {
   let [state, dispatch] = useDisclosureContext([Disclosure.name, Button.name].join('.'))
-  let buttonRef = useSyncRefs(ref)
+  let internalButtonRef = useRef<HTMLButtonElement | null>(null)
+  let buttonRef = useSyncRefs(internalButtonRef, ref)
 
   let panelContext = useDisclosurePanelContext()
   let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
@@ -290,13 +293,14 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     [state]
   )
 
+  let type = useResolveButtonType(props, internalButtonRef)
   let passthroughProps = props
   let propsWeControl = isWithinPanel
-    ? { type: 'button', onKeyDown: handleKeyDown, onClick: handleClick }
+    ? { ref: buttonRef, type, onKeyDown: handleKeyDown, onClick: handleClick }
     : {
         ref: buttonRef,
         id: state.buttonId,
-        type: 'button',
+        type,
         'aria-expanded': props.disabled
           ? undefined
           : state.disclosureState === DisclosureStates.Open,

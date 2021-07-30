@@ -58,6 +58,66 @@ describe('Rendering', () => {
     )
     assertSwitch({ state: SwitchState.Off, label: 'Enable notifications' })
   })
+
+  describe('`type` attribute', () => {
+    it('should set the `type` to "button" by default', async () => {
+      render(
+        <Switch checked={false} onChange={console.log}>
+          Trigger
+        </Switch>
+      )
+
+      expect(getSwitch()).toHaveAttribute('type', 'button')
+    })
+
+    it('should not set the `type` to "button" if it already contains a `type`', async () => {
+      render(
+        <Switch checked={false} onChange={console.log} type="submit">
+          Trigger
+        </Switch>
+      )
+
+      expect(getSwitch()).toHaveAttribute('type', 'submit')
+    })
+
+    it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+      let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+        <button ref={ref} {...props} />
+      ))
+
+      render(
+        <Switch checked={false} onChange={console.log} as={CustomButton}>
+          Trigger
+        </Switch>
+      )
+
+      expect(getSwitch()).toHaveAttribute('type', 'button')
+    })
+
+    it('should not set the type if the "as" prop is not a "button"', async () => {
+      render(
+        <Switch checked={false} onChange={console.log} as="div">
+          Trigger
+        </Switch>
+      )
+
+      expect(getSwitch()).not.toHaveAttribute('type')
+    })
+
+    it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+      let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+        <div ref={ref} {...props} />
+      ))
+
+      render(
+        <Switch checked={false} onChange={console.log} as={CustomButton}>
+          Trigger
+        </Switch>
+      )
+
+      expect(getSwitch()).not.toHaveAttribute('type')
+    })
+  })
 })
 
 describe('Render composition', () => {

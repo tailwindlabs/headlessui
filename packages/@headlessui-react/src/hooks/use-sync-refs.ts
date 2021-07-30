@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react'
 
 export function useSyncRefs<TType>(
-  ...refs: (React.MutableRefObject<TType> | ((instance: TType) => void) | null)[]
+  ...refs: (React.MutableRefObject<TType | null> | ((instance: TType) => void) | null)[]
 ) {
   let cache = useRef(refs)
 
