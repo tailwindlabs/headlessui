@@ -353,6 +353,96 @@ describe('Rendering', () => {
         })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate(
+          jsx`
+            <Menu>
+              <MenuButton>Trigger</MenuButton>
+            </Menu>
+          `
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate(
+          jsx`
+            <Menu>
+              <MenuButton type="submit">
+                Trigger
+              </MenuButton>
+            </Menu>
+          `
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: jsx`
+              <Menu>
+                <MenuButton :as="CustomButton">
+                  Trigger
+                </MenuButton>
+              </Menu>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getMenuButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate(
+          jsx`
+            <Menu>
+              <MenuButton as="div">
+                Trigger
+              </MenuButton>
+            </Menu>
+          `
+        )
+
+        expect(getMenuButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: jsx`
+              <Menu>
+                <MenuButton :as="CustomButton">
+                  Trigger
+                </MenuButton>
+              </Menu>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getMenuButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('MenuItems', () => {

@@ -20,7 +20,7 @@ jest.mock('../../hooks/use-id')
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -296,6 +296,66 @@ describe('Rendering', () => {
         assertDisclosurePanel({ state: DisclosureState.Visible })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        render(
+          <Disclosure>
+            <Disclosure.Button>Trigger</Disclosure.Button>
+          </Disclosure>
+        )
+
+        expect(getDisclosureButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        render(
+          <Disclosure>
+            <Disclosure.Button type="submit">Trigger</Disclosure.Button>
+          </Disclosure>
+        )
+
+        expect(getDisclosureButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+        let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+          <button ref={ref} {...props} />
+        ))
+
+        render(
+          <Disclosure>
+            <Disclosure.Button as={CustomButton}>Trigger</Disclosure.Button>
+          </Disclosure>
+        )
+
+        expect(getDisclosureButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        render(
+          <Disclosure>
+            <Disclosure.Button as="div">Trigger</Disclosure.Button>
+          </Disclosure>
+        )
+
+        expect(getDisclosureButton()).not.toHaveAttribute('type')
+      })
+
+      it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+        let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+          <div ref={ref} {...props} />
+        ))
+
+        render(
+          <Disclosure>
+            <Disclosure.Button as={CustomButton}>Trigger</Disclosure.Button>
+          </Disclosure>
+        )
+
+        expect(getDisclosureButton()).not.toHaveAttribute('type')
+      })
+    })
   })
 
   describe('Disclosure.Panel', () => {

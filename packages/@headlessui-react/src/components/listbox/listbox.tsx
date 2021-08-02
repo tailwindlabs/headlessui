@@ -32,6 +32,7 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum ListboxStates {
   Open,
@@ -370,7 +371,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let propsWeControl = {
     ref: buttonRef,
     id,
-    type: 'button',
+    type: useResolveButtonType(props, state.buttonRef),
     'aria-haspopup': true,
     'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.disabled ? undefined : state.listboxState === ListboxStates.Open,

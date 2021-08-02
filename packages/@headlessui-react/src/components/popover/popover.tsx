@@ -35,6 +35,7 @@ import {
 } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum PopoverStates {
   Open,
@@ -309,6 +310,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     ref,
     isWithinPanel ? null : button => dispatch({ type: ActionTypes.SetButton, button })
   )
+  let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
 
   // TODO: Revisit when handling Tab/Shift+Tab when using Portal's
   let activeElementRef = useRef<Element | null>(null)
@@ -468,17 +470,19 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     [state]
   )
 
+  let type = useResolveButtonType(props, internalButtonRef)
   let passthroughProps = props
   let propsWeControl = isWithinPanel
     ? {
-        type: 'button',
+        ref: withinPanelButtonRef,
+        type,
         onKeyDown: handleKeyDown,
         onClick: handleClick,
       }
     : {
         ref: buttonRef,
         id: state.buttonId,
-        type: 'button',
+        type,
         'aria-expanded': props.disabled ? undefined : state.popoverState === PopoverStates.Open,
         'aria-controls': state.panel ? state.panelId : undefined,
         onKeyDown: handleKeyDown,

@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch } from 'vue'
+import { defineComponent, nextTick, ref, watch, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
@@ -327,6 +327,96 @@ describe('Rendering', () => {
         assertPopoverPanel({ state: PopoverState.Visible })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate(
+          html`
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+            </Popover>
+          `
+        )
+
+        expect(getPopoverButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate(
+          html`
+            <Popover>
+              <PopoverButton type="submit">
+                Trigger
+              </PopoverButton>
+            </Popover>
+          `
+        )
+
+        expect(getPopoverButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Popover>
+                <PopoverButton :as="CustomButton">
+                  Trigger
+                </PopoverButton>
+              </Popover>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getPopoverButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate(
+          html`
+            <Popover>
+              <PopoverButton as="div">
+                Trigger
+              </PopoverButton>
+            </Popover>
+          `
+        )
+
+        expect(getPopoverButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Popover>
+                <PopoverButton :as="CustomButton">
+                  Trigger
+                </PopoverButton>
+              </Popover>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getPopoverButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('PopoverPanel', () => {

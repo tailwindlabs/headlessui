@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch } from 'vue'
+import { defineComponent, nextTick, ref, watch, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -358,6 +358,101 @@ describe('Rendering', () => {
         assertListboxButtonLinkedWithListboxLabel()
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton>Trigger</ListboxButton>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        expect(getListboxButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton type="submit">
+                Trigger
+              </ListboxButton>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        expect(getListboxButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value">
+                <ListboxButton :as="CustomButton">
+                  Trigger
+                </ListboxButton>
+              </Listbox>
+            `,
+            setup: () => ({
+              value: ref(null),
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getListboxButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton as="div">
+                Trigger
+              </ListboxButton>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        expect(getListboxButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value">
+                <ListboxButton :as="CustomButton">
+                  Trigger
+                </ListboxButton>
+              </Listbox>
+            `,
+            setup: () => ({
+              value: ref(null),
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getListboxButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('ListboxOptions', () => {

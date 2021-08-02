@@ -416,6 +416,78 @@ describe('Rendering', () => {
       assertActiveElement(getByText('Tab 1'))
     })
   })
+
+  describe(`'Tab'`, () => {
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        render(
+          <Tab.Group>
+            <Tab.List>
+              <Tab>Trigger</Tab>
+            </Tab.List>
+          </Tab.Group>
+        )
+
+        expect(getTabs()[0]).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        render(
+          <Tab.Group>
+            <Tab.List>
+              <Tab type="submit">Trigger</Tab>
+            </Tab.List>
+          </Tab.Group>
+        )
+
+        expect(getTabs()[0]).toHaveAttribute('type', 'submit')
+      })
+
+      it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+        let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+          <button ref={ref} {...props} />
+        ))
+
+        render(
+          <Tab.Group>
+            <Tab.List>
+              <Tab as={CustomButton}>Trigger</Tab>
+            </Tab.List>
+          </Tab.Group>
+        )
+
+        expect(getTabs()[0]).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        render(
+          <Tab.Group>
+            <Tab.List>
+              <Tab as="div">Trigger</Tab>
+            </Tab.List>
+          </Tab.Group>
+        )
+
+        expect(getTabs()[0]).not.toHaveAttribute('type')
+      })
+
+      it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+        let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+          <div ref={ref} {...props} />
+        ))
+
+        render(
+          <Tab.Group>
+            <Tab.List>
+              <Tab as={CustomButton}>Trigger</Tab>
+            </Tab.List>
+          </Tab.Group>
+        )
+
+        expect(getTabs()[0]).not.toHaveAttribute('type')
+      })
+    })
+  })
 })
 
 describe('Keyboard interactions', () => {

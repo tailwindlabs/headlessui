@@ -27,6 +27,7 @@ import {
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum PopoverStates {
   Open,
@@ -211,14 +212,15 @@ export let PopoverButton = defineComponent({
     let slot = { open: api.popoverState.value === PopoverStates.Open }
     let propsWeControl = this.isWithinPanel
       ? {
-          type: 'button',
+          ref: 'el',
+          type: this.type,
           onKeydown: this.handleKeyDown,
           onClick: this.handleClick,
         }
       : {
           ref: 'el',
           id: api.buttonId,
-          type: 'button',
+          type: this.type,
           'aria-expanded': this.$props.disabled
             ? undefined
             : api.popoverState.value === PopoverStates.Open,
@@ -237,7 +239,7 @@ export let PopoverButton = defineComponent({
       name: 'PopoverButton',
     })
   },
-  setup(props) {
+  setup(props, { attrs }) {
     let api = usePopoverContext('PopoverButton')
 
     let groupContext = usePopoverGroupContext()
@@ -261,9 +263,21 @@ export let PopoverButton = defineComponent({
       true
     )
 
+    let elementRef = ref(null)
+
+    if (!isWithinPanel) {
+      watchEffect(() => {
+        api.button.value = elementRef.value
+      })
+    }
+
     return {
       isWithinPanel,
-      el: isWithinPanel ? null : api.button,
+      el: elementRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        elementRef
+      ),
       handleKeyDown(event: KeyboardEvent) {
         if (isWithinPanel) {
           if (api.popoverState.value === PopoverStates.Closed) return
@@ -373,7 +387,6 @@ export let PopoverButton = defineComponent({
           api.togglePopover()
         }
       },
-      handleFocus() {},
     }
   },
 })

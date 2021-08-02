@@ -184,6 +184,65 @@ describe('Rendering', () => {
         assertMenu({ state: MenuState.Visible })
       })
     )
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        render(
+          <Menu>
+            <Menu.Button type="submit">Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+        let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+          <button ref={ref} {...props} />
+        ))
+
+        render(
+          <Menu>
+            <Menu.Button as={CustomButton}>Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        render(
+          <Menu>
+            <Menu.Button as="div">Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).not.toHaveAttribute('type')
+      })
+
+      it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+        let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+          <div ref={ref} {...props} />
+        ))
+
+        render(
+          <Menu>
+            <Menu.Button as={CustomButton}>Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).not.toHaveAttribute('type')
+      })
+    })
   })
 
   describe('Menu.Items', () => {

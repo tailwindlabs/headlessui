@@ -1,5 +1,14 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#disclosure
-import { defineComponent, ref, provide, inject, InjectionKey, Ref, computed } from 'vue'
+import {
+  defineComponent,
+  ref,
+  provide,
+  inject,
+  InjectionKey,
+  Ref,
+  computed,
+  watchEffect,
+} from 'vue'
 
 import { Keys } from '../../keyboard'
 import { match } from '../../utils/match'
@@ -7,6 +16,7 @@ import { render, Features } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { dom } from '../../utils/dom'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum DisclosureStates {
   Open,
@@ -129,14 +139,15 @@ export let DisclosureButton = defineComponent({
     let slot = { open: api.disclosureState.value === DisclosureStates.Open }
     let propsWeControl = this.isWithinPanel
       ? {
-          type: 'button',
+          ref: 'el',
+          type: this.type,
           onClick: this.handleClick,
           onKeydown: this.handleKeyDown,
         }
       : {
           id: this.id,
           ref: 'el',
-          type: 'button',
+          type: this.type,
           'aria-expanded': this.$props.disabled
             ? undefined
             : api.disclosureState.value === DisclosureStates.Open,
@@ -155,16 +166,28 @@ export let DisclosureButton = defineComponent({
       name: 'DisclosureButton',
     })
   },
-  setup(props) {
+  setup(props, { attrs }) {
     let api = useDisclosureContext('DisclosureButton')
 
     let panelContext = useDisclosurePanelContext()
     let isWithinPanel = panelContext === null ? false : panelContext === api.panelId
 
+    let elementRef = ref(null)
+
+    if (!isWithinPanel) {
+      watchEffect(() => {
+        api.button.value = elementRef.value
+      })
+    }
+
     return {
       isWithinPanel,
       id: api.buttonId,
-      el: isWithinPanel ? undefined : api.button,
+      el: elementRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        elementRef
+      ),
       handleClick() {
         if (props.disabled) return
 
