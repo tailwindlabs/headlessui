@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Fixes
+
+- Only add `type=button` to real buttons ([#709](https://github.com/tailwindlabs/headlessui/pull/709))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Fixes
+
+- Only add `type=button` to real buttons ([#709](https://github.com/tailwindlabs/headlessui/pull/709))
 
 ## [@headlessui/react@v1.4.0] - 2021-07-29
 
