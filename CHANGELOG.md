@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Only add `type=button` to real buttons ([#709](https://github.com/tailwindlabs/headlessui/pull/709))
+- Add Vue emit types ([#679](https://github.com/tailwindlabs/headlessui/pull/679), [#712](https://github.com/tailwindlabs/headlessui/pull/712))
 
 ## [@headlessui/react@v1.4.0] - 2021-07-29
 

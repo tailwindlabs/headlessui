@@ -74,7 +74,7 @@ export let Dialog = defineComponent({
     open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
-  emits: ['close'],
+  emits: { close: (_close: boolean) => true },
   render() {
     let propsWeControl = {
       // Manually passthrough the attributes, because Vue can't automatically pass

@@ -60,7 +60,7 @@ function useRadioGroupContext(component: string) {
 
 export let RadioGroup = defineComponent({
   name: 'RadioGroup',
-  emits: ['update:modelValue'],
+  emits: { 'update:modelValue': (_value: any) => true },
   props: {
     as: { type: [Object, String], default: 'div' },
     disabled: { type: [Boolean], default: false },

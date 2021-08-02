@@ -59,7 +59,7 @@ export let SwitchGroup = defineComponent({
 
 export let Switch = defineComponent({
   name: 'Switch',
-  emits: ['update:modelValue'],
+  emits: { 'update:modelValue': (_value: boolean) => true },
   props: {
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: false },

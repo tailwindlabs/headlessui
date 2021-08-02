@@ -52,7 +52,9 @@ function useTabsContext(component: string) {
 
 export let TabGroup = defineComponent({
   name: 'TabGroup',
-  emits: ['change'],
+  emits: {
+    change: (_index: number) => true,
+  },
   props: {
     as: { type: [Object, String], default: 'template' },
     defaultIndex: { type: [Number], default: 0 },

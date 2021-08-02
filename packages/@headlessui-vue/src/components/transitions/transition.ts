@@ -145,7 +145,12 @@ export let TransitionChild = defineComponent({
     leaveFrom: { type: [String], default: '' },
     leaveTo: { type: [String], default: '' },
   },
-  emits: ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'],
+  emits: {
+    beforeEnter: () => true,
+    afterEnter: () => true,
+    beforeLeave: () => true,
+    afterLeave: () => true,
+  },
   render() {
     if (this.renderAsRoot) {
       return h(
@@ -357,7 +362,12 @@ export let TransitionRoot = defineComponent({
     leaveFrom: { type: [String], default: '' },
     leaveTo: { type: [String], default: '' },
   },
-  emits: ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'],
+  emits: {
+    beforeEnter: () => true,
+    afterEnter: () => true,
+    beforeLeave: () => true,
+    afterLeave: () => true,
+  },
   render() {
     let { show, appear, unmount, ...passThroughProps } = this.$props
     let sharedProps = { unmount }
