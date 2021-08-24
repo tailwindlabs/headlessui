@@ -87,7 +87,6 @@ export let Dialog = defineComponent({
       'aria-labelledby': this.titleId,
       'aria-describedby': this.describedby,
       onClick: this.handleClick,
-      onKeydown: this.handleKeyDown,
     }
     let { open: _, initialFocus, ...passThroughProps } = this.$props
 
@@ -205,6 +204,16 @@ export let Dialog = defineComponent({
       nextTick(() => target?.focus())
     })
 
+    // Handle `Escape` to close
+    useWindowEvent('keydown', event => {
+      if (event.key !== Keys.Escape) return
+      if (dialogState.value !== DialogStates.Open) return
+      if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
+      event.preventDefault()
+      event.stopPropagation()
+      api.close()
+    })
+
     // Scroll lock
     watchEffect(onInvalidate => {
       if (dialogState.value !== DialogStates.Open) return
@@ -259,16 +268,6 @@ export let Dialog = defineComponent({
       open,
       handleClick(event: MouseEvent) {
         event.stopPropagation()
-      },
-
-      // Handle `Escape` to close
-      handleKeyDown(event: KeyboardEvent) {
-        if (event.key !== Keys.Escape) return
-        if (dialogState.value !== DialogStates.Open) return
-        if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
-        event.preventDefault()
-        event.stopPropagation()
-        api.close()
       },
     }
   },
