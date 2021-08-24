@@ -430,6 +430,90 @@ describe('Keyboard interactions', () => {
         assertDialog({ state: DialogState.InvisibleUnmounted })
       })
     )
+
+    it(
+      'should be possible to close the dialog with Escape, when a field is focused',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                Contents
+                <input id="name" />
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Close dialog
+        await press(Keys.Escape)
+
+        // Verify it is close
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+      })
+    )
+
+    it(
+      'should not be possible to close the dialog with Escape, when a field is focused but cancels the event',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                Contents
+                <input
+                  id="name"
+                  onKeyDown={event => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                  }}
+                />
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Try to close the dialog
+        await press(Keys.Escape)
+
+        // Verify it is still open
+        assertDialog({ state: DialogState.Visible })
+      })
+    )
   })
 })
 

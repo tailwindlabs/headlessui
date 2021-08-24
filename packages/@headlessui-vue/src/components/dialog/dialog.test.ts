@@ -526,6 +526,111 @@ describe('Keyboard interactions', () => {
         assertDialog({ state: DialogState.InvisibleUnmounted })
       })
     )
+
+    it(
+      'should be possible to close the dialog with Escape, when a field is focused',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="toggleOpen">
+                Trigger
+              </button>
+              <Dialog :open="isOpen" @close="setIsOpen">
+                Contents
+                <input id="name" />
+                <TabSentinel />
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+              toggleOpen() {
+                isOpen.value = !isOpen.value
+              },
+            }
+          },
+        })
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Close dialog
+        await press(Keys.Escape)
+
+        // Verify it is close
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+      })
+    )
+
+    it(
+      'should not be possible to close the dialog with Escape, when a field is focused but cancels the event',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="toggleOpen">
+                Trigger
+              </button>
+              <Dialog :open="isOpen" @close="setIsOpen">
+                Contents
+                <input
+                  id="name"
+                  @keydown="cancel"
+                />
+                <TabSentinel />
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+              toggleOpen() {
+                isOpen.value = !isOpen.value
+              },
+              cancel(event: KeyboardEvent) {
+                event.preventDefault()
+                event.stopPropagation()
+              },
+            }
+          },
+        })
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Try to close the dialog
+        await press(Keys.Escape)
+
+        // Verify it is still open
+        assertDialog({ state: DialogState.Visible })
+      })
+    )
   })
 })
 
