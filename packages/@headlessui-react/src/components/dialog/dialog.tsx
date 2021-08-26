@@ -15,6 +15,7 @@ import React, {
   KeyboardEvent as ReactKeyboardEvent,
   MutableRefObject,
   Ref,
+  SyntheticEvent,
   useState,
 } from 'react'
 
@@ -66,7 +67,7 @@ let DialogContext = createContext<
   | [
       {
         dialogState: DialogStates
-        close(): void
+        close(event?: Event | SyntheticEvent): void
         setTitleId(id: string | null): void
       },
       StateDefinition
@@ -111,7 +112,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   props: Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
     PropsForFeatures<typeof DialogRenderFeatures> & {
       open?: boolean
-      onClose(value: boolean): void
+      onClose(value: boolean, event?: Event | SyntheticEvent): void
       initialFocus?: MutableRefObject<HTMLElement | null>
     },
   ref: Ref<HTMLDivElement>
@@ -178,7 +179,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     descriptionId: null,
   } as StateDefinition)
 
-  let close = useCallback(() => onClose(false), [onClose])
+  let close = useCallback((event?: Event | SyntheticEvent) => onClose(false, event), [onClose])
 
   let setTitleId = useCallback(
     (id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }),
@@ -214,7 +215,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     if (hasNestedDialogs) return
     if (internalDialogRef.current?.contains(target)) return
 
-    close()
+    close(event)
   })
 
   // Scroll lock
@@ -290,7 +291,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       if (hasNestedDialogs) return
       event.preventDefault()
       event.stopPropagation()
-      close()
+      close(event)
     },
   }
   let passthroughProps = rest
@@ -359,7 +360,7 @@ let Overlay = forwardRefWithAs(function Overlay<
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       event.preventDefault()
       event.stopPropagation()
-      close()
+      close(event)
     },
     [close]
   )
