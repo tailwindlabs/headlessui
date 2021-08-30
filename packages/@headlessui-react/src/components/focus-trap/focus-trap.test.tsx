@@ -63,16 +63,20 @@ it('should focus the initialFocus element inside the FocusTrap even if another e
 })
 
 it(
-  'should error when there is no focusable element inside the FocusTrap',
+  'should warn when there is no focusable element inside the FocusTrap',
   suppressConsoleLogs(() => {
-    expect(() => {
-      render(
+    const consoleWarn = jest.fn()
+    console.warn = consoleWarn
+    function Example() {
+      return (
         <FocusTrap>
           <span>Nothing to see here...</span>
         </FocusTrap>
       )
-    }).toThrowErrorMatchingInlineSnapshot(
-      `"There are no focusable elements inside the <FocusTrap />"`
+    }
+    render(<Example />)
+    expect(consoleWarn.mock.calls[0][0]).toBe(
+      'There are no focusable elements inside the <FocusTrap />'
     )
   })
 )
