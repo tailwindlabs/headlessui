@@ -1,6 +1,6 @@
 {
   "name": "@headlessui/vue",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A set of completely unstyled, fully accessible UI components for Vue 3, designed to integrate beautifully with Tailwind CSS.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
