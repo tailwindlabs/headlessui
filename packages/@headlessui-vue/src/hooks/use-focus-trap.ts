@@ -53,7 +53,7 @@ export function useFocusTrap(
         }
       }
 
-      if (!couldFocus) throw new Error('There are no focusable elements inside the <FocusTrap />')
+      if (!couldFocus) console.warn('There are no focusable elements inside the <FocusTrap />')
     }
 
     previousActiveElement.value = document.activeElement as HTMLElement
