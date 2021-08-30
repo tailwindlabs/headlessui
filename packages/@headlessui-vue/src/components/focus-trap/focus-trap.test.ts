@@ -109,28 +109,22 @@ it('should focus the initialFocus element inside the FocusTrap even if another e
   assertActiveElement(document.getElementById('c'))
 })
 
-it(
-  'should error when there is no focusable element inside the FocusTrap',
-  suppressConsoleLogs(async () => {
-    expect.assertions(1)
+it('should warn when there is no focusable element inside the FocusTrap', async () => {
+  expect.assertions(1)
+  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
 
-    renderTemplate({
-      template: html`
-        <FocusTrap>
-          <span>Nothing to see here...</span>
-        </FocusTrap>
-      `,
-      errorCaptured(err: unknown) {
-        expect((err as Error).message).toMatchInlineSnapshot(
-          `"There are no focusable elements inside the <FocusTrap />"`
-        )
-        return false
-      },
-    })
+  renderTemplate(
+    html`
+      <FocusTrap>
+        <span>Nothing to see here...</span>
+      </FocusTrap>
+    `
+  )
 
-    await new Promise(nextTick)
-  })
-)
+  await new Promise(nextTick)
+
+  expect(spy.mock.calls[0][0]).toBe('There are no focusable elements inside the <FocusTrap />')
+})
 
 it(
   'should not be possible to programmatically escape the focus trap',
