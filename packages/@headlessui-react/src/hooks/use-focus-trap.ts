@@ -89,7 +89,7 @@ export function useFocusTrap(
       focusElement(initialFocus.current)
     } else {
       if (focusIn(container.current, Focus.First) === FocusResult.Error) {
-        throw new Error('There are no focusable elements inside the <FocusTrap />')
+        console.warn('There are no focusable elements inside the <FocusTrap />')
       }
     }
 

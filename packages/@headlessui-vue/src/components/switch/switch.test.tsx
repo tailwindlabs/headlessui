@@ -1,4 +1,4 @@
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Switch, SwitchLabel, SwitchDescription, SwitchGroup } from './switch'
@@ -12,6 +12,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { press, click, Keys } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
 
@@ -100,6 +101,93 @@ describe('Rendering', () => {
     })
 
     assertSwitch({ state: SwitchState.Off, label: 'Enable notifications' })
+  })
+
+  describe('`type` attribute', () => {
+    it('should set the `type` to "button" by default', async () => {
+      renderTemplate({
+        template: html`
+          <Switch v-model="checked">
+            Trigger
+          </Switch>
+        `,
+        setup: () => ({ checked: ref(false) }),
+      })
+
+      expect(getSwitch()).toHaveAttribute('type', 'button')
+    })
+
+    it('should not set the `type` to "button" if it already contains a `type`', async () => {
+      renderTemplate({
+        template: html`
+          <Switch v-model="checked" type="submit">
+            Trigger
+          </Switch>
+        `,
+        setup: () => ({ checked: ref(false) }),
+      })
+
+      expect(getSwitch()).toHaveAttribute('type', 'submit')
+    })
+
+    it(
+      'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Switch v-model="checked" :as="CustomButton">
+              Trigger
+            </Switch>
+          `,
+          setup: () => ({
+            checked: ref(false),
+            CustomButton: defineComponent({
+              setup: props => () => h('button', { ...props }),
+            }),
+          }),
+        })
+
+        await new Promise(requestAnimationFrame)
+
+        expect(getSwitch()).toHaveAttribute('type', 'button')
+      })
+    )
+
+    it('should not set the type if the "as" prop is not a "button"', async () => {
+      renderTemplate({
+        template: html`
+          <Switch v-model="checked" as="div">
+            Trigger
+          </Switch>
+        `,
+        setup: () => ({ checked: ref(false) }),
+      })
+
+      expect(getSwitch()).not.toHaveAttribute('type')
+    })
+
+    it(
+      'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Switch v-model="checked" :as="CustomButton">
+              Trigger
+            </Switch>
+          `,
+          setup: () => ({
+            checked: ref(false),
+            CustomButton: defineComponent({
+              setup: props => () => h('div', props),
+            }),
+          }),
+        })
+
+        await new Promise(requestAnimationFrame)
+
+        expect(getSwitch()).not.toHaveAttribute('type')
+      })
+    )
   })
 })
 

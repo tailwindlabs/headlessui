@@ -24,6 +24,7 @@ import { Keys } from '../../components/keyboard'
 import { focusIn, Focus } from '../../utils/focus-management'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 interface StateDefinition {
   selectedIndex: number | null
@@ -332,8 +333,6 @@ export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     change(myIndex)
   }, [change, myIndex, internalTabRef])
 
-  let type = props?.type ?? (props.as || DEFAULT_TAB_TAG) === 'button' ? 'button' : undefined
-
   let slot = useMemo(() => ({ selected }), [selected])
   let propsWeControl = {
     ref: tabRef,
@@ -342,7 +341,7 @@ export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     onClick: handleSelection,
     id,
     role: 'tab',
-    type,
+    type: useResolveButtonType(props, internalTabRef),
     'aria-controls': panels[myIndex]?.current?.id,
     'aria-selected': selected,
     tabIndex: selected ? 0 : -1,

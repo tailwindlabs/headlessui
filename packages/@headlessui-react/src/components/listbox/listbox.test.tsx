@@ -326,6 +326,66 @@ describe('Rendering', () => {
         assertListboxButtonLinkedWithListboxLabel()
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button>Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button type="submit">Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+        let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+          <button ref={ref} {...props} />
+        ))
+
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button as={CustomButton}>Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button as="div">Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).not.toHaveAttribute('type')
+      })
+
+      it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+        let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+          <div ref={ref} {...props} />
+        ))
+
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button as={CustomButton}>Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).not.toHaveAttribute('type')
+      })
+    })
   })
 
   describe('Listbox.Options', () => {

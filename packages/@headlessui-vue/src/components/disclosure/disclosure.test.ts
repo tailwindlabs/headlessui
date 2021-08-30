@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch } from 'vue'
+import { defineComponent, nextTick, ref, watch, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -291,6 +291,98 @@ describe('Rendering', () => {
         assertDisclosurePanel({ state: DisclosureState.Visible })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton>
+                Trigger
+              </DisclosureButton>
+            </Disclosure>
+          `
+        )
+
+        expect(getDisclosureButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton type="submit">
+                Trigger
+              </DisclosureButton>
+            </Disclosure>
+          `
+        )
+
+        expect(getDisclosureButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Disclosure>
+                <DisclosureButton :as="CustomButton">
+                  Trigger
+                </DisclosureButton>
+              </Disclosure>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getDisclosureButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton as="div">
+                Trigger
+              </DisclosureButton>
+            </Disclosure>
+          `
+        )
+
+        expect(getDisclosureButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Disclosure>
+                <DisclosureButton :as="CustomButton">
+                  Trigger
+                </DisclosureButton>
+              </Disclosure>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getDisclosureButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('DisclosurePanel', () => {

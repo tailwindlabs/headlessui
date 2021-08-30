@@ -34,6 +34,7 @@ import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum MenuStates {
   Open,
@@ -294,7 +295,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let propsWeControl = {
     ref: buttonRef,
     id,
-    type: 'button',
+    type: useResolveButtonType(props, state.buttonRef),
     'aria-haspopup': true,
     'aria-controls': state.itemsRef.current?.id,
     'aria-expanded': props.disabled ? undefined : state.menuState === MenuStates.Open,

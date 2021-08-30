@@ -23,6 +23,7 @@ import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
 import { match } from '../../utils/match'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum ListboxStates {
   Open,
@@ -78,7 +79,7 @@ function useListboxContext(component: string) {
 
 export let Listbox = defineComponent({
   name: 'Listbox',
-  emits: ['update:modelValue'],
+  emits: { 'update:modelValue': (_value: any) => true },
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
@@ -268,7 +269,7 @@ export let ListboxButton = defineComponent({
     let propsWeControl = {
       ref: 'el',
       id: this.id,
-      type: 'button',
+      type: this.type,
       'aria-haspopup': true,
       'aria-controls': dom(api.optionsRef)?.id,
       'aria-expanded': api.disabled.value
@@ -291,7 +292,7 @@ export let ListboxButton = defineComponent({
       name: 'ListboxButton',
     })
   },
-  setup() {
+  setup(props, { attrs }) {
     let api = useListboxContext('ListboxButton')
     let id = `headlessui-listbox-button-${useId()}`
 
@@ -344,7 +345,17 @@ export let ListboxButton = defineComponent({
       }
     }
 
-    return { id, el: api.buttonRef, handleKeyDown, handleKeyUp, handleClick }
+    return {
+      id,
+      el: api.buttonRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        api.buttonRef
+      ),
+      handleKeyDown,
+      handleKeyUp,
+      handleClick,
+    }
   },
 })
 
