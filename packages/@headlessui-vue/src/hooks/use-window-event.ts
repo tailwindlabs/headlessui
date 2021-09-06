@@ -7,6 +7,6 @@ export function useWindowEvent<TType extends keyof WindowEventMap>(
 ) {
   try {
       window.addEventListener(type, listener, options)
-  } catch(e) {}
+  } catch(e) { }
   onUnmounted(() => window.removeEventListener(type, listener, options))
 }
