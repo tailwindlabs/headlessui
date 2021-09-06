@@ -5,6 +5,8 @@ export function useWindowEvent<TType extends keyof WindowEventMap>(
   listener: (this: Window, ev: WindowEventMap[TType]) => any,
   options?: boolean | AddEventListenerOptions
 ) {
-  window.addEventListener(type, listener, options)
+  try {
+      window.addEventListener(type, listener, options)
+  } catch(e) {}
   onUnmounted(() => window.removeEventListener(type, listener, options))
 }
