@@ -20,9 +20,6 @@
 
 # production
 /build
-/packages/**/dist
-/dist
-/packages/**/dist
 
 # misc
 .DS_Store

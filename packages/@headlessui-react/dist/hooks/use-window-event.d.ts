@@ -1,0 +1,1 @@
+export declare function useWindowEvent<TType extends keyof WindowEventMap>(type: TType, listener: (this: Window, ev: WindowEventMap[TType]) => any, options?: boolean | AddEventListenerOptions): void;
