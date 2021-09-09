@@ -1858,7 +1858,9 @@ var Listbox = /*#__PURE__*/defineComponent({
     return function () {
       var slot = {
         open: listboxState.value === ListboxStates.Open,
-        disabled: props.disabled
+        disabled: props.disabled,
+        openListbox: api.openListbox,
+        closeListbox: api.closeListbox
       };
       return render({
         props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
