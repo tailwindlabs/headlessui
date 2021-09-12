@@ -304,6 +304,8 @@ export let PopoverButton = defineComponent({
               if (api.popoverState.value !== PopoverStates.Open) return closeOthers?.(api.buttonId)
               if (!dom(api.button)) return
               if (!dom(api.button)?.contains(document.activeElement)) return
+              event.preventDefault()
+              event.stopPropagation()
               api.closePopover()
               break
 
@@ -571,6 +573,7 @@ export let PopoverPanel = defineComponent({
             if (!dom(api.panel)) return
             if (!dom(api.panel)?.contains(document.activeElement)) return
             event.preventDefault()
+            event.stopPropagation()
             api.closePopover()
             dom(api.button)?.focus()
             break
