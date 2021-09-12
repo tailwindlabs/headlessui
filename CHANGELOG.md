@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Fixes
+
+- Stop the event from propagating in the `Popover` component ([#798](https://github.com/tailwindlabs/headlessui/pull/798))
 
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Fixes
+
+- Stop the event from propagating in the `Popover` component ([#798](https://github.com/tailwindlabs/headlessui/pull/798))
 
 ## [@headlessui/react@v1.4.1] - 2021-08-30
 

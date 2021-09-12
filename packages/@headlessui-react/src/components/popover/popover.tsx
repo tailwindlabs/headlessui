@@ -353,6 +353,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
             if (state.popoverState !== PopoverStates.Open) return closeOthers?.(state.buttonId)
             if (!internalButtonRef.current) return
             if (!internalButtonRef.current.contains(document.activeElement)) return
+            event.preventDefault()
+            event.stopPropagation()
             dispatch({ type: ActionTypes.ClosePopover })
             break
 
@@ -603,6 +605,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
           if (!internalPanelRef.current) return
           if (!internalPanelRef.current.contains(document.activeElement)) return
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.ClosePopover })
           state.button?.focus()
           break
