@@ -680,6 +680,52 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should not close the Dialog when clicking on contents of the Dialog.Overlay',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <div>
+            <button id="trigger" @click="toggleOpen">
+              Trigger
+            </button>
+            <Dialog :open="isOpen" @close="setIsOpen">
+              <DialogOverlay>
+                <button>hi</button>
+              </DialogOverlay>
+              Contents
+              <TabSentinel />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(false)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+            toggleOpen() {
+              isOpen.value = !isOpen.value
+            },
+          }
+        },
+      })
+
+      // Open dialog
+      await click(document.getElementById('trigger'))
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click on an element inside the overlay
+      await click(getByText('hi'))
+
+      // Verify it is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
     'should be possible to close the dialog, and re-focus the button when we click outside on the body element',
     suppressConsoleLogs(async () => {
       renderTemplate({

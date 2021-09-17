@@ -355,6 +355,7 @@ let Overlay = forwardRefWithAs(function Overlay<
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
+      if (event.target !== event.currentTarget) return
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       event.preventDefault()
       event.stopPropagation()
