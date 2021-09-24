@@ -58,6 +58,12 @@ describe('Rendering', () => {
     )
     assertSwitch({ state: SwitchState.Off, label: 'Enable notifications' })
   })
+  
+  it('should be possible to render tabIndex using the `tabIndex` prop', () => {
+    const tabIndex = 1
+    render(<Switch as="span" checked={true} onChange={console.log} tabIndex={tabIndex} />)
+    assertSwitch({ tabIndex })
+  })
 
   describe('`type` attribute', () => {
     it('should set the `type` to "button" by default', async () => {
