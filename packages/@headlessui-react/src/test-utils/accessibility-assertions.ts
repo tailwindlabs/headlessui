@@ -559,6 +559,7 @@ export function assertSwitch(
     textContent?: string
     label?: string
     description?: string
+   tabIndex?: number
   },
   switchElement = getSwitch()
 ) {
@@ -582,6 +583,10 @@ export function assertSwitch(
 
     if (options.description) {
       assertDescriptionValue(switchElement, options.description)
+    }
+    
+    if (options.tabIndex) {
+      expect(switchElement).toHaveAttribute('tabIndex', options.tabIndex.toString())
     }
 
     switch (options.state) {
