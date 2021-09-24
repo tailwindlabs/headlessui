@@ -90,7 +90,7 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     onChange(checked: boolean): void
   }
 ) {
-  let { checked, onChange, ...passThroughProps } = props
+  let { checked, onChange, tabIndex = 0, ...passThroughProps } = props
   let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
@@ -128,7 +128,7 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     ref: switchRef,
     role: 'switch',
     type: useResolveButtonType(props, internalSwitchRef),
-    tabIndex: 0,
+    tabIndex,
     'aria-checked': checked,
     'aria-labelledby': groupContext?.labelledby,
     'aria-describedby': groupContext?.describedby,
