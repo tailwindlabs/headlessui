@@ -586,7 +586,7 @@ export function assertSwitch(
     }
     
     if (options.tabIndex) {
-      expect(switchElement).toHaveAttribute('tabIndex', options.tabIndex.toString())
+      expect(switchElement).toHaveAttribute('tabindex', options.tabIndex.toString())
     }
 
     switch (options.state) {
