@@ -112,10 +112,12 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       open?: boolean
       onClose(value: boolean): void
       initialFocus?: MutableRefObject<HTMLElement | null>
+      enableScrollLock?: boolean
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { open, onClose, initialFocus, ...rest } = props
+  let { open, onClose, initialFocus, enableScrollLock, ...rest } = props
+  enableScrollLock = enableScrollLock === false ? false : true
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
@@ -228,6 +230,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   // Scroll lock
   useEffect(() => {
+    if (!enableScrollLock) return
     if (dialogState !== DialogStates.Open) return
     if (hasParentDialog) return
 
@@ -243,7 +246,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       document.documentElement.style.overflow = overflow
       document.documentElement.style.paddingRight = paddingRight
     }
-  }, [dialogState, hasParentDialog])
+  }, [enableScrollLock, dialogState, hasParentDialog])
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
