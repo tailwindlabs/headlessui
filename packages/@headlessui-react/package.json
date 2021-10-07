@@ -28,7 +28,9 @@
     "prepublishOnly": "npm run build",
     "test": "../../scripts/test.sh",
     "build": "../../scripts/build.sh",
-    "lint": "../../scripts/lint.sh"
+    "lint": "../../scripts/lint.sh",
+    "version": "../../scripts/version.sh",
+    "publish": "../../scripts/publish.sh"
   },
   "peerDependencies": {
     "react": "^16 || ^17 || ^18",

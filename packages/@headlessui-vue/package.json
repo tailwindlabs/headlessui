@@ -28,7 +28,9 @@
     "build": "../../scripts/build.sh",
     "watch": "../../scripts/watch.sh",
     "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh"
+    "lint": "../../scripts/lint.sh",
+    "version": "../../scripts/version.sh",
+    "publish": "../../scripts/publish.sh"
   },
   "peerDependencies": {
     "vue": "^3.0.0"
