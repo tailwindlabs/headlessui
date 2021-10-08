@@ -619,10 +619,12 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   // Unlink on "unmount" children
   useEffect(() => {
+    if (props.static) return
+
     if (state.popoverState === PopoverStates.Closed && (props.unmount ?? true)) {
       dispatch({ type: ActionTypes.SetPanel, panel: null })
     }
-  }, [state.popoverState, props.unmount, dispatch])
+  }, [state.popoverState, props.unmount, props.static, dispatch])
 
   // Move focus within panel
   useEffect(() => {
