@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Stop the event from propagating in the `Popover` component ([#798](https://github.com/tailwindlabs/headlessui/pull/798))
 - Allow to click on elements inside a `Dialog.Overlay` ([#816](https://github.com/tailwindlabs/headlessui/pull/816))
+- Ensure interactability with `Popover.Panel` contents when using the `static` prop ([#857](https://github.com/tailwindlabs/headlessui/pull/857))
 
 ## [Unreleased - Vue]
 
