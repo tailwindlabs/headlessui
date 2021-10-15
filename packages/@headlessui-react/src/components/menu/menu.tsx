@@ -531,11 +531,16 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   }, [bag, id])
 
   let handleClick = useCallback(
-    (event: MouseEvent) => {
+    async (event: MouseEvent) => {
       if (disabled) return event.preventDefault()
+
+      let onClickResult: any = undefined
+      if (onClick) onClickResult = await onClick(event)
+
       dispatch({ type: ActionTypes.CloseMenu })
       disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
-      if (onClick) return onClick(event)
+
+      return onClickResult
     },
     [dispatch, state.buttonRef, disabled, onClick]
   )
