@@ -1,4 +1,4 @@
-import React, { createElement, useState } from 'react'
+import React, { createElement, useRef, useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Dialog } from './dialog'
@@ -714,6 +714,51 @@ describe('Mouse interactions', () => {
 
       // Verify it is closed
       assertDialog({ state: DialogState.InvisibleUnmounted })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+    })
+  )
+
+  it(
+    'should should be possible to click on removed elements without closing the Dialog',
+    suppressConsoleLogs(async () => {
+      let wrapperFn = jest.fn()
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+        const ref = useRef<HTMLDivElement>(null)
+        return (
+          <div onClick={wrapperFn}>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <div ref={ref}>
+                Contents
+                <button
+                  onMouseDown={() => {
+                    // Remove this button before the Dialog's mousedown listener fires:
+                    ref.current?.remove()
+                  }}
+                >
+                  Inside
+                </button>
+                <TabSentinel />
+              </div>
+            </Dialog>
+          </div>
+        )
+      }
+      render(<Example />)
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Verify that the wrapper function has not been called yet
+      expect(wrapperFn).toHaveBeenCalledTimes(0)
+
+      // Click the button inside the the Dialog
+      await click(getByText('Inside'))
+
+      // Verify it is still open
+      assertDialog({ state: DialogState.Visible })
 
       // Verify that the wrapper function has not been called yet
       expect(wrapperFn).toHaveBeenCalledTimes(0)
