@@ -211,7 +211,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
     if (dialogState !== DialogStates.Open) return
     if (hasNestedDialogs) return
-    if (!document.body.contains(target)) return
+    if (!document.documentElement.contains(target)) return
     if (internalDialogRef.current?.contains(target)) return
 
     close()
