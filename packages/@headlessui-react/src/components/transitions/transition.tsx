@@ -36,6 +36,7 @@ function useSplitClasses(classes: string = '') {
 interface TransitionContextValues {
   show: boolean
   appear: boolean
+  initial: boolean
 }
 let TransitionContext = createContext<TransitionContextValues | null>(null)
 TransitionContext.displayName = 'TransitionContext'
@@ -213,10 +214,9 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
   let [state, setState] = useState(TreeStates.Visible)
   let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
-  let { show, appear } = useTransitionContext()
+  let { show, appear, initial } = useTransitionContext()
   let { register, unregister } = useParentNesting()
 
-  let initial = useIsInitialRender()
   let id = useId()
 
   let isTransitioning = useRef(false)
@@ -371,7 +371,7 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   let initial = useIsInitialRender()
   let transitionBag = useMemo<TransitionContextValues>(
-    () => ({ show: show as boolean, appear: appear || !initial }),
+    () => ({ show: show as boolean, appear: appear || !initial, initial }),
     [show, appear, initial]
   )
 
