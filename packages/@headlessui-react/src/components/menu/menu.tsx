@@ -142,9 +142,9 @@ let reducers: {
 let MenuContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
 MenuContext.displayName = 'MenuContext'
 
-function useMenuContext(component: string) {
+export function useMenuContext(component?: string) {
   let context = useContext(MenuContext)
-  if (context === null) {
+  if (component !== undefined && context === null) {
     let err = new Error(`<${component} /> is missing a parent <${Menu.name} /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
     throw err
