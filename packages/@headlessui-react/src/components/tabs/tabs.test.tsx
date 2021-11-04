@@ -1,4 +1,4 @@
-import React, { createElement } from 'react'
+import React, { createElement, useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Tab } from './tabs'
@@ -388,6 +388,173 @@ describe('Rendering', () => {
     })
 
     it('should jump to the next available tab when the defaultIndex is a disabled tab and wrap around', async () => {
+      render(
+        <>
+          <Tab.Group defaultIndex={2}>
+            <Tab.List>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab disabled>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>Content 2</Tab.Panel>
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+
+          <button>after</button>
+        </>
+      )
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 0 })
+      assertActiveElement(getByText('Tab 1'))
+    })
+  })
+
+  describe('`selectedIndex`', () => {
+    it('should be possible to change active tab controlled and uncontrolled', async () => {
+      let handleChange = jest.fn()
+
+      const ControlledTabs = () => {
+        const [selectedIndex, setSelectedIndex] = useState(0)
+
+        return (
+          <>
+            <Tab.Group
+              selectedIndex={selectedIndex}
+              onChange={value => {
+                setSelectedIndex(value)
+                handleChange(value)
+              }}
+            >
+              <Tab.List>
+                <Tab>Tab 1</Tab>
+                <Tab>Tab 2</Tab>
+                <Tab>Tab 3</Tab>
+              </Tab.List>
+
+              <Tab.Panels>
+                <Tab.Panel>Content 1</Tab.Panel>
+                <Tab.Panel>Content 2</Tab.Panel>
+                <Tab.Panel>Content 3</Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>
+
+            <button>after</button>
+            <button onClick={() => setSelectedIndex(prev => prev + 1)}>setSelectedIndex</button>
+          </>
+        )
+      }
+
+      render(<ControlledTabs />)
+
+      assertActiveElement(document.body)
+
+      // test uncontrolled behaviour
+      await click(getByText('Tab 2'))
+      expect(handleChange).toHaveBeenCalledTimes(1)
+      expect(handleChange).toHaveBeenNthCalledWith(1, 1)
+      assertTabs({ active: 1 })
+
+      // test controlled behaviour
+      await click(getByText('setSelectedIndex'))
+      assertTabs({ active: 2 })
+    })
+
+    it('should jump to the nearest tab when the selectedIndex is out of bounds (-2)', async () => {
+      render(
+        <>
+          <Tab.Group selectedIndex={-2}>
+            <Tab.List>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>Content 2</Tab.Panel>
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+
+          <button>after</button>
+        </>
+      )
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 0 })
+      assertActiveElement(getByText('Tab 1'))
+    })
+
+    it('should jump to the nearest tab when the selectedIndex is out of bounds (+5)', async () => {
+      render(
+        <>
+          <Tab.Group selectedIndex={5}>
+            <Tab.List>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>Content 2</Tab.Panel>
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+
+          <button>after</button>
+        </>
+      )
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 2 })
+      assertActiveElement(getByText('Tab 3'))
+    })
+
+    it('should jump to the next available tab when the selectedIndex is a disabled tab', async () => {
+      render(
+        <>
+          <Tab.Group selectedIndex={0}>
+            <Tab.List>
+              <Tab disabled>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>Content 2</Tab.Panel>
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+
+          <button>after</button>
+        </>
+      )
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 1 })
+      assertActiveElement(getByText('Tab 2'))
+    })
+
+    it('should jump to the next available tab when the selectedIndex is a disabled tab and wrap around', async () => {
       render(
         <>
           <Tab.Group defaultIndex={2}>
