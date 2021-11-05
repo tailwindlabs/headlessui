@@ -62,6 +62,17 @@
     ]
   },
   {
+    "name": "Tabs",
+    "path": "/tabs",
+    "children": [
+      {
+        "name": "Tabs (basic)",
+        "path": "/tabs/tabs",
+        "component": "./components/tabs/tabs.vue"
+      }
+    ]
+  },
+  {
     "name": "Focus Trap",
     "path": "/focus-trap",
     "children": [

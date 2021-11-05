@@ -16,6 +16,7 @@ import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
 import { match } from '../../utils/match'
 import { focusIn, Focus } from '../../utils/focus-management'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 type StateDefinition = {
   // State
@@ -217,7 +218,6 @@ export let Tab = defineComponent({
 
     let myIndex = computed(() => api.tabs.value.indexOf(tabRef))
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
-    let type = computed(() => attrs.type ?? (props.as === 'button' ? 'button' : undefined))
 
     function handleKeyDown(event: KeyboardEvent) {
       let list = api.tabs.value.map(tab => dom(tab)).filter(Boolean) as HTMLElement[]
@@ -276,7 +276,10 @@ export let Tab = defineComponent({
       id,
       selected,
       myIndex,
-      type,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        tabRef
+      ),
       handleKeyDown,
       handleFocus,
       handleSelection,
