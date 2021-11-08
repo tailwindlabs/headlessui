@@ -2323,4 +2323,81 @@ describe('Mouse interactions', () => {
       assertActiveElement(getPopoverButton())
     })
   )
+
+  it(
+    'should not close the Popover when clicking on a focusable element inside a static PopoverPanel',
+    suppressConsoleLogs(async () => {
+      let clickFn = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <Popover>
+            <PopoverButton>Open</PopoverButton>
+            <PopoverPanel static>
+              <button @click="clickFn">btn</button>
+            </PopoverPanel>
+          </Popover>
+        `,
+        setup: () => ({ clickFn }),
+      })
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The button should not close the popover
+      await click(getByText('btn'))
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.Visible })
+
+      // Verify we actually clicked the button
+      expect(clickFn).toHaveBeenCalledTimes(1)
+    })
+  )
+
+  it(
+    'should not close the Popover when clicking on a non-focusable element inside a static PopoverPanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Open</PopoverButton>
+          <PopoverPanel static>
+            <span>element</span>
+          </PopoverPanel>
+        </Popover>
+      `)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The element should not close the popover
+      await click(getByText('element'))
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.Visible })
+    })
+  )
+
+  it(
+    'should close the Popover when clicking outside of a static PopoverPanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Open</PopoverButton>
+          <PopoverPanel static>
+            <span>element</span>
+          </PopoverPanel>
+        </Popover>
+      `)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The element should close the popover
+      await click(document.body)
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.InvisibleHidden })
+    })
+  )
 })

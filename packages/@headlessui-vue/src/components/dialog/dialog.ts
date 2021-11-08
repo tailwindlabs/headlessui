@@ -305,6 +305,7 @@ export let DialogOverlay = defineComponent({
     return {
       id,
       handleClick(event: MouseEvent) {
+        if (event.target !== event.currentTarget) return
         event.preventDefault()
         event.stopPropagation()
         api.close()

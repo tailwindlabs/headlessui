@@ -1,5 +1,5 @@
 import React, { createElement, useEffect, useRef } from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { Popover } from './popover'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -2123,6 +2123,80 @@ describe('Mouse interactions', () => {
 
       // Verify we restored the Open button
       assertActiveElement(getPopoverButton())
+    })
+  )
+
+  it(
+    'should not close the Popover when clicking on a focusable element inside a static Popover.Panel',
+    suppressConsoleLogs(async () => {
+      let clickFn = jest.fn()
+
+      render(
+        <Popover>
+          <Popover.Button>Open</Popover.Button>
+          <Popover.Panel static>
+            <button onClick={clickFn}>btn</button>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The button should not close the popover
+      await click(getByText('btn'))
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.Visible })
+
+      // Verify we actually clicked the button
+      expect(clickFn).toHaveBeenCalledTimes(1)
+    })
+  )
+
+  it(
+    'should not close the Popover when clicking on a non-focusable element inside a static Popover.Panel',
+    suppressConsoleLogs(async () => {
+      render(
+        <Popover>
+          <Popover.Button>Open</Popover.Button>
+          <Popover.Panel static>
+            <span>element</span>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The element should not close the popover
+      await click(getByText('element'))
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.Visible })
+    })
+  )
+
+  it(
+    'should close the Popover when clicking outside of a static Popover.Panel',
+    suppressConsoleLogs(async () => {
+      render(
+        <Popover>
+          <Popover.Button>Open</Popover.Button>
+          <Popover.Panel static>
+            <span>element</span>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The element should close the popover
+      await click(document.body)
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.InvisibleHidden })
     })
   )
 })

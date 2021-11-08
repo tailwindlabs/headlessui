@@ -353,6 +353,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
             if (state.popoverState !== PopoverStates.Open) return closeOthers?.(state.buttonId)
             if (!internalButtonRef.current) return
             if (!internalButtonRef.current.contains(document.activeElement)) return
+            event.preventDefault()
+            event.stopPropagation()
             dispatch({ type: ActionTypes.ClosePopover })
             break
 
@@ -603,6 +605,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
           if (!internalPanelRef.current) return
           if (!internalPanelRef.current.contains(document.activeElement)) return
           event.preventDefault()
+          event.stopPropagation()
           dispatch({ type: ActionTypes.ClosePopover })
           state.button?.focus()
           break
@@ -616,10 +619,12 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   // Unlink on "unmount" children
   useEffect(() => {
+    if (props.static) return
+
     if (state.popoverState === PopoverStates.Closed && (props.unmount ?? true)) {
       dispatch({ type: ActionTypes.SetPanel, panel: null })
     }
-  }, [state.popoverState, props.unmount, dispatch])
+  }, [state.popoverState, props.unmount, props.static, dispatch])
 
   // Move focus within panel
   useEffect(() => {
