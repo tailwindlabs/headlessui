@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Stop the event from propagating in the `Popover` component ([#798](https://github.com/tailwindlabs/headlessui/pull/798))
-- Allow to click on elements inside a `Dialog.Overlay` ([#816](https://github.com/tailwindlabs/headlessui/pull/816))
+- Allow clicking on elements inside a `Dialog.Overlay` ([#816](https://github.com/tailwindlabs/headlessui/pull/816))
 - Ensure interactability with `Popover.Panel` contents when using the `static` prop ([#857](https://github.com/tailwindlabs/headlessui/pull/857))
 - Fix initial transition in `Transition` component ([#882](https://github.com/tailwindlabs/headlessui/pull/882))
 
@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Stop the event from propagating in the `Popover` component ([#798](https://github.com/tailwindlabs/headlessui/pull/798))
-- Allow to click on elements inside a `DialogOverlay` ([#816](https://github.com/tailwindlabs/headlessui/pull/816))
+- Allow clicking on elements inside a `DialogOverlay` ([#816](https://github.com/tailwindlabs/headlessui/pull/816))
 - Fix SSR crash because of `useWindowEvent` ([#817](https://github.com/tailwindlabs/headlessui/pull/817))
 - Improve tree shaking ([#859](https://github.com/tailwindlabs/headlessui/pull/859))
 - Add `type="button"` to `Tabs` component ([#912](https://github.com/tailwindlabs/headlessui/pull/912))
