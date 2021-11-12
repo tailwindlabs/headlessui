@@ -20,9 +20,9 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   if (!node) return d.dispose
 
   // Safari returns a comma separated list of values, so let's sort them and take the highest value.
-  let { transitionDuration, transitionDelay } = getComputedStyle(node)
+  let { transitionDuration } = getComputedStyle(node)
 
-  let [durationMs, delaysMs] = [transitionDuration, transitionDelay].map(value => {
+  let [durationMs] = [transitionDuration].map(value => {
     let [resolvedValue = 0] = value
       .split(',')
       // Remove falseys we can't work with
@@ -34,16 +34,13 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
     return resolvedValue
   })
 
-  // Waiting for the transition to end. We could use the `transitionend` event, however when no
-  // actual transition/duration is defined then the `transitionend` event is not fired.
-  //
-  // TODO: Downside is, when you slow down transitions via devtools this timeout is still using the
-  // full 100% speed instead of the 25% or 10%.
   if (durationMs !== 0) {
-    d.setTimeout(() => done(Reason.Finished), durationMs + delaysMs)
+    node.addEventListener('transitionend', () => {
+      done(Reason.Finished)
+    })
   } else {
-    // No transition is happening, so we should cleanup already. Otherwise we have to wait until we
-    // get disposed.
+    // No transition is happening, so "transitionend" won't fire.
+    // We should cleanup already, otherwise we have to wait until we get disposed.
     done(Reason.Finished)
   }
 
