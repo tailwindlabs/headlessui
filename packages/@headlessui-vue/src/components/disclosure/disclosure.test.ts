@@ -1,4 +1,4 @@
-import { defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, ref, watch, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -8,16 +8,14 @@ import {
   assertDisclosureButton,
   getDisclosureButton,
   getDisclosurePanel,
+  getByText,
+  assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
-
-beforeAll(() => {
-  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
-  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
-})
 
 afterAll(() => jest.restoreAllMocks())
 
@@ -100,6 +98,135 @@ describe('Rendering', () => {
         assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
       })
     )
+
+    it('should be possible to render a Disclosure in an open state by default', async () => {
+      renderTemplate(
+        html`
+          <Disclosure v-slot="{ open }" defaultOpen>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>Panel is: {{open ? 'open' : 'closed'}}</DisclosurePanel>
+          </Disclosure>
+        `
+      )
+
+      await new Promise<void>(nextTick)
+
+      assertDisclosureButton({
+        state: DisclosureState.Visible,
+        attributes: { id: 'headlessui-disclosure-button-1' },
+      })
+      assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
+
+      await click(getDisclosureButton())
+
+      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+    })
+
+    it(
+      'should expose a close function that closes the disclosure',
+      suppressConsoleLogs(async () => {
+        renderTemplate(
+          html`
+            <Disclosure v-slot="{ close }">
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel>
+                <button @click="close()">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `
+        )
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the Disclosure.Button got the restored focus
+        assertActiveElement(getByText('Trigger'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a specific element',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button id="test">restoreable</button>
+            <Disclosure v-slot="{ close }">
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel>
+                <button @click="close(document.getElementById('test'))">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ document }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a ref',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button ref="elementRef">restoreable</button>
+            <Disclosure v-slot="{ close }">
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel>
+                <button @click="close(elementRef)">Close me</button>}
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ elementRef: ref() }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
   })
 
   describe('DisclosureButton', () => {
@@ -164,6 +291,98 @@ describe('Rendering', () => {
         assertDisclosurePanel({ state: DisclosureState.Visible })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton>
+                Trigger
+              </DisclosureButton>
+            </Disclosure>
+          `
+        )
+
+        expect(getDisclosureButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton type="submit">
+                Trigger
+              </DisclosureButton>
+            </Disclosure>
+          `
+        )
+
+        expect(getDisclosureButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Disclosure>
+                <DisclosureButton :as="CustomButton">
+                  Trigger
+                </DisclosureButton>
+              </Disclosure>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getDisclosureButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton as="div">
+                Trigger
+              </DisclosureButton>
+            </Disclosure>
+          `
+        )
+
+        expect(getDisclosureButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Disclosure>
+                <DisclosureButton :as="CustomButton">
+                  Trigger
+                </DisclosureButton>
+              </Disclosure>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getDisclosureButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('DisclosurePanel', () => {
@@ -240,7 +459,227 @@ describe('Rendering', () => {
       assertDisclosureButton({ state: DisclosureState.InvisibleHidden })
       assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
     })
+
+    it(
+      'should expose a close function that closes the disclosure',
+      suppressConsoleLogs(async () => {
+        renderTemplate(
+          html`
+            <Disclosure>
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel v-slot="{ close }">
+                <button @click="close()">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `
+        )
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the Disclosure.Button got the restored focus
+        assertActiveElement(getByText('Trigger'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a specific element',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button id="test">restoreable</button>
+            <Disclosure>
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel v-slot="{ close }">
+                <button @click="close(document.getElementById('test'))">Close me</button>
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ document }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the disclosure and restores to a ref',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button ref="elementRef">restoreable</button>
+            <Disclosure>
+              <DisclosureButton>Trigger</DisclosureButton>
+              <DisclosurePanel v-slot="{ close }">
+                <button @click="close(elementRef)">Close me</button>}
+              </DisclosurePanel>
+            </Disclosure>
+          `,
+          setup: () => ({ elementRef: ref() }),
+        })
+
+        // Focus the button
+        getDisclosureButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getDisclosureButton())
+
+        // Open the disclosure
+        await click(getDisclosureButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the disclosure is closed
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
   })
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the DisclosurePanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: `
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <OpenClosedWrite :open="true">
+              <DisclosurePanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </DisclosurePanel>
+            </OpenClosedWrite>
+          </Disclosure>
+        `,
+      })
+
+      // Verify the Disclosure is visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      // Let's try and open the Disclosure
+      await click(getDisclosureButton())
+
+      // Verify the Disclosure is still visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+    })
+  )
+
+  it(
+    'should always close the DisclosurePanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: `
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <OpenClosedWrite :open="false">
+              <DisclosurePanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </DisclosurePanel>
+            </OpenClosedWrite>
+          </Disclosure>
+        `,
+      })
+
+      // Verify the Disclosure is hidden
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Let's try and open the Disclosure
+      await click(getDisclosureButton())
+
+      // Verify the Disclosure is still hidden
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: `
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <OpenClosedRead @read="readFn">
+              <DisclosurePanel></DisclosurePanel>
+            </OpenClosedRead>
+          </Disclosure>
+        `,
+        setup() {
+          return { readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Disclosure is hidden
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Let's toggle the Disclosure 3 times
+      await click(getDisclosureButton())
+      await click(getDisclosureButton())
+      await click(getDisclosureButton())
+
+      // Verify the Disclosure is visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {
@@ -580,6 +1019,40 @@ describe('Mouse interactions', () => {
       // Verify it is closed
       assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
       assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to close the Disclosure by clicking on a DisclosureButton inside a DisclosurePanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate(
+        html`
+          <Disclosure>
+            <DisclosureButton>Open</DisclosureButton>
+            <DisclosurePanel>
+              <DisclosureButton>Close</DisclosureButton>
+            </DisclosurePanel>
+          </Disclosure>
+        `
+      )
+
+      // Open the disclosure
+      await click(getDisclosureButton())
+
+      let closeBtn = getByText('Close')
+
+      expect(closeBtn).not.toHaveAttribute('id')
+      expect(closeBtn).not.toHaveAttribute('aria-controls')
+      expect(closeBtn).not.toHaveAttribute('aria-expanded')
+
+      // The close button should close the disclosure
+      await click(closeBtn)
+
+      // Verify it is closed
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      // Verify we restored the Open button
+      assertActiveElement(getDisclosureButton())
     })
   )
 })

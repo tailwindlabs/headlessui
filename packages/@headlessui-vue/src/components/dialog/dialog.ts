@@ -31,6 +31,7 @@ import { match } from '../../utils/match'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
 import { dom } from '../../utils/dom'
+import { useOpenClosed, State } from '../../internal/open-closed'
 
 enum DialogStates {
   Open,
@@ -70,10 +71,10 @@ export let Dialog = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    open: { type: Boolean, default: Missing },
+    open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
-  emits: ['close'],
+  emits: { close: (_close: boolean) => true },
   render() {
     let propsWeControl = {
       // Manually passthrough the attributes, because Vue can't automatically pass
@@ -85,8 +86,10 @@ export let Dialog = defineComponent({
       'aria-modal': this.dialogState === DialogStates.Open ? true : undefined,
       'aria-labelledby': this.titleId,
       'aria-describedby': this.describedby,
+      onClick: this.handleClick,
     }
-    let { open, initialFocus, ...passThroughProps } = this.$props
+    let { open: _, initialFocus, ...passThroughProps } = this.$props
+
     let slot = { open: this.dialogState === DialogStates.Open }
 
     return h(ForcePortalRoot, { force: true }, () =>
@@ -98,7 +101,7 @@ export let Dialog = defineComponent({
               slot,
               attrs: this.$attrs,
               slots: this.$slots,
-              visible: open,
+              visible: this.visible,
               features: Features.RenderStrategy | Features.Static,
               name: 'Dialog',
             })
@@ -110,23 +113,41 @@ export let Dialog = defineComponent({
   setup(props, { emit }) {
     let containers = ref<Set<HTMLElement>>(new Set())
 
+    let usesOpenClosedState = useOpenClosed()
+    let open = computed(() => {
+      if (props.open === Missing && usesOpenClosedState !== null) {
+        // Update the `open` prop based on the open closed state
+        return match(usesOpenClosedState.value, {
+          [State.Open]: true,
+          [State.Closed]: false,
+        })
+      }
+      return props.open
+    })
+
     // Validations
-    // @ts-expect-error We are comparing to a uuid stirng at runtime
-    let hasOpen = props.open !== Missing
+    let hasOpen = props.open !== Missing || usesOpenClosedState !== null
 
     if (!hasOpen) {
       throw new Error(`You forgot to provide an \`open\` prop to the \`Dialog\`.`)
     }
 
-    if (typeof props.open !== 'boolean') {
+    if (typeof open.value !== 'boolean') {
       throw new Error(
         `You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${
-          props.open === Missing ? undefined : props.open
+          open.value === Missing ? undefined : props.open
         }`
       )
     }
 
     let dialogState = computed(() => (props.open ? DialogStates.Open : DialogStates.Closed))
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return dialogState.value === DialogStates.Open
+    })
     let internalDialogRef = ref<HTMLDivElement | null>(null)
     let enabled = ref(dialogState.value === DialogStates.Open)
 
@@ -152,7 +173,7 @@ export let Dialog = defineComponent({
 
     let describedby = useDescriptions({
       name: 'DialogDescription',
-      slot: { open: props.open },
+      slot: computed(() => ({ open: open.value })),
     })
 
     let titleId = ref<StateDefinition['titleId']['value']>(null)
@@ -188,6 +209,8 @@ export let Dialog = defineComponent({
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
       if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
+      event.preventDefault()
+      event.stopPropagation()
       api.close()
     })
 
@@ -241,6 +264,11 @@ export let Dialog = defineComponent({
       dialogState,
       titleId,
       describedby,
+      visible,
+      open,
+      handleClick(event: MouseEvent) {
+        event.stopPropagation()
+      },
     }
   },
 })
@@ -276,7 +304,10 @@ export let DialogOverlay = defineComponent({
 
     return {
       id,
-      handleClick() {
+      handleClick(event: MouseEvent) {
+        if (event.target !== event.currentTarget) return
+        event.preventDefault()
+        event.stopPropagation()
         api.close()
       },
     }

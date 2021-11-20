@@ -15,10 +15,12 @@ import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { match } from '../../utils/match'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum MenuStates {
   Open,
@@ -104,7 +106,7 @@ export let Menu = defineComponent({
         activeItemIndex.value = nextActiveItemIndex
       },
       search(value: string) {
-        searchQuery.value += value
+        searchQuery.value += value.toLowerCase()
 
         let match = items.value.findIndex(
           item => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled
@@ -153,6 +155,14 @@ export let Menu = defineComponent({
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(MenuContext, api)
+    useOpenClosedProvider(
+      computed(() =>
+        match(menuState.value, {
+          [MenuStates.Open]: State.Open,
+          [MenuStates.Closed]: State.Closed,
+        })
+      )
+    )
 
     return () => {
       let slot = { open: menuState.value === MenuStates.Open }
@@ -174,10 +184,10 @@ export let MenuButton = defineComponent({
     let propsWeControl = {
       ref: 'el',
       id: this.id,
-      type: 'button',
+      type: this.type,
       'aria-haspopup': true,
       'aria-controls': dom(api.itemsRef)?.id,
-      'aria-expanded': api.menuState.value === MenuStates.Open ? true : undefined,
+      'aria-expanded': this.$props.disabled ? undefined : api.menuState.value === MenuStates.Open,
       onKeydown: this.handleKeyDown,
       onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
@@ -191,7 +201,7 @@ export let MenuButton = defineComponent({
       name: 'MenuButton',
     })
   },
-  setup(props) {
+  setup(props, { attrs }) {
     let api = useMenuContext('MenuButton')
     let id = `headlessui-menu-button-${useId()}`
 
@@ -247,7 +257,17 @@ export let MenuButton = defineComponent({
       }
     }
 
-    return { id, el: api.buttonRef, handleKeyDown, handleKeyUp, handleClick }
+    return {
+      id,
+      el: api.buttonRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        api.buttonRef
+      ),
+      handleKeyDown,
+      handleKeyUp,
+      handleClick,
+    }
   },
 })
 
@@ -283,7 +303,7 @@ export let MenuItems = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'MenuItems',
     })
   },
@@ -384,7 +404,16 @@ export let MenuItems = defineComponent({
       }
     }
 
-    return { id, el: api.itemsRef, handleKeyDown, handleKeyUp }
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.menuState.value === MenuStates.Open
+    })
+
+    return { id, el: api.itemsRef, handleKeyDown, handleKeyUp, visible }
   },
 })
 
@@ -393,13 +422,10 @@ export let MenuItem = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useMenuContext('MenuItem')
     let id = `headlessui-menu-item-${useId()}`
-    let { disabled, class: defaultClass, className = defaultClass } = props
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null
@@ -407,7 +433,7 @@ export let MenuItem = defineComponent({
         : false
     })
 
-    let dataRef = ref<MenuItemDataRef['value']>({ disabled, textValue: '' })
+    let dataRef = ref<MenuItemDataRef['value']>({ disabled: props.disabled, textValue: '' })
     onMounted(() => {
       let textValue = document
         .getElementById(id)
@@ -426,35 +452,35 @@ export let MenuItem = defineComponent({
     })
 
     function handleClick(event: MouseEvent) {
-      if (disabled) return event.preventDefault()
+      if (props.disabled) return event.preventDefault()
       api.closeMenu()
       nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {
-      if (disabled) return api.goToItem(Focus.Nothing)
+      if (props.disabled) return api.goToItem(Focus.Nothing)
       api.goToItem(Focus.Specific, id)
     }
 
     function handleMove() {
-      if (disabled) return
+      if (props.disabled) return
       if (active.value) return
       api.goToItem(Focus.Specific, id)
     }
 
     function handleLeave() {
-      if (disabled) return
+      if (props.disabled) return
       if (!active.value) return
       api.goToItem(Focus.Nothing)
     }
 
     return () => {
+      let { disabled } = props
       let slot = { active: active.value, disabled }
       let propsWeControl = {
         id,
         role: 'menuitem',
-        tabIndex: -1,
-        class: resolvePropValue(className, slot),
+        tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,

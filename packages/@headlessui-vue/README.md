@@ -27,7 +27,7 @@ yarn add @headlessui/vue
 
 ## Documentation
 
-For full documentation, visit [headlessui.dev](https://headlessui.dev/vue).
+For full documentation, visit [headlessui.dev](https://headlessui.dev/vue/menu).
 
 ## Community
 

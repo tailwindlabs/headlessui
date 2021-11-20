@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch } from 'vue'
+import { defineComponent, nextTick, ref, watch, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -35,6 +35,7 @@ import {
   MouseButton,
 } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
 
@@ -357,6 +358,101 @@ describe('Rendering', () => {
         assertListboxButtonLinkedWithListboxLabel()
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton>Trigger</ListboxButton>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        expect(getListboxButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton type="submit">
+                Trigger
+              </ListboxButton>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        expect(getListboxButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value">
+                <ListboxButton :as="CustomButton">
+                  Trigger
+                </ListboxButton>
+              </Listbox>
+            `,
+            setup: () => ({
+              value: ref(null),
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getListboxButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton as="div">
+                Trigger
+              </ListboxButton>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        expect(getListboxButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value">
+                <ListboxButton :as="CustomButton">
+                  Trigger
+                </ListboxButton>
+              </Listbox>
+            `,
+            setup: () => ({
+              value: ref(null),
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getListboxButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('ListboxOptions', () => {
@@ -479,84 +575,6 @@ describe('Rendering', () => {
 
 describe('Rendering composition', () => {
   it(
-    'should be possible to conditionally render classNames (aka className can be a function?!)',
-    suppressConsoleLogs(async () => {
-      renderTemplate({
-        template: html`
-          <Listbox v-model="value">
-            <ListboxButton>Trigger</ListboxButton>
-            <ListboxOptions>
-              <ListboxOption value="a" :className="JSON.stringify">
-                Option A
-              </ListboxOption>
-              <ListboxOption value="b" disabled :className="JSON.stringify">
-                Option B
-              </ListboxOption>
-              <ListboxOption value="c" className="no-special-treatment">
-                Option C
-              </ListboxOption>
-            </ListboxOptions>
-          </Listbox>
-        `,
-        setup: () => ({ value: ref(null) }),
-      })
-
-      assertListboxButton({
-        state: ListboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-listbox-button-1' },
-      })
-      assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-      // Open Listbox
-      await click(getListboxButton())
-
-      let options = getListboxOptions()
-
-      // Verify correct classNames
-      expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: false })
-      )
-      expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
-      )
-      expect('' + options[2].classList).toEqual('no-special-treatment')
-
-      // Double check that nothing is active
-      assertNoActiveListboxOption(getListbox())
-
-      // Make the first option active
-      await press(Keys.ArrowDown)
-
-      // Verify the classNames
-      expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: true, selected: false, disabled: false })
-      )
-      expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
-      )
-      expect('' + options[2].classList).toEqual('no-special-treatment')
-
-      // Double check that the first option is the active one
-      assertActiveListboxOption(options[0])
-
-      // Let's go down, this should go to the third option since the second option is disabled!
-      await press(Keys.ArrowDown)
-
-      // Verify the classNames
-      expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: false })
-      )
-      expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
-      )
-      expect('' + options[2].classList).toEqual('no-special-treatment')
-
-      // Double check that the last option is the active one
-      assertActiveListboxOption(options[2])
-    })
-  )
-
-  it(
     'should be possible to swap the Listbox option with a button for example',
     suppressConsoleLogs(async () => {
       renderTemplate({
@@ -590,6 +608,126 @@ describe('Rendering composition', () => {
 
       // Verify options are buttons now
       getListboxOptions().forEach(option => assertListboxOption(option, { tag: 'button' }))
+    })
+  )
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the ListboxOptions because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Listbox>
+            <ListboxButton>Trigger</ListboxButton>
+            <OpenClosedWrite :open="true">
+              <ListboxOptions v-slot="data">
+                {{JSON.stringify(data)}}
+              </ListboxOptions>
+            </OpenClosedWrite>
+          </Listbox>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Listbox is visible
+      assertListbox({ state: ListboxState.Visible })
+
+      // Let's try and open the Listbox
+      await click(getListboxButton())
+
+      // Verify the Listbox is still visible
+      assertListbox({ state: ListboxState.Visible })
+    })
+  )
+
+  it(
+    'should always close the ListboxOptions because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Listbox>
+            <ListboxButton>Trigger</ListboxButton>
+            <OpenClosedWrite :open="false">
+              <ListboxOptions v-slot="data">
+                {{JSON.stringify(data)}}
+              </ListboxOptions>
+            </OpenClosedWrite>
+          </Listbox>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Listbox is hidden
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Let's try and open the Listbox
+      await click(getListboxButton())
+
+      // Verify the Listbox is still hidden
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: html`
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <OpenClosedRead @read="readFn">
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+              </ListboxOptions>
+            </OpenClosedRead>
+          </Listbox>
+        `,
+        setup() {
+          return { value: ref(null), readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Listbox is hidden
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      // Let's toggle the Listbox 3 times
+      await click(getListboxButton())
+      await click(getListboxButton())
+      await click(getListboxButton())
+
+      // Verify the Listbox is visible
+      assertListbox({ state: ListboxState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
     })
   )
 })
@@ -1890,6 +2028,57 @@ describe('Keyboard interactions', () => {
     )
   })
 
+  describe('`ArrowRight` key', () => {
+    it(
+      'should be possible to use ArrowRight to navigate the listbox options',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value" horizontal>
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.Enter)
+
+        // Verify we have listbox options
+        let options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
+
+        // We should be able to go right once
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[1])
+
+        // We should be able to go right again
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[2])
+
+        // We should NOT be able to go right again (because last option). Current implementation won't go around.
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[2])
+      })
+    )
+  })
+
   describe('`ArrowUp` key', () => {
     it(
       'should be possible to open the listbox with ArrowUp and the last option should be active',
@@ -2196,6 +2385,67 @@ describe('Keyboard interactions', () => {
 
         // We should NOT be able to go up again (because first option). Current implementation won't go around.
         await press(Keys.ArrowUp)
+        assertActiveListboxOption(options[0])
+      })
+    )
+  })
+
+  describe('`ArrowLeft` key', () => {
+    it(
+      'should be possible to use ArrowLeft to navigate the listbox options',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value" horizontal>
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="a">Option A</ListboxOption>
+                <ListboxOption value="b">Option B</ListboxOption>
+                <ListboxOption value="c">Option C</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.ArrowUp)
+
+        // Verify it is visible
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({
+          state: ListboxState.Visible,
+          attributes: { id: 'headlessui-listbox-options-2' },
+          orientation: 'horizontal',
+        })
+        assertActiveElement(getListbox())
+        assertListboxButtonLinkedWithListbox()
+
+        // Verify we have listbox options
+        let options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[2])
+
+        // We should be able to go left once
+        await press(Keys.ArrowLeft)
+        assertActiveListboxOption(options[1])
+
+        // We should be able to go left again
+        await press(Keys.ArrowLeft)
+        assertActiveListboxOption(options[0])
+
+        // We should NOT be able to go left again (because first option). Current implementation won't go around.
+        await press(Keys.ArrowLeft)
         assertActiveListboxOption(options[0])
       })
     )
@@ -2963,6 +3213,42 @@ describe('Keyboard interactions', () => {
 
         // We should still be on the last option
         assertActiveListboxOption(options[2])
+      })
+    )
+
+    it(
+      'should be possible to search for a word (case insensitive)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="alice">alice</ListboxOption>
+                <ListboxOption value="bob">bob</ListboxOption>
+                <ListboxOption value="charlie">charlie</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.ArrowUp)
+
+        let options = getListboxOptions()
+
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
+
+        // Search for bob in a different casing
+        await type(word('BO'))
+
+        // We should be on `bob`
+        assertActiveListboxOption(options[1])
       })
     )
   })

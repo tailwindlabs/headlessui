@@ -1,4 +1,4 @@
-import { defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, ref, watch, h } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
@@ -17,6 +17,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, press, Keys, MouseButton, shift } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
 
@@ -158,6 +159,110 @@ describe('Rendering', () => {
         assertPopoverPanel({ state: PopoverState.Visible, textContent: 'Panel is: open' })
       })
     )
+
+    it(
+      'should expose a close function that closes the popover',
+      suppressConsoleLogs(async () => {
+        renderTemplate(
+          html`
+            <Popover v-slot="{ close }">
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel>
+                <button @click="close()">Close me</button>
+              </PopoverPanel>
+            </Popover>
+          `
+        )
+
+        // Focus the button
+        getPopoverButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure the Popover.Button got the restored focus
+        assertActiveElement(getByText('Trigger'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the popover and restores to a specific element',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button id="test">restoreable</button>
+            <Popover v-slot="{ close }">
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel>
+                <button @click="close(document.getElementById('test'))">Close me</button>
+              </PopoverPanel>
+            </Popover>
+          `,
+          setup: () => ({ document }),
+        })
+
+        // Focus the button
+        getPopoverButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the popover and restores to a ref',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button ref="elementRef">restoreable</button>
+            <Popover v-slot="{ close }">
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel> <button @click="close(elementRef)">Close me</button>} </PopoverPanel>
+            </Popover>
+          `,
+          setup: () => ({ elementRef: ref() }),
+        })
+
+        // Focus the button
+        getPopoverButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
   })
 
   describe('PopoverButton', () => {
@@ -222,6 +327,96 @@ describe('Rendering', () => {
         assertPopoverPanel({ state: PopoverState.Visible })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate(
+          html`
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+            </Popover>
+          `
+        )
+
+        expect(getPopoverButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate(
+          html`
+            <Popover>
+              <PopoverButton type="submit">
+                Trigger
+              </PopoverButton>
+            </Popover>
+          `
+        )
+
+        expect(getPopoverButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Popover>
+                <PopoverButton :as="CustomButton">
+                  Trigger
+                </PopoverButton>
+              </Popover>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getPopoverButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate(
+          html`
+            <Popover>
+              <PopoverButton as="div">
+                Trigger
+              </PopoverButton>
+            </Popover>
+          `
+        )
+
+        expect(getPopoverButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Popover>
+                <PopoverButton :as="CustomButton">
+                  Trigger
+                </PopoverButton>
+              </Popover>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getPopoverButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('PopoverPanel', () => {
@@ -426,7 +621,231 @@ describe('Rendering', () => {
         assertActiveElement(getByText('Link 1'))
       })
     )
+
+    it(
+      'should expose a close function that closes the popover',
+      suppressConsoleLogs(async () => {
+        renderTemplate(
+          html`
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel v-slot="{ close }">
+                <button @click="close()">Close me</button>
+              </PopoverPanel>
+            </Popover>
+          `
+        )
+
+        // Focus the button
+        getPopoverButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure the Popover.Button got the restored focus
+        assertActiveElement(getByText('Trigger'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the popover and restores to a specific element',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button id="test">restoreable</button>
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel v-slot="{ close }">
+                <button @click="close(document.getElementById('test'))">Close me</button>
+              </PopoverPanel>
+            </Popover>
+          `,
+          setup: () => ({ document }),
+        })
+
+        // Focus the button
+        getPopoverButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
+
+    it(
+      'should expose a close function that closes the popover and restores to a ref',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <button ref="elementRef">restoreable</button>
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel v-slot="{ close }">
+                <button @click="close(elementRef)">Close me</button>}
+              </PopoverPanel>
+            </Popover>
+          `,
+          setup: () => ({ elementRef: ref() }),
+        })
+
+        // Focus the button
+        getPopoverButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
   })
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the PopoverPanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <OpenClosedWrite :open="true">
+              <PopoverPanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </PopoverPanel>
+            </OpenClosedWrite>
+          </Popover>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Popover is visible
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Let's try and open the Popover
+      await click(getPopoverButton())
+
+      // Verify the Popover is still visible
+      assertPopoverPanel({ state: PopoverState.Visible })
+    })
+  )
+
+  it(
+    'should always close the PopoverPanel because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <OpenClosedWrite :open="false">
+              <PopoverPanel v-slot="data">
+                {{JSON.stringify(data)}}
+              </PopoverPanel>
+            </OpenClosedWrite>
+          </Popover>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Popover is hidden
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+      // Let's try and open the Popover
+      await click(getPopoverButton())
+
+      // Verify the Popover is still hidden
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <OpenClosedRead @read="readFn">
+              <PopoverPanel></PopoverPanel>
+            </OpenClosedRead>
+          </Popover>
+        `,
+        setup() {
+          return { readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Popover is hidden
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+      // Let's toggle the Popover 3 times
+      await click(getPopoverButton())
+      await click(getPopoverButton())
+      await click(getPopoverButton())
+
+      // Verify the Popover is visible
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {
@@ -1902,6 +2321,83 @@ describe('Mouse interactions', () => {
 
       // Verify we restored the Open button
       assertActiveElement(getPopoverButton())
+    })
+  )
+
+  it(
+    'should not close the Popover when clicking on a focusable element inside a static PopoverPanel',
+    suppressConsoleLogs(async () => {
+      let clickFn = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <Popover>
+            <PopoverButton>Open</PopoverButton>
+            <PopoverPanel static>
+              <button @click="clickFn">btn</button>
+            </PopoverPanel>
+          </Popover>
+        `,
+        setup: () => ({ clickFn }),
+      })
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The button should not close the popover
+      await click(getByText('btn'))
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.Visible })
+
+      // Verify we actually clicked the button
+      expect(clickFn).toHaveBeenCalledTimes(1)
+    })
+  )
+
+  it(
+    'should not close the Popover when clicking on a non-focusable element inside a static PopoverPanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Open</PopoverButton>
+          <PopoverPanel static>
+            <span>element</span>
+          </PopoverPanel>
+        </Popover>
+      `)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The element should not close the popover
+      await click(getByText('element'))
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.Visible })
+    })
+  )
+
+  it(
+    'should close the Popover when clicking outside of a static PopoverPanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Open</PopoverButton>
+          <PopoverPanel static>
+            <span>element</span>
+          </PopoverPanel>
+        </Popover>
+      `)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The element should close the popover
+      await click(document.body)
+
+      // Verify it is still open
+      assertPopoverButton({ state: PopoverState.InvisibleHidden })
     })
   )
 })

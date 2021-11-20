@@ -10,6 +10,7 @@ import React, {
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
+  useRef,
 } from 'react'
 
 import { Props } from '../../types'
@@ -19,6 +20,8 @@ import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null
@@ -90,6 +93,11 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   let { checked, onChange, ...passThroughProps } = props
   let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
+  let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
+  let switchRef = useSyncRefs(
+    internalSwitchRef,
+    groupContext === null ? null : groupContext.setSwitch
+  )
 
   let toggle = useCallback(() => onChange(!checked), [onChange, checked])
   let handleClick = useCallback(
@@ -117,8 +125,9 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   let slot = useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
   let propsWeControl = {
     id,
-    ref: groupContext === null ? undefined : groupContext.setSwitch,
+    ref: switchRef,
     role: 'switch',
+    type: useResolveButtonType(props, internalSwitchRef),
     tabIndex: 0,
     'aria-checked': checked,
     'aria-labelledby': groupContext?.labelledby,
@@ -126,10 +135,6 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     onClick: handleClick,
     onKeyUp: handleKeyUp,
     onKeyPress: handleKeyPress,
-  }
-
-  if (passThroughProps.as === 'button') {
-    Object.assign(propsWeControl, { type: 'button' })
   }
 
   return render({

@@ -64,7 +64,7 @@ it('should be possible to use a LabelProvider and a single Label, and have them 
   `)
 })
 
-it('should be possible to use a LabelProvider and multiple Label ocmponents, and have them linked', async () => {
+it('should be possible to use a LabelProvider and multiple Label components, and have them linked', async () => {
   function Component(props: { children: ReactNode }) {
     let [labelledby, LabelProvider] = useLabels()
 

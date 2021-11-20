@@ -13,6 +13,153 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet!
 
+## [@headlessui/react@v1.4.2] - 2021-11-08
+
+### Fixes
+
+- Stop the event from propagating in the `Popover` component ([#798](https://github.com/tailwindlabs/headlessui/pull/798))
+- Allow to click on elements inside a `Dialog.Overlay` ([#816](https://github.com/tailwindlabs/headlessui/pull/816))
+- Ensure interactability with `Popover.Panel` contents when using the `static` prop ([#857](https://github.com/tailwindlabs/headlessui/pull/857))
+- Fix initial transition in `Transition` component ([#882](https://github.com/tailwindlabs/headlessui/pull/882))
+
+## [@headlessui/vue@v1.4.2] - 2021-11-08
+
+### Fixes
+
+- Stop the event from propagating in the `Popover` component ([#798](https://github.com/tailwindlabs/headlessui/pull/798))
+- Allow to click on elements inside a `DialogOverlay` ([#816](https://github.com/tailwindlabs/headlessui/pull/816))
+- Fix SSR crash because of `useWindowEvent` ([#817](https://github.com/tailwindlabs/headlessui/pull/817))
+- Improve tree shaking ([#859](https://github.com/tailwindlabs/headlessui/pull/859))
+- Add `type="button"` to `Tabs` component ([#912](https://github.com/tailwindlabs/headlessui/pull/912))
+
+## [@headlessui/react@v1.4.1] - 2021-08-30
+
+### Fixes
+
+- Only add `type=button` to real buttons ([#709](https://github.com/tailwindlabs/headlessui/pull/709))
+- Fix `escape` bug not closing Dialog after clicking in Dialog ([#754](https://github.com/tailwindlabs/headlessui/pull/754))
+- Use `console.warn` instead of throwing an error when there are no focusable elements ([#775](https://github.com/tailwindlabs/headlessui/pull/775))
+
+## [@headlessui/vue@v1.4.1] - 2021-08-30
+
+### Fixes
+
+- Only add `type=button` to real buttons ([#709](https://github.com/tailwindlabs/headlessui/pull/709))
+- Add Vue emit types ([#679](https://github.com/tailwindlabs/headlessui/pull/679), [#712](https://github.com/tailwindlabs/headlessui/pull/712))
+- Fix `escape` bug not closing Dialog after clicking in Dialog ([#754](https://github.com/tailwindlabs/headlessui/pull/754))
+- Use `console.warn` instead of throwing an error when there are no focusable elements ([#775](https://github.com/tailwindlabs/headlessui/pull/775))
+
+## [@headlessui/react@v1.4.0] - 2021-07-29
+
+### Added
+
+- Add new `Tabs` component ([#674](https://github.com/tailwindlabs/headlessui/pull/674), [#698](https://github.com/tailwindlabs/headlessui/pull/698))
+- Make `Disclosure.Button` close the disclosure inside a `Disclosure.Panel` ([#682](https://github.com/tailwindlabs/headlessui/pull/682))
+- Add `aria-orientation` to `Listbox`, which swaps Up/Down with Left/Right keys ([#683](https://github.com/tailwindlabs/headlessui/pull/683))
+- Expose `close` function from the render prop for `Disclosure`, `Disclosure.Panel`, `Popover` and `Popover.Panel` ([#697](https://github.com/tailwindlabs/headlessui/pull/697))
+
+
+## [@headlessui/vue@v1.4.0] - 2021-07-29
+
+### Added
+
+- Add new `Tabs` component ([#674](https://github.com/tailwindlabs/headlessui/pull/674), [#698](https://github.com/tailwindlabs/headlessui/pull/698))
+- Make `DisclosureButton` close the disclosure inside a `DisclosurePanel` ([#682](https://github.com/tailwindlabs/headlessui/pull/682))
+- Add `aria-orientation` to `Listbox`, which swaps Up/Down with Left/Right keys ([#683](https://github.com/tailwindlabs/headlessui/pull/683))
+- Expose `close` function from the scoped slot for `Disclosure`, `DisclosurePanel`, `Popover` and `PopoverPanel` ([#697](https://github.com/tailwindlabs/headlessui/pull/697))
+
+## [@headlessui/react@v1.3.0] - 2021-06-21
+
+### Added 
+
+- Ensure that you can use `Transition.Child` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
+- Add new `entered` prop for `Transition` and `Transition.Child` components ([#504](https://github.com/tailwindlabs/headlessui/pull/504))
+
+### Fixes
+
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
+- Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve React peer dependency version range ([#544](https://github.com/tailwindlabs/headlessui/pull/544))
+- Improve types for the `open` prop in the `Dialog` component ([#550](https://github.com/tailwindlabs/headlessui/pull/550))
+- Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
+- Remove undocumented `:className` prop ([#607](https://github.com/tailwindlabs/headlessui/pull/607))
+- Improve types for `Listbox` component ([#576](https://github.com/tailwindlabs/headlessui/pull/576))
+- Remove explicit `:class` prop ([#608](https://github.com/tailwindlabs/headlessui/pull/608))
+- Improve tree shaking ([#602](https://github.com/tailwindlabs/headlessui/pull/602))
+- Improve peer dependencies for `react-dom`, and for the future version `18` ([#622](https://github.com/tailwindlabs/headlessui/pull/622))
+
+## [@headlessui/vue@v1.3.0] - 2021-06-21
+
+### Added 
+
+- Ensure that you can use `TransitionChild` when using implicit Transitions ([#503](https://github.com/tailwindlabs/headlessui/pull/503))
+- Add new `entered` prop for `Transition` and `TransitionChild` components ([#504](https://github.com/tailwindlabs/headlessui/pull/504))
+
+### Fixes
+
+- Add `aria-disabled` on disabled `RadioGroup.Option` components ([#543](https://github.com/tailwindlabs/headlessui/pull/543))
+- Improve `disabled` and `tabindex` prop handling ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve reactivity when destructuring from props ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
+- Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
+
+## [@headlessui/react@v1.2.0] - 2021-05-10
+
+### Added 
+
+- Introduce Open/Closed state, to simplify component communication ([#466](https://github.com/tailwindlabs/headlessui/pull/466))
+
+### Fixes
+
+- Improve SSR for `Dialog` ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
+- Delay focus trap initialization ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
+- Improve incorrect behaviour for nesting `Dialog` components ([#560](https://github.com/tailwindlabs/headlessui/pull/560))
+
+## [@headlessui/vue@v1.2.0] - 2021-05-10
+
+### Added 
+
+- Introduce Open/Closed state, to simplify component communication ([#466](https://github.com/tailwindlabs/headlessui/pull/466))
+
+## [@headlessui/react@v1.1.1] - 2021-04-28
+
+### Fixes
+
+- Fix form submission within Dialog ([#460](https://github.com/tailwindlabs/headlessui/pull/460))
+
+## [@headlessui/vue@v1.1.1] - 2021-04-28
+
+### Fixes
+
+- Fix form submission within Dialog ([#460](https://github.com/tailwindlabs/headlessui/pull/460))
+- Fix TypeScript types for `Listbox` and `Switch` ([#459](https://github.com/tailwindlabs/headlessui/pull/459), [#461](https://github.com/tailwindlabs/headlessui/pull/461))
+
+## [@headlessui/react@v1.1.0] - 2021-04-26
+
+### Fixes
+
+- Improve search, make searching case insensitive ([#385](https://github.com/tailwindlabs/headlessui/pull/385))
+- Fix unreachable `RadioGroup` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
+- Fix closing nested `Dialog` components when pressing `Escape` ([#430](https://github.com/tailwindlabs/headlessui/pull/430))
+
+### Added
+
+- Add `disabled` prop to `RadioGroup` and `RadioGroup.Option` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
+- Add `defaultOpen` prop to the `Disclosure` component ([#447](https://github.com/tailwindlabs/headlessui/pull/447))
+
+## [@headlessui/vue@v1.1.0] - 2021-04-26
+
+### Fixes
+
+- Improve search, make searching case insensitive ([#385](https://github.com/tailwindlabs/headlessui/pull/385))
+- Fix unreachable `RadioGroup` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
+- Fix `RadioGroupOption` value type ([#400](https://github.com/tailwindlabs/headlessui/pull/400))
+- Fix closing nested `Dialog` components when pressing `Escape` ([#430](https://github.com/tailwindlabs/headlessui/pull/430))
+
+### Added
+
+- Add `disabled` prop to `RadioGroup` and `RadioGroupOption` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
+- Add `defaultOpen` prop to the `Disclosure` component ([#447](https://github.com/tailwindlabs/headlessui/pull/447))
+
 ## [@headlessui/react@v1.0.0] - 2021-04-14
 
 ### Fixes
@@ -156,8 +303,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.0.0...HEAD
-[unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.0.0...HEAD
+[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...HEAD
+[unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.2...HEAD
+[@headlessui/react@v1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.1...@headlessui/react@v1.4.2
+[@headlessui/vue@v1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.1...@headlessui/vue@v1.4.2
+[@headlessui/react@v1.4.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.0...@headlessui/react@v1.4.1
+[@headlessui/vue@v1.4.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.0...@headlessui/vue@v1.4.1
+[@headlessui/react@v1.4.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.3.0...@headlessui/react@v1.4.0
+[@headlessui/vue@v1.4.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.3.0...@headlessui/vue@v1.4.0
+[@headlessui/react@v1.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.2.0...@headlessui/react@v1.3.0
+[@headlessui/vue@v1.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.2.0...@headlessui/vue@v1.3.0
+[@headlessui/react@v1.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.1.1...@headlessui/react@v1.2.0
+[@headlessui/vue@v1.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.1.1...@headlessui/vue@v1.2.0
+[@headlessui/react@v1.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.1.0...@headlessui/react@v1.1.1
+[@headlessui/vue@v1.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.1.0...@headlessui/vue@v1.1.1
+[@headlessui/react@v1.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.0.0...@headlessui/react@v1.1.0
+[@headlessui/vue@v1.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.0.0...@headlessui/vue@v1.1.0
 [@headlessui/react@v1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.2...@headlessui/react@v1.0.0
 [@headlessui/vue@v1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.1...@headlessui/vue@v1.0.0
 [@headlessui/react@v0.3.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.1...@headlessui/react@v0.3.2

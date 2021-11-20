@@ -7,7 +7,7 @@ function assertNever(x: never): never {
 // ---
 
 export function getMenuButton(): HTMLElement | null {
-  return document.querySelector('button,[role="button"]')
+  return document.querySelector('button,[role="button"],[id^="headlessui-menu-button-"]')
 }
 
 export function getMenuButtons(): HTMLElement[] {
@@ -62,12 +62,20 @@ export function assertMenuButton(
 
       case MenuState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case MenuState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:
@@ -193,7 +201,7 @@ export function assertMenuItem(
 
     // Check that we have the correct values for certain attributes
     expect(item).toHaveAttribute('role', 'menuitem')
-    expect(item).toHaveAttribute('tabindex', '-1')
+    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure menu button has the following attributes
     if (options) {
@@ -218,7 +226,7 @@ export function getListboxLabel(): HTMLElement | null {
 }
 
 export function getListboxButton(): HTMLElement | null {
-  return document.querySelector('button,[role="button"]')
+  return document.querySelector('button,[role="button"],[id^="headlessui-listbox-button-"]')
 }
 
 export function getListboxButtons(): HTMLElement[] {
@@ -255,9 +263,12 @@ export function assertListbox(
     attributes?: Record<string, string | null>
     textContent?: string
     state: ListboxState
+    orientation?: 'horizontal' | 'vertical'
   },
   listbox = getListbox()
 ) {
+  let { orientation = 'vertical' } = options
+
   try {
     switch (options.state) {
       case ListboxState.InvisibleHidden:
@@ -266,6 +277,7 @@ export function assertListbox(
         assertHidden(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
@@ -281,6 +293,7 @@ export function assertListbox(
         assertVisible(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
@@ -326,12 +339,20 @@ export function assertListboxButton(
 
       case ListboxState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case ListboxState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:
@@ -483,7 +504,7 @@ export function assertListboxOption(
 
     // Check that we have the correct values for certain attributes
     expect(item).toHaveAttribute('role', 'option')
-    expect(item).toHaveAttribute('tabindex', '-1')
+    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure listbox button has the following attributes
     if (!options) return
@@ -628,12 +649,20 @@ export function assertDisclosureButton(
 
       case DisclosureState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case DisclosureState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:
@@ -752,12 +781,20 @@ export function assertPopoverButton(
 
       case PopoverState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       case PopoverState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        expect(button).not.toHaveAttribute('aria-expanded')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
         break
 
       default:
@@ -864,6 +901,10 @@ export function getDialog(): HTMLElement | null {
   return document.querySelector('[role="dialog"]')
 }
 
+export function getDialogs(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="dialog"]'))
+}
+
 export function getDialogTitle(): HTMLElement | null {
   return document.querySelector('[id^="headlessui-dialog-title-"]')
 }
@@ -874,6 +915,10 @@ export function getDialogDescription(): HTMLElement | null {
 
 export function getDialogOverlay(): HTMLElement | null {
   return document.querySelector('[id^="headlessui-dialog-overlay-"]')
+}
+
+export function getDialogOverlays(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-dialog-overlay-"]'))
 }
 
 // ---
@@ -1141,6 +1186,88 @@ export function assertRadioGroupLabel(
     }
   } catch (err) {
     Error.captureStackTrace(err, assertRadioGroupLabel)
+    throw err
+  }
+}
+
+// ---
+
+export function getTabList(): HTMLElement | null {
+  return document.querySelector('[role="tablist"]')
+}
+
+export function getTabs(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-tabs-tab-"]'))
+}
+
+export function getPanels(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-tabs-panel-"]'))
+}
+
+// ---
+
+export function assertTabs(
+  {
+    active,
+    orientation = 'horizontal',
+  }: {
+    active: number
+    orientation?: 'vertical' | 'horizontal'
+  },
+  list = getTabList(),
+  tabs = getTabs(),
+  panels = getPanels()
+) {
+  try {
+    if (list === null) return expect(list).not.toBe(null)
+
+    expect(list).toHaveAttribute('role', 'tablist')
+    expect(list).toHaveAttribute('aria-orientation', orientation)
+
+    let activeTab = tabs.find(tab => tab.dataset.headlessuiIndex === '' + active)
+    let activePanel = panels.find(panel => panel.dataset.headlessuiIndex === '' + active)
+
+    for (let tab of tabs) {
+      expect(tab).toHaveAttribute('id')
+      expect(tab).toHaveAttribute('role', 'tab')
+      expect(tab).toHaveAttribute('type', 'button')
+
+      if (tab === activeTab) {
+        expect(tab).toHaveAttribute('aria-selected', 'true')
+        expect(tab).toHaveAttribute('tabindex', '0')
+      } else {
+        expect(tab).toHaveAttribute('aria-selected', 'false')
+        expect(tab).toHaveAttribute('tabindex', '-1')
+      }
+
+      if (tab.hasAttribute('aria-controls')) {
+        let controlsId = tab.getAttribute('aria-controls')!
+        let panel = document.getElementById(controlsId)
+
+        expect(panel).not.toBe(null)
+        expect(panels).toContain(panel)
+        expect(panel).toHaveAttribute('aria-labelledby', tab.id)
+      }
+    }
+
+    for (let panel of panels) {
+      expect(panel).toHaveAttribute('id')
+      expect(panel).toHaveAttribute('role', 'tabpanel')
+
+      let controlledById = panel.getAttribute('aria-labelledby')!
+      let tab = document.getElementById(controlledById)
+
+      expect(tabs).toContain(tab)
+      expect(tab).toHaveAttribute('aria-controls', panel.id)
+
+      if (panel === activePanel) {
+        expect(panel).toHaveAttribute('tabindex', '0')
+      } else {
+        expect(panel).toHaveAttribute('tabindex', '-1')
+      }
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertTabs)
     throw err
   }
 }

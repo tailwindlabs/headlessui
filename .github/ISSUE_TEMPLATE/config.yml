@@ -1,11 +1,15 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Get Help
+    url: https://github.com/tailwindlabs/headlessui/discussions/new?category=help
+    about: If you can't get something to work the way you expect, open a question in our discussion forums.
   - name: Feature Request
     url: https://github.com/tailwindlabs/headlessui/discussions/new?category=ideas
     about: 'Suggest any ideas you have using our discussion forums.'
-  - name: Help
-    url: https://github.com/tailwindlabs/headlessui/discussions/new?category=help
-    about: 'If you have a question or need help, ask a question on the discussion forums.'
-  - name: Kind Words
-    url: https://github.com/tailwindlabs/headlessui/discussions/new?category=kind-words
-    about: "Have something nice to say about Headless UI or Tailwind in general? We'd love to hear it!"
+  - name: Bug Report
+    url: https://github.com/tailwindlabs/headlessui/issues/new?body=%3C!--%20Please%20provide%20all%20of%20the%20information%20requested%20below.%20We're%20a%20small%20team%20and%20without%20all%20of%20this%20information%20it's%20not%20possible%20for%20us%20to%20help%20and%20your%20bug%20report%20will%20be%20closed.%20--%3E%0A%0A**What%20package%20within%20Headless%20UI%20are%20you%20using?**%0A%0AFor%20example:%20@headlessui/react%0A%0A**What%20version%20of%20that%20package%20are%20you%20using?**%0A%0AFor%20example:%20v0.3.1%0A%0A**What%20browser%20are%20you%20using?**%0A%0AFor%20example:%20Chrome,%20Safari,%20or%20N/A%0A%0A**Reproduction%20URL**%0A%0AA%20public%20GitHub%20repo%20that%20includes%20a%20minimal%20reproduction%20of%20the%20bug.%20**Please%20do%20not%20link%20to%20your%20actual%20project**,%20what%20we%20need%20instead%20is%20a%20_minimal_%20reproduction%20in%20a%20fresh%20project%20without%20any%20unnecessary%20code.%20This%20means%20it%20doesn't%20matter%20if%20your%20real%20project%20is%20private/confidential,%20since%20we%20want%20a%20link%20to%20a%20separate,%20isolated%20reproduction%20anyways.%20Unfortunately%20we%20can't%20provide%20support%20without%20a%20reproduction,%20and%20your%20issue%20will%20be%20closed%20with%20no%20comment%20if%20this%20is%20not%20provided.%0A%0A**Describe%20your%20issue**%0A%0ADescribe%20the%20problem%20you're%20seeing,%20any%20important%20steps%20to%20reproduce%20and%20what%20behavior%20you%20expect%20instead.
+    about: If you've already asked for help with a problem and confirmed something is broken with Headless UI itself, create a bug report.
+  - name: Documentation Issue
+    url: https://github.com/tailwindlabs/headlessui/issues/new?title=%5BDOCS%5D:%20
+    about: 'For documentation issues, suggest changes on our documentation repository.'
+

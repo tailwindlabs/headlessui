@@ -22,6 +22,8 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
 import { Features, PropsForFeatures, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 
 type ID = ReturnType<typeof useId>
 
@@ -34,6 +36,7 @@ function useSplitClasses(classes: string = '') {
 interface TransitionContextValues {
   show: boolean
   appear: boolean
+  initial: boolean
 }
 let TransitionContext = createContext<TransitionContextValues | null>(null)
 TransitionContext.displayName = 'TransitionContext'
@@ -47,6 +50,7 @@ export interface TransitionClasses {
   enter?: string
   enterFrom?: string
   enterTo?: string
+  entered?: string
   leave?: string
   leaveFrom?: string
   leaveTo?: string
@@ -198,6 +202,7 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     enter,
     enterFrom,
     enterTo,
+    entered,
     leave,
     leaveFrom,
     leaveTo,
@@ -209,17 +214,16 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
   let [state, setState] = useState(TreeStates.Visible)
   let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
-  let { show, appear } = useTransitionContext()
+  let { show, appear, initial } = useTransitionContext()
   let { register, unregister } = useParentNesting()
 
-  let initial = useIsInitialRender()
   let id = useId()
 
   let isTransitioning = useRef(false)
 
   let nesting = useNesting(() => {
     // When all children have been unmounted we can only hide ourselves if and only if we are not
-    // transitioning ourserlves. Otherwise we would unmount before the transitions are finished.
+    // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
     if (!isTransitioning.current) {
       setState(TreeStates.Hidden)
       unregister(id)
@@ -253,17 +257,21 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
   let enterFromClasses = useSplitClasses(enterFrom)
   let enterToClasses = useSplitClasses(enterTo)
 
+  let enteredClasses = useSplitClasses(entered)
+
   let leaveClasses = useSplitClasses(leave)
   let leaveFromClasses = useSplitClasses(leaveFrom)
   let leaveToClasses = useSplitClasses(leaveTo)
 
   let events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
 
+  let ready = useServerHandoffComplete()
+
   useEffect(() => {
-    if (state === TreeStates.Visible && container.current === null) {
+    if (ready && state === TreeStates.Visible && container.current === null) {
       throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
     }
-  }, [container, state])
+  }, [container, state, ready])
 
   // Skipping initial transition
   let skip = initial && !appear
@@ -279,11 +287,11 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     if (!show) events.current.beforeLeave()
 
     return show
-      ? transition(node, enterClasses, enterFromClasses, enterToClasses, reason => {
+      ? transition(node, enterClasses, enterFromClasses, enterToClasses, enteredClasses, reason => {
           isTransitioning.current = false
           if (reason === Reason.Finished) events.current.afterEnter()
         })
-      : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, reason => {
+      : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, enteredClasses, reason => {
           isTransitioning.current = false
 
           if (reason !== Reason.Finished) return
@@ -318,24 +326,40 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
 
   return (
     <NestingContext.Provider value={nesting}>
-      {render({
-        props: { ...passthroughProps, ...propsWeControl },
-        defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
-        features: TransitionChildRenderFeatures,
-        visible: state === TreeStates.Visible,
-        name: 'Transition.Child',
-      })}
+      <OpenClosedProvider
+        value={match(state, {
+          [TreeStates.Visible]: State.Open,
+          [TreeStates.Hidden]: State.Closed,
+        })}
+      >
+        {render({
+          props: { ...passthroughProps, ...propsWeControl },
+          defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
+          features: TransitionChildRenderFeatures,
+          visible: state === TreeStates.Visible,
+          name: 'Transition.Child',
+        })}
+      </OpenClosedProvider>
     </NestingContext.Provider>
   )
 }
 
 export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: TransitionChildProps<TTag> & { show: boolean; appear?: boolean }
+  props: TransitionChildProps<TTag> & { show?: boolean; appear?: boolean }
 ) {
   // @ts-expect-error
   let { show, appear = false, unmount, ...passthroughProps } = props as typeof props
 
-  if (![true, false].includes(show)) {
+  let usesOpenClosedState = useOpenClosed()
+
+  if (show === undefined && usesOpenClosedState !== null) {
+    show = match(usesOpenClosedState, {
+      [State.Open]: true,
+      [State.Closed]: false,
+    })
+  }
+
+  if (![true, false].includes((show as unknown) as boolean)) {
     throw new Error('A <Transition /> is used but it is missing a `show={true | false}` prop.')
   }
 
@@ -347,7 +371,7 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   let initial = useIsInitialRender()
   let transitionBag = useMemo<TransitionContextValues>(
-    () => ({ show, appear: appear || !initial }),
+    () => ({ show: show as boolean, appear: appear || !initial, initial }),
     [show, appear, initial]
   )
 
@@ -380,5 +404,16 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   )
 }
 
-Transition.Child = TransitionChild
+Transition.Child = function Child<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+  props: TransitionChildProps<TTag>
+) {
+  let hasTransitionContext = useContext(TransitionContext) !== null
+  let hasOpenClosedContext = useOpenClosed() !== null
+
+  return !hasTransitionContext && hasOpenClosedContext ? (
+    <Transition {...props} />
+  ) : (
+    <TransitionChild {...props} />
+  )
+}
 Transition.Root = Transition

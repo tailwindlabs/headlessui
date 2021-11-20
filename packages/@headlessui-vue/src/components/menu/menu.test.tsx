@@ -1,6 +1,7 @@
-import { defineComponent, h, nextTick } from 'vue'
+import { defineComponent, h, nextTick, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
+import { TransitionChild } from '../transitions/transition'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   MenuState,
@@ -30,6 +31,7 @@ import {
   MouseButton,
 } from '../../test-utils/interactions'
 import { jsx } from '../../test-utils/html'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
 
@@ -39,6 +41,16 @@ beforeAll(() => {
 })
 
 afterAll(() => jest.restoreAllMocks())
+
+function nextFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   let defaultComponents = { Menu, MenuButton, MenuItems, MenuItem }
@@ -341,6 +353,96 @@ describe('Rendering', () => {
         })
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        renderTemplate(
+          jsx`
+            <Menu>
+              <MenuButton>Trigger</MenuButton>
+            </Menu>
+          `
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        renderTemplate(
+          jsx`
+            <Menu>
+              <MenuButton type="submit">
+                Trigger
+              </MenuButton>
+            </Menu>
+          `
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it(
+        'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: jsx`
+              <Menu>
+                <MenuButton :as="CustomButton">
+                  Trigger
+                </MenuButton>
+              </Menu>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('button', { ...props }),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getMenuButton()).toHaveAttribute('type', 'button')
+        })
+      )
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        renderTemplate(
+          jsx`
+            <Menu>
+              <MenuButton as="div">
+                Trigger
+              </MenuButton>
+            </Menu>
+          `
+        )
+
+        expect(getMenuButton()).not.toHaveAttribute('type')
+      })
+
+      it(
+        'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: jsx`
+              <Menu>
+                <MenuButton :as="CustomButton">
+                  Trigger
+                </MenuButton>
+              </Menu>
+            `,
+            setup: () => ({
+              CustomButton: defineComponent({
+                setup: props => () => h('div', props),
+              }),
+            }),
+          })
+
+          await new Promise(requestAnimationFrame)
+
+          expect(getMenuButton()).not.toHaveAttribute('type')
+        })
+      )
+    })
   })
 
   describe('MenuItems', () => {
@@ -595,7 +697,6 @@ describe('Rendering', () => {
                 '  - id',
                 '  - role',
                 '  - tabIndex',
-                '  - class',
                 '  - aria-disabled',
                 '  - onClick',
                 '  - onFocus',
@@ -621,60 +722,6 @@ describe('Rendering', () => {
 })
 
 describe('Rendering composition', () => {
-  it('should be possible to conditionally render classNames (aka className can be a function?!)', async () => {
-    renderTemplate(jsx`
-      <Menu>
-        <MenuButton>Trigger</MenuButton>
-        <MenuItems>
-          <MenuItem as="a" :className="JSON.stringify">Item A</MenuItem>
-          <MenuItem as="a" disabled :className="JSON.stringify">Item B</MenuItem>
-          <MenuItem as="a" class="no-special-treatment">Item C</MenuItem>
-        </MenuItems>
-      </Menu>
-    `)
-
-    assertMenuButton({
-      state: MenuState.InvisibleUnmounted,
-      attributes: { id: 'headlessui-menu-button-1' },
-    })
-    assertMenu({ state: MenuState.InvisibleUnmounted })
-
-    // Open menu
-    await click(getMenuButton())
-
-    let items = getMenuItems()
-
-    // Verify correct classNames
-    expect('' + items[0].classList).toEqual(JSON.stringify({ active: false, disabled: false }))
-    expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
-    expect('' + items[2].classList).toEqual('no-special-treatment')
-
-    // Double check that nothing is active
-    assertNoActiveMenuItem()
-
-    // Make the first item active
-    await press(Keys.ArrowDown)
-
-    // Verify the classNames
-    expect('' + items[0].classList).toEqual(JSON.stringify({ active: true, disabled: false }))
-    expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
-    expect('' + items[2].classList).toEqual('no-special-treatment')
-
-    // Double check that the first item is the active one
-    assertMenuLinkedWithMenuItem(items[0])
-
-    // Let's go down, this should go to the third item since the second item is disabled!
-    await press(Keys.ArrowDown)
-
-    // Verify the classNames
-    expect('' + items[0].classList).toEqual(JSON.stringify({ active: false, disabled: false }))
-    expect('' + items[1].classList).toEqual(JSON.stringify({ active: false, disabled: true }))
-    expect('' + items[2].classList).toEqual('no-special-treatment')
-
-    // Double check that the last item is the active one
-    assertMenuLinkedWithMenuItem(items[2])
-  })
-
   it(
     'should be possible to swap the menu item with a button for example',
     suppressConsoleLogs(async () => {
@@ -722,22 +769,22 @@ describe('Rendering composition', () => {
         template: jsx`
           <Menu>
             <MenuButton>Trigger</MenuButton>
-            <div className="outer">
+            <div class="outer">
               <MenuItems>
-                <div className="py-1 inner">
+                <div class="py-1 inner">
                   <MenuItem as="button">Item A</MenuItem>
                   <MenuItem as="button">Item B</MenuItem>
                 </div>
-                <div className="py-1 inner">
+                <div class="py-1 inner">
                   <MenuItem as="button">Item C</MenuItem>
                   <MenuItem>
                     <div>
-                      <div className="outer">Item D</div>
+                      <div class="outer">Item D</div>
                     </div>
                   </MenuItem>
                 </div>
-                <div className="py-1 inner">
-                  <form className="inner">
+                <div class="py-1 inner">
+                  <form class="inner">
                     <MenuItem as="button">Item E</MenuItem>
                   </form>
                 </div>
@@ -761,6 +808,174 @@ describe('Rendering composition', () => {
       })
     })
   )
+})
+
+describe('Composition', () => {
+  let OpenClosedWrite = defineComponent({
+    props: { open: { type: Boolean } },
+    setup(props, { slots }) {
+      useOpenClosedProvider(ref(props.open ? State.Open : State.Closed))
+      return () => slots.default?.()
+    },
+  })
+
+  let OpenClosedRead = defineComponent({
+    emits: ['read'],
+    setup(_, { slots, emit }) {
+      let state = useOpenClosed()
+      watch([state], ([value]) => emit('read', value))
+      return () => slots.default?.()
+    },
+  })
+
+  it(
+    'should always open the MenuItems because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: jsx`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <OpenClosedWrite :open="true">
+              <MenuItems v-slot="data">
+                {{JSON.stringify(data)}}
+              </MenuItems>
+            </OpenClosedWrite>
+          </Menu>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Menu is visible
+      assertMenu({ state: MenuState.Visible })
+
+      // Let's try and open the Menu
+      await click(getMenuButton())
+
+      // Verify the Menu is still visible
+      assertMenu({ state: MenuState.Visible })
+    })
+  )
+
+  it(
+    'should always close the MenuItems because of a wrapping OpenClosed component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        components: { OpenClosedWrite },
+        template: jsx`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <OpenClosedWrite :open="false">
+              <MenuItems v-slot="data">
+                {{JSON.stringify(data)}}
+              </MenuItems>
+            </OpenClosedWrite>
+          </Menu>
+        `,
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Menu is hidden
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Let's try and open the Menu
+      await click(getMenuButton())
+
+      // Verify the Menu is still hidden
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should be possible to read the OpenClosed state',
+    suppressConsoleLogs(async () => {
+      let readFn = jest.fn()
+      renderTemplate({
+        components: { OpenClosedRead },
+        template: jsx`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <OpenClosedRead @read="readFn">
+              <MenuItems></MenuItems>
+            </OpenClosedRead>
+          </Menu>
+        `,
+        setup() {
+          return { readFn }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      // Verify the Menu is hidden
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Let's toggle the Menu 3 times
+      await click(getMenuButton())
+      await click(getMenuButton())
+      await click(getMenuButton())
+
+      // Verify the Menu is visible
+      assertMenu({ state: MenuState.Visible })
+
+      expect(readFn).toHaveBeenCalledTimes(3)
+      expect(readFn).toHaveBeenNthCalledWith(1, State.Open)
+      expect(readFn).toHaveBeenNthCalledWith(2, State.Closed)
+      expect(readFn).toHaveBeenNthCalledWith(3, State.Open)
+    })
+  )
+
+  it('should be possible to render a TransitionChild that inherits state from the Menu', async () => {
+    let readFn = jest.fn()
+    renderTemplate({
+      components: { TransitionChild },
+      template: jsx`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <TransitionChild
+            as="template"
+            @beforeEnter="readFn('enter')"
+            @beforeLeave="readFn('leave')"
+          >
+            <MenuItems>
+              <MenuItem as="button">I am a button</MenuItem>
+            </MenuItems>
+          </TransitionChild>
+        </Menu>
+      `,
+      setup() {
+        return { readFn }
+      },
+    })
+
+    // Verify the Menu is hidden
+    assertMenu({ state: MenuState.InvisibleUnmounted })
+
+    // Let's toggle the Menu
+    await click(getMenuButton())
+
+    // Verify that our transition fired
+    expect(readFn).toHaveBeenCalledTimes(1)
+    expect(readFn).toHaveBeenNthCalledWith(1, 'enter')
+
+    // Verify the Menu is visible
+    assertMenu({ state: MenuState.Visible })
+
+    // Let's toggle the Menu
+    await click(getMenuButton())
+
+    // Verify that our transition fired
+    expect(readFn).toHaveBeenCalledTimes(2)
+    expect(readFn).toHaveBeenNthCalledWith(2, 'leave')
+
+    // Wait for the transitions to finish
+    await nextFrame()
+
+    // Verify the Menu is hidden
+    assertMenu({ state: MenuState.InvisibleUnmounted })
+  })
 })
 
 describe('Keyboard interactions', () => {
@@ -2453,6 +2668,36 @@ describe('Keyboard interactions', () => {
 
       // We should still be on the last item
       assertMenuLinkedWithMenuItem(items[2])
+    })
+
+    it('should be possible to search for a word (case insensitive)', async () => {
+      renderTemplate(jsx`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">alice</MenuItem>
+            <MenuItem as="a">bob</MenuItem>
+            <MenuItem as="a">charlie</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      // Focus the button
+      getMenuButton()?.focus()
+
+      // Open menu
+      await press(Keys.ArrowUp)
+
+      let items = getMenuItems()
+
+      // We should be on the last item
+      assertMenuLinkedWithMenuItem(items[2])
+
+      // Search for bob in a different casing
+      await type(word('BO'))
+
+      // We should be on `bob`
+      assertMenuLinkedWithMenuItem(items[1])
     })
   })
 })

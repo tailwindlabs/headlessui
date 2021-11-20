@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useReducer,
   useRef,
+  useState,
 
   // Types
   ContextType,
@@ -23,14 +24,15 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
-import { useFocusTrap } from '../../hooks/use-focus-trap'
+import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
-import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
-import { contains } from '../../internal/dom-containers'
 import { Description, useDescriptions } from '../description/description'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosed, State } from '../../internal/open-closed'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { StackProvider, StackMessage } from '../../internal/stack-context'
 
 enum DialogStates {
   Open,
@@ -92,7 +94,13 @@ let DEFAULT_DIALOG_TAG = 'div' as const
 interface DialogRenderPropArg {
   open: boolean
 }
-type DialogPropsWeControl = 'id' | 'role' | 'aria-modal' | 'aria-describedby' | 'aria-labelledby'
+type DialogPropsWeControl =
+  | 'id'
+  | 'role'
+  | 'aria-modal'
+  | 'aria-describedby'
+  | 'aria-labelledby'
+  | 'onClick'
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -101,20 +109,30 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 >(
   props: Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
     PropsForFeatures<typeof DialogRenderFeatures> & {
-      open: boolean
+      open?: boolean
       onClose(value: boolean): void
       initialFocus?: MutableRefObject<HTMLElement | null>
     },
   ref: Ref<HTMLDivElement>
 ) {
   let { open, onClose, initialFocus, ...rest } = props
+  let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
-  let containers = useRef<Set<HTMLElement>>(new Set())
+  let usesOpenClosedState = useOpenClosed()
+  if (open === undefined && usesOpenClosedState !== null) {
+    // Update the `open` prop based on the open closed state
+    open = match(usesOpenClosedState, {
+      [State.Open]: true,
+      [State.Closed]: false,
+    })
+  }
+
+  let containers = useRef<Set<MutableRefObject<HTMLElement | null>>>(new Set())
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
   // Validations
-  let hasOpen = props.hasOwnProperty('open')
+  let hasOpen = props.hasOwnProperty('open') || usesOpenClosedState !== null
   let hasOnClose = props.hasOwnProperty('onClose')
   if (!hasOpen && !hasOnClose) {
     throw new Error(
@@ -145,8 +163,14 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       `You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${onClose}`
     )
   }
-
   let dialogState = open ? DialogStates.Open : DialogStates.Closed
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return dialogState === DialogStates.Open
+  })()
 
   let [state, dispatch] = useReducer(stateReducer, {
     titleId: null,
@@ -160,13 +184,34 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     [dispatch]
   )
 
+  let ready = useServerHandoffComplete()
+  let enabled = ready && dialogState === DialogStates.Open
+  let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
+  let hasParentDialog = useContext(DialogContext) !== null
+
+  // If there are multiple dialogs, then you can be the root, the leaf or one
+  // in between. We only care abou whether you are the top most one or not.
+  let position = !hasNestedDialogs ? 'leaf' : 'parent'
+
+  useFocusTrap(
+    internalDialogRef,
+    enabled
+      ? match(position, {
+          parent: FocusTrapFeatures.RestoreFocus,
+          leaf: FocusTrapFeatures.All,
+        })
+      : FocusTrapFeatures.None,
+    { initialFocus, containers }
+  )
+  useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
+
   // Handle outside click
   useWindowEvent('mousedown', event => {
     let target = event.target as HTMLElement
 
     if (dialogState !== DialogStates.Open) return
-    if (containers.current.size !== 1) return
-    if (contains(containers.current, target)) return
+    if (hasNestedDialogs) return
+    if (internalDialogRef.current?.contains(target)) return
 
     close()
   })
@@ -175,13 +220,16 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   useWindowEvent('keydown', event => {
     if (event.key !== Keys.Escape) return
     if (dialogState !== DialogStates.Open) return
-    if (containers.current.size > 1) return // 1 is myself, otherwise other elements in the Stack
+    if (hasNestedDialogs) return
+    event.preventDefault()
+    event.stopPropagation()
     close()
   })
 
   // Scroll lock
   useEffect(() => {
     if (dialogState !== DialogStates.Open) return
+    if (hasParentDialog) return
 
     let overflow = document.documentElement.style.overflow
     let paddingRight = document.documentElement.style.paddingRight
@@ -190,11 +238,12 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
     document.documentElement.style.overflow = 'hidden'
     document.documentElement.style.paddingRight = `${scrollbarWidth}px`
+
     return () => {
       document.documentElement.style.overflow = overflow
       document.documentElement.style.paddingRight = paddingRight
     }
-  }, [dialogState])
+  }, [dialogState, hasParentDialog])
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
@@ -219,10 +268,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     return () => observer.disconnect()
   }, [dialogState, internalDialogRef, close])
 
-  let enabled = dialogState === DialogStates.Open
-
-  useFocusTrap(containers, enabled, { initialFocus })
-  useInertOthers(internalDialogRef, enabled)
   let [describedby, DescriptionProvider] = useDescriptions()
 
   let id = `headlessui-dialog-${useId()}`
@@ -243,21 +288,30 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     'aria-modal': dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,
+    onClick(event: ReactMouseEvent) {
+      event.stopPropagation()
+    },
   }
   let passthroughProps = rest
 
   return (
     <StackProvider
-      onUpdate={(message, element) => {
-        return match(message, {
-          [StackMessage.AddElement]() {
+      type="Dialog"
+      element={internalDialogRef}
+      onUpdate={useCallback((message, type, element) => {
+        if (type !== 'Dialog') return
+
+        match(message, {
+          [StackMessage.Add]() {
             containers.current.add(element)
+            setNestedDialogCount(count => count + 1)
           },
-          [StackMessage.RemoveElement]() {
-            containers.current.delete(element)
+          [StackMessage.Remove]() {
+            containers.current.add(element)
+            setNestedDialogCount(count => count - 1)
           },
         })
-      }}
+      }, [])}
     >
       <ForcePortalRoot force={true}>
         <Portal>
@@ -270,7 +324,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
                     slot,
                     defaultTag: DEFAULT_DIALOG_TAG,
                     features: DialogRenderFeatures,
-                    visible: dialogState === DialogStates.Open,
+                    visible,
                     name: 'Dialog',
                   })}
                 </DescriptionProvider>
@@ -301,7 +355,10 @@ let Overlay = forwardRefWithAs(function Overlay<
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
+      if (event.target !== event.currentTarget) return
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+      event.preventDefault()
+      event.stopPropagation()
       close()
     },
     [close]

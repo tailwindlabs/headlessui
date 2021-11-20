@@ -62,20 +62,19 @@ it('should focus the initialFocus element inside the FocusTrap even if another e
   assertActiveElement(document.getElementById('c'))
 })
 
-it(
-  'should error when there is no focusable element inside the FocusTrap',
-  suppressConsoleLogs(() => {
-    expect(() => {
-      render(
-        <FocusTrap>
-          <span>Nothing to see here...</span>
-        </FocusTrap>
-      )
-    }).toThrowErrorMatchingInlineSnapshot(
-      `"There are no focusable elements inside the <FocusTrap />"`
+it('should warn when there is no focusable element inside the FocusTrap', () => {
+  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+
+  function Example() {
+    return (
+      <FocusTrap>
+        <span>Nothing to see here...</span>
+      </FocusTrap>
     )
-  })
-)
+  }
+  render(<Example />)
+  expect(spy.mock.calls[0][0]).toBe('There are no focusable elements inside the <FocusTrap />')
+})
 
 it(
   'should not be possible to programmatically escape the focus trap',
@@ -98,13 +97,13 @@ it(
 
     let [a, b, c, d] = Array.from(document.querySelectorAll('input'))
 
-    // Ensure that input-b is the active elememt
+    // Ensure that input-b is the active element
     assertActiveElement(b)
 
     // Tab to the next item
     await press(Keys.Tab)
 
-    // Ensure that input-c is the active elememt
+    // Ensure that input-c is the active element
     assertActiveElement(c)
 
     // Try to move focus

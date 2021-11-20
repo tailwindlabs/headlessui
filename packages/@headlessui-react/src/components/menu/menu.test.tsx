@@ -1,4 +1,4 @@
-import React, { createElement } from 'react'
+import React, { createElement, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Menu } from './menu'
@@ -31,6 +31,7 @@ import {
   Keys,
   MouseButton,
 } from '../../test-utils/interactions'
+import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
 
@@ -183,6 +184,65 @@ describe('Rendering', () => {
         assertMenu({ state: MenuState.Visible })
       })
     )
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        render(
+          <Menu>
+            <Menu.Button type="submit">Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+        let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+          <button ref={ref} {...props} />
+        ))
+
+        render(
+          <Menu>
+            <Menu.Button as={CustomButton}>Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        render(
+          <Menu>
+            <Menu.Button as="div">Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).not.toHaveAttribute('type')
+      })
+
+      it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+        let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+          <div ref={ref} {...props} />
+        ))
+
+        render(
+          <Menu>
+            <Menu.Button as={CustomButton}>Trigger</Menu.Button>
+          </Menu>
+        )
+
+        expect(getMenuButton()).not.toHaveAttribute('type')
+      })
+    })
   })
 
   describe('Menu.Items', () => {
@@ -427,6 +487,126 @@ describe('Rendering composition', () => {
       document.querySelectorAll('.inner').forEach(element => {
         expect(element).toHaveAttribute('role', 'none')
       })
+    })
+  )
+})
+
+describe('Composition', () => {
+  function Debug({ fn, name }: { fn: (text: string) => void; name: string }) {
+    useEffect(() => {
+      fn(`Mounting - ${name}`)
+      return () => {
+        fn(`Unmounting - ${name}`)
+      }
+    }, [fn, name])
+    return null
+  }
+
+  it(
+    'should be possible to wrap the Menu.Items with a Transition component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Debug name="Menu" fn={orderFn} />
+          <Transition>
+            <Debug name="Transition" fn={orderFn} />
+            <Menu.Items>
+              <Menu.Item as="a">
+                {data => (
+                  <>
+                    {JSON.stringify(data)}
+                    <Debug name="Menu.Item" fn={orderFn} />
+                  </>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition>
+        </Menu>
+      )
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      await click(getMenuButton())
+
+      assertMenuButton({
+        state: MenuState.Visible,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({
+        state: MenuState.Visible,
+        textContent: JSON.stringify({ active: false, disabled: false }),
+      })
+
+      await click(getMenuButton())
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Menu'],
+        ['Mounting - Transition'],
+        ['Mounting - Menu.Item'],
+        ['Unmounting - Transition'],
+        ['Unmounting - Menu.Item'],
+      ])
+    })
+  )
+
+  it(
+    'should be possible to wrap the Menu.Items with a Transition.Child component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Debug name="Menu" fn={orderFn} />
+          <Transition.Child>
+            <Debug name="Transition" fn={orderFn} />
+            <Menu.Items>
+              <Menu.Item as="a">
+                {data => (
+                  <>
+                    {JSON.stringify(data)}
+                    <Debug name="Menu.Item" fn={orderFn} />
+                  </>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition.Child>
+        </Menu>
+      )
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      await click(getMenuButton())
+
+      assertMenuButton({
+        state: MenuState.Visible,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({
+        state: MenuState.Visible,
+        textContent: JSON.stringify({ active: false, disabled: false }),
+      })
+
+      await click(getMenuButton())
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Menu'],
+        ['Mounting - Transition'],
+        ['Mounting - Menu.Item'],
+        ['Unmounting - Transition'],
+        ['Unmounting - Menu.Item'],
+      ])
     })
   )
 })
@@ -2406,6 +2586,38 @@ describe('Keyboard interactions', () => {
 
         // We should still be on the last item
         assertMenuLinkedWithMenuItem(items[2])
+      })
+    )
+    it(
+      'should be possible to search for a word (case insensitive)',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">alice</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+              <Menu.Item as="a">charlie</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        // Focus the button
+        getMenuButton()?.focus()
+
+        // Open menu
+        await press(Keys.ArrowUp)
+
+        let items = getMenuItems()
+
+        // We should be on the last item
+        assertMenuLinkedWithMenuItem(items[2])
+
+        // Search for bob in a different casing
+        await type(word('BO'))
+
+        // We should be on `bob`
+        assertMenuLinkedWithMenuItem(items[1])
       })
     )
   })

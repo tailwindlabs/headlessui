@@ -15,13 +15,15 @@ import {
   watch,
 } from 'vue'
 
-import { Features, render } from '../../utils/render'
+import { Features, render, omit } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
+import { match } from '../../utils/match'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum ListboxStates {
   Open,
@@ -37,9 +39,12 @@ type StateDefinition = {
   // State
   listboxState: Ref<ListboxStates>
   value: ComputedRef<unknown>
+  orientation: Ref<'vertical' | 'horizontal'>
+
   labelRef: Ref<HTMLLabelElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
   optionsRef: Ref<HTMLDivElement | null>
+
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ListboxOptionDataRef }[]>
   searchQuery: Ref<string>
@@ -74,14 +79,14 @@ function useListboxContext(component: string) {
 
 export let Listbox = defineComponent({
   name: 'Listbox',
-  emits: ['update:modelValue'],
+  emits: { 'update:modelValue': (_value: any) => true },
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
-    modelValue: { type: [Object, String, Number, Boolean], default: null },
+    horizontal: { type: [Boolean], default: false },
+    modelValue: { type: [Object, String, Number, Boolean] },
   },
   setup(props, { slots, attrs, emit }) {
-    let { modelValue, disabled, ...passThroughProps } = props
     let listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
     let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
@@ -95,26 +100,27 @@ export let Listbox = defineComponent({
     let api = {
       listboxState,
       value,
+      orientation: computed(() => (props.horizontal ? 'horizontal' : 'vertical')),
       labelRef,
       buttonRef,
       optionsRef,
-      disabled,
+      disabled: computed(() => props.disabled),
       options,
       searchQuery,
       activeOptionIndex,
       closeListbox() {
-        if (disabled) return
+        if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
         listboxState.value = ListboxStates.Closed
         activeOptionIndex.value = null
       },
       openListbox() {
-        if (disabled) return
+        if (props.disabled) return
         if (listboxState.value === ListboxStates.Open) return
         listboxState.value = ListboxStates.Open
       },
       goToOption(focus: Focus, id?: string) {
-        if (disabled) return
+        if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
 
         let nextActiveOptionIndex = calculateActiveIndex(
@@ -134,10 +140,10 @@ export let Listbox = defineComponent({
         activeOptionIndex.value = nextActiveOptionIndex
       },
       search(value: string) {
-        if (disabled) return
+        if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
 
-        searchQuery.value += value
+        searchQuery.value += value.toLowerCase()
 
         let match = options.value.findIndex(
           option =>
@@ -148,7 +154,7 @@ export let Listbox = defineComponent({
         activeOptionIndex.value = match
       },
       clearSearch() {
-        if (disabled) return
+        if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
         if (searchQuery.value === '') return
 
@@ -175,7 +181,7 @@ export let Listbox = defineComponent({
         })()
       },
       select(value: unknown) {
-        if (disabled) return
+        if (props.disabled) return
         emit('update:modelValue', value)
       },
     }
@@ -194,10 +200,24 @@ export let Listbox = defineComponent({
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ListboxContext, api)
+    useOpenClosedProvider(
+      computed(() =>
+        match(listboxState.value, {
+          [ListboxStates.Open]: State.Open,
+          [ListboxStates.Closed]: State.Closed,
+        })
+      )
+    )
 
     return () => {
-      let slot = { open: listboxState.value === ListboxStates.Open, disabled }
-      return render({ props: passThroughProps, slot, slots, attrs, name: 'Listbox' })
+      let slot = { open: listboxState.value === ListboxStates.Open, disabled: props.disabled }
+      return render({
+        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
+        slot,
+        slots,
+        attrs,
+        name: 'Listbox',
+      })
     }
   },
 })
@@ -210,7 +230,7 @@ export let ListboxLabel = defineComponent({
   render() {
     let api = useListboxContext('ListboxLabel')
 
-    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled }
+    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled.value }
     let propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
 
     return render({
@@ -245,18 +265,20 @@ export let ListboxButton = defineComponent({
   render() {
     let api = useListboxContext('ListboxButton')
 
-    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled }
+    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled.value }
     let propsWeControl = {
       ref: 'el',
       id: this.id,
-      type: 'button',
+      type: this.type,
       'aria-haspopup': true,
       'aria-controls': dom(api.optionsRef)?.id,
-      'aria-expanded': api.listboxState.value === ListboxStates.Open ? true : undefined,
+      'aria-expanded': api.disabled.value
+        ? undefined
+        : api.listboxState.value === ListboxStates.Open,
       'aria-labelledby': api.labelRef.value
         ? [dom(api.labelRef)?.id, this.id].join(' ')
         : undefined,
-      disabled: api.disabled,
+      disabled: api.disabled.value === true ? true : undefined,
       onKeydown: this.handleKeyDown,
       onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
@@ -270,7 +292,7 @@ export let ListboxButton = defineComponent({
       name: 'ListboxButton',
     })
   },
-  setup() {
+  setup(props, { attrs }) {
     let api = useListboxContext('ListboxButton')
     let id = `headlessui-listbox-button-${useId()}`
 
@@ -312,7 +334,7 @@ export let ListboxButton = defineComponent({
     }
 
     function handleClick(event: MouseEvent) {
-      if (api.disabled) return
+      if (api.disabled.value) return
       if (api.listboxState.value === ListboxStates.Open) {
         api.closeListbox()
         nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
@@ -323,7 +345,17 @@ export let ListboxButton = defineComponent({
       }
     }
 
-    return { id, el: api.buttonRef, handleKeyDown, handleKeyUp, handleClick }
+    return {
+      id,
+      el: api.buttonRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        api.buttonRef
+      ),
+      handleKeyDown,
+      handleKeyUp,
+      handleClick,
+    }
   },
 })
 
@@ -346,6 +378,7 @@ export let ListboxOptions = defineComponent({
           ? undefined
           : api.options.value[api.activeOptionIndex.value]?.id,
       'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+      'aria-orientation': api.orientation.value,
       id: this.id,
       onKeydown: this.handleKeyDown,
       role: 'listbox',
@@ -360,7 +393,7 @@ export let ListboxOptions = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'ListboxOptions',
     })
   },
@@ -394,12 +427,15 @@ export let ListboxOptions = defineComponent({
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
           break
 
-        case Keys.ArrowDown:
+        case match(api.orientation.value, {
+          vertical: Keys.ArrowDown,
+          horizontal: Keys.ArrowRight,
+        }):
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.Next)
 
-        case Keys.ArrowUp:
+        case match(api.orientation.value, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.Previous)
@@ -437,7 +473,16 @@ export let ListboxOptions = defineComponent({
       }
     }
 
-    return { id, el: api.optionsRef, handleKeyDown }
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.listboxState.value === ListboxStates.Open
+    })
+
+    return { id, el: api.optionsRef, handleKeyDown, visible }
   },
 })
 
@@ -445,15 +490,12 @@ export let ListboxOption = defineComponent({
   name: 'ListboxOption',
   props: {
     as: { type: [Object, String], default: 'li' },
-    value: { type: [Object, String], default: null },
+    value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
-    class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
   },
   setup(props, { slots, attrs }) {
     let api = useListboxContext('ListboxOption')
     let id = `headlessui-listbox-option-${useId()}`
-    let { disabled, class: defaultClass, className = defaultClass, value } = props
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
@@ -461,9 +503,13 @@ export let ListboxOption = defineComponent({
         : false
     })
 
-    let selected = computed(() => toRaw(api.value.value) === toRaw(value))
+    let selected = computed(() => toRaw(api.value.value) === toRaw(props.value))
 
-    let dataRef = ref<ListboxOptionDataRef['value']>({ disabled, value, textValue: '' })
+    let dataRef = ref<ListboxOptionDataRef['value']>({
+      disabled: props.disabled,
+      value: props.value,
+      textValue: '',
+    })
     onMounted(() => {
       let textValue = document
         .getElementById(id)
@@ -495,38 +541,39 @@ export let ListboxOption = defineComponent({
     })
 
     function handleClick(event: MouseEvent) {
-      if (disabled) return event.preventDefault()
-      api.select(value)
+      if (props.disabled) return event.preventDefault()
+      api.select(props.value)
       api.closeListbox()
       nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {
-      if (disabled) return api.goToOption(Focus.Nothing)
+      if (props.disabled) return api.goToOption(Focus.Nothing)
       api.goToOption(Focus.Specific, id)
     }
 
     function handleMove() {
-      if (disabled) return
+      if (props.disabled) return
       if (active.value) return
       api.goToOption(Focus.Specific, id)
     }
 
     function handleLeave() {
-      if (disabled) return
+      if (props.disabled) return
       if (!active.value) return
       api.goToOption(Focus.Nothing)
     }
 
     return () => {
+      let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
       let propsWeControl = {
         id,
         role: 'option',
-        tabIndex: -1,
-        class: resolvePropValue(className, slot),
+        tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
         'aria-selected': selected.value === true ? selected.value : undefined,
+        disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
         onFocus: handleFocus,
         onPointermove: handleMove,

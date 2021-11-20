@@ -58,11 +58,13 @@ export function transition(
   base: string[],
   from: string[],
   to: string[],
+  entered: string[],
   done?: (reason: Reason) => void
 ) {
   let d = disposables()
   let _done = done !== undefined ? once(done) : () => {}
 
+  removeClasses(node, ...entered)
   addClasses(node, ...base, ...from)
 
   d.nextFrame(() => {
@@ -72,6 +74,7 @@ export function transition(
     d.add(
       waitForTransition(node, reason => {
         removeClasses(node, ...to, ...base)
+        addClasses(node, ...entered)
         return _done(reason)
       })
     )
@@ -81,7 +84,7 @@ export function transition(
   // the node itself will be nullified and will be a no-op. In case of a full transition the classes
   // are already removed which is also a no-op. However if you go from enter -> leave mid-transition
   // then we have some leftovers that should be cleaned.
-  d.add(() => removeClasses(node, ...base, ...from, ...to))
+  d.add(() => removeClasses(node, ...base, ...from, ...to, ...entered))
 
   // When we get disposed early, than we should also call the done method but switch the reason.
   d.add(() => _done(Reason.Cancelled))

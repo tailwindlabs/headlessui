@@ -21,6 +21,12 @@ import { match } from '../../utils/match'
 import { Features, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 import { dom } from '../../utils/dom'
+import {
+  useOpenClosedProvider,
+  State,
+  useOpenClosed,
+  hasOpenClosed,
+} from '../../internal/open-closed'
 
 type ID = ReturnType<typeof useId>
 
@@ -37,6 +43,10 @@ let TransitionContext = Symbol('TransitionContext') as InjectionKey<TransitionCo
 enum TreeStates {
   Visible = 'visible',
   Hidden = 'hidden',
+}
+
+function hasTransitionContext() {
+  return inject(TransitionContext, null) !== null
 }
 
 function useTransitionContext() {
@@ -130,12 +140,32 @@ export let TransitionChild = defineComponent({
     enter: { type: [String], default: '' },
     enterFrom: { type: [String], default: '' },
     enterTo: { type: [String], default: '' },
+    entered: { type: [String], default: '' },
     leave: { type: [String], default: '' },
     leaveFrom: { type: [String], default: '' },
     leaveTo: { type: [String], default: '' },
   },
-  emits: ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'],
+  emits: {
+    beforeEnter: () => true,
+    afterEnter: () => true,
+    beforeLeave: () => true,
+    afterLeave: () => true,
+  },
   render() {
+    if (this.renderAsRoot) {
+      return h(
+        TransitionRoot,
+        {
+          ...this.$props,
+          onBeforeEnter: () => this.$emit('beforeEnter'),
+          onAfterEnter: () => this.$emit('afterEnter'),
+          onBeforeLeave: () => this.$emit('beforeLeave'),
+          onAfterLeave: () => this.$emit('afterLeave'),
+        },
+        this.$slots
+      )
+    }
+
     let {
       appear,
       show,
@@ -144,6 +174,7 @@ export let TransitionChild = defineComponent({
       enter,
       enterFrom,
       enterTo,
+      entered,
       leave,
       leaveFrom,
       leaveTo,
@@ -164,6 +195,12 @@ export let TransitionChild = defineComponent({
     })
   },
   setup(props, { emit }) {
+    if (!hasTransitionContext() && hasOpenClosed()) {
+      return {
+        renderAsRoot: true,
+      }
+    }
+
     let container = ref<HTMLElement | null>(null)
     let state = ref(TreeStates.Visible)
     let strategy = computed(() => (props.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden))
@@ -179,7 +216,7 @@ export let TransitionChild = defineComponent({
 
     let nesting = useNesting(() => {
       // When all children have been unmounted we can only hide ourselves if and only if we are not
-      // transitioning ourserlves. Otherwise we would unmount before the transitions are finished.
+      // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
       if (!isTransitioning.value) {
         state.value = TreeStates.Hidden
         unregister(id)
@@ -212,6 +249,8 @@ export let TransitionChild = defineComponent({
     let enterClasses = splitClasses(props.enter)
     let enterFromClasses = splitClasses(props.enterFrom)
     let enterToClasses = splitClasses(props.enterTo)
+
+    let enteredClasses = splitClasses(props.entered)
 
     let leaveClasses = splitClasses(props.leave)
     let leaveFromClasses = splitClasses(props.leaveFrom)
@@ -247,23 +286,37 @@ export let TransitionChild = defineComponent({
 
       onInvalidate(
         show.value
-          ? transition(node, enterClasses, enterFromClasses, enterToClasses, reason => {
-              isTransitioning.value = false
-              if (reason === Reason.Finished) emit('afterEnter')
-            })
-          : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, reason => {
-              isTransitioning.value = false
-
-              if (reason !== Reason.Finished) return
-
-              // When we don't have children anymore we can safely unregister from the parent and hide
-              // ourselves.
-              if (!hasChildren(nesting)) {
-                state.value = TreeStates.Hidden
-                unregister(id)
-                emit('afterLeave')
+          ? transition(
+              node,
+              enterClasses,
+              enterFromClasses,
+              enterToClasses,
+              enteredClasses,
+              reason => {
+                isTransitioning.value = false
+                if (reason === Reason.Finished) emit('afterEnter')
               }
-            })
+            )
+          : transition(
+              node,
+              leaveClasses,
+              leaveFromClasses,
+              leaveToClasses,
+              enteredClasses,
+              reason => {
+                isTransitioning.value = false
+
+                if (reason !== Reason.Finished) return
+
+                // When we don't have children anymore we can safely unregister from the parent and hide
+                // ourselves.
+                if (!hasChildren(nesting)) {
+                  state.value = TreeStates.Hidden
+                  unregister(id)
+                  emit('afterLeave')
+                }
+              }
+            )
       )
     }
 
@@ -277,11 +330,18 @@ export let TransitionChild = defineComponent({
         { immediate: true }
       )
     })
-    // onUpdated(() => executeTransition(() => {}))
 
     provide(NestingContext, nesting)
+    useOpenClosedProvider(
+      computed(() =>
+        match(state.value, {
+          [TreeStates.Visible]: State.Open,
+          [TreeStates.Hidden]: State.Closed,
+        })
+      )
+    )
 
-    return { el: container, state }
+    return { el: container, renderAsRoot: false, state }
   },
 })
 
@@ -297,11 +357,17 @@ export let TransitionRoot = defineComponent({
     enter: { type: [String], default: '' },
     enterFrom: { type: [String], default: '' },
     enterTo: { type: [String], default: '' },
+    entered: { type: [String], default: '' },
     leave: { type: [String], default: '' },
     leaveFrom: { type: [String], default: '' },
     leaveTo: { type: [String], default: '' },
   },
-  emits: ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'],
+  emits: {
+    beforeEnter: () => true,
+    afterEnter: () => true,
+    beforeLeave: () => true,
+    afterLeave: () => true,
+  },
   render() {
     let { show, appear, unmount, ...passThroughProps } = this.$props
     let sharedProps = { unmount }
@@ -317,7 +383,15 @@ export let TransitionRoot = defineComponent({
         default: () => [
           h(
             TransitionChild,
-            { ...this.$attrs, ...sharedProps, ...passThroughProps },
+            {
+              onBeforeEnter: () => this.$emit('beforeEnter'),
+              onAfterEnter: () => this.$emit('afterEnter'),
+              onBeforeLeave: () => this.$emit('beforeLeave'),
+              onAfterLeave: () => this.$emit('afterLeave'),
+              ...this.$attrs,
+              ...sharedProps,
+              ...passThroughProps,
+            },
             this.$slots.default
           ),
         ],
@@ -329,13 +403,26 @@ export let TransitionRoot = defineComponent({
     })
   },
   setup(props) {
+    let usesOpenClosedState = useOpenClosed()
+
+    let show = computed(() => {
+      if (props.show === null && usesOpenClosedState !== null) {
+        return match(usesOpenClosedState.value, {
+          [State.Open]: true,
+          [State.Closed]: false,
+        })
+      }
+
+      return props.show
+    })
+
     watchEffect(() => {
-      if (![true, false].includes(props.show)) {
+      if (![true, false].includes(show.value)) {
         throw new Error('A <Transition /> is used but it is missing a `:show="true | false"` prop.')
       }
     })
 
-    let state = ref(props.show ? TreeStates.Visible : TreeStates.Hidden)
+    let state = ref(show.value ? TreeStates.Visible : TreeStates.Hidden)
 
     let nestingBag = useNesting(() => {
       state.value = TreeStates.Hidden
@@ -343,7 +430,7 @@ export let TransitionRoot = defineComponent({
 
     let initial = { value: true }
     let transitionBag = {
-      show: computed(() => props.show),
+      show,
       appear: computed(() => props.appear || !initial.value),
     }
 
@@ -351,7 +438,7 @@ export let TransitionRoot = defineComponent({
       watchEffect(() => {
         initial.value = false
 
-        if (props.show) {
+        if (show.value) {
           state.value = TreeStates.Visible
         } else if (!hasChildren(nestingBag)) {
           state.value = TreeStates.Hidden
@@ -362,6 +449,6 @@ export let TransitionRoot = defineComponent({
     provide(NestingContext, nestingBag)
     provide(TransitionContext, transitionBag)
 
-    return { state }
+    return { state, show }
   },
 })

@@ -1,4 +1,4 @@
-import React, { createElement, useState } from 'react'
+import React, { createElement, useState, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Listbox } from './listbox'
@@ -36,6 +36,7 @@ import {
   ListboxState,
   getByText,
 } from '../../test-utils/accessibility-assertions'
+import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
 
@@ -325,6 +326,66 @@ describe('Rendering', () => {
         assertListboxButtonLinkedWithListboxLabel()
       })
     )
+
+    describe('`type` attribute', () => {
+      it('should set the `type` to "button" by default', async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button>Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the `type` to "button" if it already contains a `type`', async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button type="submit">Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).toHaveAttribute('type', 'submit')
+      })
+
+      it('should set the `type` to "button" when using the `as` prop which resolves to a "button"', async () => {
+        let CustomButton = React.forwardRef<HTMLButtonElement>((props, ref) => (
+          <button ref={ref} {...props} />
+        ))
+
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button as={CustomButton}>Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).toHaveAttribute('type', 'button')
+      })
+
+      it('should not set the type if the "as" prop is not a "button"', async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button as="div">Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).not.toHaveAttribute('type')
+      })
+
+      it('should not set the `type` to "button" when using the `as` prop which resolves to a "div"', async () => {
+        let CustomButton = React.forwardRef<HTMLDivElement>((props, ref) => (
+          <div ref={ref} {...props} />
+        ))
+
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button as={CustomButton}>Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).not.toHaveAttribute('type')
+      })
+    })
   })
 
   describe('Listbox.Options', () => {
@@ -542,6 +603,72 @@ describe('Rendering composition', () => {
 
       // Verify options are buttons now
       getListboxOptions().forEach(option => assertListboxOption(option, { tag: 'button' }))
+    })
+  )
+})
+
+describe('Composition', () => {
+  function Debug({ fn, name }: { fn: (text: string) => void; name: string }) {
+    useEffect(() => {
+      fn(`Mounting - ${name}`)
+      return () => {
+        fn(`Unmounting - ${name}`)
+      }
+    }, [fn, name])
+    return null
+  }
+
+  it(
+    'should be possible to wrap the Listbox.Options with a Transition component',
+    suppressConsoleLogs(async () => {
+      let orderFn = jest.fn()
+      render(
+        <Listbox value={undefined} onChange={console.log}>
+          <Listbox.Button>Trigger</Listbox.Button>
+          <Debug name="Listbox" fn={orderFn} />
+          <Transition>
+            <Debug name="Transition" fn={orderFn} />
+            <Listbox.Options>
+              <Listbox.Option value="a">
+                {data => (
+                  <>
+                    {JSON.stringify(data)}
+                    <Debug name="Listbox.Option" fn={orderFn} />
+                  </>
+                )}
+              </Listbox.Option>
+            </Listbox.Options>
+          </Transition>
+        </Listbox>
+      )
+
+      assertListboxButton({
+        state: ListboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+      await click(getListboxButton())
+
+      assertListboxButton({
+        state: ListboxState.Visible,
+        attributes: { id: 'headlessui-listbox-button-1' },
+      })
+      assertListbox({
+        state: ListboxState.Visible,
+        textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
+      })
+
+      await click(getListboxButton())
+
+      // Verify that we tracked the `mounts` and `unmounts` in the correct order
+      expect(orderFn.mock.calls).toEqual([
+        ['Mounting - Listbox'],
+        ['Mounting - Transition'],
+        ['Mounting - Listbox.Option'],
+        ['Unmounting - Transition'],
+        ['Unmounting - Listbox.Option'],
+      ])
     })
   )
 })
@@ -1770,6 +1897,54 @@ describe('Keyboard interactions', () => {
     )
   })
 
+  describe('`ArrowRight` key', () => {
+    it(
+      'should be possible to use ArrowRight to navigate the listbox options',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log} horizontal>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.Enter)
+
+        // Verify we have listbox options
+        let options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[0])
+
+        // We should be able to go right once
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[1])
+
+        // We should be able to go right again
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[2])
+
+        // We should NOT be able to go right again (because last option). Current implementation won't go around.
+        await press(Keys.ArrowRight)
+        assertActiveListboxOption(options[2])
+      })
+    )
+  })
+
   describe('`ArrowUp` key', () => {
     it(
       'should be possible to open the listbox with ArrowUp and the last option should be active',
@@ -2055,6 +2230,64 @@ describe('Keyboard interactions', () => {
 
         // We should NOT be able to go up again (because first option). Current implementation won't go around.
         await press(Keys.ArrowUp)
+        assertActiveListboxOption(options[0])
+      })
+    )
+  })
+
+  describe('`ArrowLeft` key', () => {
+    it(
+      'should be possible to use ArrowLeft to navigate the listbox options',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log} horizontal>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({
+          state: ListboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-listbox-button-1' },
+        })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.ArrowUp)
+
+        // Verify it is visible
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({
+          state: ListboxState.Visible,
+          attributes: { id: 'headlessui-listbox-options-2' },
+          orientation: 'horizontal',
+        })
+        assertActiveElement(getListbox())
+        assertListboxButtonLinkedWithListbox()
+
+        // Verify we have listbox options
+        let options = getListboxOptions()
+        expect(options).toHaveLength(3)
+        options.forEach(option => assertListboxOption(option))
+        assertActiveListboxOption(options[2])
+
+        // We should be able to go left once
+        await press(Keys.ArrowLeft)
+        assertActiveListboxOption(options[1])
+
+        // We should be able to go left again
+        await press(Keys.ArrowLeft)
+        assertActiveListboxOption(options[0])
+
+        // We should NOT be able to go left again (because first option). Current implementation won't go around.
+        await press(Keys.ArrowLeft)
         assertActiveListboxOption(options[0])
       })
     )
@@ -2762,6 +2995,39 @@ describe('Keyboard interactions', () => {
 
         // We should still be on the last option
         assertActiveListboxOption(options[2])
+      })
+    )
+
+    it(
+      'should be possible to search for a word (case insensitive)',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={undefined} onChange={console.log}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">alice</Listbox.Option>
+              <Listbox.Option value="bob">bob</Listbox.Option>
+              <Listbox.Option value="charlie">charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        // Focus the button
+        getListboxButton()?.focus()
+
+        // Open listbox
+        await press(Keys.ArrowUp)
+
+        let options = getListboxOptions()
+
+        // We should be on the last option
+        assertActiveListboxOption(options[2])
+
+        // Search for bob in a different casing
+        await type(word('BO'))
+
+        // We should be on `bob`
+        assertActiveListboxOption(options[1])
       })
     )
   })

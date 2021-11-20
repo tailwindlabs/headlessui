@@ -7,14 +7,15 @@ import {
   // Types
   InjectionKey,
   Ref,
+  computed,
 } from 'vue'
 
 import { render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
-import { resolvePropValue } from '../../utils/resolve-prop-value'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 type StateDefinition = {
   // State
@@ -58,34 +59,25 @@ export let SwitchGroup = defineComponent({
 
 export let Switch = defineComponent({
   name: 'Switch',
-  emits: ['update:modelValue'],
+  emits: { 'update:modelValue': (_value: boolean) => true },
   props: {
     as: { type: [Object, String], default: 'button' },
-    modelValue: { type: [Object, Boolean], default: null },
-    class: { type: [String, Function], required: false },
-    className: { type: [String, Function], required: false },
+    modelValue: { type: Boolean, default: false },
   },
   render() {
-    let api = inject(GroupContext, null)
-    let { class: defaultClass, className = defaultClass } = this.$props
-
     let slot = { checked: this.$props.modelValue }
     let propsWeControl = {
       id: this.id,
-      ref: api === null ? undefined : api.switchRef,
+      ref: 'el',
       role: 'switch',
+      type: this.type,
       tabIndex: 0,
-      class: resolvePropValue(className, slot),
       'aria-checked': this.$props.modelValue,
       'aria-labelledby': this.labelledby,
       'aria-describedby': this.describedby,
       onClick: this.handleClick,
       onKeyup: this.handleKeyUp,
       onKeypress: this.handleKeyPress,
-    }
-
-    if (this.$props.as === 'button') {
-      Object.assign(propsWeControl, { type: 'button' })
     }
 
     return render({
@@ -96,7 +88,7 @@ export let Switch = defineComponent({
       name: 'Switch',
     })
   },
-  setup(props, { emit }) {
+  setup(props, { emit, attrs }) {
     let api = inject(GroupContext, null)
     let id = `headlessui-switch-${useId()}`
 
@@ -104,9 +96,16 @@ export let Switch = defineComponent({
       emit('update:modelValue', !props.modelValue)
     }
 
+    let internalSwitchRef = ref(null)
+    let switchRef = api === null ? internalSwitchRef : api.switchRef
+
     return {
       id,
-      el: api?.switchRef,
+      el: switchRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        switchRef
+      ),
       labelledby: api?.labelledby,
       describedby: api?.describedby,
       handleClick(event: MouseEvent) {

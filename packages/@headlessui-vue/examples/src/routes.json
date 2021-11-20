@@ -62,6 +62,17 @@
     ]
   },
   {
+    "name": "Tabs",
+    "path": "/tabs",
+    "children": [
+      {
+        "name": "Tabs (basic)",
+        "path": "/tabs/tabs",
+        "component": "./components/tabs/tabs.vue"
+      }
+    ]
+  },
+  {
     "name": "Focus Trap",
     "path": "/focus-trap",
     "children": [
@@ -91,6 +102,17 @@
         "name": "Popover",
         "path": "/popover/popover",
         "component": "./components/popover/popover.vue"
+      }
+    ]
+  },
+  {
+    "name": "Disclosure",
+    "path": "/disclosure",
+    "children": [
+      {
+        "name": "Disclosure",
+        "path": "/disclosure/disclosure",
+        "component": "./components/disclosure/disclosure.vue"
       }
     ]
   },

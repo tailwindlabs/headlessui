@@ -9,6 +9,7 @@ import {
   // Types
   InjectionKey,
   Ref,
+  computed,
 } from 'vue'
 
 import { match } from '../../utils/match'
@@ -25,6 +26,8 @@ import {
 } from '../../utils/focus-management'
 import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum PopoverStates {
   Open,
@@ -42,6 +45,9 @@ interface StateDefinition {
   // State mutators
   togglePopover(): void
   closePopover(): void
+
+  // Exposed functions
+  close(focusableElement: HTMLElement | Ref<HTMLElement | null>): void
 }
 
 let PopoverContext = Symbol('PopoverContext') as InjectionKey<StateDefinition>
@@ -85,8 +91,6 @@ export let Popover = defineComponent({
     as: { type: [Object, String], default: 'div' },
   },
   setup(props, { slots, attrs }) {
-    let { ...passThroughProps } = props
-
     let buttonId = `headlessui-popover-button-${useId()}`
     let panelId = `headlessui-popover-panel-${useId()}`
 
@@ -110,9 +114,30 @@ export let Popover = defineComponent({
         if (popoverState.value === PopoverStates.Closed) return
         popoverState.value = PopoverStates.Closed
       },
+      close(focusableElement: HTMLElement | Ref<HTMLElement | null>) {
+        api.closePopover()
+
+        let restoreElement = (() => {
+          if (!focusableElement) return dom(api.button)
+          if (focusableElement instanceof HTMLElement) return focusableElement
+          if (focusableElement.value instanceof HTMLElement) return dom(focusableElement)
+
+          return dom(api.button)
+        })()
+
+        restoreElement?.focus()
+      },
     } as StateDefinition
 
     provide(PopoverContext, api)
+    useOpenClosedProvider(
+      computed(() =>
+        match(popoverState.value, {
+          [PopoverStates.Open]: State.Open,
+          [PopoverStates.Closed]: State.Closed,
+        })
+      )
+    )
 
     let registerBag = {
       buttonId,
@@ -167,8 +192,8 @@ export let Popover = defineComponent({
     })
 
     return () => {
-      let slot = { open: popoverState.value === PopoverStates.Open }
-      return render({ props: passThroughProps, slot, slots, attrs, name: 'Popover' })
+      let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }
+      return render({ props, slot, slots, attrs, name: 'Popover' })
     }
   },
 })
@@ -187,16 +212,20 @@ export let PopoverButton = defineComponent({
     let slot = { open: api.popoverState.value === PopoverStates.Open }
     let propsWeControl = this.isWithinPanel
       ? {
-          type: 'button',
+          ref: 'el',
+          type: this.type,
           onKeydown: this.handleKeyDown,
           onClick: this.handleClick,
         }
       : {
           ref: 'el',
           id: api.buttonId,
-          type: 'button',
-          'aria-expanded': api.popoverState.value === PopoverStates.Open ? true : undefined,
+          type: this.type,
+          'aria-expanded': this.$props.disabled
+            ? undefined
+            : api.popoverState.value === PopoverStates.Open,
           'aria-controls': dom(api.panel) ? api.panelId : undefined,
+          disabled: this.$props.disabled ? true : undefined,
           onKeydown: this.handleKeyDown,
           onKeyup: this.handleKeyUp,
           onClick: this.handleClick,
@@ -210,7 +239,7 @@ export let PopoverButton = defineComponent({
       name: 'PopoverButton',
     })
   },
-  setup(props) {
+  setup(props, { attrs }) {
     let api = usePopoverContext('PopoverButton')
 
     let groupContext = usePopoverGroupContext()
@@ -234,9 +263,21 @@ export let PopoverButton = defineComponent({
       true
     )
 
+    let elementRef = ref(null)
+
+    if (!isWithinPanel) {
+      watchEffect(() => {
+        api.button.value = elementRef.value
+      })
+    }
+
     return {
       isWithinPanel,
-      el: isWithinPanel ? null : api.button,
+      el: elementRef,
+      type: useResolveButtonType(
+        computed(() => ({ as: props.as, type: attrs.type })),
+        elementRef
+      ),
       handleKeyDown(event: KeyboardEvent) {
         if (isWithinPanel) {
           if (api.popoverState.value === PopoverStates.Closed) return
@@ -263,6 +304,8 @@ export let PopoverButton = defineComponent({
               if (api.popoverState.value !== PopoverStates.Open) return closeOthers?.(api.buttonId)
               if (!dom(api.button)) return
               if (!dom(api.button)?.contains(document.activeElement)) return
+              event.preventDefault()
+              event.stopPropagation()
               api.closePopover()
               break
 
@@ -346,7 +389,6 @@ export let PopoverButton = defineComponent({
           api.togglePopover()
         }
       },
-      handleFocus() {},
     }
   },
 })
@@ -377,18 +419,28 @@ export let PopoverOverlay = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'PopoverOverlay',
     })
   },
   setup() {
     let api = usePopoverContext('PopoverOverlay')
 
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.popoverState.value === PopoverStates.Open
+    })
+
     return {
       id: `headlessui-popover-overlay-${useId()}`,
       handleClick() {
         api.closePopover()
       },
+      visible,
     }
   },
 })
@@ -406,7 +458,11 @@ export let PopoverPanel = defineComponent({
   render() {
     let api = usePopoverContext('PopoverPanel')
 
-    let slot = { open: api.popoverState.value === PopoverStates.Open }
+    let slot = {
+      open: api.popoverState.value === PopoverStates.Open,
+      close: api.close,
+    }
+
     let propsWeControl = {
       ref: 'el',
       id: this.id,
@@ -419,7 +475,7 @@ export let PopoverPanel = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: slot.open,
+      visible: this.visible,
       name: 'PopoverPanel',
     })
   },
@@ -456,7 +512,7 @@ export let PopoverPanel = defineComponent({
 
       // We will take-over the default tab behaviour so that we have a bit
       // control over what is focused next. It will behave exactly the same,
-      // but it will also "fix" some issues based on wether you are using a
+      // but it will also "fix" some issues based on whether you are using a
       // Portal or not.
       event.preventDefault()
 
@@ -498,6 +554,15 @@ export let PopoverPanel = defineComponent({
       true
     )
 
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.popoverState.value === PopoverStates.Open
+    })
+
     return {
       id: api.panelId,
       el: api.panel,
@@ -508,11 +573,13 @@ export let PopoverPanel = defineComponent({
             if (!dom(api.panel)) return
             if (!dom(api.panel)?.contains(document.activeElement)) return
             event.preventDefault()
+            event.stopPropagation()
             api.closePopover()
             dom(api.button)?.focus()
             break
         }
       },
+      visible,
     }
   },
 })

@@ -31,6 +31,8 @@ import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
 enum ListboxStates {
   Open,
@@ -45,10 +47,14 @@ type ListboxOptionDataRef = MutableRefObject<{
 
 interface StateDefinition {
   listboxState: ListboxStates
+
+  orientation: 'horizontal' | 'vertical'
+
   propsRef: MutableRefObject<{ value: unknown; onChange(value: unknown): void }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
   buttonRef: MutableRefObject<HTMLButtonElement | null>
   optionsRef: MutableRefObject<HTMLUListElement | null>
+
   disabled: boolean
   options: { id: string; dataRef: ListboxOptionDataRef }[]
   searchQuery: string
@@ -60,6 +66,7 @@ enum ActionTypes {
   CloseListbox,
 
   SetDisabled,
+  SetOrientation,
 
   GoToOption,
   Search,
@@ -73,6 +80,7 @@ type Actions =
   | { type: ActionTypes.CloseListbox }
   | { type: ActionTypes.OpenListbox }
   | { type: ActionTypes.SetDisabled; disabled: boolean }
+  | { type: ActionTypes.SetOrientation; orientation: StateDefinition['orientation'] }
   | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
   | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
   | { type: ActionTypes.Search; value: string }
@@ -100,6 +108,10 @@ let reducers: {
     if (state.disabled === action.disabled) return state
     return { ...state, disabled: action.disabled }
   },
+  [ActionTypes.SetOrientation](state, action) {
+    if (state.orientation === action.orientation) return state
+    return { ...state, orientation: action.orientation }
+  },
   [ActionTypes.GoToOption](state, action) {
     if (state.disabled) return state
     if (state.listboxState === ListboxStates.Closed) return state
@@ -118,7 +130,7 @@ let reducers: {
     if (state.disabled) return state
     if (state.listboxState === ListboxStates.Closed) return state
 
-    let searchQuery = state.searchQuery + action.value
+    let searchQuery = state.searchQuery + action.value.toLowerCase()
     let match = state.options.findIndex(
       option =>
         !option.dataRef.current.disabled &&
@@ -192,9 +204,12 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
     value: TType
     onChange(value: TType): void
     disabled?: boolean
+    horizontal?: boolean
   }
 ) {
-  let { value, onChange, disabled = false, ...passThroughProps } = props
+  let { value, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
+  const orientation = horizontal ? 'horizontal' : 'vertical'
+
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
     propsRef: { current: { value, onChange } },
@@ -202,6 +217,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
     buttonRef: createRef(),
     optionsRef: createRef(),
     disabled,
+    orientation,
     options: [],
     searchQuery: '',
     activeOptionIndex: null,
@@ -215,6 +231,9 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
     propsRef.current.onChange = onChange
   }, [onChange, propsRef])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
+  useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetOrientation, orientation }), [
+    orientation,
+  ])
 
   // Handle outside click
   useWindowEvent('mousedown', event => {
@@ -240,12 +259,19 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
 
   return (
     <ListboxContext.Provider value={reducerBag}>
-      {render({
-        props: passThroughProps,
-        slot,
-        defaultTag: DEFAULT_LISTBOX_TAG,
-        name: 'Listbox',
-      })}
+      <OpenClosedProvider
+        value={match(listboxState, {
+          [ListboxStates.Open]: State.Open,
+          [ListboxStates.Closed]: State.Closed,
+        })}
+      >
+        {render({
+          props: passThroughProps,
+          slot,
+          defaultTag: DEFAULT_LISTBOX_TAG,
+          name: 'Listbox',
+        })}
+      </OpenClosedProvider>
     </ListboxContext.Provider>
   )
 }
@@ -345,10 +371,10 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let propsWeControl = {
     ref: buttonRef,
     id,
-    type: 'button',
+    type: useResolveButtonType(props, state.buttonRef),
     'aria-haspopup': true,
     'aria-controls': state.optionsRef.current?.id,
-    'aria-expanded': state.listboxState === ListboxStates.Open ? true : undefined,
+    'aria-expanded': state.disabled ? undefined : state.listboxState === ListboxStates.Open,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
@@ -405,6 +431,7 @@ interface OptionsRenderPropArg {
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
+  | 'aria-orientation'
   | 'id'
   | 'onKeyDown'
   | 'role'
@@ -425,6 +452,15 @@ let Options = forwardRefWithAs(function Options<
   let id = `headlessui-listbox-options-${useId()}`
   let d = useDisposables()
   let searchDisposables = useDisposables()
+
+  let usesOpenClosedState = useOpenClosed()
+  let visible = (() => {
+    if (usesOpenClosedState !== null) {
+      return usesOpenClosedState === State.Open
+    }
+
+    return state.listboxState === ListboxStates.Open
+  })()
 
   useIsoMorphicEffect(() => {
     let container = state.optionsRef.current
@@ -461,12 +497,12 @@ let Options = forwardRefWithAs(function Options<
           disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
           break
 
-        case Keys.ArrowDown:
+        case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
           event.preventDefault()
           event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Next })
 
-        case Keys.ArrowUp:
+        case match(state.orientation, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
           event.preventDefault()
           event.stopPropagation()
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Previous })
@@ -518,6 +554,7 @@ let Options = forwardRefWithAs(function Options<
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
+    'aria-orientation': state.orientation,
     id,
     onKeyDown: handleKeyDown,
     role: 'listbox',
@@ -531,7 +568,7 @@ let Options = forwardRefWithAs(function Options<
     slot,
     defaultTag: DEFAULT_OPTIONS_TAG,
     features: OptionsRenderFeatures,
-    visible: state.listboxState === ListboxStates.Open,
+    visible,
     name: 'Listbox.Options',
   })
 })
@@ -643,9 +680,10 @@ function Option<
   let propsWeControl = {
     id,
     role: 'option',
-    tabIndex: -1,
+    tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
     'aria-selected': selected === true ? true : undefined,
+    disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
     onPointerMove: handleMove,
