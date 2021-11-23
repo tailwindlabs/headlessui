@@ -34,6 +34,15 @@ function usePortalTarget(): HTMLElement | null {
     return document.body.appendChild(root)
   })
 
+  // Ensure the portal root is always in the DOM
+  useEffect(() => {
+    if (target === null) return
+
+    if (!document.body.contains(target)) {
+      document.body.appendChild(target)
+    }
+  }, [target])
+
   useEffect(() => {
     if (forceInRoot) return
     if (groupTarget === null) return
