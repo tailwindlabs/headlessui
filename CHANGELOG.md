@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
-- Nothing yet!
+### Fixes
+
+- Ensure portal root exists in the DOM ([#950](https://github.com/tailwindlabs/headlessui/pull/950))
 
 ## [Unreleased - Vue]
 
