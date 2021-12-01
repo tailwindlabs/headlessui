@@ -11,9 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ensure portal root exists in the DOM ([#950](https://github.com/tailwindlabs/headlessui/pull/950))
 
+### Added
+
+- Allow for `Tab.Group` to be controllable ([#909](https://github.com/tailwindlabs/headlessui/pull/909), [#970](https://github.com/tailwindlabs/headlessui/pull/970))
+
 ## [Unreleased - Vue]
 
-- Nothing yet!
+### Added
+
+- Allow for `TabGroup` to be controllable ([#909](https://github.com/tailwindlabs/headlessui/pull/909), [#970](https://github.com/tailwindlabs/headlessui/pull/970))
 
 ## [@headlessui/react@v1.4.2] - 2021-11-08
 
