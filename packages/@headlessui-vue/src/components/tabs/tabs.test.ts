@@ -433,6 +433,53 @@ describe('Rendering', () => {
       assertTabs({ active: 0 })
       assertActiveElement(getByText('Tab 1'))
     })
+
+    it('should not change the Tab if the defaultIndex changes', async () => {
+      renderTemplate({
+        template: html`
+          <TabGroup :defaultIndex="defaultIndex">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
+
+          <button>after</button>
+          <button @click="defaultIndex = 0">change</button>
+        `,
+        setup() {
+          let defaultIndex = ref(1)
+          return { defaultIndex }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 1 })
+      assertActiveElement(getByText('Tab 2'))
+
+      await click(getByText('Tab 3'))
+
+      assertTabs({ active: 2 })
+      assertActiveElement(getByText('Tab 3'))
+
+      // Change default index
+      await click(getByText('change'))
+
+      // Nothing should change...
+      assertTabs({ active: 2 })
+    })
   })
 })
 

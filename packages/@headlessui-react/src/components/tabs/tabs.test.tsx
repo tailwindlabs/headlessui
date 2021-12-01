@@ -415,6 +415,53 @@ describe('Rendering', () => {
       assertTabs({ active: 0 })
       assertActiveElement(getByText('Tab 1'))
     })
+
+    it('should not change the Tab if the defaultIndex changes', async () => {
+      function Example() {
+        let [defaultIndex, setDefaultIndex] = useState(1)
+
+        return (
+          <>
+            <Tab.Group defaultIndex={defaultIndex}>
+              <Tab.List>
+                <Tab>Tab 1</Tab>
+                <Tab>Tab 2</Tab>
+                <Tab>Tab 3</Tab>
+              </Tab.List>
+
+              <Tab.Panels>
+                <Tab.Panel>Content 1</Tab.Panel>
+                <Tab.Panel>Content 2</Tab.Panel>
+                <Tab.Panel>Content 3</Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>
+
+            <button>after</button>
+            <button onClick={() => setDefaultIndex(0)}>change</button>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 1 })
+      assertActiveElement(getByText('Tab 2'))
+
+      await click(getByText('Tab 3'))
+
+      assertTabs({ active: 2 })
+      assertActiveElement(getByText('Tab 3'))
+
+      // Change default index
+      await click(getByText('change'))
+
+      // Nothing should change...
+      assertTabs({ active: 2 })
+    })
   })
 
   describe('`selectedIndex`', () => {
