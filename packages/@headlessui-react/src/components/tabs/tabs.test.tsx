@@ -421,8 +421,8 @@ describe('Rendering', () => {
     it('should be possible to change active tab controlled and uncontrolled', async () => {
       let handleChange = jest.fn()
 
-      const ControlledTabs = () => {
-        const [selectedIndex, setSelectedIndex] = useState(0)
+      function ControlledTabs() {
+        let [selectedIndex, setSelectedIndex] = useState(0)
 
         return (
           <>
@@ -562,6 +562,35 @@ describe('Rendering', () => {
               <Tab>Tab 1</Tab>
               <Tab>Tab 2</Tab>
               <Tab disabled>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>Content 2</Tab.Panel>
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+
+          <button>after</button>
+        </>
+      )
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 0 })
+      assertActiveElement(getByText('Tab 1'))
+    })
+
+    it('should prefer selectedIndex over defaultIndex', async () => {
+      render(
+        <>
+          <Tab.Group selectedIndex={0} defaultIndex={2}>
+            <Tab.List>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
             </Tab.List>
 
             <Tab.Panels>

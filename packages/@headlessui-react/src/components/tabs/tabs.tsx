@@ -174,7 +174,7 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
     let tabs = state.tabs.map(tab => tab.current).filter(Boolean) as HTMLElement[]
     let focusableTabs = tabs.filter(tab => !tab.hasAttribute('disabled'))
 
-    const indexToSet = selectedIndex || defaultIndex
+    let indexToSet = selectedIndex ?? defaultIndex
 
     // Underflow
     if (indexToSet < 0) {
