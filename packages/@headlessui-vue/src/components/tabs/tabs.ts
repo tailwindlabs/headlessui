@@ -83,14 +83,14 @@ export let TabGroup = defineComponent({
       },
       unregisterTab(tab: typeof tabs['value'][number]) {
         let idx = tabs.value.indexOf(tab)
-        if (idx !== -1) tabs.value.slice(idx, 1)
+        if (idx !== -1) tabs.value.splice(idx, 1)
       },
       registerPanel(panel: typeof panels['value'][number]) {
         if (!panels.value.includes(panel)) panels.value.push(panel)
       },
       unregisterPanel(panel: typeof panels['value'][number]) {
         let idx = panels.value.indexOf(panel)
-        if (idx !== -1) panels.value.slice(idx, 1)
+        if (idx !== -1) panels.value.splice(idx, 1)
       },
     }
 
