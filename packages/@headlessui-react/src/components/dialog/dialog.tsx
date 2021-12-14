@@ -101,6 +101,7 @@ type DialogPropsWeControl =
   | 'aria-describedby'
   | 'aria-labelledby'
   | 'onClick'
+  | 'onMouseDown'
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -205,6 +206,9 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   )
   useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
 
+  // Used to detect mousedown events originating from elements within portals which are rendered in dialog
+  const mouseDownEventRef = useRef<MouseEvent>()
+
   // Handle outside click
   useWindowEvent('mousedown', event => {
     let target = event.target as HTMLElement
@@ -212,6 +216,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     if (dialogState !== DialogStates.Open) return
     if (hasNestedDialogs) return
     if (internalDialogRef.current?.contains(target)) return
+    if (mouseDownEventRef.current === event) return
 
     close()
   })
@@ -290,6 +295,9 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     'aria-describedby': describedby,
     onClick(event: ReactMouseEvent) {
       event.stopPropagation()
+    },
+    onMouseDown(event: React.MouseEvent) {
+      mouseDownEventRef.current = event.nativeEvent
     },
   }
   let passthroughProps = rest
