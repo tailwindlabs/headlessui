@@ -15,7 +15,7 @@
       <TabList class="relative z-0 rounded-lg shadow flex divide-x divide-gray-200">
         <Tab
           v-for="(tab, tabIdx) in tabs"
-          key="tab.name"
+          :key="tab.name"
           :disabled="tab.disabled"
           class="group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10"
           :class="{
