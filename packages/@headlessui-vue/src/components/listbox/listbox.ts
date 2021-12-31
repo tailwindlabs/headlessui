@@ -186,17 +186,22 @@ export let Listbox = defineComponent({
       },
     }
 
-    useWindowEvent('mousedown', event => {
-      let target = event.target as HTMLElement
-      let active = document.activeElement
+    // Handle outside click
+    useWindowEvent(
+      'mousedown',
+      (event: MouseEvent) => {
+        let target = event.target as HTMLElement
+        let active = document.activeElement
 
-      if (listboxState.value !== ListboxStates.Open) return
-      if (dom(buttonRef)?.contains(target)) return
+        if (listboxState.value !== ListboxStates.Open) return
+        if (dom(buttonRef)?.contains(target)) return
 
-      if (!dom(optionsRef)?.contains(target)) api.closeListbox()
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
-    })
+        if (!dom(optionsRef)?.contains(target)) api.closeListbox()
+        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+        if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
+      },
+      true
+    )
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ListboxContext, api)

@@ -236,21 +236,25 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
   ])
 
   // Handle outside click
-  useWindowEvent('mousedown', event => {
-    let target = event.target as HTMLElement
+  useWindowEvent(
+    'mousedown',
+    (event: MouseEvent) => {
+      let target = event.target as HTMLElement
 
-    if (listboxState !== ListboxStates.Open) return
+      if (listboxState !== ListboxStates.Open) return
 
-    if (buttonRef.current?.contains(target)) return
-    if (optionsRef.current?.contains(target)) return
+      if (buttonRef.current?.contains(target)) return
+      if (optionsRef.current?.contains(target)) return
 
-    dispatch({ type: ActionTypes.CloseListbox })
+      dispatch({ type: ActionTypes.CloseListbox })
 
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      buttonRef.current?.focus()
-    }
-  })
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        buttonRef.current?.focus()
+      }
+    },
+    true
+  )
 
   let slot = useMemo<ListboxRenderPropArg>(
     () => ({ open: listboxState === ListboxStates.Open, disabled }),

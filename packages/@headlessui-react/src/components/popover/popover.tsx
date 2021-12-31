@@ -217,21 +217,25 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   )
 
   // Handle outside click
-  useWindowEvent('mousedown', event => {
-    let target = event.target as HTMLElement
+  useWindowEvent(
+    'mousedown',
+    (event: MouseEvent) => {
+      let target = event.target as HTMLElement
 
-    if (popoverState !== PopoverStates.Open) return
+      if (popoverState !== PopoverStates.Open) return
 
-    if (button?.contains(target)) return
-    if (panel?.contains(target)) return
+      if (button?.contains(target)) return
+      if (panel?.contains(target)) return
 
-    dispatch({ type: ActionTypes.ClosePopover })
+      dispatch({ type: ActionTypes.ClosePopover })
 
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      button?.focus()
-    }
-  })
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        button?.focus()
+      }
+    },
+    true
+  )
 
   let close = useCallback(
     (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {

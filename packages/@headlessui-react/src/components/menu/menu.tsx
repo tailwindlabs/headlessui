@@ -177,21 +177,25 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
 
   // Handle outside click
-  useWindowEvent('mousedown', event => {
-    let target = event.target as HTMLElement
+  useWindowEvent(
+    'mousedown',
+    (event: MouseEvent) => {
+      let target = event.target as HTMLElement
 
-    if (menuState !== MenuStates.Open) return
+      if (menuState !== MenuStates.Open) return
 
-    if (buttonRef.current?.contains(target)) return
-    if (itemsRef.current?.contains(target)) return
+      if (buttonRef.current?.contains(target)) return
+      if (itemsRef.current?.contains(target)) return
 
-    dispatch({ type: ActionTypes.CloseMenu })
+      dispatch({ type: ActionTypes.CloseMenu })
 
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      buttonRef.current?.focus()
-    }
-  })
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        buttonRef.current?.focus()
+      }
+    },
+    true
+  )
 
   let slot = useMemo<MenuRenderPropArg>(() => ({ open: menuState === MenuStates.Open }), [
     menuState,

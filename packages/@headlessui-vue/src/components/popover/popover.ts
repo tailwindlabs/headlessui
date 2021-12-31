@@ -175,21 +175,25 @@ export let Popover = defineComponent({
     )
 
     // Handle outside click
-    useWindowEvent('mousedown', (event: MouseEvent) => {
-      let target = event.target as HTMLElement
+    useWindowEvent(
+      'mousedown',
+      (event: MouseEvent) => {
+        let target = event.target as HTMLElement
 
-      if (popoverState.value !== PopoverStates.Open) return
+        if (popoverState.value !== PopoverStates.Open) return
 
-      if (dom(button)?.contains(target)) return
-      if (dom(panel)?.contains(target)) return
+        if (dom(button)?.contains(target)) return
+        if (dom(panel)?.contains(target)) return
 
-      api.closePopover()
+        api.closePopover()
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        dom(button)?.focus()
-      }
-    })
+        if (!isFocusableElement(target, FocusableMode.Loose)) {
+          event.preventDefault()
+          dom(button)?.focus()
+        }
+      },
+      true
+    )
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }

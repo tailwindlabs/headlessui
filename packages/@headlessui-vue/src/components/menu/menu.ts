@@ -141,17 +141,22 @@ export let Menu = defineComponent({
       },
     }
 
-    useWindowEvent('mousedown', event => {
-      let target = event.target as HTMLElement
-      let active = document.activeElement
+    // Handle outside click
+    useWindowEvent(
+      'mousedown',
+      (event: MouseEvent) => {
+        let target = event.target as HTMLElement
+        let active = document.activeElement
 
-      if (menuState.value !== MenuStates.Open) return
-      if (dom(buttonRef)?.contains(target)) return
+        if (menuState.value !== MenuStates.Open) return
+        if (dom(buttonRef)?.contains(target)) return
 
-      if (!dom(itemsRef)?.contains(target)) api.closeMenu()
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
-    })
+        if (!dom(itemsRef)?.contains(target)) api.closeMenu()
+        if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
+        if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
+      },
+      true
+    )
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(MenuContext, api)

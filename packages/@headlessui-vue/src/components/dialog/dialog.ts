@@ -193,26 +193,34 @@ export let Dialog = defineComponent({
     provide(DialogContext, api)
 
     // Handle outside click
-    useWindowEvent('mousedown', event => {
-      let target = event.target as HTMLElement
+    useWindowEvent(
+      'mousedown',
+      (event: MouseEvent) => {
+        let target = event.target as HTMLElement
 
-      if (dialogState.value !== DialogStates.Open) return
-      if (containers.value.size !== 1) return
-      if (contains(containers.value, target)) return
+        if (dialogState.value !== DialogStates.Open) return
+        if (containers.value.size !== 1) return
+        if (contains(containers.value, target)) return
 
-      api.close()
-      nextTick(() => target?.focus())
-    })
+        api.close()
+        nextTick(() => target?.focus())
+      },
+      true
+    )
 
     // Handle `Escape` to close
-    useWindowEvent('keydown', event => {
-      if (event.key !== Keys.Escape) return
-      if (dialogState.value !== DialogStates.Open) return
-      if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
-      event.preventDefault()
-      event.stopPropagation()
-      api.close()
-    })
+    useWindowEvent(
+      'keydown', 
+      (event: KeyboardEvent) => {
+        if (event.key !== Keys.Escape) return
+        if (dialogState.value !== DialogStates.Open) return
+        if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
+        event.preventDefault()
+        event.stopPropagation()
+        api.close()
+      },
+      true
+    )
 
     // Scroll lock
     watchEffect(onInvalidate => {

@@ -206,25 +206,33 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
 
   // Handle outside click
-  useWindowEvent('mousedown', event => {
-    let target = event.target as HTMLElement
+  useWindowEvent(
+    'mousedown',
+    (event: MouseEvent) => {
+      let target = event.target as HTMLElement
 
-    if (dialogState !== DialogStates.Open) return
-    if (hasNestedDialogs) return
-    if (internalDialogRef.current?.contains(target)) return
+      if (dialogState !== DialogStates.Open) return
+      if (hasNestedDialogs) return
+      if (internalDialogRef.current?.contains(target)) return
 
-    close()
-  })
+      close()
+    },
+    true
+  )
 
   // Handle `Escape` to close
-  useWindowEvent('keydown', event => {
-    if (event.key !== Keys.Escape) return
-    if (dialogState !== DialogStates.Open) return
-    if (hasNestedDialogs) return
-    event.preventDefault()
-    event.stopPropagation()
-    close()
-  })
+  useWindowEvent(
+    'keydown',
+    (event: KeyboardEvent) => {
+      if (event.key !== Keys.Escape) return
+      if (dialogState !== DialogStates.Open) return
+      if (hasNestedDialogs) return
+      event.preventDefault()
+      event.stopPropagation()
+      close()
+    },
+    true
+  )
 
   // Scroll lock
   useEffect(() => {
