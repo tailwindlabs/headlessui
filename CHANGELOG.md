@@ -281,20 +281,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [@headlessui/react@v0.2.0] - 2020-10-06
 
+### Added
+
 - Add `Listbox` component
 - Add `Switch` component
 
 ## [@headlessui/vue@v0.2.0] - 2020-10-06
+
+### Added
 
 - Add `Listbox` component
 - Add `Switch` component
 
 ## [@headlessui/react@v0.1.3] - 2020-09-29
 
+### Fixes
+
 - Fix outside click behaviour. If you had multiple menu's, when menu 1 is open, menu 2 is closed and you click on menu button 2 it will open both menu's. This is now fixed.
 - Ensure when using keyboard navigation we prevent the default behaviour.
 
 ## [@headlessui/vue@v0.1.3] - 2020-09-29
+
+### Fixes
 
 - Fix an issue where you couldn't click on menu items that were links.
 - Fix outside click behaviour. If you had multiple menu's, when menu 1 is open, menu 2 is closed and you click on menu button 2 it will open both menu's. This is now fixed.
@@ -302,21 +310,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [@headlessui/react@v0.1.2] - 2020-09-25
 
+### Added
+
 - Add tests for `onClick` handling that wasn't working properly in @headlessui/vue to ensure behavior stays the same in this library
+
+### Fixes
+
 - Don't pass `disabled` prop through to children, only add `aria-disabled`
 
 ## [@headlessui/vue@v0.1.2] - 2020-09-25
+
+### Fixes
 
 - Fix issue where button `MenuItem` instances didn't properly fire click events
 - Don't pass `disabled` prop through to children, only add `aria-disabled`
 
 ## [@headlessui/react@v0.1.1] - 2020-09-24
 
-- Initial release
+### Added
+
+- Everything!
 
 ## [@headlessui/vue@v0.1.1] - 2020-09-24
 
-- Initial release
+### Added
+
+- Everything!
 
 [unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...HEAD
 [unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.2...HEAD
