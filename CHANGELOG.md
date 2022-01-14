@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - Vue]
 
+### Fixes
+
+- Fix missing key binding in examples ([#1036](https://github.com/tailwindlabs/headlessui/pull/1036), [#1006](https://github.com/tailwindlabs/headlessui/pull/1006))
+- Fix slice => splice typo in `Tabs` component ([#1037](https://github.com/tailwindlabs/headlessui/pull/1037), [#986](https://github.com/tailwindlabs/headlessui/pull/986))
+
 ### Added
 
 - Allow for `TabGroup` to be controllable ([#909](https://github.com/tailwindlabs/headlessui/pull/909), [#970](https://github.com/tailwindlabs/headlessui/pull/970))
