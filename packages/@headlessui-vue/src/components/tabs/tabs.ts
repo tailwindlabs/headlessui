@@ -199,10 +199,6 @@ export let Tab = defineComponent({
       disabled: this.$props.disabled ? true : undefined,
     }
 
-    if (process.env.NODE_ENV === 'test') {
-      Object.assign(propsWeControl, { ['data-headlessui-index']: this.myIndex })
-    }
-
     return render({
       props: { ...this.$props, ...propsWeControl },
       slot,
@@ -332,10 +328,6 @@ export let TabPanel = defineComponent({
       role: 'tabpanel',
       'aria-labelledby': api.tabs.value[this.myIndex]?.value?.id,
       tabIndex: this.selected ? 0 : -1,
-    }
-
-    if (process.env.NODE_ENV === 'test') {
-      Object.assign(propsWeControl, { ['data-headlessui-index']: this.myIndex })
     }
 
     return render({
