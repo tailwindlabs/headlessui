@@ -75,6 +75,45 @@ describe('Rendering', () => {
     assertTabs({ active: 0 })
   })
 
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    function Example() {
+      let [hide, setHide] = useState(false)
+
+      return (
+        <>
+          <button onClick={() => setHide(v => !v)}>toggle</button>
+          <Tab.Group>
+            <Tab.List>
+              <Tab>Tab 1</Tab>
+              {!hide && <Tab>Tab 2</Tab>}
+              <Tab>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              {!hide && <Tab.Panel>Content 2</Tab.Panel>}
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </>
+      )
+    }
+
+    render(<Example />)
+
+    await click(getByText('toggle')) // Remove Tab 2
+    await click(getByText('toggle')) // Re-add Tab 2
+
+    await press(Keys.Tab)
+    assertTabs({ active: 0 })
+
+    await press(Keys.ArrowRight)
+    assertTabs({ active: 1 })
+
+    await press(Keys.ArrowRight)
+    assertTabs({ active: 2 })
+  })
+
   describe('`renderProps`', () => {
     it('should expose the `selectedIndex` on the `Tab.Group` component', async () => {
       render(

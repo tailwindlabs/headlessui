@@ -101,6 +101,51 @@ describe('Rendering', () => {
     assertTabs({ active: 0 })
   })
 
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    renderTemplate({
+      template: html`
+        <button @click="toggle()">toggle</button>
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab v-if="!hide">Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel v-if="!hide">Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+      `,
+      setup() {
+        let hide = ref(false)
+
+        return {
+          hide,
+          toggle() {
+            hide.value = !hide.value
+          },
+        }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    await click(getByText('toggle')) // Remove Tab 2
+    await click(getByText('toggle')) // Re-add Tab 2
+
+    await press(Keys.Tab)
+    assertTabs({ active: 0 })
+
+    await press(Keys.ArrowRight)
+    assertTabs({ active: 1 })
+
+    await press(Keys.ArrowRight)
+    assertTabs({ active: 2 })
+  })
+
   describe('`renderProps`', () => {
     it('should expose the `selectedIndex` on the `Tabs` component', async () => {
       renderTemplate(
