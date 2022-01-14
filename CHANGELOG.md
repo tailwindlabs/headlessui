@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - React]
 
+- Nothing yet!
+
+## [Unreleased - Vue]
+
+- Nothing yet!
+
+## [@headlessui/react@v1.4.3] - 2022-01-14
+
 ### Fixes
 
 - Ensure portal root exists in the DOM ([#950](https://github.com/tailwindlabs/headlessui/pull/950))
@@ -16,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow for `Tab.Group` to be controllable ([#909](https://github.com/tailwindlabs/headlessui/pull/909), [#970](https://github.com/tailwindlabs/headlessui/pull/970))
 
-## [Unreleased - Vue]
+## [@headlessui/vue@v1.4.3] - 2022-01-14
 
 ### Fixes
 
@@ -337,8 +345,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...HEAD
-[unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.2...HEAD
+[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.3...HEAD
+[unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.3...HEAD
+[@headlessui/react@v1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...@headlessui/react@v1.4.3
+[@headlessui/vue@v1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.2...@headlessui/vue@v1.4.3
 [@headlessui/react@v1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.1...@headlessui/react@v1.4.2
 [@headlessui/vue@v1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.1...@headlessui/vue@v1.4.2
 [@headlessui/react@v1.4.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.0...@headlessui/react@v1.4.1
