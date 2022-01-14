@@ -96,7 +96,15 @@ export function focusElement(element: HTMLElement | null) {
 }
 
 export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
-  let elements = Array.isArray(container) ? container : getFocusableElements(container)
+  let elements = Array.isArray(container)
+    ? container.slice().sort((a, b) => {
+        let position = a.compareDocumentPosition(b)
+
+        if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1
+        if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1
+        return 0
+      })
+    : getFocusableElements(container)
   let active = document.activeElement as HTMLElement
 
   let direction = (() => {

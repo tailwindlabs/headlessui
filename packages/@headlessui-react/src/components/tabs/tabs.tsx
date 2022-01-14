@@ -358,10 +358,6 @@ export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   }
   let passThroughProps = props
 
-  if (process.env.NODE_ENV === 'test') {
-    Object.assign(propsWeControl, { 'data-headlessui-index': myIndex })
-  }
-
   return render({
     props: { ...passThroughProps, ...propsWeControl },
     slot,
@@ -431,10 +427,6 @@ function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     role: 'tabpanel',
     'aria-labelledby': tabs[myIndex]?.current?.id,
     tabIndex: selected ? 0 : -1,
-  }
-
-  if (process.env.NODE_ENV === 'test') {
-    Object.assign(propsWeControl, { 'data-headlessui-index': myIndex })
   }
 
   let passThroughProps = props
