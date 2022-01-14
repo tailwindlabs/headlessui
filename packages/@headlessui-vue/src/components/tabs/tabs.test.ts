@@ -1,4 +1,4 @@
-import { defineComponent, nextTick } from 'vue'
+import { defineComponent, nextTick, ref } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -99,6 +99,51 @@ describe('Rendering', () => {
     await new Promise<void>(nextTick)
 
     assertTabs({ active: 0 })
+  })
+
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    renderTemplate({
+      template: html`
+        <button @click="toggle()">toggle</button>
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab v-if="!hide">Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel v-if="!hide">Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+      `,
+      setup() {
+        let hide = ref(false)
+
+        return {
+          hide,
+          toggle() {
+            hide.value = !hide.value
+          },
+        }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    await click(getByText('toggle')) // Remove Tab 2
+    await click(getByText('toggle')) // Re-add Tab 2
+
+    await press(Keys.Tab)
+    assertTabs({ active: 0 })
+
+    await press(Keys.ArrowRight)
+    assertTabs({ active: 1 })
+
+    await press(Keys.ArrowRight)
+    assertTabs({ active: 2 })
   })
 
   describe('`renderProps`', () => {
@@ -433,6 +478,262 @@ describe('Rendering', () => {
       assertTabs({ active: 0 })
       assertActiveElement(getByText('Tab 1'))
     })
+
+    it('should not change the Tab if the defaultIndex changes', async () => {
+      renderTemplate({
+        template: html`
+          <TabGroup :defaultIndex="defaultIndex">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
+
+          <button>after</button>
+          <button @click="defaultIndex = 0">change</button>
+        `,
+        setup() {
+          let defaultIndex = ref(1)
+          return { defaultIndex }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+
+      assertTabs({ active: 1 })
+      assertActiveElement(getByText('Tab 2'))
+
+      await click(getByText('Tab 3'))
+
+      assertTabs({ active: 2 })
+      assertActiveElement(getByText('Tab 3'))
+
+      // Change default index
+      await click(getByText('change'))
+
+      // Nothing should change...
+      assertTabs({ active: 2 })
+    })
+  })
+})
+
+describe('`selectedIndex`', () => {
+  it('should be possible to change active tab controlled and uncontrolled', async () => {
+    let handleChange = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <TabGroup @change="handleChange" :selectedIndex="selectedIndex">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+        <button>after</button>
+        <button @click="next">setSelectedIndex</button>
+      `,
+      setup() {
+        let selectedIndex = ref(0)
+
+        return {
+          selectedIndex,
+          handleChange(value: number) {
+            selectedIndex.value = value
+            handleChange(value)
+          },
+          next() {
+            selectedIndex.value += 1
+          },
+        }
+      },
+    })
+
+    await new Promise<void>(nextTick)
+
+    assertActiveElement(document.body)
+
+    // test uncontrolled behaviour
+    await click(getByText('Tab 2'))
+    expect(handleChange).toHaveBeenCalledTimes(1)
+    expect(handleChange).toHaveBeenNthCalledWith(1, 1)
+    assertTabs({ active: 1 })
+
+    // test controlled behaviour
+    await click(getByText('setSelectedIndex'))
+    assertTabs({ active: 2 })
+  })
+
+  it('should jump to the nearest tab when the selectedIndex is out of bounds (-2)', async () => {
+    renderTemplate(
+      html`
+        <TabGroup :selectedIndex="-2">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+
+        <button>after</button>
+      `
+    )
+
+    await new Promise<void>(nextTick)
+
+    assertActiveElement(document.body)
+
+    await press(Keys.Tab)
+
+    assertTabs({ active: 0 })
+    assertActiveElement(getByText('Tab 1'))
+  })
+
+  it('should jump to the nearest tab when the selectedIndex is out of bounds (+5)', async () => {
+    renderTemplate(
+      html`
+        <TabGroup :selectedIndex="5">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+
+        <button>after</button>
+      `
+    )
+
+    await new Promise<void>(nextTick)
+
+    assertActiveElement(document.body)
+
+    await press(Keys.Tab)
+
+    assertTabs({ active: 2 })
+    assertActiveElement(getByText('Tab 3'))
+  })
+
+  it('should jump to the next available tab when the selectedIndex is a disabled tab', async () => {
+    renderTemplate(
+      html`
+        <TabGroup :selectedIndex="0">
+          <TabList>
+            <Tab disabled>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+
+        <button>after</button>
+      `
+    )
+
+    await new Promise<void>(nextTick)
+
+    assertActiveElement(document.body)
+
+    await press(Keys.Tab)
+
+    assertTabs({ active: 1 })
+    assertActiveElement(getByText('Tab 2'))
+  })
+
+  it('should jump to the next available tab when the selectedIndex is a disabled tab and wrap around', async () => {
+    renderTemplate(
+      html`
+        <TabGroup :selectedIndex="2">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab disabled>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+
+        <button>after</button>
+      `
+    )
+
+    await new Promise<void>(nextTick)
+
+    assertActiveElement(document.body)
+
+    await press(Keys.Tab)
+
+    assertTabs({ active: 0 })
+    assertActiveElement(getByText('Tab 1'))
+  })
+
+  it('should prefer selectedIndex over defaultIndex', async () => {
+    renderTemplate(
+      html`
+        <TabGroup :selectedIndex="0" :defaultIndex="2">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+
+        <button>after</button>
+      `
+    )
+
+    await new Promise<void>(nextTick)
+
+    assertActiveElement(document.body)
+
+    await press(Keys.Tab)
+
+    assertTabs({ active: 0 })
+    assertActiveElement(getByText('Tab 1'))
   })
 })
 
@@ -1880,7 +2181,7 @@ describe('Mouse interactions', () => {
   })
 })
 
-it('should trigger the `onChange` when the tab changes', async () => {
+it('should trigger the `change` when the tab changes', async () => {
   let changes = jest.fn()
 
   renderTemplate({

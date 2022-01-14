@@ -1224,8 +1224,8 @@ export function assertTabs(
     expect(list).toHaveAttribute('role', 'tablist')
     expect(list).toHaveAttribute('aria-orientation', orientation)
 
-    let activeTab = tabs.find(tab => tab.dataset.headlessuiIndex === '' + active)
-    let activePanel = panels.find(panel => panel.dataset.headlessuiIndex === '' + active)
+    let activeTab = Array.from(list.querySelectorAll('[id^="headlessui-tabs-tab-"]'))[active]
+    let activePanel = panels.find(panel => panel.id === activeTab.getAttribute('aria-controls'))
 
     for (let tab of tabs) {
       expect(tab).toHaveAttribute('id')

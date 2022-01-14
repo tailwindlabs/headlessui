@@ -127,11 +127,19 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
   props: Props<TTag, TabsRenderPropArg> & {
     defaultIndex?: number
     onChange?: (index: number) => void
+    selectedIndex?: number
     vertical?: boolean
     manual?: boolean
   }
 ) {
-  let { defaultIndex = 0, vertical = false, manual = false, onChange, ...passThroughProps } = props
+  let {
+    defaultIndex = 0,
+    vertical = false,
+    manual = false,
+    onChange,
+    selectedIndex = null,
+    ...passThroughProps
+  } = props
   const orientation = vertical ? 'vertical' : 'horizontal'
   const activation = manual ? 'manual' : 'auto'
 
@@ -161,18 +169,20 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
 
   useEffect(() => {
     if (state.tabs.length <= 0) return
-    if (state.selectedIndex !== null) return
+    if (selectedIndex === null && state.selectedIndex !== null) return
 
     let tabs = state.tabs.map(tab => tab.current).filter(Boolean) as HTMLElement[]
     let focusableTabs = tabs.filter(tab => !tab.hasAttribute('disabled'))
 
+    let indexToSet = selectedIndex ?? defaultIndex
+
     // Underflow
-    if (defaultIndex < 0) {
+    if (indexToSet < 0) {
       dispatch({ type: ActionTypes.SetSelectedIndex, index: tabs.indexOf(focusableTabs[0]) })
     }
 
     // Overflow
-    else if (defaultIndex > state.tabs.length) {
+    else if (indexToSet > state.tabs.length) {
       dispatch({
         type: ActionTypes.SetSelectedIndex,
         index: tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
@@ -181,15 +191,15 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
 
     // Middle
     else {
-      let before = tabs.slice(0, defaultIndex)
-      let after = tabs.slice(defaultIndex)
+      let before = tabs.slice(0, indexToSet)
+      let after = tabs.slice(indexToSet)
 
       let next = [...after, ...before].find(tab => focusableTabs.includes(tab))
       if (!next) return
 
       dispatch({ type: ActionTypes.SetSelectedIndex, index: tabs.indexOf(next) })
     }
-  }, [defaultIndex, state.tabs, state.selectedIndex])
+  }, [defaultIndex, selectedIndex, state.tabs, state.selectedIndex])
 
   let lastChangedIndex = useRef(state.selectedIndex)
   let providerBag = useMemo<ContextType<typeof TabsContext>>(
@@ -348,10 +358,6 @@ export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   }
   let passThroughProps = props
 
-  if (process.env.NODE_ENV === 'test') {
-    Object.assign(propsWeControl, { ['data-headlessui-index']: myIndex })
-  }
-
   return render({
     props: { ...passThroughProps, ...propsWeControl },
     slot,
@@ -421,10 +427,6 @@ function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     role: 'tabpanel',
     'aria-labelledby': tabs[myIndex]?.current?.id,
     tabIndex: selected ? 0 : -1,
-  }
-
-  if (process.env.NODE_ENV === 'test') {
-    Object.assign(propsWeControl, { ['data-headlessui-index']: myIndex })
   }
 
   let passThroughProps = props

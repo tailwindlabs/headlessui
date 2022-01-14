@@ -8,6 +8,7 @@ import {
   computed,
   InjectionKey,
   Ref,
+  watchEffect,
 } from 'vue'
 
 import { Features, render, omit } from '../../utils/render'
@@ -58,6 +59,7 @@ export let TabGroup = defineComponent({
   },
   props: {
     as: { type: [Object, String], default: 'template' },
+    selectedIndex: { type: [Number], default: null },
     defaultIndex: { type: [Number], default: 0 },
     vertical: { type: [Boolean], default: false },
     manual: { type: [Boolean], default: false },
@@ -83,40 +85,42 @@ export let TabGroup = defineComponent({
       },
       unregisterTab(tab: typeof tabs['value'][number]) {
         let idx = tabs.value.indexOf(tab)
-        if (idx !== -1) tabs.value.slice(idx, 1)
+        if (idx !== -1) tabs.value.splice(idx, 1)
       },
       registerPanel(panel: typeof panels['value'][number]) {
         if (!panels.value.includes(panel)) panels.value.push(panel)
       },
       unregisterPanel(panel: typeof panels['value'][number]) {
         let idx = panels.value.indexOf(panel)
-        if (idx !== -1) panels.value.slice(idx, 1)
+        if (idx !== -1) panels.value.splice(idx, 1)
       },
     }
 
     provide(TabsContext, api)
 
-    onMounted(() => {
-      if (api.tabs.value.length <= 0) return console.log('bail')
-      if (selectedIndex.value !== null) return console.log('bail 2')
+    watchEffect(() => {
+      if (api.tabs.value.length <= 0) return
+      if (props.selectedIndex === null && selectedIndex.value !== null) return
 
       let tabs = api.tabs.value.map(tab => dom(tab)).filter(Boolean) as HTMLElement[]
       let focusableTabs = tabs.filter(tab => !tab.hasAttribute('disabled'))
 
+      let indexToSet = props.selectedIndex ?? props.defaultIndex
+
       // Underflow
-      if (props.defaultIndex < 0) {
+      if (indexToSet < 0) {
         selectedIndex.value = tabs.indexOf(focusableTabs[0])
       }
 
       // Overflow
-      else if (props.defaultIndex > api.tabs.value.length) {
+      else if (indexToSet > api.tabs.value.length) {
         selectedIndex.value = tabs.indexOf(focusableTabs[focusableTabs.length - 1])
       }
 
       // Middle
       else {
-        let before = tabs.slice(0, props.defaultIndex)
-        let after = tabs.slice(props.defaultIndex)
+        let before = tabs.slice(0, indexToSet)
+        let after = tabs.slice(indexToSet)
 
         let next = [...after, ...before].find(tab => focusableTabs.includes(tab))
         if (!next) return
@@ -129,7 +133,7 @@ export let TabGroup = defineComponent({
       let slot = { selectedIndex: selectedIndex.value }
 
       return render({
-        props: omit(props, ['defaultIndex', 'manual', 'vertical']),
+        props: omit(props, ['selectedIndex', 'defaultIndex', 'manual', 'vertical', 'onChange']),
         slot,
         slots,
         attrs,
@@ -193,10 +197,6 @@ export let Tab = defineComponent({
       'aria-selected': this.selected,
       tabIndex: this.selected ? 0 : -1,
       disabled: this.$props.disabled ? true : undefined,
-    }
-
-    if (process.env.NODE_ENV === 'test') {
-      Object.assign(propsWeControl, { ['data-headlessui-index']: this.myIndex })
     }
 
     return render({
@@ -328,10 +328,6 @@ export let TabPanel = defineComponent({
       role: 'tabpanel',
       'aria-labelledby': api.tabs.value[this.myIndex]?.value?.id,
       tabIndex: this.selected ? 0 : -1,
-    }
-
-    if (process.env.NODE_ENV === 'test') {
-      Object.assign(propsWeControl, { ['data-headlessui-index']: this.myIndex })
     }
 
     return render({
