@@ -13,6 +13,20 @@
 
 For full documentation, visit [headlessui.dev](https://headlessui.dev).
 
+### Installing the latest version
+
+You can install the latest version by using:
+
+- `npm install @headlessui/react@latest` or `yarn add @headlessui/react@latest`.
+- `npm install @headlessui/vue@latest` or `yarn add @headlessui/vue@latest`.
+
+### Installing the insiders version
+
+You can install the insiders version (which points to whatever the latest commit on the `main` branch is) by using:
+
+- `npm install @headlessui/react@insiders` or `yarn add @headlessui/react@insiders`.
+- `npm install @headlessui/vue@insiders` or `yarn add @headlessui/vue@insiders`.
+
 ## Packages
 
 | Name                                                                                                     |                                                        Version                                                        |                                                        Downloads                                                         |
@@ -29,3 +43,8 @@ For help, discussion about best practices, or any other conversation that would 
 For casual chit-chat with others using the library:
 
 [Join the Tailwind CSS Discord Server](https://discord.gg/7NF8GNe)
+
+## Contributing
+
+If you're interested in contributing to Headless UI, please read our [contributing docs](https://github.com/tailwindcss/headlessui/blob/main/.github/CONTRIBUTING.md) **before submitting a pull request**.
+
