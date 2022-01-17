@@ -350,6 +350,49 @@ describe('Rendering', () => {
       })
     )
   })
+
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    function Example({ hide = false }) {
+      return (
+        <>
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="button">Item 1</Menu.Item>
+              {!hide && <Menu.Item as="button">Item 2</Menu.Item>}
+              <Menu.Item as="button">Item 3</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        </>
+      )
+    }
+
+    let { rerender } = render(<Example />)
+
+    // Open the Menu
+    await click(getByText('Trigger'))
+
+    rerender(<Example hide={true} />) // Remove Menu.Item 2
+    rerender(<Example hide={false} />) // Re-add Menu.Item 2
+
+    assertMenu({ state: MenuState.Visible })
+
+    let items = getMenuItems()
+
+    // Focus the first item
+    await press(Keys.ArrowDown)
+
+    // Verify that the first menu item is active
+    assertMenuLinkedWithMenuItem(items[0])
+
+    await press(Keys.ArrowDown)
+    // Verify that the second menu item is active
+    assertMenuLinkedWithMenuItem(items[1])
+
+    await press(Keys.ArrowDown)
+    // Verify that the third menu item is active
+    assertMenuLinkedWithMenuItem(items[2])
+  })
 })
 
 describe('Rendering composition', () => {
