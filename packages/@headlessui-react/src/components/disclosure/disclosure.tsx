@@ -259,7 +259,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         }
       }
     },
-    [dispatch, isWithinPanel, state.disclosureState]
+    [dispatch, isWithinPanel, state.disclosureState, state.buttonId]
   )
 
   let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
