@@ -1,5 +1,5 @@
 import React, { createElement, useEffect, useRef } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { Popover } from './popover'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
