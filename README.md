@@ -46,5 +46,5 @@ For casual chit-chat with others using the library:
 
 ## Contributing
 
-If you're interested in contributing to Headless UI, please read our [contributing docs](https://github.com/tailwindcss/headlessui/blob/main/.github/CONTRIBUTING.md) **before submitting a pull request**.
+If you're interested in contributing to Headless UI, please read our [contributing docs](https://github.com/tailwindlabs/headlessui/blob/main/.github/CONTRIBUTING.md) **before submitting a pull request**.
 
