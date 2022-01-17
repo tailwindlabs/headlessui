@@ -5,11 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased - React]
+## [Unreleased - @headlessui/react]
 
 - Nothing yet!
 
-## [Unreleased - Vue]
+## [Unreleased - @headlessui/vue]
 
 - Nothing yet!
 
@@ -345,8 +345,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased - react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.3...HEAD
-[unreleased - vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.3...HEAD
+[unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.3...HEAD
+[unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.3...HEAD
 [@headlessui/react@v1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...@headlessui/react@v1.4.3
 [@headlessui/vue@v1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.2...@headlessui/vue@v1.4.3
 [@headlessui/react@v1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.1...@headlessui/react@v1.4.2
