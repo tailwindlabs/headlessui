@@ -27,6 +27,8 @@ You can install the insiders version (which points to whatever the latest commit
 - `npm install @headlessui/react@insiders` or `yarn add @headlessui/react@insiders`.
 - `npm install @headlessui/vue@insiders` or `yarn add @headlessui/vue@insiders`.
 
+**Note:** The insiders build doesn't follow semver and therefore doesn't guarantee that the APIs will be the same once they are released.
+
 ## Packages
 
 | Name                                                                                                     |                                                        Version                                                        |                                                        Downloads                                                         |
