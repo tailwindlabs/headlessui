@@ -1,4 +1,4 @@
-import { defineComponent, h, nextTick, ref, watch } from 'vue'
+import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { TransitionChild } from '../transitions/transition'
@@ -12,6 +12,7 @@ import {
   assertMenuLinkedWithMenuItem,
   assertActiveElement,
   assertNoActiveMenuItem,
+  getByText,
   getMenuButton,
   getMenu,
   getMenuItems,
@@ -718,6 +719,64 @@ describe('Rendering', () => {
 
       await click(getMenuButton())
     })
+  })
+
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    const props = reactive({ hide: false })
+
+    // todo: how do I pass in props to show/hide like we did in the jsx example?
+    // Likely requires an update to renderTemplate so we can pass props to the 2nd argument of render()
+    // Also is there a reason we can't just use JSX for the Vue tests too?
+    renderTemplate({
+      template: jsx`
+          <div>
+            <Menu>
+              <MenuButton>Trigger</MenuButton>
+              <MenuItems>
+                <MenuItem as="button">Item 1</MenuItem>
+                <MenuItem v-if="!hide" as="button">Item 2</MenuItem>
+                <MenuItem as="button">Item 3</MenuItem>
+              </MenuItems>
+            </Menu>
+          </div>
+        `,
+      setup() {
+        return {
+          get hide() {
+            return props.hide
+          },
+        }
+      },
+    })
+
+    // Open the Menu
+    await click(getByText('Trigger'))
+
+    props.hide = true
+    await nextFrame()
+
+    props.hide = false
+    await nextFrame()
+
+    assertMenu({ state: MenuState.Visible })
+
+    let items = getMenuItems()
+
+    // Focus the first item
+    await press(Keys.ArrowDown)
+
+    // Verify that the first menu item is active
+    assertMenuLinkedWithMenuItem(items[0])
+
+    await press(Keys.ArrowDown)
+
+    // Verify that the second menu item is active
+    assertMenuLinkedWithMenuItem(items[1])
+
+    await press(Keys.ArrowDown)
+
+    // Verify that the third menu item is active
+    assertMenuLinkedWithMenuItem(items[2])
   })
 })
 
