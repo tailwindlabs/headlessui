@@ -722,24 +722,19 @@ describe('Rendering', () => {
   })
 
   it('should guarantee the order of DOM nodes when performing actions', async () => {
-    const props = reactive({ hide: false })
+    let props = reactive({ hide: false })
 
-    // todo: how do I pass in props to show/hide like we did in the jsx example?
-    // Likely requires an update to renderTemplate so we can pass props to the 2nd argument of render()
-    // Also is there a reason we can't just use JSX for the Vue tests too?
     renderTemplate({
       template: jsx`
-          <div>
-            <Menu>
-              <MenuButton>Trigger</MenuButton>
-              <MenuItems>
-                <MenuItem as="button">Item 1</MenuItem>
-                <MenuItem v-if="!hide" as="button">Item 2</MenuItem>
-                <MenuItem as="button">Item 3</MenuItem>
-              </MenuItems>
-            </Menu>
-          </div>
-        `,
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="button">Item 1</MenuItem>
+            <MenuItem v-if="!hide" as="button">Item 2</MenuItem>
+            <MenuItem as="button">Item 3</MenuItem>
+          </MenuItems>
+        </Menu>
+      `,
       setup() {
         return {
           get hide() {
