@@ -20,6 +20,13 @@ it('should expose the correct components', () => {
     // FocusTrap
     'FocusTrap',
 
+    // Combobox
+    'Combobox',
+    'ComboboxLabel',
+    'ComboboxButton',
+    'ComboboxOptions',
+    'ComboboxOption',
+
     // Listbox
     'Listbox',
     'ListboxLabel',
