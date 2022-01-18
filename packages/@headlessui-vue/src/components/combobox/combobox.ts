@@ -34,7 +34,7 @@ function nextFrame(cb: () => void) {
   requestAnimationFrame(() => requestAnimationFrame(cb))
 }
 
-type ComboboxOptionDataRef = Ref<{ textValue: string; disabled: boolean; value: unknown }>
+type ComboboxOptionDataRef = Ref<{ disabled: boolean; value: unknown }>
 type StateDefinition = {
   // State
   ComboboxState: Ref<ComboboxStates>
@@ -42,6 +42,7 @@ type StateDefinition = {
   orientation: Ref<'vertical' | 'horizontal'>
 
   labelRef: Ref<HTMLLabelElement | null>
+  inputRef: Ref<HTMLInputElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
   optionsRef: Ref<HTMLDivElement | null>
 
@@ -54,8 +55,8 @@ type StateDefinition = {
   closeCombobox(): void
   openCombobox(): void
   goToOption(focus: Focus, id?: string): void
-  search(value: string): void
-  clearSearch(): void
+  selectOption(id: string): void
+  selectActiveOption(): void
   registerOption(id: string, dataRef: ComboboxOptionDataRef): void
   unregisterOption(id: string): void
   select(value: unknown): void
@@ -79,7 +80,7 @@ function useComboboxContext(component: string) {
 
 export let Combobox = defineComponent({
   name: 'Combobox',
-  emits: { 'update:modelValue': (_value: any) => true },
+  emits: { 'update:modelValue': (_value: any) => true, search: (_value: string) => true },
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
@@ -89,6 +90,7 @@ export let Combobox = defineComponent({
   setup(props, { slots, attrs, emit }) {
     let ComboboxState = ref<StateDefinition['ComboboxState']['value']>(ComboboxStates.Closed)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
+    let inputRef = ref<StateDefinition['inputRef']['value']>(null)
     let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
     let optionsRef = ref<StateDefinition['optionsRef']['value']>(null)
     let options = ref<StateDefinition['options']['value']>([])
@@ -139,26 +141,28 @@ export let Combobox = defineComponent({
         searchQuery.value = ''
         activeOptionIndex.value = nextActiveOptionIndex
       },
-      search(value: string) {
-        if (props.disabled) return
-        if (ComboboxState.value === ComboboxStates.Closed) return
+      selectOption(id: string) {
+        let option = options.value.find(item => item.id === id)
+        if (!option) return
 
-        searchQuery.value += value.toLowerCase()
+        let { dataRef } = option
+        emit('update:modelValue', dataRef.value)
 
-        let match = options.value.findIndex(
-          option =>
-            !option.dataRef.disabled && option.dataRef.textValue.startsWith(searchQuery.value)
-        )
-
-        if (match === -1 || match === activeOptionIndex.value) return
-        activeOptionIndex.value = match
+        // TODO: Do we need this?
+        if (typeof dataRef.value === 'string' && inputRef.value) {
+          inputRef.value.value = dataRef.value
+        }
       },
-      clearSearch() {
-        if (props.disabled) return
-        if (ComboboxState.value === ComboboxStates.Closed) return
-        if (searchQuery.value === '') return
+      selectActiveOption() {
+        if (activeOptionIndex.value === null) return
 
-        searchQuery.value = ''
+        let { dataRef } = options.value[activeOptionIndex.value]
+        emit('update:modelValue', dataRef.value)
+
+        // TODO: Do we need this?
+        if (typeof dataRef.value === 'string' && inputRef.value) {
+          inputRef.value.value = dataRef.value
+        }
       },
       registerOption(id: string, dataRef: ComboboxOptionDataRef) {
         let orderMap = Array.from(
@@ -200,11 +204,15 @@ export let Combobox = defineComponent({
       let active = document.activeElement
 
       if (ComboboxState.value !== ComboboxStates.Open) return
-      if (dom(buttonRef)?.contains(target)) return
 
-      if (!dom(optionsRef)?.contains(target)) api.closeCombobox()
+      if (dom(inputRef)?.contains(target)) return
+      if (dom(buttonRef)?.contains(target)) return
+      if (dom(optionsRef)?.contains(target)) return
+
+      api.closeCombobox()
+
       if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
+      if (!event.defaultPrevented) dom(inputRef)?.focus({ preventScroll: true })
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -261,7 +269,7 @@ export let ComboboxLabel = defineComponent({
       id,
       el: api.labelRef,
       handleClick() {
-        dom(api.buttonRef)?.focus({ preventScroll: true })
+        dom(api.inputRef)?.focus({ preventScroll: true })
       },
     }
   },
@@ -285,6 +293,7 @@ export let ComboboxButton = defineComponent({
       ref: 'el',
       id: this.id,
       type: this.type,
+      tabindex: '-1',
       'aria-haspopup': true,
       'aria-controls': dom(api.optionsRef)?.id,
       'aria-expanded': api.disabled.value
@@ -294,7 +303,6 @@ export let ComboboxButton = defineComponent({
         ? [dom(api.labelRef)?.id, this.id].join(' ')
         : undefined,
       disabled: api.disabled.value === true ? true : undefined,
-      onKeydown: this.handleKeyDown,
       onKeyup: this.handleKeyUp,
       onClick: this.handleClick,
     }
@@ -311,53 +319,16 @@ export let ComboboxButton = defineComponent({
     let api = useComboboxContext('ComboboxButton')
     let id = `headlessui-combobox-button-${useId()}`
 
-    function handleKeyDown(event: KeyboardEvent) {
-      switch (event.key) {
-        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-13
-
-        case Keys.Space:
-        case Keys.Enter:
-        case Keys.ArrowDown:
-          event.preventDefault()
-          api.openCombobox()
-          nextTick(() => {
-            dom(api.optionsRef)?.focus({ preventScroll: true })
-            if (!api.value.value) api.goToOption(Focus.First)
-          })
-          break
-
-        case Keys.ArrowUp:
-          event.preventDefault()
-          api.openCombobox()
-          nextTick(() => {
-            dom(api.optionsRef)?.focus({ preventScroll: true })
-            if (!api.value.value) api.goToOption(Focus.Last)
-          })
-          break
-      }
-    }
-
-    function handleKeyUp(event: KeyboardEvent) {
-      switch (event.key) {
-        case Keys.Space:
-          // Required for firefox, event.preventDefault() in handleKeyDown for
-          // the Space key doesn't cancel the handleKeyUp, which in turn
-          // triggers a *click*.
-          event.preventDefault()
-          break
-      }
-    }
-
     function handleClick(event: MouseEvent) {
       if (api.disabled.value) return
       if (api.ComboboxState.value === ComboboxStates.Open) {
         api.closeCombobox()
-        nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
         api.openCombobox()
-        nextFrame(() => dom(api.optionsRef)?.focus({ preventScroll: true }))
       }
+
+      nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
     }
 
     return {
@@ -367,8 +338,6 @@ export let ComboboxButton = defineComponent({
         computed(() => ({ as: props.as, type: attrs.type })),
         api.buttonRef
       ),
-      handleKeyDown,
-      handleKeyUp,
       handleClick,
     }
   },
@@ -376,15 +345,15 @@ export let ComboboxButton = defineComponent({
 
 // ---
 
-export let ComboboxOptions = defineComponent({
-  name: 'ComboboxOptions',
+export let ComboboxInput = defineComponent({
+  name: 'ComboboxInput',
   props: {
     as: { type: [Object, String], default: 'ul' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = useComboboxContext('ComboboxOptions')
+    let api = useComboboxContext('ComboboxInput')
 
     let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
     let propsWeControl = {
@@ -409,11 +378,11 @@ export let ComboboxOptions = defineComponent({
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
       visible: this.visible,
-      name: 'ComboboxOptions',
+      name: 'ComboboxInput',
     })
   },
   setup() {
-    let api = useComboboxContext('ComboboxOptions')
+    let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-options-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
@@ -423,23 +392,13 @@ export let ComboboxOptions = defineComponent({
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        // @ts-expect-error Fallthrough is expected here
         case Keys.Space:
-          if (api.searchQuery.value !== '') {
-            event.preventDefault()
-            event.stopPropagation()
-            return api.search(event.key)
-          }
-        // When in type ahead mode, fallthrough
         case Keys.Enter:
           event.preventDefault()
           event.stopPropagation()
-          if (api.activeOptionIndex.value !== null) {
-            let { dataRef } = api.options.value[api.activeOptionIndex.value]
-            api.select(dataRef.value)
-          }
+          api.selectActiveOption()
           api.closeCombobox()
-          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
           break
 
         case match(api.orientation.value, {
@@ -448,12 +407,32 @@ export let ComboboxOptions = defineComponent({
         }):
           event.preventDefault()
           event.stopPropagation()
-          return api.goToOption(Focus.Next)
+          return match(api.ComboboxState.value, {
+            [ComboboxStates.Open]: () => api.goToOption(Focus.Next),
+            [ComboboxStates.Closed]: () => {
+              api.openCombobox()
+              nextTick(() => {
+                if (!api.value) {
+                  api.goToOption(Focus.First)
+                }
+              })
+            },
+          })
 
         case match(api.orientation.value, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
           event.preventDefault()
           event.stopPropagation()
-          return api.goToOption(Focus.Previous)
+          return match(api.ComboboxState.value, {
+            [ComboboxStates.Open]: () => api.goToOption(Focus.Previous),
+            [ComboboxStates.Closed]: () => {
+              api.openCombobox()
+              nextTick(() => {
+                if (!api.value) {
+                  api.goToOption(Focus.Last)
+                }
+              })
+            },
+          })
 
         case Keys.Home:
         case Keys.PageUp:
@@ -471,21 +450,23 @@ export let ComboboxOptions = defineComponent({
           event.preventDefault()
           event.stopPropagation()
           api.closeCombobox()
-          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+          nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
           event.preventDefault()
           event.stopPropagation()
-          break
-
-        default:
-          if (event.key.length === 1) {
-            api.search(event.key)
-            searchDebounce.value = setTimeout(() => api.clearSearch(), 350)
-          }
+          api.selectActiveOption()
+          api.closeCombobox()
           break
       }
+    }
+
+    function handleKeyUp(event: KeyboardEvent) {
+      api.openCombobox()
+
+      // TODO: How do we do this here?
+      // emit('search', (event.target as HTMLInputElement).value)
     }
 
     let usesOpenClosedState = useOpenClosed()
@@ -498,6 +479,58 @@ export let ComboboxOptions = defineComponent({
     })
 
     return { id, el: api.optionsRef, handleKeyDown, visible }
+  },
+})
+
+// ---
+
+export let ComboboxOptions = defineComponent({
+  name: 'ComboboxOptions',
+  props: {
+    as: { type: [Object, String], default: 'ul' },
+    static: { type: Boolean, default: false },
+    unmount: { type: Boolean, default: true },
+  },
+  render() {
+    let api = useComboboxContext('ComboboxOptions')
+
+    let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
+    let propsWeControl = {
+      'aria-activedescendant':
+        api.activeOptionIndex.value === null
+          ? undefined
+          : api.options.value[api.activeOptionIndex.value]?.id,
+      'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+      'aria-orientation': api.orientation.value,
+      id: this.id,
+      ref: 'el',
+    }
+    let passThroughProps = this.$props
+
+    return render({
+      props: { ...passThroughProps, ...propsWeControl },
+      slot,
+      attrs: this.$attrs,
+      slots: this.$slots,
+      features: Features.RenderStrategy | Features.Static,
+      visible: this.visible,
+      name: 'ComboboxOptions',
+    })
+  },
+  setup() {
+    let api = useComboboxContext('ComboboxOptions')
+    let id = `headlessui-combobox-options-${useId()}`
+
+    let usesOpenClosedState = useOpenClosed()
+    let visible = computed(() => {
+      if (usesOpenClosedState !== null) {
+        return usesOpenClosedState.value === State.Open
+      }
+
+      return api.ComboboxState.value === ComboboxStates.Open
+    })
+
+    return { id, el: api.optionsRef, visible }
   },
 })
 
@@ -523,14 +556,6 @@ export let ComboboxOption = defineComponent({
     let dataRef = ref<ComboboxOptionDataRef['value']>({
       disabled: props.disabled,
       value: props.value,
-      textValue: '',
-    })
-    onMounted(() => {
-      let textValue = document
-        .getElementById(id)
-        ?.textContent?.toLowerCase()
-        .trim()
-      if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 
     onMounted(() => api.registerOption(id, dataRef))
@@ -543,7 +568,6 @@ export let ComboboxOption = defineComponent({
           if (api.ComboboxState.value !== ComboboxStates.Open) return
           if (!selected.value) return
           api.goToOption(Focus.Specific, id)
-          document.getElementById(id)?.focus?.()
         },
         { immediate: true }
       )
@@ -559,7 +583,7 @@ export let ComboboxOption = defineComponent({
       if (props.disabled) return event.preventDefault()
       api.select(props.value)
       api.closeCombobox()
-      nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+      nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
     }
 
     function handleFocus() {
