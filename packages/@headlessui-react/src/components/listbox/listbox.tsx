@@ -146,10 +146,20 @@ let reducers: {
     if (state.searchQuery === '') return state
     return { ...state, searchQuery: '' }
   },
-  [ActionTypes.RegisterOption]: (state, action) => ({
-    ...state,
-    options: [...state.options, { id: action.id, dataRef: action.dataRef }],
-  }),
+  [ActionTypes.RegisterOption]: (state, action) => {
+    let orderMap = Array.from(
+      state.optionsRef.current?.querySelectorAll('[id^="headlessui-listbox-option-"]')!
+    ).reduce(
+      (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
+      {}
+    ) as Record<string, number>
+
+    let options = [...state.options, { id: action.id, dataRef: action.dataRef }].sort(
+      (a, z) => orderMap[a.id] - orderMap[z.id]
+    )
+
+    return { ...state, options }
+  },
   [ActionTypes.UnregisterOption]: (state, action) => {
     let nextOptions = state.options.slice()
     let currentActiveOption =

@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/react]
 
-- Nothing yet!
+### Fixed
+
+- Ensure correct order when conditionally rendering `Menu.Item`, `Listbox.Option` and `RadioGroup.Option` ([#1045](https://github.com/tailwindlabs/headlessui/pull/1045))
 
 ## [Unreleased - @headlessui/vue]
 
-- Nothing yet!
+### Fixed
+
+- Ensure correct order when conditionally rendering `MenuItem`, `ListboxOption` and `RadioGroupOption` ([#1045](https://github.com/tailwindlabs/headlessui/pull/1045))
 
 ## [@headlessui/react@v1.4.3] - 2022-01-14
 

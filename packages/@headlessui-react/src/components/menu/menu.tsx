@@ -112,10 +112,20 @@ let reducers: {
     if (state.searchQuery === '') return state
     return { ...state, searchQuery: '' }
   },
-  [ActionTypes.RegisterItem]: (state, action) => ({
-    ...state,
-    items: [...state.items, { id: action.id, dataRef: action.dataRef }],
-  }),
+  [ActionTypes.RegisterItem]: (state, action) => {
+    let orderMap = Array.from(
+      state.itemsRef.current?.querySelectorAll('[id^="headlessui-menu-item-"]')!
+    ).reduce(
+      (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
+      {}
+    ) as Record<string, number>
+
+    let items = [...state.items, { id: action.id, dataRef: action.dataRef }].sort(
+      (a, z) => orderMap[a.id] - orderMap[z.id]
+    )
+
+    return { ...state, items }
+  },
   [ActionTypes.UnregisterItem]: (state, action) => {
     let nextItems = state.items.slice()
     let currentActiveItem = state.activeItemIndex !== null ? nextItems[state.activeItemIndex] : null

@@ -120,8 +120,17 @@ export let Menu = defineComponent({
         searchQuery.value = ''
       },
       registerItem(id: string, dataRef: MenuItemDataRef) {
+        let orderMap = Array.from(
+          itemsRef.value?.querySelectorAll('[id^="headlessui-menu-item-"]') ?? []
+        ).reduce(
+          (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
+          {}
+        ) as Record<string, number>
+
         // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
-        items.value.push({ id, dataRef })
+        items.value = [...items.value, { id, dataRef }].sort(
+          (a, z) => orderMap[a.id] - orderMap[z.id]
+        )
       },
       unregisterItem(id: string) {
         let nextItems = items.value.slice()
