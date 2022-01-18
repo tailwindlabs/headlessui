@@ -494,6 +494,49 @@ describe('Rendering', () => {
       })
     )
   })
+
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    function Example({ hide = false }) {
+      return (
+        <>
+          <Listbox value={undefined} onChange={console.log}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option 1</Listbox.Option>
+              {!hide && <Listbox.Option value="b">Option 2</Listbox.Option>}
+              <Listbox.Option value="c">Option 3</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        </>
+      )
+    }
+
+    let { rerender } = render(<Example />)
+
+    // Open the Listbox
+    await click(getByText('Trigger'))
+
+    rerender(<Example hide={true} />) // Remove Listbox.Option 2
+    rerender(<Example hide={false} />) // Re-add Listbox.Option 2
+
+    assertListbox({ state: ListboxState.Visible })
+
+    let options = getListboxOptions()
+
+    // Focus the first item
+    await press(Keys.ArrowDown)
+
+    // Verify that the first menu item is active
+    assertActiveListboxOption(options[0])
+
+    await press(Keys.ArrowDown)
+    // Verify that the second menu item is active
+    assertActiveListboxOption(options[1])
+
+    await press(Keys.ArrowDown)
+    // Verify that the third menu item is active
+    assertActiveListboxOption(options[2])
+  })
 })
 
 describe('Rendering composition', () => {
