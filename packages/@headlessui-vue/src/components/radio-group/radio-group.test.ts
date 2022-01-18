@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch } from 'vue'
+import { defineComponent, nextTick, ref, watch, reactive } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { RadioGroup, RadioGroupOption, RadioGroupLabel, RadioGroupDescription } from './radio-group'
@@ -23,6 +23,16 @@ beforeAll(() => {
 })
 
 afterAll(() => jest.restoreAllMocks())
+
+function nextFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   let defaultComponents = { RadioGroup, RadioGroupOption, RadioGroupLabel, RadioGroupDescription }
@@ -453,6 +463,48 @@ describe('Rendering', () => {
 
     // Make sure that the onChange handler got called
     expect(changeFn).toHaveBeenCalledTimes(1)
+  })
+
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    let props = reactive({ hide: false })
+
+    renderTemplate({
+      template: html`
+        <RadioGroup v-model="value">
+          <RadioGroupOption value="a">Option 1</RadioGroupOption>
+          <RadioGroupOption v-if="!hide" value="b">Option 2</RadioGroupOption>
+          <RadioGroupOption value="c">Option 3</RadioGroupOption>
+        </RadioGroup>
+      `,
+      setup() {
+        return {
+          value: ref('a'),
+          get hide() {
+            return props.hide
+          },
+        }
+      },
+    })
+
+    // Focus the RadioGroup
+    await press(Keys.Tab)
+
+    props.hide = true
+    await nextFrame()
+
+    props.hide = false
+    await nextFrame()
+
+    // Verify that the first radio group option is active
+    assertActiveElement(getByText('Option 1'))
+
+    await press(Keys.ArrowDown)
+    // Verify that the second radio group option is active
+    assertActiveElement(getByText('Option 2'))
+
+    await press(Keys.ArrowDown)
+    // Verify that the third radio group option is active
+    assertActiveElement(getByText('Option 3'))
   })
 })
 
