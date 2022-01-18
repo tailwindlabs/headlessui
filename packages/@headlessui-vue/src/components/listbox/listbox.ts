@@ -170,7 +170,7 @@ export let Listbox = defineComponent({
 
         // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
         options.value = [...options.value, { id, dataRef }].sort(
-          (a, b) => orderMap[a.id] - orderMap[b.id]
+          (a, z) => orderMap[a.id] - orderMap[z.id]
         )
       },
       unregisterOption(id: string) {
