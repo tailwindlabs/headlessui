@@ -1,5 +1,5 @@
 import React, { createElement, useState, useEffect } from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { Combobox } from './combobox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -66,7 +66,8 @@ describe('safeguards', () => {
     'should be possible to render a Combobox without crashing',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -91,9 +92,10 @@ describe('Rendering', () => {
       'should be possible to render a Combobox using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
             {({ open }) => (
               <>
+                <Combobox.Input />
                 <Combobox.Button>Trigger</Combobox.Button>
                 {open && (
                   <Combobox.Options>
@@ -128,6 +130,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} disabled>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -167,8 +170,9 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Label using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
             <Combobox.Label>{JSON.stringify}</Combobox.Label>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -204,8 +208,9 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Label using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
             <Combobox.Label as="p">{JSON.stringify}</Combobox.Label>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -238,7 +243,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Button using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
             <Combobox.Button>{JSON.stringify}</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -270,7 +275,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Button using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
             <Combobox.Button as="div" role="button">
               {JSON.stringify}
             </Combobox.Button>
@@ -304,8 +309,9 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Button and a Combobox.Label and see them linked together',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
             <Combobox.Label>Label</Combobox.Label>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -331,6 +337,7 @@ describe('Rendering', () => {
       it('should set the `type` to "button" by default', async () => {
         render(
           <Combobox value={null} onChange={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
           </Combobox>
         )
@@ -393,7 +400,8 @@ describe('Rendering', () => {
       'should be possible to render Combobox.Options using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               {data => (
@@ -427,7 +435,8 @@ describe('Rendering', () => {
 
     it('should be possible to always render the Combobox.Options if we provide it a `static` prop', () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options static>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -443,7 +452,8 @@ describe('Rendering', () => {
 
     it('should be possible to use a different render strategy for the Combobox.Options', async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options unmount={false}>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -467,7 +477,8 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Option using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">{JSON.stringify}</Combobox.Option>
@@ -499,7 +510,8 @@ describe('Rendering', () => {
     function Example({ hide = false }) {
       return (
         <>
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option 1</Combobox.Option>
@@ -518,6 +530,8 @@ describe('Rendering', () => {
 
     rerender(<Example hide={true} />) // Remove Combobox.Option 2
     rerender(<Example hide={false} />) // Re-add Combobox.Option 2
+
+    screen.debug()
 
     assertCombobox({ state: ComboboxState.Visible })
 
@@ -544,7 +558,8 @@ describe('Rendering composition', () => {
     'should be possible to conditionally render classNames (aka className can be a function?!)',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a" className={bag => JSON.stringify(bag)}>
@@ -619,7 +634,8 @@ describe('Rendering composition', () => {
     'should be possible to swap the Combobox option with a button for example',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option as="button" value="a">
@@ -666,7 +682,8 @@ describe('Composition', () => {
     suppressConsoleLogs(async () => {
       let orderFn = jest.fn()
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Debug name="Combobox" fn={orderFn} />
           <Transition>
@@ -722,7 +739,8 @@ describe('Keyboard interactions', () => {
       'should be possible to open the combobox with Enter',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -769,6 +787,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} disabled>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -804,6 +823,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="b" onChange={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -849,6 +869,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="b" onChange={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options unmount={false}>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -916,6 +937,7 @@ describe('Keyboard interactions', () => {
         let selectedOption = myOptions[1]
         render(
           <Combobox value={selectedOption} onChange={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               {myOptions.map(myOption => (
@@ -962,7 +984,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option when there are no combobox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options />
           </Combobox>
@@ -986,7 +1009,8 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled combobox option when opening with Enter',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1021,7 +1045,8 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled combobox option when opening with Enter (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1058,7 +1083,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option upon Enter key press, when there are no non-disabled combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1094,7 +1120,8 @@ describe('Keyboard interactions', () => {
       'should be possible to close the combobox with Enter when there is no active comboboxoption',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1144,6 +1171,7 @@ describe('Keyboard interactions', () => {
                 handleChange(value)
               }}
             >
+              <Combobox.Input />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1200,7 +1228,8 @@ describe('Keyboard interactions', () => {
       'should be possible to open the combobox with Space',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1244,6 +1273,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} disabled>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1279,6 +1309,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="b" onChange={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1323,7 +1354,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option when there are no combobox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options />
           </Combobox>
@@ -1347,7 +1379,8 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled combobox option when opening with Space',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1382,7 +1415,8 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled combobox option when opening with Space (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1419,7 +1453,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option upon Space key press, when there are no non-disabled combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1467,6 +1502,7 @@ describe('Keyboard interactions', () => {
                 handleChange(value)
               }}
             >
+              <Combobox.Input />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1523,7 +1559,8 @@ describe('Keyboard interactions', () => {
       'should be possible to close an open combobox with Escape',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1566,7 +1603,8 @@ describe('Keyboard interactions', () => {
       'should focus trap when we use Tab',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1617,7 +1655,8 @@ describe('Keyboard interactions', () => {
       'should focus trap when we use Shift+Tab',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1670,7 +1709,8 @@ describe('Keyboard interactions', () => {
       'should be possible to open the combobox with ArrowDown',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1716,6 +1756,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} disabled>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1751,6 +1792,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="b" onChange={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1795,7 +1837,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option when there are no combobox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options />
           </Combobox>
@@ -1819,7 +1862,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1865,7 +1909,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the combobox options and skip the first disabled one',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1905,7 +1950,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the combobox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -1946,6 +1992,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} horizontal>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1993,7 +2040,8 @@ describe('Keyboard interactions', () => {
       'should be possible to open the combobox with ArrowUp and the last option should be active',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2039,6 +2087,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} disabled>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2074,6 +2123,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="b" onChange={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2118,7 +2168,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option when there are no combobox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options />
           </Combobox>
@@ -2142,7 +2193,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2180,7 +2232,8 @@ describe('Keyboard interactions', () => {
       'should not be possible to navigate up or down if there is only a single non-disabled option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2226,7 +2279,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowUp to navigate the combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2284,6 +2338,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} horizontal>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2341,7 +2396,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the last combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2372,7 +2428,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the last non disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2408,7 +2465,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the first combobox option if that is the only non-disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2443,7 +2501,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option upon End key press, when there are no non-disabled combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2481,7 +2540,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the last combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2512,7 +2572,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the last non disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2548,7 +2609,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the first combobox option if that is the only non-disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2583,7 +2645,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option upon PageDown key press, when there are no non-disabled combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2621,7 +2684,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the first combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2652,7 +2716,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the first non disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2687,7 +2752,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the last combobox option if that is the only non-disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2722,7 +2788,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option upon Home key press, when there are no non-disabled combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2760,7 +2827,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the first combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2791,7 +2859,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the first non disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2826,7 +2895,8 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the last combobox option if that is the only non-disabled combobox option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2861,7 +2931,8 @@ describe('Keyboard interactions', () => {
       'should have no active combobox option upon PageUp key press, when there are no non-disabled combobox options',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option disabled value="a">
@@ -2899,7 +2970,8 @@ describe('Keyboard interactions', () => {
       'should be possible to type a full word that has a perfect match',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -2932,7 +3004,8 @@ describe('Keyboard interactions', () => {
       'should be possible to type a partial of a word',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -2971,7 +3044,8 @@ describe('Keyboard interactions', () => {
       'should be possible to type words with spaces',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">value a</Combobox.Option>
@@ -3010,7 +3084,8 @@ describe('Keyboard interactions', () => {
       'should not be possible to search for a disabled option',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3045,7 +3120,8 @@ describe('Keyboard interactions', () => {
       'should be possible to search for a word (case insensitive)',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3081,8 +3157,9 @@ describe('Mouse interactions', () => {
     'should focus the Combobox.Button when we click the Combobox.Label',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
           <Combobox.Label>Label</Combobox.Label>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3107,8 +3184,9 @@ describe('Mouse interactions', () => {
     'should not focus the Combobox.Button when we right click the Combobox.Label',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
           <Combobox.Label>Label</Combobox.Label>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3133,7 +3211,8 @@ describe('Mouse interactions', () => {
     'should be possible to open the combobox on click',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3172,7 +3251,8 @@ describe('Mouse interactions', () => {
     'should not be possible to open the combobox on right click',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Item A</Combobox.Option>
@@ -3201,6 +3281,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value={undefined} onChange={console.log} disabled>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3233,6 +3314,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="b" onChange={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3274,7 +3356,8 @@ describe('Mouse interactions', () => {
     'should be possible to close a combobox on click',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3303,7 +3386,8 @@ describe('Mouse interactions', () => {
     'should be a no-op when we click outside of a closed combobox',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3328,7 +3412,8 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the combobox which should close the combobox',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3359,7 +3444,8 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <div>
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3368,7 +3454,8 @@ describe('Mouse interactions', () => {
             </Combobox.Options>
           </Combobox>
 
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3402,7 +3489,8 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the combobox which should close the combobox (even if we press the combobox button)',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3434,7 +3522,7 @@ describe('Mouse interactions', () => {
       let focusFn = jest.fn()
       render(
         <div>
-          <Combobox value={undefined} onChange={console.log}>
+          <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
             <Combobox.Button onFocus={focusFn}>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3473,7 +3561,8 @@ describe('Mouse interactions', () => {
     'should be possible to hover an option and make it active',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3505,7 +3594,8 @@ describe('Mouse interactions', () => {
     'should make a combobox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3529,7 +3619,8 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the combobox option is already active',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3559,7 +3650,8 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the combobox option is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3585,7 +3677,8 @@ describe('Mouse interactions', () => {
     'should not be possible to hover an option that is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3614,7 +3707,8 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3656,7 +3750,8 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave a disabled option and be a no-op',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3697,6 +3792,7 @@ describe('Mouse interactions', () => {
               handleChange(value)
             }}
           >
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3748,6 +3844,7 @@ describe('Mouse interactions', () => {
               handleChange(value)
             }}
           >
+            <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3790,7 +3887,8 @@ describe('Mouse interactions', () => {
     'should be possible focus a combobox option, so that it becomes active',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -3820,7 +3918,8 @@ describe('Mouse interactions', () => {
     'should not be possible to focus a combobox option which is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={undefined} onChange={console.log}>
+        <Combobox value={'test'} onChange={console.log} onSearch={console.log}>
+          <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>

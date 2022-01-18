@@ -106,6 +106,7 @@ describe('safeguards', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -134,6 +135,7 @@ describe('Rendering', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" v-slot="{ open }">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions v-show="open">
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -168,6 +170,7 @@ describe('Rendering', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" disabled>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -212,6 +215,7 @@ describe('Rendering', () => {
           template: html`
             <Combobox v-model="value">
               <ComboboxLabel v-slot="data">{{JSON.stringify(data)}}</ComboboxLabel>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -252,6 +256,7 @@ describe('Rendering', () => {
           template: html`
             <Combobox v-model="value">
               <ComboboxLabel as="p" v-slot="data">{{JSON.stringify(data)}}</ComboboxLabel>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -361,6 +366,7 @@ describe('Rendering', () => {
           template: html`
             <Combobox v-model="value">
               <ComboboxLabel>Label</ComboboxLabel>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -388,6 +394,7 @@ describe('Rendering', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
             </Combobox>
           `,
@@ -486,6 +493,7 @@ describe('Rendering', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions v-slot="data">
                 <ComboboxOption value="a">{{JSON.stringify(data)}}</ComboboxOption>
@@ -519,6 +527,7 @@ describe('Rendering', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions static>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -538,6 +547,7 @@ describe('Rendering', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions :unmount="false">
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -567,6 +577,7 @@ describe('Rendering', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a" v-slot="data">{{JSON.stringify(data)}}</ComboboxOption>
@@ -602,6 +613,7 @@ describe('Rendering', () => {
     renderTemplate({
       template: html`
         <Combobox v-model="value">
+          <ComboboxInput />
           <ComboboxButton>Trigger</ComboboxButton>
           <ComboboxOptions>
             <ComboboxOption value="a">Option 1</ComboboxOption>
@@ -658,6 +670,7 @@ describe('Rendering composition', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption as="button" value="a">
@@ -715,6 +728,7 @@ describe('Composition', () => {
         components: { OpenClosedWrite },
         template: html`
           <Combobox>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <OpenClosedWrite :open="true">
               <ComboboxOptions v-slot="data">
@@ -745,6 +759,7 @@ describe('Composition', () => {
         components: { OpenClosedWrite },
         template: html`
           <Combobox>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <OpenClosedWrite :open="false">
               <ComboboxOptions v-slot="data">
@@ -776,6 +791,7 @@ describe('Composition', () => {
         components: { OpenClosedRead },
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <OpenClosedRead @read="readFn">
               <ComboboxOptions>
@@ -818,6 +834,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -867,6 +884,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" disabled>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -905,6 +923,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -953,6 +972,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions :unmount="false">
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1019,6 +1039,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption v-for="option in options" key="option.id" :value="option"
@@ -1076,6 +1097,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions />
             </Combobox>
@@ -1103,6 +1125,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -1141,6 +1164,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -1181,6 +1205,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -1220,6 +1245,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1262,6 +1288,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1323,6 +1350,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1369,6 +1397,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" disabled>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1407,6 +1436,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1455,6 +1485,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions />
             </Combobox>
@@ -1482,6 +1513,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -1520,6 +1552,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -1560,6 +1593,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -1600,6 +1634,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1661,6 +1696,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1707,6 +1743,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1761,6 +1798,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1817,6 +1855,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1865,6 +1904,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" disabled>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1903,6 +1943,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -1951,6 +1992,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions />
             </Combobox>
@@ -1978,6 +2020,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2027,6 +2070,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2070,6 +2114,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2113,6 +2158,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" horizontal>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2164,6 +2210,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2212,6 +2259,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" disabled>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2250,6 +2298,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2298,6 +2347,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions />
             </Combobox>
@@ -2325,6 +2375,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2366,6 +2417,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2415,6 +2467,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2475,6 +2528,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value" horizontal>
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2536,6 +2590,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2570,6 +2625,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2609,6 +2665,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2647,6 +2704,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2688,6 +2746,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2722,6 +2781,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2761,6 +2821,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2799,6 +2860,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2840,6 +2902,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2874,6 +2937,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2912,6 +2976,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2950,6 +3015,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -2991,6 +3057,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3025,6 +3092,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -3063,6 +3131,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -3101,6 +3170,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption disabled value="a">
@@ -3142,6 +3212,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3178,6 +3249,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3220,6 +3292,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">value a</ComboboxOption>
@@ -3262,6 +3335,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3300,6 +3374,7 @@ describe('Keyboard interactions', () => {
         renderTemplate({
           template: html`
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3340,6 +3415,7 @@ describe('Mouse interactions', () => {
         template: html`
           <Combobox v-model="value">
             <ComboboxLabel>Label</ComboboxLabel>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3369,6 +3445,7 @@ describe('Mouse interactions', () => {
         template: html`
           <Combobox v-model="value">
             <ComboboxLabel>Label</ComboboxLabel>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3397,6 +3474,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3439,6 +3517,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3470,6 +3549,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value" disabled>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3505,6 +3585,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3550,6 +3631,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -3582,6 +3664,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3610,6 +3693,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3644,6 +3728,7 @@ describe('Mouse interactions', () => {
         template: html`
           <div>
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3653,6 +3738,7 @@ describe('Mouse interactions', () => {
             </Combobox>
 
             <Combobox v-model="value">
+              <ComboboxInput />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3690,6 +3776,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3723,6 +3810,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3758,6 +3846,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3785,6 +3874,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3818,6 +3908,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3847,6 +3938,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3879,6 +3971,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3924,6 +4017,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -3958,6 +4052,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -4004,6 +4099,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -4051,6 +4147,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
@@ -4084,6 +4181,7 @@ describe('Mouse interactions', () => {
       renderTemplate({
         template: html`
           <Combobox v-model="value">
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
