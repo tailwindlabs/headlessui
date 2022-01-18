@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, h } from 'vue'
+import { defineComponent, nextTick, ref, watch, h, reactive } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -21,6 +21,7 @@ import {
   getListboxOptions,
   getListboxLabel,
   ListboxState,
+  getByText,
 } from '../../test-utils/accessibility-assertions'
 import {
   click,
@@ -45,6 +46,16 @@ beforeAll(() => {
 })
 
 afterAll(() => jest.restoreAllMocks())
+
+function nextFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
 
 function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
   let defaultComponents = { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption }
@@ -570,6 +581,60 @@ describe('Rendering', () => {
         })
       })
     )
+  })
+
+  it('should guarantee the order of DOM nodes when performing actions', async () => {
+    let props = reactive({ hide: false })
+
+    renderTemplate({
+      template: html`
+        <Listbox v-model="value">
+          <ListboxButton>Trigger</ListboxButton>
+          <ListboxOptions>
+            <ListboxOption value="a">Option 1</ListboxOption>
+            <ListboxOption v-if="!hide" value="b">Option 2</ListboxOption>
+            <ListboxOption value="c">Option 3</ListboxOption>
+          </ListboxOptions>
+        </Listbox>
+      `,
+      setup() {
+        return {
+          value: ref(null),
+          get hide() {
+            return props.hide
+          },
+        }
+      },
+    })
+
+    // Open the Listbox
+    await click(getByText('Trigger'))
+
+    props.hide = true
+    await nextFrame()
+
+    props.hide = false
+    await nextFrame()
+
+    assertListbox({ state: ListboxState.Visible })
+
+    let options = getListboxOptions()
+
+    // Focus the first option
+    await press(Keys.ArrowDown)
+
+    // Verify that the first listbox option is active
+    assertActiveListboxOption(options[0])
+
+    await press(Keys.ArrowDown)
+
+    // Verify that the second listbox option is active
+    assertActiveListboxOption(options[1])
+
+    await press(Keys.ArrowDown)
+
+    // Verify that the third listbox option is active
+    assertActiveListboxOption(options[2])
   })
 })
 
