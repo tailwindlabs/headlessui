@@ -202,6 +202,10 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
   }, [defaultIndex, selectedIndex, state.tabs, state.selectedIndex])
 
   let lastChangedIndex = useRef(state.selectedIndex)
+  useEffect(() => {
+    lastChangedIndex.current = state.selectedIndex
+  }, [state.selectedIndex])
+
   let providerBag = useMemo<ContextType<typeof TabsContext>>(
     () => [
       state,

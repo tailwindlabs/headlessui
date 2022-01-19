@@ -579,6 +579,12 @@ describe('`selectedIndex`', () => {
     // test controlled behaviour
     await click(getByText('setSelectedIndex'))
     assertTabs({ active: 2 })
+
+    // test uncontrolled behaviour again
+    await click(getByText('Tab 2'))
+    expect(handleChange).toHaveBeenCalledTimes(2)
+    expect(handleChange).toHaveBeenNthCalledWith(2, 1)
+    assertTabs({ active: 1 })
   })
 
   it('should jump to the nearest tab when the selectedIndex is out of bounds (-2)', async () => {
