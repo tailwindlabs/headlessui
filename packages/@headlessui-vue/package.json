@@ -35,6 +35,6 @@
   "devDependencies": {
     "@testing-library/vue": "^5.1.0",
     "@vue/test-utils": "^2.0.0-beta.7",
-    "vue": "^3.0.0"
+    "vue": "3.0.7"
   }
 }
