@@ -2,13 +2,21 @@
 set -e
 
 node="yarn node"
-tsdxArgs=()
+jestArgs=()
 
-# Add script name
-tsdxArgs+=("watch" "--name" "headlessui" "--format" "cjs,esm,umd" "--tsconfig" "./tsconfig.tsdx.json")
+# Add default arguments
+jestArgs+=("--passWithNoTests")
+jestArgs+=("--watch")
+
+# Add arguments based on environment variables
+if [ -n "$CI" ]; then
+  jestArgs+=("--maxWorkers=4")
+  jestArgs+=("--ci")
+fi
 
 # Passthrough arguments and flags
-tsdxArgs+=($@)
+jestArgs+=($@)
 
 # Execute
-$node "$(yarn bin tsdx)" "${tsdxArgs[@]}"
+$node "$(yarn bin jest)" "${jestArgs[@]}"
+
