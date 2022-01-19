@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, h } from 'vue'
+import { defineComponent, nextTick, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
@@ -28,7 +28,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = {
     Popover,
     PopoverGroup,

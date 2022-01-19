@@ -1,4 +1,12 @@
-import { defineComponent, nextTick, ref, watch, h, reactive } from 'vue'
+import {
+  defineComponent,
+  nextTick,
+  ref,
+  watch,
+  h,
+  reactive,
+  ComponentOptionsWithoutProps,
+} from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -48,7 +56,7 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -57,7 +65,7 @@ function nextFrame() {
   })
 }
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption }
 
   if (typeof input === 'string') {

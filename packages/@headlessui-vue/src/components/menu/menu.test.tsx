@@ -1,4 +1,12 @@
-import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
+import {
+  ComponentOptionsWithoutProps,
+  defineComponent,
+  h,
+  nextTick,
+  reactive,
+  ref,
+  watch,
+} from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { TransitionChild } from '../transitions/transition'
@@ -44,7 +52,7 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -53,7 +61,7 @@ function nextFrame() {
   })
 }
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Menu, MenuButton, MenuItems, MenuItem }
 
   if (typeof input === 'string') {

@@ -8,7 +8,8 @@ import { html } from '../../test-utils/html'
 import { click } from '../../test-utils/interactions'
 import { getByText } from '../../test-utils/accessibility-assertions'
 
-function format(input: Element | string) {
+function format(input: Element | null | string) {
+  if (input === null) throw new Error('input is null')
   let contents = (typeof input === 'string' ? input : (input as HTMLElement).outerHTML).trim()
   return prettier.format(contents, { parser: 'babel' })
 }
@@ -22,32 +23,19 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
-  let defaultComponents = { Label }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
-
 it('should be possible to use useLabels without using a Label', async () => {
-  let { container } = renderTemplate({
-    render() {
-      return h('div', [h('div', { 'aria-labelledby': this.labelledby }, ['No label'])])
-    },
-    setup() {
-      let labelledby = useLabels()
-      return { labelledby }
-    },
-  })
+  let { container } = render(
+    defineComponent({
+      components: { Label },
+      render() {
+        return h('div', [h('div', { 'aria-labelledby': this.labelledby }, ['No label'])])
+      },
+      setup() {
+        let labelledby = useLabels()
+        return { labelledby }
+      },
+    })
+  )
 
   expect(format(container.firstElementChild)).toEqual(
     format(html`
@@ -59,20 +47,23 @@ it('should be possible to use useLabels without using a Label', async () => {
 })
 
 it('should be possible to use useLabels and a single Label, and have them linked', async () => {
-  let { container } = renderTemplate({
-    render() {
-      return h('div', [
-        h('div', { 'aria-labelledby': this.labelledby }, [
-          h(Label, () => 'I am a label'),
-          h('span', 'Contents'),
-        ]),
-      ])
-    },
-    setup() {
-      let labelledby = useLabels()
-      return { labelledby }
-    },
-  })
+  let { container } = render(
+    defineComponent({
+      components: { Label },
+      render() {
+        return h('div', [
+          h('div', { 'aria-labelledby': this.labelledby }, [
+            h(Label, () => 'I am a label'),
+            h('span', 'Contents'),
+          ]),
+        ])
+      },
+      setup() {
+        let labelledby = useLabels()
+        return { labelledby }
+      },
+    })
+  )
 
   await new Promise<void>(nextTick)
 
@@ -89,21 +80,24 @@ it('should be possible to use useLabels and a single Label, and have them linked
 })
 
 it('should be possible to use useLabels and multiple Label components, and have them linked', async () => {
-  let { container } = renderTemplate({
-    render() {
-      return h('div', [
-        h('div', { 'aria-labelledby': this.labelledby }, [
-          h(Label, () => 'I am a label'),
-          h('span', 'Contents'),
-          h(Label, () => 'I am also a label'),
-        ]),
-      ])
-    },
-    setup() {
-      let labelledby = useLabels()
-      return { labelledby }
-    },
-  })
+  let { container } = render(
+    defineComponent({
+      components: { Label },
+      render() {
+        return h('div', [
+          h('div', { 'aria-labelledby': this.labelledby }, [
+            h(Label, () => 'I am a label'),
+            h('span', 'Contents'),
+            h(Label, () => 'I am also a label'),
+          ]),
+        ])
+      },
+      setup() {
+        let labelledby = useLabels()
+        return { labelledby }
+      },
+    })
+  )
 
   await new Promise<void>(nextTick)
 
@@ -121,21 +115,24 @@ it('should be possible to use useLabels and multiple Label components, and have 
 })
 
 it('should be possible to update a prop from the parent and it should reflect in the Label component', async () => {
-  let { container } = renderTemplate({
-    render() {
-      return h('div', [
-        h('div', { 'aria-labelledby': this.labelledby }, [
-          h(Label, () => 'I am a label'),
-          h('button', { onClick: () => this.count++ }, '+1'),
-        ]),
-      ])
-    },
-    setup() {
-      let count = ref(0)
-      let labelledby = useLabels({ props: { 'data-count': count } })
-      return { count, labelledby }
-    },
-  })
+  let { container } = render(
+    defineComponent({
+      components: { Label },
+      render() {
+        return h('div', [
+          h('div', { 'aria-labelledby': this.labelledby }, [
+            h(Label, () => 'I am a label'),
+            h('button', { onClick: () => this.count++ }, '+1'),
+          ]),
+        ])
+      },
+      setup() {
+        let count = ref(0)
+        let labelledby = useLabels({ props: { 'data-count': count } })
+        return { count, labelledby }
+      },
+    })
+  )
 
   await new Promise<void>(nextTick)
 

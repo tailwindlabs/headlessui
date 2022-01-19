@@ -1,4 +1,4 @@
-import { defineComponent, ref, nextTick } from 'vue'
+import { defineComponent, ref, nextTick, ComponentOptionsWithoutProps } from 'vue'
 
 import { render } from '../test-utils/vue-testing-library'
 import { useInertOthers } from './use-inert-others'
@@ -14,7 +14,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = {}
 
   if (typeof input === 'string') {

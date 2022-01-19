@@ -1,4 +1,4 @@
-import { defineComponent, ref, watch, h } from 'vue'
+import { defineComponent, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Switch, SwitchLabel, SwitchDescription, SwitchGroup } from './switch'
@@ -16,7 +16,7 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Switch, SwitchLabel, SwitchDescription, SwitchGroup }
 
   if (typeof input === 'string') {
