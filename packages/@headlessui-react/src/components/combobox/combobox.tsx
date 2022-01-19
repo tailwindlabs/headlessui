@@ -320,6 +320,7 @@ type InputPropsWeControl =
   | 'role'
   | 'aria-labelledby'
   | 'aria-expanded'
+  | 'aria-activedescendant'
   | 'onKeyDown'
   | 'onFocus'
 
@@ -429,6 +430,8 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     role: 'combobox',
     'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
+    'aria-activedescendant':
+      state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
