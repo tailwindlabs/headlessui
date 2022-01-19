@@ -411,10 +411,12 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     state.propsRef.current.onSearch((event.target as HTMLInputElement).value)
   }, [])
 
+  // TODO: Verify this. The spec says that, for the input/combobox, the lebel is the labelling element when present
+  // Otherwise it's the ID of the non-label element
   let labelledby = useComputed(() => {
     if (!state.labelRef.current) return undefined
-    return [state.labelRef.current.id, id].join(' ')
-  }, [state.labelRef.current, id])
+    return [state.labelRef.current.id].join(' ')
+  }, [state.labelRef.current])
 
   let slot = useMemo<ButtonRenderPropArg>(
     () => ({ open: state.comboboxState === ComboboxStates.Open, disabled: state.disabled }),
