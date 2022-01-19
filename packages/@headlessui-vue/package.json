@@ -23,8 +23,6 @@
     "access": "public"
   },
   "scripts": {
-    "playground": "vite --config ./vite.config.js serve examples",
-    "playground:build": "NODE_ENV=production vite build examples",
     "prepublishOnly": "npm run build",
     "build": "../../scripts/build.sh",
     "watch": "../../scripts/watch.sh",
@@ -35,13 +33,8 @@
     "vue": "^3.0.0"
   },
   "devDependencies": {
-    "@popperjs/core": "^2.5.3",
     "@testing-library/vue": "^5.1.0",
-    "@types/debounce": "^1.2.0",
-    "@vue/compiler-sfc": "3.0.1",
     "@vue/test-utils": "^2.0.0-beta.7",
-    "vite": "^1.0.0-rc.4",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.0-beta.13"
+    "vue": "3.0.7"
   }
 }

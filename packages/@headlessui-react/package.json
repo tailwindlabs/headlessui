@@ -23,8 +23,6 @@
     "access": "public"
   },
   "scripts": {
-    "playground": "next dev",
-    "playground:build": "next build",
     "prepublishOnly": "npm run build",
     "test": "../../scripts/test.sh",
     "build": "../../scripts/build.sh",
@@ -35,12 +33,9 @@
     "react-dom": "^16 || ^17 || ^18"
   },
   "devDependencies": {
+    "@testing-library/react": "^11.2.3",
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
-    "@popperjs/core": "^2.6.0",
-    "@testing-library/react": "^11.2.3",
-    "framer-motion": "^2.9.5",
-    "next": "10.0.5",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "snapshot-diff": "^0.8.1"
