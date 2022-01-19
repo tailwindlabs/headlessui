@@ -245,7 +245,7 @@ type ListPropsWeControl = 'role' | 'aria-orientation'
 function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
   props: Props<TTag, ListRenderPropArg, ListPropsWeControl> & {}
 ) {
-  let [{ selectedIndex, orientation }] = useTabsContext([Tab.name, List.name].join('.'))
+  let [{ selectedIndex, orientation }] = useTabsContext('Tab.List')
 
   let slot = { selectedIndex }
   let propsWeControl = {
@@ -380,7 +380,7 @@ interface PanelsRenderPropArg {
 function Panels<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
   props: Props<TTag, PanelsRenderPropArg>
 ) {
-  let [{ selectedIndex }] = useTabsContext([Tab.name, Panels.name].join('.'))
+  let [{ selectedIndex }] = useTabsContext('Tab.Panels')
 
   let slot = useMemo(() => ({ selectedIndex }), [selectedIndex])
 
@@ -405,9 +405,7 @@ function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
     PropsForFeatures<typeof PanelRenderFeatures>
 ) {
-  let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext(
-    [Tab.name, Panel.name].join('.')
-  )
+  let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext('Tab.Panel')
 
   let id = `headlessui-tabs-panel-${useId()}`
   let internalPanelRef = useRef<HTMLElement>(null)

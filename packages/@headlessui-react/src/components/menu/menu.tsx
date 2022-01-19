@@ -249,7 +249,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let [state, dispatch] = useMenuContext([Menu.name, Button.name].join('.'))
+  let [state, dispatch] = useMenuContext('Menu.Button')
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
   let id = `headlessui-menu-button-${useId()}`
@@ -352,7 +352,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     PropsForFeatures<typeof ItemsRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
-  let [state, dispatch] = useMenuContext([Menu.name, Items.name].join('.'))
+  let [state, dispatch] = useMenuContext('Menu.Items')
   let itemsRef = useSyncRefs(state.itemsRef, ref)
 
   let id = `headlessui-menu-items-${useId()}`
@@ -522,7 +522,7 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   }
 ) {
   let { disabled = false, onClick, ...passthroughProps } = props
-  let [state, dispatch] = useMenuContext([Menu.name, Item.name].join('.'))
+  let [state, dispatch] = useMenuContext('Menu.Item')
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
 

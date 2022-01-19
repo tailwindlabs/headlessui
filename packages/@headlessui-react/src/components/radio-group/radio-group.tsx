@@ -322,7 +322,7 @@ function Option<
     firstOption,
     containsCheckedOption,
     value: radioGroupValue,
-  } = useRadioGroupContext([RadioGroup.name, Option.name].join('.'))
+  } = useRadioGroupContext('RadioGroup.Option')
 
   useIsoMorphicEffect(() => registerOption({ id, element: optionRef, propsRef }), [
     id,

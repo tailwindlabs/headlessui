@@ -348,7 +348,7 @@ type OverlayPropsWeControl = 'id' | 'aria-hidden' | 'onClick'
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
 >(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
-  let [{ dialogState, close }] = useDialogContext([Dialog.displayName, Overlay.name].join('.'))
+  let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
   let overlayRef = useSyncRefs(ref)
 
   let id = `headlessui-dialog-overlay-${useId()}`
@@ -394,7 +394,7 @@ type TitlePropsWeControl = 'id'
 function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   props: Props<TTag, TitleRenderPropArg, TitlePropsWeControl>
 ) {
-  let [{ dialogState, setTitleId }] = useDialogContext([Dialog.displayName, Title.name].join('.'))
+  let [{ dialogState, setTitleId }] = useDialogContext('Dialog.Title')
 
   let id = `headlessui-dialog-title-${useId()}`
 

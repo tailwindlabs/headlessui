@@ -227,7 +227,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let [state, dispatch] = useDisclosureContext([Disclosure.name, Button.name].join('.'))
+  let [state, dispatch] = useDisclosureContext('Disclosure.Button')
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
   let buttonRef = useSyncRefs(internalButtonRef, ref)
 
@@ -334,8 +334,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     PropsForFeatures<typeof PanelRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
-  let [state, dispatch] = useDisclosureContext([Disclosure.name, Panel.name].join('.'))
-  let { close } = useDisclosureAPIContext([Disclosure.name, Panel.name].join('.'))
+  let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
+  let { close } = useDisclosureAPIContext('Disclosure.Panel')
 
   let panelRef = useSyncRefs(ref, () => {
     if (state.linkedPanel) return

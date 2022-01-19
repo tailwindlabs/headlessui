@@ -318,7 +318,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let [state, dispatch] = useListboxContext([Listbox.name, Button.name].join('.'))
+  let [state, dispatch] = useListboxContext('Listbox.Button')
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
   let id = `headlessui-listbox-button-${useId()}`
@@ -422,7 +422,7 @@ type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
 ) {
-  let [state] = useListboxContext([Listbox.name, Label.name].join('.'))
+  let [state] = useListboxContext('Listbox.Label')
   let id = `headlessui-listbox-label-${useId()}`
 
   let handleClick = useCallback(() => state.buttonRef.current?.focus({ preventScroll: true }), [
@@ -466,7 +466,7 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLUListElement>
 ) {
-  let [state, dispatch] = useListboxContext([Listbox.name, Options.name].join('.'))
+  let [state, dispatch] = useListboxContext('Listbox.Options')
   let optionsRef = useSyncRefs(state.optionsRef, ref)
 
   let id = `headlessui-listbox-options-${useId()}`
@@ -625,7 +625,7 @@ function Option<
   }
 ) {
   let { disabled = false, value, ...passthroughProps } = props
-  let [state, dispatch] = useListboxContext([Listbox.name, Option.name].join('.'))
+  let [state, dispatch] = useListboxContext('Listbox.Option')
   let id = `headlessui-listbox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
