@@ -96,8 +96,8 @@ export let Menu = defineComponent({
           {
             resolveItems: () => items.value,
             resolveActiveIndex: () => activeItemIndex.value,
-            resolveId: item => item.id,
-            resolveDisabled: item => item.dataRef.disabled,
+            resolveId: (item) => item.id,
+            resolveDisabled: (item) => item.dataRef.disabled,
           }
         )
 
@@ -116,7 +116,7 @@ export let Menu = defineComponent({
             : items.value
 
         let matchingItem = reOrderedItems.find(
-          item => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled
+          (item) => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled
         )
 
         let matchIdx = matchingItem ? items.value.indexOf(matchingItem) : -1
@@ -144,7 +144,7 @@ export let Menu = defineComponent({
         let nextItems = items.value.slice()
         let currentActiveItem =
           activeItemIndex.value !== null ? nextItems[activeItemIndex.value] : null
-        let idx = nextItems.findIndex(a => a.id === id)
+        let idx = nextItems.findIndex((a) => a.id === id)
         if (idx !== -1) nextItems.splice(idx, 1)
         items.value = nextItems
         activeItemIndex.value = (() => {
@@ -158,7 +158,7 @@ export let Menu = defineComponent({
       },
     }
 
-    useWindowEvent('mousedown', event => {
+    useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
       let active = document.activeElement
 
@@ -452,10 +452,7 @@ export let MenuItem = defineComponent({
 
     let dataRef = ref<MenuItemDataRef['value']>({ disabled: props.disabled, textValue: '' })
     onMounted(() => {
-      let textValue = document
-        .getElementById(id)
-        ?.textContent?.toLowerCase()
-        .trim()
+      let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 

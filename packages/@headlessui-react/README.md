@@ -36,4 +36,3 @@ For help, discussion about best practices, or any other conversation that would 
 For casual chit-chat with others using the library:
 
 [Join the Tailwind CSS Discord Server](https://discord.gg/7NF8GNe)
-

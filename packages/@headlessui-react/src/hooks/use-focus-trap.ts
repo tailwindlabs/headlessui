@@ -97,7 +97,7 @@ export function useFocusTrap(
   }, [container, initialFocus, featuresInitialFocus])
 
   // Handle `Tab` & `Shift+Tab` keyboard events
-  useWindowEvent('keydown', event => {
+  useWindowEvent('keydown', (event) => {
     if (!(features & Features.TabLock)) return
 
     if (!container.current) return
@@ -118,7 +118,7 @@ export function useFocusTrap(
   // Prevent programmatically escaping the container
   useWindowEvent(
     'focus',
-    event => {
+    (event) => {
       if (!(features & Features.FocusLock)) return
 
       let allContainers = new Set(containers?.current)

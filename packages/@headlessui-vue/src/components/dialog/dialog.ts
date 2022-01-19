@@ -193,7 +193,7 @@ export let Dialog = defineComponent({
     provide(DialogContext, api)
 
     // Handle outside click
-    useWindowEvent('mousedown', event => {
+    useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
 
       if (dialogState.value !== DialogStates.Open) return
@@ -205,7 +205,7 @@ export let Dialog = defineComponent({
     })
 
     // Handle `Escape` to close
-    useWindowEvent('keydown', event => {
+    useWindowEvent('keydown', (event) => {
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
       if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
@@ -215,7 +215,7 @@ export let Dialog = defineComponent({
     })
 
     // Scroll lock
-    watchEffect(onInvalidate => {
+    watchEffect((onInvalidate) => {
       if (dialogState.value !== DialogStates.Open) return
 
       let overflow = document.documentElement.style.overflow
@@ -233,12 +233,12 @@ export let Dialog = defineComponent({
     })
 
     // Trigger close when the FocusTrap gets hidden
-    watchEffect(onInvalidate => {
+    watchEffect((onInvalidate) => {
       if (dialogState.value !== DialogStates.Open) return
       let container = dom(internalDialogRef)
       if (!container) return
 
-      let observer = new IntersectionObserver(entries => {
+      let observer = new IntersectionObserver((entries) => {
         for (let entry of entries) {
           if (
             entry.boundingClientRect.x === 0 &&

@@ -28,9 +28,10 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 type ID = ReturnType<typeof useId>
 
 function useSplitClasses(classes: string = '') {
-  return useMemo(() => classes.split(' ').filter(className => className.trim().length > 1), [
-    classes,
-  ])
+  return useMemo(
+    () => classes.split(' ').filter((className) => className.trim().length > 1),
+    [classes]
+  )
 }
 
 interface TransitionContextValues {
@@ -287,23 +288,37 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     if (!show) events.current.beforeLeave()
 
     return show
-      ? transition(node, enterClasses, enterFromClasses, enterToClasses, enteredClasses, reason => {
-          isTransitioning.current = false
-          if (reason === Reason.Finished) events.current.afterEnter()
-        })
-      : transition(node, leaveClasses, leaveFromClasses, leaveToClasses, enteredClasses, reason => {
-          isTransitioning.current = false
-
-          if (reason !== Reason.Finished) return
-
-          // When we don't have children anymore we can safely unregister from the parent and hide
-          // ourselves.
-          if (!hasChildren(nesting)) {
-            setState(TreeStates.Hidden)
-            unregister(id)
-            events.current.afterLeave()
+      ? transition(
+          node,
+          enterClasses,
+          enterFromClasses,
+          enterToClasses,
+          enteredClasses,
+          (reason) => {
+            isTransitioning.current = false
+            if (reason === Reason.Finished) events.current.afterEnter()
           }
-        })
+        )
+      : transition(
+          node,
+          leaveClasses,
+          leaveFromClasses,
+          leaveToClasses,
+          enteredClasses,
+          (reason) => {
+            isTransitioning.current = false
+
+            if (reason !== Reason.Finished) return
+
+            // When we don't have children anymore we can safely unregister from the parent and hide
+            // ourselves.
+            if (!hasChildren(nesting)) {
+              setState(TreeStates.Hidden)
+              unregister(id)
+              events.current.afterLeave()
+            }
+          }
+        )
   }, [
     events,
     id,
@@ -359,7 +374,7 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     })
   }
 
-  if (![true, false].includes((show as unknown) as boolean)) {
+  if (![true, false].includes(show as unknown as boolean)) {
     throw new Error('A <Transition /> is used but it is missing a `show={true | false}` prop.')
   }
 

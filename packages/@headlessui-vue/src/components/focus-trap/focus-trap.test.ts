@@ -193,14 +193,10 @@ it('should restore the previously focused element, before entering the FocusTrap
     template: html`
       <div>
         <input id="item-1" ref="autoFocusRef" />
-        <button id="item-2" @click="visible = true">
-          Open modal
-        </button>
+        <button id="item-2" @click="visible = true">Open modal</button>
 
         <FocusTrap v-if="visible">
-          <button id="item-3" @click="visible = false">
-            Close
-          </button>
+          <button id="item-3" @click="visible = false">Close</button>
         </FocusTrap>
       </div>
     `,
@@ -302,12 +298,8 @@ it('should skip the initial "hidden" elements within the focus trap', async () =
       <div>
         <button id="before">Before</button>
         <FocusTrap>
-          <button id="item-a" style="display:none">
-            Item A
-          </button>
-          <button id="item-b" style="display:none">
-            Item B
-          </button>
+          <button id="item-a" style="display:none">Item A</button>
+          <button id="item-b" style="display:none">Item B</button>
           <button id="item-c">Item C</button>
           <button id="item-d">Item D</button>
         </FocusTrap>
@@ -328,9 +320,7 @@ it('should be possible skip "hidden" elements within the focus trap', async () =
         <FocusTrap>
           <button id="item-a">Item A</button>
           <button id="item-b">Item B</button>
-          <button id="item-c" style="display:none">
-            Item C
-          </button>
+          <button id="item-c" style="display:none">Item C</button>
           <button id="item-d">Item D</button>
         </FocusTrap>
         <button>After</button>
@@ -364,9 +354,7 @@ it('should be possible skip disabled elements within the focus trap', async () =
         <FocusTrap>
           <button id="item-a">Item A</button>
           <button id="item-b">Item B</button>
-          <button id="item-c" disabled>
-            Item C
-          </button>
+          <button id="item-c" disabled>Item C</button>
           <button id="item-d">Item D</button>
         </FocusTrap>
         <button>After</button>

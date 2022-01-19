@@ -35,16 +35,12 @@ function renderTemplate(input: string | Partial<Parameters<typeof defineComponen
 
 let Before = defineComponent({
   name: 'Before',
-  template: html`
-    <div>before</div>
-  `,
+  template: html` <div>before</div> `,
 })
 
 let After = defineComponent({
   name: 'After',
-  template: html`
-    <div>after</div>
-  `,
+  template: html` <div>after</div> `,
 })
 
 it('should be possible to inert other elements', async () => {

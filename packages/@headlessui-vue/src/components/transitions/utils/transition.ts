@@ -22,13 +22,13 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   // Safari returns a comma separated list of values, so let's sort them and take the highest value.
   let { transitionDuration, transitionDelay } = getComputedStyle(node)
 
-  let [durationMs, delaysMs] = [transitionDuration, transitionDelay].map(value => {
+  let [durationMs, delaysMs] = [transitionDuration, transitionDelay].map((value) => {
     let [resolvedValue = 0] = value
       .split(',')
       // Remove falseys we can't work with
       .filter(Boolean)
       // Values are returned as `0.3s` or `75ms`
-      .map(v => (v.includes('ms') ? parseFloat(v) : parseFloat(v) * 1000))
+      .map((v) => (v.includes('ms') ? parseFloat(v) : parseFloat(v) * 1000))
       .sort((a, z) => z - a)
 
     return resolvedValue
@@ -72,7 +72,7 @@ export function transition(
     addClasses(node, ...to)
 
     d.add(
-      waitForTransition(node, reason => {
+      waitForTransition(node, (reason) => {
         removeClasses(node, ...to, ...base)
         addClasses(node, ...entered)
         return _done(reason)

@@ -68,14 +68,14 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.ToggleDisclosure]: state => ({
+  [ActionTypes.ToggleDisclosure]: (state) => ({
     ...state,
     disclosureState: match(state.disclosureState, {
       [DisclosureStates.Open]: DisclosureStates.Closed,
       [DisclosureStates.Closed]: DisclosureStates.Open,
     }),
   }),
-  [ActionTypes.CloseDisclosure]: state => {
+  [ActionTypes.CloseDisclosure]: (state) => {
     if (state.disclosureState === DisclosureStates.Closed) return state
     return { ...state, disclosureState: DisclosureStates.Closed }
   },

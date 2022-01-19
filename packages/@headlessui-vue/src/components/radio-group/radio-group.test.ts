@@ -25,7 +25,7 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -86,9 +86,7 @@ describe('Safe guards', () => {
 
   it('should be possible to render a RadioGroup without options and without crashing', () => {
     renderTemplate({
-      template: html`
-        <RadioGroup v-model="deliveryMethod" />
-      `,
+      template: html` <RadioGroup v-model="deliveryMethod" /> `,
       setup() {
         let deliveryMethod = ref(undefined)
         return { deliveryMethod }

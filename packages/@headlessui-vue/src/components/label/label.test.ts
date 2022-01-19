@@ -52,9 +52,7 @@ it('should be possible to use useLabels without using a Label', async () => {
   expect(format(container.firstElementChild)).toEqual(
     format(html`
       <div>
-        <div>
-          No label
-        </div>
+        <div>No label</div>
       </div>
     `)
   )
@@ -82,12 +80,8 @@ it('should be possible to use useLabels and a single Label, and have them linked
     format(html`
       <div>
         <div aria-labelledby="headlessui-label-1">
-          <label id="headlessui-label-1">
-            I am a label
-          </label>
-          <span>
-            Contents
-          </span>
+          <label id="headlessui-label-1">I am a label</label>
+          <span>Contents</span>
         </div>
       </div>
     `)
@@ -117,15 +111,9 @@ it('should be possible to use useLabels and multiple Label components, and have 
     format(html`
       <div>
         <div aria-labelledby="headlessui-label-1 headlessui-label-2">
-          <label id="headlessui-label-1">
-            I am a label
-          </label>
-          <span>
-            Contents
-          </span>
-          <label id="headlessui-label-2">
-            I am also a label
-          </label>
+          <label id="headlessui-label-1">I am a label</label>
+          <span>Contents</span>
+          <label id="headlessui-label-2">I am also a label</label>
         </div>
       </div>
     `)
@@ -155,9 +143,7 @@ it('should be possible to update a prop from the parent and it should reflect in
     format(html`
       <div>
         <div aria-labelledby="headlessui-label-1">
-          <label data-count="0" id="headlessui-label-1">
-            I am a label
-          </label>
+          <label data-count="0" id="headlessui-label-1">I am a label</label>
           <button>+1</button>
         </div>
       </div>
@@ -170,9 +156,7 @@ it('should be possible to update a prop from the parent and it should reflect in
     format(html`
       <div>
         <div aria-labelledby="headlessui-label-1">
-          <label data-count="1" id="headlessui-label-1">
-            I am a label
-          </label>
+          <label data-count="1" id="headlessui-label-1">I am a label</label>
           <button>+1</button>
         </div>
       </div>

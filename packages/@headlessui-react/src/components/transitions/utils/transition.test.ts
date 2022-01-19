@@ -17,7 +17,7 @@ it('should be possible to transition', async () => {
   d.add(
     reportChanges(
       () => document.body.innerHTML,
-      content => {
+      (content) => {
         snapshots.push({
           content,
           recordedAt: process.hrtime.bigint(),
@@ -26,11 +26,11 @@ it('should be possible to transition', async () => {
     )
   )
 
-  await new Promise(resolve => {
+  await new Promise((resolve) => {
     transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
   })
 
-  await new Promise(resolve => d.nextFrame(resolve))
+  await new Promise((resolve) => d.nextFrame(resolve))
 
   // Initial render:
   expect(snapshots[0].content).toEqual('<div></div>')
@@ -61,7 +61,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
   d.add(
     reportChanges(
       () => document.body.innerHTML,
-      content => {
+      (content) => {
         snapshots.push({
           content,
           recordedAt: process.hrtime.bigint(),
@@ -70,11 +70,11 @@ it('should wait the correct amount of time to finish a transition', async () => 
     )
   )
 
-  let reason = await new Promise(resolve => {
+  let reason = await new Promise((resolve) => {
     transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
   })
 
-  await new Promise(resolve => d.nextFrame(resolve))
+  await new Promise((resolve) => d.nextFrame(resolve))
   expect(reason).toBe(Reason.Finished)
 
   // Initial render:
@@ -118,7 +118,7 @@ it('should keep the delay time into account', async () => {
   d.add(
     reportChanges(
       () => document.body.innerHTML,
-      content => {
+      (content) => {
         snapshots.push({
           content,
           recordedAt: process.hrtime.bigint(),
@@ -127,11 +127,11 @@ it('should keep the delay time into account', async () => {
     )
   )
 
-  let reason = await new Promise(resolve => {
+  let reason = await new Promise((resolve) => {
     transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
   })
 
-  await new Promise(resolve => d.nextFrame(resolve))
+  await new Promise((resolve) => d.nextFrame(resolve))
   expect(reason).toBe(Reason.Finished)
 
   let estimatedDuration = Number(
@@ -161,7 +161,7 @@ it('should be possible to cancel a transition at any time', async () => {
   d.add(
     reportChanges(
       () => document.body.innerHTML,
-      content => {
+      (content) => {
         let recordedAt = process.hrtime.bigint()
         let total = snapshots.length
 
@@ -178,16 +178,16 @@ it('should be possible to cancel a transition at any time', async () => {
   expect.assertions(2)
 
   // Setup the transition
-  let cancel = transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], reason => {
+  let cancel = transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], (reason) => {
     expect(reason).toBe(Reason.Cancelled)
   })
 
   // Wait for a bit
-  await new Promise(resolve => setTimeout(resolve, 20))
+  await new Promise((resolve) => setTimeout(resolve, 20))
 
   // Cancel the transition
   cancel()
-  await new Promise(resolve => d.nextFrame(resolve))
+  await new Promise((resolve) => d.nextFrame(resolve))
 
-  expect(snapshots.map(snapshot => snapshot.content).join('\n')).not.toContain('enterTo')
+  expect(snapshots.map((snapshot) => snapshot.content).join('\n')).not.toContain('enterTo')
 })

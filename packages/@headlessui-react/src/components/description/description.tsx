@@ -57,10 +57,10 @@ export function useDescriptions(): [
     useMemo(() => {
       return function DescriptionProvider(props: DescriptionProviderProps) {
         let register = useCallback((value: string) => {
-          setDescriptionIds(existing => [...existing, value])
+          setDescriptionIds((existing) => [...existing, value])
 
           return () =>
-            setDescriptionIds(existing => {
+            setDescriptionIds((existing) => {
               let clone = existing.slice()
               let idx = clone.indexOf(value)
               if (idx !== -1) clone.splice(idx, 1)

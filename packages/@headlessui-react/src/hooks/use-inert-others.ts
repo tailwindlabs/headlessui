@@ -42,7 +42,7 @@ export function useInertOthers<TElement extends HTMLElement>(
     }
 
     // Collect direct children of the body
-    document.querySelectorAll('body > *').forEach(child => {
+    document.querySelectorAll('body > *').forEach((child) => {
       if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
       // Skip the interactables, and the parents of the interactables
@@ -71,7 +71,7 @@ export function useInertOthers<TElement extends HTMLElement>(
       // will become inert as well.
       if (interactables.size > 0) {
         // Collect direct children of the body
-        document.querySelectorAll('body > *').forEach(child => {
+        document.querySelectorAll('body > *').forEach((child) => {
           if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
           // Skip already inert parents

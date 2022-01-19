@@ -18,7 +18,7 @@ function redentSnapshot(input: string) {
 
   return input
     .split('\n')
-    .map(line =>
+    .map((line) =>
       line.trim() === '---' ? line : line.replace(replacer, (_, sign, rest) => `${sign}  ${rest}`)
     )
     .join('\n')
@@ -70,13 +70,13 @@ export async function executeTimeline(
       .reduce((total, current) => total + current, 0)
 
     // Changes happen in the next frame
-    await new Promise(resolve => d.nextFrame(resolve))
+    await new Promise((resolve) => d.nextFrame(resolve))
 
     // We wait for the amount of the duration
-    await new Promise(resolve => d.setTimeout(resolve, totalDuration))
+    await new Promise((resolve) => d.setTimeout(resolve, totalDuration))
 
     // We wait an additional next frame so that we know that we are done
-    await new Promise(resolve => d.nextFrame(resolve))
+    await new Promise((resolve) => d.nextFrame(resolve))
   }, Promise.resolve())
 
   if (snapshots.length <= 0) {
@@ -128,7 +128,7 @@ export async function executeTimeline(
           .replace(/Snapshot Diff:\n/g, '')
       )
         .split('\n')
-        .map(line => `    ${line}`)
+        .map((line) => `    ${line}`)
         .join('\n')}`
     })
     .filter(Boolean)

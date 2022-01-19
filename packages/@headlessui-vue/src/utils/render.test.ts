@@ -34,9 +34,7 @@ describe('Validation', () => {
     expect.hasAssertions()
 
     renderTemplate({
-      template: html`
-        <Dummy as="template" class="abc">Contents</Dummy>
-      `,
+      template: html` <Dummy as="template" class="abc">Contents</Dummy> `,
       errorCaptured(err) {
         expect(err as Error).toEqual(
           new Error(

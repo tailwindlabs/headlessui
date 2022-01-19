@@ -17,7 +17,7 @@ it('should be possible to inert other elements', async () => {
 
     return (
       <div ref={ref} id="main">
-        <button onClick={() => setEnabled(v => !v)}>toggle</button>
+        <button onClick={() => setEnabled((v) => !v)}>toggle</button>
       </div>
     )
   }
@@ -61,7 +61,7 @@ it('should restore inert elements, when all useInertOthers calls are disabled', 
 
     return (
       <div ref={ref} id={id}>
-        <button onClick={() => setEnabled(v => !v)}>{toggle}</button>
+        <button onClick={() => setEnabled((v) => !v)}>{toggle}</button>
       </div>
     )
   }
@@ -136,7 +136,7 @@ it('should restore inert elements, when all useInertOthers calls are disabled (i
     return (
       <div id={`parent-${id}`}>
         <div ref={ref} id={id}>
-          <button onClick={() => setEnabled(v => !v)}>{toggle}</button>
+          <button onClick={() => setEnabled((v) => !v)}>{toggle}</button>
         </div>
       </div>
     )
@@ -221,7 +221,7 @@ it('should handle inert others correctly when 2 useInertOthers are used in a sha
 
     return (
       <div ref={ref} id={id}>
-        <button onClick={() => setEnabled(v => !v)}>{toggle}</button>
+        <button onClick={() => setEnabled((v) => !v)}>{toggle}</button>
       </div>
     )
   }

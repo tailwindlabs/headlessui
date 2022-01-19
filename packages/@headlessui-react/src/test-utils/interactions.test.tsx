@@ -175,7 +175,7 @@ describe('Keyboard', () => {
 
       await type([key(input)])
 
-      let expected = result.map(e => event(e))
+      let expected = result.map((e) => event(e))
 
       expect(fired.length).toEqual(result.length)
 

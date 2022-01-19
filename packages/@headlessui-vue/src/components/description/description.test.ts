@@ -52,9 +52,7 @@ it('should be possible to use useDescriptions without using a Description', asyn
   expect(format(container.firstElementChild)).toEqual(
     format(html`
       <div>
-        <div>
-          No description
-        </div>
+        <div>No description</div>
       </div>
     `)
   )
@@ -82,12 +80,8 @@ it('should be possible to use useDescriptions and a single Description, and have
     format(html`
       <div>
         <div aria-describedby="headlessui-description-1">
-          <p id="headlessui-description-1">
-            I am a description
-          </p>
-          <span>
-            Contents
-          </span>
+          <p id="headlessui-description-1">I am a description</p>
+          <span>Contents</span>
         </div>
       </div>
     `)
@@ -117,15 +111,9 @@ it('should be possible to use useDescriptions and multiple Description component
     format(html`
       <div>
         <div aria-describedby="headlessui-description-1 headlessui-description-2">
-          <p id="headlessui-description-1">
-            I am a description
-          </p>
-          <span>
-            Contents
-          </span>
-          <p id="headlessui-description-2">
-            I am also a description
-          </p>
+          <p id="headlessui-description-1">I am a description</p>
+          <span>Contents</span>
+          <p id="headlessui-description-2">I am also a description</p>
         </div>
       </div>
     `)
@@ -155,9 +143,7 @@ it('should be possible to update a prop from the parent and it should reflect in
     format(html`
       <div>
         <div aria-describedby="headlessui-description-1">
-          <p data-count="0" id="headlessui-description-1">
-            I am a description
-          </p>
+          <p data-count="0" id="headlessui-description-1">I am a description</p>
           <button>+1</button>
         </div>
       </div>
@@ -170,9 +156,7 @@ it('should be possible to update a prop from the parent and it should reflect in
     format(html`
       <div>
         <div aria-describedby="headlessui-description-1">
-          <p data-count="1" id="headlessui-description-1">
-            I am a description
-          </p>
+          <p data-count="1" id="headlessui-description-1">I am a description</p>
           <button>+1</button>
         </div>
       </div>

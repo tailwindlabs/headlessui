@@ -45,7 +45,7 @@ describe('Default functionality', () => {
 
     testRender(
       <Dummy>
-        {data => {
+        {(data) => {
           expect(data).toBe(slot)
 
           return <span>Contents</span>

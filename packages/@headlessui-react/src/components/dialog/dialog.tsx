@@ -206,7 +206,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
 
   // Handle outside click
-  useWindowEvent('mousedown', event => {
+  useWindowEvent('mousedown', (event) => {
     let target = event.target as HTMLElement
 
     if (dialogState !== DialogStates.Open) return
@@ -217,7 +217,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   })
 
   // Handle `Escape` to close
-  useWindowEvent('keydown', event => {
+  useWindowEvent('keydown', (event) => {
     if (event.key !== Keys.Escape) return
     if (dialogState !== DialogStates.Open) return
     if (hasNestedDialogs) return
@@ -250,7 +250,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     if (dialogState !== DialogStates.Open) return
     if (!internalDialogRef.current) return
 
-    let observer = new IntersectionObserver(entries => {
+    let observer = new IntersectionObserver((entries) => {
       for (let entry of entries) {
         if (
           entry.boundingClientRect.x === 0 &&
@@ -277,9 +277,10 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     [dialogState, state, close, setTitleId]
   )
 
-  let slot = useMemo<DialogRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
-    dialogState,
-  ])
+  let slot = useMemo<DialogRenderPropArg>(
+    () => ({ open: dialogState === DialogStates.Open }),
+    [dialogState]
+  )
 
   let propsWeControl = {
     ref: dialogRef,
@@ -304,11 +305,11 @@ let DialogRoot = forwardRefWithAs(function Dialog<
         match(message, {
           [StackMessage.Add]() {
             containers.current.add(element)
-            setNestedDialogCount(count => count + 1)
+            setNestedDialogCount((count) => count + 1)
           },
           [StackMessage.Remove]() {
             containers.current.add(element)
-            setNestedDialogCount(count => count - 1)
+            setNestedDialogCount((count) => count - 1)
           },
         })
       }, [])}
@@ -364,9 +365,10 @@ let Overlay = forwardRefWithAs(function Overlay<
     [close]
   )
 
-  let slot = useMemo<OverlayRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
-    dialogState,
-  ])
+  let slot = useMemo<OverlayRenderPropArg>(
+    () => ({ open: dialogState === DialogStates.Open }),
+    [dialogState]
+  )
   let propsWeControl = {
     ref: overlayRef,
     id,
@@ -403,9 +405,10 @@ function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     return () => setTitleId(null)
   }, [id, setTitleId])
 
-  let slot = useMemo<TitleRenderPropArg>(() => ({ open: dialogState === DialogStates.Open }), [
-    dialogState,
-  ])
+  let slot = useMemo<TitleRenderPropArg>(
+    () => ({ open: dialogState === DialogStates.Open }),
+    [dialogState]
+  )
   let propsWeControl = { id }
   let passthroughProps = props
 

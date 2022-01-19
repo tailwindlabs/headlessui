@@ -214,7 +214,7 @@ describe('Keyboard interactions', () => {
         return (
           <Switch
             checked={state}
-            onChange={value => {
+            onChange={(value) => {
               setState(value)
               handleChange(value)
             }}
@@ -297,7 +297,7 @@ describe('Mouse interactions', () => {
       return (
         <Switch
           checked={state}
-          onChange={value => {
+          onChange={(value) => {
             setState(value)
             handleChange(value)
           }}
@@ -331,7 +331,7 @@ describe('Mouse interactions', () => {
         <Switch.Group>
           <Switch
             checked={state}
-            onChange={value => {
+            onChange={(value) => {
               setState(value)
               handleChange(value)
             }}
@@ -373,7 +373,7 @@ describe('Mouse interactions', () => {
         <Switch.Group>
           <Switch
             checked={state}
-            onChange={value => {
+            onChange={(value) => {
               setState(value)
               handleChange(value)
             }}
