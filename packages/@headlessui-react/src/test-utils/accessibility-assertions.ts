@@ -237,8 +237,16 @@ export function getCombobox(): HTMLElement | null {
   return document.querySelector('[role="combobox"]')
 }
 
+export function getComboboxList(): HTMLElement | null {
+  return document.querySelector('[role="listbox"]')
+}
+
 export function getComboboxes(): HTMLElement[] {
   return Array.from(document.querySelectorAll('[role="combobox"]'))
+}
+
+export function getComboboxLists(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="listbox"]'))
 }
 
 export function getComboboxOptions(): HTMLElement[] {
@@ -305,6 +313,64 @@ export function assertCombobox(
 
       case ComboboxState.InvisibleUnmounted:
         expect(combobox).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    Error.captureStackTrace(err, assertCombobox)
+    throw err
+  }
+}
+
+export function assertComboboxList(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: ComboboxState
+    orientation?: 'horizontal' | 'vertical'
+  },
+  listbox = getComboboxList()
+) {
+  let { orientation = 'vertical' } = options
+
+  try {
+    switch (options.state) {
+      case ComboboxState.InvisibleHidden:
+        if (listbox === null) return expect(listbox).not.toBe(null)
+
+        assertHidden(listbox)
+
+        expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
+        expect(listbox).toHaveAttribute('role', 'listbox')
+
+        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ComboboxState.Visible:
+        if (listbox === null) return expect(listbox).not.toBe(null)
+
+        assertVisible(listbox)
+
+        expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
+        expect(listbox).toHaveAttribute('role', 'listbox')
+
+        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ComboboxState.InvisibleUnmounted:
+        expect(listbox).toBe(null)
         break
 
       default:
@@ -407,15 +473,15 @@ export function assertComboboxLabel(
 
 export function assertComboboxButtonLinkedWithCombobox(
   button = getComboboxButton(),
-  combobox = getCombobox()
+  listbox = getComboboxList()
 ) {
   try {
     if (button === null) return expect(button).not.toBe(null)
-    if (combobox === null) return expect(combobox).not.toBe(null)
+    if (listbox === null) return expect(listbox).not.toBe(null)
 
     // Ensure link between button & combobox is correct
-    expect(button).toHaveAttribute('aria-controls', combobox.getAttribute('id'))
-    expect(combobox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
+    expect(button).toHaveAttribute('aria-controls', listbox.getAttribute('id'))
+    expect(listbox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
     Error.captureStackTrace(err, assertComboboxButtonLinkedWithCombobox)
     throw err
