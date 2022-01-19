@@ -2753,6 +2753,37 @@ describe('Keyboard interactions', () => {
       // We should be on `bob`
       assertMenuLinkedWithMenuItem(items[1])
     })
+
+    it('should be possible to search for the next occurence', async () => {
+      renderTemplate(jsx`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem as="a">alice</MenuItem>
+            <MenuItem as="a">bob</MenuItem>
+            <MenuItem as="a">charlie</MenuItem>
+            <MenuItem as="a">bob</MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      // Open menu
+      await click(getMenuButton())
+
+      let items = getMenuItems()
+
+      // Search for bob
+      await type(word('b'))
+
+      // We should be on the first `bob`
+      assertMenuLinkedWithMenuItem(items[1])
+
+      // Search for bob again
+      await type(word('b'))
+
+      // We should be on the second `bob`
+      assertMenuLinkedWithMenuItem(items[3])
+    })
   })
 })
 

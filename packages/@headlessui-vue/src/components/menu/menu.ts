@@ -108,13 +108,21 @@ export let Menu = defineComponent({
       search(value: string) {
         searchQuery.value += value.toLowerCase()
 
-        let match = items.value.findIndex(
+        let reOrderedItems =
+          activeItemIndex.value !== null
+            ? items.value
+                .slice(activeItemIndex.value + 1)
+                .concat(items.value.slice(0, activeItemIndex.value + 1))
+            : items.value
+
+        let matchingItem = reOrderedItems.find(
           item => item.dataRef.textValue.startsWith(searchQuery.value) && !item.dataRef.disabled
         )
 
-        if (match === -1 || match === activeItemIndex.value) return
+        let matchIdx = matchingItem ? items.value.indexOf(matchingItem) : -1
+        if (matchIdx === -1 || matchIdx === activeItemIndex.value) return
 
-        activeItemIndex.value = match
+        activeItemIndex.value = matchIdx
       },
       clearSearch() {
         searchQuery.value = ''
