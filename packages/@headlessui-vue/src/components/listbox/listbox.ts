@@ -145,13 +145,22 @@ export let Listbox = defineComponent({
 
         searchQuery.value += value.toLowerCase()
 
-        let match = options.value.findIndex(
+        let reOrderedOptions =
+          activeOptionIndex.value !== null
+            ? options.value
+                .slice(activeOptionIndex.value + 1)
+                .concat(options.value.slice(0, activeOptionIndex.value + 1))
+            : options.value
+
+        let matchingOption = reOrderedOptions.find(
           option =>
-            !option.dataRef.disabled && option.dataRef.textValue.startsWith(searchQuery.value)
+            option.dataRef.textValue.startsWith(searchQuery.value) && !option.dataRef.disabled
         )
 
-        if (match === -1 || match === activeOptionIndex.value) return
-        activeOptionIndex.value = match
+        let matchIdx = matchingOption ? options.value.indexOf(matchingOption) : -1
+        if (matchIdx === -1 || matchIdx === activeOptionIndex.value) return
+
+        activeOptionIndex.value = matchIdx
       },
       clearSearch() {
         if (props.disabled) return

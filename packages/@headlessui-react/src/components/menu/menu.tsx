@@ -100,17 +100,26 @@ let reducers: {
   },
   [ActionTypes.Search]: (state, action) => {
     let searchQuery = state.searchQuery + action.value.toLowerCase()
-    let match = state.items.findIndex(
+
+    let reOrderedItems =
+      state.activeItemIndex !== null
+        ? state.items
+            .slice(state.activeItemIndex + 1)
+            .concat(state.items.slice(0, state.activeItemIndex + 1))
+        : state.items
+
+    let matchingItem = reOrderedItems.find(
       item =>
         item.dataRef.current.textValue?.startsWith(searchQuery) && !item.dataRef.current.disabled
     )
 
-    if (match === -1 || match === state.activeItemIndex) return { ...state, searchQuery }
-    return { ...state, searchQuery, activeItemIndex: match }
+    let matchIdx = matchingItem ? state.items.indexOf(matchingItem) : -1
+    if (matchIdx === -1 || matchIdx === state.activeItemIndex) return { ...state, searchQuery }
+    return { ...state, searchQuery, activeItemIndex: matchIdx }
   },
   [ActionTypes.ClearSearch](state) {
     if (state.searchQuery === '') return state
-    return { ...state, searchQuery: '' }
+    return { ...state, searchQuery: '', searchActiveItemIndex: null }
   },
   [ActionTypes.RegisterItem]: (state, action) => {
     let orderMap = Array.from(

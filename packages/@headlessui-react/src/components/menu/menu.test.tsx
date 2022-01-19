@@ -2631,6 +2631,7 @@ describe('Keyboard interactions', () => {
         assertMenuLinkedWithMenuItem(items[2])
       })
     )
+
     it(
       'should be possible to search for a word (case insensitive)',
       suppressConsoleLogs(async () => {
@@ -2661,6 +2662,40 @@ describe('Keyboard interactions', () => {
 
         // We should be on `bob`
         assertMenuLinkedWithMenuItem(items[1])
+      })
+    )
+
+    it(
+      'should be possible to search for the next occurence',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">alice</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+              <Menu.Item as="a">charlie</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        // Open menu
+        await click(getMenuButton())
+
+        let items = getMenuItems()
+
+        // Search for bob
+        await type(word('b'))
+
+        // We should be on the first `bob`
+        assertMenuLinkedWithMenuItem(items[1])
+
+        // Search for bob again
+        await type(word('b'))
+
+        // We should be on the second `bob`
+        assertMenuLinkedWithMenuItem(items[3])
       })
     )
   })

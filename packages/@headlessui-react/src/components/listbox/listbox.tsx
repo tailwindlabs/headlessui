@@ -131,14 +131,24 @@ let reducers: {
     if (state.listboxState === ListboxStates.Closed) return state
 
     let searchQuery = state.searchQuery + action.value.toLowerCase()
-    let match = state.options.findIndex(
+
+    let reOrderedOptions =
+      state.activeOptionIndex !== null
+        ? state.options
+            .slice(state.activeOptionIndex + 1)
+            .concat(state.options.slice(0, state.activeOptionIndex + 1))
+        : state.options
+
+    let matchingOption = reOrderedOptions.find(
       option =>
         !option.dataRef.current.disabled &&
         option.dataRef.current.textValue?.startsWith(searchQuery)
     )
 
-    if (match === -1 || match === state.activeOptionIndex) return { ...state, searchQuery }
-    return { ...state, searchQuery, activeOptionIndex: match }
+    let matchIdx = matchingOption ? state.options.indexOf(matchingOption) : -1
+
+    if (matchIdx === -1 || matchIdx === state.activeOptionIndex) return { ...state, searchQuery }
+    return { ...state, searchQuery, activeOptionIndex: matchIdx }
   },
   [ActionTypes.ClearSearch](state) {
     if (state.disabled) return state
