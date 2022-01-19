@@ -604,6 +604,7 @@ let Options = forwardRefWithAs(function Options<
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     'aria-orientation': state.orientation,
+    role: 'listbox',
     id,
     ref: optionsRef,
   }
