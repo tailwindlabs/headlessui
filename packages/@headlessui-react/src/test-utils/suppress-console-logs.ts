@@ -5,10 +5,10 @@ type FunctionPropertyNames<T> = {
 
 export function suppressConsoleLogs<T extends unknown[]>(
   cb: (...args: T) => unknown,
-  type: FunctionPropertyNames<typeof global.console> = 'error'
+  type: FunctionPropertyNames<typeof globalThis.console> = 'error'
 ) {
   return (...args: T) => {
-    let spy = jest.spyOn(global.console, type).mockImplementation(jest.fn())
+    let spy = jest.spyOn(globalThis.console, type).mockImplementation(jest.fn())
 
     return new Promise<unknown>((resolve, reject) => {
       Promise.resolve(cb(...args)).then(resolve, reject)

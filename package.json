@@ -36,6 +36,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.9",
     "@types/node": "^14.14.22",
+    "esbuild": "^0.14.11",
     "husky": "^4.3.8",
     "lint-staged": "^12.2.1",
     "tsdx": "^0.14.1",

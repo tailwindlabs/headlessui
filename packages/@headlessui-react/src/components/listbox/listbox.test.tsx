@@ -56,6 +56,7 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Listbox />',
     suppressConsoleLogs((name, Component) => {
+      // @ts-expect-error This is fine
       expect(() => render(createElement(Component))).toThrowError(
         `<${name} /> is missing a parent <Listbox /> component.`
       )

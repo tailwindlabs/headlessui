@@ -26,8 +26,6 @@ it(
 
     expect(() => {
       render(
-        // @ts-expect-error Disabling TS because it does require us to use a show prop. But non
-        // TypeScript projects won't benefit from this.
         <Transition>
           <div className="hello">Children</div>
         </Transition>
