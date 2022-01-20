@@ -10,7 +10,6 @@ RELATIVE_TARGET_DIR="${TARGET_DIR/$ROOT_DIR/}"
 
 pushd $ROOT_DIR > /dev/null
 
-node="yarn node"
 prettierArgs=()
 
 if ! [ -z "$CI" ]; then
@@ -27,6 +26,6 @@ prettierArgs+=('--ignore-unknown')
 prettierArgs+=($@)
 
 # Execute
-$node "$(yarn bin prettier)" "${prettierArgs[@]}"
+yarn prettier "${prettierArgs[@]}"
 
 popd > /dev/null
