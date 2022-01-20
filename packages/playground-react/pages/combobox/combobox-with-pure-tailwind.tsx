@@ -3,7 +3,7 @@ import { Combobox } from '@headlessui/react'
 
 import { classNames } from '../../utils/class-names'
 
-let people = [
+let everybody = [
   'Wade Cooper',
   'Arlene Mccoy',
   'Devon Webb',
@@ -16,13 +16,30 @@ let people = [
   'Emil Schaefer',
 ]
 
+function useDebounce<T>(value: T, delay: number) {
+  let [debouncedValue, setDebouncedValue] = useState(value)
+  useEffect(() => {
+    let timer = setTimeout(() => setDebouncedValue(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return debouncedValue
+}
 export default function Home() {
-  let [active, setActivePerson] = useState(people[2])
+  let [query, setQuery] = useState('')
+  let [active, setActivePerson] = useState(everybody[2])
+
+  // Mimic delayed response from an API
+  let actualQuery = useDebounce(query, 100)
 
   // Choose a random person on mount
   useEffect(() => {
-    setActivePerson(people[Math.floor(Math.random() * people.length)])
+    setActivePerson(everybody[Math.floor(Math.random() * everybody.length)])
   }, [])
+
+  let people =
+    actualQuery === ''
+      ? everybody
+      : everybody.filter(person => person.toLowerCase().includes(actualQuery.toLowerCase()))
 
   return (
     <div className="flex justify-center w-screen h-full p-12 bg-gray-50">
@@ -31,12 +48,9 @@ export default function Home() {
           <Combobox
             value={active}
             onChange={value => {
-              console.log('value:', value)
               setActivePerson(value)
             }}
-            onSearch={value => {
-              console.log('search:', value)
-            }}
+            onSearch={setQuery}
           >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
               Assigned to

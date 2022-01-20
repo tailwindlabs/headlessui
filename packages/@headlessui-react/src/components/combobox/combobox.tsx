@@ -15,6 +15,7 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  ContextType,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'
@@ -40,6 +41,7 @@ enum ComboboxStates {
 }
 
 type ComboboxOptionDataRef = MutableRefObject<{
+  textValue?: string
   disabled: boolean
   value: unknown
 }>
@@ -48,11 +50,12 @@ interface StateDefinition {
   comboboxState: ComboboxStates
 
   orientation: 'horizontal' | 'vertical'
+  strategy: 'hide' | 'custom'
 
   propsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
-    onSearch(value: unknown): void
+    onSearch?(value: unknown): void
   }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
   inputRef: MutableRefObject<HTMLInputElement | null>
@@ -74,9 +77,6 @@ enum ActionTypes {
 
   GoToOption,
 
-  SelectOption,
-  SelectActiveOption,
-
   RegisterOption,
   UnregisterOption,
 }
@@ -88,8 +88,6 @@ type Actions =
   | { type: ActionTypes.SetOrientation; orientation: StateDefinition['orientation'] }
   | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
   | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
-  | { type: ActionTypes.SelectOption; id: string }
-  | { type: ActionTypes.SelectActiveOption }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef }
   | { type: ActionTypes.UnregisterOption; id: string }
 
@@ -130,33 +128,6 @@ let reducers: {
 
     if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) return state
     return { ...state, searchQuery: '', activeOptionIndex }
-  },
-  [ActionTypes.SelectOption](state, action) {
-    let option = state.options.find(item => item.id === action.id)
-    if (!option) return state
-
-    let { dataRef } = option
-    state.propsRef.current.onChange(dataRef.current.value)
-
-    // TODO: make sure this is a proper string
-    if (typeof dataRef.current.value === 'string' && state.inputRef.current) {
-      state.inputRef.current.value = dataRef.current.value
-    }
-
-    return state
-  },
-  [ActionTypes.SelectActiveOption](state) {
-    if (state.activeOptionIndex !== null) {
-      let { dataRef } = state.options[state.activeOptionIndex]
-      state.propsRef.current.onChange(dataRef.current.value)
-
-      // TODO: make sure this is a proper string
-      if (typeof dataRef.current.value === 'string' && state.inputRef.current) {
-        state.inputRef.current.value = dataRef.current.value
-      }
-    }
-
-    return state
   },
   [ActionTypes.RegisterOption]: (state, action) => {
     let orderMap = Array.from(
@@ -209,6 +180,22 @@ function useComboboxContext(component: string) {
   return context
 }
 
+let ComboboxActions = createContext<{
+  selectOption(id: string): void
+  selectActiveOption(): void
+} | null>(null)
+ComboboxActions.displayName = 'ComboboxActions'
+
+function useComboboxActions() {
+  let context = useContext(ComboboxActions)
+  if (context === null) {
+    let err = new Error(`ComboboxActions is missing a parent <${Combobox.name} /> component.`)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useComboboxActions)
+    throw err
+  }
+  return context
+}
+
 function stateReducer(state: StateDefinition, action: Actions) {
   return match(action.type, reducers, state, action)
 }
@@ -225,7 +212,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   props: Props<TTag, ComboboxRenderPropArg, 'value' | 'onChange'> & {
     value: TType
     onChange(value: TType): void
-    onSearch(value: TType): void
+    onSearch?(value: TType): void
     disabled?: boolean
     horizontal?: boolean
   }
@@ -242,7 +229,14 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
 
   let reducerBag = useReducer(stateReducer, {
     comboboxState: ComboboxStates.Closed,
-    propsRef: { current: { value, onChange, onSearch } },
+    propsRef: {
+      current: {
+        value,
+        onChange,
+        onSearch,
+      },
+    },
+    strategy: onSearch === undefined ? 'hide' : 'custom',
     labelRef: createRef(),
     inputRef: createRef(),
     buttonRef: createRef(),
@@ -253,7 +247,10 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     searchQuery: '',
     activeOptionIndex: null,
   } as StateDefinition)
-  let [{ comboboxState, propsRef, optionsRef, inputRef, buttonRef }, dispatch] = reducerBag
+  let [
+    { comboboxState, options, activeOptionIndex, propsRef, optionsRef, inputRef, buttonRef },
+    dispatch,
+  ] = reducerBag
 
   useIsoMorphicEffect(() => {
     propsRef.current.value = value
@@ -292,22 +289,57 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     [comboboxState, disabled]
   )
 
+  let selectOption = useCallback(
+    (id: string) => {
+      let option = options.find(item => item.id === id)
+      if (!option) return
+
+      let { dataRef } = option
+      propsRef.current.onChange(dataRef.current.value)
+
+      // TODO: make sure this is a proper string
+      if (typeof dataRef.current.value === 'string' && inputRef.current) {
+        inputRef.current.value = dataRef.current.value
+      }
+    },
+    [options, propsRef, inputRef]
+  )
+
+  let selectActiveOption = useCallback(() => {
+    if (activeOptionIndex !== null) {
+      let { dataRef } = options[activeOptionIndex]
+      propsRef.current.onChange(dataRef.current.value)
+
+      // TODO: make sure this is a proper string
+      if (typeof dataRef.current.value === 'string' && inputRef.current) {
+        inputRef.current.value = dataRef.current.value
+      }
+    }
+  }, [activeOptionIndex, options, propsRef, inputRef])
+
+  let actionsBag = useMemo<ContextType<typeof ComboboxActions>>(
+    () => ({ selectOption, selectActiveOption }),
+    [selectOption, selectActiveOption]
+  )
+
   return (
-    <ComboboxContext.Provider value={reducerBag}>
-      <OpenClosedProvider
-        value={match(comboboxState, {
-          [ComboboxStates.Open]: State.Open,
-          [ComboboxStates.Closed]: State.Closed,
-        })}
-      >
-        {render({
-          props: passThroughProps,
-          slot,
-          defaultTag: DEFAULT_COMBOBOX_TAG,
-          name: 'Combobox',
-        })}
-      </OpenClosedProvider>
-    </ComboboxContext.Provider>
+    <ComboboxActions.Provider value={actionsBag}>
+      <ComboboxContext.Provider value={reducerBag}>
+        <OpenClosedProvider
+          value={match(comboboxState, {
+            [ComboboxStates.Open]: State.Open,
+            [ComboboxStates.Closed]: State.Closed,
+          })}
+        >
+          {render({
+            props: passThroughProps,
+            slot,
+            defaultTag: DEFAULT_COMBOBOX_TAG,
+            name: 'Combobox',
+          })}
+        </OpenClosedProvider>
+      </ComboboxContext.Provider>
+    </ComboboxActions.Provider>
   )
 }
 
@@ -328,6 +360,8 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
   ref: Ref<HTMLInputElement>
 ) {
   let [state, dispatch] = useComboboxContext([Combobox.name, Input.name].join('.'))
+  let actions = useComboboxActions()
+
   let inputRef = useSyncRefs(state.inputRef, ref)
 
   let id = `headlessui-combobox-input-${useId()}`
@@ -341,7 +375,8 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
         case Keys.Enter:
           event.preventDefault()
           event.stopPropagation()
-          dispatch({ type: ActionTypes.SelectActiveOption })
+
+          actions.selectActiveOption()
           dispatch({ type: ActionTypes.CloseCombobox })
           break
 
@@ -395,12 +430,12 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
           return dispatch({ type: ActionTypes.CloseCombobox })
 
         case Keys.Tab:
-          dispatch({ type: ActionTypes.SelectActiveOption })
+          actions.selectActiveOption()
           dispatch({ type: ActionTypes.CloseCombobox })
           break
       }
     },
-    [d, dispatch, state]
+    [d, dispatch, state, actions]
   )
 
   let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -418,7 +453,7 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     }
 
     dispatch({ type: ActionTypes.OpenCombobox })
-    state.propsRef.current.onSearch((event.target as HTMLInputElement).value)
+    state.propsRef.current.onSearch?.((event.target as HTMLInputElement).value)
   }, [])
 
   // TODO: Verify this. The spec says that, for the input/combobox, the lebel is the labelling element when present
@@ -663,6 +698,7 @@ function Option<
 ) {
   let { disabled = false, value, ...passthroughProps } = props
   let [state, dispatch] = useComboboxContext([Combobox.name, Option.name].join('.'))
+  let actions = useComboboxActions()
   let id = `headlessui-combobox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
@@ -676,10 +712,11 @@ function Option<
   useIsoMorphicEffect(() => {
     bag.current.value = value
   }, [bag, value])
+  useIsoMorphicEffect(() => {
+    bag.current.textValue = document.getElementById(id)?.textContent?.toLowerCase()
+  }, [bag, id])
 
-  let select = useCallback(() => {
-    dispatch({ type: ActionTypes.SelectOption, id })
-  }, [dispatch, state.propsRef, id])
+  let select = useCallback(() => actions.selectOption(id), [actions, id])
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.RegisterOption, id, dataRef: bag })
@@ -727,6 +764,7 @@ function Option<
     selected,
     disabled,
   ])
+
   let propsWeControl = {
     id,
     role: 'option',
