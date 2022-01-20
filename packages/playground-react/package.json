@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "next.config.js",
   "scripts": {
-    "dev": "next dev"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "keywords": [],
   "author": "Robin Malfait",
