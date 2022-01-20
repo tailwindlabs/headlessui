@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "next.config.js",
   "scripts": {
+    "prebuild": "yarn workspace @headlessui/react build",
     "dev": "next dev",
     "build": "next build",
     "start": "next start"
