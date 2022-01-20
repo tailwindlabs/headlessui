@@ -1,5 +1,5 @@
 import React, { createElement, useState, useEffect } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { Combobox } from './combobox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -18,7 +18,6 @@ import {
 import {
   assertActiveElement,
   assertActiveComboboxOption,
-  assertCombobox,
   assertComboboxList,
   assertComboboxButton,
   assertComboboxButtonLinkedWithCombobox,
@@ -59,6 +58,7 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Combobox />',
     suppressConsoleLogs((name, Component) => {
+      // @ts-expect-error This is fine
       expect(() => render(createElement(Component))).toThrowError(
         `<${name} /> is missing a parent <Combobox /> component.`
       )

@@ -319,7 +319,7 @@ export function assertCombobox(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertCombobox)
+    if (err instanceof Error) Error.captureStackTrace(err, assertCombobox)
     throw err
   }
 }
@@ -377,7 +377,7 @@ export function assertComboboxList(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertCombobox)
+    if (err instanceof Error) Error.captureStackTrace(err, assertCombobox)
     throw err
   }
 }
@@ -434,7 +434,7 @@ export function assertComboboxButton(
       expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertComboboxButton)
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxButton)
     throw err
   }
 }
@@ -466,7 +466,7 @@ export function assertComboboxLabel(
       expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertComboboxLabel)
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxLabel)
     throw err
   }
 }
@@ -483,7 +483,7 @@ export function assertComboboxButtonLinkedWithCombobox(
     expect(button).toHaveAttribute('aria-controls', listbox.getAttribute('id'))
     expect(listbox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertComboboxButtonLinkedWithCombobox)
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxButtonLinkedWithCombobox)
     throw err
   }
 }
@@ -498,7 +498,7 @@ export function assertComboboxLabelLinkedWithCombobox(
 
     expect(combobox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertComboboxLabelLinkedWithCombobox)
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxLabelLinkedWithCombobox)
     throw err
   }
 }
@@ -514,7 +514,8 @@ export function assertComboboxButtonLinkedWithComboboxLabel(
     // Ensure link between button & label is correct
     expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
   } catch (err) {
-    Error.captureStackTrace(err, assertComboboxButtonLinkedWithComboboxLabel)
+    if (err instanceof Error)
+      Error.captureStackTrace(err, assertComboboxButtonLinkedWithComboboxLabel)
     throw err
   }
 }
@@ -527,7 +528,7 @@ export function assertActiveComboboxOption(item: HTMLElement | null, combobox = 
     // Ensure link between combobox & combobox item is correct
     expect(combobox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertActiveComboboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertActiveComboboxOption)
     throw err
   }
 }
@@ -539,7 +540,7 @@ export function assertNoActiveComboboxOption(combobox = getCombobox()) {
     // Ensure we don't have an active combobox
     expect(combobox).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
-    Error.captureStackTrace(err, assertNoActiveComboboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertNoActiveComboboxOption)
     throw err
   }
 }
@@ -548,7 +549,7 @@ export function assertNoSelectedComboboxOption(items = getComboboxOptions()) {
   try {
     for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
   } catch (err) {
-    Error.captureStackTrace(err, assertNoSelectedComboboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertNoSelectedComboboxOption)
     throw err
   }
 }
@@ -596,7 +597,7 @@ export function assertComboboxOption(
       }
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertComboboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxOption)
     throw err
   }
 }
