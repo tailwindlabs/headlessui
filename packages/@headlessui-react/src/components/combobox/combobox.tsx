@@ -414,8 +414,9 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
             [ComboboxStates.Closed]: () => {
               dispatch({ type: ActionTypes.OpenCombobox })
               d.nextFrame(() => {
-                if (!state.propsRef.current.value)
+                if (!state.propsRef.current.value) {
                   dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
+                }
               })
             },
           })
@@ -490,6 +491,20 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
   }
+
+  useIsoMorphicEffect(() => {
+    // The user is controlling this component
+    if ('value' in passthroughProps) {
+      return
+    }
+
+    // On mount we want to ensure the input has a value
+    let el = document.querySelector(`#${id}`) as HTMLInputElement
+    if (el) {
+      // TODO: This value may not be a string
+      el.value = String(state.propsRef.current.value)
+    }
+  }, [])
 
   return render({
     props: { ...passthroughProps, ...propsWeControl },

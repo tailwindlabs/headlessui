@@ -233,7 +233,7 @@ export function getComboboxButtons(): HTMLElement[] {
   return Array.from(document.querySelectorAll('button,[role="button"]'))
 }
 
-export function getCombobox(): HTMLElement | null {
+export function getCombobox(): HTMLInputElement | null {
   return document.querySelector('[role="combobox"]')
 }
 
