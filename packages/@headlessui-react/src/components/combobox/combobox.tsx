@@ -322,7 +322,6 @@ type InputPropsWeControl =
   | 'aria-expanded'
   | 'aria-activedescendant'
   | 'onKeyDown'
-  | 'onFocus'
 
 let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
   props: Props<TTag, InputRenderPropArg, InputPropsWeControl>,
@@ -339,13 +338,11 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        case Keys.Space:
         case Keys.Enter:
           event.preventDefault()
           event.stopPropagation()
           dispatch({ type: ActionTypes.SelectActiveOption })
           dispatch({ type: ActionTypes.CloseCombobox })
-          disposables().nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
           break
 
         case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
@@ -395,8 +392,7 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
         case Keys.Escape:
           event.preventDefault()
           event.stopPropagation()
-          dispatch({ type: ActionTypes.CloseCombobox })
-          return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+          return dispatch({ type: ActionTypes.CloseCombobox })
 
         case Keys.Tab:
           dispatch({ type: ActionTypes.SelectActiveOption })
@@ -408,6 +404,19 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
   )
 
   let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    switch (event.key) {
+      case Keys.Enter:
+      case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
+      case match(state.orientation, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+      case Keys.Home:
+      case Keys.PageUp:
+      case Keys.End:
+      case Keys.PageDown:
+      case Keys.Escape:
+      case Keys.Tab:
+        return
+    }
+
     dispatch({ type: ActionTypes.OpenCombobox })
     state.propsRef.current.onSearch((event.target as HTMLInputElement).value)
   }, [])
@@ -638,7 +647,6 @@ type ComboboxOptionPropsWeControl =
   | 'onMouseLeave'
   | 'onPointerMove'
   | 'onMouseMove'
-  | 'onFocus'
 
 function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
@@ -700,11 +708,6 @@ function Option<
     [dispatch, state.inputRef, disabled, select]
   )
 
-  let handleFocus = useCallback(() => {
-    if (disabled) return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-  }, [disabled, id, dispatch])
-
   let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
@@ -730,7 +733,6 @@ function Option<
     'aria-selected': selected === true ? true : undefined,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
-    onFocus: handleFocus,
     onPointerMove: handleMove,
     onMouseMove: handleMove,
     onPointerLeave: handleLeave,
