@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "react": "yarn workspace @headlessui/react",
+    "react-playground": "yarn workspace playground-react dev",
+    "playground-react": "yarn workspace playground-react dev",
     "vue": "yarn workspace @headlessui/vue",
     "shared": "yarn workspace @headlessui/shared",
     "build": "yarn workspaces run build",
