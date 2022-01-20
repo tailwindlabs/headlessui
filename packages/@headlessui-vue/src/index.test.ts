@@ -6,6 +6,14 @@ import * as HeadlessUI from './index'
  */
 it('should expose the correct components', () => {
   expect(Object.keys(HeadlessUI)).toEqual([
+    // Combobox
+    'Combobox',
+    'ComboboxLabel',
+    'ComboboxButton',
+    'ComboboxInput',
+    'ComboboxOptions',
+    'ComboboxOption',
+
     // Dialog
     'Dialog',
     'DialogOverlay',
@@ -19,13 +27,6 @@ it('should expose the correct components', () => {
 
     // FocusTrap
     'FocusTrap',
-
-    // Combobox
-    'Combobox',
-    'ComboboxLabel',
-    'ComboboxButton',
-    'ComboboxOptions',
-    'ComboboxOption',
 
     // Listbox
     'Listbox',
