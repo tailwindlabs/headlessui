@@ -26,6 +26,7 @@
     "prepublishOnly": "npm run build",
     "test": "../../scripts/test.sh",
     "build": "../../scripts/build.sh",
+    "watch": "../../scripts/watch.sh",
     "lint": "../../scripts/lint.sh"
   },
   "peerDependencies": {
