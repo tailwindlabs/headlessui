@@ -437,7 +437,8 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     ref: inputRef,
     id,
     role: 'combobox',
-    'aria-controls': state.optionsRef.current?.id,
+    'aria-controls':
+      state.comboboxState === ComboboxStates.Open ? state.optionsRef.current?.id : undefined,
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
@@ -514,7 +515,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     type: useResolveButtonType(props, state.buttonRef),
     tabIndex: -1,
     'aria-haspopup': true,
-    'aria-controls': state.optionsRef.current?.id,
+    'aria-controls':
+      state.comboboxState === ComboboxStates.Open ? state.optionsRef.current?.id : undefined,
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
