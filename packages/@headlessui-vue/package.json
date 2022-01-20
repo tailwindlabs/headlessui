@@ -34,7 +34,7 @@
   "scripts": {
     "prepublishOnly": "npm run build",
     "build": "../../scripts/build.sh",
-    "watch": "../../scripts/watch.sh",
+    "watch": "../../scripts/build.sh --watch",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh"
   },
