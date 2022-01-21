@@ -111,7 +111,7 @@ export default function Home() {
                     ) : activeIndex === null || people[activeIndex] === undefined ? null : (
                       <div className="border-l">
                         <div className="flex flex-col">
-                          <div className="border-b p-8 text-center">
+                          <div className="p-8 text-center">
                             <img
                               src={people[activeIndex].img}
                               className="w-16 h-16 rounded-full overflow-hidden inline-block mb-4"
