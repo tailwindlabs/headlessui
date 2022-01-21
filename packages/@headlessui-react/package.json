@@ -37,7 +37,8 @@
     "watch": "../../scripts/watch.sh --external:react --external:react-dom",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
-    "playground": "yarn workspace playground-react dev"
+    "playground": "yarn workspace playground-react dev",
+    "clean": "rimraf ./dist"
   },
   "peerDependencies": {
     "react": "^16 || ^17 || ^18",

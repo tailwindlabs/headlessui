@@ -10,7 +10,8 @@
     "dev:headlessui": "yarn workspace @headlessui/vue watch",
     "dev:next": "vite --config ./vite.config.js serve examples",
     "dev": "npm-run-all -p dev:*",
-    "build": "NODE_ENV=production vite --config ./vite.config.js build examples"
+    "build": "NODE_ENV=production vite --config ./vite.config.js build examples",
+    "clean": "rimraf ./dist"
   },
   "dependencies": {
     "@headlessui/vue": "*",

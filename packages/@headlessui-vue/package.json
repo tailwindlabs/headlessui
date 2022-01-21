@@ -37,7 +37,8 @@
     "watch": "../../scripts/watch.sh",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
-    "playground": "yarn workspace playground-vue dev"
+    "playground": "yarn workspace playground-vue dev",
+    "clean": "rimraf ./dist"
   },
   "peerDependencies": {
     "vue": "^3.0.0"
