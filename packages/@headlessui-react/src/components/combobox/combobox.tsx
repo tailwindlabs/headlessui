@@ -322,6 +322,14 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     [selectOption, selectActiveOption]
   )
 
+  // Ensure that we update the inputRef if the value changes
+  useIsoMorphicEffect(() => {
+    if (!inputRef.current) return
+
+    // TODO: This value may not be a string
+    inputRef.current.value = String(value)
+  }, [value, inputRef])
+
   return (
     <ComboboxActions.Provider value={actionsBag}>
       <ComboboxContext.Provider value={reducerBag}>
@@ -359,6 +367,7 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
   props: Props<TTag, InputRenderPropArg, InputPropsWeControl>,
   ref: Ref<HTMLInputElement>
 ) {
+  let { value, onChange, ...passThroughProps } = props
   let [state, dispatch] = useComboboxContext([Combobox.name, Input.name].join('.'))
   let actions = useComboboxActions()
 
@@ -476,7 +485,6 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     () => ({ open: state.comboboxState === ComboboxStates.Open, disabled: state.disabled }),
     [state]
   )
-  let passthroughProps = props
   let propsWeControl = {
     ref: inputRef,
     id,
@@ -492,22 +500,8 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     onKeyUp: handleKeyUp,
   }
 
-  useIsoMorphicEffect(() => {
-    // The user is controlling this component
-    if ('value' in passthroughProps) {
-      return
-    }
-
-    // On mount we want to ensure the input has a value
-    let el = document.querySelector(`#${id}`) as HTMLInputElement
-    if (el) {
-      // TODO: This value may not be a string
-      el.value = String(state.propsRef.current.value)
-    }
-  }, [])
-
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...passThroughProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_INPUT_TAG,
     name: 'Combobox.Input',
