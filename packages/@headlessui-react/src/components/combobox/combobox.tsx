@@ -56,6 +56,7 @@ interface StateDefinition {
     value: unknown
     onChange(value: unknown): void
     onSearch?(value: unknown): void
+    displayValue?(item: unknown): string
   }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
   inputRef: MutableRefObject<HTMLInputElement | null>
@@ -206,6 +207,7 @@ let DEFAULT_COMBOBOX_TAG = Fragment
 interface ComboboxRenderPropArg {
   open: boolean
   disabled: boolean
+  activeIndex: number | null
 }
 
 export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
@@ -213,7 +215,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     value: TType
     onChange(value: TType): void
     onSearch?(value: string): void
-    property?: { [P in keyof TType]-?: TType[P] extends string ? P : never }[keyof TType]
+    displayValue?(item: TType): string
     disabled?: boolean
     horizontal?: boolean
   }
@@ -224,7 +226,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     disabled = false,
     horizontal = false,
     onSearch,
-    property,
+    displayValue,
     ...passThroughProps
   } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
@@ -236,6 +238,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
         value,
         onChange,
         onSearch,
+        displayValue,
       },
     },
     strategy: onSearch === undefined ? 'hide' : 'custom',
@@ -263,6 +266,10 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   useIsoMorphicEffect(() => {
     propsRef.current.onSearch = onSearch
   }, [onSearch, propsRef])
+  useIsoMorphicEffect(() => {
+    propsRef.current.displayValue = displayValue
+  }, [displayValue, propsRef])
+
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetOrientation, orientation }), [
     orientation,
@@ -287,9 +294,25 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   })
 
   let slot = useMemo<ComboboxRenderPropArg>(
-    () => ({ open: comboboxState === ComboboxStates.Open, disabled }),
-    [comboboxState, disabled]
+    () => ({
+      open: comboboxState === ComboboxStates.Open,
+      disabled,
+      activeIndex: activeOptionIndex,
+    }),
+    [comboboxState, disabled, activeOptionIndex]
   )
+
+  let syncInputValue = useCallback(() => {
+    if (!inputRef.current) return
+    if (value === undefined) return
+    let displayValue = propsRef.current.displayValue
+
+    if (typeof displayValue === 'function') {
+      inputRef.current.value = displayValue(value)
+    } else if (typeof value === 'string') {
+      inputRef.current.value = value
+    }
+  }, [value, inputRef])
 
   let selectOption = useCallback(
     (id: string) => {
@@ -298,6 +321,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
 
       let { dataRef } = option
       propsRef.current.onChange(dataRef.current.value)
+      syncInputValue()
     },
     [options, propsRef, inputRef]
   )
@@ -306,6 +330,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     if (activeOptionIndex !== null) {
       let { dataRef } = options[activeOptionIndex]
       propsRef.current.onChange(dataRef.current.value)
+      syncInputValue()
     }
   }, [activeOptionIndex, options, propsRef, inputRef])
 
@@ -314,17 +339,15 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     [selectOption, selectActiveOption]
   )
 
-  // Ensure that we update the inputRef if the value changes
   useIsoMorphicEffect(() => {
-    if (!inputRef.current) return
-    if (!value) return
-
-    if (typeof value === 'string') {
-      inputRef.current.value = value
-    } else if (property && property in value && typeof value[property] === 'string') {
-      inputRef.current.value = (value[property] as unknown) as string
+    if (comboboxState !== ComboboxStates.Closed) {
+      return
     }
-  }, [value, inputRef, property])
+    syncInputValue()
+  }, [syncInputValue, comboboxState])
+
+  // Ensure that we update the inputRef if the value changes
+  useIsoMorphicEffect(syncInputValue, [syncInputValue])
 
   return (
     <ComboboxActions.Provider value={actionsBag}>
@@ -350,7 +373,10 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
 // ---
 
 let DEFAULT_INPUT_TAG = 'input' as const
-interface InputRenderPropArg {}
+interface InputRenderPropArg {
+  open: boolean
+  disabled: boolean
+}
 type InputPropsWeControl =
   | 'id'
   | 'role'
@@ -452,20 +478,7 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     [d, dispatch, state, actions]
   )
 
-  let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
-    switch (event.key) {
-      case Keys.Enter:
-      case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
-      case match(state.orientation, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
-      case Keys.Home:
-      case Keys.PageUp:
-      case Keys.End:
-      case Keys.PageDown:
-      case Keys.Escape:
-      case Keys.Tab:
-        return
-    }
-
+  let handleOnChange = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     dispatch({ type: ActionTypes.OpenCombobox })
     state.propsRef.current.onSearch?.((event.target as HTMLInputElement).value)
   }, [])
@@ -477,7 +490,7 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     return [state.labelRef.current.id].join(' ')
   }, [state.labelRef.current])
 
-  let slot = useMemo<ButtonRenderPropArg>(
+  let slot = useMemo<InputRenderPropArg>(
     () => ({ open: state.comboboxState === ComboboxStates.Open, disabled: state.disabled }),
     [state]
   )
@@ -493,7 +506,7 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
-    onKeyUp: handleKeyUp,
+    onChange: handleOnChange,
   }
 
   return render({

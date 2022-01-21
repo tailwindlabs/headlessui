@@ -34,65 +34,100 @@ export default function Home() {
 
   return (
     <div className="flex justify-center w-screen h-full p-12 bg-gray-50">
-      <div className="w-full max-w-xs mx-auto">
+      <div className="w-full max-w-lg mx-auto">
         <div className="space-y-1">
           <Combobox
             value={activePerson}
-            property="name"
             onChange={setActivePerson}
             onSearch={setQuery}
+            displayValue={item => item?.name}
+            className="bg-white w-full shadow-sm border border-black/5 bg-clip-padding rounded overflow-hidden"
           >
-            <div className="relative">
-              <span className="relative inline-flex flex-row rounded-md overflow-hidden shadow-sm border">
-                <Combobox.Input className="outline-none px-3 py-1" />
-              </span>
-
-              <div className="absolute w-full mt-1 bg-white rounded-md shadow-lg">
-                <Combobox.Options className="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
-                  {people.map(person => (
-                    <Combobox.Option
-                      key={person.id}
-                      value={person}
-                      className={({ active }) => {
-                        return classNames(
-                          'relative py-2 pl-3 cursor-default select-none pr-9 focus:outline-none',
-                          active ? 'text-white bg-indigo-600' : 'text-gray-900'
-                        )
-                      }}
-                    >
-                      {({ active, selected }) => (
-                        <>
-                          <span
-                            className={classNames(
-                              'block truncate',
-                              selected ? 'font-semibold' : 'font-normal'
-                            )}
-                          >
-                            {person.name}
-                          </span>
-                          {selected && (
-                            <span
-                              className={classNames(
-                                'absolute inset-y-0 right-0 flex items-center pr-4',
-                                active ? 'text-white' : 'text-indigo-600'
+            {({ activeIndex }) => {
+              return (
+                <div className="flex flex-col w-full">
+                  <Combobox.Input
+                    className={({ open }) => {
+                      return classNames(
+                        'outline-none px-3 py-1 border-y-0 border-b bg-none border-gray-200 rounded-none w-full',
+                        activePerson && !open ? 'border-transparent' : 'border-gray-200'
+                      )
+                    }}
+                    placeholder="Search users…"
+                  />
+                  <div className="flex">
+                    <Combobox.Options className="flex-1 py-1 overflow-auto text-base leading-6 shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
+                      {people.map(person => (
+                        <Combobox.Option
+                          key={person.id}
+                          value={person}
+                          className={({ active }) => {
+                            return classNames(
+                              'flex  relative py-2 pl-3 cursor-default select-none pr-9 focus:outline-none space-x-4',
+                              active ? 'text-white bg-indigo-600' : 'text-gray-900'
+                            )
+                          }}
+                        >
+                          {({ active, selected }) => (
+                            <>
+                              <img
+                                src={person.img}
+                                className="w-6 h-6 overflow-hidden rounded-full"
+                              />
+                              <span
+                                className={classNames(
+                                  'block truncate',
+                                  selected ? 'font-semibold' : 'font-normal'
+                                )}
+                              >
+                                {person.name}
+                              </span>
+                              {active && (
+                                <span
+                                  className={classNames(
+                                    'absolute inset-y-0 right-0 flex items-center pr-4',
+                                    active ? 'text-white' : 'text-indigo-600'
+                                  )}
+                                >
+                                  <svg className="w-5 h-5" viewBox="0 0 25 24" fill="none">
+                                    <path
+                                      d="M11.25 8.75L14.75 12L11.25 15.25"
+                                      stroke="currentColor"
+                                      strokeWidth="1.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                </span>
                               )}
-                            >
-                              <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </span>
+                            </>
                           )}
-                        </>
-                      )}
-                    </Combobox.Option>
-                  ))}
-                </Combobox.Options>
-              </div>
-            </div>
+                        </Combobox.Option>
+                      ))}
+                    </Combobox.Options>
+
+                    {people.length === 0 ? (
+                      <div className="text-center w-full py-4">No person selected</div>
+                    ) : activeIndex === null || people[activeIndex] === undefined ? null : (
+                      <div className="border-l">
+                        <div className="flex flex-col">
+                          <div className="border-b p-8 text-center">
+                            <img
+                              src={people[activeIndex].img}
+                              className="w-16 h-16 rounded-full overflow-hidden inline-block mb-4"
+                            />
+                            <div className="text-gray-900 font-bold">
+                              {people[activeIndex].name}
+                            </div>
+                            <div className="text-gray-700">Obviously cool person</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            }}
           </Combobox>
         </div>
       </div>
