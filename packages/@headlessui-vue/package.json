@@ -36,7 +36,8 @@
     "build": "../../scripts/build.sh",
     "watch": "../../scripts/watch.sh",
     "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh"
+    "lint": "../../scripts/lint.sh",
+    "playground": "yarn workspace playground-vue dev"
   },
   "peerDependencies": {
     "vue": "^3.0.0"

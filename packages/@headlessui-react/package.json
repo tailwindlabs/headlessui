@@ -36,7 +36,8 @@
     "build": "../../scripts/build.sh --external:react --external:react-dom",
     "watch": "../../scripts/watch.sh --external:react --external:react-dom",
     "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh"
+    "lint": "../../scripts/lint.sh",
+    "playground": "yarn workspace playground-react dev"
   },
   "peerDependencies": {
     "react": "^16 || ^17 || ^18",
