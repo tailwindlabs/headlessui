@@ -208,16 +208,12 @@ interface ComboboxRenderPropArg {
   disabled: boolean
 }
 
-export function Combobox<
-  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
-  TType = string,
-  P extends keyof TType = never
->(
+export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
   props: Props<TTag, ComboboxRenderPropArg, 'value' | 'onChange'> & {
     value: TType
     onChange(value: TType): void
     onSearch?(value: string): void
-    property?: P
+    property?: { [P in keyof TType]-?: TType[P] extends string ? P : never }[keyof TType]
     disabled?: boolean
     horizontal?: boolean
   }
