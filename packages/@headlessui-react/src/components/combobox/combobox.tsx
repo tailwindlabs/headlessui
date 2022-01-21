@@ -77,6 +77,7 @@ enum ActionTypes {
   SetOrientation,
 
   GoToOption,
+  Search,
 
   RegisterOption,
   UnregisterOption,
@@ -89,6 +90,7 @@ type Actions =
   | { type: ActionTypes.SetOrientation; orientation: StateDefinition['orientation'] }
   | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
   | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
+  | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef }
   | { type: ActionTypes.UnregisterOption; id: string }
 
@@ -127,8 +129,13 @@ let reducers: {
       resolveDisabled: item => item.dataRef.current.disabled,
     })
 
-    if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) return state
-    return { ...state, searchQuery: '', activeOptionIndex }
+    if (state.activeOptionIndex === activeOptionIndex) return state
+    return { ...state, activeOptionIndex }
+  },
+  [ActionTypes.Search](state, action) {
+    if (state.disabled) return state
+
+    return { ...state, searchQuery: action.value.toLocaleLowerCase() }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
     let orderMap = Array.from(
@@ -480,7 +487,15 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
 
   let handleOnChange = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     dispatch({ type: ActionTypes.OpenCombobox })
-    state.propsRef.current.onSearch?.((event.target as HTMLInputElement).value)
+
+    let onSearch = state.propsRef.current.onSearch
+    let value = (event.target as HTMLInputElement).value
+
+    if (onSearch) {
+      onSearch(value)
+    } else {
+      dispatch({ type: ActionTypes.Search, value: value })
+    }
   }, [])
 
   // TODO: Verify this. The spec says that, for the input/combobox, the lebel is the labelling element when present
@@ -805,11 +820,40 @@ function Option<
     onMouseLeave: handleLeave,
   }
 
-  return render({
-    props: { ...passthroughProps, ...propsWeControl },
-    slot,
-    defaultTag: DEFAULT_OPTION_TAG,
-    name: 'Combobox.Option',
+  return match(state.strategy, {
+    hide() {
+      let visible = (() => {
+        let searchQuery = state.searchQuery
+
+        if (
+          searchQuery !== undefined &&
+          searchQuery !== '' &&
+          !bag.current.textValue?.toLocaleLowerCase().includes(searchQuery)
+        ) {
+          return false
+        }
+
+        return true
+      })()
+
+      return render({
+        props: { ...passthroughProps, ...propsWeControl, unmount: false },
+        slot,
+        defaultTag: DEFAULT_OPTION_TAG,
+        name: 'Combobox.Option',
+        features: Features.RenderStrategy,
+        visible,
+      })
+    },
+
+    custom() {
+      return render({
+        props: { ...passthroughProps, ...propsWeControl },
+        slot,
+        defaultTag: DEFAULT_OPTION_TAG,
+        name: 'Combobox.Option',
+      })
+    },
   })
 }
 
