@@ -26,10 +26,10 @@ function useDebounce<T>(value: T, delay: number) {
 }
 export default function Home() {
   let [query, setQuery] = useState('')
-  let [active, setActivePerson] = useState(everybody[2])
+  let [activePerson, setActivePerson] = useState(everybody[2])
 
   // Mimic delayed response from an API
-  let actualQuery = useDebounce(query, 100)
+  let actualQuery = useDebounce(query, 0 /* Change to higher value like 100 for testing purposes */)
 
   // Choose a random person on mount
   useEffect(() => {
@@ -44,9 +44,10 @@ export default function Home() {
   return (
     <div className="flex justify-center w-screen h-full p-12 bg-gray-50">
       <div className="w-full max-w-xs mx-auto">
+        <div className="text-xs py-8 font-mono">Selected person: {activePerson}</div>
         <div className="space-y-1">
           <Combobox
-            value={active}
+            value={activePerson}
             onChange={value => {
               setActivePerson(value)
             }}
@@ -57,9 +58,9 @@ export default function Home() {
             </Combobox.Label>
 
             <div className="relative">
-              <span className="relative inline-flex flex-row rounded-md overflow-hidden shadow-sm border-2 border-indigo-500">
+              <span className="relative inline-flex flex-row rounded-md overflow-hidden shadow-sm border">
                 <Combobox.Input className="outline-none px-3 py-1" />
-                <Combobox.Button className="focus:outline-none px-1 bg-gray-100 cursor-default border-l-2 border-indigo-500 text-indigo-600">
+                <Combobox.Button className="focus:outline-none px-1 bg-gray-100 cursor-default border-l text-indigo-600">
                   <span className="flex items-center px-2 pointer-events-none">
                     <svg
                       className="w-5 h-5 text-gray-400"
