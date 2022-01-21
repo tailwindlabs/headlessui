@@ -296,11 +296,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
 
       let { dataRef } = option
       propsRef.current.onChange(dataRef.current.value)
-
-      // TODO: make sure this is a proper string
-      if (typeof dataRef.current.value === 'string' && inputRef.current) {
-        inputRef.current.value = dataRef.current.value
-      }
     },
     [options, propsRef, inputRef]
   )
@@ -309,11 +304,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     if (activeOptionIndex !== null) {
       let { dataRef } = options[activeOptionIndex]
       propsRef.current.onChange(dataRef.current.value)
-
-      // TODO: make sure this is a proper string
-      if (typeof dataRef.current.value === 'string' && inputRef.current) {
-        inputRef.current.value = dataRef.current.value
-      }
     }
   }, [activeOptionIndex, options, propsRef, inputRef])
 
@@ -325,6 +315,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   // Ensure that we update the inputRef if the value changes
   useIsoMorphicEffect(() => {
     if (!inputRef.current) return
+    if (!value) return
 
     // TODO: This value may not be a string
     inputRef.current.value = String(value)
