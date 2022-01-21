@@ -208,11 +208,16 @@ interface ComboboxRenderPropArg {
   disabled: boolean
 }
 
-export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
+export function Combobox<
+  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
+  TType = string,
+  P extends keyof TType = never
+>(
   props: Props<TTag, ComboboxRenderPropArg, 'value' | 'onChange'> & {
     value: TType
     onChange(value: TType): void
-    onSearch?(value: TType): void
+    onSearch?(value: string): void
+    property?: P
     disabled?: boolean
     horizontal?: boolean
   }
@@ -223,6 +228,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     disabled = false,
     horizontal = false,
     onSearch,
+    property,
     ...passThroughProps
   } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
@@ -317,9 +323,12 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     if (!inputRef.current) return
     if (!value) return
 
-    // TODO: This value may not be a string
-    inputRef.current.value = String(value)
-  }, [value, inputRef])
+    if (typeof value === 'string') {
+      inputRef.current.value = value
+    } else if (property && property in value && typeof value[property] === 'string') {
+      inputRef.current.value = (value[property] as unknown) as string
+    }
+  }, [value, inputRef, property])
 
   return (
     <ComboboxActions.Provider value={actionsBag}>
