@@ -8,9 +8,9 @@
   "scripts": {
     "prebuild": "yarn workspace @headlessui/vue build",
     "dev:headlessui": "yarn workspace @headlessui/vue watch",
-    "dev:next": "vite --config ./vite.config.js serve examples",
+    "dev:next": "vite serve",
     "dev": "npm-run-all -p dev:*",
-    "build": "NODE_ENV=production vite --config ./vite.config.js build examples",
+    "build": "NODE_ENV=production vite build",
     "clean": "rimraf ./dist"
   },
   "dependencies": {

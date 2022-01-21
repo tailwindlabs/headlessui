@@ -3,7 +3,7 @@ import path from 'path'
 
 import vue from '@vitejs/plugin-vue'
 
-import routes from './examples/src/routes.json'
+import routes from './src/routes.json'
 
 function flatten(routes, resolver) {
   return routes
@@ -20,7 +20,7 @@ let contents = flatten(routes, (route) => route.component)
   })
   .join('\n')
 
-let location = path.resolve(__dirname, './examples/src/.generated/preload.js')
+let location = path.resolve(__dirname, './src/.generated/preload.js')
 let data = `${contents}\n\nexport default {\n${Object.entries(map)
   .map(([path, name]) => `  "${path}": ${name}`)
   .join(',\n')}\n}`
