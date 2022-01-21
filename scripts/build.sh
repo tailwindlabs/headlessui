@@ -30,3 +30,4 @@ cp -rf ./build/ $outdir
 
 # Wait for all the scripts to finish
 wait
+

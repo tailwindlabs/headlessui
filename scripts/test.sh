@@ -18,3 +18,4 @@ jestArgs+=($@)
 
 # Execute
 $node "$(yarn bin jest)" "${jestArgs[@]}"
+

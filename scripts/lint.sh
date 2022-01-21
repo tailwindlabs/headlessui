@@ -29,3 +29,4 @@ prettierArgs+=($@)
 yarn prettier "${prettierArgs[@]}"
 
 popd > /dev/null
+
