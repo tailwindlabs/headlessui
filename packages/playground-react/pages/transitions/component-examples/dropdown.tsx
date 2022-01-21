@@ -29,7 +29,7 @@ function Dropdown() {
             id="options-menu"
             aria-haspopup="true"
             aria-expanded={isOpen}
-            onClick={() => setIsOpen(v => !v)}
+            onClick={() => setIsOpen((v) => !v)}
           >
             Options
             <svg className="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor">

@@ -4,7 +4,7 @@ import { Transition } from '@headlessui/react'
 export default function Home() {
   let [isOpen, setIsOpen] = useState(false)
   function toggle() {
-    setIsOpen(v => !v)
+    setIsOpen((v) => !v)
   }
 
   let [email, setEmail] = useState('')
@@ -12,7 +12,7 @@ export default function Home() {
   let inputRef = useRef(null)
 
   function addEvent(name) {
-    setEvents(existing => [...existing, `${new Date().toJSON()} - ${name}`])
+    setEvents((existing) => [...existing, `${new Date().toJSON()} - ${name}`])
   }
 
   return (
@@ -130,7 +130,7 @@ export default function Home() {
                         <input
                           ref={inputRef}
                           value={email}
-                          onChange={event => setEmail(event.target.value)}
+                          onChange={(event) => setEmail(event.target.value)}
                           id="email"
                           className="block w-full px-3 form-input sm:text-sm sm:leading-5"
                           placeholder="name@example.com"

@@ -81,7 +81,7 @@ function SignOutButton(props) {
     <form
       method="POST"
       action="#"
-      onSubmit={e => {
+      onSubmit={(e) => {
         e.preventDefault()
         alert('SIGNED OUT')
       }}

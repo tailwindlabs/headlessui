@@ -87,7 +87,7 @@ export default function Home() {
               ref={popper1}
               className="flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
             >
-              {links.map(link => (
+              {links.map((link) => (
                 <Link key={link}>Portal - {link}</Link>
               ))}
             </Popover.Panel>
@@ -102,7 +102,7 @@ export default function Home() {
               focus
               className="flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
             >
-              {links.map(link => (
+              {links.map((link) => (
                 <Link key={link}>Focus in Portal - {link}</Link>
               ))}
             </Popover.Panel>

@@ -46,7 +46,7 @@ export default function Page(props: { examples: false | ExamplesType[] }) {
 export function Examples(props: { examples: ExamplesType[] }) {
   return (
     <ul>
-      {props.examples.map(example => (
+      {props.examples.map((example) => (
         <li key={example.path}>
           {example.children ? (
             <h3 className="text-xl capitalize">{example.name}</h3>

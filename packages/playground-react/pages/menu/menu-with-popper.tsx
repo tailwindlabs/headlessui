@@ -57,7 +57,7 @@ export default function Home() {
                   Account settings
                 </Menu.Item>
                 <Menu.Item>
-                  {data => (
+                  {(data) => (
                     <a href="#support" className={resolveClass(data)}>
                       Support
                     </a>

@@ -113,13 +113,13 @@ function KeyCaster() {
 
   useEffect(() => {
     function handler(event: KeyboardEvent) {
-      setKeys(current => [
+      setKeys((current) => [
         event.shiftKey && event.key !== 'Shift'
           ? KeyDisplay[`Shift${event.key}`] ?? event.key
           : KeyDisplay[event.key] ?? event.key,
         ...current,
       ])
-      d.setTimeout(() => setKeys(current => tap(current.slice(), clone => clone.pop())), 2000)
+      d.setTimeout(() => setKeys((current) => tap(current.slice(), (clone) => clone.pop())), 2000)
     }
 
     window.addEventListener('keydown', handler, true)
@@ -130,10 +130,7 @@ function KeyCaster() {
 
   return (
     <div className="fixed z-50 px-4 py-2 overflow-hidden text-2xl tracking-wide text-blue-100 bg-blue-800 rounded-md shadow cursor-default pointer-events-none select-none right-4 bottom-4">
-      {keys
-        .slice()
-        .reverse()
-        .join(' ')}
+      {keys.slice().reverse().join(' ')}
     </div>
   )
 }

@@ -30,7 +30,7 @@ export default function Home() {
         <div className="space-y-1">
           <Listbox
             value={active}
-            onChange={value => {
+            onChange={(value) => {
               console.log('value:', value)
               setActivePerson(value)
             }}
@@ -63,7 +63,7 @@ export default function Home() {
 
               <div className="absolute w-full mt-1 bg-white rounded-md shadow-lg">
                 <Listbox.Options className="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
-                  {people.map(name => (
+                  {people.map((name) => (
                     <Listbox.Option
                       key={name}
                       value={name}

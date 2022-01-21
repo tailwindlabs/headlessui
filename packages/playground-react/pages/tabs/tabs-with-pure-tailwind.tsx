@@ -74,7 +74,7 @@ export default function Home() {
         </Tab.List>
 
         <Tab.Panels className="mt-4">
-          {tabs.map(tab => (
+          {tabs.map((tab) => (
             <Tab.Panel className="bg-white rounded-lg p-4 shadow" key={tab.name}>
               {tab.content}
             </Tab.Panel>
