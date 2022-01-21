@@ -39,6 +39,11 @@ enum ListboxStates {
   Closed,
 }
 
+enum ActiveOptionTrigger {
+  mouse,
+  auto,
+}
+
 type ListboxOptionDataRef = MutableRefObject<{
   textValue?: string
   disabled: boolean
@@ -59,6 +64,7 @@ interface StateDefinition {
   options: { id: string; dataRef: ListboxOptionDataRef }[]
   searchQuery: string
   activeOptionIndex: number | null
+  activeOptionTrigger: ActiveOptionTrigger
 }
 
 enum ActionTypes {
@@ -81,8 +87,17 @@ type Actions =
   | { type: ActionTypes.OpenListbox }
   | { type: ActionTypes.SetDisabled; disabled: boolean }
   | { type: ActionTypes.SetOrientation; orientation: StateDefinition['orientation'] }
-  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
-  | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
+  | ({ type: ActionTypes.GoToOption } & (
+      | {
+          focus: Focus.Specific
+          id: string
+          trigger: ActiveOptionTrigger
+        }
+      | {
+          focus: Exclude<Focus, Focus.Specific>
+          trigger?: undefined
+        }
+    ))
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef }
@@ -124,7 +139,12 @@ let reducers: {
     })
 
     if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) return state
-    return { ...state, searchQuery: '', activeOptionIndex }
+    return {
+      ...state,
+      searchQuery: '',
+      activeOptionIndex,
+      activeOptionTrigger: action.trigger ?? ActiveOptionTrigger.auto,
+    }
   },
   [ActionTypes.Search]: (state, action) => {
     if (state.disabled) return state
@@ -241,6 +261,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
     options: [],
     searchQuery: '',
     activeOptionIndex: null,
+    activeOptionTrigger: ActiveOptionTrigger.auto,
   } as StateDefinition)
   let [{ listboxState, propsRef, optionsRef, buttonRef }, dispatch] = reducerBag
 
@@ -653,13 +674,19 @@ function Option<
   useIsoMorphicEffect(() => {
     if (state.listboxState !== ListboxStates.Open) return
     if (!selected) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+    dispatch({
+      type: ActionTypes.GoToOption,
+      focus: Focus.Specific,
+      id,
+      trigger: ActiveOptionTrigger.auto,
+    })
     document.getElementById(id)?.focus?.()
   }, [state.listboxState])
 
   useIsoMorphicEffect(() => {
     if (state.listboxState !== ListboxStates.Open) return
     if (!active) return
+    if (state.activeOptionTrigger === ActiveOptionTrigger.mouse) return
     let d = disposables()
     d.nextFrame(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     return d.dispose
@@ -677,13 +704,23 @@ function Option<
 
   let handleFocus = useCallback(() => {
     if (disabled) return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+    dispatch({
+      type: ActionTypes.GoToOption,
+      focus: Focus.Specific,
+      id,
+      trigger: ActiveOptionTrigger.auto,
+    })
   }, [disabled, id, dispatch])
 
   let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+    dispatch({
+      type: ActionTypes.GoToOption,
+      focus: Focus.Specific,
+      id,
+      trigger: ActiveOptionTrigger.mouse,
+    })
   }, [disabled, active, id, dispatch])
 
   let handleLeave = useCallback(() => {
