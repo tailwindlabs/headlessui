@@ -364,10 +364,14 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, activeOptionIndex, dispatch])
 
-  let propsWeControl = {
-    onPointerLeave: handleLeave,
-    onMouseLeave: handleLeave,
-  }
+  // TODO: This is super hacky and shouldnt be done this way but it works for non-fragments
+  let propsWeControl =
+    props.as !== undefined
+      ? {
+          onPointerLeave: handleLeave,
+          onMouseLeave: handleLeave,
+        }
+      : {}
 
   return (
     <ComboboxActions.Provider value={actionsBag}>
