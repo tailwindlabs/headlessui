@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "scripts": {
     "prebuild": "yarn workspace @headlessui/react build",
-    "dev": "next dev",
+    "dev:headlessui": "yarn workspace @headlessui/react watch",
+    "dev:next": "next dev",
+    "dev": "npm-run-all -p dev:*",
     "build": "next build",
     "start": "next start"
   },
