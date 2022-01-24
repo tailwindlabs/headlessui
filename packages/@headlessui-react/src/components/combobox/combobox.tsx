@@ -126,7 +126,10 @@ let reducers: {
       resolveItems: () => state.options,
       resolveActiveIndex: () => state.activeOptionIndex,
       resolveId: item => item.id,
-      resolveDisabled: item => item.dataRef.current.disabled,
+      resolveDisabled: item => {
+        let el = document.getElementById(item.id)!
+        return item.dataRef.current.disabled || el.hasAttribute('hidden')
+      },
     })
 
     if (state.activeOptionIndex === activeOptionIndex) return state
@@ -217,10 +220,8 @@ interface ComboboxRenderPropArg {
   activeIndex: number | null
 }
 
-type ComboboxPropsWeControl = 'onPointerLeave' | 'onMouseLeave' | 'value' | 'onChange'
-
 export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
-  props: Props<TTag, ComboboxRenderPropArg, ComboboxPropsWeControl> & {
+  props: Props<TTag, ComboboxRenderPropArg> & {
     value: TType
     onChange(value: TType): void
     onSearch?(value: string): void
@@ -358,18 +359,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   // Ensure that we update the inputRef if the value changes
   useIsoMorphicEffect(syncInputValue, [syncInputValue])
 
-  let handleLeave = useCallback(() => {
-    if (disabled) return
-    if (activeOptionIndex === null) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-  }, [disabled, activeOptionIndex, dispatch])
-
-  // TODO: This is super hacky and does not work with fragments
-  let propsWeControl = {
-    onPointerLeave: handleLeave,
-    onMouseLeave: handleLeave,
-  }
-
   return (
     <ComboboxActions.Provider value={actionsBag}>
       <ComboboxContext.Provider value={reducerBag}>
@@ -380,10 +369,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
           })}
         >
           {render({
-            props: {
-              ...passThroughProps,
-              ...propsWeControl,
-            },
+            props: passThroughProps,
             slot,
             defaultTag: DEFAULT_COMBOBOX_TAG,
             name: 'Combobox',
@@ -404,6 +390,7 @@ interface InputRenderPropArg {
 type InputPropsWeControl =
   | 'id'
   | 'role'
+  | 'type'
   | 'aria-labelledby'
   | 'aria-expanded'
   | 'aria-activedescendant'
@@ -502,18 +489,21 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     [d, dispatch, state, actions]
   )
 
-  let handleOnChange = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
-    dispatch({ type: ActionTypes.OpenCombobox })
+  let handleChange = useCallback(
+    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+      dispatch({ type: ActionTypes.OpenCombobox })
 
-    let onSearch = state.propsRef.current.onSearch
-    let value = (event.target as HTMLInputElement).value
+      let onSearch = state.propsRef.current.onSearch
+      let value = (event.target as HTMLInputElement).value
 
-    if (onSearch) {
-      onSearch(value)
-    } else {
-      dispatch({ type: ActionTypes.Search, value: value })
-    }
-  }, [])
+      if (onSearch) {
+        onSearch(value)
+      } else {
+        dispatch({ type: ActionTypes.Search, value })
+      }
+    },
+    [dispatch, state]
+  )
 
   // TODO: Verify this. The spec says that, for the input/combobox, the lebel is the labelling element when present
   // Otherwise it's the ID of the non-label element
@@ -526,19 +516,20 @@ let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DE
     () => ({ open: state.comboboxState === ComboboxStates.Open, disabled: state.disabled }),
     [state]
   )
+
   let propsWeControl = {
     ref: inputRef,
     id,
     role: 'combobox',
-    'aria-controls':
-      state.comboboxState === ComboboxStates.Open ? state.optionsRef.current?.id : undefined,
+    type: 'text',
+    'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
-    onChange: handleOnChange,
+    onChange: handleChange,
   }
 
   return render({
@@ -566,16 +557,66 @@ type ButtonPropsWeControl =
   | 'aria-labelledby'
   | 'disabled'
   | 'onClick'
+  | 'onKeyDown'
 
 let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
   let [state, dispatch] = useComboboxContext([Combobox.name, Button.name].join('.'))
+  let actions = useComboboxActions()
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
   let id = `headlessui-combobox-button-${useId()}`
   let d = useDisposables()
+
+  let handleKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLUListElement>) => {
+      switch (event.key) {
+        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+
+        case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
+          event.preventDefault()
+          event.stopPropagation()
+          if (state.comboboxState === ComboboxStates.Closed) {
+            dispatch({ type: ActionTypes.OpenCombobox })
+            // TODO: We can't do this outside next frame because the options aren't rendered yet
+            // But doing this in next frame results in a flicker because the dom mutations are async here
+            // Basically:
+            // Sync -> no option list yet
+            // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
+
+            // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
+            d.nextFrame(() => {
+              if (!state.propsRef.current.value) {
+                dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
+              }
+            })
+          }
+          return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+
+        case match(state.orientation, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+          event.preventDefault()
+          event.stopPropagation()
+          if (state.comboboxState === ComboboxStates.Closed) {
+            dispatch({ type: ActionTypes.OpenCombobox })
+            d.nextFrame(() => {
+              if (!state.propsRef.current.value) {
+                dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
+              }
+            })
+          }
+          return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+
+        case Keys.Escape:
+          event.preventDefault()
+          event.stopPropagation()
+          dispatch({ type: ActionTypes.CloseCombobox })
+          return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+      }
+    },
+    [d, dispatch, state, actions]
+  )
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
@@ -608,12 +649,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     type: useResolveButtonType(props, state.buttonRef),
     tabIndex: -1,
     'aria-haspopup': true,
-    'aria-controls':
-      state.comboboxState === ComboboxStates.Open ? state.optionsRef.current?.id : undefined,
+    'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onClick: handleClick,
+    onKeyDown: handleKeyDown,
   }
 
   return render({
@@ -680,7 +721,7 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLUListElement>
 ) {
-  let [state] = useComboboxContext([Combobox.name, Options.name].join('.'))
+  let [state, dispatch] = useComboboxContext([Combobox.name, Options.name].join('.'))
   let optionsRef = useSyncRefs(state.optionsRef, ref)
 
   let id = `headlessui-combobox-options-${useId()}`
@@ -699,6 +740,12 @@ let Options = forwardRefWithAs(function Options<
     state.buttonRef.current,
   ])
 
+  let handleLeave = useCallback(() => {
+    if (state.comboboxState !== ComboboxStates.Open) return
+    if (state.activeOptionIndex === null) return
+    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
+  }, [state, dispatch])
+
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: state.comboboxState === ComboboxStates.Open }),
     [state]
@@ -711,6 +758,8 @@ let Options = forwardRefWithAs(function Options<
     role: 'listbox',
     id,
     ref: optionsRef,
+    onPointerLeave: handleLeave,
+    onMouseLeave: handleLeave,
   }
   let passthroughProps = props
 
@@ -761,7 +810,6 @@ function Option<
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
   let selected = state.propsRef.current.value === value
-
   let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value })
 
   useIsoMorphicEffect(() => {

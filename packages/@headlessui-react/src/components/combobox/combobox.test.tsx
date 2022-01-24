@@ -27,10 +27,10 @@ import {
   assertComboboxLabelLinkedWithCombobox,
   assertNoActiveComboboxOption,
   assertNoSelectedComboboxOption,
-  getCombobox,
+  getComboboxInput,
   getComboboxButton,
   getComboboxButtons,
-  getComboboxes,
+  getComboboxInputs,
   getComboboxOptions,
   getComboboxLabel,
   ComboboxState,
@@ -69,7 +69,7 @@ describe('safeguards', () => {
     'should be possible to render a Combobox without crashing',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -95,7 +95,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             {({ open }) => (
               <>
                 <Combobox.Input />
@@ -173,7 +173,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Label using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Label>{JSON.stringify}</Combobox.Label>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
@@ -211,7 +211,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Label using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Label as="p">{JSON.stringify}</Combobox.Label>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
@@ -246,7 +246,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Button using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button>{JSON.stringify}</Combobox.Button>
             <Combobox.Options>
@@ -279,7 +279,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Button using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button as="div" role="button">
               {JSON.stringify}
@@ -314,7 +314,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Button and a Combobox.Label and see them linked together',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Label>Label</Combobox.Label>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
@@ -409,7 +409,7 @@ describe('Rendering', () => {
       'should be possible to render Combobox.Options using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -438,13 +438,13 @@ describe('Rendering', () => {
           state: ComboboxState.Visible,
           textContent: JSON.stringify({ open: true }),
         })
-        assertActiveElement(getCombobox())
+        assertActiveElement(getComboboxInput())
       })
     )
 
     it('should be possible to always render the Combobox.Options if we provide it a `static` prop', () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options static>
@@ -456,12 +456,12 @@ describe('Rendering', () => {
       )
 
       // Let's verify that the Combobox is already there
-      expect(getCombobox()).not.toBe(null)
+      expect(getComboboxInput()).not.toBe(null)
     })
 
     it('should be possible to use a different render strategy for the Combobox.Options', async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options unmount={false}>
@@ -486,7 +486,7 @@ describe('Rendering', () => {
       'should be possible to render a Combobox.Option using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -519,7 +519,7 @@ describe('Rendering', () => {
     function Example({ hide = false }) {
       return (
         <>
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -565,7 +565,7 @@ describe('Rendering composition', () => {
     'should be possible to conditionally render classNames (aka className can be a function?!)',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -603,7 +603,7 @@ describe('Rendering composition', () => {
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
       // Double check that nothing is active
-      assertNoActiveComboboxOption(getCombobox())
+      assertNoActiveComboboxOption(getComboboxInput())
 
       // Make the first option active
       await press(Keys.ArrowDown)
@@ -641,7 +641,7 @@ describe('Rendering composition', () => {
     'should be possible to swap the Combobox option with a button for example',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -689,7 +689,7 @@ describe('Composition', () => {
     suppressConsoleLogs(async () => {
       let orderFn = jest.fn()
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Debug name="Combobox" fn={orderFn} />
@@ -741,444 +741,13 @@ describe('Composition', () => {
 })
 
 describe('Keyboard interactions', () => {
-  fdescribe('`Enter` key', () => {
-    // TODO: Remove test?
-    it(
-      'should be possible to open the combobox with Enter',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option, { selected: false }))
-
-        assertNoActiveComboboxOption()
-        assertNoSelectedComboboxOption()
-      })
-    )
-
-    it(
-      'should not be possible to open the combobox with Enter when the button is disabled',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Try to open the combobox
-        await press(Keys.Enter)
-
-        // Verify it is still closed
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-      })
-    )
-
-    it(
-      'should be possible to open the combobox with Enter, and focus the selected option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value="b" onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second combobox option is active (because it is already selected)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should be possible to open the combobox with Enter, and focus the selected option (when using the `hidden` render strategy)',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value="b" onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options unmount={false}>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleHidden,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleHidden })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        let options = getComboboxOptions()
-
-        // Hover over Option A
-        await mouseMove(options[0])
-
-        // Verify that Option A is active
-        assertActiveComboboxOption(options[0])
-
-        // Verify that Option B is still selected
-        assertComboboxOption(options[1], { selected: true })
-
-        // Close/Hide the combobox
-        await press(Keys.Escape)
-
-        // Re-open the combobox
-        await click(getComboboxButton())
-
-        // Verify we have combobox options
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second combobox option is active (because it is already selected)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should be possible to open the combobox with Enter, and focus the selected option (with a list of objects)',
-      suppressConsoleLogs(async () => {
-        let myOptions = [
-          { id: 'a', name: 'Option A' },
-          { id: 'b', name: 'Option B' },
-          { id: 'c', name: 'Option C' },
-        ]
-        let selectedOption = myOptions[1]
-        render(
-          <Combobox value={selectedOption} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              {myOptions.map(myOption => (
-                <Combobox.Option key={myOption.id} value={myOption}>
-                  {myOption.name}
-                </Combobox.Option>
-              ))}
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second combobox option is active (because it is already selected)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should have no active combobox option when there are no combobox options at all',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options />
-          </Combobox>
-        )
-
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-        assertComboboxList({ state: ComboboxState.Visible })
-        assertActiveElement(getCombobox())
-
-        assertNoActiveComboboxOption()
-      })
-    )
-
-    it(
-      'should focus the first non disabled combobox option when opening with Enter',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-
-        let options = getComboboxOptions()
-
-        // Verify that the first non-disabled combobox option is active
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should focus the first non disabled combobox option when opening with Enter (jump over multiple disabled ones)',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-
-        let options = getComboboxOptions()
-
-        // Verify that the first non-disabled combobox option is active
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should have no active combobox option upon Enter key press, when there are no non-disabled combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Enter)
-
-        assertNoActiveComboboxOption()
-      })
-    )
-
-    it(
-      'should be possible to close the combobox with Enter when there is no active comboboxoption',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-
-        // Close combobox
-        await press(Keys.Enter)
-
-        // Verify it is closed
-        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Verify the button is focused again
-        assertActiveElement(getComboboxButton())
-      })
-    )
-
-    it(
-      'should be possible to close the combobox with Enter and choose the active combobox option',
-      suppressConsoleLogs(async () => {
-        let handleChange = jest.fn()
-
-        function Example() {
-          let [value, setValue] = useState<string | undefined>(undefined)
-
-          return (
-            <Combobox
-              value={value}
-              onChange={value => {
-                setValue(value)
-                handleChange(value)
-              }}
-              onSearch={NOOP}
-            >
+  describe('Button', () => {
+    describe('`Enter` key', () => {
+      it(
+        'should be possible to open the combobox with Enter',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
               <Combobox.Input />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
@@ -1188,296 +757,1240 @@ describe('Keyboard interactions', () => {
               </Combobox.Options>
             </Combobox>
           )
-        }
 
-        render(<Example />)
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Enter)
+
+          // Verify we moved focus to the input field
+          assertActiveElement(getComboboxInput())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option, { selected: false }))
+
+          assertNoActiveComboboxOption()
+          assertNoSelectedComboboxOption()
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      )
 
-        // Open combobox
-        await click(getComboboxButton())
+      it(
+        'should not be possible to open the combobox with Enter when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
 
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
-        // Activate the first combobox option
-        let options = getComboboxOptions()
-        await mouseMove(options[0])
+          // Try to focus the button
+          getComboboxButton()?.focus()
 
-        // Choose option, and close combobox
-        await press(Keys.Enter)
+          // Try to open the combobox
+          await press(Keys.Enter)
 
-        // Verify it is closed
-        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        })
+      )
 
-        // Verify we got the change event
-        expect(handleChange).toHaveBeenCalledTimes(1)
-        expect(handleChange).toHaveBeenCalledWith('a')
+      it(
+        'should be possible to open the combobox with Enter, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
 
-        // Verify the button is focused again
-        assertActiveElement(getComboboxButton())
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
-        // Open combobox again
-        await click(getComboboxButton())
+          // Focus the button
+          getComboboxButton()?.focus()
 
-        // Verify the active option is the previously selected one
-        assertActiveComboboxOption(getComboboxOptions()[0])
-      })
-    )
+          // Open combobox
+          await press(Keys.Enter)
+
+          // Verify we moved focus to the input field
+          assertActiveElement(getComboboxInput())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with Enter, and focus the selected option (when using the `hidden` render strategy)',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options unmount={false}>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleHidden,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleHidden })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Enter)
+
+          // Verify we moved focus to the input field
+          assertActiveElement(getComboboxInput())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          let options = getComboboxOptions()
+
+          // Hover over Option A
+          await mouseMove(options[0])
+
+          // Verify that Option A is active
+          assertActiveComboboxOption(options[0])
+
+          // Verify that Option B is still selected
+          assertComboboxOption(options[1], { selected: true })
+
+          // Close/Hide the combobox
+          await press(Keys.Escape)
+
+          // Re-open the combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with Enter, and focus the selected option (with a list of objects)',
+        suppressConsoleLogs(async () => {
+          let myOptions = [
+            { id: 'a', name: 'Option A' },
+            { id: 'b', name: 'Option B' },
+            { id: 'c', name: 'Option C' },
+          ]
+          let selectedOption = myOptions[1]
+          render(
+            <Combobox value={selectedOption} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                {myOptions.map(myOption => (
+                  <Combobox.Option key={myOption.id} value={myOption}>
+                    {myOption.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Enter)
+
+          // Verify we moved focus to the input field
+          assertActiveElement(getComboboxInput())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Enter)
+
+          // Verify we moved focus to the input field
+          assertActiveElement(getComboboxInput())
+
+          assertComboboxList({ state: ComboboxState.Visible })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    describe('`Space` key', () => {
+      it(
+        'should be possible to open the combobox with Space',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Space)
+
+          // Verify we moved focus to the input field
+          assertActiveElement(getComboboxInput())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with Space when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.Space)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with Space, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({
+            state: ComboboxState.InvisibleUnmounted,
+          })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Space)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({
+            state: ComboboxState.InvisibleUnmounted,
+          })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Space)
+          assertComboboxList({ state: ComboboxState.Visible })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should have no active combobox option upon Space key press, when there are no non-disabled combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({
+            state: ComboboxState.InvisibleUnmounted,
+          })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.Space)
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    describe('`Escape` key', () => {
+      it(
+        'should be possible to close an open combobox with Escape',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // Verify it is closed
+          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Verify the button is focused again
+          assertActiveElement(getComboboxInput())
+        })
+      )
+    })
+
+    describe('`ArrowDown` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowDown',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowDown)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // Verify that the first combobox option is active
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowDown when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowDown)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowDown, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowDown)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowDown)
+          assertComboboxList({ state: ComboboxState.Visible })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    describe('`ArrowRight` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowRight',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowRight)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // Verify that the first combobox option is active
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowRight when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowRight)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowRight, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowRight)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowRight)
+          assertComboboxList({ state: ComboboxState.Visible, orientation: 'horizontal' })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    describe('`ArrowUp` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowUp and the last option should be active',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // ! ALERT: The LAST option should now be active
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowUp and the last option should be active when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowUp)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowUp, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+          assertComboboxList({ state: ComboboxState.Visible })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertActiveComboboxOption(options[0])
+        })
+      )
+    })
+
+    describe('`ArrowLeft` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowLeft and the last option should be active',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // ! ALERT: The LAST option should now be active
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowLeft and the last option should be active when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowLeft, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+          assertComboboxList({ state: ComboboxState.Visible, orientation: 'horizontal' })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should be possible to use ArrowLeft to navigate the combobox options and jump to the first non-disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the button
+          getComboboxButton()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertActiveComboboxOption(options[0])
+        })
+      )
+    })
   })
 
-  // TODO: The space key is not "special" for the combobox so can these go away?
-  describe('`Space` key', () => {
-    it(
-      'should be possible to open the combobox with Space',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
+  describe('Input', () => {
+    describe('`Enter` key', () => {
+      it(
+        'should be possible to close the combobox with Enter and choose the active combobox option',
+        suppressConsoleLogs(async () => {
+          let handleChange = jest.fn()
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
 
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertNoActiveComboboxOption()
-      })
-    )
-
-    it(
-      'should not be possible to open the combobox with Space when the button is disabled',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Try to open the combobox
-        await press(Keys.Space)
-
-        // Verify it is still closed
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-      })
-    )
-
-    it(
-      'should be possible to open the combobox with Space, and focus the selected option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value="b" onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({
-          state: ComboboxState.InvisibleUnmounted,
-        })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second combobox option is active (because it is already selected)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should have no active combobox option when there are no combobox options at all',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options />
-          </Combobox>
-        )
-
-        assertComboboxList({
-          state: ComboboxState.InvisibleUnmounted,
-        })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-        assertComboboxList({ state: ComboboxState.Visible })
-        assertActiveElement(getCombobox())
-
-        assertNoActiveComboboxOption()
-      })
-    )
-
-    it(
-      'should have no active combobox option upon Space key press, when there are no non-disabled combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({
-          state: ComboboxState.InvisibleUnmounted,
-        })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        assertNoActiveComboboxOption()
-      })
-    )
-  })
-
-  describe('`Escape` key', () => {
-    it(
-      'should be possible to close an open combobox with Escape',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Close combobox
-        await press(Keys.Escape)
-
-        // Verify it is closed
-        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Verify the button is focused again
-        assertActiveElement(getCombobox())
-      })
-    )
-  })
-
-  describe('`Tab` key', () => {
-    it(
-      'pressing Tab should select the active item and move to the next DOM node',
-      suppressConsoleLogs(async () => {
-        function Example() {
-          return (
-            <>
-              <input id="before-combobox" />
-              <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+            return (
+              <Combobox
+                value={value}
+                onChange={value => {
+                  setValue(value)
+                  handleChange(value)
+                }}
+                onSearch={NOOP}
+              >
                 <Combobox.Input />
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
@@ -1486,1560 +1999,1976 @@ describe('Keyboard interactions', () => {
                   <Combobox.Option value="c">Option C</Combobox.Option>
                 </Combobox.Options>
               </Combobox>
-              <input id="after-combobox" />
-            </>
-          )
-        }
+            )
+          }
 
-        render(<Example />)
+          render(<Example />)
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+
+          // Activate the first combobox option
+          let options = getComboboxOptions()
+          await mouseMove(options[0])
+
+          // Choose option, and close combobox
+          await press(Keys.Enter)
+
+          // Verify it is closed
+          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Verify we got the change event
+          expect(handleChange).toHaveBeenCalledTimes(1)
+          expect(handleChange).toHaveBeenCalledWith('a')
+
+          // Verify the button is focused again
+          assertActiveElement(getComboboxInput())
+
+          // Open combobox again
+          await click(getComboboxButton())
+
+          // Verify the active option is the previously selected one
+          assertActiveComboboxOption(getComboboxOptions()[0])
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      )
+    })
 
-        // Open combobox
-        await click(getComboboxButton())
+    describe('`Tab` key', () => {
+      it(
+        'pressing Tab should select the active item and move to the next DOM node',
+        suppressConsoleLogs(async () => {
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
 
-        // Select the 2nd option
-        await press(Keys.ArrowDown)
-        await press(Keys.ArrowDown)
+            return (
+              <>
+                <input id="before-combobox" />
+                <Combobox value={value} onChange={setValue} onSearch={NOOP}>
+                  <Combobox.Input />
+                  <Combobox.Button>Trigger</Combobox.Button>
+                  <Combobox.Options>
+                    <Combobox.Option value="a">Option A</Combobox.Option>
+                    <Combobox.Option value="b">Option B</Combobox.Option>
+                    <Combobox.Option value="c">Option C</Combobox.Option>
+                  </Combobox.Options>
+                </Combobox>
+                <input id="after-combobox" />
+              </>
+            )
+          }
 
-        // Tab to the next DOM node
-        await press(Keys.Tab)
+          render(<Example />)
 
-        // Verify it is closed
-        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
-        // That the selected value was the highlighted one
-        // TODO: The value of the input versus the value of the Combobox versus the text content of an option can all be different so we need to test this more abstractly
-        expect(getCombobox()?.value).toBe('b')
+          // Open combobox
+          await click(getComboboxButton())
 
-        // And focus has moved to the next element
-        assertActiveElement(document.querySelector('#after-combobox'))
-      })
-    )
+          // Select the 2nd option
+          await press(Keys.ArrowDown)
+          await press(Keys.ArrowDown)
 
-    it(
-      'pressing Shift+Tab should select the active item and move to the previous DOM node',
-      suppressConsoleLogs(async () => {
-        function Example() {
-          return (
-            <>
-              <input id="before-combobox" />
-              <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          // Tab to the next DOM node
+          await press(Keys.Tab)
+
+          // Verify it is closed
+          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // That the selected value was the highlighted one
+          expect(getComboboxInput()?.value).toBe('b')
+
+          // And focus has moved to the next element
+          assertActiveElement(document.querySelector('#after-combobox'))
+        })
+      )
+
+      it(
+        'pressing Shift+Tab should select the active item and move to the previous DOM node',
+        suppressConsoleLogs(async () => {
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
+
+            return (
+              <>
+                <input id="before-combobox" />
+                <Combobox value={value} onChange={setValue} onSearch={NOOP}>
+                  <Combobox.Input />
+                  <Combobox.Button>Trigger</Combobox.Button>
+                  <Combobox.Options>
+                    <Combobox.Option value="a">Option A</Combobox.Option>
+                    <Combobox.Option value="b">Option B</Combobox.Option>
+                    <Combobox.Option value="c">Option C</Combobox.Option>
+                  </Combobox.Options>
+                </Combobox>
+                <input id="after-combobox" />
+              </>
+            )
+          }
+
+          render(<Example />)
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Select the 2nd option
+          await press(Keys.ArrowDown)
+          await press(Keys.ArrowDown)
+
+          // Tab to the next DOM node
+          await press(shift(Keys.Tab))
+
+          // Verify it is closed
+          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // That the selected value was the highlighted one
+          expect(getComboboxInput()?.value).toBe('b')
+
+          // And focus has moved to the next element
+          assertActiveElement(document.querySelector('#before-combobox'))
+        })
+      )
+    })
+
+    describe('`ArrowDown` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowDown',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowDown)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // Verify that the first combobox option is active
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowDown when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowDown)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowDown, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowDown)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowDown)
+          assertComboboxList({ state: ComboboxState.Visible })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should be possible to use ArrowDown to navigate the combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+
+          // We should be able to go down once
+          await press(Keys.ArrowDown)
+          assertActiveComboboxOption(options[0])
+
+          // We should be able to go down again
+          await press(Keys.ArrowDown)
+          assertActiveComboboxOption(options[1])
+
+          // We should be able to go down again
+          await press(Keys.ArrowDown)
+          assertActiveComboboxOption(options[2])
+
+          // We should NOT be able to go down again (because last option). Current implementation won't go around.
+          await press(Keys.ArrowDown)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to use ArrowDown to navigate the combobox options and skip the first disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+
+          // We should be able to go down once
+          await press(Keys.ArrowDown)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should be possible to use ArrowDown to navigate the combobox options and jump to the first non-disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+
+          // Open combobox
+          await press(Keys.ArrowDown)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+    })
+
+    describe('`ArrowRight` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowRight',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowRight)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // Verify that the first combobox option is active
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowRight when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowRight)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowRight, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowRight)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowRight)
+          assertComboboxList({ state: ComboboxState.Visible, orientation: 'horizontal' })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should be possible to use ArrowRight to navigate the combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+
+          // We should be able to go down once
+          await press(Keys.ArrowRight)
+          assertActiveComboboxOption(options[0])
+
+          // We should be able to go down again
+          await press(Keys.ArrowRight)
+          assertActiveComboboxOption(options[1])
+
+          // We should be able to go down again
+          await press(Keys.ArrowRight)
+          assertActiveComboboxOption(options[2])
+
+          // We should NOT be able to go down again (because last option). Current implementation won't go around.
+          await press(Keys.ArrowRight)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to use ArrowRight to navigate the combobox options and skip the first disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+
+          // We should be able to go down once
+          await press(Keys.ArrowRight)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should be possible to use ArrowRight to navigate the combobox options and jump to the first non-disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+
+          // Open combobox
+          await press(Keys.ArrowRight)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+    })
+
+    describe('`ArrowUp` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowUp and the last option should be active',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // ! ALERT: The LAST option should now be active
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowUp and the last option should be active when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowUp)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowUp, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+          assertComboboxList({ state: ComboboxState.Visible })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertActiveComboboxOption(options[0])
+        })
+      )
+
+      it(
+        'should not be possible to navigate up or down if there is only a single non-disabled option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertNoActiveComboboxOption()
+
+          // Going up or down should select the single available option
+          await press(Keys.ArrowUp)
+
+          // We should not be able to go up (because those are disabled)
+          await press(Keys.ArrowUp)
+          assertActiveComboboxOption(options[2])
+
+          // We should not be able to go down (because this is the last option)
+          await press(Keys.ArrowDown)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to use ArrowUp to navigate the combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertActiveComboboxOption(options[2])
+
+          // We should be able to go down once
+          await press(Keys.ArrowUp)
+          assertActiveComboboxOption(options[1])
+
+          // We should be able to go down again
+          await press(Keys.ArrowUp)
+          assertActiveComboboxOption(options[0])
+
+          // We should NOT be able to go up again (because first option). Current implementation won't go around.
+          await press(Keys.ArrowUp)
+          assertActiveComboboxOption(options[0])
+        })
+      )
+    })
+
+    describe('`ArrowLeft` key', () => {
+      it(
+        'should be possible to open the combobox with ArrowLeft and the last option should be active',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+
+          // ! ALERT: The LAST option should now be active
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should not be possible to open the combobox with ArrowLeft and the last option should be active when the button is disabled',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Try to open the combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify it is still closed
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+        })
+      )
+
+      it(
+        'should be possible to open the combobox with ArrowLeft, and focus the selected option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="b" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+            orientation: 'horizontal',
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+
+          // Verify that the second combobox option is active (because it is already selected)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should have no active combobox option when there are no combobox options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options />
+            </Combobox>
+          )
+
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+          assertComboboxList({ state: ComboboxState.Visible, orientation: 'horizontal' })
+          assertActiveElement(getComboboxInput())
+
+          assertNoActiveComboboxOption()
+        })
+      )
+
+      it(
+        'should be possible to use ArrowLeft to navigate the combobox options and jump to the first non-disabled one',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP} horizontal>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted, orientation: 'horizontal' })
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowLeft)
+
+          // Verify we have combobox options
+          let options = getComboboxOptions()
+          expect(options).toHaveLength(3)
+          options.forEach(option => assertComboboxOption(option))
+          assertActiveComboboxOption(options[0])
+        })
+      )
+    })
+
+    describe('`End` key', () => {
+      it(
+        'should be possible to use the End key to go to the last combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          let options = getComboboxOptions()
+
+          // We should have no option selected
+          assertNoActiveComboboxOption()
+
+          // We should be able to go to the last option
+          await press(Keys.End)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to use the End key to go to the last non disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          let options = getComboboxOptions()
+
+          // We should have no option selected
+          assertNoActiveComboboxOption()
+
+          // We should be able to go to the last non-disabled option
+          await press(Keys.End)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should be possible to use the End key to go to the first combobox option if that is the only non-disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.End)
+
+          let options = getComboboxOptions()
+          assertActiveComboboxOption(options[0])
+        })
+      )
+
+      it(
+        'should have no active combobox option upon End key press, when there are no non-disabled combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.End)
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    describe('`PageDown` key', () => {
+      it(
+        'should be possible to use the PageDown key to go to the last combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          let options = getComboboxOptions()
+
+          // We should be on the first option
+          assertNoActiveComboboxOption()
+
+          // We should be able to go to the last option
+          await press(Keys.PageDown)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to use the PageDown key to go to the last non disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Open combobox
+          await press(Keys.Space)
+
+          let options = getComboboxOptions()
+
+          // We should have nothing active
+          assertNoActiveComboboxOption()
+
+          // We should be able to go to the last non-disabled option
+          await press(Keys.PageDown)
+          assertActiveComboboxOption(options[1])
+        })
+      )
+
+      it(
+        'should be possible to use the PageDown key to go to the first combobox option if that is the only non-disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.PageDown)
+
+          let options = getComboboxOptions()
+          assertActiveComboboxOption(options[0])
+        })
+      )
+
+      it(
+        'should have no active combobox option upon PageDown key press, when there are no non-disabled combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.PageDown)
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    describe('`Home` key', () => {
+      it(
+        'should be possible to use the Home key to go to the first combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          let options = getComboboxOptions()
+
+          // We should be on the last option
+          assertActiveComboboxOption(options[2])
+
+          // We should be able to go to the first option
+          await press(Keys.Home)
+          assertActiveComboboxOption(options[0])
+        })
+      )
+
+      it(
+        'should be possible to use the Home key to go to the first non disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+                <Combobox.Option value="d">Option D</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.Home)
+
+          let options = getComboboxOptions()
+
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to use the Home key to go to the last combobox option if that is the only non-disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option value="d">Option D</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.Home)
+
+          let options = getComboboxOptions()
+          assertActiveComboboxOption(options[3])
+        })
+      )
+
+      it(
+        'should have no active combobox option upon Home key press, when there are no non-disabled combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.Home)
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    describe('`PageUp` key', () => {
+      it(
+        'should be possible to use the PageUp key to go to the first combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Focus the input
+          getComboboxInput()?.focus()
+
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          let options = getComboboxOptions()
+
+          // We should be on the last option
+          assertActiveComboboxOption(options[2])
+
+          // We should be able to go to the first option
+          await press(Keys.PageUp)
+          assertActiveComboboxOption(options[0])
+        })
+      )
+
+      it(
+        'should be possible to use the PageUp key to go to the first non disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+                <Combobox.Option value="d">Option D</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.PageUp)
+
+          let options = getComboboxOptions()
+
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to use the PageUp key to go to the last combobox option if that is the only non-disabled combobox option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option value="d">Option D</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.PageUp)
+
+          let options = getComboboxOptions()
+          assertActiveComboboxOption(options[3])
+        })
+      )
+
+      it(
+        'should have no active combobox option upon PageUp key press, when there are no non-disabled combobox options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option disabled value="a">
+                  Option A
+                </Combobox.Option>
+                <Combobox.Option disabled value="b">
+                  Option B
+                </Combobox.Option>
+                <Combobox.Option disabled value="c">
+                  Option C
+                </Combobox.Option>
+                <Combobox.Option disabled value="d">
+                  Option D
+                </Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // We opened via click, we don't have an active option
+          assertNoActiveComboboxOption()
+
+          // We should not be able to go to the end
+          await press(Keys.PageUp)
+
+          assertNoActiveComboboxOption()
+        })
+      )
+    })
+
+    fdescribe('`Any` key aka search', () => {
+      it(
+        'should be possible to type a full word that has a perfect match',
+        suppressConsoleLogs(async () => {
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
+
+            return (
+              <Combobox value={value} onChange={setValue}>
                 <Combobox.Input />
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
-                  <Combobox.Option value="a">Option A</Combobox.Option>
-                  <Combobox.Option value="b">Option B</Combobox.Option>
-                  <Combobox.Option value="c">Option C</Combobox.Option>
+                  <Combobox.Option value="alice">alice</Combobox.Option>
+                  <Combobox.Option value="bob">bob</Combobox.Option>
+                  <Combobox.Option value="charlie">charlie</Combobox.Option>
                 </Combobox.Options>
               </Combobox>
-              <input id="after-combobox" />
-            </>
+            )
+          }
+          render(<Example />)
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify we moved focus to the input field
+          assertActiveElement(getComboboxInput())
+
+          let options = getComboboxOptions()
+
+          // We should be able to go to the second option
+          await type(word('bob'))
+          await press(Keys.Home)
+          assertActiveComboboxOption(options[1])
+
+          // We should be able to go to the first option
+          await type(word('alice'))
+          await press(Keys.Home)
+          assertActiveComboboxOption(options[0])
+
+          // We should be able to go to the last option
+          await type(word('charlie'))
+          await press(Keys.Home)
+          assertActiveComboboxOption(options[2])
+        })
+      )
+
+      fit(
+        'should be possible to type a partial of a word',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
           )
-        }
 
-        render(<Example />)
+          // Focus the input
+          getComboboxInput()?.focus()
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          let options = getComboboxOptions()
+
+          // We should be on the last option
+          assertActiveComboboxOption(options[2])
+
+          // We should be able to go to the second option
+          await type(word('bo'))
+          assertActiveComboboxOption(options[1])
+
+          // We should be able to go to the first option
+          await type(word('ali'))
+          assertActiveComboboxOption(options[0])
+
+          // We should be able to go to the last option
+          await type(word('char'))
+          assertActiveComboboxOption(options[2])
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      )
 
-        // Open combobox
-        await click(getComboboxButton())
+      it(
+        'should be possible to type words with spaces',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">value a</Combobox.Option>
+                <Combobox.Option value="b">value b</Combobox.Option>
+                <Combobox.Option value="c">value c</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
 
-        // Select the 2nd option
-        await press(Keys.ArrowDown)
-        await press(Keys.ArrowDown)
+          // Focus the input
+          getComboboxInput()?.focus()
 
-        // Tab to the next DOM node
-        await press(shift(Keys.Tab))
+          // Open combobox
+          await press(Keys.ArrowUp)
 
-        // Verify it is closed
-        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          let options = getComboboxOptions()
 
-        // That the selected value was the highlighted one
-        // TODO: The value of the input versus the value of the Combobox versus the text content of an option can all be different so we need to test this more abstractly
-        expect(getCombobox()?.value).toBe('b')
+          // We should be on the last option
+          assertActiveComboboxOption(options[2])
 
-        // And focus has moved to the next element
-        assertActiveElement(document.querySelector('#before-combobox'))
-      })
-    )
-  })
+          // We should be able to go to the second option
+          await type(word('value b'))
+          assertActiveComboboxOption(options[1])
 
-  describe('`ArrowDown` key', () => {
-    it(
-      'should be possible to open the combobox with ArrowDown',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
+          // We should be able to go to the first option
+          await type(word('value a'))
+          assertActiveComboboxOption(options[0])
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
+          // We should be able to go to the last option
+          await type(word('value c'))
+          assertActiveComboboxOption(options[2])
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      )
 
-        // Focus the input
-        getCombobox()?.focus()
+      it(
+        'should not be possible to search for a disabled option',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option disabled value="bob">
+                  bob
+                </Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
 
-        // Open combobox
-        await press(Keys.Space)
+          // Focus the input
+          getComboboxInput()?.focus()
 
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
+          // Open combobox
+          await press(Keys.ArrowUp)
+
+          let options = getComboboxOptions()
+
+          // We should be on the last option
+          assertActiveComboboxOption(options[2])
+
+          // We should not be able to go to the disabled option
+          await type(word('bo'))
+
+          // We should still be on the last option
+          assertActiveComboboxOption(options[2])
         })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
+      )
 
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
+      it(
+        'should be possible to search for a word (case insensitive)',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
 
-        // Verify that the first combobox option is active
-        assertNoActiveComboboxOption()
-      })
-    )
+          // Focus the input
+          getComboboxInput()?.focus()
 
-    it(
-      'should not be possible to open the combobox with ArrowDown when the button is disabled',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
+          // Open combobox
+          await press(Keys.ArrowUp)
 
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
+          let options = getComboboxOptions()
+
+          // We should be on the last option
+          assertActiveComboboxOption(options[2])
+
+          // Search for bob in a different casing
+          await type(word('BO'))
+
+          // We should be on `bob`
+          assertActiveComboboxOption(options[1])
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Try to open the combobox
-        await press(Keys.ArrowDown)
-
-        // Verify it is still closed
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-      })
-    )
-
-    it(
-      'should be possible to open the combobox with ArrowDown, and focus the selected option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value="b" onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowDown)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second combobox option is active (because it is already selected)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should have no active combobox option when there are no combobox options at all',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options />
-          </Combobox>
-        )
-
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowDown)
-        assertComboboxList({ state: ComboboxState.Visible })
-        assertActiveElement(getCombobox())
-
-        assertNoActiveComboboxOption()
-      })
-    )
-
-    it(
-      'should be possible to use ArrowDown to navigate the combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertNoActiveComboboxOption()
-
-        // We should be able to go down once
-        await press(Keys.ArrowDown)
-        assertActiveComboboxOption(options[0])
-
-        // We should be able to go down again
-        await press(Keys.ArrowDown)
-        assertActiveComboboxOption(options[1])
-
-        // We should be able to go down again
-        await press(Keys.ArrowDown)
-        assertActiveComboboxOption(options[2])
-
-        // We should NOT be able to go down again (because last option). Current implementation won't go around.
-        await press(Keys.ArrowDown)
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to use ArrowDown to navigate the combobox options and skip the first disabled one',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertNoActiveComboboxOption()
-
-        // We should be able to go down once
-        await press(Keys.ArrowDown)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should be possible to use ArrowDown to navigate the combobox options and jump to the first non-disabled one',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertNoActiveComboboxOption()
-
-        // Open combobox
-        await press(Keys.ArrowDown)
-        assertActiveComboboxOption(options[2])
-      })
-    )
-  })
-
-  describe('`ArrowRight` key', () => {
-    it(
-      'should be possible to use ArrowRight to navigate the combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP} horizontal>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertNoActiveComboboxOption()
-
-        // We should be able to go right once
-        await press(Keys.ArrowRight)
-        assertActiveComboboxOption(options[0])
-
-        // We should be able to go right again
-        await press(Keys.ArrowRight)
-        assertActiveComboboxOption(options[1])
-
-        // We should be able to go right again
-        await press(Keys.ArrowRight)
-        assertActiveComboboxOption(options[2])
-
-        // We should NOT be able to go right again (because last option). Current implementation won't go around.
-        await press(Keys.ArrowRight)
-        assertActiveComboboxOption(options[2])
-      })
-    )
-  })
-
-  describe('`ArrowUp` key', () => {
-    it(
-      'should be possible to open the combobox with ArrowUp and the last option should be active',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-
-        // ! ALERT: The LAST option should now be active
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should not be possible to open the combobox with ArrowUp and the last option should be active when the button is disabled',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP} disabled>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Try to open the combobox
-        await press(Keys.ArrowUp)
-
-        // Verify it is still closed
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-      })
-    )
-
-    it(
-      'should be possible to open the combobox with ArrowUp, and focus the selected option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value="b" onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second combobox option is active (because it is already selected)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should have no active combobox option when there are no combobox options at all',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options />
-          </Combobox>
-        )
-
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-        assertComboboxList({ state: ComboboxState.Visible })
-        assertActiveElement(getCombobox())
-
-        assertNoActiveComboboxOption()
-      })
-    )
-
-    it(
-      'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertActiveComboboxOption(options[0])
-      })
-    )
-
-    it(
-      'should not be possible to navigate up or down if there is only a single non-disabled option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertNoActiveComboboxOption()
-
-        // Going up or down should select the single available option
-        await press(Keys.ArrowUp)
-
-        // We should not be able to go up (because those are disabled)
-        await press(Keys.ArrowUp)
-        assertActiveComboboxOption(options[2])
-
-        // We should not be able to go down (because this is the last option)
-        await press(Keys.ArrowDown)
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to use ArrowUp to navigate the combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertActiveComboboxOption(options[2])
-
-        // We should be able to go down once
-        await press(Keys.ArrowUp)
-        assertActiveComboboxOption(options[1])
-
-        // We should be able to go down again
-        await press(Keys.ArrowUp)
-        assertActiveComboboxOption(options[0])
-
-        // We should NOT be able to go up again (because first option). Current implementation won't go around.
-        await press(Keys.ArrowUp)
-        assertActiveComboboxOption(options[0])
-      })
-    )
-  })
-
-  describe('`ArrowLeft` key', () => {
-    it(
-      'should be possible to use ArrowLeft to navigate the combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP} horizontal>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        assertComboboxButton({
-          state: ComboboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-combobox-button-2' },
-        })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        // Verify it is visible
-        assertComboboxButton({ state: ComboboxState.Visible })
-        assertComboboxList({
-          state: ComboboxState.Visible,
-          attributes: { id: 'headlessui-combobox-options-3' },
-          orientation: 'horizontal',
-        })
-        assertActiveElement(getCombobox())
-        assertComboboxButtonLinkedWithCombobox()
-
-        // Verify we have combobox options
-        let options = getComboboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach(option => assertComboboxOption(option))
-        assertNoActiveComboboxOption()
-
-        // We should be able to go left once
-        await press(Keys.ArrowLeft)
-        assertActiveComboboxOption(options[2])
-
-        // We should be able to go left again
-        await press(Keys.ArrowLeft)
-        assertActiveComboboxOption(options[1])
-
-        // We should be able to go left again
-        await press(Keys.ArrowLeft)
-        assertActiveComboboxOption(options[0])
-
-        // We should NOT be able to go left again (because first option). Current implementation won't go around.
-        await press(Keys.ArrowLeft)
-        assertActiveComboboxOption(options[0])
-      })
-    )
-  })
-
-  describe('`End` key', () => {
-    it(
-      'should be possible to use the End key to go to the last combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        let options = getComboboxOptions()
-
-        // We should have no option selected
-        assertNoActiveComboboxOption()
-
-        // We should be able to go to the last option
-        await press(Keys.End)
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to use the End key to go to the last non disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        let options = getComboboxOptions()
-
-        // We should have no option selected
-        assertNoActiveComboboxOption()
-
-        // We should be able to go to the last non-disabled option
-        await press(Keys.End)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should be possible to use the End key to go to the first combobox option if that is the only non-disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.End)
-
-        let options = getComboboxOptions()
-        assertActiveComboboxOption(options[0])
-      })
-    )
-
-    it(
-      'should have no active combobox option upon End key press, when there are no non-disabled combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.End)
-
-        assertNoActiveComboboxOption()
-      })
-    )
-  })
-
-  describe('`PageDown` key', () => {
-    it(
-      'should be possible to use the PageDown key to go to the last combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        let options = getComboboxOptions()
-
-        // We should be on the first option
-        assertNoActiveComboboxOption()
-
-        // We should be able to go to the last option
-        await press(Keys.PageDown)
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to use the PageDown key to go to the last non disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.Space)
-
-        let options = getComboboxOptions()
-
-        // We should have nothing active
-        assertNoActiveComboboxOption()
-
-        // We should be able to go to the last non-disabled option
-        await press(Keys.PageDown)
-        assertActiveComboboxOption(options[1])
-      })
-    )
-
-    it(
-      'should be possible to use the PageDown key to go to the first combobox option if that is the only non-disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.PageDown)
-
-        let options = getComboboxOptions()
-        assertActiveComboboxOption(options[0])
-      })
-    )
-
-    it(
-      'should have no active combobox option upon PageDown key press, when there are no non-disabled combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.PageDown)
-
-        assertNoActiveComboboxOption()
-      })
-    )
-  })
-
-  describe('`Home` key', () => {
-    it(
-      'should be possible to use the Home key to go to the first combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        let options = getComboboxOptions()
-
-        // We should be on the last option
-        assertActiveComboboxOption(options[2])
-
-        // We should be able to go to the first option
-        await press(Keys.Home)
-        assertActiveComboboxOption(options[0])
-      })
-    )
-
-    it(
-      'should be possible to use the Home key to go to the first non disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-              <Combobox.Option value="d">Option D</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.Home)
-
-        let options = getComboboxOptions()
-
-        // We should be on the first non-disabled option
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to use the Home key to go to the last combobox option if that is the only non-disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option value="d">Option D</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.Home)
-
-        let options = getComboboxOptions()
-        assertActiveComboboxOption(options[3])
-      })
-    )
-
-    it(
-      'should have no active combobox option upon Home key press, when there are no non-disabled combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.Home)
-
-        assertNoActiveComboboxOption()
-      })
-    )
-  })
-
-  describe('`PageUp` key', () => {
-    it(
-      'should be possible to use the PageUp key to go to the first combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={undefined} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">Option A</Combobox.Option>
-              <Combobox.Option value="b">Option B</Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        let options = getComboboxOptions()
-
-        // We should be on the last option
-        assertActiveComboboxOption(options[2])
-
-        // We should be able to go to the first option
-        await press(Keys.PageUp)
-        assertActiveComboboxOption(options[0])
-      })
-    )
-
-    it(
-      'should be possible to use the PageUp key to go to the first non disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option value="c">Option C</Combobox.Option>
-              <Combobox.Option value="d">Option D</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.PageUp)
-
-        let options = getComboboxOptions()
-
-        // We should be on the first non-disabled option
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to use the PageUp key to go to the last combobox option if that is the only non-disabled combobox option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option value="d">Option D</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.PageUp)
-
-        let options = getComboboxOptions()
-        assertActiveComboboxOption(options[3])
-      })
-    )
-
-    it(
-      'should have no active combobox option upon PageUp key press, when there are no non-disabled combobox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option disabled value="a">
-                Option A
-              </Combobox.Option>
-              <Combobox.Option disabled value="b">
-                Option B
-              </Combobox.Option>
-              <Combobox.Option disabled value="c">
-                Option C
-              </Combobox.Option>
-              <Combobox.Option disabled value="d">
-                Option D
-              </Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getComboboxButton())
-
-        // We opened via click, we don't have an active option
-        assertNoActiveComboboxOption()
-
-        // We should not be able to go to the end
-        await press(Keys.PageUp)
-
-        assertNoActiveComboboxOption()
-      })
-    )
-  })
-
-  describe('`Any` key aka search', () => {
-    it(
-      'should be possible to type a full word that has a perfect match',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="alice">alice</Combobox.Option>
-              <Combobox.Option value="bob">bob</Combobox.Option>
-              <Combobox.Option value="charlie">charlie</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Open combobox
-        await click(getCombobox())
-
-        let options = getComboboxOptions()
-
-        // We should be able to go to the second option
-        await type(word('bob'))
-
-        assertActiveComboboxOption(options[1])
-
-        // We should be able to go to the first option
-        await type(word('alice'))
-        assertActiveComboboxOption(options[0])
-
-        // We should be able to go to the last option
-        await type(word('charlie'))
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to type a partial of a word',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="alice">alice</Combobox.Option>
-              <Combobox.Option value="bob">bob</Combobox.Option>
-              <Combobox.Option value="charlie">charlie</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        let options = getComboboxOptions()
-
-        // We should be on the last option
-        assertActiveComboboxOption(options[2])
-
-        // We should be able to go to the second option
-        await type(word('bo'))
-        assertActiveComboboxOption(options[1])
-
-        // We should be able to go to the first option
-        await type(word('ali'))
-        assertActiveComboboxOption(options[0])
-
-        // We should be able to go to the last option
-        await type(word('char'))
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to type words with spaces',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="a">value a</Combobox.Option>
-              <Combobox.Option value="b">value b</Combobox.Option>
-              <Combobox.Option value="c">value c</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        let options = getComboboxOptions()
-
-        // We should be on the last option
-        assertActiveComboboxOption(options[2])
-
-        // We should be able to go to the second option
-        await type(word('value b'))
-        assertActiveComboboxOption(options[1])
-
-        // We should be able to go to the first option
-        await type(word('value a'))
-        assertActiveComboboxOption(options[0])
-
-        // We should be able to go to the last option
-        await type(word('value c'))
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should not be possible to search for a disabled option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="alice">alice</Combobox.Option>
-              <Combobox.Option disabled value="bob">
-                bob
-              </Combobox.Option>
-              <Combobox.Option value="charlie">charlie</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        let options = getComboboxOptions()
-
-        // We should be on the last option
-        assertActiveComboboxOption(options[2])
-
-        // We should not be able to go to the disabled option
-        await type(word('bo'))
-
-        // We should still be on the last option
-        assertActiveComboboxOption(options[2])
-      })
-    )
-
-    it(
-      'should be possible to search for a word (case insensitive)',
-      suppressConsoleLogs(async () => {
-        render(
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="alice">alice</Combobox.Option>
-              <Combobox.Option value="bob">bob</Combobox.Option>
-              <Combobox.Option value="charlie">charlie</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
-
-        // Focus the input
-        getCombobox()?.focus()
-
-        // Open combobox
-        await press(Keys.ArrowUp)
-
-        let options = getComboboxOptions()
-
-        // We should be on the last option
-        assertActiveComboboxOption(options[2])
-
-        // Search for bob in a different casing
-        await type(word('BO'))
-
-        // We should be on `bob`
-        assertActiveComboboxOption(options[1])
-      })
-    )
+      )
+    })
   })
 })
 
@@ -3048,7 +3977,7 @@ describe('Mouse interactions', () => {
     'should focus the Combobox.Button when we click the Combobox.Label',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Label>Label</Combobox.Label>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
@@ -3075,7 +4004,7 @@ describe('Mouse interactions', () => {
     'should not focus the Combobox.Button when we right click the Combobox.Label',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Label>Label</Combobox.Label>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
@@ -3102,7 +4031,7 @@ describe('Mouse interactions', () => {
     'should be possible to open the combobox on click',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3128,7 +4057,7 @@ describe('Mouse interactions', () => {
         state: ComboboxState.Visible,
         attributes: { id: 'headlessui-combobox-options-3' },
       })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
 
       // Verify we have combobox options
@@ -3142,7 +4071,7 @@ describe('Mouse interactions', () => {
     'should not be possible to open the combobox on right click',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3230,7 +4159,7 @@ describe('Mouse interactions', () => {
         state: ComboboxState.Visible,
         attributes: { id: 'headlessui-combobox-options-3' },
       })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
       assertComboboxButtonLinkedWithCombobox()
 
       // Verify we have combobox options
@@ -3247,7 +4176,7 @@ describe('Mouse interactions', () => {
     'should be possible to close a combobox on click',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3277,7 +4206,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we click outside of a closed combobox',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3303,7 +4232,7 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the combobox which should close the combobox',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3317,7 +4246,7 @@ describe('Mouse interactions', () => {
       // Open combobox
       await click(getComboboxButton())
       assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
 
       // Click something that is not related to the combobox
       await click(document.body)
@@ -3335,7 +4264,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <div>
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -3345,7 +4274,7 @@ describe('Mouse interactions', () => {
             </Combobox.Options>
           </Combobox>
 
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -3361,18 +4290,18 @@ describe('Mouse interactions', () => {
 
       // Click the first combobox button
       await click(button1)
-      expect(getComboboxes()).toHaveLength(1) // Only 1 combobox should be visible
+      expect(getComboboxInputs()).toHaveLength(1) // Only 1 combobox should be visible
 
       // Ensure the open combobox is linked to the first button
-      assertComboboxButtonLinkedWithCombobox(button1, getCombobox())
+      assertComboboxButtonLinkedWithCombobox(button1, getComboboxInput())
 
       // Click the second combobox button
       await click(button2)
 
-      expect(getComboboxes()).toHaveLength(1) // Only 1 combobox should be visible
+      expect(getComboboxInputs()).toHaveLength(1) // Only 1 combobox should be visible
 
       // Ensure the open combobox is linked to the second button
-      assertComboboxButtonLinkedWithCombobox(button2, getCombobox())
+      assertComboboxButtonLinkedWithCombobox(button2, getComboboxInput())
     })
   )
 
@@ -3380,7 +4309,7 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the combobox which should close the combobox (even if we press the combobox button)',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3394,7 +4323,7 @@ describe('Mouse interactions', () => {
       // Open combobox
       await click(getComboboxButton())
       assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
 
       // Click the combobox button again
       await click(getComboboxButton())
@@ -3413,7 +4342,7 @@ describe('Mouse interactions', () => {
       let focusFn = jest.fn()
       render(
         <div>
-          <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+          <Combobox value="test" onChange={console.log} onSearch={NOOP}>
             <Combobox.Input />
             <Combobox.Button onFocus={focusFn}>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -3453,7 +4382,7 @@ describe('Mouse interactions', () => {
     'should be possible to hover an option and make it active',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3486,7 +4415,7 @@ describe('Mouse interactions', () => {
     'should make a combobox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3511,7 +4440,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the combobox option is already active',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3542,7 +4471,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the combobox option is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3569,7 +4498,7 @@ describe('Mouse interactions', () => {
     'should not be possible to hover an option that is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3599,7 +4528,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3642,7 +4571,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave a disabled option and be a no-op',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3701,7 +4630,7 @@ describe('Mouse interactions', () => {
       // Open combobox
       await click(getComboboxButton())
       assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
@@ -3756,14 +4685,14 @@ describe('Mouse interactions', () => {
       // Open combobox
       await click(getComboboxButton())
       assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
       // We should be able to click the first option
       await click(options[1])
       assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
       expect(handleChange).toHaveBeenCalledTimes(0)
 
       // Close the combobox
@@ -3781,7 +4710,7 @@ describe('Mouse interactions', () => {
     'should be possible focus a combobox option, so that it becomes active',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3795,7 +4724,7 @@ describe('Mouse interactions', () => {
       // Open combobox
       await click(getComboboxButton())
       assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
@@ -3812,7 +4741,7 @@ describe('Mouse interactions', () => {
     'should not be possible to focus a combobox option which is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value={'test'} onChange={console.log} onSearch={NOOP}>
+        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
           <Combobox.Input />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
@@ -3828,7 +4757,7 @@ describe('Mouse interactions', () => {
       // Open combobox
       await click(getComboboxButton())
       assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getCombobox())
+      assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 

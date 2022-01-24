@@ -233,19 +233,19 @@ export function getComboboxButtons(): HTMLElement[] {
   return Array.from(document.querySelectorAll('button,[role="button"]'))
 }
 
-export function getCombobox(): HTMLInputElement | null {
+export function getComboboxInput(): HTMLInputElement | null {
   return document.querySelector('[role="combobox"]')
 }
 
-export function getComboboxList(): HTMLElement | null {
+export function getCombobox(): HTMLElement | null {
   return document.querySelector('[role="listbox"]')
 }
 
-export function getComboboxes(): HTMLElement[] {
+export function getComboboxInputs(): HTMLElement[] {
   return Array.from(document.querySelectorAll('[role="combobox"]'))
 }
 
-export function getComboboxLists(): HTMLElement[] {
+export function getComboboxes(): HTMLElement[] {
   return Array.from(document.querySelectorAll('[role="listbox"]'))
 }
 
@@ -273,7 +273,7 @@ export function assertCombobox(
     state: ComboboxState
     orientation?: 'horizontal' | 'vertical'
   },
-  combobox = getCombobox()
+  combobox = getComboboxInput()
 ) {
   let { orientation = 'vertical' } = options
 
@@ -331,7 +331,7 @@ export function assertComboboxList(
     state: ComboboxState
     orientation?: 'horizontal' | 'vertical'
   },
-  listbox = getComboboxList()
+  listbox = getCombobox()
 ) {
   let { orientation = 'vertical' } = options
 
@@ -473,7 +473,7 @@ export function assertComboboxLabel(
 
 export function assertComboboxButtonLinkedWithCombobox(
   button = getComboboxButton(),
-  listbox = getComboboxList()
+  listbox = getCombobox()
 ) {
   try {
     if (button === null) return expect(button).not.toBe(null)
@@ -490,7 +490,7 @@ export function assertComboboxButtonLinkedWithCombobox(
 
 export function assertComboboxLabelLinkedWithCombobox(
   label = getComboboxLabel(),
-  combobox = getCombobox()
+  combobox = getComboboxInput()
 ) {
   try {
     if (label === null) return expect(label).not.toBe(null)
@@ -520,7 +520,10 @@ export function assertComboboxButtonLinkedWithComboboxLabel(
   }
 }
 
-export function assertActiveComboboxOption(item: HTMLElement | null, combobox = getCombobox()) {
+export function assertActiveComboboxOption(
+  item: HTMLElement | null,
+  combobox = getComboboxInput()
+) {
   try {
     if (combobox === null) return expect(combobox).not.toBe(null)
     if (item === null) return expect(item).not.toBe(null)
@@ -533,7 +536,7 @@ export function assertActiveComboboxOption(item: HTMLElement | null, combobox = 
   }
 }
 
-export function assertNoActiveComboboxOption(combobox = getCombobox()) {
+export function assertNoActiveComboboxOption(combobox = getComboboxInput()) {
   try {
     if (combobox === null) return expect(combobox).not.toBe(null)
 

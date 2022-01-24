@@ -1,4 +1,7 @@
 import { fireEvent } from '@testing-library/react'
+import { disposables } from '../utils/disposables'
+
+let d = disposables()
 
 function nextFrame(cb: Function): void {
   setImmediate(() =>
@@ -33,7 +36,15 @@ export function shift(event: Partial<KeyboardEvent>) {
 }
 
 export function word(input: string): Partial<KeyboardEvent>[] {
-  return input.split('').map(key => ({ key }))
+  let result = input.split('').map(key => ({ key }))
+
+  d.enqueue(() =>
+    fireEvent.change(document.activeElement!, {
+      target: Object.assign({}, document.activeElement, { value: input }),
+    })
+  )
+
+  return result
 }
 
 let Default = Symbol()
@@ -75,6 +86,9 @@ let order: Record<
     },
     function keypress(element, event) {
       return fireEvent.keyPress(element, event)
+    },
+    function input(element, event) {
+      return fireEvent.input(element, event)
     },
     function keyup(element, event) {
       return fireEvent.keyUp(element, event)
@@ -158,6 +172,8 @@ export async function type(events: Partial<KeyboardEvent>[], element = document.
 
     // We don't want to actually wait in our tests, so let's advance
     jest.runAllTimers()
+
+    await d.workQueue()
 
     await new Promise(nextFrame)
   } catch (err) {
