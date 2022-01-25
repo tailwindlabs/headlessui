@@ -38,11 +38,15 @@ export function shift(event: Partial<KeyboardEvent>) {
 export function word(input: string): Partial<KeyboardEvent>[] {
   let result = input.split('').map(key => ({ key }))
 
-  d.enqueue(() =>
-    fireEvent.change(document.activeElement!, {
-      target: Object.assign({}, document.activeElement, { value: input }),
-    })
-  )
+  d.enqueue(() => {
+    let element = document.activeElement
+
+    if (element instanceof HTMLInputElement) {
+      fireEvent.change(element, {
+        target: Object.assign({}, element, { value: input }),
+      })
+    }
+  })
 
   return result
 }
