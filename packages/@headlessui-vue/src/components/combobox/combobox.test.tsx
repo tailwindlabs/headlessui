@@ -85,7 +85,7 @@ function renderTemplate(input: string | Partial<Parameters<typeof defineComponen
   )
 }
 
-describe('safeguards', () => {
+xdescribe('safeguards', () => {
   it.each([
     ['ComboboxButton', ComboboxButton],
     ['ComboboxLabel', ComboboxLabel],
@@ -127,7 +127,7 @@ describe('safeguards', () => {
   )
 })
 
-describe('Rendering', () => {
+xdescribe('Rendering', () => {
   describe('Combobox', () => {
     it(
       'should be possible to render a Combobox using a render prop',
@@ -703,7 +703,7 @@ describe('Rendering composition', () => {
   )
 })
 
-describe('Composition', () => {
+xdescribe('Composition', () => {
   let OpenClosedWrite = defineComponent({
     props: { open: { type: Boolean } },
     setup(props, { slots }) {
@@ -826,7 +826,7 @@ describe('Composition', () => {
   )
 })
 
-describe('Keyboard interactions', () => {
+xdescribe('Keyboard interactions', () => {
   describe('`Enter` key', () => {
     it(
       'should be possible to open the Combobox with Enter',
@@ -3407,7 +3407,7 @@ describe('Keyboard interactions', () => {
   })
 })
 
-describe('Mouse interactions', () => {
+xdescribe('Mouse interactions', () => {
   it(
     'should focus the ComboboxButton when we click the ComboboxLabel',
     suppressConsoleLogs(async () => {
