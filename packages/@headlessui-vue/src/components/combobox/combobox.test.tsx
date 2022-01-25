@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, h, reactive } from 'vue'
+import { DefineComponent, defineComponent, nextTick, ref, watch, h, reactive } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import {
   Combobox,
@@ -54,7 +54,7 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -63,7 +63,7 @@ function nextFrame() {
   })
 }
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | Partial<DefineComponent>) {
   let defaultComponents = {
     Combobox,
     ComboboxLabel,
