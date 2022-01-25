@@ -1,5 +1,5 @@
 import React, { createElement, useState, useEffect } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { Listbox } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -844,7 +844,7 @@ describe('Keyboard interactions', () => {
       })
     )
 
-    fit(
+    it(
       'should be possible to open the listbox with Enter, and focus the selected option (when using the `hidden` render strategy)',
       suppressConsoleLogs(async () => {
         render(
@@ -857,8 +857,6 @@ describe('Keyboard interactions', () => {
             </Listbox.Options>
           </Listbox>
         )
-
-        screen.debug()
 
         assertListboxButton({
           state: ListboxState.InvisibleHidden,
