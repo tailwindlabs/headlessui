@@ -853,11 +853,22 @@ function Option<
     [dispatch, state.inputRef, disabled, select]
   )
 
+  let handleFocus = useCallback(() => {
+    if (disabled) return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
+    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+  }, [disabled, id, dispatch])
+
   let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [disabled, active, id, dispatch])
+
+  let handleLeave = useCallback(() => {
+    if (disabled) return
+    if (!active) return
+    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
+  }, [disabled, active, dispatch])
 
   let slot = useMemo<OptionRenderPropArg>(() => ({ active, selected, disabled }), [
     active,
@@ -873,8 +884,11 @@ function Option<
     'aria-selected': selected === true ? true : undefined,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
+    onFocus: handleFocus,
     onPointerMove: handleMove,
     onMouseMove: handleMove,
+    onPointerLeave: handleLeave,
+    onMouseLeave: handleLeave,
   }
 
   return match(state.strategy, {

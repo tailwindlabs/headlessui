@@ -35,6 +35,7 @@ import {
   getComboboxLabel,
   ComboboxState,
   getByText,
+  getComboboxes,
 } from '../../test-utils/accessibility-assertions'
 import { Transition } from '../transitions/transition'
 
@@ -1256,6 +1257,10 @@ describe('Keyboard interactions', () => {
           assertActiveElement(getComboboxInput())
           assertComboboxButtonLinkedWithCombobox()
 
+          // Re-focus the button
+          getComboboxButton()?.focus()
+          assertActiveElement(getComboboxButton())
+
           // Close combobox
           await press(Keys.Escape)
 
@@ -1263,7 +1268,7 @@ describe('Keyboard interactions', () => {
           assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
-          // Verify the button is focused again
+          // Verify the input is focused again
           assertActiveElement(getComboboxInput())
         })
       )
@@ -2147,6 +2152,47 @@ describe('Keyboard interactions', () => {
 
           // And focus has moved to the next element
           assertActiveElement(document.querySelector('#before-combobox'))
+        })
+      )
+    })
+
+    describe('`Escape` key', () => {
+      it(
+        'should be possible to close an open combobox with Escape',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // Verify it is closed
+          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Verify the button is focused again
+          assertActiveElement(getComboboxInput())
         })
       )
     })
@@ -3773,7 +3819,7 @@ describe('Keyboard interactions', () => {
       )
     })
 
-    fdescribe('`Any` key aka search', () => {
+    describe('`Any` key aka search', () => {
       it(
         'should be possible to type a full word that has a perfect match',
         suppressConsoleLogs(async () => {
@@ -3819,42 +3865,45 @@ describe('Keyboard interactions', () => {
         })
       )
 
-      fit(
+      it(
         'should be possible to type a partial of a word',
         suppressConsoleLogs(async () => {
-          render(
-            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
-              <Combobox.Input />
-              <Combobox.Button>Trigger</Combobox.Button>
-              <Combobox.Options>
-                <Combobox.Option value="alice">alice</Combobox.Option>
-                <Combobox.Option value="bob">bob</Combobox.Option>
-                <Combobox.Option value="charlie">charlie</Combobox.Option>
-              </Combobox.Options>
-            </Combobox>
-          )
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
 
-          // Focus the input
-          getComboboxInput()?.focus()
+            return (
+              <Combobox value={value} onChange={setValue}>
+                <Combobox.Input />
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="alice">alice</Combobox.Option>
+                  <Combobox.Option value="bob">bob</Combobox.Option>
+                  <Combobox.Option value="charlie">charlie</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            )
+          }
+
+          render(<Example />)
 
           // Open combobox
-          await press(Keys.ArrowUp)
+          await click(getComboboxButton())
 
           let options = getComboboxOptions()
 
-          // We should be on the last option
-          assertActiveComboboxOption(options[2])
-
           // We should be able to go to the second option
           await type(word('bo'))
+          await press(Keys.Home)
           assertActiveComboboxOption(options[1])
 
           // We should be able to go to the first option
           await type(word('ali'))
+          await press(Keys.Home)
           assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await type(word('char'))
+          await press(Keys.Home)
           assertActiveComboboxOption(options[2])
         })
       )
@@ -3862,107 +3911,110 @@ describe('Keyboard interactions', () => {
       it(
         'should be possible to type words with spaces',
         suppressConsoleLogs(async () => {
-          render(
-            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
-              <Combobox.Input />
-              <Combobox.Button>Trigger</Combobox.Button>
-              <Combobox.Options>
-                <Combobox.Option value="a">value a</Combobox.Option>
-                <Combobox.Option value="b">value b</Combobox.Option>
-                <Combobox.Option value="c">value c</Combobox.Option>
-              </Combobox.Options>
-            </Combobox>
-          )
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
 
-          // Focus the input
-          getComboboxInput()?.focus()
+            return (
+              <Combobox value={value} onChange={setValue}>
+                <Combobox.Input />
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="a">value a</Combobox.Option>
+                  <Combobox.Option value="b">value b</Combobox.Option>
+                  <Combobox.Option value="c">value c</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            )
+          }
+
+          render(<Example />)
 
           // Open combobox
-          await press(Keys.ArrowUp)
+          await click(getComboboxButton())
 
           let options = getComboboxOptions()
 
-          // We should be on the last option
-          assertActiveComboboxOption(options[2])
-
           // We should be able to go to the second option
           await type(word('value b'))
+          await press(Keys.Home)
           assertActiveComboboxOption(options[1])
 
           // We should be able to go to the first option
           await type(word('value a'))
+          await press(Keys.Home)
           assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await type(word('value c'))
+          await press(Keys.Home)
           assertActiveComboboxOption(options[2])
         })
       )
 
       it(
-        'should not be possible to search for a disabled option',
+        'should not be possible to search and activate a disabled option',
         suppressConsoleLogs(async () => {
-          render(
-            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
-              <Combobox.Input />
-              <Combobox.Button>Trigger</Combobox.Button>
-              <Combobox.Options>
-                <Combobox.Option value="alice">alice</Combobox.Option>
-                <Combobox.Option disabled value="bob">
-                  bob
-                </Combobox.Option>
-                <Combobox.Option value="charlie">charlie</Combobox.Option>
-              </Combobox.Options>
-            </Combobox>
-          )
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
 
-          // Focus the input
-          getComboboxInput()?.focus()
+            return (
+              <Combobox value={value} onChange={setValue}>
+                <Combobox.Input />
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="alice">alice</Combobox.Option>
+                  <Combobox.Option disabled value="bob">
+                    bob
+                  </Combobox.Option>
+                  <Combobox.Option value="charlie">charlie</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            )
+          }
+
+          render(<Example />)
 
           // Open combobox
-          await press(Keys.ArrowUp)
-
-          let options = getComboboxOptions()
-
-          // We should be on the last option
-          assertActiveComboboxOption(options[2])
+          await click(getComboboxButton())
 
           // We should not be able to go to the disabled option
           await type(word('bo'))
+          await press(Keys.Home)
 
-          // We should still be on the last option
-          assertActiveComboboxOption(options[2])
+          assertNoActiveComboboxOption()
+          assertNoSelectedComboboxOption()
         })
       )
 
       it(
         'should be possible to search for a word (case insensitive)',
         suppressConsoleLogs(async () => {
-          render(
-            <Combobox value="test" onChange={console.log} onSearch={NOOP}>
-              <Combobox.Input />
-              <Combobox.Button>Trigger</Combobox.Button>
-              <Combobox.Options>
-                <Combobox.Option value="alice">alice</Combobox.Option>
-                <Combobox.Option value="bob">bob</Combobox.Option>
-                <Combobox.Option value="charlie">charlie</Combobox.Option>
-              </Combobox.Options>
-            </Combobox>
-          )
+          function Example() {
+            let [value, setValue] = useState<string | undefined>(undefined)
 
-          // Focus the input
-          getComboboxInput()?.focus()
+            return (
+              <Combobox value={value} onChange={setValue}>
+                <Combobox.Input />
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="alice">alice</Combobox.Option>
+                  <Combobox.Option value="bob">bob</Combobox.Option>
+                  <Combobox.Option value="charlie">charlie</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            )
+          }
+
+          render(<Example />)
 
           // Open combobox
-          await press(Keys.ArrowUp)
+          await click(getComboboxButton())
 
           let options = getComboboxOptions()
 
-          // We should be on the last option
-          assertActiveComboboxOption(options[2])
-
           // Search for bob in a different casing
           await type(word('BO'))
+          await press(Keys.Home)
 
           // We should be on `bob`
           assertActiveComboboxOption(options[1])
@@ -3974,7 +4026,7 @@ describe('Keyboard interactions', () => {
 
 describe('Mouse interactions', () => {
   it(
-    'should focus the Combobox.Button when we click the Combobox.Label',
+    'should focus the Combobox.Input when we click the Combobox.Label',
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log} onSearch={NOOP}>
@@ -3996,12 +4048,12 @@ describe('Mouse interactions', () => {
       await click(getComboboxLabel())
 
       // Ensure that the actual button is focused instead
-      assertActiveElement(getComboboxButton())
+      assertActiveElement(getComboboxInput())
     })
   )
 
   it(
-    'should not focus the Combobox.Button when we right click the Combobox.Label',
+    'should not focus the Combobox.Input when we right click the Combobox.Label',
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log} onSearch={NOOP}>
@@ -4254,8 +4306,8 @@ describe('Mouse interactions', () => {
       // Should be closed now
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
-      // Verify the button is focused again
-      assertActiveElement(getComboboxButton())
+      // Verify the input is focused again
+      assertActiveElement(getComboboxInput())
     })
   )
 
@@ -4290,18 +4342,18 @@ describe('Mouse interactions', () => {
 
       // Click the first combobox button
       await click(button1)
-      expect(getComboboxInputs()).toHaveLength(1) // Only 1 combobox should be visible
+      expect(getComboboxes()).toHaveLength(1) // Only 1 combobox should be visible
 
-      // Ensure the open combobox is linked to the first button
-      assertComboboxButtonLinkedWithCombobox(button1, getComboboxInput())
+      // Verify that the first input is focused
+      assertActiveElement(getComboboxInputs()[0])
 
       // Click the second combobox button
       await click(button2)
 
-      expect(getComboboxInputs()).toHaveLength(1) // Only 1 combobox should be visible
+      expect(getComboboxes()).toHaveLength(1) // Only 1 combobox should be visible
 
-      // Ensure the open combobox is linked to the second button
-      assertComboboxButtonLinkedWithCombobox(button2, getComboboxInput())
+      // Verify that the first input is focused
+      assertActiveElement(getComboboxInputs()[1])
     })
   )
 
@@ -4331,8 +4383,8 @@ describe('Mouse interactions', () => {
       // Should be closed now
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
-      // Verify the button is focused again
-      assertActiveElement(getComboboxButton())
+      // Verify the input is focused again
+      assertActiveElement(getComboboxInput())
     })
   )
 
@@ -4343,8 +4395,8 @@ describe('Mouse interactions', () => {
       render(
         <div>
           <Combobox value="test" onChange={console.log} onSearch={NOOP}>
-            <Combobox.Input />
-            <Combobox.Button onFocus={focusFn}>Trigger</Combobox.Button>
+            <Combobox.Input onFocus={focusFn} />
+            <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
               <Combobox.Option value="bob">bob</Combobox.Option>
@@ -4640,8 +4692,8 @@ describe('Mouse interactions', () => {
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('bob')
 
-      // Verify the button is focused again
-      assertActiveElement(getComboboxButton())
+      // Verify the input is focused again
+      assertActiveElement(getComboboxInput())
 
       // Open combobox again
       await click(getComboboxButton())
@@ -4709,17 +4761,23 @@ describe('Mouse interactions', () => {
   it(
     'should be possible focus a combobox option, so that it becomes active',
     suppressConsoleLogs(async () => {
-      render(
-        <Combobox value="test" onChange={console.log} onSearch={NOOP}>
-          <Combobox.Input />
-          <Combobox.Button>Trigger</Combobox.Button>
-          <Combobox.Options>
-            <Combobox.Option value="alice">alice</Combobox.Option>
-            <Combobox.Option value="bob">bob</Combobox.Option>
-            <Combobox.Option value="charlie">charlie</Combobox.Option>
-          </Combobox.Options>
-        </Combobox>
-      )
+      function Example() {
+        let [value, setValue] = useState<string | undefined>(undefined)
+
+        return (
+          <Combobox value={value} onChange={setValue}>
+            <Combobox.Input />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value="alice">alice</Combobox.Option>
+              <Combobox.Option value="bob">bob</Combobox.Option>
+              <Combobox.Option value="charlie">charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+        )
+      }
+
+      render(<Example />)
 
       // Open combobox
       await click(getComboboxButton())
