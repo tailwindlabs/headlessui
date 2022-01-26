@@ -85,9 +85,11 @@ export let Combobox = defineComponent({
   setup(props, { slots, attrs, emit }) {
     let ComboboxState = ref<StateDefinition['ComboboxState']['value']>(ComboboxStates.Closed)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
-    let inputRef = ref<StateDefinition['inputRef']['value']>(null)
-    let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
-    let optionsRef = ref<StateDefinition['optionsRef']['value']>(null)
+    let inputRef = ref<StateDefinition['inputRef']['value']>(null) as StateDefinition['inputRef']
+    let buttonRef = ref<StateDefinition['buttonRef']['value']>(null) as StateDefinition['buttonRef']
+    let optionsRef = ref<StateDefinition['optionsRef']['value']>(
+      null
+    ) as StateDefinition['optionsRef']
     let options = ref<StateDefinition['options']['value']>([])
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
@@ -97,6 +99,7 @@ export let Combobox = defineComponent({
       ComboboxState,
       value,
       orientation: computed(() => (props.horizontal ? 'horizontal' : 'vertical')),
+      inputRef,
       labelRef,
       buttonRef,
       optionsRef,
@@ -348,7 +351,8 @@ export let ComboboxButton = defineComponent({
               }
             })
           }
-          return nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+          nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+          return
 
         case match(api.orientation.value, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
           event.preventDefault()
@@ -361,17 +365,20 @@ export let ComboboxButton = defineComponent({
               }
             })
           }
-          return nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+          nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+          return
 
         case Keys.Escape:
           event.preventDefault()
           event.stopPropagation()
           api.closeCombobox()
-          return nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+          nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+          return
       }
     }
 
     return {
+      api,
       id,
       el: api.buttonRef,
       type: useResolveButtonType(
@@ -429,13 +436,12 @@ export let ComboboxInput = defineComponent({
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        case Keys.Space:
         case Keys.Enter:
           event.preventDefault()
           event.stopPropagation()
+
           api.selectActiveOption()
           api.closeCombobox()
-          nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
           break
 
         case match(api.orientation.value, {
@@ -449,7 +455,7 @@ export let ComboboxInput = defineComponent({
             [ComboboxStates.Closed]: () => {
               api.openCombobox()
               nextTick(() => {
-                if (!api.value) {
+                if (!api.value.value) {
                   api.goToOption(Focus.First)
                 }
               })
@@ -464,7 +470,7 @@ export let ComboboxInput = defineComponent({
             [ComboboxStates.Closed]: () => {
               api.openCombobox()
               nextTick(() => {
-                if (!api.value) {
+                if (!api.value.value) {
                   api.goToOption(Focus.Last)
                 }
               })
@@ -487,12 +493,9 @@ export let ComboboxInput = defineComponent({
           event.preventDefault()
           event.stopPropagation()
           api.closeCombobox()
-          nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
           break
 
         case Keys.Tab:
-          event.preventDefault()
-          event.stopPropagation()
           api.selectActiveOption()
           api.closeCombobox()
           break
