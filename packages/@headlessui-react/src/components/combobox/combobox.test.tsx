@@ -3822,159 +3822,178 @@ describe('Keyboard interactions', () => {
     })
 
     describe('`Any` key aka search', () => {
+      function Example(props: { people: { value: string; name: string; disabled: boolean }[] }) {
+        let [value, setValue] = useState<string | undefined>(undefined)
+        let [query, setQuery] = useState<string>('')
+        let filteredPeople =
+          query === ''
+            ? props.people
+            : props.people.filter(person => person.name.toLowerCase().includes(query.toLowerCase()))
+
+        return (
+          <Combobox value={value} onChange={setValue} onSearch={setQuery}>
+            <Combobox.Input />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              {filteredPeople.map(person => (
+                <Combobox.Option key={person.value} value={person.value} disabled={person.disabled}>
+                  {person.name}
+                </Combobox.Option>
+              ))}
+            </Combobox.Options>
+          </Combobox>
+        )
+      }
+
       it(
         'should be possible to type a full word that has a perfect match',
         suppressConsoleLogs(async () => {
-          function Example() {
-            let [value, setValue] = useState<string | undefined>(undefined)
-
-            return (
-              <Combobox value={value} onChange={setValue}>
-                <Combobox.Input />
-                <Combobox.Button>Trigger</Combobox.Button>
-                <Combobox.Options>
-                  <Combobox.Option value="alice">alice</Combobox.Option>
-                  <Combobox.Option value="bob">bob</Combobox.Option>
-                  <Combobox.Option value="charlie">charlie</Combobox.Option>
-                </Combobox.Options>
-              </Combobox>
-            )
-          }
-          render(<Example />)
+          render(
+            <Example
+              people={[
+                { value: 'alice', name: 'alice', disabled: false },
+                { value: 'bob', name: 'bob', disabled: false },
+                { value: 'charlie', name: 'charlie', disabled: false },
+              ]}
+            />
+          )
 
           // Open combobox
           await click(getComboboxButton())
 
           // Verify we moved focus to the input field
           assertActiveElement(getComboboxInput())
-
-          let options = getComboboxOptions()
+          let options: ReturnType<typeof getComboboxOptions>
 
           // We should be able to go to the second option
           await type(word('bob'))
           await press(Keys.Home)
-          assertActiveComboboxOption(options[1])
+
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('bob')
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go to the first option
           await type(word('alice'))
           await press(Keys.Home)
+
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('alice')
           assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await type(word('charlie'))
           await press(Keys.Home)
-          assertActiveComboboxOption(options[2])
+
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('charlie')
+          assertActiveComboboxOption(options[0])
         })
       )
 
       it(
         'should be possible to type a partial of a word',
         suppressConsoleLogs(async () => {
-          function Example() {
-            let [value, setValue] = useState<string | undefined>(undefined)
-
-            return (
-              <Combobox value={value} onChange={setValue}>
-                <Combobox.Input />
-                <Combobox.Button>Trigger</Combobox.Button>
-                <Combobox.Options>
-                  <Combobox.Option value="alice">alice</Combobox.Option>
-                  <Combobox.Option value="bob">bob</Combobox.Option>
-                  <Combobox.Option value="charlie">charlie</Combobox.Option>
-                </Combobox.Options>
-              </Combobox>
-            )
-          }
-
-          render(<Example />)
+          render(
+            <Example
+              people={[
+                { value: 'alice', name: 'alice', disabled: false },
+                { value: 'bob', name: 'bob', disabled: false },
+                { value: 'charlie', name: 'charlie', disabled: false },
+              ]}
+            />
+          )
 
           // Open combobox
           await click(getComboboxButton())
 
-          let options = getComboboxOptions()
+          let options: ReturnType<typeof getComboboxOptions>
 
           // We should be able to go to the second option
           await type(word('bo'))
           await press(Keys.Home)
-          assertActiveComboboxOption(options[1])
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('bob')
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go to the first option
           await type(word('ali'))
           await press(Keys.Home)
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('alice')
           assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await type(word('char'))
           await press(Keys.Home)
-          assertActiveComboboxOption(options[2])
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('charlie')
+          assertActiveComboboxOption(options[0])
         })
       )
 
       it(
         'should be possible to type words with spaces',
         suppressConsoleLogs(async () => {
-          function Example() {
-            let [value, setValue] = useState<string | undefined>(undefined)
-
-            return (
-              <Combobox value={value} onChange={setValue}>
-                <Combobox.Input />
-                <Combobox.Button>Trigger</Combobox.Button>
-                <Combobox.Options>
-                  <Combobox.Option value="a">value a</Combobox.Option>
-                  <Combobox.Option value="b">value b</Combobox.Option>
-                  <Combobox.Option value="c">value c</Combobox.Option>
-                </Combobox.Options>
-              </Combobox>
-            )
-          }
-
-          render(<Example />)
+          render(
+            <Example
+              people={[
+                { value: 'alice', name: 'alice jones', disabled: false },
+                { value: 'bob', name: 'bob the builder', disabled: false },
+                { value: 'charlie', name: 'charlie bit me', disabled: false },
+              ]}
+            />
+          )
 
           // Open combobox
           await click(getComboboxButton())
 
-          let options = getComboboxOptions()
+          let options: ReturnType<typeof getComboboxOptions>
 
           // We should be able to go to the second option
-          await type(word('value b'))
+          await type(word('bob t'))
           await press(Keys.Home)
-          assertActiveComboboxOption(options[1])
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('bob the builder')
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go to the first option
-          await type(word('value a'))
+          await type(word('alice j'))
           await press(Keys.Home)
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('alice jones')
           assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
-          await type(word('value c'))
+          await type(word('charlie b'))
           await press(Keys.Home)
-          assertActiveComboboxOption(options[2])
+          options = getComboboxOptions()
+          expect(options).toHaveLength(1)
+          expect(options[0]).toHaveTextContent('charlie bit me')
+          assertActiveComboboxOption(options[0])
         })
       )
 
       it(
         'should not be possible to search and activate a disabled option',
         suppressConsoleLogs(async () => {
-          function Example() {
-            let [value, setValue] = useState<string | undefined>(undefined)
-
-            return (
-              <Combobox value={value} onChange={setValue}>
-                <Combobox.Input />
-                <Combobox.Button>Trigger</Combobox.Button>
-                <Combobox.Options>
-                  <Combobox.Option value="alice">alice</Combobox.Option>
-                  <Combobox.Option disabled value="bob">
-                    bob
-                  </Combobox.Option>
-                  <Combobox.Option value="charlie">charlie</Combobox.Option>
-                </Combobox.Options>
-              </Combobox>
-            )
-          }
-
-          render(<Example />)
+          render(
+            <Example
+              people={[
+                { value: 'alice', name: 'alice', disabled: false },
+                { value: 'bob', name: 'bob', disabled: true },
+                { value: 'charlie', name: 'charlie', disabled: false },
+              ]}
+            />
+          )
 
           // Open combobox
           await click(getComboboxButton())
@@ -3985,41 +4004,6 @@ describe('Keyboard interactions', () => {
 
           assertNoActiveComboboxOption()
           assertNoSelectedComboboxOption()
-        })
-      )
-
-      it(
-        'should be possible to search for a word (case insensitive)',
-        suppressConsoleLogs(async () => {
-          function Example() {
-            let [value, setValue] = useState<string | undefined>(undefined)
-
-            return (
-              <Combobox value={value} onChange={setValue}>
-                <Combobox.Input />
-                <Combobox.Button>Trigger</Combobox.Button>
-                <Combobox.Options>
-                  <Combobox.Option value="alice">alice</Combobox.Option>
-                  <Combobox.Option value="bob">bob</Combobox.Option>
-                  <Combobox.Option value="charlie">charlie</Combobox.Option>
-                </Combobox.Options>
-              </Combobox>
-            )
-          }
-
-          render(<Example />)
-
-          // Open combobox
-          await click(getComboboxButton())
-
-          let options = getComboboxOptions()
-
-          // Search for bob in a different casing
-          await type(word('BO'))
-          await press(Keys.Home)
-
-          // We should be on `bob`
-          assertActiveComboboxOption(options[1])
         })
       )
     })

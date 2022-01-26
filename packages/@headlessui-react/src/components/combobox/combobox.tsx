@@ -50,12 +50,11 @@ interface StateDefinition {
   comboboxState: ComboboxStates
 
   orientation: 'horizontal' | 'vertical'
-  strategy: 'hide' | 'custom'
 
   propsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
-    onSearch?(value: unknown): void
+    onSearch(value: unknown): void
   }>
   inputPropsRef: MutableRefObject<{
     displayValue?(item: unknown): string
@@ -67,7 +66,6 @@ interface StateDefinition {
 
   disabled: boolean
   options: { id: string; dataRef: ComboboxOptionDataRef }[]
-  searchQuery: string
   activeOptionIndex: number | null
 }
 
@@ -79,7 +77,6 @@ enum ActionTypes {
   SetOrientation,
 
   GoToOption,
-  Search,
 
   RegisterOption,
   UnregisterOption,
@@ -92,7 +89,6 @@ type Actions =
   | { type: ActionTypes.SetOrientation; orientation: StateDefinition['orientation'] }
   | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
   | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
-  | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef }
   | { type: ActionTypes.UnregisterOption; id: string }
 
@@ -136,11 +132,6 @@ let reducers: {
 
     if (state.activeOptionIndex === activeOptionIndex) return state
     return { ...state, activeOptionIndex }
-  },
-  [ActionTypes.Search](state, action) {
-    if (state.disabled) return state
-
-    return { ...state, searchQuery: action.value.toLocaleLowerCase() }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
     let orderMap = Array.from(
@@ -231,7 +222,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   > & {
     value: TType
     onChange(value: TType): void
-    onSearch?(value: string): void
+    onSearch(value: string): void
     disabled?: boolean
     horizontal?: boolean
   }
@@ -260,7 +251,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
         displayValue: undefined,
       },
     },
-    strategy: onSearch === undefined ? 'hide' : 'custom',
     labelRef: createRef(),
     inputRef: createRef(),
     buttonRef: createRef(),
@@ -268,7 +258,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     disabled,
     orientation,
     options: [],
-    searchQuery: '',
     activeOptionIndex: null,
   } as StateDefinition)
   let [
@@ -525,14 +514,8 @@ let Input = forwardRefWithAs(function Input<
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
       dispatch({ type: ActionTypes.OpenCombobox })
 
-      let onSearch = state.propsRef.current.onSearch
       let value = (event.target as HTMLInputElement).value
-
-      if (onSearch) {
-        onSearch(value)
-      } else {
-        dispatch({ type: ActionTypes.Search, value })
-      }
+      state.propsRef.current.onSearch(value)
     },
     [dispatch, state]
   )
@@ -923,40 +906,11 @@ function Option<
     onMouseLeave: handleLeave,
   }
 
-  return match(state.strategy, {
-    hide() {
-      let visible = (() => {
-        let searchQuery = state.searchQuery
-
-        if (
-          searchQuery !== undefined &&
-          searchQuery !== '' &&
-          !bag.current.textValue?.toLocaleLowerCase().includes(searchQuery)
-        ) {
-          return false
-        }
-
-        return true
-      })()
-
-      return render({
-        props: { ...passthroughProps, ...propsWeControl, unmount: false },
-        slot,
-        defaultTag: DEFAULT_OPTION_TAG,
-        name: 'Combobox.Option',
-        features: Features.RenderStrategy,
-        visible,
-      })
-    },
-
-    custom() {
-      return render({
-        props: { ...passthroughProps, ...propsWeControl },
-        slot,
-        defaultTag: DEFAULT_OPTION_TAG,
-        name: 'Combobox.Option',
-      })
-    },
+  return render({
+    props: { ...passthroughProps, ...propsWeControl },
+    slot,
+    defaultTag: DEFAULT_OPTION_TAG,
+    name: 'Combobox.Option',
   })
 }
 
