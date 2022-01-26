@@ -45,6 +45,7 @@ type StateDefinition = {
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComboboxOptionDataRef }[]>
   activeOptionIndex: Ref<number | null>
+  displayValue: Ref<((item: unknown) => string) | null>
 
   // State mutators
   closeCombobox(): void
@@ -55,6 +56,7 @@ type StateDefinition = {
   registerOption(id: string, dataRef: ComboboxOptionDataRef): void
   unregisterOption(id: string): void
   select(value: unknown): void
+  onSearch(value: string): void
 }
 
 let ComboboxContext = Symbol('ComboboxContext') as InjectionKey<StateDefinition>
@@ -106,6 +108,7 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       activeOptionIndex,
+      displayValue: ref(null),
       onSearch(value: string) {
         emit('search', value)
       },
@@ -411,6 +414,7 @@ export let ComboboxInput = defineComponent({
     as: { type: [Object, String], default: 'input' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
+    displayValue: { type: Function },
   },
   render() {
     let api = useComboboxContext('ComboboxInput')
