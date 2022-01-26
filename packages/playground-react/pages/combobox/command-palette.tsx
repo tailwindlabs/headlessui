@@ -37,6 +37,7 @@ export default function Home() {
       <div className="w-full max-w-lg mx-auto">
         <div className="space-y-1">
           <Combobox
+            as="div"
             value={activePerson}
             onChange={setActivePerson}
             onSearch={setQuery}

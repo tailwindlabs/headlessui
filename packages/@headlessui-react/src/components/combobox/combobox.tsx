@@ -221,7 +221,11 @@ interface ComboboxRenderPropArg {
 }
 
 export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
-  props: Props<TTag, ComboboxRenderPropArg> & {
+  props: Props<
+    TTag,
+    ComboboxRenderPropArg,
+    'value' | 'onChange' | 'onSearch' | 'displayValue' | 'displayValue' | 'disabled' | 'horizontal'
+  > & {
     value: TType
     onChange(value: TType): void
     onSearch?(value: string): void
