@@ -169,6 +169,70 @@ describe('Rendering', () => {
     )
   })
 
+  fdescribe('Combobox.Input', () => {
+    it(
+      'selecting an option puts the value into Combobox.Input when displayValue is not provided',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState(undefined)
+
+          return (
+            <Combobox value={value} onChange={setValue} onSearch={NOOP}>
+              <Combobox.Input />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        await click(getComboboxButton())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        await click(getComboboxOptions()[1])
+
+        expect(getComboboxInput()).toHaveValue('b')
+      })
+    )
+
+    it(
+      'selecting an option puts the display value into Combobox.Input when displayValue is provided',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState(undefined)
+
+          return (
+            <Combobox value={value} onChange={setValue} onSearch={NOOP}>
+              <Combobox.Input displayValue={(str?: string) => str?.toUpperCase() ?? ''} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        await click(getComboboxButton())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        await click(getComboboxOptions()[1])
+
+        expect(getComboboxInput()).toHaveValue('B')
+      })
+    )
+  })
+
   describe('Combobox.Label', () => {
     it(
       'should be possible to render a Combobox.Label using a render prop',
