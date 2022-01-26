@@ -32,10 +32,12 @@ export default function Home() {
     setPerson(everybody[Math.floor(Math.random() * everybody.length)])
   }, [])
 
-  let people =
-    query === ''
-      ? everybody
-      : everybody.filter(person => person.name.toLowerCase().includes(query.toLowerCase()))
+  let people = (query === ''
+    ? everybody
+    : everybody.filter(person => person.name.toLowerCase().includes(query.toLowerCase()))
+  )
+    .slice()
+    .sort((a, z) => a.name.split(' ')[1][0].localeCompare(z.name.split(' ')[1][0]))
 
   let groups = people.reduce((groups, person) => {
     let lastNameLetter = person.name.split(' ')[1][0]
