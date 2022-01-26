@@ -4257,14 +4257,6 @@ describe('Keyboard interactions', () => {
                 )
           })
 
-          onUpdated(() => {
-            console.log('Updated', {
-              query: query.value,
-              value: value.value,
-              filteredPeople: filteredPeople.value,
-            })
-          })
-
           return {
             value,
             query,
@@ -4274,7 +4266,7 @@ describe('Keyboard interactions', () => {
         },
       })
 
-      fit(
+      it(
         'should be possible to type a full word that has a perfect match',
         suppressConsoleLogs(async () => {
           renderTemplate({

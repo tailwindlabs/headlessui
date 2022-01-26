@@ -106,6 +106,9 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       activeOptionIndex,
+      onSearch(value: string) {
+        emit('search', value)
+      },
       closeCombobox() {
         if (props.disabled) return
         if (ComboboxState.value === ComboboxStates.Closed) return
@@ -224,7 +227,13 @@ export let Combobox = defineComponent({
     return () => {
       let slot = { open: ComboboxState.value === ComboboxStates.Open, disabled: props.disabled }
       return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
+        props: omit(props, [
+          'modelValue',
+          'onUpdate:modelValue',
+          'onSearch',
+          'disabled',
+          'horizontal',
+        ]),
         slot,
         slots,
         attrs,
@@ -413,6 +422,7 @@ export let ComboboxInput = defineComponent({
       'aria-orientation': api.orientation.value,
       id: this.id,
       onKeydown: this.handleKeyDown,
+      onChange: this.handleChange,
       role: 'combobox',
       tabIndex: 0,
       ref: 'el',
@@ -502,7 +512,14 @@ export let ComboboxInput = defineComponent({
       }
     }
 
-    return { id, el: api.inputRef, handleKeyDown }
+    function handleChange(event: KeyboardEvent) {
+      api.openCombobox()
+
+      let value = (event.target as HTMLInputElement).value
+      api.onSearch(value)
+    }
+
+    return { id, el: api.inputRef, handleKeyDown, handleChange }
   },
 })
 
