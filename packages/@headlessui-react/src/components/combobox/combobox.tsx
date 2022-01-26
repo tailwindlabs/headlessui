@@ -56,6 +56,8 @@ interface StateDefinition {
     value: unknown
     onChange(value: unknown): void
     onSearch?(value: unknown): void
+  }>
+  inputPropsRef: MutableRefObject<{
     displayValue?(item: unknown): string
   }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
@@ -225,12 +227,11 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   props: Props<
     TTag,
     ComboboxRenderPropArg<TType>,
-    'value' | 'onChange' | 'onSearch' | 'displayValue' | 'displayValue' | 'disabled' | 'horizontal'
+    'value' | 'onChange' | 'onSearch' | 'disabled' | 'horizontal'
   > & {
     value: TType
     onChange(value: TType): void
     onSearch?(value: string): void
-    displayValue?(item: TType): string
     disabled?: boolean
     horizontal?: boolean
   }
@@ -241,7 +242,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     disabled = false,
     horizontal = false,
     onSearch,
-    displayValue,
     ...passThroughProps
   } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
@@ -253,7 +253,11 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
         value,
         onChange,
         onSearch,
-        displayValue,
+      },
+    },
+    inputPropsRef: {
+      current: {
+        displayValue: undefined,
       },
     },
     strategy: onSearch === undefined ? 'hide' : 'custom',
@@ -268,7 +272,16 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     activeOptionIndex: null,
   } as StateDefinition)
   let [
-    { comboboxState, options, activeOptionIndex, propsRef, optionsRef, inputRef, buttonRef },
+    {
+      comboboxState,
+      options,
+      activeOptionIndex,
+      propsRef,
+      inputPropsRef,
+      optionsRef,
+      inputRef,
+      buttonRef,
+    },
     dispatch,
   ] = reducerBag
 
@@ -281,9 +294,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   useIsoMorphicEffect(() => {
     propsRef.current.onSearch = onSearch
   }, [onSearch, propsRef])
-  useIsoMorphicEffect(() => {
-    propsRef.current.displayValue = displayValue
-  }, [displayValue, propsRef])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetOrientation, orientation }), [
@@ -324,14 +334,14 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   let syncInputValue = useCallback(() => {
     if (!inputRef.current) return
     if (value === undefined) return
-    let displayValue = propsRef.current.displayValue
+    let displayValue = inputPropsRef.current.displayValue
 
     if (typeof displayValue === 'function') {
       inputRef.current.value = displayValue(value)
     } else if (typeof value === 'string') {
       inputRef.current.value = value
     }
-  }, [value, inputRef])
+  }, [value, inputRef, inputPropsRef])
 
   let selectOption = useCallback(
     (id: string) => {
@@ -404,19 +414,32 @@ type InputPropsWeControl =
   | 'aria-expanded'
   | 'aria-activedescendant'
   | 'onKeyDown'
+  | 'displayValue'
 
-let Input = forwardRefWithAs(function Input<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
-  props: Props<TTag, InputRenderPropArg, InputPropsWeControl>,
+let Input = forwardRefWithAs(function Input<
+  TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
+  // TODO: One day we will be able to infer this type from the generic in Combobox itself.
+  // But today is not that day..
+  TType = Parameters<typeof Combobox>[0]['value']
+>(
+  props: Props<TTag, InputRenderPropArg, InputPropsWeControl> & {
+    displayValue?(item: TType): string
+  },
   ref: Ref<HTMLInputElement>
 ) {
-  let { value, onChange, ...passThroughProps } = props
+  let { value, onChange, displayValue, ...passThroughProps } = props
   let [state, dispatch] = useComboboxContext([Combobox.name, Input.name].join('.'))
   let actions = useComboboxActions()
 
   let inputRef = useSyncRefs(state.inputRef, ref)
+  let inputPropsRef = state.inputPropsRef
 
   let id = `headlessui-combobox-input-${useId()}`
   let d = useDisposables()
+
+  useIsoMorphicEffect(() => {
+    inputPropsRef.current.displayValue = displayValue
+  }, [displayValue, inputPropsRef])
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLUListElement>) => {
