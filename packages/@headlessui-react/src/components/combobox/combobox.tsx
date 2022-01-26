@@ -218,7 +218,7 @@ interface ComboboxRenderPropArg<T> {
   open: boolean
   disabled: boolean
   activeIndex: number | null
-  activeItem: T | null
+  activeOption: T | null
 }
 
 export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
@@ -313,7 +313,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
       open: comboboxState === ComboboxStates.Open,
       disabled,
       activeIndex: activeOptionIndex,
-      activeItem:
+      activeOption:
         activeOptionIndex === null
           ? null
           : (options[activeOptionIndex].dataRef.current.value as TType),
