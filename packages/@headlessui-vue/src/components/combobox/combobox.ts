@@ -132,7 +132,10 @@ export let Combobox = defineComponent({
             resolveItems: () => options.value,
             resolveActiveIndex: () => activeOptionIndex.value,
             resolveId: option => option.id,
-            resolveDisabled: option => option.dataRef.disabled,
+            resolveDisabled: option => {
+              let el = document.getElementById(option.id)!
+              return option.dataRef.disabled || el.hasAttribute('hidden')
+            },
           }
         )
 
