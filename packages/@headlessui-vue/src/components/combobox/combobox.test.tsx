@@ -227,7 +227,7 @@ describe('Rendering', () => {
     )
   })
 
-  xdescribe('Combobox.Input', () => {
+  describe('Combobox.Input', () => {
     it(
       'selecting an option puts the value into Combobox.Input when displayValue is not provided',
       suppressConsoleLogs(async () => {
@@ -265,7 +265,7 @@ describe('Rendering', () => {
         const Example = defineComponent({
           template: html`
             <Combobox v-model="value" @search="setSearch">
-              <ComboboxInput :displayValue="(str: string) => str?.toUpperCase() ?? ''" />
+              <ComboboxInput :displayValue="(str) => str?.toUpperCase() ?? ''" />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption value="a">Option A</ComboboxOption>
@@ -2250,7 +2250,7 @@ describe('Keyboard interactions', () => {
     })
   })
 
-  fdescribe('Input', () => {
+  describe('Input', () => {
     describe('`Enter` key', () => {
       it(
         'should be possible to close the combobox with Enter and choose the active combobox option',
@@ -4219,7 +4219,7 @@ describe('Keyboard interactions', () => {
       )
     })
 
-    fdescribe('`Any` key aka search', () => {
+    describe('`Any` key aka search', () => {
       const Example = defineComponent({
         components: getDefaultComponents(),
 
