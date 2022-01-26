@@ -60,7 +60,7 @@ export default function Home() {
 
             <div className="relative">
               <span className="relative inline-flex flex-row rounded-md overflow-hidden shadow-sm border">
-                <Combobox.Input className="outline-none px-3 py-1" />
+                <Combobox.Input className="border-none outline-none px-3 py-1" />
                 <Combobox.Button className="focus:outline-none px-1 bg-gray-100 cursor-default border-l text-indigo-600">
                   <span className="flex items-center px-2 pointer-events-none">
                     <svg

@@ -43,19 +43,19 @@ export default function Home() {
             displayValue={item => item?.name}
             className="bg-white w-full shadow-sm border border-black/5 bg-clip-padding rounded overflow-hidden"
           >
-            {({ activeIndex }) => {
+            {({ activeIndex, open }) => {
               return (
                 <div className="flex flex-col w-full">
                   <Combobox.Input
-                    className={({ open }) => {
-                      return classNames(
-                        'outline-none px-3 py-1 border-y-0 border-b bg-none border-gray-200 rounded-none w-full',
-                        activePerson && !open ? 'border-transparent' : 'border-gray-200'
-                      )
-                    }}
+                    className="border-none outline-none px-3 py-1 rounded-none w-full"
                     placeholder="Search users…"
                   />
-                  <div className="flex">
+                  <div
+                    className={classNames(
+                      'flex border-t',
+                      activePerson && !open ? 'border-transparent' : 'border-gray-200'
+                    )}
+                  >
                     <Combobox.Options className="flex-1 py-1 overflow-auto text-base leading-6 shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
                       {people.map(person => (
                         <Combobox.Option

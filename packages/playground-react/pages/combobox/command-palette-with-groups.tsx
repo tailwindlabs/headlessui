@@ -60,12 +60,7 @@ export default function Home() {
               return (
                 <div className="flex flex-col w-full">
                   <Combobox.Input
-                    className={({ open }) => {
-                      return classNames(
-                        'outline-none px-3 py-1 border-y-0 border-b bg-none border-gray-200 rounded-none w-full',
-                        activePerson && !open ? 'border-transparent' : 'border-gray-200'
-                      )
-                    }}
+                    className="border-none outline-none px-3 py-1 bg-none rounded-none w-full"
                     placeholder="Search users…"
                   />
                   <div className="flex">
