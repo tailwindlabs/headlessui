@@ -548,15 +548,17 @@ describe('Rendering', () => {
     // Focus the first item
     await press(Keys.ArrowDown)
 
-    // Verify that the first menu item is active
+    // Verify that the first combobox option is active
     assertActiveComboboxOption(options[0])
 
     await press(Keys.ArrowDown)
-    // Verify that the second menu item is active
+
+    // Verify that the second combobox option is active
     assertActiveComboboxOption(options[1])
 
     await press(Keys.ArrowDown)
-    // Verify that the third menu item is active
+
+    // Verify that the third combobox option is active
     assertActiveComboboxOption(options[2])
   })
 })
