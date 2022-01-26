@@ -39,12 +39,12 @@ export default function Home() {
           <Combobox
             as="div"
             value={activePerson}
-            onChange={setActivePerson}
+            onChange={person => setActivePerson(person)}
             onSearch={setQuery}
             displayValue={item => item?.name}
             className="bg-white w-full shadow-sm border border-black/5 bg-clip-padding rounded overflow-hidden"
           >
-            {({ activeIndex, open }) => {
+            {({ activeItem, open }) => {
               return (
                 <div className="flex flex-col w-full">
                   <Combobox.Input
@@ -109,17 +109,15 @@ export default function Home() {
 
                     {people.length === 0 ? (
                       <div className="text-center w-full py-4">No person selected</div>
-                    ) : activeIndex === null || people[activeIndex] === undefined ? null : (
+                    ) : activeItem === null ? null : (
                       <div className="border-l">
                         <div className="flex flex-col">
                           <div className="p-8 text-center">
                             <img
-                              src={people[activeIndex].img}
+                              src={activeItem.img}
                               className="w-16 h-16 rounded-full overflow-hidden inline-block mb-4"
                             />
-                            <div className="text-gray-900 font-bold">
-                              {people[activeIndex].name}
-                            </div>
+                            <div className="text-gray-900 font-bold">{activeItem.name}</div>
                             <div className="text-gray-700">Obviously cool person</div>
                           </div>
                         </div>

@@ -214,16 +214,17 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 let DEFAULT_COMBOBOX_TAG = Fragment
-interface ComboboxRenderPropArg {
+interface ComboboxRenderPropArg<T> {
   open: boolean
   disabled: boolean
   activeIndex: number | null
+  activeItem: T | null
 }
 
 export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
   props: Props<
     TTag,
-    ComboboxRenderPropArg,
+    ComboboxRenderPropArg<TType>,
     'value' | 'onChange' | 'onSearch' | 'displayValue' | 'displayValue' | 'disabled' | 'horizontal'
   > & {
     value: TType
@@ -307,13 +308,17 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     }
   })
 
-  let slot = useMemo<ComboboxRenderPropArg>(
+  let slot = useMemo<ComboboxRenderPropArg<TType>>(
     () => ({
       open: comboboxState === ComboboxStates.Open,
       disabled,
       activeIndex: activeOptionIndex,
+      activeItem:
+        activeOptionIndex === null
+          ? null
+          : (options[activeOptionIndex].dataRef.current.value as TType),
     }),
-    [comboboxState, disabled, activeOptionIndex]
+    [comboboxState, disabled, options, activeOptionIndex]
   )
 
   let syncInputValue = useCallback(() => {
