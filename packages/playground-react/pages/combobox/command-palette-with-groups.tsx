@@ -54,15 +54,15 @@ export default function Home() {
             value={activePerson}
             onChange={person => setPerson(person)}
             onSearch={setQuery}
-            displayValue={item => item?.name}
             className="bg-white w-full shadow-sm border border-black/5 bg-clip-padding rounded overflow-hidden"
           >
-            {({ activeItem }) => {
+            {({ activeOption }) => {
               return (
                 <div className="flex flex-col w-full">
                   <Combobox.Input
                     className="border-none outline-none px-3 py-1 bg-none rounded-none w-full"
                     placeholder="Search users…"
+                    displayValue={item => item?.name}
                   />
                   <div className="flex">
                     <Combobox.Options className="flex-1 overflow-auto text-base leading-6 shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
@@ -124,15 +124,15 @@ export default function Home() {
 
                     {people.length === 0 ? (
                       <div className="text-center w-full py-4">No person selected</div>
-                    ) : activeItem === null ? null : (
+                    ) : activeOption === null ? null : (
                       <div className="border-l">
                         <div className="flex flex-col">
                           <div className="p-8 text-center">
                             <img
-                              src={activeItem.img}
+                              src={activeOption.img}
                               className="w-16 h-16 rounded-full overflow-hidden inline-block mb-4"
                             />
-                            <div className="text-gray-900 font-bold">{activeItem.name}</div>
+                            <div className="text-gray-900 font-bold">{activeOption.name}</div>
                             <div className="text-gray-700">Obviously cool person</div>
                           </div>
                         </div>
