@@ -238,12 +238,7 @@ describe('Rendering', () => {
           setup: () => ({ value: ref(null) }),
         })
 
-        renderTemplate({
-          components: { Example },
-          template: html`
-            <Example />
-          `,
-        })
+        renderTemplate(Example)
 
         await click(getComboboxButton())
 
@@ -273,12 +268,7 @@ describe('Rendering', () => {
           setup: () => ({ value: ref(null) }),
         })
 
-        renderTemplate({
-          components: { Example },
-          template: html`
-            <Example />
-          `,
-        })
+        renderTemplate(Example)
 
         await click(getComboboxButton())
 
