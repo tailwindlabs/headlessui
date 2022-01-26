@@ -30,10 +30,6 @@ enum ComboboxStates {
   Closed,
 }
 
-function nextFrame(cb: () => void) {
-  requestAnimationFrame(() => requestAnimationFrame(cb))
-}
-
 type ComboboxOptionDataRef = Ref<{ disabled: boolean; value: unknown }>
 type StateDefinition = {
   // State
@@ -48,7 +44,6 @@ type StateDefinition = {
 
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComboboxOptionDataRef }[]>
-  searchQuery: Ref<string>
   activeOptionIndex: Ref<number | null>
 
   // State mutators
@@ -94,7 +89,6 @@ export let Combobox = defineComponent({
     let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
     let optionsRef = ref<StateDefinition['optionsRef']['value']>(null)
     let options = ref<StateDefinition['options']['value']>([])
-    let searchQuery = ref<StateDefinition['searchQuery']['value']>('')
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
     let value = computed(() => props.modelValue)
@@ -108,7 +102,6 @@ export let Combobox = defineComponent({
       optionsRef,
       disabled: computed(() => props.disabled),
       options,
-      searchQuery,
       activeOptionIndex,
       closeCombobox() {
         if (props.disabled) return
@@ -137,8 +130,7 @@ export let Combobox = defineComponent({
           }
         )
 
-        if (searchQuery.value === '' && activeOptionIndex.value === nextActiveOptionIndex) return
-        searchQuery.value = ''
+        if (activeOptionIndex.value === nextActiveOptionIndex) return
         activeOptionIndex.value = nextActiveOptionIndex
       },
       selectOption(id: string) {
@@ -303,7 +295,7 @@ export let ComboboxButton = defineComponent({
         ? [dom(api.labelRef)?.id, this.id].join(' ')
         : undefined,
       disabled: api.disabled.value === true ? true : undefined,
-      onKeyup: this.handleKeyUp,
+      onKeydown: this.handleKeydown,
       onClick: this.handleClick,
     }
 
@@ -331,6 +323,54 @@ export let ComboboxButton = defineComponent({
       nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
     }
 
+    function handleKeydown(event: KeyboardEvent) {
+      switch (event.key) {
+        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+
+        case match(api.orientation.value, {
+          vertical: Keys.ArrowDown,
+          horizontal: Keys.ArrowRight,
+        }):
+          event.preventDefault()
+          event.stopPropagation()
+          if (api.ComboboxState.value === ComboboxStates.Closed) {
+            api.openCombobox()
+            // TODO: We can't do this outside next frame because the options aren't rendered yet
+            // But doing this in next frame results in a flicker because the dom mutations are async here
+            // Basically:
+            // Sync -> no option list yet
+            // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
+
+            // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
+            nextTick(() => {
+              if (!api.value.value) {
+                api.goToOption(Focus.First)
+              }
+            })
+          }
+          return nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+
+        case match(api.orientation.value, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+          event.preventDefault()
+          event.stopPropagation()
+          if (api.ComboboxState.value === ComboboxStates.Closed) {
+            api.openCombobox()
+            nextTick(() => {
+              if (!api.value.value) {
+                api.goToOption(Focus.Last)
+              }
+            })
+          }
+          return nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+
+        case Keys.Escape:
+          event.preventDefault()
+          event.stopPropagation()
+          api.closeCombobox()
+          return nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
+      }
+    }
+
     return {
       id,
       el: api.buttonRef,
@@ -339,6 +379,7 @@ export let ComboboxButton = defineComponent({
         api.buttonRef
       ),
       handleClick,
+      handleKeydown,
     }
   },
 })
@@ -348,7 +389,7 @@ export let ComboboxButton = defineComponent({
 export let ComboboxInput = defineComponent({
   name: 'ComboboxInput',
   props: {
-    as: { type: [Object, String], default: 'ul' },
+    as: { type: [Object, String], default: 'input' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
@@ -377,18 +418,14 @@ export let ComboboxInput = defineComponent({
       attrs: this.$attrs,
       slots: this.$slots,
       features: Features.RenderStrategy | Features.Static,
-      visible: this.visible,
       name: 'ComboboxInput',
     })
   },
   setup() {
     let api = useComboboxContext('ComboboxInput')
-    let id = `headlessui-combobox-options-${useId()}`
-    let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
+    let id = `headlessui-combobox-input-${useId()}`
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (searchDebounce.value) clearTimeout(searchDebounce.value)
-
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
@@ -462,23 +499,7 @@ export let ComboboxInput = defineComponent({
       }
     }
 
-    function handleKeyUp(event: KeyboardEvent) {
-      api.openCombobox()
-
-      // TODO: How do we do this here?
-      // emit('search', (event.target as HTMLInputElement).value)
-    }
-
-    let usesOpenClosedState = useOpenClosed()
-    let visible = computed(() => {
-      if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
-      }
-
-      return api.ComboboxState.value === ComboboxStates.Open
-    })
-
-    return { id, el: api.optionsRef, handleKeyDown, visible }
+    return { id, el: api.inputRef, handleKeyDown }
   },
 })
 
@@ -504,6 +525,7 @@ export let ComboboxOptions = defineComponent({
       'aria-orientation': api.orientation.value,
       id: this.id,
       ref: 'el',
+      role: 'listbox',
     }
     let passThroughProps = this.$props
 
