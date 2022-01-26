@@ -169,7 +169,7 @@ describe('Rendering', () => {
     )
   })
 
-  fdescribe('Combobox.Input', () => {
+  describe('Combobox.Input', () => {
     it(
       'selecting an option puts the value into Combobox.Input when displayValue is not provided',
       suppressConsoleLogs(async () => {
