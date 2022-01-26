@@ -2,6 +2,7 @@ import { DefineComponent, defineComponent, nextTick, ref, watch, h, reactive } f
 import { render } from '../../test-utils/vue-testing-library'
 import {
   Combobox,
+  ComboboxInput,
   ComboboxLabel,
   ComboboxButton,
   ComboboxOptions,
@@ -67,6 +68,7 @@ function nextFrame() {
 function renderTemplate(input: string | Partial<DefineComponent>) {
   let defaultComponents = {
     Combobox,
+    ComboboxInput,
     ComboboxLabel,
     ComboboxButton,
     ComboboxOptions,
