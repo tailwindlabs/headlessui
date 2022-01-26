@@ -2916,7 +2916,9 @@ describe('Keyboard interactions', () => {
                 <ComboboxInput />
                 <ComboboxButton>Trigger</ComboboxButton>
                 <ComboboxOptions>
-                  <ComboboxOption disabled value="a">Option A</ComboboxOption>
+                  <ComboboxOption disabled value="a">
+                    Option A
+                  </ComboboxOption>
                   <ComboboxOption value="b">Option B</ComboboxOption>
                   <ComboboxOption value="c">Option C</ComboboxOption>
                 </ComboboxOptions>
@@ -2955,8 +2957,12 @@ describe('Keyboard interactions', () => {
                 <ComboboxInput />
                 <ComboboxButton>Trigger</ComboboxButton>
                 <ComboboxOptions>
-                  <ComboboxOption disabled value="a">Option A</ComboboxOption>
-                  <ComboboxOption disabled value="b">Option B</ComboboxOption>
+                  <ComboboxOption disabled value="a">
+                    Option A
+                  </ComboboxOption>
+                  <ComboboxOption disabled value="b">
+                    Option B
+                  </ComboboxOption>
                   <ComboboxOption value="c">Option C</ComboboxOption>
                 </ComboboxOptions>
               </Combobox>
@@ -4715,6 +4721,51 @@ describe('Mouse interactions', () => {
 
       // Verify the input is focused again
       assertActiveElement(getComboboxInput())
+    })
+  )
+
+  it(
+    'should be possible to click outside of the combobox, on an element which is within a focusable element, which closes the combobox',
+    suppressConsoleLogs(async () => {
+      let focusFn = jest.fn()
+      renderTemplate({
+        template: html`
+          <div>
+            <Combobox v-model="value">
+              <ComboboxInput @focus="focusFn" />
+              <ComboboxButton>Trigger</ComboboxButton>
+              <ComboboxOptions>
+                <ComboboxOption value="alice">alice</ComboboxOption>
+                <ComboboxOption value="bob">bob</ComboboxOption>
+                <ComboboxOption value="charlie">charlie</ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+
+            <button id="btn">
+              <span>Next</span>
+            </button>
+          </div>
+        `,
+        setup: () => ({ value: ref('test'), focusFn }),
+      })
+
+      // Click the combobox button
+      await click(getComboboxButton())
+
+      // Ensure the combobox is open
+      assertComboboxList({ state: ComboboxState.Visible })
+
+      // Click the span inside the button
+      await click(getByText('Next'))
+
+      // Ensure the combobox is closed
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      // Ensure the outside button is focused
+      assertActiveElement(document.getElementById('btn'))
+
+      // Ensure that the focus button only got focus once (first click)
+      expect(focusFn).toHaveBeenCalledTimes(1)
     })
   )
 
