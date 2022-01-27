@@ -257,7 +257,7 @@ export let ComboboxLabel = defineComponent({
   name: 'ComboboxLabel',
   props: { as: { type: [Object, String], default: 'label' } },
   render() {
-    let api = useComboboxContext('ComboboxLabel')
+    let api = this.api
 
     let slot = {
       open: api.ComboboxState.value === ComboboxStates.Open,
@@ -278,6 +278,7 @@ export let ComboboxLabel = defineComponent({
     let id = `headlessui-combobox-label-${useId()}`
 
     return {
+      api,
       id,
       el: api.labelRef,
       handleClick() {
@@ -295,7 +296,7 @@ export let ComboboxButton = defineComponent({
     as: { type: [Object, String], default: 'button' },
   },
   render() {
-    let api = useComboboxContext('ComboboxButton')
+    let api = this.api
 
     let slot = {
       open: api.ComboboxState.value === ComboboxStates.Open,
@@ -422,7 +423,7 @@ export let ComboboxInput = defineComponent({
     change: (_value: Event & { target: HTMLInputElement }) => true,
   },
   render() {
-    let api = useComboboxContext('ComboboxInput')
+    let api = this.api
 
     let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
     let propsWeControl = {
@@ -530,7 +531,7 @@ export let ComboboxInput = defineComponent({
       emit('change', event)
     }
 
-    return { id, el: api.inputRef, handleKeyDown, handleChange }
+    return { api, id, el: api.inputRef, handleKeyDown, handleChange }
   },
 })
 
@@ -544,7 +545,7 @@ export let ComboboxOptions = defineComponent({
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = useComboboxContext('ComboboxOptions')
+    let api = this.api
 
     let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
     let propsWeControl = {
@@ -583,7 +584,7 @@ export let ComboboxOptions = defineComponent({
       return api.ComboboxState.value === ComboboxStates.Open
     })
 
-    return { id, el: api.optionsRef, visible }
+    return { api, id, el: api.optionsRef, visible }
   },
 })
 

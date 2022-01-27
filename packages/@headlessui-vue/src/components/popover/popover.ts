@@ -207,7 +207,7 @@ export let PopoverButton = defineComponent({
     disabled: { type: [Boolean], default: false },
   },
   render() {
-    let api = usePopoverContext('PopoverButton')
+    let api = this.api
 
     let slot = { open: api.popoverState.value === PopoverStates.Open }
     let propsWeControl = this.isWithinPanel
@@ -272,6 +272,7 @@ export let PopoverButton = defineComponent({
     }
 
     return {
+      api,
       isWithinPanel,
       el: elementRef,
       type: useResolveButtonType(
@@ -403,7 +404,7 @@ export let PopoverOverlay = defineComponent({
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = usePopoverContext('PopoverOverlay')
+    let api = this.api
 
     let slot = { open: api.popoverState.value === PopoverStates.Open }
     let propsWeControl = {
@@ -436,6 +437,7 @@ export let PopoverOverlay = defineComponent({
     })
 
     return {
+      api,
       id: `headlessui-popover-overlay-${useId()}`,
       handleClick() {
         api.closePopover()
@@ -456,7 +458,7 @@ export let PopoverPanel = defineComponent({
     focus: { type: Boolean, default: false },
   },
   render() {
-    let api = usePopoverContext('PopoverPanel')
+    let api = this.api
 
     let slot = {
       open: api.popoverState.value === PopoverStates.Open,
@@ -564,6 +566,7 @@ export let PopoverPanel = defineComponent({
     })
 
     return {
+      api,
       id: api.panelId,
       el: api.panel,
       handleKeyDown(event: KeyboardEvent) {

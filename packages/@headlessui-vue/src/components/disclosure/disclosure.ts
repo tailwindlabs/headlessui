@@ -134,7 +134,7 @@ export let DisclosureButton = defineComponent({
     disabled: { type: [Boolean], default: false },
   },
   render() {
-    let api = useDisclosureContext('DisclosureButton')
+    let api = this.api
 
     let slot = { open: api.disclosureState.value === DisclosureStates.Open }
     let propsWeControl = this.isWithinPanel
@@ -181,6 +181,7 @@ export let DisclosureButton = defineComponent({
     }
 
     return {
+      api,
       isWithinPanel,
       id: api.buttonId,
       el: elementRef,
@@ -246,7 +247,7 @@ export let DisclosurePanel = defineComponent({
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = useDisclosureContext('DisclosurePanel')
+    let api = this.api
 
     let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
     let propsWeControl = { id: this.id, ref: 'el' }
@@ -276,6 +277,7 @@ export let DisclosurePanel = defineComponent({
     })
 
     return {
+      api,
       id: api.panelId,
       el: api.panel,
       visible,

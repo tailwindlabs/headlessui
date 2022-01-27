@@ -172,6 +172,7 @@ export let Menu = defineComponent({
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(MenuContext, api)
+
     useOpenClosedProvider(
       computed(() =>
         match(menuState.value, {
@@ -195,8 +196,7 @@ export let MenuButton = defineComponent({
     as: { type: [Object, String], default: 'button' },
   },
   render() {
-    let api = useMenuContext('MenuButton')
-
+    let api = this.api
     let slot = { open: api.menuState.value === MenuStates.Open }
     let propsWeControl = {
       ref: 'el',
@@ -275,6 +275,7 @@ export let MenuButton = defineComponent({
     }
 
     return {
+      api,
       id,
       el: api.buttonRef,
       type: useResolveButtonType(
@@ -296,8 +297,7 @@ export let MenuItems = defineComponent({
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = useMenuContext('MenuItems')
-
+    let api = this.api
     let slot = { open: api.menuState.value === MenuStates.Open }
     let propsWeControl = {
       'aria-activedescendant':
@@ -430,7 +430,7 @@ export let MenuItems = defineComponent({
       return api.menuState.value === MenuStates.Open
     })
 
-    return { id, el: api.itemsRef, handleKeyDown, handleKeyUp, visible }
+    return { id, api, el: api.itemsRef, handleKeyDown, handleKeyUp, visible }
   },
 })
 

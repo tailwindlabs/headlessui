@@ -182,8 +182,7 @@ export let Tab = defineComponent({
     disabled: { type: [Boolean], default: false },
   },
   render() {
-    let api = useTabsContext('Tab')
-
+    let api = this.api
     let slot = { selected: this.selected }
     let propsWeControl = {
       ref: 'el',
@@ -272,6 +271,7 @@ export let Tab = defineComponent({
     }
 
     return {
+      api,
       el: tabRef,
       id,
       selected,
@@ -319,7 +319,7 @@ export let TabPanel = defineComponent({
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = useTabsContext('TabPanel')
+    let api = this.api
 
     let slot = { selected: this.selected }
     let propsWeControl = {
@@ -352,6 +352,6 @@ export let TabPanel = defineComponent({
     let myIndex = computed(() => api.panels.value.indexOf(panelRef))
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
-    return { id, el: panelRef, selected, myIndex }
+    return { api, id, el: panelRef, selected, myIndex }
   },
 })

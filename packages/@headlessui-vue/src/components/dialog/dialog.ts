@@ -281,7 +281,7 @@ export let DialogOverlay = defineComponent({
     as: { type: [Object, String], default: 'div' },
   },
   render() {
-    let api = useDialogContext('DialogOverlay')
+    let api = this.api
     let propsWeControl = {
       ref: 'el',
       id: this.id,
@@ -303,6 +303,7 @@ export let DialogOverlay = defineComponent({
     let id = `headlessui-dialog-overlay-${useId()}`
 
     return {
+      api,
       id,
       handleClick(event: MouseEvent) {
         if (event.target !== event.currentTarget) return
@@ -322,7 +323,7 @@ export let DialogTitle = defineComponent({
     as: { type: [Object, String], default: 'h2' },
   },
   render() {
-    let api = useDialogContext('DialogTitle')
+    let api = this.api
     let propsWeControl = { id: this.id }
     let passThroughProps = this.$props
 
@@ -343,7 +344,7 @@ export let DialogTitle = defineComponent({
       onUnmounted(() => api.setTitleId(null))
     })
 
-    return { id }
+    return { api, id }
   },
 })
 

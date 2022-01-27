@@ -246,7 +246,7 @@ export let ListboxLabel = defineComponent({
   name: 'ListboxLabel',
   props: { as: { type: [Object, String], default: 'label' } },
   render() {
-    let api = useListboxContext('ListboxLabel')
+    let api = this.api
 
     let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled.value }
     let propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
@@ -264,6 +264,7 @@ export let ListboxLabel = defineComponent({
     let id = `headlessui-listbox-label-${useId()}`
 
     return {
+      api,
       id,
       el: api.labelRef,
       handleClick() {
@@ -281,7 +282,7 @@ export let ListboxButton = defineComponent({
     as: { type: [Object, String], default: 'button' },
   },
   render() {
-    let api = useListboxContext('ListboxButton')
+    let api = this.api
 
     let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled.value }
     let propsWeControl = {
@@ -364,6 +365,7 @@ export let ListboxButton = defineComponent({
     }
 
     return {
+      api,
       id,
       el: api.buttonRef,
       type: useResolveButtonType(
@@ -387,7 +389,7 @@ export let ListboxOptions = defineComponent({
     unmount: { type: Boolean, default: true },
   },
   render() {
-    let api = useListboxContext('ListboxOptions')
+    let api = this.api
 
     let slot = { open: api.listboxState.value === ListboxStates.Open }
     let propsWeControl = {
@@ -500,7 +502,7 @@ export let ListboxOptions = defineComponent({
       return api.listboxState.value === ListboxStates.Open
     })
 
-    return { id, el: api.optionsRef, handleKeyDown, visible }
+    return { api, id, el: api.optionsRef, handleKeyDown, visible }
   },
 })
 
