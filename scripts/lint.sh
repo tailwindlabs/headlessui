@@ -16,7 +16,7 @@ if ! [ -z "$CI" ]; then
   prettierArgs+=("--check")
 else
   prettierArgs+=("--write")
-  prettierArgs+=("$RELATIVE_TARGET_DIR/**/*.{js,ts,tsx,json,md,vue,html}")
+  prettierArgs+=("$RELATIVE_TARGET_DIR")
 fi
 
 # Add default arguments
