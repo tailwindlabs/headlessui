@@ -124,10 +124,7 @@ let reducers: {
       resolveItems: () => state.options,
       resolveActiveIndex: () => state.activeOptionIndex,
       resolveId: item => item.id,
-      resolveDisabled: item => {
-        let el = document.getElementById(item.id)!
-        return item.dataRef.current.disabled || el.hasAttribute('hidden')
-      },
+      resolveDisabled: item => item.dataRef.current.disabled,
     })
 
     if (state.activeOptionIndex === activeOptionIndex) return state
