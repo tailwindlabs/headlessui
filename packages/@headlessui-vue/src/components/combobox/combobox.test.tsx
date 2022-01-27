@@ -261,7 +261,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         const Example = defineComponent({
           template: html`
-            <Combobox v-model="value" @search="setSearch">
+            <Combobox v-model="value">
               <ComboboxInput :displayValue="(str) => str?.toUpperCase() ?? ''" />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
@@ -4221,8 +4221,8 @@ describe('Keyboard interactions', () => {
         components: getDefaultComponents(),
 
         template: html`
-          <Combobox v-model="value" @search="setQuery">
-            <ComboboxInput />
+          <Combobox v-model="value">
+            <ComboboxInput @change="setQuery" />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption
@@ -4258,7 +4258,9 @@ describe('Keyboard interactions', () => {
             value,
             query,
             filteredPeople,
-            setQuery: (newValue: string) => (query.value = newValue),
+            setQuery: (event: Event & { target: HTMLInputElement }) => {
+              query.value = event.target.value
+            },
           }
         },
       })

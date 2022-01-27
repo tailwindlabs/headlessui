@@ -56,7 +56,6 @@ type StateDefinition = {
   registerOption(id: string, dataRef: ComboboxOptionDataRef): void
   unregisterOption(id: string): void
   select(value: unknown): void
-  onSearch(value: string): void
 }
 
 let ComboboxContext = Symbol('ComboboxContext') as InjectionKey<StateDefinition>
@@ -77,7 +76,7 @@ function useComboboxContext(component: string) {
 
 export let Combobox = defineComponent({
   name: 'Combobox',
-  emits: { 'update:modelValue': (_value: any) => true, search: (_value: string) => true },
+  emits: { 'update:modelValue': (_value: any) => true },
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
@@ -109,9 +108,6 @@ export let Combobox = defineComponent({
       options,
       activeOptionIndex,
       displayValue: ref(null),
-      onSearch(value: string) {
-        emit('search', value)
-      },
       closeCombobox() {
         if (props.disabled) return
         if (ComboboxState.value === ComboboxStates.Closed) return
@@ -233,13 +229,7 @@ export let Combobox = defineComponent({
     return () => {
       let slot = { open: ComboboxState.value === ComboboxStates.Open, disabled: props.disabled }
       return render({
-        props: omit(props, [
-          'modelValue',
-          'onUpdate:modelValue',
-          'onSearch',
-          'disabled',
-          'horizontal',
-        ]),
+        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
         slot,
         slots,
         attrs,
@@ -416,6 +406,9 @@ export let ComboboxInput = defineComponent({
     unmount: { type: Boolean, default: true },
     displayValue: { type: Function },
   },
+  emits: {
+    change: (_value: Event & { target: HTMLInputElement }) => true,
+  },
   render() {
     let api = useComboboxContext('ComboboxInput')
 
@@ -445,7 +438,7 @@ export let ComboboxInput = defineComponent({
       name: 'ComboboxInput',
     })
   },
-  setup() {
+  setup(_, { emit }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
 
@@ -521,9 +514,7 @@ export let ComboboxInput = defineComponent({
 
     function handleChange(event: KeyboardEvent) {
       api.openCombobox()
-
-      let value = (event.target as HTMLInputElement).value
-      api.onSearch(value)
+      emit('change', event)
     }
 
     return { id, el: api.inputRef, handleKeyDown, handleChange }
