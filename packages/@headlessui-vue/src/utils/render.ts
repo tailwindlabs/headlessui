@@ -125,12 +125,15 @@ function _render({
   return h(as, passThroughProps, children)
 }
 
-export function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) {
+export function omit<T extends Record<any, any>, Keys extends keyof T>(
+  object: T,
+  keysToOmit: readonly Keys[] = []
+) {
   let clone = Object.assign({}, object)
   for (let key of keysToOmit) {
     if (key in clone) delete clone[key]
   }
-  return clone
+  return clone as Omit<T, Keys>
 }
 
 function isValidElement(input: any): boolean {
