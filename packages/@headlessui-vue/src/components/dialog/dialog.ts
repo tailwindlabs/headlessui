@@ -280,37 +280,32 @@ export let DialogOverlay = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  render() {
-    let api = this.api
-    let propsWeControl = {
-      ref: 'el',
-      id: this.id,
-      'aria-hidden': true,
-      onClick: this.handleClick,
-    }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot: { open: api.dialogState.value === DialogStates.Open },
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'DialogOverlay',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useDialogContext('DialogOverlay')
     let id = `headlessui-dialog-overlay-${useId()}`
 
-    return {
-      api,
-      id,
-      handleClick(event: MouseEvent) {
-        if (event.target !== event.currentTarget) return
-        event.preventDefault()
-        event.stopPropagation()
-        api.close()
-      },
+    function handleClick(event: MouseEvent) {
+      if (event.target !== event.currentTarget) return
+      event.preventDefault()
+      event.stopPropagation()
+      api.close()
+    }
+
+    return () => {
+      let propsWeControl = {
+        id,
+        'aria-hidden': true,
+        onClick: handleClick,
+      }
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot: { open: api.dialogState.value === DialogStates.Open },
+        attrs,
+        slots,
+        name: 'DialogOverlay',
+      })
     }
   },
 })
@@ -322,20 +317,7 @@ export let DialogTitle = defineComponent({
   props: {
     as: { type: [Object, String], default: 'h2' },
   },
-  render() {
-    let api = this.api
-    let propsWeControl = { id: this.id }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot: { open: api.dialogState.value === DialogStates.Open },
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'DialogTitle',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useDialogContext('DialogTitle')
     let id = `headlessui-dialog-title-${useId()}`
 
@@ -344,7 +326,18 @@ export let DialogTitle = defineComponent({
       onUnmounted(() => api.setTitleId(null))
     })
 
-    return { api, id }
+    return () => {
+      let propsWeControl = { id }
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot: { open: api.dialogState.value === DialogStates.Open },
+        attrs,
+        slots,
+        name: 'DialogTitle',
+      })
+    }
   },
 })
 

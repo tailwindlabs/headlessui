@@ -195,30 +195,7 @@ export let MenuButton = defineComponent({
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
   },
-  render() {
-    let api = this.api
-    let slot = { open: api.menuState.value === MenuStates.Open }
-    let propsWeControl = {
-      ref: 'el',
-      id: this.id,
-      type: this.type,
-      'aria-haspopup': true,
-      'aria-controls': dom(api.itemsRef)?.id,
-      'aria-expanded': this.$props.disabled ? undefined : api.menuState.value === MenuStates.Open,
-      onKeydown: this.handleKeyDown,
-      onKeyup: this.handleKeyUp,
-      onClick: this.handleClick,
-    }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'MenuButton',
-    })
-  },
-  setup(props, { attrs }) {
+  setup(props, { attrs, slots }) {
     let api = useMenuContext('MenuButton')
     let id = `headlessui-menu-button-${useId()}`
 
@@ -274,17 +251,32 @@ export let MenuButton = defineComponent({
       }
     }
 
-    return {
-      api,
-      id,
-      el: api.buttonRef,
-      type: useResolveButtonType(
-        computed(() => ({ as: props.as, type: attrs.type })),
-        api.buttonRef
-      ),
-      handleKeyDown,
-      handleKeyUp,
-      handleClick,
+    let type = useResolveButtonType(
+      computed(() => ({ as: props.as, type: attrs.type })),
+      api.buttonRef
+    )
+
+    return () => {
+      let slot = { open: api.menuState.value === MenuStates.Open }
+      let propsWeControl = {
+        ref: api.buttonRef,
+        id,
+        type: type.value,
+        'aria-haspopup': true,
+        'aria-controls': dom(api.itemsRef)?.id,
+        'aria-expanded': props.disabled ? undefined : api.menuState.value === MenuStates.Open,
+        onKeydown: handleKeyDown,
+        onKeyup: handleKeyUp,
+        onClick: handleClick,
+      }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'MenuButton',
+      })
     }
   },
 })
@@ -296,35 +288,7 @@ export let MenuItems = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  render() {
-    let api = this.api
-    let slot = { open: api.menuState.value === MenuStates.Open }
-    let propsWeControl = {
-      'aria-activedescendant':
-        api.activeItemIndex.value === null
-          ? undefined
-          : api.items.value[api.activeItemIndex.value]?.id,
-      'aria-labelledby': dom(api.buttonRef)?.id,
-      id: this.id,
-      onKeydown: this.handleKeyDown,
-      onKeyup: this.handleKeyUp,
-      role: 'menu',
-      tabIndex: 0,
-      ref: 'el',
-    }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      features: Features.RenderStrategy | Features.Static,
-      visible: this.visible,
-      name: 'MenuItems',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useMenuContext('MenuItems')
     let id = `headlessui-menu-items-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
@@ -430,7 +394,34 @@ export let MenuItems = defineComponent({
       return api.menuState.value === MenuStates.Open
     })
 
-    return { id, api, el: api.itemsRef, handleKeyDown, handleKeyUp, visible }
+    return () => {
+      let slot = { open: api.menuState.value === MenuStates.Open }
+      let propsWeControl = {
+        'aria-activedescendant':
+          api.activeItemIndex.value === null
+            ? undefined
+            : api.items.value[api.activeItemIndex.value]?.id,
+        'aria-labelledby': dom(api.buttonRef)?.id,
+        id,
+        onKeydown: handleKeyDown,
+        onKeyup: handleKeyUp,
+        role: 'menu',
+        tabIndex: 0,
+        ref: api.itemsRef,
+      }
+
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        features: Features.RenderStrategy | Features.Static,
+        visible: visible.value,
+        name: 'MenuItems',
+      })
+    }
   },
 })
 

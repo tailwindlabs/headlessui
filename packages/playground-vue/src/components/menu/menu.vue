@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, ref, watchEffect } from 'vue'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 
 function classNames(...classes) {

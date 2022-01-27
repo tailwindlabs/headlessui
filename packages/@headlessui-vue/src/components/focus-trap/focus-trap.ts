@@ -17,20 +17,7 @@ export let FocusTrap = defineComponent({
     as: { type: [Object, String], default: 'div' },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
-  render() {
-    let slot = {}
-    let propsWeControl = { ref: 'el' }
-    let { initialFocus, ...passThroughProps } = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'FocusTrap',
-    })
-  },
-  setup(props) {
+  setup(props, { attrs, slots }) {
     let containers = ref(new Set<HTMLElement>())
     let container = ref<HTMLElement | null>(null)
     let enabled = ref(true)
@@ -47,6 +34,18 @@ export let FocusTrap = defineComponent({
       enabled.value = false
     })
 
-    return { el: container }
+    return () => {
+      let slot = {}
+      let propsWeControl = { ref: container }
+      let { initialFocus, ...passThroughProps } = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'FocusTrap',
+      })
+    }
   },
 })
