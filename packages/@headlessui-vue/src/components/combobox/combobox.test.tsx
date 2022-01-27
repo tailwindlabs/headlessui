@@ -8,9 +8,8 @@ import {
   reactive,
   computed,
   PropType,
-  onUpdated,
 } from 'vue'
-import { render, screen } from '../../test-utils/vue-testing-library'
+import { render } from '../../test-utils/vue-testing-library'
 import {
   Combobox,
   ComboboxInput,
@@ -56,8 +55,6 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-
-let NOOP = () => {}
 
 jest.mock('../../hooks/use-id')
 
