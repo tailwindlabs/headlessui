@@ -391,6 +391,7 @@ type InputPropsWeControl =
   | 'aria-expanded'
   | 'aria-activedescendant'
   | 'onKeyDown'
+  | 'onChange'
   | 'displayValue'
 
 let Input = forwardRefWithAs(function Input<
@@ -401,6 +402,7 @@ let Input = forwardRefWithAs(function Input<
 >(
   props: Props<TTag, InputRenderPropArg, InputPropsWeControl> & {
     displayValue?(item: TType): string
+    onChange(event: React.ChangeEvent<HTMLInputElement>): void
   },
   ref: Ref<HTMLInputElement>
 ) {

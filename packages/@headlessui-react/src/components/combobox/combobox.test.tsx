@@ -39,6 +39,8 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { Transition } from '../transitions/transition'
 
+let NOOP = () => {}
+
 jest.mock('../../hooks/use-id')
 
 beforeAll(() => {
@@ -69,7 +71,7 @@ describe('safeguards', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -97,7 +99,7 @@ describe('Rendering', () => {
           <Combobox value="test" onChange={console.log}>
             {({ open }) => (
               <>
-                <Combobox.Input />
+                <Combobox.Input onChange={NOOP} />
                 <Combobox.Button>Trigger</Combobox.Button>
                 {open && (
                   <Combobox.Options>
@@ -132,7 +134,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value={undefined} onChange={console.log} disabled>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -176,7 +178,7 @@ describe('Rendering', () => {
 
           return (
             <Combobox value={value} onChange={setValue}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -207,7 +209,10 @@ describe('Rendering', () => {
 
           return (
             <Combobox value={value} onChange={setValue}>
-              <Combobox.Input displayValue={(str?: string) => str?.toUpperCase() ?? ''} />
+              <Combobox.Input
+                onChange={NOOP}
+                displayValue={(str?: string) => str?.toUpperCase() ?? ''}
+              />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -238,7 +243,7 @@ describe('Rendering', () => {
         render(
           <Combobox value="test" onChange={console.log}>
             <Combobox.Label>{JSON.stringify}</Combobox.Label>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -276,7 +281,7 @@ describe('Rendering', () => {
         render(
           <Combobox value="test" onChange={console.log}>
             <Combobox.Label as="p">{JSON.stringify}</Combobox.Label>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -310,7 +315,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>{JSON.stringify}</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -343,7 +348,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button as="div" role="button">
               {JSON.stringify}
             </Combobox.Button>
@@ -379,7 +384,7 @@ describe('Rendering', () => {
         render(
           <Combobox value="test" onChange={console.log}>
             <Combobox.Label>Label</Combobox.Label>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -405,7 +410,7 @@ describe('Rendering', () => {
       it('should set the `type` to "button" by default', async () => {
         render(
           <Combobox value={null} onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
           </Combobox>
         )
@@ -416,7 +421,7 @@ describe('Rendering', () => {
       it('should not set the `type` to "button" if it already contains a `type`', async () => {
         render(
           <Combobox value={null} onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button type="submit">Trigger</Combobox.Button>
           </Combobox>
         )
@@ -431,7 +436,7 @@ describe('Rendering', () => {
 
         render(
           <Combobox value={null} onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button as={CustomButton}>Trigger</Combobox.Button>
           </Combobox>
         )
@@ -442,7 +447,7 @@ describe('Rendering', () => {
       it('should not set the type if the "as" prop is not a "button"', async () => {
         render(
           <Combobox value={null} onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button as="div">Trigger</Combobox.Button>
           </Combobox>
         )
@@ -457,7 +462,7 @@ describe('Rendering', () => {
 
         render(
           <Combobox value={null} onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button as={CustomButton}>Trigger</Combobox.Button>
           </Combobox>
         )
@@ -473,7 +478,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               {data => (
@@ -508,7 +513,7 @@ describe('Rendering', () => {
     it('should be possible to always render the Combobox.Options if we provide it a `static` prop', () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options static>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -525,7 +530,7 @@ describe('Rendering', () => {
     it('should be possible to use a different render strategy for the Combobox.Options', async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options unmount={false}>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -550,7 +555,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">{JSON.stringify}</Combobox.Option>
@@ -583,7 +588,7 @@ describe('Rendering', () => {
       return (
         <>
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option 1</Combobox.Option>
@@ -631,7 +636,7 @@ describe('Rendering composition', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a" className={bag => JSON.stringify(bag)}>
@@ -707,7 +712,7 @@ describe('Rendering composition', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option as="button" value="a">
@@ -755,7 +760,7 @@ describe('Composition', () => {
       let orderFn = jest.fn()
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Debug name="Combobox" fn={orderFn} />
           <Transition>
@@ -813,7 +818,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -862,7 +867,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -898,7 +903,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -947,7 +952,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options unmount={false}>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1018,7 +1023,7 @@ describe('Keyboard interactions', () => {
           let selectedOption = myOptions[1]
           render(
             <Combobox value={selectedOption} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 {myOptions.map(myOption => (
@@ -1069,7 +1074,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -1100,7 +1105,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1147,7 +1152,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1183,7 +1188,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1231,7 +1236,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -1258,7 +1263,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -1299,7 +1304,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1344,7 +1349,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1390,7 +1395,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1426,7 +1431,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1472,7 +1477,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -1499,7 +1504,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1546,7 +1551,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1582,7 +1587,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1629,7 +1634,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -1656,7 +1661,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1702,7 +1707,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1738,7 +1743,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1784,7 +1789,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -1809,7 +1814,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1850,7 +1855,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1897,7 +1902,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1933,7 +1938,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1980,7 +1985,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -2005,7 +2010,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2059,7 +2064,7 @@ describe('Keyboard interactions', () => {
                   handleChange(value)
                 }}
               >
-                <Combobox.Input />
+                <Combobox.Input onChange={NOOP} />
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
                   <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2122,7 +2127,7 @@ describe('Keyboard interactions', () => {
               <>
                 <input id="before-combobox" />
                 <Combobox value={value} onChange={setValue}>
-                  <Combobox.Input />
+                  <Combobox.Input onChange={NOOP} />
                   <Combobox.Button>Trigger</Combobox.Button>
                   <Combobox.Options>
                     <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2175,7 +2180,7 @@ describe('Keyboard interactions', () => {
               <>
                 <input id="before-combobox" />
                 <Combobox value={value} onChange={setValue}>
-                  <Combobox.Input />
+                  <Combobox.Input onChange={NOOP} />
                   <Combobox.Button>Trigger</Combobox.Button>
                   <Combobox.Options>
                     <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2225,7 +2230,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2266,7 +2271,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2312,7 +2317,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2348,7 +2353,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2394,7 +2399,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -2419,7 +2424,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2467,7 +2472,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -2505,7 +2510,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -2547,7 +2552,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2594,7 +2599,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2630,7 +2635,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2677,7 +2682,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -2702,7 +2707,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2750,7 +2755,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -2788,7 +2793,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -2830,7 +2835,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2876,7 +2881,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2912,7 +2917,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -2958,7 +2963,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -2983,7 +2988,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3022,7 +3027,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3069,7 +3074,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3127,7 +3132,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3174,7 +3179,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} disabled horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3210,7 +3215,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="b" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3257,7 +3262,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options />
             </Combobox>
@@ -3282,7 +3287,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log} horizontal>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3323,7 +3328,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3352,7 +3357,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3386,7 +3391,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3422,7 +3427,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3461,7 +3466,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3490,7 +3495,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3527,7 +3532,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3563,7 +3568,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3602,7 +3607,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3634,7 +3639,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3670,7 +3675,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3706,7 +3711,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3745,7 +3750,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value={undefined} onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option value="a">Option A</Combobox.Option>
@@ -3777,7 +3782,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3813,7 +3818,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -3849,7 +3854,7 @@ describe('Keyboard interactions', () => {
         suppressConsoleLogs(async () => {
           render(
             <Combobox value="test" onChange={console.log}>
-              <Combobox.Input />
+              <Combobox.Input onChange={NOOP} />
               <Combobox.Button>Trigger</Combobox.Button>
               <Combobox.Options>
                 <Combobox.Option disabled value="a">
@@ -4078,7 +4083,7 @@ describe('Mouse interactions', () => {
       render(
         <Combobox value="test" onChange={console.log}>
           <Combobox.Label>Label</Combobox.Label>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4105,7 +4110,7 @@ describe('Mouse interactions', () => {
       render(
         <Combobox value="test" onChange={console.log}>
           <Combobox.Label>Label</Combobox.Label>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4131,7 +4136,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4171,7 +4176,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Item A</Combobox.Option>
@@ -4200,7 +4205,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value={undefined} onChange={console.log} disabled>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4233,7 +4238,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="b" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4276,7 +4281,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4306,7 +4311,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4332,7 +4337,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4364,7 +4369,7 @@ describe('Mouse interactions', () => {
       render(
         <div>
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4374,7 +4379,7 @@ describe('Mouse interactions', () => {
           </Combobox>
 
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4409,7 +4414,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4442,7 +4447,7 @@ describe('Mouse interactions', () => {
       render(
         <div>
           <Combobox value="test" onChange={console.log}>
-            <Combobox.Input onFocus={focusFn} />
+            <Combobox.Input onChange={NOOP} onFocus={focusFn} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4482,7 +4487,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4515,7 +4520,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4540,7 +4545,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4571,7 +4576,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4598,7 +4603,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4628,7 +4633,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4671,7 +4676,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4712,7 +4717,7 @@ describe('Mouse interactions', () => {
               handleChange(value)
             }}
           >
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4764,7 +4769,7 @@ describe('Mouse interactions', () => {
               handleChange(value)
             }}
           >
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4811,7 +4816,7 @@ describe('Mouse interactions', () => {
 
         return (
           <Combobox value={value} onChange={setValue}>
-            <Combobox.Input />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="alice">alice</Combobox.Option>
@@ -4845,7 +4850,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test" onChange={console.log}>
-          <Combobox.Input />
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="alice">alice</Combobox.Option>
