@@ -34,6 +34,7 @@ import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useLatestValue } from '../../hooks/use-latest-value'
 
 enum ComboboxStates {
   Open,
@@ -54,7 +55,6 @@ interface StateDefinition {
   propsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
-    onSearch(value: unknown): void
   }>
   inputPropsRef: MutableRefObject<{
     displayValue?(item: unknown): string
@@ -218,23 +218,15 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   props: Props<
     TTag,
     ComboboxRenderPropArg<TType>,
-    'value' | 'onChange' | 'onSearch' | 'disabled' | 'horizontal'
+    'value' | 'onChange' | 'disabled' | 'horizontal'
   > & {
     value: TType
     onChange(value: TType): void
-    onSearch(value: string): void
     disabled?: boolean
     horizontal?: boolean
   }
 ) {
-  let {
-    value,
-    onChange,
-    disabled = false,
-    horizontal = false,
-    onSearch,
-    ...passThroughProps
-  } = props
+  let { value, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
 
   let reducerBag = useReducer(stateReducer, {
@@ -243,7 +235,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
       current: {
         value,
         onChange,
-        onSearch,
       },
     },
     inputPropsRef: {
@@ -280,9 +271,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   useIsoMorphicEffect(() => {
     propsRef.current.onChange = onChange
   }, [onChange, propsRef])
-  useIsoMorphicEffect(() => {
-    propsRef.current.onSearch = onSearch
-  }, [onSearch, propsRef])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetOrientation, orientation }), [
@@ -426,6 +414,8 @@ let Input = forwardRefWithAs(function Input<
   let id = `headlessui-combobox-input-${useId()}`
   let d = useDisposables()
 
+  let onChangeRef = useLatestValue(onChange)
+
   useIsoMorphicEffect(() => {
     inputPropsRef.current.displayValue = displayValue
   }, [displayValue, inputPropsRef])
@@ -513,11 +503,9 @@ let Input = forwardRefWithAs(function Input<
   let handleChange = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
       dispatch({ type: ActionTypes.OpenCombobox })
-
-      let value = (event.target as HTMLInputElement).value
-      state.propsRef.current.onSearch(value)
+      onChangeRef.current(event)
     },
-    [dispatch, state]
+    [dispatch, onChangeRef]
   )
 
   // TODO: Verify this. The spec says that, for the input/combobox, the lebel is the labelling element when present
