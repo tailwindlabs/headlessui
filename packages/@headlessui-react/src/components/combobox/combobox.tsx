@@ -419,7 +419,7 @@ let Input = forwardRefWithAs(function Input<
   ref: Ref<HTMLInputElement>
 ) {
   let { value, onChange, displayValue, ...passThroughProps } = props
-  let [state, dispatch] = useComboboxContext([Combobox.name, Input.name].join('.'))
+  let [state, dispatch] = useComboboxContext('Combobox.Input')
   let actions = useComboboxActions()
 
   let inputRef = useSyncRefs(state.inputRef, ref)
@@ -580,7 +580,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let [state, dispatch] = useComboboxContext([Combobox.name, Button.name].join('.'))
+  let [state, dispatch] = useComboboxContext('Combobox.Button')
   let actions = useComboboxActions()
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
@@ -694,7 +694,7 @@ type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
 ) {
-  let [state] = useComboboxContext([Combobox.name, Label.name].join('.'))
+  let [state] = useComboboxContext('Combobox.Label')
   let id = `headlessui-combobox-label-${useId()}`
 
   let handleClick = useCallback(
@@ -739,7 +739,7 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLUListElement>
 ) {
-  let [state, dispatch] = useComboboxContext([Combobox.name, Options.name].join('.'))
+  let [state, dispatch] = useComboboxContext('Combobox.Options')
   let optionsRef = useSyncRefs(state.optionsRef, ref)
 
   let id = `headlessui-combobox-options-${useId()}`
@@ -822,7 +822,7 @@ function Option<
   }
 ) {
   let { disabled = false, value, ...passthroughProps } = props
-  let [state, dispatch] = useComboboxContext([Combobox.name, Option.name].join('.'))
+  let [state, dispatch] = useComboboxContext('Combobox.Option')
   let actions = useComboboxActions()
   let id = `headlessui-combobox-option-${useId()}`
   let active =
