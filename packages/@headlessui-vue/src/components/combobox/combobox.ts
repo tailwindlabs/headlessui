@@ -167,6 +167,8 @@ export let Combobox = defineComponent({
         api.syncInputValue()
       },
       registerOption(id: string, dataRef: ComboboxOptionDataRef) {
+        let currentActiveOption =
+          activeOptionIndex.value !== null ? options.value[activeOptionIndex.value] : null
         let orderMap = Array.from(
           optionsRef.value?.querySelectorAll('[id^="headlessui-combobox-option-"]') ?? []
         ).reduce(
@@ -178,6 +180,14 @@ export let Combobox = defineComponent({
         options.value = [...options.value, { id, dataRef }].sort(
           (a, z) => orderMap[a.id] - orderMap[z.id]
         )
+
+        // If we inserted an option before the current active option then the
+        // active option index would be wrong. To fix this, we will re-lookup
+        // the correct index.
+        activeOptionIndex.value = (() => {
+          if (currentActiveOption === null) return null
+          return options.value.indexOf(currentActiveOption)
+        })()
       },
       unregisterOption(id: string) {
         let nextOptions = options.value.slice()

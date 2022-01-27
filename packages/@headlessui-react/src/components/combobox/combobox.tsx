@@ -131,6 +131,9 @@ let reducers: {
     return { ...state, activeOptionIndex }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
+    let currentActiveOption =
+      state.activeOptionIndex !== null ? state.options[state.activeOptionIndex] : null
+
     let orderMap = Array.from(
       state.optionsRef.current?.querySelectorAll('[id^="headlessui-combobox-option-"]')!
     ).reduce(
@@ -142,7 +145,18 @@ let reducers: {
       (a, z) => orderMap[a.id] - orderMap[z.id]
     )
 
-    return { ...state, options }
+    return {
+      ...state,
+      options,
+      activeOptionIndex: (() => {
+        if (currentActiveOption === null) return null
+
+        // If we inserted an option before the current active option then the
+        // active option index would be wrong. To fix this, we will re-lookup
+        // the correct index.
+        return options.indexOf(currentActiveOption)
+      })(),
+    }
   },
   [ActionTypes.UnregisterOption]: (state, action) => {
     let nextOptions = state.options.slice()

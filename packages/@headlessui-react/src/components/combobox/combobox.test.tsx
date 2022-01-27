@@ -4072,6 +4072,46 @@ describe('Keyboard interactions', () => {
           assertNoSelectedComboboxOption()
         })
       )
+
+      it(
+        'should maintain activeIndex and activeOption when filtering',
+        suppressConsoleLogs(async () => {
+          render(
+            <Example
+              people={[
+                { value: 'a', name: 'person a', disabled: false },
+                { value: 'b', name: 'person b', disabled: false },
+                { value: 'c', name: 'person c', disabled: false },
+              ]}
+            />
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          let options: ReturnType<typeof getComboboxOptions>
+
+          await press(Keys.ArrowDown)
+          await press(Keys.ArrowDown)
+
+          // Person B should be active
+          options = getComboboxOptions()
+          expect(options[1]).toHaveTextContent('person b')
+          assertActiveComboboxOption(options[1])
+
+          // Filter more, remove `person a`
+          await type(word('person b'))
+          options = getComboboxOptions()
+          expect(options[0]).toHaveTextContent('person b')
+          assertActiveComboboxOption(options[0])
+
+          // Filter less, insert `person a` before `person b`
+          await type(word('person'))
+          options = getComboboxOptions()
+          expect(options[1]).toHaveTextContent('person b')
+          assertActiveComboboxOption(options[1])
+        })
+      )
     })
   })
 })
