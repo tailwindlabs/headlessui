@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center w-screen h-full p-12 bg-gray-50">
-    <div class="w-full max-w-xs mx-auto">
+  <div class="flex h-full w-screen justify-center bg-gray-50 p-12">
+    <div class="mx-auto w-full max-w-xs">
       <Disclosure>
         <DisclosureButton>Trigger</DisclosureButton>
 
@@ -12,7 +12,7 @@
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
         >
-          <DisclosurePanel class="p-4 bg-white mt-4">Content</DisclosurePanel>
+          <DisclosurePanel class="mt-4 bg-white p-4">Content</DisclosurePanel>
         </TransitionRoot>
       </Disclosure>
     </div>

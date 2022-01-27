@@ -1,5 +1,5 @@
 <template>
-  <div class="p-12 max-w-xl">
+  <div class="max-w-xl p-12">
     <a href="/">Link before</a>
     <RadioGroup v-model="active">
       <fieldset class="space-y-4">
@@ -7,7 +7,7 @@
           <h2 class="text-xl">Privacy setting</h2>
         </legend>
 
-        <div class="bg-white rounded-md -space-y-px">
+        <div class="-space-y-px rounded-md bg-white">
           <RadioGroupOption
             v-for="({ id, name, description }, i) in access"
             :key="id"
@@ -26,11 +26,11 @@
                 )
             "
           >
-            <div class="flex justify-between items-center w-full">
-              <div class="ml-3 flex flex-col cursor-pointer">
+            <div class="flex w-full items-center justify-between">
+              <div class="ml-3 flex cursor-pointer flex-col">
                 <span
                   :class="[
-                    'block text-sm leading-5 font-medium',
+                    'block text-sm font-medium leading-5',
                     active ? 'text-indigo-900' : 'text-gray-900',
                   ]"
                 >

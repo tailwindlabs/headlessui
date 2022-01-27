@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center w-screen h-full p-12 space-x-4 bg-gray-50">
+  <div class="flex h-full w-screen justify-center space-x-4 bg-gray-50 p-12">
     <div class="w-64">
       <div class="space-y-1">
         <Listbox v-model="active">
@@ -10,12 +10,12 @@
           <div class="relative">
             <span class="inline-block w-full rounded-md shadow-sm">
               <ListboxButton
-                class="relative w-full py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md cursor-default focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
+                class="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
               >
                 <span class="block truncate">{{ active.name }}</span>
-                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                   <svg
-                    class="w-5 h-5 text-gray-400"
+                    class="h-5 w-5 text-gray-400"
                     viewBox="0 0 20 20"
                     fill="none"
                     stroke="currentColor"
@@ -31,9 +31,9 @@
               </ListboxButton>
             </span>
 
-            <div class="absolute w-full mt-1 bg-white rounded-md shadow-lg">
+            <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
               <ListboxOptions
-                class="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5"
+                class="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
               >
                 <ListboxOption
                   v-for="person in people"
@@ -58,7 +58,7 @@
                       )
                     "
                   >
-                    <svg class="w-5 h-5" viewbox="0 0 20 20" fill="currentColor">
+                    <svg class="h-5 w-5" viewbox="0 0 20 20" fill="currentColor">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -78,7 +78,7 @@
       <label for="email" class="block text-sm font-medium leading-5 text-gray-700"> Email </label>
       <div class="relative mt-1 rounded-md shadow-sm">
         <input
-          class="block w-full form-input sm:text-sm sm:leading-5"
+          class="form-input block w-full sm:text-sm sm:leading-5"
           placeholder="you@example.com"
         />
       </div>
@@ -94,12 +94,12 @@
           <div class="relative">
             <span class="inline-block w-full rounded-md shadow-sm">
               <ListboxButton
-                class="relative w-full py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md cursor-default focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5"
+                class="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
               >
                 <span class="block truncate">{{ active.name }}</span>
-                <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                   <svg
-                    class="w-5 h-5 text-gray-400"
+                    class="h-5 w-5 text-gray-400"
                     viewBox="0 0 20 20"
                     fill="none"
                     stroke="currentColor"
@@ -115,9 +115,9 @@
               </ListboxButton>
             </span>
 
-            <div class="absolute w-full mt-1 bg-white rounded-md shadow-lg">
+            <div class="absolute mt-1 w-full rounded-md bg-white shadow-lg">
               <ListboxOptions
-                class="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5"
+                class="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
               >
                 <ListboxOption
                   v-for="person in people"
@@ -142,7 +142,7 @@
                       )
                     "
                   >
-                    <svg class="w-5 h-5" viewbox="0 0 20 20" fill="currentColor">
+                    <svg class="h-5 w-5" viewbox="0 0 20 20" fill="currentColor">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"

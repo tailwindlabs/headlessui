@@ -1,9 +1,9 @@
 <template>
   <div
-    class="flex flex-col h-screen overflow-hidden font-sans antialiased text-gray-900 bg-gray-700"
+    class="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased"
   >
     <header
-      class="relative z-10 flex items-center justify-between flex-shrink-0 px-4 py-4 bg-gray-700 border-b border-gray-200 sm:px-6 lg:px-8"
+      class="relative z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8"
     >
       <router-link to="/">
         <svg class="h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 243 42">

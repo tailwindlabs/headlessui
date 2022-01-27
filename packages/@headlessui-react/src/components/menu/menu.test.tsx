@@ -496,11 +496,11 @@ describe('Rendering composition', () => {
           <Menu.Button>Trigger</Menu.Button>
           <div className="outer">
             <Menu.Items>
-              <div className="py-1 inner">
+              <div className="inner py-1">
                 <Menu.Item as="button">Item A</Menu.Item>
                 <Menu.Item as="button">Item B</Menu.Item>
               </div>
-              <div className="py-1 inner">
+              <div className="inner py-1">
                 <Menu.Item as="button">Item C</Menu.Item>
                 <Menu.Item>
                   <div>
@@ -508,7 +508,7 @@ describe('Rendering composition', () => {
                   </div>
                 </Menu.Item>
               </div>
-              <div className="py-1 inner">
+              <div className="inner py-1">
                 <form className="inner">
                   <Menu.Item as="button">Item E</Menu.Item>
                 </form>

@@ -50,5 +50,8 @@
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
     "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "prettier-plugin-tailwindcss": "^0.1.4"
   }
 }

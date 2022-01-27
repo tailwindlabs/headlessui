@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center items-center space-x-12 p-12">
+  <div class="flex items-center justify-center space-x-12 p-12">
     <button>Previous</button>
 
     <PopoverGroup as="nav" ar-label="Mythical University" class="flex space-x-3">
@@ -12,19 +12,19 @@
           leave-from-class="opacity-100"
           leave-to-class="opacity-0"
         >
-          <PopoverOverlay class="bg-opacity-75 bg-gray-500 fixed inset-0 z-20"></PopoverOverlay>
+          <PopoverOverlay class="fixed inset-0 z-20 bg-gray-500 bg-opacity-75"></PopoverOverlay>
         </transition>
 
         <PopoverButton
-          class="px-3 py-2 bg-gray-300 border-2 border-transparent focus:outline-none focus:border-blue-900 relative z-30"
+          class="relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-none"
           >Normal</PopoverButton
         >
-        <PopoverPanel class="absolute flex flex-col w-64 bg-gray-100 border-2 border-blue-900 z-30">
+        <PopoverPanel class="absolute z-30 flex w-64 flex-col border-2 border-blue-900 bg-gray-100">
           <a
             v-for="(link, i) of links"
             :hidden="i === 2"
             href="/"
-            class="px-3 py-2 border-2 border-transparent hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:border-blue-900"
+            class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
           >
             Normal - {{ link }}
           </a>
@@ -33,17 +33,17 @@
 
       <Popover as="div" class="relative">
         <PopoverButton
-          class="px-3 py-2 bg-gray-300 border-2 border-transparent focus:outline-none focus:border-blue-900"
+          class="border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-none"
           >Focus</PopoverButton
         >
         <PopoverPanel
           focus
-          class="absolute flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
+          class="absolute flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
         >
           <a
             v-for="(link, i) of links"
             href="/"
-            class="px-3 py-2 border-2 border-transparent hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:border-blue-900"
+            class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
           >
             Focus - {{ link }}
           </a>
@@ -53,18 +53,18 @@
       <Popover as="div" class="relative">
         <PopoverButton
           ref="trigger1"
-          class="px-3 py-2 bg-gray-300 border-2 border-transparent focus:outline-none focus:border-blue-900"
+          class="border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-none"
           >Portal</PopoverButton
         >
         <Portal>
           <PopoverPanel
             ref="container1"
-            class="flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
+            class="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
           >
             <a
               v-for="(link, i) of links"
               href="/"
-              class="px-3 py-2 border-2 border-transparent hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:border-blue-900"
+              class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
             >
               Portal - {{ link }}
             </a>
@@ -75,19 +75,19 @@
       <Popover as="div" class="relative">
         <PopoverButton
           ref="trigger2"
-          class="px-3 py-2 bg-gray-300 border-2 border-transparent focus:outline-none focus:border-blue-900"
+          class="border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-none"
           >Focus in portal</PopoverButton
         >
         <Portal>
           <PopoverPanel
             ref="container2"
             focus
-            class="flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
+            class="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
           >
             <a
               v-for="(link, i) of links"
               href="/"
-              class="px-3 py-2 border-2 border-transparent hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:border-blue-900"
+              class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
             >
               Focus in Portal - {{ link }}
             </a>

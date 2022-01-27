@@ -1,6 +1,6 @@
 <template>
-  <div class="flex justify-center w-screen h-full p-12 bg-gray-50">
-    <div class="w-full max-w-xs mx-auto">
+  <div class="flex h-full w-screen justify-center bg-gray-50 p-12">
+    <div class="mx-auto w-full max-w-xs">
       <main>
         <aside ref="container" id="group-1">A</aside>
 

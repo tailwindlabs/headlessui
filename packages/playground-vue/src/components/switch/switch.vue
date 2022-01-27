@@ -1,11 +1,11 @@
 <template>
-  <div class="flex items-start justify-center w-screen h-full p-12 bg-gray-50">
+  <div class="flex h-full w-screen items-start justify-center bg-gray-50 p-12">
     <SwitchGroup as="div" class="flex items-center space-x-4">
       <SwitchLabel>Enable notifications</SwitchLabel>
 
       <Switch as="button" v-model="state" :className="resolveSwitchClass" v-slot="{ checked }">
         <span
-          class="inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full"
+          class="inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out"
           :class="{ 'translate-x-5': checked, 'translate-x-0': !checked }"
         />
       </Switch>
