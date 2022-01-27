@@ -35,6 +35,7 @@ export function useTreeWalker({
     let walk = walkRef.current
 
     let acceptNode = Object.assign((node: HTMLElement) => accept(node), { acceptNode: accept })
+    // @ts-expect-error This `false` is a simple small fix for older browsers
     let walker = document.createTreeWalker(container, NodeFilter.SHOW_ELEMENT, acceptNode, false)
 
     while (walker.nextNode()) walk(walker.currentNode as HTMLElement)

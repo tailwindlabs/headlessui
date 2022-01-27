@@ -98,7 +98,7 @@ function _render({
             `However we need to passthrough the following props:`,
             Object.keys(passThroughProps)
               .concat(Object.keys(attrs))
-              .map(line => `  - ${line}`)
+              .map((line) => `  - ${line}`)
               .join('\n'),
             '',
             'You can apply a few solutions:',
@@ -106,7 +106,7 @@ function _render({
               'Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
               'Render a single element as the child so that we can forward the props onto that element.',
             ]
-              .map(line => `  - ${line}`)
+              .map((line) => `  - ${line}`)
               .join('\n'),
           ].join('\n')
         )

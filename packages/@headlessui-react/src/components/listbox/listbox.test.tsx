@@ -56,6 +56,7 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Listbox />',
     suppressConsoleLogs((name, Component) => {
+      // @ts-expect-error This is fine
       expect(() => render(createElement(Component))).toThrowError(
         `<${name} /> is missing a parent <Listbox /> component.`
       )
@@ -396,7 +397,7 @@ describe('Rendering', () => {
           <Listbox value={undefined} onChange={console.log}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
-              {data => (
+              {(data) => (
                 <>
                   <Listbox.Option value="a">{JSON.stringify(data)}</Listbox.Option>
                 </>
@@ -547,10 +548,10 @@ describe('Rendering composition', () => {
         <Listbox value={undefined} onChange={console.log}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
-            <Listbox.Option value="a" className={bag => JSON.stringify(bag)}>
+            <Listbox.Option value="a" className={(bag) => JSON.stringify(bag)}>
               Option A
             </Listbox.Option>
-            <Listbox.Option value="b" disabled className={bag => JSON.stringify(bag)}>
+            <Listbox.Option value="b" disabled className={(bag) => JSON.stringify(bag)}>
               Option B
             </Listbox.Option>
             <Listbox.Option value="c" className="no-special-treatment">
@@ -645,7 +646,7 @@ describe('Rendering composition', () => {
       await click(getListboxButton())
 
       // Verify options are buttons now
-      getListboxOptions().forEach(option => assertListboxOption(option, { tag: 'button' }))
+      getListboxOptions().forEach((option) => assertListboxOption(option, { tag: 'button' }))
     })
   )
 })
@@ -673,7 +674,7 @@ describe('Composition', () => {
             <Debug name="Transition" fn={orderFn} />
             <Listbox.Options>
               <Listbox.Option value="a">
-                {data => (
+                {(data) => (
                   <>
                     {JSON.stringify(data)}
                     <Debug name="Listbox.Option" fn={orderFn} />
@@ -756,7 +757,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option, { selected: false }))
+        options.forEach((option) => assertListboxOption(option, { selected: false }))
 
         // Verify that the first listbox option is active
         assertActiveListboxOption(options[0])
@@ -918,7 +919,7 @@ describe('Keyboard interactions', () => {
           <Listbox value={selectedOption} onChange={console.log}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
-              {myOptions.map(myOption => (
+              {myOptions.map((myOption) => (
                 <Listbox.Option key={myOption.id} value={myOption}>
                   {myOption.name}
                 </Listbox.Option>
@@ -1139,7 +1140,7 @@ describe('Keyboard interactions', () => {
           return (
             <Listbox
               value={value}
-              onChange={value => {
+              onChange={(value) => {
                 setValue(value)
                 handleChange(value)
               }}
@@ -1234,7 +1235,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
       })
     )
@@ -1462,7 +1463,7 @@ describe('Keyboard interactions', () => {
           return (
             <Listbox
               value={value}
-              onChange={value => {
+              onChange={(value) => {
                 setValue(value)
                 handleChange(value)
               }}
@@ -1600,7 +1601,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // Try to tab
@@ -1651,7 +1652,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // Try to Shift+Tab
@@ -1704,7 +1705,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
 
         // Verify that the first listbox option is active
         assertActiveListboxOption(options[0])
@@ -1844,7 +1845,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // We should be able to go down once
@@ -1892,7 +1893,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[1])
 
         // We should be able to go down once
@@ -1934,7 +1935,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
       })
     )
@@ -1970,7 +1971,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // We should be able to go right once
@@ -2027,7 +2028,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
 
         // ! ALERT: The LAST option should now be active
         assertActiveListboxOption(options[2])
@@ -2171,7 +2172,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
       })
     )
@@ -2209,7 +2210,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
 
         // We should not be able to go up (because those are disabled)
@@ -2260,7 +2261,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
 
         // We should be able to go down once
@@ -2318,7 +2319,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
 
         // We should be able to go left once
@@ -3198,7 +3199,7 @@ describe('Mouse interactions', () => {
       // Verify we have listbox options
       let options = getListboxOptions()
       expect(options).toHaveLength(3)
-      options.forEach(option => assertListboxOption(option))
+      options.forEach((option) => assertListboxOption(option))
     })
   )
 
@@ -3726,7 +3727,7 @@ describe('Mouse interactions', () => {
         return (
           <Listbox
             value={value}
-            onChange={value => {
+            onChange={(value) => {
               setValue(value)
               handleChange(value)
             }}
@@ -3777,7 +3778,7 @@ describe('Mouse interactions', () => {
         return (
           <Listbox
             value={value}
-            onChange={value => {
+            onChange={(value) => {
               setValue(value)
               handleChange(value)
             }}

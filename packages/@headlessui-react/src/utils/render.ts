@@ -102,10 +102,12 @@ function _render<TTag extends ElementType, TSlot>(
   tag: ElementType,
   name: string
 ) {
-  let { as: Component = tag, children, refName = 'ref', ...passThroughProps } = omit(props, [
-    'unmount',
-    'static',
-  ])
+  let {
+    as: Component = tag,
+    children,
+    refName = 'ref',
+    ...passThroughProps
+  } = omit(props, ['unmount', 'static'])
 
   // This allows us to use `<HeadlessUIComponent as={MyComponent} refName="innerRef" />`
   let refRelatedProps = props.ref !== undefined ? { [refName]: props.ref } : {}
@@ -132,7 +134,7 @@ function _render<TTag extends ElementType, TSlot>(
             `The current component <${name} /> is rendering a "Fragment".`,
             `However we need to passthrough the following props:`,
             Object.keys(passThroughProps)
-              .map(line => `  - ${line}`)
+              .map((line) => `  - ${line}`)
               .join('\n'),
             '',
             'You can apply a few solutions:',
@@ -140,7 +142,7 @@ function _render<TTag extends ElementType, TSlot>(
               'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
               'Render a single element as the child so that we can forward the props onto that element.',
             ]
-              .map(line => `  - ${line}`)
+              .map((line) => `  - ${line}`)
               .join('\n'),
           ].join('\n')
         )
@@ -211,7 +213,7 @@ function mergeEventFunctions(
 export function forwardRefWithAs<T extends { name: string; displayName?: string }>(
   component: T
 ): T & { displayName: string } {
-  return Object.assign(forwardRef((component as unknown) as any) as any, {
+  return Object.assign(forwardRef(component as unknown as any) as any, {
     displayName: component.displayName ?? component.name,
   })
 }

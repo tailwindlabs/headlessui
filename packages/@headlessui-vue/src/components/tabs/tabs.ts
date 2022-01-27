@@ -102,8 +102,8 @@ export let TabGroup = defineComponent({
       if (api.tabs.value.length <= 0) return
       if (props.selectedIndex === null && selectedIndex.value !== null) return
 
-      let tabs = api.tabs.value.map(tab => dom(tab)).filter(Boolean) as HTMLElement[]
-      let focusableTabs = tabs.filter(tab => !tab.hasAttribute('disabled'))
+      let tabs = api.tabs.value.map((tab) => dom(tab)).filter(Boolean) as HTMLElement[]
+      let focusableTabs = tabs.filter((tab) => !tab.hasAttribute('disabled'))
 
       let indexToSet = props.selectedIndex ?? props.defaultIndex
 
@@ -122,7 +122,7 @@ export let TabGroup = defineComponent({
         let before = tabs.slice(0, indexToSet)
         let after = tabs.slice(indexToSet)
 
-        let next = [...after, ...before].find(tab => focusableTabs.includes(tab))
+        let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
         if (!next) return
 
         selectedIndex.value = tabs.indexOf(next)
@@ -220,7 +220,7 @@ export let Tab = defineComponent({
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
     function handleKeyDown(event: KeyboardEvent) {
-      let list = api.tabs.value.map(tab => dom(tab)).filter(Boolean) as HTMLElement[]
+      let list = api.tabs.value.map((tab) => dom(tab)).filter(Boolean) as HTMLElement[]
 
       if (event.key === Keys.Space || event.key === Keys.Enter) {
         event.preventDefault()

@@ -7,7 +7,7 @@ export default function Home() {
   let [state, setState] = useState(false)
 
   return (
-    <div className="flex items-start justify-center w-screen h-full p-12 bg-gray-50">
+    <div className="flex h-full w-screen items-start justify-center bg-gray-50 p-12">
       <Switch.Group as="div" className="flex items-center space-x-4">
         <Switch.Label>Enable notifications</Switch.Label>
 
@@ -17,7 +17,7 @@ export default function Home() {
           onChange={setState}
           className={({ checked }) =>
             classNames(
-              'relative inline-flex flex-shrink-0 h-6 border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline transition-colors ease-in-out duration-200',
+              'focus:shadow-outline relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
               checked ? 'bg-indigo-600' : 'bg-gray-200'
             )
           }
@@ -26,7 +26,7 @@ export default function Home() {
             <>
               <span
                 className={classNames(
-                  'inline-block w-5 h-5 bg-white rounded-full transform transition ease-in-out duration-200',
+                  'inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out',
                   checked ? 'translate-x-5' : 'translate-x-0'
                 )}
               />

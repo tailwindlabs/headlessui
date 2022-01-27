@@ -1,4 +1,4 @@
-import { defineComponent, ref, nextTick, onMounted } from 'vue'
+import { defineComponent, ref, nextTick, onMounted, ComponentOptionsWithoutProps } from 'vue'
 
 import { FocusTrap } from './focus-trap'
 import { assertActiveElement, getByText } from '../../test-utils/accessibility-assertions'
@@ -16,7 +16,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { FocusTrap }
 
   if (typeof input === 'string') {
@@ -41,7 +41,7 @@ it('should focus the first focusable element inside the FocusTrap', async () => 
     `
   )
 
-  await new Promise(nextTick)
+  await new Promise<void>(nextTick)
 
   assertActiveElement(getByText('Trigger'))
 })
@@ -64,7 +64,7 @@ it('should focus the autoFocus element inside the FocusTrap if that exists', asy
     },
   })
 
-  await new Promise(nextTick)
+  await new Promise<void>(nextTick)
 
   assertActiveElement(document.getElementById('b'))
 })
@@ -84,7 +84,7 @@ it('should focus the initialFocus element inside the FocusTrap if that exists', 
     },
   })
 
-  await new Promise(nextTick)
+  await new Promise<void>(nextTick)
 
   assertActiveElement(document.getElementById('c'))
 })
@@ -104,7 +104,7 @@ it('should focus the initialFocus element inside the FocusTrap even if another e
     },
   })
 
-  await new Promise(nextTick)
+  await new Promise<void>(nextTick)
 
   assertActiveElement(document.getElementById('c'))
 })
@@ -121,7 +121,7 @@ it('should warn when there is no focusable element inside the FocusTrap', async 
     `
   )
 
-  await new Promise(nextTick)
+  await new Promise<void>(nextTick)
 
   expect(spy.mock.calls[0][0]).toBe('There are no focusable elements inside the <FocusTrap />')
 })
@@ -143,7 +143,7 @@ it(
       `,
     })
 
-    await new Promise(nextTick)
+    await new Promise<void>(nextTick)
 
     let [a, b, c, d] = Array.from(document.querySelectorAll('input'))
 
@@ -193,14 +193,10 @@ it('should restore the previously focused element, before entering the FocusTrap
     template: html`
       <div>
         <input id="item-1" ref="autoFocusRef" />
-        <button id="item-2" @click="visible = true">
-          Open modal
-        </button>
+        <button id="item-2" @click="visible = true">Open modal</button>
 
         <FocusTrap v-if="visible">
-          <button id="item-3" @click="visible = false">
-            Close
-          </button>
+          <button id="item-3" @click="visible = false">Close</button>
         </FocusTrap>
       </div>
     `,
@@ -214,7 +210,7 @@ it('should restore the previously focused element, before entering the FocusTrap
     },
   })
 
-  await new Promise(nextTick)
+  await new Promise<void>(nextTick)
 
   // The input should have focus by default because of the autoFocus prop
   assertActiveElement(document.getElementById('item-1'))
@@ -247,7 +243,7 @@ it('should be possible to tab to the next focusable element within the focus tra
     `
   )
 
-  await new Promise(nextTick)
+  await new Promise<void>(nextTick)
 
   // Item A should be focused because the FocusTrap will focus the first item
   assertActiveElement(document.getElementById('item-a'))
@@ -302,12 +298,8 @@ it('should skip the initial "hidden" elements within the focus trap', async () =
       <div>
         <button id="before">Before</button>
         <FocusTrap>
-          <button id="item-a" style="display:none">
-            Item A
-          </button>
-          <button id="item-b" style="display:none">
-            Item B
-          </button>
+          <button id="item-a" style="display:none">Item A</button>
+          <button id="item-b" style="display:none">Item B</button>
           <button id="item-c">Item C</button>
           <button id="item-d">Item D</button>
         </FocusTrap>
@@ -328,9 +320,7 @@ it('should be possible skip "hidden" elements within the focus trap', async () =
         <FocusTrap>
           <button id="item-a">Item A</button>
           <button id="item-b">Item B</button>
-          <button id="item-c" style="display:none">
-            Item C
-          </button>
+          <button id="item-c" style="display:none">Item C</button>
           <button id="item-d">Item D</button>
         </FocusTrap>
         <button>After</button>
@@ -364,9 +354,7 @@ it('should be possible skip disabled elements within the focus trap', async () =
         <FocusTrap>
           <button id="item-a">Item A</button>
           <button id="item-b">Item B</button>
-          <button id="item-c" disabled>
-            Item C
-          </button>
+          <button id="item-c" disabled>Item C</button>
           <button id="item-d">Item D</button>
         </FocusTrap>
         <button>After</button>

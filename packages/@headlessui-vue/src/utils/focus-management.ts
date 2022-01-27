@@ -18,8 +18,8 @@ let focusableSelector = [
       ? // TODO: Remove this once JSDOM fixes the issue where an element that is
         // "hidden" can be the document.activeElement, because this is not possible
         // in real browsers.
-        selector => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
-      : selector => `${selector}:not([tabindex='-1'])`
+        (selector) => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
+      : (selector) => `${selector}:not([tabindex='-1'])`
   )
   .join(',')
 

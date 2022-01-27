@@ -1,17 +1,16 @@
 {
   "name": "playground-react",
-  "version": "1.0.0",
-  "main": "next.config.js",
+  "private": true,
+  "version": "0.0.0",
   "scripts": {
     "prebuild": "yarn workspace @headlessui/react build",
-    "dev": "next dev",
+    "dev:headlessui": "yarn workspace @headlessui/react watch",
+    "dev:next": "next dev",
+    "dev": "npm-run-all -p dev:*",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "clean": "rimraf ./.next"
   },
-  "keywords": [],
-  "author": "Robin Malfait",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@headlessui/react": "*",
     "@popperjs/core": "^2.6.0",

@@ -40,7 +40,7 @@ export function calculateActiveIndex<TItem>(
   let nextActiveIndex = (() => {
     switch (action.focus) {
       case Focus.First:
-        return items.findIndex(item => !resolvers.resolveDisabled(item))
+        return items.findIndex((item) => !resolvers.resolveDisabled(item))
 
       case Focus.Previous: {
         let idx = items
@@ -64,13 +64,13 @@ export function calculateActiveIndex<TItem>(
         let idx = items
           .slice()
           .reverse()
-          .findIndex(item => !resolvers.resolveDisabled(item))
+          .findIndex((item) => !resolvers.resolveDisabled(item))
         if (idx === -1) return idx
         return items.length - 1 - idx
       }
 
       case Focus.Specific:
-        return items.findIndex(item => resolvers.resolveId(item) === action.id)
+        return items.findIndex((item) => resolvers.resolveId(item) === action.id)
 
       case Focus.Nothing:
         return null

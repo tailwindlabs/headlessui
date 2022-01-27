@@ -23,7 +23,7 @@ export default function Home() {
   let [active, setActive] = useState()
 
   return (
-    <div className="p-12 max-w-xl">
+    <div className="max-w-xl p-12">
       <a href="/">Link before</a>
       <RadioGroup value={active} onChange={setActive}>
         <fieldset className="space-y-4">
@@ -31,7 +31,7 @@ export default function Home() {
             <h2 className="text-xl">Privacy setting</h2>
           </legend>
 
-          <div className="bg-white rounded-md -space-y-px">
+          <div className="-space-y-px rounded-md bg-white">
             {access.map(({ id, name, description }, i) => {
               return (
                 <RadioGroup.Option
@@ -44,17 +44,17 @@ export default function Home() {
                       access.length - 1 === i && 'rounded-bl-md rounded-br-md',
 
                       // Shared
-                      'relative border p-4 flex focus:outline-none',
-                      active ? 'bg-indigo-50 border-indigo-200 z-10' : 'border-gray-200'
+                      'relative flex border p-4 focus:outline-none',
+                      active ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'
                     )
                   }
                 >
                   {({ active, checked }) => (
-                    <div className="flex justify-between items-center w-full">
-                      <div className="ml-3 flex flex-col cursor-pointer">
+                    <div className="flex w-full items-center justify-between">
+                      <div className="ml-3 flex cursor-pointer flex-col">
                         <span
                           className={classNames(
-                            'block text-sm leading-5 font-medium',
+                            'block text-sm font-medium leading-5',
                             active ? 'text-indigo-900' : 'text-gray-900'
                           )}
                         >

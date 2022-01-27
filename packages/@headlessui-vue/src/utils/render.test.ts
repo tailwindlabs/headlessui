@@ -1,4 +1,4 @@
-import { defineComponent } from 'vue'
+import { defineComponent, ComponentOptionsWithoutProps } from 'vue'
 import { render as testRender } from '../test-utils/vue-testing-library'
 
 import { render } from './render'
@@ -13,7 +13,7 @@ let Dummy = defineComponent({
   },
 })
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Dummy }
 
   if (typeof input === 'string') {
@@ -34,9 +34,7 @@ describe('Validation', () => {
     expect.hasAssertions()
 
     renderTemplate({
-      template: html`
-        <Dummy as="template" class="abc">Contents</Dummy>
-      `,
+      template: html` <Dummy as="template" class="abc">Contents</Dummy> `,
       errorCaptured(err) {
         expect(err as Error).toEqual(
           new Error(

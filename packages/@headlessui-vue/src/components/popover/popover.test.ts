@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, h } from 'vue'
+import { defineComponent, nextTick, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
@@ -28,7 +28,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = {
     Popover,
     PopoverGroup,
@@ -345,9 +345,7 @@ describe('Rendering', () => {
         renderTemplate(
           html`
             <Popover>
-              <PopoverButton type="submit">
-                Trigger
-              </PopoverButton>
+              <PopoverButton type="submit"> Trigger </PopoverButton>
             </Popover>
           `
         )
@@ -361,14 +359,12 @@ describe('Rendering', () => {
           renderTemplate({
             template: html`
               <Popover>
-                <PopoverButton :as="CustomButton">
-                  Trigger
-                </PopoverButton>
+                <PopoverButton :as="CustomButton"> Trigger </PopoverButton>
               </Popover>
             `,
             setup: () => ({
               CustomButton: defineComponent({
-                setup: props => () => h('button', { ...props }),
+                setup: (props) => () => h('button', { ...props }),
               }),
             }),
           })
@@ -383,9 +379,7 @@ describe('Rendering', () => {
         renderTemplate(
           html`
             <Popover>
-              <PopoverButton as="div">
-                Trigger
-              </PopoverButton>
+              <PopoverButton as="div"> Trigger </PopoverButton>
             </Popover>
           `
         )
@@ -399,14 +393,12 @@ describe('Rendering', () => {
           renderTemplate({
             template: html`
               <Popover>
-                <PopoverButton :as="CustomButton">
-                  Trigger
-                </PopoverButton>
+                <PopoverButton :as="CustomButton"> Trigger </PopoverButton>
               </Popover>
             `,
             setup: () => ({
               CustomButton: defineComponent({
-                setup: props => () => h('div', props),
+                setup: (props) => () => h('div', props),
               }),
             }),
           })
@@ -569,9 +561,7 @@ describe('Rendering', () => {
             <Popover>
               <PopoverButton>Trigger</PopoverButton>
               <PopoverPanel focus>
-                <a href="/" style="display:none">
-                  Link 1
-                </a>
+                <a href="/" style="display:none"> Link 1 </a>
                 <a href="/">Link 2</a>
               </PopoverPanel>
             </Popover>
@@ -757,9 +747,7 @@ describe('Composition', () => {
           <Popover>
             <PopoverButton>Trigger</PopoverButton>
             <OpenClosedWrite :open="true">
-              <PopoverPanel v-slot="data">
-                {{JSON.stringify(data)}}
-              </PopoverPanel>
+              <PopoverPanel v-slot="data"> {{JSON.stringify(data)}} </PopoverPanel>
             </OpenClosedWrite>
           </Popover>
         `,
@@ -787,9 +775,7 @@ describe('Composition', () => {
           <Popover>
             <PopoverButton>Trigger</PopoverButton>
             <OpenClosedWrite :open="false">
-              <PopoverPanel v-slot="data">
-                {{JSON.stringify(data)}}
-              </PopoverPanel>
+              <PopoverPanel v-slot="data"> {{JSON.stringify(data)}} </PopoverPanel>
             </OpenClosedWrite>
           </Popover>
         `,

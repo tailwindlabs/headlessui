@@ -1,14 +1,33 @@
 #!/bin/bash
 set -e
 
-node="yarn node"
-tsdxArgs=()
+# Known variables
+outdir="./dist"
+name="headlessui"
+input="./src/index.ts"
 
-# Add script name
-tsdxArgs+=("build" "--name" "headlessui" "--format" "cjs,esm,umd" "--tsconfig" "./tsconfig.tsdx.json")
+# Find executables
+esbuild=$(yarn bin esbuild)
+tsc=$(yarn bin tsc)
 
-# Passthrough arguments and flags
-tsdxArgs+=($@)
+# Setup shared options for esbuild
+sharedOptions=()
+sharedOptions+=("--bundle")
+sharedOptions+=("--platform=browser")
+sharedOptions+=("--target=es2020")
 
-# Execute
-$node "$(yarn bin tsdx)" "${tsdxArgs[@]}"
+# Generate actual builds
+NODE_ENV=production  $esbuild $input --format=esm  --outfile=$outdir/$name.esm.js      --minify ${sharedOptions[@]} $@ &
+NODE_ENV=production  $esbuild $input --format=cjs  --outfile=$outdir/$name.prod.cjs.js --minify ${sharedOptions[@]} $@ &
+NODE_ENV=production  $esbuild $input --format=iife --outfile=$outdir/$name.iife.js     --minify ${sharedOptions[@]} $@ &
+NODE_ENV=development $esbuild $input --format=cjs  --outfile=$outdir/$name.dev.cjs.js           ${sharedOptions[@]} $@ &
+
+# Generate types
+tsc --emitDeclarationOnly --outDir $outdir &
+
+# Copy build files over
+cp -rf ./build/ $outdir
+
+# Wait for all the scripts to finish
+wait
+

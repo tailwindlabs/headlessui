@@ -1,4 +1,4 @@
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, ComponentOptionsWithoutProps } from 'vue'
 import { render, fireEvent } from '../../test-utils/vue-testing-library'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -11,7 +11,7 @@ jest.mock('../../hooks/use-id')
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { TransitionRoot, TransitionChild }
 
   if (typeof input === 'string') {
@@ -58,9 +58,7 @@ it('should render without crashing', () => {
 
 it('should be possible to render a Transition without children', () => {
   renderTemplate({
-    template: html`
-      <TransitionRoot :show="true" class="transition" />
-    `,
+    template: html` <TransitionRoot :show="true" class="transition" /> `,
   })
   expect(document.getElementsByClassName('transition')).not.toBeNull()
 })
@@ -91,12 +89,10 @@ describe('Setup API', () => {
   describe('shallow', () => {
     it('should render a div and its children by default', () => {
       let { container } = renderTemplate({
-        template: html`
-          <TransitionRoot :show="true">Children</TransitionRoot>
-        `,
+        template: html`<TransitionRoot :show="true">Children</TransitionRoot>`,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(html`
+      expect(container.firstChild).toMatchInlineSnapshot(`
         <div>
           Children
         </div>
@@ -106,9 +102,7 @@ describe('Setup API', () => {
     it('should passthrough all the props (that we do not use internally)', () => {
       let { container } = renderTemplate({
         template: html`
-          <TransitionRoot :show="true" id="root" class="text-blue-400">
-            Children
-          </TransitionRoot>
+          <TransitionRoot :show="true" id="root" class="text-blue-400"> Children </TransitionRoot>
         `,
       })
 
@@ -124,11 +118,7 @@ describe('Setup API', () => {
 
     it('should render another component if the `as` prop is used and its children by default', () => {
       let { container } = renderTemplate({
-        template: html`
-          <TransitionRoot :show="true" as="a">
-            Children
-          </TransitionRoot>
-        `,
+        template: html` <TransitionRoot :show="true" as="a"> Children </TransitionRoot> `,
       })
 
       expect(container.firstChild).toMatchInlineSnapshot(`
@@ -159,9 +149,7 @@ describe('Setup API', () => {
 
     it('should render nothing when the show prop is false', () => {
       let { container } = renderTemplate({
-        template: html`
-          <TransitionRoot :show="false">Children</TransitionRoot>
-        `,
+        template: html` <TransitionRoot :show="false">Children</TransitionRoot> `,
       })
 
       expect(container.firstChild).toMatchInlineSnapshot(`<!---->`)
@@ -169,11 +157,7 @@ describe('Setup API', () => {
 
     it('should be possible to change the underlying DOM tag', () => {
       let { container } = renderTemplate({
-        template: html`
-          <TransitionRoot :show="true" as="a">
-            Children
-          </TransitionRoot>
-        `,
+        template: html` <TransitionRoot :show="true" as="a"> Children </TransitionRoot> `,
       })
 
       expect(container.firstChild).toMatchInlineSnapshot(`
@@ -470,9 +454,7 @@ describe('Transitions', () => {
             <span>Hello!</span>
           </TransitionRoot>
 
-          <button data-testid="toggle" @click="show = !show">
-            Toggle
-          </button>
+          <button data-testid="toggle" @click="show = !show">Toggle</button>
         `,
         setup() {
           let show = ref(false)
@@ -525,9 +507,7 @@ describe('Transitions', () => {
             <span>Hello!</span>
           </TransitionRoot>
 
-          <button data-testid="toggle" @click="show = !show">
-            Toggle
-          </button>
+          <button data-testid="toggle" @click="show = !show">Toggle</button>
         `,
         setup() {
           let show = ref(false)
@@ -580,9 +560,7 @@ describe('Transitions', () => {
             <span>Hello!</span>
           </TransitionRoot>
 
-          <button data-testid="toggle" @click="show = !show">
-            Toggle
-          </button>
+          <button data-testid="toggle" @click="show = !show">Toggle</button>
         `,
         setup() {
           let show = ref(false)
@@ -630,9 +608,7 @@ describe('Transitions', () => {
             <span>Hello!</span>
           </TransitionRoot>
 
-          <button data-testid="toggle" @click="show = !show">
-            Toggle
-          </button>
+          <button data-testid="toggle" @click="show = !show">Toggle</button>
         `,
         setup() {
           let show = ref(false)
@@ -687,9 +663,7 @@ describe('Transitions', () => {
               <span>Hello!</span>
             </TransitionRoot>
 
-            <button data-testid="toggle" @click="show = !show">
-              Toggle
-            </button>
+            <button data-testid="toggle" @click="show = !show">Toggle</button>
           `,
           setup() {
             let show = ref(true)
@@ -753,9 +727,7 @@ describe('Transitions', () => {
               <span>Hello!</span>
             </TransitionRoot>
 
-            <button data-testid="toggle" @click="show = !show">
-              Toggle
-            </button>
+            <button data-testid="toggle" @click="show = !show">Toggle</button>
           `,
           setup() {
             let show = ref(true)
@@ -822,9 +794,7 @@ describe('Transitions', () => {
               <span>Hello!</span>
             </TransitionRoot>
 
-            <button data-testid="toggle" @click="show = !show">
-              Toggle
-            </button>
+            <button data-testid="toggle" @click="show = !show">Toggle</button>
           `,
           setup() {
             let show = ref(false)
@@ -918,9 +888,7 @@ describe('Transitions', () => {
               <span>Hello!</span>
             </TransitionRoot>
 
-            <button data-testid="toggle" @click="show = !show">
-              Toggle
-            </button>
+            <button data-testid="toggle" @click="show = !show">Toggle</button>
           `,
           setup() {
             let show = ref(false)
@@ -1021,9 +989,7 @@ describe('Transitions', () => {
               </TransitionChild>
             </TransitionRoot>
 
-            <button data-testid="toggle" @click="show = !show">
-              Toggle
-            </button>
+            <button data-testid="toggle" @click="show = !show">Toggle</button>
           `,
           setup() {
             let show = ref(true)
@@ -1113,9 +1079,7 @@ describe('Transitions', () => {
               </TransitionChild>
             </TransitionRoot>
 
-            <button data-testid="toggle" @click="show = !show">
-              Toggle
-            </button>
+            <button data-testid="toggle" @click="show = !show">Toggle</button>
           `,
           setup() {
             let show = ref(true)
@@ -1227,9 +1191,7 @@ describe('Events', () => {
             <span>Hello!</span>
           </TransitionRoot>
 
-          <button data-testid="toggle" @click="show = !show">
-            Toggle
-          </button>
+          <button data-testid="toggle" @click="show = !show">Toggle</button>
         `,
         setup() {
           let show = ref(false)

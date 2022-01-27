@@ -23,11 +23,11 @@ export function usePopper(
 
   return useMemo(
     () => [
-      referenceDomNode => {
+      (referenceDomNode) => {
         reference.current = referenceDomNode
         instantiatePopper()
       },
-      popperDomNode => {
+      (popperDomNode) => {
         popper.current = popperDomNode
         instantiatePopper()
       },

@@ -32,7 +32,7 @@ export function useInertOthers<TElement extends HTMLElement>(
   container: Ref<TElement | null>,
   enabled: Ref<boolean> = ref(true)
 ) {
-  watchEffect(onInvalidate => {
+  watchEffect((onInvalidate) => {
     if (!enabled.value) return
     if (!container.value) return
 
@@ -50,7 +50,7 @@ export function useInertOthers<TElement extends HTMLElement>(
     }
 
     // Collect direct children of the body
-    document.querySelectorAll(CHILDREN_SELECTOR).forEach(child => {
+    document.querySelectorAll(CHILDREN_SELECTOR).forEach((child) => {
       if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
       // Skip the interactables, and the parents of the interactables
@@ -79,7 +79,7 @@ export function useInertOthers<TElement extends HTMLElement>(
       // will become inert as well.
       if (interactables.size > 0) {
         // Collect direct children of the body
-        document.querySelectorAll(CHILDREN_SELECTOR).forEach(child => {
+        document.querySelectorAll(CHILDREN_SELECTOR).forEach((child) => {
           if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
           // Skip already inert parents

@@ -1,12 +1,12 @@
 import { render } from './vue-testing-library'
 
 import { type, shift, Keys } from './interactions'
-import { defineComponent, h } from 'vue'
+import { ComponentOptionsWithoutProps, defineComponent, h } from 'vue'
 
 type Events = 'onKeydown' | 'onKeyup' | 'onKeypress' | 'onClick' | 'onBlur' | 'onFocus'
 let events: Events[] = ['onKeydown', 'onKeyup', 'onKeypress', 'onClick', 'onBlur', 'onFocus']
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = {}
 
   if (typeof input === 'string') {
@@ -164,7 +164,7 @@ describe('Keyboard', () => {
       let state = { readyToCapture: false }
 
       function createProps(id: string) {
-        return events.reduce(
+        return events.reduce<Record<string, string | ((event: any) => void)>>(
           (props, name) => {
             props[name] = (event: any) => {
               if (!state.readyToCapture) return
@@ -202,7 +202,7 @@ describe('Keyboard', () => {
 
       await type([key(input)])
 
-      let expected = result.map(e => event(e))
+      let expected = result.map((e) => event(e))
 
       expect(fired.length).toEqual(result.length)
 

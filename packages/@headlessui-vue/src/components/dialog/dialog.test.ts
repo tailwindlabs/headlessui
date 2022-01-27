@@ -1,4 +1,4 @@
-import { defineComponent, ref, nextTick, h } from 'vue'
+import { defineComponent, ref, nextTick, h, ComponentOptionsWithoutProps } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Dialog, DialogOverlay, DialogTitle, DialogDescription } from './dialog'
@@ -30,9 +30,7 @@ afterAll(() => jest.restoreAllMocks())
 
 let TabSentinel = defineComponent({
   name: 'TabSentinel',
-  template: html`
-    <div :tabindex="0"></div>
-  `,
+  template: html` <div :tabindex="0"></div> `,
 })
 
 jest.mock('../../hooks/use-id')
@@ -44,7 +42,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Dialog, DialogOverlay, DialogTitle, DialogDescription, TabSentinel }
 
   if (typeof input === 'string') {

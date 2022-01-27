@@ -21,16 +21,16 @@ export default function Home() {
   }
 
   return (
-    <div className="flex justify-center w-screen h-full p-12 bg-gray-50">
-      <div className="inline-block mt-64 text-left">
+    <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
+      <div className="mt-64 inline-block text-left">
         <Menu>
           <span className="inline-flex rounded-md shadow-sm">
             <Menu.Button
               ref={trigger}
-              className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800"
+              className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800"
             >
               <span>Options</span>
-              <svg className="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fillRule="evenodd"
                   d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -42,12 +42,12 @@ export default function Home() {
 
           <Portal>
             <Menu.Items
-              className="w-56 bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+              className="w-56 divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none"
               ref={container}
             >
               <div className="px-4 py-3">
                 <p className="text-sm leading-5">Signed in as</p>
-                <p className="text-sm font-medium leading-5 text-gray-900 truncate">
+                <p className="truncate text-sm font-medium leading-5 text-gray-900">
                   tom@example.com
                 </p>
               </div>
@@ -57,7 +57,7 @@ export default function Home() {
                   Account settings
                 </Menu.Item>
                 <Menu.Item>
-                  {data => (
+                  {(data) => (
                     <a href="#support" className={resolveClass(data)}>
                       Support
                     </a>

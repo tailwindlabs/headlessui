@@ -46,4 +46,3 @@ yarn vue test
 ```
 
 Please ensure that the tests are passing when submitting a pull request. If you're adding new features to Headless UI, please include tests.
-

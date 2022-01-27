@@ -130,8 +130,8 @@ export let Listbox = defineComponent({
           {
             resolveItems: () => options.value,
             resolveActiveIndex: () => activeOptionIndex.value,
-            resolveId: option => option.id,
-            resolveDisabled: option => option.dataRef.disabled,
+            resolveId: (option) => option.id,
+            resolveDisabled: (option) => option.dataRef.disabled,
           }
         )
 
@@ -153,7 +153,7 @@ export let Listbox = defineComponent({
             : options.value
 
         let matchingOption = reOrderedOptions.find(
-          option =>
+          (option) =>
             option.dataRef.textValue.startsWith(searchQuery.value) && !option.dataRef.disabled
         )
 
@@ -186,7 +186,7 @@ export let Listbox = defineComponent({
         let nextOptions = options.value.slice()
         let currentActiveOption =
           activeOptionIndex.value !== null ? nextOptions[activeOptionIndex.value] : null
-        let idx = nextOptions.findIndex(a => a.id === id)
+        let idx = nextOptions.findIndex((a) => a.id === id)
         if (idx !== -1) nextOptions.splice(idx, 1)
         options.value = nextOptions
         activeOptionIndex.value = (() => {
@@ -204,7 +204,7 @@ export let Listbox = defineComponent({
       },
     }
 
-    useWindowEvent('mousedown', event => {
+    useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
       let active = document.activeElement
 
@@ -529,10 +529,7 @@ export let ListboxOption = defineComponent({
       textValue: '',
     })
     onMounted(() => {
-      let textValue = document
-        .getElementById(id)
-        ?.textContent?.toLowerCase()
-        .trim()
+      let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 

@@ -31,7 +31,7 @@ import {
 type ID = ReturnType<typeof useId>
 
 function splitClasses(classes: string = '') {
-  return classes.split(' ').filter(className => className.trim().length > 1)
+  return classes.split(' ').filter((className) => className.trim().length > 1)
 }
 
 interface TransitionContextValues {
@@ -292,7 +292,7 @@ export let TransitionChild = defineComponent({
               enterFromClasses,
               enterToClasses,
               enteredClasses,
-              reason => {
+              (reason) => {
                 isTransitioning.value = false
                 if (reason === Reason.Finished) emit('afterEnter')
               }
@@ -303,7 +303,7 @@ export let TransitionChild = defineComponent({
               leaveFromClasses,
               leaveToClasses,
               enteredClasses,
-              reason => {
+              (reason) => {
                 isTransitioning.value = false
 
                 if (reason !== Reason.Finished) return

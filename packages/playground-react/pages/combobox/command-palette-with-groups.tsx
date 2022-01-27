@@ -35,7 +35,7 @@ export default function Home() {
   let people =
     query === ''
       ? everybody
-      : everybody.filter(person => person.name.toLowerCase().includes(query.toLowerCase()))
+      : everybody.filter((person) => person.name.toLowerCase().includes(query.toLowerCase()))
 
   let groups = people.reduce((groups, person) => {
     let lastNameLetter = person.name.split(' ')[1][0]
@@ -46,39 +46,39 @@ export default function Home() {
   }, new Map())
 
   return (
-    <div className="flex justify-center w-screen h-full p-12 bg-gray-50">
-      <div className="w-full max-w-lg mx-auto">
+    <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
+      <div className="mx-auto w-full max-w-lg">
         <div className="space-y-1">
           <Combobox
             as="div"
             value={activePerson}
-            onChange={person => setPerson(person)}
-            className="bg-white w-full shadow-sm border border-black/5 bg-clip-padding rounded overflow-hidden"
+            onChange={(person) => setPerson(person)}
+            className="w-full overflow-hidden rounded border border-black/5 bg-white bg-clip-padding shadow-sm"
           >
             {({ activeOption }) => {
               return (
-                <div className="flex flex-col w-full">
+                <div className="flex w-full flex-col">
                   <Combobox.Input
-                    onChange={e => setQuery(e.target.value)}
-                    className="border-none outline-none px-3 py-1 bg-none rounded-none w-full"
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-full rounded-none border-none bg-none px-3 py-1 outline-none"
                     placeholder="Search users…"
-                    displayValue={item => item?.name}
+                    displayValue={(item: typeof activeOption) => item?.name}
                   />
                   <div className="flex">
-                    <Combobox.Options className="flex-1 overflow-auto text-base leading-6 shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
+                    <Combobox.Options className="shadow-xs max-h-60 flex-1 overflow-auto text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
                       {Array.from(groups.entries())
                         .sort(([letterA], [letterZ]) => letterA.localeCompare(letterZ))
                         .map(([letter, people]) => (
                           <Fragment key={letter}>
                             <div className="bg-gray-100 px-4 py-2">{letter}</div>
-                            {people.map(person => (
+                            {people.map((person) => (
                               <Combobox.Option
                                 key={person.id}
                                 value={person}
                                 className={({ active }) => {
                                   return classNames(
-                                    'flex  relative py-2 pl-3 cursor-default select-none pr-9 focus:outline-none space-x-4',
-                                    active ? 'text-white bg-indigo-600' : 'text-gray-900'
+                                    'relative  flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 focus:outline-none',
+                                    active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                                   )
                                 }}
                               >
@@ -86,7 +86,7 @@ export default function Home() {
                                   <>
                                     <img
                                       src={person.img}
-                                      className="w-6 h-6 overflow-hidden rounded-full"
+                                      className="h-6 w-6 overflow-hidden rounded-full"
                                     />
                                     <span
                                       className={classNames(
@@ -103,7 +103,7 @@ export default function Home() {
                                           active ? 'text-white' : 'text-indigo-600'
                                         )}
                                       >
-                                        <svg className="w-5 h-5" viewBox="0 0 25 24" fill="none">
+                                        <svg className="h-5 w-5" viewBox="0 0 25 24" fill="none">
                                           <path
                                             d="M11.25 8.75L14.75 12L11.25 15.25"
                                             stroke="currentColor"
@@ -123,16 +123,16 @@ export default function Home() {
                     </Combobox.Options>
 
                     {people.length === 0 ? (
-                      <div className="text-center w-full py-4">No person selected</div>
+                      <div className="w-full py-4 text-center">No person selected</div>
                     ) : activeOption === null ? null : (
                       <div className="border-l">
                         <div className="flex flex-col">
                           <div className="p-8 text-center">
                             <img
                               src={activeOption.img}
-                              className="w-16 h-16 rounded-full overflow-hidden inline-block mb-4"
+                              className="mb-4 inline-block h-16 w-16 overflow-hidden rounded-full"
                             />
-                            <div className="text-gray-900 font-bold">{activeOption.name}</div>
+                            <div className="font-bold text-gray-900">{activeOption.name}</div>
                             <div className="text-gray-700">Obviously cool person</div>
                           </div>
                         </div>

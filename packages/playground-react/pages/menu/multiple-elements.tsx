@@ -4,13 +4,13 @@ import { classNames } from '../../utils/class-names'
 
 export default function Home() {
   return (
-    <div className="flex justify-center w-screen h-full p-12 space-x-4 bg-gray-50">
+    <div className="flex h-full w-screen justify-center space-x-4 bg-gray-50 p-12">
       <Dropdown />
 
       <div>
         <div className="relative rounded-md shadow-sm">
           <input
-            className="block w-full form-input sm:text-sm sm:leading-5"
+            className="form-input block w-full sm:text-sm sm:leading-5"
             placeholder="you@example.com"
           />
         </div>
@@ -34,9 +34,9 @@ function Dropdown() {
     <div className="relative inline-block text-left">
       <Menu>
         <span className="inline-flex rounded-md shadow-sm">
-          <Menu.Button className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800">
+          <Menu.Button className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800">
             <span>Options</span>
-            <svg className="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <svg className="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path
                 fillRule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -46,10 +46,10 @@ function Dropdown() {
           </Menu.Button>
         </span>
 
-        <Menu.Items className="absolute right-0 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none">
+        <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none">
           <div className="px-4 py-3">
             <p className="text-sm leading-5">Signed in as</p>
-            <p className="text-sm font-medium leading-5 text-gray-900 truncate">tom@example.com</p>
+            <p className="truncate text-sm font-medium leading-5 text-gray-900">tom@example.com</p>
           </div>
 
           <div className="py-1">
@@ -57,7 +57,7 @@ function Dropdown() {
               Account settings
             </Menu.Item>
             <Menu.Item>
-              {data => (
+              {(data) => (
                 <a href="#support" className={resolveClass(data)}>
                   Support
                 </a>

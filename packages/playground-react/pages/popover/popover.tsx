@@ -7,7 +7,7 @@ let Button = forwardRef(
     return (
       <Popover.Button
         ref={ref}
-        className="px-3 py-2 bg-gray-300 border-2 border-transparent focus:outline-none focus:border-blue-900"
+        className="border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-none"
         {...props}
       />
     )
@@ -18,7 +18,7 @@ function Link(props: React.ComponentProps<'a'>) {
   return (
     <a
       href="/"
-      className="px-3 py-2 border-2 border-transparent hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:border-blue-900"
+      className="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
       {...props}
     >
       {props.children}
@@ -39,7 +39,7 @@ export default function Home() {
   let links = ['First', 'Second', 'Third', 'Fourth']
 
   return (
-    <div className="flex justify-center items-center space-x-12 p-12">
+    <div className="flex items-center justify-center space-x-12 p-12">
       <button>Previous</button>
 
       <Popover.Group as="nav" aria-label="Mythical University" className="flex space-x-3">
@@ -53,13 +53,13 @@ export default function Home() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Popover.Overlay className="bg-opacity-75 bg-gray-500 fixed inset-0 z-20"></Popover.Overlay>
+            <Popover.Overlay className="fixed inset-0 z-20 bg-gray-500 bg-opacity-75"></Popover.Overlay>
           </Transition>
 
-          <Popover.Button className="px-3 py-2 bg-gray-300 border-2 border-transparent focus:outline-none focus:border-blue-900 relative z-30">
+          <Popover.Button className="relative z-30 border-2 border-transparent bg-gray-300 px-3 py-2 focus:border-blue-900 focus:outline-none">
             Normal
           </Popover.Button>
-          <Popover.Panel className="absolute flex flex-col w-64 bg-gray-100 border-2 border-blue-900 z-30">
+          <Popover.Panel className="absolute z-30 flex w-64 flex-col border-2 border-blue-900 bg-gray-100">
             {links.map((link, i) => (
               <Link key={link} hidden={i === 2}>
                 Normal - {link}
@@ -72,7 +72,7 @@ export default function Home() {
           <Button>Focus</Button>
           <Popover.Panel
             focus
-            className="absolute flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
+            className="absolute flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
           >
             {links.map((link, i) => (
               <Link key={link}>Focus - {link}</Link>
@@ -85,9 +85,9 @@ export default function Home() {
           <Portal>
             <Popover.Panel
               ref={popper1}
-              className="flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
+              className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
             >
-              {links.map(link => (
+              {links.map((link) => (
                 <Link key={link}>Portal - {link}</Link>
               ))}
             </Popover.Panel>
@@ -100,9 +100,9 @@ export default function Home() {
             <Popover.Panel
               ref={popper2}
               focus
-              className="flex flex-col w-64 bg-gray-100 border-2 border-blue-900"
+              className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
             >
-              {links.map(link => (
+              {links.map((link) => (
                 <Link key={link}>Focus in Portal - {link}</Link>
               ))}
             </Popover.Panel>

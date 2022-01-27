@@ -82,10 +82,10 @@ it('should cleanup the Portal root when the last Portal is unmounted', async () 
 
     return (
       <main id="parent">
-        <button id="a" onClick={() => setRenderA(v => !v)}>
+        <button id="a" onClick={() => setRenderA((v) => !v)}>
           Toggle A
         </button>
-        <button id="b" onClick={() => setRenderB(v => !v)}>
+        <button id="b" onClick={() => setRenderB((v) => !v)}>
           Toggle B
         </button>
 
@@ -151,21 +151,21 @@ it('should be possible to render multiple portals at the same time', async () =>
 
     return (
       <main id="parent">
-        <button id="a" onClick={() => setRenderA(v => !v)}>
+        <button id="a" onClick={() => setRenderA((v) => !v)}>
           Toggle A
         </button>
-        <button id="b" onClick={() => setRenderB(v => !v)}>
+        <button id="b" onClick={() => setRenderB((v) => !v)}>
           Toggle B
         </button>
-        <button id="c" onClick={() => setRenderC(v => !v)}>
+        <button id="c" onClick={() => setRenderC((v) => !v)}>
           Toggle C
         </button>
 
         <button
           id="double"
           onClick={() => {
-            setRenderA(v => !v)
-            setRenderB(v => !v)
+            setRenderA((v) => !v)
+            setRenderB((v) => !v)
           }}
         >
           Toggle A & B{' '}
@@ -231,10 +231,10 @@ it('should be possible to tamper with the modal root and restore correctly', asy
 
     return (
       <main id="parent">
-        <button id="a" onClick={() => setRenderA(v => !v)}>
+        <button id="a" onClick={() => setRenderA((v) => !v)}>
           Toggle A
         </button>
-        <button id="b" onClick={() => setRenderB(v => !v)}>
+        <button id="b" onClick={() => setRenderB((v) => !v)}>
           Toggle B
         </button>
 

@@ -113,13 +113,13 @@ function KeyCaster() {
 
   useEffect(() => {
     function handler(event: KeyboardEvent) {
-      setKeys(current => [
+      setKeys((current) => [
         event.shiftKey && event.key !== 'Shift'
           ? KeyDisplay[`Shift${event.key}`] ?? event.key
           : KeyDisplay[event.key] ?? event.key,
         ...current,
       ])
-      d.setTimeout(() => setKeys(current => tap(current.slice(), clone => clone.pop())), 2000)
+      d.setTimeout(() => setKeys((current) => tap(current.slice(), (clone) => clone.pop())), 2000)
     }
 
     window.addEventListener('keydown', handler, true)
@@ -129,11 +129,8 @@ function KeyCaster() {
   if (keys.length <= 0) return null
 
   return (
-    <div className="fixed z-50 px-4 py-2 overflow-hidden text-2xl tracking-wide text-blue-100 bg-blue-800 rounded-md shadow cursor-default pointer-events-none select-none right-4 bottom-4">
-      {keys
-        .slice()
-        .reverse()
-        .join(' ')}
+    <div className="pointer-events-none fixed right-4 bottom-4 z-50 cursor-default select-none overflow-hidden rounded-md bg-blue-800 px-4 py-2 text-2xl tracking-wide text-blue-100 shadow">
+      {keys.slice().reverse().join(' ')}
     </div>
   )
 }
@@ -162,8 +159,8 @@ function MyApp({ Component, pageProps }) {
         />
       </Head>
 
-      <div className="flex flex-col h-screen overflow-hidden font-sans antialiased text-gray-900 bg-gray-700">
-        <header className="relative z-10 flex items-center justify-between flex-shrink-0 px-4 py-4 bg-gray-700 border-b border-gray-200 sm:px-6 lg:px-8">
+      <div className="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased">
+        <header className="relative z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
           <NextLink href="/">
             <Logo className="h-6" />
           </NextLink>

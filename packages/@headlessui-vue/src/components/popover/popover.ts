@@ -528,7 +528,7 @@ export let PopoverPanel = defineComponent({
 
         let nextElements = elements
           .splice(buttonIdx + 1) // Elements after button
-          .filter(element => !dom(api.panel)?.contains(element)) // Ignore items in panel
+          .filter((element) => !dom(api.panel)?.contains(element)) // Ignore items in panel
 
         // Try to focus the next element, however it could fail if we are in a
         // Portal that happens to be the very last one in the DOM. In that
@@ -624,7 +624,7 @@ export let PopoverGroup = defineComponent({
       if (dom(groupRef)?.contains(element)) return true
 
       // Check if the focus is in one of the button or panel elements. This is important in case you are rendering inside a Portal.
-      return popovers.value.some(bag => {
+      return popovers.value.some((bag) => {
         return (
           document.getElementById(bag.buttonId)?.contains(element) ||
           document.getElementById(bag.panelId)?.contains(element)

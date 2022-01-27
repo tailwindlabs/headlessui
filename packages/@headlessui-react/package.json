@@ -4,12 +4,21 @@
   "description": "A set of completely unstyled, fully accessible UI components for React, designed to integrate beautifully with Tailwind CSS.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/index.esm.js",
+  "module": "dist/headlessui.esm.js",
   "license": "MIT",
   "files": [
     "README.md",
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/headlessui.esm.js"
+      },
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=10"
@@ -24,10 +33,12 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
+    "build": "../../scripts/build.sh --external:react --external:react-dom",
+    "watch": "../../scripts/watch.sh --external:react --external:react-dom",
     "test": "../../scripts/test.sh",
-    "build": "../../scripts/build.sh",
-    "watch": "../../scripts/watch.sh",
-    "lint": "../../scripts/lint.sh"
+    "lint": "../../scripts/lint.sh",
+    "playground": "yarn workspace playground-react dev",
+    "clean": "rimraf ./dist"
   },
   "peerDependencies": {
     "react": "^16 || ^17 || ^18",
@@ -39,6 +50,7 @@
     "@types/react-dom": "^16.9.10",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "snapshot-diff": "^0.8.1"
+    "snapshot-diff": "^0.8.1",
+    "esbuild": "^0.11.18"
   }
 }

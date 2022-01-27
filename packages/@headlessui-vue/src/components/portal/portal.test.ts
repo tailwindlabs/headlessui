@@ -1,4 +1,4 @@
-import { defineComponent, ref, nextTick } from 'vue'
+import { defineComponent, ref, nextTick, ComponentOptionsWithoutProps } from 'vue'
 
 import { render } from '../../test-utils/vue-testing-library'
 import { Portal, PortalGroup } from './portal'
@@ -22,7 +22,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Portal, PortalGroup }
 
   if (typeof input === 'string') {
@@ -108,12 +108,8 @@ it('should cleanup the Portal root when the last Portal is unmounted', async () 
   renderTemplate({
     template: html`
       <main id="parent">
-        <button id="a" @click="toggleA">
-          Toggle A
-        </button>
-        <button id="b" @click="toggleB">
-          Toggle B
-        </button>
+        <button id="a" @click="toggleA">Toggle A</button>
+        <button id="b" @click="toggleB">Toggle B</button>
 
         <Portal v-if="renderA">
           <p id="content1">Contents 1 ...</p>
@@ -182,19 +178,11 @@ it('should be possible to render multiple portals at the same time', async () =>
   renderTemplate({
     template: html`
       <main id="parent">
-        <button id="a" @click="toggleA">
-          Toggle A
-        </button>
-        <button id="b" @click="toggleB">
-          Toggle B
-        </button>
-        <button id="c" @click="toggleC">
-          Toggle C
-        </button>
+        <button id="a" @click="toggleA">Toggle A</button>
+        <button id="b" @click="toggleB">Toggle B</button>
+        <button id="c" @click="toggleC">Toggle C</button>
 
-        <button id="double" @click="toggleAB">
-          Toggle A & B
-        </button>
+        <button id="double" @click="toggleAB">Toggle A & B</button>
 
         <Portal v-if="renderA">
           <p id="content1">Contents 1 ...</p>
@@ -269,12 +257,8 @@ it('should be possible to tamper with the modal root and restore correctly', asy
   renderTemplate({
     template: html`
       <main id="parent">
-        <button id="a" @click="toggleA">
-          Toggle A
-        </button>
-        <button id="b" @click="toggleB">
-          Toggle B
-        </button>
+        <button id="a" @click="toggleA">Toggle A</button>
+        <button id="b" @click="toggleB">Toggle B</button>
 
         <Portal v-if="renderA">
           <p id="content1">Contents 1 ...</p>
@@ -325,9 +309,7 @@ it('should be possible to force the Portal into a specific element using PortalG
   renderTemplate({
     template: html`
       <main>
-        <aside ref="container" id="group-1">
-          A
-        </aside>
+        <aside ref="container" id="group-1">A</aside>
 
         <PortalGroup :target="container">
           <section id="group-2">
@@ -346,6 +328,6 @@ it('should be possible to force the Portal into a specific element using PortalG
   await new Promise<void>(nextTick)
 
   expect(document.body.innerHTML).toMatchInlineSnapshot(
-    `"<div><div><div data-v-app=\\"\\"><main><aside id=\\"group-1\\"> A <div>Next to A</div></aside><section id=\\"group-2\\"><span>B</span></section><!--teleport start--><!--teleport end--></main></div></div></div>"`
+    `"<div><div><div data-v-app=\\"\\"><main><aside id=\\"group-1\\">A<div>Next to A</div></aside><section id=\\"group-2\\"><span>B</span></section><!--teleport start--><!--teleport end--></main></div></div></div>"`
   )
 })

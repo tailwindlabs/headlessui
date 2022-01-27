@@ -8,7 +8,7 @@ jestArgs=()
 jestArgs+=("--passWithNoTests")
 
 # Add arguments based on environment variables
-if [ -n "$CI" ]; then
+if ! [ -z "$CI" ]; then
   jestArgs+=("--maxWorkers=4")
   jestArgs+=("--ci")
 fi
@@ -18,3 +18,4 @@ jestArgs+=($@)
 
 # Execute
 $node "$(yarn bin jest)" "${jestArgs[@]}"
+

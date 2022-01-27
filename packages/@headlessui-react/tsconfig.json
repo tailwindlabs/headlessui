@@ -21,13 +21,12 @@
     },
     "jsx": "preserve",
     "esModuleInterop": true,
-    "target": "es5",
+    "target": "ESNext",
     "allowJs": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/*.test.tsx?"]
 }

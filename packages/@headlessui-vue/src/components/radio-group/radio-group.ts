@@ -99,19 +99,19 @@ export let RadioGroup = defineComponent({
       value,
       disabled: computed(() => props.disabled),
       firstOption: computed(() =>
-        options.value.find(option => {
+        options.value.find((option) => {
           if (option.propsRef.disabled) return false
           return true
         })
       ),
       containsCheckedOption: computed(() =>
-        options.value.some(option => toRaw(option.propsRef.value) === toRaw(props.modelValue))
+        options.value.some((option) => toRaw(option.propsRef.value) === toRaw(props.modelValue))
       ),
       change(nextValue: unknown) {
         if (props.disabled) return false
         if (value.value === nextValue) return false
         let nextOption = options.value.find(
-          option => toRaw(option.propsRef.value) === toRaw(nextValue)
+          (option) => toRaw(option.propsRef.value) === toRaw(nextValue)
         )?.propsRef
         if (nextOption?.disabled) return false
         emit('update:modelValue', nextValue)
@@ -129,7 +129,7 @@ export let RadioGroup = defineComponent({
         options.value.sort((a, z) => orderMap[a.id] - orderMap[z.id])
       },
       unregisterOption(id: Option['id']) {
-        let idx = options.value.findIndex(radio => radio.id === id)
+        let idx = options.value.findIndex((radio) => radio.id === id)
         if (idx === -1) return
         options.value.splice(idx, 1)
       },
@@ -155,8 +155,8 @@ export let RadioGroup = defineComponent({
       if (!radioGroupRef.value.contains(event.target as HTMLElement)) return
 
       let all = options.value
-        .filter(option => option.propsRef.disabled === false)
-        .map(radio => radio.element) as HTMLElement[]
+        .filter((option) => option.propsRef.disabled === false)
+        .map((radio) => radio.element) as HTMLElement[]
 
       switch (event.key) {
         case Keys.ArrowLeft:
@@ -169,7 +169,7 @@ export let RadioGroup = defineComponent({
 
             if (result === FocusResult.Success) {
               let activeOption = options.value.find(
-                option => option.element === document.activeElement
+                (option) => option.element === document.activeElement
               )
               if (activeOption) api.change(activeOption.propsRef.value)
             }
@@ -186,7 +186,7 @@ export let RadioGroup = defineComponent({
 
             if (result === FocusResult.Success) {
               let activeOption = options.value.find(
-                option => option.element === document.activeElement
+                (option) => option.element === document.activeElement
               )
               if (activeOption) api.change(activeOption.propsRef.value)
             }
@@ -199,7 +199,7 @@ export let RadioGroup = defineComponent({
             event.stopPropagation()
 
             let activeOption = options.value.find(
-              option => option.element === document.activeElement
+              (option) => option.element === document.activeElement
             )
             if (activeOption) api.change(activeOption.propsRef.value)
           }

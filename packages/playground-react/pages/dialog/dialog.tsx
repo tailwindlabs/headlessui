@@ -16,23 +16,23 @@ function Nested({ onClose, level = 0 }) {
 
   return (
     <>
-      <Dialog open={true} onClose={onClose} className="fixed z-10 inset-0">
+      <Dialog open={true} onClose={onClose} className="fixed inset-0 z-10">
         <Dialog.Overlay className="fixed inset-0 bg-gray-500 opacity-25" />
         <div
-          className="z-10 fixed left-12 top-24 bg-white w-96 p-4"
+          className="fixed left-12 top-24 z-10 w-96 bg-white p-4"
           style={{
             transform: `translate(calc(50px * ${level}), calc(50px * ${level}))`,
           }}
         >
           <p>Level: {level}</p>
           <div className="space-x-4">
-            <button className="bg-gray-200 px-2 py-1 rounded" onClick={() => setShowChild(true)}>
+            <button className="rounded bg-gray-200 px-2 py-1" onClick={() => setShowChild(true)}>
               Open (1)
             </button>
-            <button className="bg-gray-200 px-2 py-1 rounded" onClick={() => setShowChild(true)}>
+            <button className="rounded bg-gray-200 px-2 py-1" onClick={() => setShowChild(true)}>
               Open (2)
             </button>
-            <button className="bg-gray-200 px-2 py-1 rounded" onClick={() => setShowChild(true)}>
+            <button className="rounded bg-gray-200 px-2 py-1" onClick={() => setShowChild(true)}>
               Open (3)
             </button>
           </div>
@@ -57,8 +57,8 @@ export default function Home() {
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(v => !v)}
-        className="m-12 px-4 py-2 text-base font-medium leading-6 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue sm:text-sm sm:leading-5"
+        onClick={() => setIsOpen((v) => !v)}
+        className="focus:shadow-outline-blue m-12 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
       >
         Toggle!
       </button>
@@ -68,8 +68,8 @@ export default function Home() {
 
       <Transition show={isOpen} as={Fragment} afterLeave={() => console.log('done')}>
         <Dialog onClose={setIsOpen}>
-          <div className="fixed z-10 inset-0 overflow-y-auto">
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -93,15 +93,15 @@ export default function Home() {
               >
                 {/* This element is to trick the browser into centering the modal contents. */}
                 <span
-                  className="hidden sm:inline-block sm:align-middle sm:h-screen"
+                  className="hidden sm:inline-block sm:h-screen sm:align-middle"
                   aria-hidden="true"
                 >
                   &#8203;
                 </span>
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
                   <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
-                      <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                         {/* Heroicon name: exclamation */}
                         <svg
                           className="h-6 w-6 text-red-600"
@@ -122,7 +122,7 @@ export default function Home() {
                       <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                         <Dialog.Title
                           as="h3"
-                          className="text-lg leading-6 font-medium text-gray-900"
+                          className="text-lg font-medium leading-6 text-gray-900"
                         >
                           Deactivate account
                         </Dialog.Title>
@@ -131,16 +131,16 @@ export default function Home() {
                             Are you sure you want to deactivate your account? All of your data will
                             be permanently removed. This action cannot be undone.
                           </p>
-                          <div className="relative inline-block text-left mt-10">
+                          <div className="relative mt-10 inline-block text-left">
                             <Menu>
                               <span className="rounded-md shadow-sm">
                                 <Menu.Button
                                   ref={trigger}
-                                  className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue active:bg-gray-50 active:text-gray-800"
+                                  className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800"
                                 >
                                   <span>Choose a reason</span>
                                   <svg
-                                    className="w-5 h-5 ml-2 -mr-1"
+                                    className="ml-2 -mr-1 h-5 w-5"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
                                   >
@@ -164,11 +164,11 @@ export default function Home() {
                                 <Portal>
                                   <Menu.Items
                                     ref={container}
-                                    className="z-20 w-56 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg outline-none"
+                                    className="z-20 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none"
                                   >
                                     <div className="px-4 py-3">
                                       <p className="text-sm leading-5">Signed in as</p>
-                                      <p className="text-sm font-medium leading-5 text-gray-900 truncate">
+                                      <p className="truncate text-sm font-medium leading-5 text-gray-900">
                                         tom@example.com
                                       </p>
                                     </div>
@@ -211,18 +211,18 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:shadow-outline-red sm:ml-3 sm:w-auto sm:text-sm"
+                      className="focus:shadow-outline-red inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       Deactivate
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:shadow-outline-indigo sm:mt-0 sm:w-auto sm:text-sm"
+                      className="focus:shadow-outline-indigo mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
                     >
                       Cancel
                     </button>

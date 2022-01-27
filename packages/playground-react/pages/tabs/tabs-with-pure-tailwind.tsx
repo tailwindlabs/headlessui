@@ -14,7 +14,7 @@ export default function Home() {
   let [manual, setManual] = useState(false)
 
   return (
-    <div className="flex flex-col items-start w-screen h-full p-12 bg-gray-50 space-y-12">
+    <div className="flex h-full w-screen flex-col items-start space-y-12 bg-gray-50 p-12">
       <Switch.Group as="div" className="flex items-center space-x-4">
         <Switch.Label>Manual keyboard activation</Switch.Label>
 
@@ -24,7 +24,7 @@ export default function Home() {
           onChange={setManual}
           className={({ checked }) =>
             classNames(
-              'relative inline-flex flex-shrink-0 h-6 border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline transition-colors ease-in-out duration-200',
+              'focus:shadow-outline relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
               checked ? 'bg-indigo-600' : 'bg-gray-200'
             )
           }
@@ -32,7 +32,7 @@ export default function Home() {
           {({ checked }) => (
             <span
               className={classNames(
-                'inline-block w-5 h-5 bg-white rounded-full transform transition ease-in-out duration-200',
+                'inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out',
                 checked ? 'translate-x-5' : 'translate-x-0'
               )}
             />
@@ -40,8 +40,8 @@ export default function Home() {
         </Switch>
       </Switch.Group>
 
-      <Tab.Group className="flex flex-col max-w-3xl w-full" as="div" manual={manual}>
-        <Tab.List className="relative z-0 rounded-lg shadow flex divide-x divide-gray-200">
+      <Tab.Group className="flex w-full max-w-3xl flex-col" as="div" manual={manual}>
+        <Tab.List className="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow">
           {tabs.map((tab, tabIdx) => (
             <Tab
               key={tab.name}
@@ -52,7 +52,7 @@ export default function Home() {
                   tabIdx === 0 ? 'rounded-l-lg' : '',
                   tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
                   tab.disabled && 'opacity-50',
-                  'group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10'
+                  'group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10'
                 )
               }
             >
@@ -74,8 +74,8 @@ export default function Home() {
         </Tab.List>
 
         <Tab.Panels className="mt-4">
-          {tabs.map(tab => (
-            <Tab.Panel className="bg-white rounded-lg p-4 shadow" key={tab.name}>
+          {tabs.map((tab) => (
+            <Tab.Panel className="rounded-lg bg-white p-4 shadow" key={tab.name}>
               {tab.content}
             </Tab.Panel>
           ))}
