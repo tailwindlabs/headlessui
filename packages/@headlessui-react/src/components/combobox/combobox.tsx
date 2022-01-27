@@ -503,7 +503,7 @@ let Input = forwardRefWithAs(function Input<
   )
 
   let handleChange = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       dispatch({ type: ActionTypes.OpenCombobox })
       onChangeRef.current(event)
     },
