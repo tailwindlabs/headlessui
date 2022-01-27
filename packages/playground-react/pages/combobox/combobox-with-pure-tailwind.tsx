@@ -39,7 +39,7 @@ export default function Home() {
   let people =
     actualQuery === ''
       ? everybody
-      : everybody.filter(person => person.toLowerCase().includes(actualQuery.toLowerCase()))
+      : everybody.filter((person) => person.toLowerCase().includes(actualQuery.toLowerCase()))
 
   return (
     <div className="flex justify-center w-screen h-full p-12 bg-gray-50">
@@ -48,7 +48,7 @@ export default function Home() {
         <div className="space-y-1">
           <Combobox
             value={activePerson}
-            onChange={value => {
+            onChange={(value) => {
               setActivePerson(value)
             }}
             as="div"
@@ -60,7 +60,7 @@ export default function Home() {
             <div className="relative">
               <span className="relative inline-flex flex-row rounded-md overflow-hidden shadow-sm border">
                 <Combobox.Input
-                  onChange={e => setQuery(e.target.value)}
+                  onChange={(e) => setQuery(e.target.value)}
                   className="border-none outline-none px-3 py-1"
                 />
                 <Combobox.Button className="focus:outline-none px-1 bg-gray-100 cursor-default border-l text-indigo-600">
@@ -84,7 +84,7 @@ export default function Home() {
 
               <div className="absolute w-full mt-1 bg-white rounded-md shadow-lg">
                 <Combobox.Options className="py-1 overflow-auto text-base leading-6 rounded-md shadow-xs max-h-60 focus:outline-none sm:text-sm sm:leading-5">
-                  {people.map(name => (
+                  {people.map((name) => (
                     <Combobox.Option
                       key={name}
                       value={name}

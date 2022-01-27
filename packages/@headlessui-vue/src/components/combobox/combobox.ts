@@ -131,8 +131,8 @@ export let Combobox = defineComponent({
           {
             resolveItems: () => options.value,
             resolveActiveIndex: () => activeOptionIndex.value,
-            resolveId: option => option.id,
-            resolveDisabled: option => option.dataRef.disabled,
+            resolveId: (option) => option.id,
+            resolveDisabled: (option) => option.dataRef.disabled,
           }
         )
 
@@ -152,7 +152,7 @@ export let Combobox = defineComponent({
         }
       },
       selectOption(id: string) {
-        let option = options.value.find(item => item.id === id)
+        let option = options.value.find((item) => item.id === id)
         if (!option) return
 
         let { dataRef } = option
@@ -193,7 +193,7 @@ export let Combobox = defineComponent({
         let nextOptions = options.value.slice()
         let currentActiveOption =
           activeOptionIndex.value !== null ? nextOptions[activeOptionIndex.value] : null
-        let idx = nextOptions.findIndex(a => a.id === id)
+        let idx = nextOptions.findIndex((a) => a.id === id)
         if (idx !== -1) nextOptions.splice(idx, 1)
         options.value = nextOptions
         activeOptionIndex.value = (() => {
@@ -207,7 +207,7 @@ export let Combobox = defineComponent({
       },
     }
 
-    useWindowEvent('mousedown', event => {
+    useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
       let active = document.activeElement
 
