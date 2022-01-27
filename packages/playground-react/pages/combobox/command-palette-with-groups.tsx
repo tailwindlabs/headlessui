@@ -53,13 +53,13 @@ export default function Home() {
             as="div"
             value={activePerson}
             onChange={person => setPerson(person)}
-            onSearch={setQuery}
             className="bg-white w-full shadow-sm border border-black/5 bg-clip-padding rounded overflow-hidden"
           >
             {({ activeOption }) => {
               return (
                 <div className="flex flex-col w-full">
                   <Combobox.Input
+                    onChange={e => setQuery(e.target.value)}
                     className="border-none outline-none px-3 py-1 bg-none rounded-none w-full"
                     placeholder="Search users…"
                     displayValue={item => item?.name}

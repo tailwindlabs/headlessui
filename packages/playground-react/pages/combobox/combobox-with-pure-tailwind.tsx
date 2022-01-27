@@ -51,7 +51,6 @@ export default function Home() {
             onChange={value => {
               setActivePerson(value)
             }}
-            onSearch={setQuery}
             as="div"
           >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
@@ -60,7 +59,10 @@ export default function Home() {
 
             <div className="relative">
               <span className="relative inline-flex flex-row rounded-md overflow-hidden shadow-sm border">
-                <Combobox.Input className="border-none outline-none px-3 py-1" />
+                <Combobox.Input
+                  onChange={e => setQuery(e.target.value)}
+                  className="border-none outline-none px-3 py-1"
+                />
                 <Combobox.Button className="focus:outline-none px-1 bg-gray-100 cursor-default border-l text-indigo-600">
                   <span className="flex items-center px-2 pointer-events-none">
                     <svg
