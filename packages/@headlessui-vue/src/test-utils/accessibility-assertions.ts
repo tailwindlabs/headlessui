@@ -91,7 +91,7 @@ export function assertMenuButton(
       expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertMenuButton)
+    if (err instanceof Error) Error.captureStackTrace(err, assertMenuButton)
     throw err
   }
 }
@@ -105,7 +105,7 @@ export function assertMenuButtonLinkedWithMenu(button = getMenuButton(), menu = 
     expect(button).toHaveAttribute('aria-controls', menu.getAttribute('id'))
     expect(menu).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertMenuButtonLinkedWithMenu)
+    if (err instanceof Error) Error.captureStackTrace(err, assertMenuButtonLinkedWithMenu)
     throw err
   }
 }
@@ -118,7 +118,7 @@ export function assertMenuLinkedWithMenuItem(item: HTMLElement | null, menu = ge
     // Ensure link between menu & menu item is correct
     expect(menu).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertMenuLinkedWithMenuItem)
+    if (err instanceof Error) Error.captureStackTrace(err, assertMenuLinkedWithMenuItem)
     throw err
   }
 }
@@ -130,7 +130,7 @@ export function assertNoActiveMenuItem(menu = getMenu()) {
     // Ensure we don't have an active menu
     expect(menu).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
-    Error.captureStackTrace(err, assertNoActiveMenuItem)
+    if (err instanceof Error) Error.captureStackTrace(err, assertNoActiveMenuItem)
     throw err
   }
 }
@@ -183,7 +183,7 @@ export function assertMenu(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertMenu)
+    if (err instanceof Error) Error.captureStackTrace(err, assertMenu)
     throw err
   }
 }
@@ -214,7 +214,393 @@ export function assertMenuItem(
       }
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertMenuItem)
+    if (err instanceof Error) Error.captureStackTrace(err, assertMenuItem)
+    throw err
+  }
+}
+
+// ---
+
+export function getComboboxLabel(): HTMLElement | null {
+  return document.querySelector('label,[id^="headlessui-combobox-label"]')
+}
+
+export function getComboboxButton(): HTMLElement | null {
+  return document.querySelector('button,[role="button"],[id^="headlessui-combobox-button-"]')
+}
+
+export function getComboboxButtons(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('button,[role="button"]'))
+}
+
+export function getComboboxInput(): HTMLInputElement | null {
+  return document.querySelector('[role="combobox"]')
+}
+
+export function getCombobox(): HTMLElement | null {
+  return document.querySelector('[role="listbox"]')
+}
+
+export function getComboboxInputs(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="combobox"]'))
+}
+
+export function getComboboxes(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="listbox"]'))
+}
+
+export function getComboboxOptions(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[role="option"]'))
+}
+
+// ---
+
+export enum ComboboxState {
+  /** The combobox is visible to the user. */
+  Visible,
+
+  /** The combobox is **not** visible to the user. It's still in the DOM, but it is hidden. */
+  InvisibleHidden,
+
+  /** The combobox is **not** visible to the user. It's not in the DOM, it is unmounted. */
+  InvisibleUnmounted,
+}
+
+export function assertCombobox(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: ComboboxState
+    orientation?: 'horizontal' | 'vertical'
+  },
+  combobox = getComboboxInput()
+) {
+  let { orientation = 'vertical' } = options
+
+  try {
+    switch (options.state) {
+      case ComboboxState.InvisibleHidden:
+        if (combobox === null) return expect(combobox).not.toBe(null)
+
+        assertHidden(combobox)
+
+        expect(combobox).toHaveAttribute('aria-labelledby')
+        expect(combobox).toHaveAttribute('aria-orientation', orientation)
+        expect(combobox).toHaveAttribute('role', 'combobox')
+
+        if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(combobox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ComboboxState.Visible:
+        if (combobox === null) return expect(combobox).not.toBe(null)
+
+        assertVisible(combobox)
+
+        expect(combobox).toHaveAttribute('aria-labelledby')
+        expect(combobox).toHaveAttribute('aria-orientation', orientation)
+        expect(combobox).toHaveAttribute('role', 'combobox')
+
+        if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(combobox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ComboboxState.InvisibleUnmounted:
+        expect(combobox).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertCombobox)
+    throw err
+  }
+}
+
+export function assertComboboxList(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: ComboboxState
+    orientation?: 'horizontal' | 'vertical'
+  },
+  listbox = getCombobox()
+) {
+  let { orientation = 'vertical' } = options
+
+  try {
+    switch (options.state) {
+      case ComboboxState.InvisibleHidden:
+        if (listbox === null) return expect(listbox).not.toBe(null)
+
+        assertHidden(listbox)
+
+        expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
+        expect(listbox).toHaveAttribute('role', 'listbox')
+
+        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ComboboxState.Visible:
+        if (listbox === null) return expect(listbox).not.toBe(null)
+
+        assertVisible(listbox)
+
+        expect(listbox).toHaveAttribute('aria-labelledby')
+        expect(listbox).toHaveAttribute('aria-orientation', orientation)
+        expect(listbox).toHaveAttribute('role', 'listbox')
+
+        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+
+        for (let attributeName in options.attributes) {
+          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case ComboboxState.InvisibleUnmounted:
+        expect(listbox).toBe(null)
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertCombobox)
+    throw err
+  }
+}
+
+export function assertComboboxButton(
+  options: {
+    attributes?: Record<string, string | null>
+    textContent?: string
+    state: ComboboxState
+  },
+  button = getComboboxButton()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+
+    // Ensure menu button have these properties
+    expect(button).toHaveAttribute('id')
+    expect(button).toHaveAttribute('aria-haspopup')
+
+    switch (options.state) {
+      case ComboboxState.Visible:
+        expect(button).toHaveAttribute('aria-controls')
+        expect(button).toHaveAttribute('aria-expanded', 'true')
+        break
+
+      case ComboboxState.InvisibleHidden:
+        expect(button).toHaveAttribute('aria-controls')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
+        break
+
+      case ComboboxState.InvisibleUnmounted:
+        expect(button).not.toHaveAttribute('aria-controls')
+        if (button.hasAttribute('disabled')) {
+          expect(button).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(button).toHaveAttribute('aria-expanded', 'false')
+        }
+        break
+
+      default:
+        assertNever(options.state)
+    }
+
+    if (options.textContent) {
+      expect(button).toHaveTextContent(options.textContent)
+    }
+
+    // Ensure menu button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxButton)
+    throw err
+  }
+}
+
+export function assertComboboxLabel(
+  options: {
+    attributes?: Record<string, string | null>
+    tag?: string
+    textContent?: string
+  },
+  label = getComboboxLabel()
+) {
+  try {
+    if (label === null) return expect(label).not.toBe(null)
+
+    // Ensure menu button have these properties
+    expect(label).toHaveAttribute('id')
+
+    if (options.textContent) {
+      expect(label).toHaveTextContent(options.textContent)
+    }
+
+    if (options.tag) {
+      expect(label.tagName.toLowerCase()).toBe(options.tag)
+    }
+
+    // Ensure menu button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxLabel)
+    throw err
+  }
+}
+
+export function assertComboboxButtonLinkedWithCombobox(
+  button = getComboboxButton(),
+  combobox = getCombobox()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+    if (combobox === null) return expect(combobox).not.toBe(null)
+
+    // Ensure link between button & combobox is correct
+    expect(button).toHaveAttribute('aria-controls', combobox.getAttribute('id'))
+    expect(combobox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxButtonLinkedWithCombobox)
+    throw err
+  }
+}
+
+export function assertComboboxLabelLinkedWithCombobox(
+  label = getComboboxLabel(),
+  combobox = getComboboxInput()
+) {
+  try {
+    if (label === null) return expect(label).not.toBe(null)
+    if (combobox === null) return expect(combobox).not.toBe(null)
+
+    expect(combobox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxLabelLinkedWithCombobox)
+    throw err
+  }
+}
+
+export function assertComboboxButtonLinkedWithComboboxLabel(
+  button = getComboboxButton(),
+  label = getComboboxLabel()
+) {
+  try {
+    if (button === null) return expect(button).not.toBe(null)
+    if (label === null) return expect(label).not.toBe(null)
+
+    // Ensure link between button & label is correct
+    expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
+  } catch (err) {
+    if (err instanceof Error)
+      Error.captureStackTrace(err, assertComboboxButtonLinkedWithComboboxLabel)
+    throw err
+  }
+}
+
+export function assertActiveComboboxOption(
+  item: HTMLElement | null,
+  combobox = getComboboxInput()
+) {
+  try {
+    if (combobox === null) return expect(combobox).not.toBe(null)
+    if (item === null) return expect(item).not.toBe(null)
+
+    // Ensure link between combobox & combobox item is correct
+    expect(combobox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertActiveComboboxOption)
+    throw err
+  }
+}
+
+export function assertNoActiveComboboxOption(combobox = getComboboxInput()) {
+  try {
+    if (combobox === null) return expect(combobox).not.toBe(null)
+
+    // Ensure we don't have an active combobox
+    expect(combobox).not.toHaveAttribute('aria-activedescendant')
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertNoActiveComboboxOption)
+    throw err
+  }
+}
+
+export function assertNoSelectedComboboxOption(items = getComboboxOptions()) {
+  try {
+    for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertNoSelectedComboboxOption)
+    throw err
+  }
+}
+
+export function assertComboboxOption(
+  item: HTMLElement | null,
+  options?: {
+    tag?: string
+    attributes?: Record<string, string | null>
+    selected?: boolean
+  }
+) {
+  try {
+    if (item === null) return expect(item).not.toBe(null)
+
+    // Check that some attributes exists, doesn't really matter what the values are at this point in
+    // time, we just require them.
+    expect(item).toHaveAttribute('id')
+
+    // Check that we have the correct values for certain attributes
+    expect(item).toHaveAttribute('role', 'option')
+    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
+
+    // Ensure combobox button has the following attributes
+    if (!options) return
+
+    for (let attributeName in options.attributes) {
+      expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+
+    if (options.tag) {
+      expect(item.tagName.toLowerCase()).toBe(options.tag)
+    }
+
+    if (options.selected != null) {
+      switch (options.selected) {
+        case true:
+          return expect(item).toHaveAttribute('aria-selected', 'true')
+
+        case false:
+          return expect(item).not.toHaveAttribute('aria-selected')
+
+        default:
+          assertNever(options.selected)
+      }
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxOption)
     throw err
   }
 }
@@ -311,7 +697,7 @@ export function assertListbox(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertListbox)
+    if (err instanceof Error) Error.captureStackTrace(err, assertListbox)
     throw err
   }
 }
@@ -368,7 +754,7 @@ export function assertListboxButton(
       expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertListboxButton)
+    if (err instanceof Error) Error.captureStackTrace(err, assertListboxButton)
     throw err
   }
 }
@@ -400,7 +786,7 @@ export function assertListboxLabel(
       expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertListboxLabel)
+    if (err instanceof Error) Error.captureStackTrace(err, assertListboxLabel)
     throw err
   }
 }
@@ -417,7 +803,7 @@ export function assertListboxButtonLinkedWithListbox(
     expect(button).toHaveAttribute('aria-controls', listbox.getAttribute('id'))
     expect(listbox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertListboxButtonLinkedWithListbox)
+    if (err instanceof Error) Error.captureStackTrace(err, assertListboxButtonLinkedWithListbox)
     throw err
   }
 }
@@ -432,7 +818,7 @@ export function assertListboxLabelLinkedWithListbox(
 
     expect(listbox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertListboxLabelLinkedWithListbox)
+    if (err instanceof Error) Error.captureStackTrace(err, assertListboxLabelLinkedWithListbox)
     throw err
   }
 }
@@ -448,7 +834,8 @@ export function assertListboxButtonLinkedWithListboxLabel(
     // Ensure link between button & label is correct
     expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
   } catch (err) {
-    Error.captureStackTrace(err, assertListboxButtonLinkedWithListboxLabel)
+    if (err instanceof Error)
+      Error.captureStackTrace(err, assertListboxButtonLinkedWithListboxLabel)
     throw err
   }
 }
@@ -461,7 +848,7 @@ export function assertActiveListboxOption(item: HTMLElement | null, listbox = ge
     // Ensure link between listbox & listbox item is correct
     expect(listbox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
-    Error.captureStackTrace(err, assertActiveListboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertActiveListboxOption)
     throw err
   }
 }
@@ -473,7 +860,7 @@ export function assertNoActiveListboxOption(listbox = getListbox()) {
     // Ensure we don't have an active listbox
     expect(listbox).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
-    Error.captureStackTrace(err, assertNoActiveListboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertNoActiveListboxOption)
     throw err
   }
 }
@@ -482,7 +869,7 @@ export function assertNoSelectedListboxOption(items = getListboxOptions()) {
   try {
     for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
   } catch (err) {
-    Error.captureStackTrace(err, assertNoSelectedListboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertNoSelectedListboxOption)
     throw err
   }
 }
@@ -530,7 +917,7 @@ export function assertListboxOption(
       }
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertListboxOption)
+    if (err instanceof Error) Error.captureStackTrace(err, assertListboxOption)
     throw err
   }
 }
@@ -597,7 +984,7 @@ export function assertSwitch(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertSwitch)
+    if (err instanceof Error) Error.captureStackTrace(err, assertSwitch)
     throw err
   }
 }
@@ -678,7 +1065,7 @@ export function assertDisclosureButton(
       expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertDisclosureButton)
+    if (err instanceof Error) Error.captureStackTrace(err, assertDisclosureButton)
     throw err
   }
 }
@@ -725,7 +1112,7 @@ export function assertDisclosurePanel(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertDisclosurePanel)
+    if (err instanceof Error) Error.captureStackTrace(err, assertDisclosurePanel)
     throw err
   }
 }
@@ -810,7 +1197,7 @@ export function assertPopoverButton(
       expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertPopoverButton)
+    if (err instanceof Error) Error.captureStackTrace(err, assertPopoverButton)
     throw err
   }
 }
@@ -857,7 +1244,7 @@ export function assertPopoverPanel(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertPopoverPanel)
+    if (err instanceof Error) Error.captureStackTrace(err, assertPopoverPanel)
     throw err
   }
 }
@@ -984,7 +1371,7 @@ export function assertDialog(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertDialog)
+    if (err instanceof Error) Error.captureStackTrace(err, assertDialog)
     throw err
   }
 }
@@ -1040,7 +1427,7 @@ export function assertDialogTitle(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertDialogTitle)
+    if (err instanceof Error) Error.captureStackTrace(err, assertDialogTitle)
     throw err
   }
 }
@@ -1096,7 +1483,7 @@ export function assertDialogDescription(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertDialogDescription)
+    if (err instanceof Error) Error.captureStackTrace(err, assertDialogDescription)
     throw err
   }
 }
@@ -1143,7 +1530,7 @@ export function assertDialogOverlay(
         assertNever(options.state)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertDialogOverlay)
+    if (err instanceof Error) Error.captureStackTrace(err, assertDialogOverlay)
     throw err
   }
 }
@@ -1185,7 +1572,7 @@ export function assertRadioGroupLabel(
       expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertRadioGroupLabel)
+    if (err instanceof Error) Error.captureStackTrace(err, assertRadioGroupLabel)
     throw err
   }
 }
@@ -1267,7 +1654,7 @@ export function assertTabs(
       }
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertTabs)
+    if (err instanceof Error) Error.captureStackTrace(err, assertTabs)
     throw err
   }
 }
@@ -1287,7 +1674,7 @@ export function assertActiveElement(element: HTMLElement | null) {
       expect(document.activeElement?.outerHTML).toBe(element.outerHTML)
     }
   } catch (err) {
-    Error.captureStackTrace(err, assertActiveElement)
+    if (err instanceof Error) Error.captureStackTrace(err, assertActiveElement)
     throw err
   }
 }
@@ -1297,7 +1684,7 @@ export function assertContainsActiveElement(element: HTMLElement | null) {
     if (element === null) return expect(element).not.toBe(null)
     expect(element.contains(document.activeElement)).toBe(true)
   } catch (err) {
-    Error.captureStackTrace(err, assertContainsActiveElement)
+    if (err instanceof Error) Error.captureStackTrace(err, assertContainsActiveElement)
     throw err
   }
 }
@@ -1311,7 +1698,7 @@ export function assertHidden(element: HTMLElement | null) {
     expect(element).toHaveAttribute('hidden')
     expect(element).toHaveStyle({ display: 'none' })
   } catch (err) {
-    Error.captureStackTrace(err, assertHidden)
+    if (err instanceof Error) Error.captureStackTrace(err, assertHidden)
     throw err
   }
 }
@@ -1323,7 +1710,7 @@ export function assertVisible(element: HTMLElement | null) {
     expect(element).not.toHaveAttribute('hidden')
     expect(element).not.toHaveStyle({ display: 'none' })
   } catch (err) {
-    Error.captureStackTrace(err, assertVisible)
+    if (err instanceof Error) Error.captureStackTrace(err, assertVisible)
     throw err
   }
 }
@@ -1336,7 +1723,7 @@ export function assertFocusable(element: HTMLElement | null) {
 
     expect(isFocusableElement(element, FocusableMode.Strict)).toBe(true)
   } catch (err) {
-    Error.captureStackTrace(err, assertFocusable)
+    if (err instanceof Error) Error.captureStackTrace(err, assertFocusable)
     throw err
   }
 }
@@ -1347,7 +1734,7 @@ export function assertNotFocusable(element: HTMLElement | null) {
 
     expect(isFocusableElement(element, FocusableMode.Strict)).toBe(false)
   } catch (err) {
-    Error.captureStackTrace(err, assertNotFocusable)
+    if (err instanceof Error) Error.captureStackTrace(err, assertNotFocusable)
     throw err
   }
 }
