@@ -33,8 +33,8 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "../../scripts/build.sh",
-    "watch": "../../scripts/watch.sh",
+    "build": "../../scripts/build.sh --external:vue",
+    "watch": "../../scripts/watch.sh --external:vue",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
     "playground": "yarn workspace playground-vue dev",
