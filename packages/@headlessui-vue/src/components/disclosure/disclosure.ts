@@ -133,40 +133,7 @@ export let DisclosureButton = defineComponent({
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
   },
-  render() {
-    let api = useDisclosureContext('DisclosureButton')
-
-    let slot = { open: api.disclosureState.value === DisclosureStates.Open }
-    let propsWeControl = this.isWithinPanel
-      ? {
-          ref: 'el',
-          type: this.type,
-          onClick: this.handleClick,
-          onKeydown: this.handleKeyDown,
-        }
-      : {
-          id: this.id,
-          ref: 'el',
-          type: this.type,
-          'aria-expanded': this.$props.disabled
-            ? undefined
-            : api.disclosureState.value === DisclosureStates.Open,
-          'aria-controls': dom(api.panel) ? api.panelId : undefined,
-          disabled: this.$props.disabled ? true : undefined,
-          onClick: this.handleClick,
-          onKeydown: this.handleKeyDown,
-          onKeyup: this.handleKeyUp,
-        }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'DisclosureButton',
-    })
-  },
-  setup(props, { attrs }) {
+  setup(props, { attrs, slots }) {
     let api = useDisclosureContext('DisclosureButton')
 
     let panelContext = useDisclosurePanelContext()
@@ -180,58 +147,86 @@ export let DisclosureButton = defineComponent({
       })
     }
 
-    return {
-      isWithinPanel,
-      id: api.buttonId,
-      el: elementRef,
-      type: useResolveButtonType(
-        computed(() => ({ as: props.as, type: attrs.type })),
-        elementRef
-      ),
-      handleClick() {
-        if (props.disabled) return
+    let type = useResolveButtonType(
+      computed(() => ({ as: props.as, type: attrs.type })),
+      elementRef
+    )
 
-        if (isWithinPanel) {
-          api.toggleDisclosure()
-          dom(api.button)?.focus()
-        } else {
-          api.toggleDisclosure()
-        }
-      },
-      handleKeyDown(event: KeyboardEvent) {
-        if (props.disabled) return
+    function handleClick() {
+      if (props.disabled) return
 
-        if (isWithinPanel) {
-          switch (event.key) {
-            case Keys.Space:
-            case Keys.Enter:
-              event.preventDefault()
-              event.stopPropagation()
-              api.toggleDisclosure()
-              dom(api.button)?.focus()
-              break
-          }
-        } else {
-          switch (event.key) {
-            case Keys.Space:
-            case Keys.Enter:
-              event.preventDefault()
-              event.stopPropagation()
-              api.toggleDisclosure()
-              break
-          }
-        }
-      },
-      handleKeyUp(event: KeyboardEvent) {
+      if (isWithinPanel) {
+        api.toggleDisclosure()
+        dom(api.button)?.focus()
+      } else {
+        api.toggleDisclosure()
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (props.disabled) return
+
+      if (isWithinPanel) {
         switch (event.key) {
           case Keys.Space:
-            // Required for firefox, event.preventDefault() in handleKeyDown for
-            // the Space key doesn't cancel the handleKeyUp, which in turn
-            // triggers a *click*.
+          case Keys.Enter:
             event.preventDefault()
+            event.stopPropagation()
+            api.toggleDisclosure()
+            dom(api.button)?.focus()
             break
         }
-      },
+      } else {
+        switch (event.key) {
+          case Keys.Space:
+          case Keys.Enter:
+            event.preventDefault()
+            event.stopPropagation()
+            api.toggleDisclosure()
+            break
+        }
+      }
+    }
+    function handleKeyUp(event: KeyboardEvent) {
+      switch (event.key) {
+        case Keys.Space:
+          // Required for firefox, event.preventDefault() in handleKeyDown for
+          // the Space key doesn't cancel the handleKeyUp, which in turn
+          // triggers a *click*.
+          event.preventDefault()
+          break
+      }
+    }
+
+    return () => {
+      let slot = { open: api.disclosureState.value === DisclosureStates.Open }
+      let propsWeControl = isWithinPanel
+        ? {
+            ref: elementRef,
+            type: type.value,
+            onClick: handleClick,
+            onKeydown: handleKeyDown,
+          }
+        : {
+            id: api.buttonId,
+            ref: elementRef,
+            type: type.value,
+            'aria-expanded': props.disabled
+              ? undefined
+              : api.disclosureState.value === DisclosureStates.Open,
+            'aria-controls': dom(api.panel) ? api.panelId : undefined,
+            disabled: props.disabled ? true : undefined,
+            onClick: handleClick,
+            onKeydown: handleKeyDown,
+            onKeyup: handleKeyUp,
+          }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'DisclosureButton',
+      })
     }
   },
 })
@@ -245,23 +240,7 @@ export let DisclosurePanel = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  render() {
-    let api = useDisclosureContext('DisclosurePanel')
-
-    let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
-    let propsWeControl = { id: this.id, ref: 'el' }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      features: Features.RenderStrategy | Features.Static,
-      visible: this.visible,
-      name: 'DisclosurePanel',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useDisclosureContext('DisclosurePanel')
 
     provide(DisclosurePanelContext, api.panelId)
@@ -275,10 +254,19 @@ export let DisclosurePanel = defineComponent({
       return api.disclosureState.value === DisclosureStates.Open
     })
 
-    return {
-      id: api.panelId,
-      el: api.panel,
-      visible,
+    return () => {
+      let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
+      let propsWeControl = { id: api.panelId, ref: api.panel }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        features: Features.RenderStrategy | Features.Static,
+        visible: visible.value,
+        name: 'DisclosurePanel',
+      })
     }
   },
 })

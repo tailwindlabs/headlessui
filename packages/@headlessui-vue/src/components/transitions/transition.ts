@@ -18,7 +18,7 @@ import {
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 
-import { Features, render, RenderStrategy } from '../../utils/render'
+import { Features, omit, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 import { dom } from '../../utils/dom'
 import {
@@ -151,54 +151,20 @@ export let TransitionChild = defineComponent({
     beforeLeave: () => true,
     afterLeave: () => true,
   },
-  render() {
-    if (this.renderAsRoot) {
-      return h(
-        TransitionRoot,
-        {
-          ...this.$props,
-          onBeforeEnter: () => this.$emit('beforeEnter'),
-          onAfterEnter: () => this.$emit('afterEnter'),
-          onBeforeLeave: () => this.$emit('beforeLeave'),
-          onAfterLeave: () => this.$emit('afterLeave'),
-        },
-        this.$slots
-      )
-    }
-
-    let {
-      appear,
-      show,
-
-      // Class names
-      enter,
-      enterFrom,
-      enterTo,
-      entered,
-      leave,
-      leaveFrom,
-      leaveTo,
-      ...rest
-    } = this.$props
-
-    let propsWeControl = { ref: 'el' }
-    let passthroughProps = rest
-
-    return render({
-      props: { ...passthroughProps, ...propsWeControl },
-      slot: {},
-      slots: this.$slots,
-      attrs: this.$attrs,
-      features: TransitionChildRenderFeatures,
-      visible: this.state === TreeStates.Visible,
-      name: 'TransitionChild',
-    })
-  },
-  setup(props, { emit }) {
+  setup(props, { emit, attrs, slots }) {
     if (!hasTransitionContext() && hasOpenClosed()) {
-      return {
-        renderAsRoot: true,
-      }
+      return () =>
+        h(
+          TransitionRoot,
+          {
+            ...props,
+            onBeforeEnter: () => emit('beforeEnter'),
+            onAfterEnter: () => emit('afterEnter'),
+            onBeforeLeave: () => emit('beforeLeave'),
+            onAfterLeave: () => emit('afterLeave'),
+          },
+          slots
+        )
     }
 
     let container = ref<HTMLElement | null>(null)
@@ -341,7 +307,35 @@ export let TransitionChild = defineComponent({
       )
     )
 
-    return { el: container, renderAsRoot: false, state }
+    return () => {
+      let {
+        appear,
+        show,
+
+        // Class names
+        enter,
+        enterFrom,
+        enterTo,
+        entered,
+        leave,
+        leaveFrom,
+        leaveTo,
+        ...rest
+      } = props
+
+      let propsWeControl = { ref: container }
+      let passthroughProps = rest
+
+      return render({
+        props: { ...passthroughProps, ...propsWeControl },
+        slot: {},
+        slots,
+        attrs,
+        features: TransitionChildRenderFeatures,
+        visible: state.value === TreeStates.Visible,
+        name: 'TransitionChild',
+      })
+    }
   },
 })
 
@@ -368,41 +362,7 @@ export let TransitionRoot = defineComponent({
     beforeLeave: () => true,
     afterLeave: () => true,
   },
-  render() {
-    let { show, appear, unmount, ...passThroughProps } = this.$props
-    let sharedProps = { unmount }
-
-    return render({
-      props: {
-        ...sharedProps,
-        as: 'template',
-      },
-      slot: {},
-      slots: {
-        ...this.$slots,
-        default: () => [
-          h(
-            TransitionChild,
-            {
-              onBeforeEnter: () => this.$emit('beforeEnter'),
-              onAfterEnter: () => this.$emit('afterEnter'),
-              onBeforeLeave: () => this.$emit('beforeLeave'),
-              onAfterLeave: () => this.$emit('afterLeave'),
-              ...this.$attrs,
-              ...sharedProps,
-              ...passThroughProps,
-            },
-            this.$slots.default
-          ),
-        ],
-      },
-      attrs: {},
-      features: TransitionChildRenderFeatures,
-      visible: this.state === TreeStates.Visible,
-      name: 'Transition',
-    })
-  },
-  setup(props) {
+  setup(props, { emit, attrs, slots }) {
     let usesOpenClosedState = useOpenClosed()
 
     let show = computed(() => {
@@ -449,6 +409,39 @@ export let TransitionRoot = defineComponent({
     provide(NestingContext, nestingBag)
     provide(TransitionContext, transitionBag)
 
-    return { state, show }
+    return () => {
+      let passThroughProps = omit(props, ['show', 'appear', 'unmount'])
+      let sharedProps = { unmount: props.unmount }
+
+      return render({
+        props: {
+          ...sharedProps,
+          as: 'template',
+        },
+        slot: {},
+        slots: {
+          ...slots,
+          default: () => [
+            h(
+              TransitionChild,
+              {
+                onBeforeEnter: () => emit('beforeEnter'),
+                onAfterEnter: () => emit('afterEnter'),
+                onBeforeLeave: () => emit('beforeLeave'),
+                onAfterLeave: () => emit('afterLeave'),
+                ...attrs,
+                ...sharedProps,
+                ...passThroughProps,
+              },
+              slots.default
+            ),
+          ],
+        },
+        attrs: {},
+        features: TransitionChildRenderFeatures,
+        visible: state.value === TreeStates.Visible,
+        name: 'Transition',
+      })
+    }
   },
 })

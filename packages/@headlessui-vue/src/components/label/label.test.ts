@@ -27,12 +27,10 @@ it('should be possible to use useLabels without using a Label', async () => {
   let { container } = render(
     defineComponent({
       components: { Label },
-      render() {
-        return h('div', [h('div', { 'aria-labelledby': this.labelledby }, ['No label'])])
-      },
       setup() {
         let labelledby = useLabels()
-        return { labelledby }
+
+        return () => h('div', [h('div', { 'aria-labelledby': labelledby.value }, ['No label'])])
       },
     })
   )
@@ -50,17 +48,16 @@ it('should be possible to use useLabels and a single Label, and have them linked
   let { container } = render(
     defineComponent({
       components: { Label },
-      render() {
-        return h('div', [
-          h('div', { 'aria-labelledby': this.labelledby }, [
-            h(Label, () => 'I am a label'),
-            h('span', 'Contents'),
-          ]),
-        ])
-      },
       setup() {
         let labelledby = useLabels()
-        return { labelledby }
+
+        return () =>
+          h('div', [
+            h('div', { 'aria-labelledby': labelledby.value }, [
+              h(Label, () => 'I am a label'),
+              h('span', 'Contents'),
+            ]),
+          ])
       },
     })
   )
@@ -83,18 +80,17 @@ it('should be possible to use useLabels and multiple Label components, and have 
   let { container } = render(
     defineComponent({
       components: { Label },
-      render() {
-        return h('div', [
-          h('div', { 'aria-labelledby': this.labelledby }, [
-            h(Label, () => 'I am a label'),
-            h('span', 'Contents'),
-            h(Label, () => 'I am also a label'),
-          ]),
-        ])
-      },
       setup() {
         let labelledby = useLabels()
-        return { labelledby }
+
+        return () =>
+          h('div', [
+            h('div', { 'aria-labelledby': labelledby.value }, [
+              h(Label, () => 'I am a label'),
+              h('span', 'Contents'),
+              h(Label, () => 'I am also a label'),
+            ]),
+          ])
       },
     })
   )
@@ -118,18 +114,17 @@ it('should be possible to update a prop from the parent and it should reflect in
   let { container } = render(
     defineComponent({
       components: { Label },
-      render() {
-        return h('div', [
-          h('div', { 'aria-labelledby': this.labelledby }, [
-            h(Label, () => 'I am a label'),
-            h('button', { onClick: () => this.count++ }, '+1'),
-          ]),
-        ])
-      },
       setup() {
         let count = ref(0)
         let labelledby = useLabels({ props: { 'data-count': count } })
-        return { count, labelledby }
+
+        return () =>
+          h('div', [
+            h('div', { 'aria-labelledby': labelledby.value }, [
+              h(Label, () => 'I am a label'),
+              h('button', { onClick: () => count.value++ }, '+1'),
+            ]),
+          ])
       },
     })
   )

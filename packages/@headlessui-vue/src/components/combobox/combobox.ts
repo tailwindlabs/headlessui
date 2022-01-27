@@ -256,33 +256,29 @@ export let Combobox = defineComponent({
 export let ComboboxLabel = defineComponent({
   name: 'ComboboxLabel',
   props: { as: { type: [Object, String], default: 'label' } },
-  render() {
-    let api = useComboboxContext('ComboboxLabel')
-
-    let slot = {
-      open: api.ComboboxState.value === ComboboxStates.Open,
-      disabled: api.disabled.value,
-    }
-    let propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'ComboboxLabel',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useComboboxContext('ComboboxLabel')
     let id = `headlessui-combobox-label-${useId()}`
 
-    return {
-      id,
-      el: api.labelRef,
-      handleClick() {
-        dom(api.inputRef)?.focus({ preventScroll: true })
-      },
+    function handleClick() {
+      dom(api.inputRef)?.focus({ preventScroll: true })
+    }
+
+    return () => {
+      let slot = {
+        open: api.ComboboxState.value === ComboboxStates.Open,
+        disabled: api.disabled.value,
+      }
+
+      let propsWeControl = { id, ref: api.labelRef, onClick: handleClick }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'ComboboxLabel',
+      })
     }
   },
 })
@@ -294,40 +290,7 @@ export let ComboboxButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
   },
-  render() {
-    let api = useComboboxContext('ComboboxButton')
-
-    let slot = {
-      open: api.ComboboxState.value === ComboboxStates.Open,
-      disabled: api.disabled.value,
-    }
-    let propsWeControl = {
-      ref: 'el',
-      id: this.id,
-      type: this.type,
-      tabindex: '-1',
-      'aria-haspopup': true,
-      'aria-controls': dom(api.optionsRef)?.id,
-      'aria-expanded': api.disabled.value
-        ? undefined
-        : api.ComboboxState.value === ComboboxStates.Open,
-      'aria-labelledby': api.labelRef.value
-        ? [dom(api.labelRef)?.id, this.id].join(' ')
-        : undefined,
-      disabled: api.disabled.value === true ? true : undefined,
-      onKeydown: this.handleKeydown,
-      onClick: this.handleClick,
-    }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'ComboboxButton',
-    })
-  },
-  setup(props, { attrs }) {
+  setup(props, { attrs, slots }) {
     let api = useComboboxContext('ComboboxButton')
     let id = `headlessui-combobox-button-${useId()}`
 
@@ -394,16 +357,39 @@ export let ComboboxButton = defineComponent({
       }
     }
 
-    return {
-      api,
-      id,
-      el: api.buttonRef,
-      type: useResolveButtonType(
-        computed(() => ({ as: props.as, type: attrs.type })),
-        api.buttonRef
-      ),
-      handleClick,
-      handleKeydown,
+    let type = useResolveButtonType(
+      computed(() => ({ as: props.as, type: attrs.type })),
+      api.buttonRef
+    )
+
+    return () => {
+      let slot = {
+        open: api.ComboboxState.value === ComboboxStates.Open,
+        disabled: api.disabled.value,
+      }
+      let propsWeControl = {
+        ref: api.buttonRef,
+        id,
+        type: type.value,
+        tabindex: '-1',
+        'aria-haspopup': true,
+        'aria-controls': dom(api.optionsRef)?.id,
+        'aria-expanded': api.disabled.value
+          ? undefined
+          : api.ComboboxState.value === ComboboxStates.Open,
+        'aria-labelledby': api.labelRef.value ? [dom(api.labelRef)?.id, id].join(' ') : undefined,
+        disabled: api.disabled.value === true ? true : undefined,
+        onKeydown: handleKeydown,
+        onClick: handleClick,
+      }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'ComboboxButton',
+      })
     }
   },
 })
@@ -421,36 +407,7 @@ export let ComboboxInput = defineComponent({
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
   },
-  render() {
-    let api = useComboboxContext('ComboboxInput')
-
-    let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
-    let propsWeControl = {
-      'aria-activedescendant':
-        api.activeOptionIndex.value === null
-          ? undefined
-          : api.options.value[api.activeOptionIndex.value]?.id,
-      'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
-      'aria-orientation': api.orientation.value,
-      id: this.id,
-      onKeydown: this.handleKeyDown,
-      onChange: this.handleChange,
-      role: 'combobox',
-      tabIndex: 0,
-      ref: 'el',
-    }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      features: Features.RenderStrategy | Features.Static,
-      name: 'ComboboxInput',
-    })
-  },
-  setup(props, { emit }) {
+  setup(props, { emit, attrs, slots }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
     api.inputPropsRef = computed(() => props)
@@ -530,7 +487,33 @@ export let ComboboxInput = defineComponent({
       emit('change', event)
     }
 
-    return { id, el: api.inputRef, handleKeyDown, handleChange }
+    return () => {
+      let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
+      let propsWeControl = {
+        'aria-activedescendant':
+          api.activeOptionIndex.value === null
+            ? undefined
+            : api.options.value[api.activeOptionIndex.value]?.id,
+        'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+        'aria-orientation': api.orientation.value,
+        id,
+        onKeydown: handleKeyDown,
+        onChange: handleChange,
+        role: 'combobox',
+        tabIndex: 0,
+        ref: api.inputRef,
+      }
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        features: Features.RenderStrategy | Features.Static,
+        name: 'ComboboxInput',
+      })
+    }
   },
 })
 
@@ -543,34 +526,7 @@ export let ComboboxOptions = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  render() {
-    let api = useComboboxContext('ComboboxOptions')
-
-    let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
-    let propsWeControl = {
-      'aria-activedescendant':
-        api.activeOptionIndex.value === null
-          ? undefined
-          : api.options.value[api.activeOptionIndex.value]?.id,
-      'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
-      'aria-orientation': api.orientation.value,
-      id: this.id,
-      ref: 'el',
-      role: 'listbox',
-    }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      features: Features.RenderStrategy | Features.Static,
-      visible: this.visible,
-      name: 'ComboboxOptions',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useComboboxContext('ComboboxOptions')
     let id = `headlessui-combobox-options-${useId()}`
 
@@ -583,7 +539,31 @@ export let ComboboxOptions = defineComponent({
       return api.ComboboxState.value === ComboboxStates.Open
     })
 
-    return { id, el: api.optionsRef, visible }
+    return () => {
+      let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
+      let propsWeControl = {
+        'aria-activedescendant':
+          api.activeOptionIndex.value === null
+            ? undefined
+            : api.options.value[api.activeOptionIndex.value]?.id,
+        'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+        'aria-orientation': api.orientation.value,
+        id,
+        ref: api.optionsRef,
+        role: 'listbox',
+      }
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        features: Features.RenderStrategy | Features.Static,
+        visible: visible.value,
+        name: 'ComboboxOptions',
+      })
+    }
   },
 })
 

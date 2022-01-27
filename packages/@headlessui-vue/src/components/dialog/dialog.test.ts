@@ -935,57 +935,46 @@ describe('Nesting', () => {
     components: { Dialog, DialogOverlay },
     emits: ['close'],
     props: ['level'],
-    render() {
-      let level = this.$props.level ?? 1
-      return h(Dialog, { open: true, onClose: this.onClose }, () => [
-        h(DialogOverlay),
-        h('div', [
-          h('p', `Level: ${level}`),
-          h(
-            'button',
-            {
-              onClick: () => {
-                this.showChild = true
-              },
-            },
-            `Open ${level + 1} a`
-          ),
-          h(
-            'button',
-            {
-              onClick: () => {
-                this.showChild = true
-              },
-            },
-            `Open ${level + 1} b`
-          ),
-          h(
-            'button',
-            {
-              onClick: () => {
-                this.showChild = true
-              },
-            },
-            `Open ${level + 1} c`
-          ),
-        ]),
-        this.showChild &&
-          h(Nested, {
-            onClose: () => {
-              this.showChild = false
-            },
-            level: level + 1,
-          }),
-      ])
-    },
-    setup(_props, { emit }) {
+    setup(props, { emit }) {
       let showChild = ref(false)
+      function onClose() {
+        emit('close', false)
+      }
 
-      return {
-        showChild,
-        onClose() {
-          emit('close', false)
-        },
+      return () => {
+        let level = props.level ?? 1
+        return h(Dialog, { open: true, onClose: onClose }, () => [
+          h(DialogOverlay),
+          h('div', [
+            h('p', `Level: ${level}`),
+            h(
+              'button',
+              {
+                onClick: () => (showChild.value = true),
+              },
+              `Open ${level + 1} a`
+            ),
+            h(
+              'button',
+              {
+                onClick: () => (showChild.value = true),
+              },
+              `Open ${level + 1} b`
+            ),
+            h(
+              'button',
+              {
+                onClick: () => (showChild.value = true),
+              },
+              `Open ${level + 1} c`
+            ),
+          ]),
+          showChild.value &&
+            h(Nested, {
+              onClose: () => (showChild.value = false),
+              level: level + 1,
+            }),
+        ])
       }
     },
   })

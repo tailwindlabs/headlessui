@@ -70,31 +70,30 @@ export let Description = defineComponent({
   props: {
     as: { type: [Object, String], default: 'p' },
   },
-  render() {
-    let { name = 'Description', slot = ref({}), props = {} } = this.context
-    let passThroughProps = this.$props
-    let propsWeControl = {
-      ...Object.entries(props).reduce(
-        (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
-        {}
-      ),
-      id: this.id,
-    }
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot: slot.value,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name,
-    })
-  },
-  setup() {
+  setup(myProps, { attrs, slots }) {
     let context = useDescriptionContext()
     let id = `headlessui-description-${useId()}`
 
     onMounted(() => onUnmounted(context.register(id)))
 
-    return { id, context }
+    return () => {
+      let { name = 'Description', slot = ref({}), props = {} } = context
+      let passThroughProps = myProps
+      let propsWeControl = {
+        ...Object.entries(props).reduce(
+          (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
+          {}
+        ),
+        id,
+      }
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot: slot.value,
+        attrs,
+        slots,
+        name,
+      })
+    }
   },
 })

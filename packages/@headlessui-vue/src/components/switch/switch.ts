@@ -64,31 +64,8 @@ export let Switch = defineComponent({
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: false },
   },
-  render() {
-    let slot = { checked: this.$props.modelValue }
-    let propsWeControl = {
-      id: this.id,
-      ref: 'el',
-      role: 'switch',
-      type: this.type,
-      tabIndex: 0,
-      'aria-checked': this.$props.modelValue,
-      'aria-labelledby': this.labelledby,
-      'aria-describedby': this.describedby,
-      onClick: this.handleClick,
-      onKeyup: this.handleKeyUp,
-      onKeypress: this.handleKeyPress,
-    }
 
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'Switch',
-    })
-  },
-  setup(props, { emit, attrs }) {
+  setup(props, { emit, attrs, slots }) {
     let api = inject(GroupContext, null)
     let id = `headlessui-switch-${useId()}`
 
@@ -98,28 +75,49 @@ export let Switch = defineComponent({
 
     let internalSwitchRef = ref(null)
     let switchRef = api === null ? internalSwitchRef : api.switchRef
+    let type = useResolveButtonType(
+      computed(() => ({ as: props.as, type: attrs.type })),
+      switchRef
+    )
 
-    return {
-      id,
-      el: switchRef,
-      type: useResolveButtonType(
-        computed(() => ({ as: props.as, type: attrs.type })),
-        switchRef
-      ),
-      labelledby: api?.labelledby,
-      describedby: api?.describedby,
-      handleClick(event: MouseEvent) {
-        event.preventDefault()
-        toggle()
-      },
-      handleKeyUp(event: KeyboardEvent) {
-        if (event.key !== Keys.Tab) event.preventDefault()
-        if (event.key === Keys.Space) toggle()
-      },
-      // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
-      handleKeyPress(event: KeyboardEvent) {
-        event.preventDefault()
-      },
+    function handleClick(event: MouseEvent) {
+      event.preventDefault()
+      toggle()
+    }
+
+    function handleKeyUp(event: KeyboardEvent) {
+      if (event.key !== Keys.Tab) event.preventDefault()
+      if (event.key === Keys.Space) toggle()
+    }
+
+    // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
+    function handleKeyPress(event: KeyboardEvent) {
+      event.preventDefault()
+    }
+
+    return () => {
+      let slot = { checked: props.modelValue }
+      let propsWeControl = {
+        id,
+        ref: switchRef,
+        role: 'switch',
+        type: type.value,
+        tabIndex: 0,
+        'aria-checked': props.modelValue,
+        'aria-labelledby': api?.labelledby.value,
+        'aria-describedby': api?.describedby.value,
+        onClick: handleClick,
+        onKeyup: handleKeyUp,
+        onKeypress: handleKeyPress,
+      }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'Switch',
+      })
     }
   },
 })
