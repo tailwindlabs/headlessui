@@ -4227,6 +4227,7 @@ describe('Keyboard interactions', () => {
             <ComboboxOptions>
               <ComboboxOption
                 v-for="person in filteredPeople"
+                :key="person.value"
                 :value="person.value"
                 :disabled="person.disabled"
               >

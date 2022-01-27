@@ -13,6 +13,7 @@ import {
   watchEffect,
   toRaw,
   watch,
+  PropType,
 } from 'vue'
 
 import { Features, render, omit } from '../../utils/render'
@@ -41,11 +42,11 @@ type StateDefinition = {
   inputRef: Ref<HTMLInputElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
   optionsRef: Ref<HTMLDivElement | null>
+  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
 
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComboboxOptionDataRef }[]>
   activeOptionIndex: Ref<number | null>
-  displayValue: Ref<((item: unknown) => string) | null>
 
   // State mutators
   closeCombobox(): void
@@ -107,7 +108,7 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       activeOptionIndex,
-      displayValue: ref(null),
+      inputPropsRef: ref<{ displayValue?: (item: unknown) => string }>({ displayValue: undefined }),
       closeCombobox() {
         if (props.disabled) return
         if (ComboboxState.value === ComboboxStates.Closed) return
@@ -131,15 +132,24 @@ export let Combobox = defineComponent({
             resolveItems: () => options.value,
             resolveActiveIndex: () => activeOptionIndex.value,
             resolveId: option => option.id,
-            resolveDisabled: option => {
-              let el = document.getElementById(option.id)!
-              return option.dataRef.disabled || el.hasAttribute('hidden')
-            },
+            resolveDisabled: option => option.dataRef.disabled,
           }
         )
 
         if (activeOptionIndex.value === nextActiveOptionIndex) return
         activeOptionIndex.value = nextActiveOptionIndex
+      },
+      syncInputValue() {
+        let value = api.value.value
+        if (!dom(api.inputRef)) return
+        if (value === undefined) return
+        let displayValue = api.inputPropsRef.value.displayValue
+
+        if (typeof displayValue === 'function') {
+          api.inputRef!.value!.value = displayValue(value)
+        } else if (typeof value === 'string') {
+          api.inputRef!.value!.value = value
+        }
       },
       selectOption(id: string) {
         let option = options.value.find(item => item.id === id)
@@ -147,22 +157,14 @@ export let Combobox = defineComponent({
 
         let { dataRef } = option
         emit('update:modelValue', dataRef.value)
-
-        // TODO: Do we need this?
-        if (typeof dataRef.value === 'string' && inputRef.value) {
-          inputRef.value.value = dataRef.value
-        }
+        api.syncInputValue()
       },
       selectActiveOption() {
         if (activeOptionIndex.value === null) return
 
         let { dataRef } = options.value[activeOptionIndex.value]
         emit('update:modelValue', dataRef.value)
-
-        // TODO: Do we need this?
-        if (typeof dataRef.value === 'string' && inputRef.value) {
-          inputRef.value.value = dataRef.value
-        }
+        api.syncInputValue()
       },
       registerOption(id: string, dataRef: ComboboxOptionDataRef) {
         let orderMap = Array.from(
@@ -193,10 +195,6 @@ export let Combobox = defineComponent({
           return nextOptions.indexOf(currentActiveOption)
         })()
       },
-      select(value: unknown) {
-        if (props.disabled) return
-        emit('update:modelValue', value)
-      },
     }
 
     useWindowEvent('mousedown', event => {
@@ -213,6 +211,10 @@ export let Combobox = defineComponent({
 
       if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
       if (!event.defaultPrevented) dom(inputRef)?.focus({ preventScroll: true })
+    })
+
+    watchEffect(() => {
+      api.syncInputValue()
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -404,7 +406,7 @@ export let ComboboxInput = defineComponent({
     as: { type: [Object, String], default: 'input' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    displayValue: { type: Function },
+    displayValue: { type: Function as PropType<(item: unknown) => string> },
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
@@ -438,9 +440,10 @@ export let ComboboxInput = defineComponent({
       name: 'ComboboxInput',
     })
   },
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
+    api.inputPropsRef = computed(() => props)
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -512,7 +515,7 @@ export let ComboboxInput = defineComponent({
       }
     }
 
-    function handleChange(event: KeyboardEvent) {
+    function handleChange(event: Event & { target: HTMLInputElement }) {
       api.openCombobox()
       emit('change', event)
     }
@@ -593,10 +596,10 @@ export let ComboboxOption = defineComponent({
 
     let selected = computed(() => toRaw(api.value.value) === toRaw(props.value))
 
-    let dataRef = ref<ComboboxOptionDataRef['value']>({
+    let dataRef = computed<ComboboxOptionDataRef['value']>(() => ({
       disabled: props.disabled,
       value: props.value,
-    })
+    }))
 
     onMounted(() => api.registerOption(id, dataRef))
     onUnmounted(() => api.unregisterOption(id))
@@ -621,7 +624,7 @@ export let ComboboxOption = defineComponent({
 
     function handleClick(event: MouseEvent) {
       if (props.disabled) return event.preventDefault()
-      api.select(props.value)
+      api.selectOption(id)
       api.closeCombobox()
       nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
     }
