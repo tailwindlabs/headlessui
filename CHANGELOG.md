@@ -13,12 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve controlled Tabs behaviour ([#1050](https://github.com/tailwindlabs/headlessui/pull/1050))
 - Improve typeahead search logic ([#1051](https://github.com/tailwindlabs/headlessui/pull/1051))
 
+### Added
+
+- Add `Combobox` component ([#1047](https://github.com/tailwindlabs/headlessui/pull/1047))
+
 ## [Unreleased - @headlessui/vue]
 
 ### Fixed
 
 - Ensure correct order when conditionally rendering `MenuItem`, `ListboxOption` and `RadioGroupOption` ([#1045](https://github.com/tailwindlabs/headlessui/pull/1045))
 - Improve typeahead search logic ([#1051](https://github.com/tailwindlabs/headlessui/pull/1051))
+
+### Added
+
+- Add `Combobox` component ([#1047](https://github.com/tailwindlabs/headlessui/pull/1047))
 
 ## [@headlessui/react@v1.4.3] - 2022-01-14
 
@@ -87,7 +95,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make `Disclosure.Button` close the disclosure inside a `Disclosure.Panel` ([#682](https://github.com/tailwindlabs/headlessui/pull/682))
 - Add `aria-orientation` to `Listbox`, which swaps Up/Down with Left/Right keys ([#683](https://github.com/tailwindlabs/headlessui/pull/683))
 - Expose `close` function from the render prop for `Disclosure`, `Disclosure.Panel`, `Popover` and `Popover.Panel` ([#697](https://github.com/tailwindlabs/headlessui/pull/697))
-
 
 ## [@headlessui/vue@v1.4.0] - 2021-07-29
 
