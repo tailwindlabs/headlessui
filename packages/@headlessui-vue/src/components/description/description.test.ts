@@ -27,12 +27,11 @@ it('should be possible to use useDescriptions without using a Description', asyn
   let { container } = render(
     defineComponent({
       components: { Description },
-      render() {
-        return h('div', [h('div', { 'aria-describedby': this.describedby }, ['No description'])])
-      },
       setup() {
         let describedby = useDescriptions()
-        return { describedby }
+
+        return () =>
+          h('div', [h('div', { 'aria-describedby': describedby.value }, ['No description'])])
       },
     })
   )
@@ -50,17 +49,16 @@ it('should be possible to use useDescriptions and a single Description, and have
   let { container } = render(
     defineComponent({
       components: { Description },
-      render() {
-        return h('div', [
-          h('div', { 'aria-describedby': this.describedby }, [
-            h(Description, () => 'I am a description'),
-            h('span', 'Contents'),
-          ]),
-        ])
-      },
       setup() {
         let describedby = useDescriptions()
-        return { describedby }
+
+        return () =>
+          h('div', [
+            h('div', { 'aria-describedby': describedby.value }, [
+              h(Description, () => 'I am a description'),
+              h('span', 'Contents'),
+            ]),
+          ])
       },
     })
   )
@@ -83,18 +81,17 @@ it('should be possible to use useDescriptions and multiple Description component
   let { container } = render(
     defineComponent({
       components: { Description },
-      render() {
-        return h('div', [
-          h('div', { 'aria-describedby': this.describedby }, [
-            h(Description, () => 'I am a description'),
-            h('span', 'Contents'),
-            h(Description, () => 'I am also a description'),
-          ]),
-        ])
-      },
       setup() {
         let describedby = useDescriptions()
-        return { describedby }
+
+        return () =>
+          h('div', [
+            h('div', { 'aria-describedby': describedby.value }, [
+              h(Description, () => 'I am a description'),
+              h('span', 'Contents'),
+              h(Description, () => 'I am also a description'),
+            ]),
+          ])
       },
     })
   )
@@ -118,18 +115,18 @@ it('should be possible to update a prop from the parent and it should reflect in
   let { container } = render(
     defineComponent({
       components: { Description },
-      render() {
-        return h('div', [
-          h('div', { 'aria-describedby': this.describedby }, [
-            h(Description, () => 'I am a description'),
-            h('button', { onClick: () => this.count++ }, '+1'),
-          ]),
-        ])
-      },
       setup() {
         let count = ref(0)
         let describedby = useDescriptions({ props: { 'data-count': count } })
-        return { count, describedby }
+
+        return () => {
+          return h('div', [
+            h('div', { 'aria-describedby': describedby.value }, [
+              h(Description, () => 'I am a description'),
+              h('button', { onClick: () => count.value++ }, '+1'),
+            ]),
+          ])
+        }
       },
     })
   )
