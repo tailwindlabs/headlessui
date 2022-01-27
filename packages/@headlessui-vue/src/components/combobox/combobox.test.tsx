@@ -228,7 +228,7 @@ describe('Rendering', () => {
     it(
       'selecting an option puts the value into Combobox.Input when displayValue is not provided',
       suppressConsoleLogs(async () => {
-        const Example = defineComponent({
+        let Example = defineComponent({
           template: html`
             <Combobox v-model="value">
               <ComboboxInput />
@@ -259,7 +259,7 @@ describe('Rendering', () => {
     it(
       'selecting an option puts the display value into Combobox.Input when displayValue is provided',
       suppressConsoleLogs(async () => {
-        const Example = defineComponent({
+        let Example = defineComponent({
           template: html`
             <Combobox v-model="value">
               <ComboboxInput :displayValue="(str) => str?.toUpperCase() ?? ''" />
@@ -4217,7 +4217,7 @@ describe('Keyboard interactions', () => {
     })
 
     describe('`Any` key aka search', () => {
-      const Example = defineComponent({
+      let Example = defineComponent({
         components: getDefaultComponents(),
 
         template: html`
@@ -4244,9 +4244,9 @@ describe('Keyboard interactions', () => {
         },
 
         setup(props) {
-          const value = ref<string | null>(null)
-          const query = ref('')
-          const filteredPeople = computed(() => {
+          let value = ref<string | null>(null)
+          let query = ref('')
+          let filteredPeople = computed(() => {
             return query.value === ''
               ? props.people
               : props.people.filter(person =>
