@@ -13,6 +13,7 @@ import {
   // Types
   InjectionKey,
   Ref,
+  ConcreteComponent,
 } from 'vue'
 
 import { useId } from '../../hooks/use-id'
@@ -341,6 +342,9 @@ export let TransitionChild = defineComponent({
 
 // ---
 
+// This exists to work around typescript circular inference problem
+let _TransitionChild = TransitionChild as ConcreteComponent
+
 export let TransitionRoot = defineComponent({
   inheritAttrs: false,
   props: {
@@ -423,7 +427,7 @@ export let TransitionRoot = defineComponent({
           ...slots,
           default: () => [
             h(
-              TransitionChild,
+              _TransitionChild,
               {
                 onBeforeEnter: () => emit('beforeEnter'),
                 onAfterEnter: () => emit('afterEnter'),

@@ -1,4 +1,11 @@
-import { defineComponent, ref, nextTick, h, ComponentOptionsWithoutProps } from 'vue'
+import {
+  defineComponent,
+  ref,
+  nextTick,
+  h,
+  ComponentOptionsWithoutProps,
+  ConcreteComponent,
+} from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Dialog, DialogOverlay, DialogTitle, DialogDescription } from './dialog'
@@ -931,7 +938,7 @@ describe('Mouse interactions', () => {
 })
 
 describe('Nesting', () => {
-  let Nested = defineComponent({
+  let Nested: ConcreteComponent = defineComponent({
     components: { Dialog, DialogOverlay },
     emits: ['close'],
     props: ['level'],
