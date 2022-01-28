@@ -75,42 +75,7 @@ export let Dialog = defineComponent({
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
   emits: { close: (_close: boolean) => true },
-  render() {
-    let propsWeControl = {
-      // Manually passthrough the attributes, because Vue can't automatically pass
-      // it to the underlying div because of all the wrapper components below.
-      ...this.$attrs,
-      ref: 'el',
-      id: this.id,
-      role: 'dialog',
-      'aria-modal': this.dialogState === DialogStates.Open ? true : undefined,
-      'aria-labelledby': this.titleId,
-      'aria-describedby': this.describedby,
-      onClick: this.handleClick,
-    }
-    let { open: _, initialFocus, ...passThroughProps } = this.$props
-
-    let slot = { open: this.dialogState === DialogStates.Open }
-
-    return h(ForcePortalRoot, { force: true }, () =>
-      h(Portal, () =>
-        h(PortalGroup, { target: this.dialogRef }, () =>
-          h(ForcePortalRoot, { force: false }, () =>
-            render({
-              props: { ...passThroughProps, ...propsWeControl },
-              slot,
-              attrs: this.$attrs,
-              slots: this.$slots,
-              visible: this.visible,
-              features: Features.RenderStrategy | Features.Static,
-              name: 'Dialog',
-            })
-          )
-        )
-      )
-    )
-  },
-  setup(props, { emit }) {
+  setup(props, { emit, attrs, slots }) {
     let containers = ref<Set<HTMLElement>>(new Set())
 
     let usesOpenClosedState = useOpenClosed()
@@ -193,7 +158,7 @@ export let Dialog = defineComponent({
     provide(DialogContext, api)
 
     // Handle outside click
-    useWindowEvent('mousedown', event => {
+    useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
 
       if (dialogState.value !== DialogStates.Open) return
@@ -205,7 +170,7 @@ export let Dialog = defineComponent({
     })
 
     // Handle `Escape` to close
-    useWindowEvent('keydown', event => {
+    useWindowEvent('keydown', (event) => {
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
       if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
@@ -215,7 +180,7 @@ export let Dialog = defineComponent({
     })
 
     // Scroll lock
-    watchEffect(onInvalidate => {
+    watchEffect((onInvalidate) => {
       if (dialogState.value !== DialogStates.Open) return
 
       let overflow = document.documentElement.style.overflow
@@ -233,12 +198,12 @@ export let Dialog = defineComponent({
     })
 
     // Trigger close when the FocusTrap gets hidden
-    watchEffect(onInvalidate => {
+    watchEffect((onInvalidate) => {
       if (dialogState.value !== DialogStates.Open) return
       let container = dom(internalDialogRef)
       if (!container) return
 
-      let observer = new IntersectionObserver(entries => {
+      let observer = new IntersectionObserver((entries) => {
         for (let entry of entries) {
           if (
             entry.boundingClientRect.x === 0 &&
@@ -256,19 +221,44 @@ export let Dialog = defineComponent({
       onInvalidate(() => observer.disconnect())
     })
 
-    return {
-      id,
-      el: internalDialogRef,
-      dialogRef: internalDialogRef,
-      containers,
-      dialogState,
-      titleId,
-      describedby,
-      visible,
-      open,
-      handleClick(event: MouseEvent) {
-        event.stopPropagation()
-      },
+    function handleClick(event: MouseEvent) {
+      event.stopPropagation()
+    }
+
+    return () => {
+      let propsWeControl = {
+        // Manually passthrough the attributes, because Vue can't automatically pass
+        // it to the underlying div because of all the wrapper components below.
+        ...attrs,
+        ref: internalDialogRef,
+        id,
+        role: 'dialog',
+        'aria-modal': dialogState.value === DialogStates.Open ? true : undefined,
+        'aria-labelledby': titleId.value,
+        'aria-describedby': describedby.value,
+        onClick: handleClick,
+      }
+      let { open: _, initialFocus, ...passThroughProps } = props
+
+      let slot = { open: dialogState.value === DialogStates.Open }
+
+      return h(ForcePortalRoot, { force: true }, () =>
+        h(Portal, () =>
+          h(PortalGroup, { target: internalDialogRef.value }, () =>
+            h(ForcePortalRoot, { force: false }, () =>
+              render({
+                props: { ...passThroughProps, ...propsWeControl },
+                slot,
+                attrs,
+                slots,
+                visible: visible.value,
+                features: Features.RenderStrategy | Features.Static,
+                name: 'Dialog',
+              })
+            )
+          )
+        )
+      )
     }
   },
 })
@@ -280,36 +270,32 @@ export let DialogOverlay = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  render() {
-    let api = useDialogContext('DialogOverlay')
-    let propsWeControl = {
-      ref: 'el',
-      id: this.id,
-      'aria-hidden': true,
-      onClick: this.handleClick,
-    }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot: { open: api.dialogState.value === DialogStates.Open },
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'DialogOverlay',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useDialogContext('DialogOverlay')
     let id = `headlessui-dialog-overlay-${useId()}`
 
-    return {
-      id,
-      handleClick(event: MouseEvent) {
-        if (event.target !== event.currentTarget) return
-        event.preventDefault()
-        event.stopPropagation()
-        api.close()
-      },
+    function handleClick(event: MouseEvent) {
+      if (event.target !== event.currentTarget) return
+      event.preventDefault()
+      event.stopPropagation()
+      api.close()
+    }
+
+    return () => {
+      let propsWeControl = {
+        id,
+        'aria-hidden': true,
+        onClick: handleClick,
+      }
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot: { open: api.dialogState.value === DialogStates.Open },
+        attrs,
+        slots,
+        name: 'DialogOverlay',
+      })
     }
   },
 })
@@ -321,20 +307,7 @@ export let DialogTitle = defineComponent({
   props: {
     as: { type: [Object, String], default: 'h2' },
   },
-  render() {
-    let api = useDialogContext('DialogTitle')
-    let propsWeControl = { id: this.id }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot: { open: api.dialogState.value === DialogStates.Open },
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'DialogTitle',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useDialogContext('DialogTitle')
     let id = `headlessui-dialog-title-${useId()}`
 
@@ -343,7 +316,18 @@ export let DialogTitle = defineComponent({
       onUnmounted(() => api.setTitleId(null))
     })
 
-    return { id }
+    return () => {
+      let propsWeControl = { id }
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot: { open: api.dialogState.value === DialogStates.Open },
+        attrs,
+        slots,
+        name: 'DialogTitle',
+      })
+    }
   },
 })
 

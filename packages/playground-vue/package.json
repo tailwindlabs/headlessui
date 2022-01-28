@@ -1,0 +1,25 @@
+{
+  "name": "playground-vue",
+  "private": true,
+  "version": "0.0.0",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "prebuild": "yarn workspace @headlessui/vue build",
+    "dev:headlessui": "yarn workspace @headlessui/vue watch",
+    "dev:next": "vite serve",
+    "dev": "npm-run-all -p dev:*",
+    "build": "NODE_ENV=production vite build",
+    "clean": "rimraf ./dist"
+  },
+  "dependencies": {
+    "@headlessui/vue": "*",
+    "vue": "^3.2.27",
+    "vue-router": "^4.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.0.1",
+    "vite": "^2.7.13"
+  }
+}

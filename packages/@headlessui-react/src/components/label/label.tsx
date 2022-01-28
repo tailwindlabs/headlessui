@@ -52,10 +52,10 @@ export function useLabels(): [string | undefined, (props: LabelProviderProps) =>
     useMemo(() => {
       return function LabelProvider(props: LabelProviderProps) {
         let register = useCallback((value: string) => {
-          setLabelIds(existing => [...existing, value])
+          setLabelIds((existing) => [...existing, value])
 
           return () =>
-            setLabelIds(existing => {
+            setLabelIds((existing) => {
               let clone = existing.slice()
               let idx = clone.indexOf(value)
               if (idx !== -1) clone.splice(idx, 1)

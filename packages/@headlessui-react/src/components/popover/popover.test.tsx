@@ -23,7 +23,7 @@ jest.mock('../../hooks/use-id')
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise<void>(resolve => {
+  return new Promise<void>((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()

@@ -26,8 +26,6 @@ it(
 
     expect(() => {
       render(
-        // @ts-expect-error Disabling TS because it does require us to use a show prop. But non
-        // TypeScript projects won't benefit from this.
         <Transition>
           <div className="hello">Children</div>
         </Transition>
@@ -445,7 +443,7 @@ describe('Transitions', () => {
               <span>Hello!</span>
             </Transition>
 
-            <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+            <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
               Toggle
             </button>
           </>
@@ -488,14 +486,15 @@ describe('Transitions', () => {
 
         return (
           <>
-            <style>{`.enter { transition-duration: ${enterDuration /
-              1000}s; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
+            <style>{`.enter { transition-duration: ${
+              enterDuration / 1000
+            }s; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
             </Transition>
 
-            <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+            <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
               Toggle
             </button>
           </>
@@ -538,14 +537,15 @@ describe('Transitions', () => {
 
         return (
           <>
-            <style>{`.enter { transition-duration: ${enterDuration /
-              1000}s; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
+            <style>{`.enter { transition-duration: ${
+              enterDuration / 1000
+            }s; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
 
             <Transition show={show} unmount={false} enter="enter" enterFrom="from" enterTo="to">
               <span>Hello!</span>
             </Transition>
 
-            <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+            <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
               Toggle
             </button>
           </>
@@ -591,7 +591,7 @@ describe('Transitions', () => {
               <span>Hello!</span>
             </Transition>
 
-            <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+            <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
               Toggle
             </button>
           </>
@@ -642,7 +642,7 @@ describe('Transitions', () => {
                 <span>Hello!</span>
               </Transition>
 
-              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
                 Toggle
               </button>
             </>
@@ -696,7 +696,7 @@ describe('Transitions', () => {
                 <span>Hello!</span>
               </Transition>
 
-              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
                 Toggle
               </button>
             </>
@@ -757,7 +757,7 @@ describe('Transitions', () => {
                 <span>Hello!</span>
               </Transition>
 
-              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
                 Toggle
               </button>
             </>
@@ -843,7 +843,7 @@ describe('Transitions', () => {
                 <span>Hello!</span>
               </Transition>
 
-              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
                 Toggle
               </button>
             </>
@@ -943,7 +943,7 @@ describe('Transitions', () => {
                 </Transition.Child>
               </Transition>
 
-              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
                 Toggle
               </button>
             </>
@@ -1027,7 +1027,7 @@ describe('Transitions', () => {
                 </Transition.Child>
               </Transition>
 
-              <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+              <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
                 Toggle
               </button>
             </>
@@ -1138,7 +1138,7 @@ describe('Events', () => {
               <span>Hello!</span>
             </Transition>
 
-            <button data-testid="toggle" onClick={() => setShow(v => !v)}>
+            <button data-testid="toggle" onClick={() => setShow((v) => !v)}>
               Toggle
             </button>
           </>

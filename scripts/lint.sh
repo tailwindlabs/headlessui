@@ -10,19 +10,28 @@ RELATIVE_TARGET_DIR="${TARGET_DIR/$ROOT_DIR/}"
 
 pushd $ROOT_DIR > /dev/null
 
-node="yarn node"
-tsdxArgs=()
+prettierArgs=()
 
-# Add script name
-tsdxArgs+=("lint")
+if ! [ -z "$CI" ]; then
+  prettierArgs+=("--check")
+else
+  prettierArgs+=("--write")
+  prettierArgs+=("$RELATIVE_TARGET_DIR")
+fi
 
 # Add default arguments
-tsdxArgs+=($RELATIVE_TARGET_DIR)
+prettierArgs+=('--ignore-unknown')
 
 # Passthrough arguments and flags
-tsdxArgs+=($@)
+prettierArgs+=($@)
+
+# Ensure that a path is passed, otherwise default to the current directory
+if [ -z "$@" ]; then
+  prettierArgs+=(.)
+fi
 
 # Execute
-$node "$(yarn bin tsdx)" "${tsdxArgs[@]}"
+yarn prettier "${prettierArgs[@]}"
 
 popd > /dev/null
+

@@ -1,4 +1,12 @@
-import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
+import {
+  ComponentOptionsWithoutProps,
+  defineComponent,
+  h,
+  nextTick,
+  reactive,
+  ref,
+  watch,
+} from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { TransitionChild } from '../transitions/transition'
@@ -44,7 +52,7 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise(resolve => {
+  return new Promise<void>((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -53,7 +61,7 @@ function nextFrame() {
   })
 }
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Menu, MenuButton, MenuItems, MenuItem }
 
   if (typeof input === 'string') {
@@ -395,7 +403,7 @@ describe('Rendering', () => {
             `,
             setup: () => ({
               CustomButton: defineComponent({
-                setup: props => () => h('button', { ...props }),
+                setup: (props) => () => h('button', { ...props }),
               }),
             }),
           })
@@ -433,7 +441,7 @@ describe('Rendering', () => {
             `,
             setup: () => ({
               CustomButton: defineComponent({
-                setup: props => () => h('div', props),
+                setup: (props) => () => h('div', props),
               }),
             }),
           })
@@ -810,7 +818,7 @@ describe('Rendering composition', () => {
 
       // Verify items are buttons now
       let items = getMenuItems()
-      items.forEach(item =>
+      items.forEach((item) =>
         assertMenuItem(item, { tag: 'button', attributes: { 'data-my-custom-button': 'true' } })
       )
     })
@@ -853,11 +861,11 @@ describe('Rendering composition', () => {
 
       expect.hasAssertions()
 
-      document.querySelectorAll('.outer').forEach(element => {
+      document.querySelectorAll('.outer').forEach((element) => {
         expect(element).not.toHaveAttribute('role', 'none')
       })
 
-      document.querySelectorAll('.inner').forEach(element => {
+      document.querySelectorAll('.inner').forEach((element) => {
         expect(element).toHaveAttribute('role', 'none')
       })
     })
@@ -1069,7 +1077,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
 
       // Verify that the first menu item is active
       assertMenuLinkedWithMenuItem(items[0])
@@ -1398,7 +1406,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[0])
     })
 
@@ -1704,7 +1712,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[0])
 
       // Try to tab
@@ -1750,7 +1758,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[0])
 
       // Try to Shift+Tab
@@ -1798,7 +1806,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
 
       // Verify that the first menu item is active
       assertMenuLinkedWithMenuItem(items[0])
@@ -1883,7 +1891,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[0])
 
       // We should be able to go down once
@@ -1926,7 +1934,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[1])
 
       // We should be able to go down once
@@ -1961,7 +1969,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[2])
     })
   })
@@ -2002,7 +2010,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
 
       // ! ALERT: The LAST item should now be active
       assertMenuLinkedWithMenuItem(items[2])
@@ -2055,7 +2063,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[0])
     })
 
@@ -2086,7 +2094,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[2])
 
       // We should not be able to go up (because those are disabled)
@@ -2133,7 +2141,7 @@ describe('Keyboard interactions', () => {
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach(item => assertMenuItem(item))
+      items.forEach((item) => assertMenuItem(item))
       assertMenuLinkedWithMenuItem(items[2])
 
       // We should be able to go down once
@@ -2820,7 +2828,7 @@ describe('Mouse interactions', () => {
     // Verify we have menu items
     let items = getMenuItems()
     expect(items).toHaveLength(3)
-    items.forEach(item => assertMenuItem(item))
+    items.forEach((item) => assertMenuItem(item))
   })
 
   it(

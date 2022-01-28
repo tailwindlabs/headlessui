@@ -98,7 +98,7 @@ function _render({
             `However we need to passthrough the following props:`,
             Object.keys(passThroughProps)
               .concat(Object.keys(attrs))
-              .map(line => `  - ${line}`)
+              .map((line) => `  - ${line}`)
               .join('\n'),
             '',
             'You can apply a few solutions:',
@@ -106,7 +106,7 @@ function _render({
               'Add an `as="..."` prop, to ensure that we render an actual element instead of a "template".',
               'Render a single element as the child so that we can forward the props onto that element.',
             ]
-              .map(line => `  - ${line}`)
+              .map((line) => `  - ${line}`)
               .join('\n'),
           ].join('\n')
         )
@@ -125,12 +125,15 @@ function _render({
   return h(as, passThroughProps, children)
 }
 
-export function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) {
+export function omit<T extends Record<any, any>, Keys extends keyof T>(
+  object: T,
+  keysToOmit: readonly Keys[] = []
+) {
   let clone = Object.assign({}, object)
   for (let key of keysToOmit) {
     if (key in clone) delete clone[key]
   }
-  return clone
+  return clone as Omit<T, Keys>
 }
 
 function isValidElement(input: any): boolean {

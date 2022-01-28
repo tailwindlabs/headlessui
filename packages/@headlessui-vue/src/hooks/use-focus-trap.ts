@@ -75,7 +75,7 @@ export function useFocusTrap(
   onUnmounted(restore)
 
   // Handle Tab & Shift+Tab keyboard events
-  useWindowEvent('keydown', event => {
+  useWindowEvent('keydown', (event) => {
     if (!enabled.value) return
     if (event.key !== Keys.Tab) return
     if (!document.activeElement) return
@@ -99,7 +99,7 @@ export function useFocusTrap(
   // Prevent programmatically escaping
   useWindowEvent(
     'focus',
-    event => {
+    (event) => {
       if (!enabled.value) return
       if (containers.value.size !== 1) return
 

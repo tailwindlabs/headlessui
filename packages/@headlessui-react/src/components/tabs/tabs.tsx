@@ -83,14 +83,14 @@ let reducers: {
     return { ...state, tabs: [...state.tabs, action.tab] }
   },
   [ActionTypes.UnregisterTab](state, action) {
-    return { ...state, tabs: state.tabs.filter(tab => tab !== action.tab) }
+    return { ...state, tabs: state.tabs.filter((tab) => tab !== action.tab) }
   },
   [ActionTypes.RegisterPanel](state, action) {
     if (state.panels.includes(action.panel)) return state
     return { ...state, panels: [...state.panels, action.panel] }
   },
   [ActionTypes.UnregisterPanel](state, action) {
-    return { ...state, panels: state.panels.filter(panel => panel !== action.panel) }
+    return { ...state, panels: state.panels.filter((panel) => panel !== action.panel) }
   },
   [ActionTypes.ForceRerender](state) {
     return { ...state }
@@ -171,8 +171,8 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
     if (state.tabs.length <= 0) return
     if (selectedIndex === null && state.selectedIndex !== null) return
 
-    let tabs = state.tabs.map(tab => tab.current).filter(Boolean) as HTMLElement[]
-    let focusableTabs = tabs.filter(tab => !tab.hasAttribute('disabled'))
+    let tabs = state.tabs.map((tab) => tab.current).filter(Boolean) as HTMLElement[]
+    let focusableTabs = tabs.filter((tab) => !tab.hasAttribute('disabled'))
 
     let indexToSet = selectedIndex ?? defaultIndex
 
@@ -194,7 +194,7 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
       let before = tabs.slice(0, indexToSet)
       let after = tabs.slice(indexToSet)
 
-      let next = [...after, ...before].find(tab => focusableTabs.includes(tab))
+      let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
       if (!next) return
 
       dispatch({ type: ActionTypes.SetSelectedIndex, index: tabs.indexOf(next) })
@@ -245,7 +245,7 @@ type ListPropsWeControl = 'role' | 'aria-orientation'
 function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
   props: Props<TTag, ListRenderPropArg, ListPropsWeControl> & {}
 ) {
-  let [{ selectedIndex, orientation }] = useTabsContext([Tab.name, List.name].join('.'))
+  let [{ selectedIndex, orientation }] = useTabsContext('Tab.List')
 
   let slot = { selectedIndex }
   let propsWeControl = {
@@ -275,13 +275,11 @@ export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
 ) {
   let id = `headlessui-tabs-tab-${useId()}`
 
-  let [
-    { selectedIndex, tabs, panels, orientation, activation },
-    { dispatch, change },
-  ] = useTabsContext(Tab.name)
+  let [{ selectedIndex, tabs, panels, orientation, activation }, { dispatch, change }] =
+    useTabsContext(Tab.name)
 
   let internalTabRef = useRef<HTMLElement>(null)
-  let tabRef = useSyncRefs(internalTabRef, element => {
+  let tabRef = useSyncRefs(internalTabRef, (element) => {
     if (!element) return
     dispatch({ type: ActionTypes.ForceRerender })
   })
@@ -296,7 +294,7 @@ export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLElement>) => {
-      let list = tabs.map(tab => tab.current).filter(Boolean) as HTMLElement[]
+      let list = tabs.map((tab) => tab.current).filter(Boolean) as HTMLElement[]
 
       if (event.key === Keys.Space || event.key === Keys.Enter) {
         event.preventDefault()
@@ -380,7 +378,7 @@ interface PanelsRenderPropArg {
 function Panels<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
   props: Props<TTag, PanelsRenderPropArg>
 ) {
-  let [{ selectedIndex }] = useTabsContext([Tab.name, Panels.name].join('.'))
+  let [{ selectedIndex }] = useTabsContext('Tab.Panels')
 
   let slot = useMemo(() => ({ selectedIndex }), [selectedIndex])
 
@@ -405,13 +403,11 @@ function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
     PropsForFeatures<typeof PanelRenderFeatures>
 ) {
-  let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext(
-    [Tab.name, Panel.name].join('.')
-  )
+  let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext('Tab.Panel')
 
   let id = `headlessui-tabs-panel-${useId()}`
   let internalPanelRef = useRef<HTMLElement>(null)
-  let panelRef = useSyncRefs(internalPanelRef, element => {
+  let panelRef = useSyncRefs(internalPanelRef, (element) => {
     if (!element) return
     dispatch({ type: ActionTypes.ForceRerender })
   })

@@ -119,8 +119,8 @@ let reducers: {
     let activeOptionIndex = calculateActiveIndex(action, {
       resolveItems: () => state.options,
       resolveActiveIndex: () => state.activeOptionIndex,
-      resolveId: item => item.id,
-      resolveDisabled: item => item.dataRef.current.disabled,
+      resolveId: (item) => item.id,
+      resolveDisabled: (item) => item.dataRef.current.disabled,
     })
 
     if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) return state
@@ -140,7 +140,7 @@ let reducers: {
         : state.options
 
     let matchingOption = reOrderedOptions.find(
-      option =>
+      (option) =>
         !option.dataRef.current.disabled &&
         option.dataRef.current.textValue?.startsWith(searchQuery)
     )
@@ -175,7 +175,7 @@ let reducers: {
     let currentActiveOption =
       state.activeOptionIndex !== null ? nextOptions[state.activeOptionIndex] : null
 
-    let idx = nextOptions.findIndex(a => a.id === action.id)
+    let idx = nextOptions.findIndex((a) => a.id === action.id)
 
     if (idx !== -1) nextOptions.splice(idx, 1)
 
@@ -251,12 +251,13 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
     propsRef.current.onChange = onChange
   }, [onChange, propsRef])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
-  useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetOrientation, orientation }), [
-    orientation,
-  ])
+  useIsoMorphicEffect(
+    () => dispatch({ type: ActionTypes.SetOrientation, orientation }),
+    [orientation]
+  )
 
   // Handle outside click
-  useWindowEvent('mousedown', event => {
+  useWindowEvent('mousedown', (event) => {
     let target = event.target as HTMLElement
 
     if (listboxState !== ListboxStates.Open) return
@@ -318,7 +319,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let [state, dispatch] = useListboxContext([Listbox.name, Button.name].join('.'))
+  let [state, dispatch] = useListboxContext('Listbox.Button')
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
   let id = `headlessui-listbox-button-${useId()}`
@@ -422,12 +423,13 @@ type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
 ) {
-  let [state] = useListboxContext([Listbox.name, Label.name].join('.'))
+  let [state] = useListboxContext('Listbox.Label')
   let id = `headlessui-listbox-label-${useId()}`
 
-  let handleClick = useCallback(() => state.buttonRef.current?.focus({ preventScroll: true }), [
-    state.buttonRef,
-  ])
+  let handleClick = useCallback(
+    () => state.buttonRef.current?.focus({ preventScroll: true }),
+    [state.buttonRef]
+  )
 
   let slot = useMemo<LabelRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
@@ -466,7 +468,7 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLUListElement>
 ) {
-  let [state, dispatch] = useListboxContext([Listbox.name, Options.name].join('.'))
+  let [state, dispatch] = useListboxContext('Listbox.Options')
   let optionsRef = useSyncRefs(state.optionsRef, ref)
 
   let id = `headlessui-listbox-options-${useId()}`
@@ -561,10 +563,10 @@ let Options = forwardRefWithAs(function Options<
     [d, dispatch, searchDisposables, state]
   )
 
-  let labelledby = useComputed(() => state.labelRef.current?.id ?? state.buttonRef.current?.id, [
-    state.labelRef.current,
-    state.buttonRef.current,
-  ])
+  let labelledby = useComputed(
+    () => state.labelRef.current?.id ?? state.buttonRef.current?.id,
+    [state.labelRef.current, state.buttonRef.current]
+  )
 
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: state.listboxState === ListboxStates.Open }),
@@ -625,7 +627,7 @@ function Option<
   }
 ) {
   let { disabled = false, value, ...passthroughProps } = props
-  let [state, dispatch] = useListboxContext([Listbox.name, Option.name].join('.'))
+  let [state, dispatch] = useListboxContext('Listbox.Option')
   let id = `headlessui-listbox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
@@ -692,11 +694,10 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, active, dispatch])
 
-  let slot = useMemo<OptionRenderPropArg>(() => ({ active, selected, disabled }), [
-    active,
-    selected,
-    disabled,
-  ])
+  let slot = useMemo<OptionRenderPropArg>(
+    () => ({ active, selected, disabled }),
+    [active, selected, disabled]
+  )
   let propsWeControl = {
     id,
     role: 'option',

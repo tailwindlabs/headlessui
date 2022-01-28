@@ -11,11 +11,16 @@
   ],
   "scripts": {
     "react": "yarn workspace @headlessui/react",
+    "react-playground": "yarn workspace playground-react dev",
+    "playground-react": "yarn workspace playground-react dev",
     "vue": "yarn workspace @headlessui/vue",
-    "shared": "yarn workspace @headlessui/shared",
-    "build": "yarn workspaces run build",
+    "playground-vue": "yarn workspace playground-vue dev",
+    "vue-playground": "yarn workspace playground-vue dev",
+    "clean": "yarn workspaces run clean",
+    "build": "npm-run-all -p 'react build' 'vue build'",
     "test": "./scripts/test.sh",
-    "lint": "./scripts/lint.sh"
+    "lint": "./scripts/lint.sh",
+    "lint-check": "CI=true ./scripts/lint.sh"
   },
   "husky": {
     "hooks": {
@@ -23,7 +28,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "tsdx lint"
+    "*": "yarn lint-check"
   },
   "prettier": {
     "printWidth": 100,
@@ -32,12 +37,19 @@
     "trailingComma": "es5"
   },
   "devDependencies": {
+    "@swc/core": "^1.2.131",
+    "@swc/jest": "^0.2.17",
     "@testing-library/jest-dom": "^5.11.9",
     "@types/node": "^14.14.22",
+    "esbuild": "^0.14.11",
     "husky": "^4.3.8",
+    "jest": "26",
     "lint-staged": "^12.2.1",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.1.0",
-    "typescript": "^3.9.7"
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.5.1",
+    "prettier-plugin-tailwindcss": "^0.1.4",
+    "rimraf": "^3.0.2",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
   }
 }

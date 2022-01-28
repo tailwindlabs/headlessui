@@ -1,4 +1,12 @@
-import { defineComponent, nextTick, ref, watch, h, reactive } from 'vue'
+import {
+  defineComponent,
+  nextTick,
+  ref,
+  watch,
+  h,
+  reactive,
+  ComponentOptionsWithoutProps,
+} from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -48,7 +56,7 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise(resolve => {
+  return new Promise<void>((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         resolve()
@@ -57,7 +65,7 @@ function nextFrame() {
   })
 }
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption }
 
   if (typeof input === 'string') {
@@ -388,9 +396,7 @@ describe('Rendering', () => {
         renderTemplate({
           template: html`
             <Listbox v-model="value">
-              <ListboxButton type="submit">
-                Trigger
-              </ListboxButton>
+              <ListboxButton type="submit"> Trigger </ListboxButton>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -405,15 +411,13 @@ describe('Rendering', () => {
           renderTemplate({
             template: html`
               <Listbox v-model="value">
-                <ListboxButton :as="CustomButton">
-                  Trigger
-                </ListboxButton>
+                <ListboxButton :as="CustomButton"> Trigger </ListboxButton>
               </Listbox>
             `,
             setup: () => ({
               value: ref(null),
               CustomButton: defineComponent({
-                setup: props => () => h('button', { ...props }),
+                setup: (props) => () => h('button', { ...props }),
               }),
             }),
           })
@@ -428,9 +432,7 @@ describe('Rendering', () => {
         renderTemplate({
           template: html`
             <Listbox v-model="value">
-              <ListboxButton as="div">
-                Trigger
-              </ListboxButton>
+              <ListboxButton as="div"> Trigger </ListboxButton>
             </Listbox>
           `,
           setup: () => ({ value: ref(null) }),
@@ -445,15 +447,13 @@ describe('Rendering', () => {
           renderTemplate({
             template: html`
               <Listbox v-model="value">
-                <ListboxButton :as="CustomButton">
-                  Trigger
-                </ListboxButton>
+                <ListboxButton :as="CustomButton"> Trigger </ListboxButton>
               </Listbox>
             `,
             setup: () => ({
               value: ref(null),
               CustomButton: defineComponent({
-                setup: props => () => h('div', props),
+                setup: (props) => () => h('div', props),
               }),
             }),
           })
@@ -647,15 +647,9 @@ describe('Rendering composition', () => {
           <Listbox v-model="value">
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
-              <ListboxOption as="button" value="a">
-                Option A
-              </ListboxOption>
-              <ListboxOption as="button" value="b">
-                Option B
-              </ListboxOption>
-              <ListboxOption as="button" value="c">
-                Option C
-              </ListboxOption>
+              <ListboxOption as="button" value="a"> Option A </ListboxOption>
+              <ListboxOption as="button" value="b"> Option B </ListboxOption>
+              <ListboxOption as="button" value="c"> Option C </ListboxOption>
             </ListboxOptions>
           </Listbox>
         `,
@@ -672,7 +666,7 @@ describe('Rendering composition', () => {
       await click(getListboxButton())
 
       // Verify options are buttons now
-      getListboxOptions().forEach(option => assertListboxOption(option, { tag: 'button' }))
+      getListboxOptions().forEach((option) => assertListboxOption(option, { tag: 'button' }))
     })
   )
 })
@@ -704,9 +698,7 @@ describe('Composition', () => {
           <Listbox>
             <ListboxButton>Trigger</ListboxButton>
             <OpenClosedWrite :open="true">
-              <ListboxOptions v-slot="data">
-                {{JSON.stringify(data)}}
-              </ListboxOptions>
+              <ListboxOptions v-slot="data"> {{JSON.stringify(data)}} </ListboxOptions>
             </OpenClosedWrite>
           </Listbox>
         `,
@@ -734,9 +726,7 @@ describe('Composition', () => {
           <Listbox>
             <ListboxButton>Trigger</ListboxButton>
             <OpenClosedWrite :open="false">
-              <ListboxOptions v-slot="data">
-                {{JSON.stringify(data)}}
-              </ListboxOptions>
+              <ListboxOptions v-slot="data"> {{JSON.stringify(data)}} </ListboxOptions>
             </OpenClosedWrite>
           </Listbox>
         `,
@@ -840,7 +830,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option, { selected: false }))
+        options.forEach((option) => assertListboxOption(option, { selected: false }))
 
         // Verify that the first listbox option is active
         assertActiveListboxOption(options[0])
@@ -1092,9 +1082,7 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
               </ListboxOptions>
@@ -1130,12 +1118,8 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
               </ListboxOptions>
             </Listbox>
@@ -1170,15 +1154,9 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -1345,7 +1323,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
       })
     )
@@ -1471,9 +1449,7 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
               </ListboxOptions>
@@ -1509,12 +1485,8 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
               </ListboxOptions>
             </Listbox>
@@ -1549,15 +1521,9 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -1729,7 +1695,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // Try to tab
@@ -1783,7 +1749,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // Try to Shift+Tab
@@ -1839,7 +1805,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
 
         // Verify that the first listbox option is active
         assertActiveListboxOption(options[0])
@@ -1991,7 +1957,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // We should be able to go down once
@@ -2016,9 +1982,7 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
               </ListboxOptions>
@@ -2042,7 +2006,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[1])
 
         // We should be able to go down once
@@ -2059,12 +2023,8 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
               </ListboxOptions>
             </Listbox>
@@ -2087,7 +2047,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
       })
     )
@@ -2126,7 +2086,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
         // We should be able to go right once
@@ -2186,7 +2146,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
 
         // ! ALERT: The LAST option should now be active
         assertActiveListboxOption(options[2])
@@ -2315,12 +2275,8 @@ describe('Keyboard interactions', () => {
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -2342,7 +2298,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
       })
     )
@@ -2355,12 +2311,8 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
               </ListboxOptions>
             </Listbox>
@@ -2383,7 +2335,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
 
         // We should not be able to go up (because those are disabled)
@@ -2437,7 +2389,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
 
         // We should be able to go down once
@@ -2498,7 +2450,7 @@ describe('Keyboard interactions', () => {
         // Verify we have listbox options
         let options = getListboxOptions()
         expect(options).toHaveLength(3)
-        options.forEach(option => assertListboxOption(option))
+        options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[2])
 
         // We should be able to go left once
@@ -2561,12 +2513,8 @@ describe('Keyboard interactions', () => {
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -2599,15 +2547,9 @@ describe('Keyboard interactions', () => {
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -2636,18 +2578,10 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -2713,12 +2647,8 @@ describe('Keyboard interactions', () => {
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
                 <ListboxOption value="b">Option B</ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -2751,15 +2681,9 @@ describe('Keyboard interactions', () => {
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="a">Option A</ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -2788,18 +2712,10 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -2863,12 +2779,8 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
                 <ListboxOption value="d">Option D</ListboxOption>
               </ListboxOptions>
@@ -2901,15 +2813,9 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
                 <ListboxOption value="d">Option D</ListboxOption>
               </ListboxOptions>
             </Listbox>
@@ -2939,18 +2845,10 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -3014,12 +2912,8 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
                 <ListboxOption value="c">Option C</ListboxOption>
                 <ListboxOption value="d">Option D</ListboxOption>
               </ListboxOptions>
@@ -3052,15 +2946,9 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
                 <ListboxOption value="d">Option D</ListboxOption>
               </ListboxOptions>
             </Listbox>
@@ -3090,18 +2978,10 @@ describe('Keyboard interactions', () => {
             <Listbox v-model="value">
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
-                <ListboxOption disabled value="a">
-                  Option A
-                </ListboxOption>
-                <ListboxOption disabled value="b">
-                  Option B
-                </ListboxOption>
-                <ListboxOption disabled value="c">
-                  Option C
-                </ListboxOption>
-                <ListboxOption disabled value="d">
-                  Option D
-                </ListboxOption>
+                <ListboxOption disabled value="a"> Option A </ListboxOption>
+                <ListboxOption disabled value="b"> Option B </ListboxOption>
+                <ListboxOption disabled value="c"> Option C </ListboxOption>
+                <ListboxOption disabled value="d"> Option D </ListboxOption>
               </ListboxOptions>
             </Listbox>
           `,
@@ -3252,9 +3132,7 @@ describe('Keyboard interactions', () => {
               <ListboxButton>Trigger</ListboxButton>
               <ListboxOptions>
                 <ListboxOption value="alice">alice</ListboxOption>
-                <ListboxOption disabled value="bob">
-                  bob
-                </ListboxOption>
+                <ListboxOption disabled value="bob"> bob </ListboxOption>
                 <ListboxOption value="charlie">charlie</ListboxOption>
               </ListboxOptions>
             </Listbox>
@@ -3453,7 +3331,7 @@ describe('Mouse interactions', () => {
       // Verify we have listbox options
       let options = getListboxOptions()
       expect(options).toHaveLength(3)
-      options.forEach(option => assertListboxOption(option))
+      options.forEach((option) => assertListboxOption(option))
     })
   )
 
@@ -3845,9 +3723,7 @@ describe('Mouse interactions', () => {
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
-              <ListboxOption disabled value="bob">
-                bob
-              </ListboxOption>
+              <ListboxOption disabled value="bob"> bob </ListboxOption>
               <ListboxOption value="charlie">charlie</ListboxOption>
             </ListboxOptions>
           </Listbox>
@@ -3874,9 +3750,7 @@ describe('Mouse interactions', () => {
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
-              <ListboxOption disabled value="bob">
-                bob
-              </ListboxOption>
+              <ListboxOption disabled value="bob"> bob </ListboxOption>
               <ListboxOption value="charlie">charlie</ListboxOption>
             </ListboxOptions>
           </Listbox>
@@ -3951,9 +3825,7 @@ describe('Mouse interactions', () => {
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
-              <ListboxOption disabled value="bob">
-                bob
-              </ListboxOption>
+              <ListboxOption disabled value="bob"> bob </ListboxOption>
               <ListboxOption value="charlie">charlie</ListboxOption>
             </ListboxOptions>
           </Listbox>
@@ -4031,9 +3903,7 @@ describe('Mouse interactions', () => {
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
-              <ListboxOption disabled value="bob">
-                bob
-              </ListboxOption>
+              <ListboxOption disabled value="bob"> bob </ListboxOption>
               <ListboxOption value="charlie">charlie</ListboxOption>
             </ListboxOptions>
           </Listbox>
@@ -4111,9 +3981,7 @@ describe('Mouse interactions', () => {
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
-              <ListboxOption disabled value="bob">
-                bob
-              </ListboxOption>
+              <ListboxOption disabled value="bob"> bob </ListboxOption>
               <ListboxOption value="charlie">charlie</ListboxOption>
             </ListboxOptions>
           </Listbox>

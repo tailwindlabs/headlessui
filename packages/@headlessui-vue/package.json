@@ -4,12 +4,21 @@
   "description": "A set of completely unstyled, fully accessible UI components for Vue 3, designed to integrate beautifully with Tailwind CSS.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/index.esm.js",
+  "module": "dist/headlessui.esm.js",
   "license": "MIT",
   "files": [
     "README.md",
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/headlessui.esm.js"
+      },
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=10"
@@ -24,17 +33,19 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "../../scripts/build.sh",
-    "watch": "../../scripts/watch.sh",
+    "build": "../../scripts/build.sh --external:vue",
+    "watch": "../../scripts/watch.sh --external:vue",
     "test": "../../scripts/test.sh",
-    "lint": "../../scripts/lint.sh"
+    "lint": "../../scripts/lint.sh",
+    "playground": "yarn workspace playground-vue dev",
+    "clean": "rimraf ./dist"
   },
   "peerDependencies": {
-    "vue": "^3.0.0"
+    "vue": "^3.2.0"
   },
   "devDependencies": {
-    "@testing-library/vue": "^5.1.0",
-    "@vue/test-utils": "^2.0.0-beta.7",
-    "vue": "3.0.7"
+    "@testing-library/vue": "^5.8.2",
+    "@vue/test-utils": "^2.0.0-rc.18",
+    "vue": "^3.2.29"
   }
 }

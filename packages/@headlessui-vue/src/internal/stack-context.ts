@@ -24,7 +24,7 @@ export function useStackContext() {
 export function useElemenStack(element: Ref<HTMLElement | null> | null) {
   let notify = useStackContext()
 
-  watchEffect(onInvalidate => {
+  watchEffect((onInvalidate) => {
     let domElement = element?.value
     if (!domElement) return
 

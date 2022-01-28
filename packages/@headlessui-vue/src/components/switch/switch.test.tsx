@@ -1,4 +1,4 @@
-import { defineComponent, ref, watch, h } from 'vue'
+import { defineComponent, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Switch, SwitchLabel, SwitchDescription, SwitchGroup } from './switch'
@@ -16,7 +16,7 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Switch, SwitchLabel, SwitchDescription, SwitchGroup }
 
   if (typeof input === 'string') {
@@ -35,9 +35,7 @@ function renderTemplate(input: string | Partial<Parameters<typeof defineComponen
 describe('Safe guards', () => {
   it('should be possible to render a Switch without crashing', () => {
     renderTemplate({
-      template: html`
-        <Switch v-model="checked" />
-      `,
+      template: html` <Switch v-model="checked" /> `,
       setup: () => ({ checked: ref(false) }),
     })
   })
@@ -72,9 +70,7 @@ describe('Rendering', () => {
 
   it('should be possible to render an (on) Switch using an `as` prop', () => {
     renderTemplate({
-      template: html`
-        <Switch as="span" v-model="checked" />
-      `,
+      template: html` <Switch as="span" v-model="checked" /> `,
       setup: () => ({ checked: ref(true) }),
     })
     assertSwitch({ state: SwitchState.On, tag: 'span' })
@@ -82,9 +78,7 @@ describe('Rendering', () => {
 
   it('should be possible to render an (off) Switch using an `as` prop', () => {
     renderTemplate({
-      template: html`
-        <Switch as="span" v-model="checked" />
-      `,
+      template: html` <Switch as="span" v-model="checked" /> `,
       setup: () => ({ checked: ref(false) }),
     })
     assertSwitch({ state: SwitchState.Off, tag: 'span' })
@@ -106,11 +100,7 @@ describe('Rendering', () => {
   describe('`type` attribute', () => {
     it('should set the `type` to "button" by default', async () => {
       renderTemplate({
-        template: html`
-          <Switch v-model="checked">
-            Trigger
-          </Switch>
-        `,
+        template: html` <Switch v-model="checked"> Trigger </Switch> `,
         setup: () => ({ checked: ref(false) }),
       })
 
@@ -119,11 +109,7 @@ describe('Rendering', () => {
 
     it('should not set the `type` to "button" if it already contains a `type`', async () => {
       renderTemplate({
-        template: html`
-          <Switch v-model="checked" type="submit">
-            Trigger
-          </Switch>
-        `,
+        template: html` <Switch v-model="checked" type="submit"> Trigger </Switch> `,
         setup: () => ({ checked: ref(false) }),
       })
 
@@ -134,15 +120,11 @@ describe('Rendering', () => {
       'should set the `type` to "button" when using the `as` prop which resolves to a "button"',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: html`
-            <Switch v-model="checked" :as="CustomButton">
-              Trigger
-            </Switch>
-          `,
+          template: html` <Switch v-model="checked" :as="CustomButton"> Trigger </Switch> `,
           setup: () => ({
             checked: ref(false),
             CustomButton: defineComponent({
-              setup: props => () => h('button', { ...props }),
+              setup: (props) => () => h('button', { ...props }),
             }),
           }),
         })
@@ -155,11 +137,7 @@ describe('Rendering', () => {
 
     it('should not set the type if the "as" prop is not a "button"', async () => {
       renderTemplate({
-        template: html`
-          <Switch v-model="checked" as="div">
-            Trigger
-          </Switch>
-        `,
+        template: html` <Switch v-model="checked" as="div"> Trigger </Switch> `,
         setup: () => ({ checked: ref(false) }),
       })
 
@@ -170,15 +148,11 @@ describe('Rendering', () => {
       'should not set the `type` to "button" when using the `as` prop which resolves to a "div"',
       suppressConsoleLogs(async () => {
         renderTemplate({
-          template: html`
-            <Switch v-model="checked" :as="CustomButton">
-              Trigger
-            </Switch>
-          `,
+          template: html` <Switch v-model="checked" :as="CustomButton"> Trigger </Switch> `,
           setup: () => ({
             checked: ref(false),
             CustomButton: defineComponent({
-              setup: props => () => h('div', props),
+              setup: (props) => () => h('div', props),
             }),
           }),
         })
@@ -213,9 +187,7 @@ describe('Render composition', () => {
       template: html`
         <SwitchGroup>
           <SwitchLabel>Label B</SwitchLabel>
-          <Switch v-model="checked">
-            Label A
-          </Switch>
+          <Switch v-model="checked"> Label A </Switch>
         </SwitchGroup>
       `,
       setup: () => ({ checked: ref(false) }),
@@ -234,9 +206,7 @@ describe('Render composition', () => {
     renderTemplate({
       template: html`
         <SwitchGroup>
-          <Switch v-model="checked">
-            Label A
-          </Switch>
+          <Switch v-model="checked"> Label A </Switch>
           <SwitchLabel>Label B</SwitchLabel>
         </SwitchGroup>
       `,
@@ -370,9 +340,7 @@ describe('Keyboard interactions', () => {
     it('should be possible to toggle the Switch with Space', async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: html`
-          <Switch v-model="checked" />
-        `,
+        template: html` <Switch v-model="checked" /> `,
         setup() {
           let checked = ref(false)
           watch([checked], () => handleChange(checked.value))
@@ -404,9 +372,7 @@ describe('Keyboard interactions', () => {
     it('should not be possible to use Enter to toggle the Switch', async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: html`
-          <Switch v-model="checked" />
-        `,
+        template: html` <Switch v-model="checked" /> `,
         setup() {
           let checked = ref(false)
           watch([checked], () => handleChange(checked.value))
@@ -461,9 +427,7 @@ describe('Mouse interactions', () => {
   it('should be possible to toggle the Switch with a click', async () => {
     let handleChange = jest.fn()
     renderTemplate({
-      template: html`
-        <Switch v-model="checked" />
-      `,
+      template: html` <Switch v-model="checked" /> `,
       setup() {
         let checked = ref(false)
         watch([checked], () => handleChange(checked.value))

@@ -6,6 +6,14 @@ import * as HeadlessUI from './index'
  */
 it('should expose the correct components', () => {
   expect(Object.keys(HeadlessUI)).toEqual([
+    // Combobox
+    'Combobox',
+    'ComboboxLabel',
+    'ComboboxButton',
+    'ComboboxInput',
+    'ComboboxOptions',
+    'ComboboxOption',
+
     // Dialog
     'Dialog',
     'DialogOverlay',

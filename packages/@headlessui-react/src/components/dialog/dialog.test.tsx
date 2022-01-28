@@ -143,7 +143,7 @@ describe('Rendering', () => {
                 Trigger
               </button>
               <Dialog open={isOpen} onClose={setIsOpen}>
-                {data => (
+                {(data) => (
                   <>
                     <pre>{JSON.stringify(data)}</pre>
                     <TabSentinel />
@@ -204,7 +204,7 @@ describe('Rendering', () => {
 
         return (
           <>
-            <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
             <Dialog open={isOpen} onClose={setIsOpen} unmount={false}>
@@ -239,7 +239,7 @@ describe('Rendering', () => {
 
           return (
             <>
-              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
 
@@ -277,7 +277,7 @@ describe('Rendering', () => {
           let [isOpen, setIsOpen] = useState(false)
           return (
             <>
-              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
               <Dialog open={isOpen} onClose={setIsOpen}>
@@ -400,7 +400,7 @@ describe('Keyboard interactions', () => {
           let [isOpen, setIsOpen] = useState(false)
           return (
             <>
-              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
               <Dialog open={isOpen} onClose={setIsOpen}>
@@ -438,7 +438,7 @@ describe('Keyboard interactions', () => {
           let [isOpen, setIsOpen] = useState(false)
           return (
             <>
-              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
               <Dialog open={isOpen} onClose={setIsOpen}>
@@ -477,14 +477,14 @@ describe('Keyboard interactions', () => {
           let [isOpen, setIsOpen] = useState(false)
           return (
             <>
-              <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
               <Dialog open={isOpen} onClose={setIsOpen}>
                 Contents
                 <input
                   id="name"
-                  onKeyDown={event => {
+                  onKeyDown={(event) => {
                     event.preventDefault()
                     event.stopPropagation()
                   }}
@@ -525,7 +525,7 @@ describe('Mouse interactions', () => {
         let [isOpen, setIsOpen] = useState(false)
         return (
           <>
-            <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
             <Dialog open={isOpen} onClose={setIsOpen}>
@@ -559,7 +559,7 @@ describe('Mouse interactions', () => {
         let [isOpen, setIsOpen] = useState(false)
         return (
           <>
-            <button id="trigger" onClick={() => setIsOpen(v => !v)}>
+            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
             <Dialog open={isOpen} onClose={setIsOpen}>
@@ -595,7 +595,7 @@ describe('Mouse interactions', () => {
         let [isOpen, setIsOpen] = useState(false)
         return (
           <>
-            <button onClick={() => setIsOpen(v => !v)}>Trigger</button>
+            <button onClick={() => setIsOpen((v) => !v)}>Trigger</button>
             <Dialog open={isOpen} onClose={setIsOpen}>
               Contents
               <TabSentinel />
@@ -630,7 +630,7 @@ describe('Mouse interactions', () => {
         return (
           <>
             <button>Hello</button>
-            <button onClick={() => setIsOpen(v => !v)}>Trigger</button>
+            <button onClick={() => setIsOpen((v) => !v)}>Trigger</button>
             <Dialog open={isOpen} onClose={setIsOpen}>
               Contents
               <TabSentinel />

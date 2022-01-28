@@ -130,8 +130,8 @@ export let Listbox = defineComponent({
           {
             resolveItems: () => options.value,
             resolveActiveIndex: () => activeOptionIndex.value,
-            resolveId: option => option.id,
-            resolveDisabled: option => option.dataRef.disabled,
+            resolveId: (option) => option.id,
+            resolveDisabled: (option) => option.dataRef.disabled,
           }
         )
 
@@ -153,7 +153,7 @@ export let Listbox = defineComponent({
             : options.value
 
         let matchingOption = reOrderedOptions.find(
-          option =>
+          (option) =>
             option.dataRef.textValue.startsWith(searchQuery.value) && !option.dataRef.disabled
         )
 
@@ -186,7 +186,7 @@ export let Listbox = defineComponent({
         let nextOptions = options.value.slice()
         let currentActiveOption =
           activeOptionIndex.value !== null ? nextOptions[activeOptionIndex.value] : null
-        let idx = nextOptions.findIndex(a => a.id === id)
+        let idx = nextOptions.findIndex((a) => a.id === id)
         if (idx !== -1) nextOptions.splice(idx, 1)
         options.value = nextOptions
         activeOptionIndex.value = (() => {
@@ -204,7 +204,7 @@ export let Listbox = defineComponent({
       },
     }
 
-    useWindowEvent('mousedown', event => {
+    useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
       let active = document.activeElement
 
@@ -245,30 +245,28 @@ export let Listbox = defineComponent({
 export let ListboxLabel = defineComponent({
   name: 'ListboxLabel',
   props: { as: { type: [Object, String], default: 'label' } },
-  render() {
-    let api = useListboxContext('ListboxLabel')
-
-    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled.value }
-    let propsWeControl = { id: this.id, ref: 'el', onClick: this.handleClick }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'ListboxLabel',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useListboxContext('ListboxLabel')
     let id = `headlessui-listbox-label-${useId()}`
 
-    return {
-      id,
-      el: api.labelRef,
-      handleClick() {
-        dom(api.buttonRef)?.focus({ preventScroll: true })
-      },
+    function handleClick() {
+      dom(api.buttonRef)?.focus({ preventScroll: true })
+    }
+
+    return () => {
+      let slot = {
+        open: api.listboxState.value === ListboxStates.Open,
+        disabled: api.disabled.value,
+      }
+      let propsWeControl = { id, ref: api.labelRef, onClick: handleClick }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'ListboxLabel',
+      })
     }
   },
 })
@@ -280,37 +278,7 @@ export let ListboxButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
   },
-  render() {
-    let api = useListboxContext('ListboxButton')
-
-    let slot = { open: api.listboxState.value === ListboxStates.Open, disabled: api.disabled.value }
-    let propsWeControl = {
-      ref: 'el',
-      id: this.id,
-      type: this.type,
-      'aria-haspopup': true,
-      'aria-controls': dom(api.optionsRef)?.id,
-      'aria-expanded': api.disabled.value
-        ? undefined
-        : api.listboxState.value === ListboxStates.Open,
-      'aria-labelledby': api.labelRef.value
-        ? [dom(api.labelRef)?.id, this.id].join(' ')
-        : undefined,
-      disabled: api.disabled.value === true ? true : undefined,
-      onKeydown: this.handleKeyDown,
-      onKeyup: this.handleKeyUp,
-      onClick: this.handleClick,
-    }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'ListboxButton',
-    })
-  },
-  setup(props, { attrs }) {
+  setup(props, { attrs, slots }) {
     let api = useListboxContext('ListboxButton')
     let id = `headlessui-listbox-button-${useId()}`
 
@@ -363,16 +331,39 @@ export let ListboxButton = defineComponent({
       }
     }
 
-    return {
-      id,
-      el: api.buttonRef,
-      type: useResolveButtonType(
-        computed(() => ({ as: props.as, type: attrs.type })),
-        api.buttonRef
-      ),
-      handleKeyDown,
-      handleKeyUp,
-      handleClick,
+    let type = useResolveButtonType(
+      computed(() => ({ as: props.as, type: attrs.type })),
+      api.buttonRef
+    )
+
+    return () => {
+      let slot = {
+        open: api.listboxState.value === ListboxStates.Open,
+        disabled: api.disabled.value,
+      }
+      let propsWeControl = {
+        ref: api.buttonRef,
+        id,
+        type: type.value,
+        'aria-haspopup': true,
+        'aria-controls': dom(api.optionsRef)?.id,
+        'aria-expanded': api.disabled.value
+          ? undefined
+          : api.listboxState.value === ListboxStates.Open,
+        'aria-labelledby': api.labelRef.value ? [dom(api.labelRef)?.id, id].join(' ') : undefined,
+        disabled: api.disabled.value === true ? true : undefined,
+        onKeydown: handleKeyDown,
+        onKeyup: handleKeyUp,
+        onClick: handleClick,
+      }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'ListboxButton',
+      })
     }
   },
 })
@@ -386,36 +377,7 @@ export let ListboxOptions = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  render() {
-    let api = useListboxContext('ListboxOptions')
-
-    let slot = { open: api.listboxState.value === ListboxStates.Open }
-    let propsWeControl = {
-      'aria-activedescendant':
-        api.activeOptionIndex.value === null
-          ? undefined
-          : api.options.value[api.activeOptionIndex.value]?.id,
-      'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
-      'aria-orientation': api.orientation.value,
-      id: this.id,
-      onKeydown: this.handleKeyDown,
-      role: 'listbox',
-      tabIndex: 0,
-      ref: 'el',
-    }
-    let passThroughProps = this.$props
-
-    return render({
-      props: { ...passThroughProps, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      features: Features.RenderStrategy | Features.Static,
-      visible: this.visible,
-      name: 'ListboxOptions',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useListboxContext('ListboxOptions')
     let id = `headlessui-listbox-options-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
@@ -500,7 +462,33 @@ export let ListboxOptions = defineComponent({
       return api.listboxState.value === ListboxStates.Open
     })
 
-    return { id, el: api.optionsRef, handleKeyDown, visible }
+    return () => {
+      let slot = { open: api.listboxState.value === ListboxStates.Open }
+      let propsWeControl = {
+        'aria-activedescendant':
+          api.activeOptionIndex.value === null
+            ? undefined
+            : api.options.value[api.activeOptionIndex.value]?.id,
+        'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+        'aria-orientation': api.orientation.value,
+        id,
+        onKeydown: handleKeyDown,
+        role: 'listbox',
+        tabIndex: 0,
+        ref: api.optionsRef,
+      }
+      let passThroughProps = props
+
+      return render({
+        props: { ...passThroughProps, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        features: Features.RenderStrategy | Features.Static,
+        visible: visible.value,
+        name: 'ListboxOptions',
+      })
+    }
   },
 })
 
@@ -529,10 +517,7 @@ export let ListboxOption = defineComponent({
       textValue: '',
     })
     onMounted(() => {
-      let textValue = document
-        .getElementById(id)
-        ?.textContent?.toLowerCase()
-        .trim()
+      let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 

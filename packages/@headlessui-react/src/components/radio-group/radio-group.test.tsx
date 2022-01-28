@@ -113,7 +113,7 @@ describe('Rendering', () => {
 
       return (
         <>
-          <button onClick={() => setShowFirst(v => !v)}>Toggle</button>
+          <button onClick={() => setShowFirst((v) => !v)}>Toggle</button>
           <RadioGroup value={active} onChange={setActive}>
             <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
             {showFirst && <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>}
@@ -145,7 +145,7 @@ describe('Rendering', () => {
       let [disabled, setDisabled] = useState(true)
       return (
         <>
-          <button onClick={() => setDisabled(v => !v)}>Toggle</button>
+          <button onClick={() => setDisabled((v) => !v)}>Toggle</button>
           <RadioGroup value={undefined} onChange={changeFn} disabled={disabled}>
             <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
             <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
@@ -208,7 +208,7 @@ describe('Rendering', () => {
       let [disabled, setDisabled] = useState(true)
       return (
         <>
-          <button onClick={() => setDisabled(v => !v)}>Toggle</button>
+          <button onClick={() => setDisabled((v) => !v)}>Toggle</button>
           <RadioGroup value={undefined} onChange={changeFn}>
             <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
             <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
@@ -745,7 +745,7 @@ describe('Keyboard interactions', () => {
             <button>Before</button>
             <RadioGroup
               value={value}
-              onChange={v => {
+              onChange={(v) => {
                 setValue(v)
                 changeFn(v)
               }}
@@ -815,7 +815,7 @@ describe('Mouse interactions', () => {
           <button>Before</button>
           <RadioGroup
             value={value}
-            onChange={v => {
+            onChange={(v) => {
               setValue(v)
               changeFn(v)
             }}

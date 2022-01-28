@@ -1,14 +1,21 @@
 #!/bin/bash
 set -e
 
-node="yarn node"
-tsdxArgs=()
+# Known variables
+outdir="./dist"
+name="headlessui"
+input="./src/index.ts"
 
-# Add script name
-tsdxArgs+=("watch" "--name" "headlessui" "--format" "cjs,esm,umd" "--tsconfig" "./tsconfig.tsdx.json")
+# Find executables
+esbuild=$(yarn bin esbuild)
+tsc=$(yarn bin tsc)
 
-# Passthrough arguments and flags
-tsdxArgs+=($@)
+# Setup shared options for esbuild
+sharedOptions=()
+sharedOptions+=("--bundle")
+sharedOptions+=("--platform=browser")
+sharedOptions+=("--target=es2020")
 
-# Execute
-$node "$(yarn bin tsdx)" "${tsdxArgs[@]}"
+# Generate actual builds
+$esbuild $input --format=esm  --outfile=$outdir/$name.esm.js --sourcemap ${sharedOptions[@]} $@ --watch
+

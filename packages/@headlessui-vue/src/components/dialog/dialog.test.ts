@@ -1,4 +1,11 @@
-import { defineComponent, ref, nextTick, h } from 'vue'
+import {
+  defineComponent,
+  ref,
+  nextTick,
+  h,
+  ComponentOptionsWithoutProps,
+  ConcreteComponent,
+} from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
 import { Dialog, DialogOverlay, DialogTitle, DialogDescription } from './dialog'
@@ -30,9 +37,7 @@ afterAll(() => jest.restoreAllMocks())
 
 let TabSentinel = defineComponent({
   name: 'TabSentinel',
-  template: html`
-    <div :tabindex="0"></div>
-  `,
+  template: html` <div :tabindex="0"></div> `,
 })
 
 jest.mock('../../hooks/use-id')
@@ -44,7 +49,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | Partial<Parameters<typeof defineComponent>[0]>) {
+function renderTemplate(input: string | ComponentOptionsWithoutProps) {
   let defaultComponents = { Dialog, DialogOverlay, DialogTitle, DialogDescription, TabSentinel }
 
   if (typeof input === 'string') {
@@ -933,61 +938,50 @@ describe('Mouse interactions', () => {
 })
 
 describe('Nesting', () => {
-  let Nested = defineComponent({
+  let Nested: ConcreteComponent = defineComponent({
     components: { Dialog, DialogOverlay },
     emits: ['close'],
     props: ['level'],
-    render() {
-      let level = this.$props.level ?? 1
-      return h(Dialog, { open: true, onClose: this.onClose }, () => [
-        h(DialogOverlay),
-        h('div', [
-          h('p', `Level: ${level}`),
-          h(
-            'button',
-            {
-              onClick: () => {
-                this.showChild = true
-              },
-            },
-            `Open ${level + 1} a`
-          ),
-          h(
-            'button',
-            {
-              onClick: () => {
-                this.showChild = true
-              },
-            },
-            `Open ${level + 1} b`
-          ),
-          h(
-            'button',
-            {
-              onClick: () => {
-                this.showChild = true
-              },
-            },
-            `Open ${level + 1} c`
-          ),
-        ]),
-        this.showChild &&
-          h(Nested, {
-            onClose: () => {
-              this.showChild = false
-            },
-            level: level + 1,
-          }),
-      ])
-    },
-    setup(_props, { emit }) {
+    setup(props, { emit }) {
       let showChild = ref(false)
+      function onClose() {
+        emit('close', false)
+      }
 
-      return {
-        showChild,
-        onClose() {
-          emit('close', false)
-        },
+      return () => {
+        let level = props.level ?? 1
+        return h(Dialog, { open: true, onClose: onClose }, () => [
+          h(DialogOverlay),
+          h('div', [
+            h('p', `Level: ${level}`),
+            h(
+              'button',
+              {
+                onClick: () => (showChild.value = true),
+              },
+              `Open ${level + 1} a`
+            ),
+            h(
+              'button',
+              {
+                onClick: () => (showChild.value = true),
+              },
+              `Open ${level + 1} b`
+            ),
+            h(
+              'button',
+              {
+                onClick: () => (showChild.value = true),
+              },
+              `Open ${level + 1} c`
+            ),
+          ]),
+          showChild.value &&
+            h(Nested, {
+              onClose: () => (showChild.value = false),
+              level: level + 1,
+            }),
+        ])
       }
     },
   })

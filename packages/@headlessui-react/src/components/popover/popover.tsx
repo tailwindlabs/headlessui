@@ -75,7 +75,7 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.TogglePopover]: state => ({
+  [ActionTypes.TogglePopover]: (state) => ({
     ...state,
     popoverState: match(state.popoverState, {
       [PopoverStates.Open]: PopoverStates.Closed,
@@ -217,7 +217,7 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   )
 
   // Handle outside click
-  useWindowEvent('mousedown', event => {
+  useWindowEvent('mousedown', (event) => {
     let target = event.target as HTMLElement
 
     if (popoverState !== PopoverStates.Open) return
@@ -296,7 +296,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let [state, dispatch] = usePopoverContext([Popover.name, Button.name].join('.'))
+  let [state, dispatch] = usePopoverContext('Popover.Button')
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
 
   let groupContext = usePopoverGroupContext()
@@ -308,7 +308,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let buttonRef = useSyncRefs(
     internalButtonRef,
     ref,
-    isWithinPanel ? null : button => dispatch({ type: ActionTypes.SetButton, button })
+    isWithinPanel ? null : (button) => dispatch({ type: ActionTypes.SetButton, button })
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
 
@@ -517,7 +517,7 @@ let Overlay = forwardRefWithAs(function Overlay<
     PropsForFeatures<typeof OverlayRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
-  let [{ popoverState }, dispatch] = usePopoverContext([Popover.name, Overlay.name].join('.'))
+  let [{ popoverState }, dispatch] = usePopoverContext('Popover.Overlay')
   let overlayRef = useSyncRefs(ref)
 
   let id = `headlessui-popover-overlay-${useId()}`
@@ -539,9 +539,10 @@ let Overlay = forwardRefWithAs(function Overlay<
     [dispatch]
   )
 
-  let slot = useMemo<OverlayRenderPropArg>(() => ({ open: popoverState === PopoverStates.Open }), [
-    popoverState,
-  ])
+  let slot = useMemo<OverlayRenderPropArg>(
+    () => ({ open: popoverState === PopoverStates.Open }),
+    [popoverState]
+  )
   let propsWeControl = {
     ref: overlayRef,
     id,
@@ -580,11 +581,11 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 ) {
   let { focus = false, ...passthroughProps } = props
 
-  let [state, dispatch] = usePopoverContext([Popover.name, Panel.name].join('.'))
-  let { close } = usePopoverAPIContext([Popover.name, Panel.name].join('.'))
+  let [state, dispatch] = usePopoverContext('Popover.Panel')
+  let { close } = usePopoverAPIContext('Popover.Panel')
 
   let internalPanelRef = useRef<HTMLDivElement | null>(null)
-  let panelRef = useSyncRefs(internalPanelRef, ref, panel => {
+  let panelRef = useSyncRefs(internalPanelRef, ref, (panel) => {
     dispatch({ type: ActionTypes.SetPanel, panel })
   })
 
@@ -639,7 +640,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   }, [focus, internalPanelRef, state.popoverState])
 
   // Handle Tab / Shift+Tab focus positioning
-  useWindowEvent('keydown', event => {
+  useWindowEvent('keydown', (event) => {
     if (state.popoverState !== PopoverStates.Open) return
     if (!internalPanelRef.current) return
     if (event.key !== Keys.Tab) return
@@ -665,7 +666,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
       let nextElements = elements
         .splice(buttonIdx + 1) // Elements after button
-        .filter(element => !internalPanelRef.current?.contains(element)) // Ignore items in panel
+        .filter((element) => !internalPanelRef.current?.contains(element)) // Ignore items in panel
 
       // Try to focus the next element, however it could fail if we are in a
       // Portal that happens to be the very last one in the DOM. In that
@@ -730,7 +731,7 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
   let unregisterPopover = useCallback(
     (registerbag: PopoverRegisterBag) => {
-      setPopovers(existing => {
+      setPopovers((existing) => {
         let idx = existing.indexOf(registerbag)
         if (idx !== -1) {
           let clone = existing.slice()
@@ -745,7 +746,7 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
   let registerPopover = useCallback(
     (registerbag: PopoverRegisterBag) => {
-      setPopovers(existing => [...existing, registerbag])
+      setPopovers((existing) => [...existing, registerbag])
       return () => unregisterPopover(registerbag)
     },
     [setPopovers, unregisterPopover]
@@ -757,7 +758,7 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     if (groupRef.current?.contains(element)) return true
 
     // Check if the focus is in one of the button or panel elements. This is important in case you are rendering inside a Portal.
-    return popovers.some(bag => {
+    return popovers.some((bag) => {
       return (
         document.getElementById(bag.buttonId)?.contains(element) ||
         document.getElementById(bag.panelId)?.contains(element)

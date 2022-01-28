@@ -81,7 +81,7 @@ describe('Rendering', () => {
 
       return (
         <>
-          <button onClick={() => setHide(v => !v)}>toggle</button>
+          <button onClick={() => setHide((v) => !v)}>toggle</button>
           <Tab.Group>
             <Tab.List>
               <Tab>Tab 1</Tab>
@@ -118,7 +118,7 @@ describe('Rendering', () => {
     it('should expose the `selectedIndex` on the `Tab.Group` component', async () => {
       render(
         <Tab.Group>
-          {data => (
+          {(data) => (
             <>
               <pre id="exposed">{JSON.stringify(data)}</pre>
 
@@ -153,7 +153,7 @@ describe('Rendering', () => {
       render(
         <Tab.Group>
           <Tab.List>
-            {data => (
+            {(data) => (
               <>
                 <pre id="exposed">{JSON.stringify(data)}</pre>
                 <Tab>Tab 1</Tab>
@@ -192,7 +192,7 @@ describe('Rendering', () => {
           </Tab.List>
 
           <Tab.Panels>
-            {data => (
+            {(data) => (
               <>
                 <pre id="exposed">{JSON.stringify(data)}</pre>
                 <Tab.Panel>Content 1</Tab.Panel>
@@ -220,7 +220,7 @@ describe('Rendering', () => {
         <Tab.Group>
           <Tab.List>
             <Tab>
-              {data => (
+              {(data) => (
                 <>
                   <pre data-tab={0}>{JSON.stringify(data)}</pre>
                   <span>Tab 1</span>
@@ -228,7 +228,7 @@ describe('Rendering', () => {
               )}
             </Tab>
             <Tab>
-              {data => (
+              {(data) => (
                 <>
                   <pre data-tab={1}>{JSON.stringify(data)}</pre>
                   <span>Tab 2</span>
@@ -236,7 +236,7 @@ describe('Rendering', () => {
               )}
             </Tab>
             <Tab>
-              {data => (
+              {(data) => (
                 <>
                   <pre data-tab={2}>{JSON.stringify(data)}</pre>
                   <span>Tab 3</span>
@@ -287,7 +287,7 @@ describe('Rendering', () => {
 
           <Tab.Panels>
             <Tab.Panel unmount={false}>
-              {data => (
+              {(data) => (
                 <>
                   <pre data-panel={0}>{JSON.stringify(data)}</pre>
                   <span>Content 1</span>
@@ -295,7 +295,7 @@ describe('Rendering', () => {
               )}
             </Tab.Panel>
             <Tab.Panel unmount={false}>
-              {data => (
+              {(data) => (
                 <>
                   <pre data-panel={1}>{JSON.stringify(data)}</pre>
                   <span>Content 2</span>
@@ -303,7 +303,7 @@ describe('Rendering', () => {
               )}
             </Tab.Panel>
             <Tab.Panel unmount={false}>
-              {data => (
+              {(data) => (
                 <>
                   <pre data-panel={2}>{JSON.stringify(data)}</pre>
                   <span>Content 3</span>
@@ -514,7 +514,7 @@ describe('Rendering', () => {
           <>
             <Tab.Group
               selectedIndex={selectedIndex}
-              onChange={value => {
+              onChange={(value) => {
                 setSelectedIndex(value)
                 handleChange(value)
               }}
@@ -533,7 +533,7 @@ describe('Rendering', () => {
             </Tab.Group>
 
             <button>after</button>
-            <button onClick={() => setSelectedIndex(prev => prev + 1)}>setSelectedIndex</button>
+            <button onClick={() => setSelectedIndex((prev) => prev + 1)}>setSelectedIndex</button>
           </>
         )
       }

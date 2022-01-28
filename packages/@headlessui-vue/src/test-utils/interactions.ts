@@ -1,4 +1,7 @@
 import { fireEvent } from '@testing-library/dom'
+import { disposables } from '../utils/disposables'
+
+let d = disposables()
 
 function nextFrame(cb: Function): void {
   setImmediate(() =>
@@ -33,7 +36,19 @@ export function shift(event: Partial<KeyboardEvent>) {
 }
 
 export function word(input: string): Partial<KeyboardEvent>[] {
-  return input.split('').map(key => ({ key }))
+  let result = input.split('').map((key) => ({ key }))
+
+  d.enqueue(() => {
+    let element = document.activeElement
+
+    if (element instanceof HTMLInputElement) {
+      fireEvent.change(element, {
+        target: Object.assign({}, element, { value: input }),
+      })
+    }
+  })
+
+  return result
 }
 
 let Default = Symbol()
@@ -75,6 +90,9 @@ let order: Record<
     },
     function keypress(element, event) {
       return fireEvent.keyPress(element, event)
+    },
+    function input(element, event) {
+      return fireEvent.input(element, event)
     },
     function keyup(element, event) {
       return fireEvent.keyUp(element, event)
@@ -134,7 +152,7 @@ export async function type(events: Partial<KeyboardEvent>[], element = document.
       let actions = order[event.key!] ?? order[Default as any]
       for (let action of actions) {
         let checks = action.name.split('And')
-        if (checks.some(check => skip.has(check))) continue
+        if (checks.some((check) => skip.has(check))) continue
 
         let result = action(element, {
           type: action.name,
@@ -159,9 +177,11 @@ export async function type(events: Partial<KeyboardEvent>[], element = document.
     // We don't want to actually wait in our tests, so let's advance
     jest.runAllTimers()
 
+    await d.workQueue()
+
     await new Promise(nextFrame)
   } catch (err) {
-    Error.captureStackTrace(err, type)
+    if (err instanceof Error) Error.captureStackTrace(err, type)
     throw err
   } finally {
     jest.useRealTimers()
@@ -178,7 +198,7 @@ export enum MouseButton {
 }
 
 export async function click(
-  element: Document | Element | Window | null,
+  element: Document | Element | Window | Node | null,
   button = MouseButton.Left
 ) {
   try {
@@ -224,12 +244,12 @@ export async function click(
 
     await new Promise(nextFrame)
   } catch (err) {
-    Error.captureStackTrace(err, click)
+    if (err instanceof Error) Error.captureStackTrace(err, click)
     throw err
   }
 }
 
-export async function focus(element: Document | Element | Window | null) {
+export async function focus(element: Document | Element | Window | Node | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
@@ -237,11 +257,10 @@ export async function focus(element: Document | Element | Window | null) {
 
     await new Promise(nextFrame)
   } catch (err) {
-    Error.captureStackTrace(err, focus)
+    if (err instanceof Error) Error.captureStackTrace(err, focus)
     throw err
   }
 }
-
 export async function mouseEnter(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
@@ -252,7 +271,7 @@ export async function mouseEnter(element: Document | Element | Window | null) {
 
     await new Promise(nextFrame)
   } catch (err) {
-    Error.captureStackTrace(err, mouseEnter)
+    if (err instanceof Error) Error.captureStackTrace(err, mouseEnter)
     throw err
   }
 }
@@ -266,7 +285,7 @@ export async function mouseMove(element: Document | Element | Window | null) {
 
     await new Promise(nextFrame)
   } catch (err) {
-    Error.captureStackTrace(err, mouseMove)
+    if (err instanceof Error) Error.captureStackTrace(err, mouseMove)
     throw err
   }
 }
@@ -282,7 +301,7 @@ export async function mouseLeave(element: Document | Element | Window | null) {
 
     await new Promise(nextFrame)
   } catch (err) {
-    Error.captureStackTrace(err, mouseLeave)
+    if (err instanceof Error) Error.captureStackTrace(err, mouseLeave)
     throw err
   }
 }
@@ -325,8 +344,8 @@ let focusableSelector = [
       ? // TODO: Remove this once JSDOM fixes the issue where an element that is
         // "hidden" can be the document.activeElement, because this is not possible
         // in real browsers.
-        selector => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
-      : selector => `${selector}:not([tabindex='-1'])`
+        (selector) => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
+      : (selector) => `${selector}:not([tabindex='-1'])`
   )
   .join(',')
 

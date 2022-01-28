@@ -102,8 +102,8 @@ export let TabGroup = defineComponent({
       if (api.tabs.value.length <= 0) return
       if (props.selectedIndex === null && selectedIndex.value !== null) return
 
-      let tabs = api.tabs.value.map(tab => dom(tab)).filter(Boolean) as HTMLElement[]
-      let focusableTabs = tabs.filter(tab => !tab.hasAttribute('disabled'))
+      let tabs = api.tabs.value.map((tab) => dom(tab)).filter(Boolean) as HTMLElement[]
+      let focusableTabs = tabs.filter((tab) => !tab.hasAttribute('disabled'))
 
       let indexToSet = props.selectedIndex ?? props.defaultIndex
 
@@ -122,7 +122,7 @@ export let TabGroup = defineComponent({
         let before = tabs.slice(0, indexToSet)
         let after = tabs.slice(indexToSet)
 
-        let next = [...after, ...before].find(tab => focusableTabs.includes(tab))
+        let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
         if (!next) return
 
         selectedIndex.value = tabs.indexOf(next)
@@ -181,33 +181,7 @@ export let Tab = defineComponent({
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
   },
-  render() {
-    let api = useTabsContext('Tab')
-
-    let slot = { selected: this.selected }
-    let propsWeControl = {
-      ref: 'el',
-      onKeydown: this.handleKeyDown,
-      onFocus: api.activation.value === 'manual' ? this.handleFocus : this.handleSelection,
-      onClick: this.handleSelection,
-      id: this.id,
-      role: 'tab',
-      type: this.type,
-      'aria-controls': api.panels.value[this.myIndex]?.value?.id,
-      'aria-selected': this.selected,
-      tabIndex: this.selected ? 0 : -1,
-      disabled: this.$props.disabled ? true : undefined,
-    }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name: 'Tab',
-    })
-  },
-  setup(props, { attrs }) {
+  setup(props, { attrs, slots }) {
     let api = useTabsContext('Tab')
     let id = `headlessui-tabs-tab-${useId()}`
 
@@ -220,7 +194,7 @@ export let Tab = defineComponent({
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
     function handleKeyDown(event: KeyboardEvent) {
-      let list = api.tabs.value.map(tab => dom(tab)).filter(Boolean) as HTMLElement[]
+      let list = api.tabs.value.map((tab) => dom(tab)).filter(Boolean) as HTMLElement[]
 
       if (event.key === Keys.Space || event.key === Keys.Enter) {
         event.preventDefault()
@@ -271,18 +245,34 @@ export let Tab = defineComponent({
       api.setSelectedIndex(myIndex.value)
     }
 
-    return {
-      el: tabRef,
-      id,
-      selected,
-      myIndex,
-      type: useResolveButtonType(
-        computed(() => ({ as: props.as, type: attrs.type })),
-        tabRef
-      ),
-      handleKeyDown,
-      handleFocus,
-      handleSelection,
+    let type = useResolveButtonType(
+      computed(() => ({ as: props.as, type: attrs.type })),
+      tabRef
+    )
+
+    return () => {
+      let slot = { selected: selected.value }
+      let propsWeControl = {
+        ref: tabRef,
+        onKeydown: handleKeyDown,
+        onFocus: api.activation.value === 'manual' ? handleFocus : handleSelection,
+        onClick: handleSelection,
+        id,
+        role: 'tab',
+        type: type.value,
+        'aria-controls': api.panels.value[myIndex.value]?.value?.id,
+        'aria-selected': selected.value,
+        tabIndex: selected.value ? 0 : -1,
+        disabled: props.disabled ? true : undefined,
+      }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        name: 'Tab',
+      })
     }
   },
 })
@@ -318,29 +308,7 @@ export let TabPanel = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  render() {
-    let api = useTabsContext('TabPanel')
-
-    let slot = { selected: this.selected }
-    let propsWeControl = {
-      ref: 'el',
-      id: this.id,
-      role: 'tabpanel',
-      'aria-labelledby': api.tabs.value[this.myIndex]?.value?.id,
-      tabIndex: this.selected ? 0 : -1,
-    }
-
-    return render({
-      props: { ...this.$props, ...propsWeControl },
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      features: Features.Static | Features.RenderStrategy,
-      visible: this.selected,
-      name: 'TabPanel',
-    })
-  },
-  setup() {
+  setup(props, { attrs, slots }) {
     let api = useTabsContext('TabPanel')
     let id = `headlessui-tabs-panel-${useId()}`
 
@@ -352,6 +320,25 @@ export let TabPanel = defineComponent({
     let myIndex = computed(() => api.panels.value.indexOf(panelRef))
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
-    return { id, el: panelRef, selected, myIndex }
+    return () => {
+      let slot = { selected: selected.value }
+      let propsWeControl = {
+        ref: panelRef,
+        id,
+        role: 'tabpanel',
+        'aria-labelledby': api.tabs.value[myIndex.value]?.value?.id,
+        tabIndex: selected.value ? 0 : -1,
+      }
+
+      return render({
+        props: { ...props, ...propsWeControl },
+        slot,
+        attrs,
+        slots,
+        features: Features.Static | Features.RenderStrategy,
+        visible: selected.value,
+        name: 'TabPanel',
+      })
+    }
   },
 })

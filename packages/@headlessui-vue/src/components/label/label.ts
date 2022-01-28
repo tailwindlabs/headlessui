@@ -69,36 +69,35 @@ export let Label = defineComponent({
     as: { type: [Object, String], default: 'label' },
     passive: { type: [Boolean], default: false },
   },
-  render() {
-    let { name = 'Label', slot = {}, props = {} } = this.context
-    let { passive, ...passThroughProps } = this.$props
-    let propsWeControl = {
-      ...Object.entries(props).reduce(
-        (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
-        {}
-      ),
-      id: this.id,
-    }
-    let allProps = { ...passThroughProps, ...propsWeControl }
-
-    // @ts-expect-error props are dynamic via context, some components will
-    //                  provide an onClick then we can delete it.
-    if (passive) delete allProps['onClick']
-
-    return render({
-      props: allProps,
-      slot,
-      attrs: this.$attrs,
-      slots: this.$slots,
-      name,
-    })
-  },
-  setup() {
+  setup(myProps, { slots, attrs }) {
     let context = useLabelContext()
     let id = `headlessui-label-${useId()}`
 
     onMounted(() => onUnmounted(context.register(id)))
 
-    return { id, context }
+    return () => {
+      let { name = 'Label', slot = {}, props = {} } = context
+      let { passive, ...passThroughProps } = myProps
+      let propsWeControl = {
+        ...Object.entries(props).reduce(
+          (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
+          {}
+        ),
+        id,
+      }
+      let allProps = { ...passThroughProps, ...propsWeControl }
+
+      // @ts-expect-error props are dynamic via context, some components will
+      //                  provide an onClick then we can delete it.
+      if (passive) delete allProps['onClick']
+
+      return render({
+        props: allProps,
+        slot,
+        attrs,
+        slots,
+        name,
+      })
+    }
   },
 })

@@ -61,7 +61,7 @@ let reducers: {
   },
   [ActionTypes.UnregisterOption](state, action) {
     let options = state.options.slice()
-    let idx = state.options.findIndex(radio => radio.id === action.id)
+    let idx = state.options.findIndex((radio) => radio.id === action.id)
     if (idx === -1) return state
     options.splice(idx, 1)
     return { ...state, options }
@@ -123,23 +123,23 @@ export function RadioGroup<
 
   let firstOption = useMemo(
     () =>
-      options.find(option => {
+      options.find((option) => {
         if (option.propsRef.current.disabled) return false
         return true
       }),
     [options]
   )
   let containsCheckedOption = useMemo(
-    () => options.some(option => option.propsRef.current.value === value),
+    () => options.some((option) => option.propsRef.current.value === value),
     [options, value]
   )
 
   let triggerChange = useCallback(
-    nextValue => {
+    (nextValue) => {
       if (disabled) return false
       if (nextValue === value) return false
-      let nextOption = options.find(option => option.propsRef.current.value === nextValue)?.propsRef
-        .current
+      let nextOption = options.find((option) => option.propsRef.current.value === nextValue)
+        ?.propsRef.current
       if (nextOption?.disabled) return false
 
       onChange(nextValue)
@@ -166,8 +166,8 @@ export function RadioGroup<
       if (!container) return
 
       let all = options
-        .filter(option => option.propsRef.current.disabled === false)
-        .map(radio => radio.element.current) as HTMLElement[]
+        .filter((option) => option.propsRef.current.disabled === false)
+        .map((radio) => radio.element.current) as HTMLElement[]
 
       switch (event.key) {
         case Keys.ArrowLeft:
@@ -180,7 +180,7 @@ export function RadioGroup<
 
             if (result === FocusResult.Success) {
               let activeOption = options.find(
-                option => option.element.current === document.activeElement
+                (option) => option.element.current === document.activeElement
               )
               if (activeOption) triggerChange(activeOption.propsRef.current.value)
             }
@@ -197,7 +197,7 @@ export function RadioGroup<
 
             if (result === FocusResult.Success) {
               let activeOption = options.find(
-                option => option.element.current === document.activeElement
+                (option) => option.element.current === document.activeElement
               )
               if (activeOption) triggerChange(activeOption.propsRef.current.value)
             }
@@ -210,7 +210,7 @@ export function RadioGroup<
             event.stopPropagation()
 
             let activeOption = options.find(
-              option => option.element.current === document.activeElement
+              (option) => option.element.current === document.activeElement
             )
             if (activeOption) triggerChange(activeOption.propsRef.current.value)
           }
@@ -322,14 +322,12 @@ function Option<
     firstOption,
     containsCheckedOption,
     value: radioGroupValue,
-  } = useRadioGroupContext([RadioGroup.name, Option.name].join('.'))
+  } = useRadioGroupContext('RadioGroup.Option')
 
-  useIsoMorphicEffect(() => registerOption({ id, element: optionRef, propsRef }), [
-    id,
-    registerOption,
-    optionRef,
-    props,
-  ])
+  useIsoMorphicEffect(
+    () => registerOption({ id, element: optionRef, propsRef }),
+    [id, registerOption, optionRef, props]
+  )
 
   let handleClick = useCallback(() => {
     if (!change(value)) return
