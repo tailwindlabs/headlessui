@@ -25,6 +25,11 @@ prettierArgs+=('--ignore-unknown')
 # Passthrough arguments and flags
 prettierArgs+=($@)
 
+# Ensure that a path is passed, otherwise default to the current directory
+if [ -z "$@" ]; then
+  prettierArgs+=(.)
+fi
+
 # Execute
 yarn prettier "${prettierArgs[@]}"
 
