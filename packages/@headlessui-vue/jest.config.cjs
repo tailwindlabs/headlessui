@@ -1,3 +1,2 @@
-const create = require('../../jest/create-jest-config.js')
-
+let create = require('../../jest/create-jest-config.cjs')
 module.exports = create(__dirname, { displayName: ' Vue ' })

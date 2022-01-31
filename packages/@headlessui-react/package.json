@@ -2,7 +2,7 @@
   "name": "@headlessui/react",
   "version": "1.4.3",
   "description": "A set of completely unstyled, fully accessible UI components for React, designed to integrate beautifully with Tailwind CSS.",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "typings": "dist/index.d.ts",
   "module": "dist/headlessui.esm.js",
   "license": "MIT",
@@ -11,14 +11,11 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "import": {
-        "default": "./dist/headlessui.esm.js"
-      },
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
+    "import": "./dist/headlessui.esm.js",
+    "require": "./dist/index.cjs",
+    "types": "./dist/index.d.ts"
   },
+  "type": "module",
   "sideEffects": false,
   "engines": {
     "node": ">=10"

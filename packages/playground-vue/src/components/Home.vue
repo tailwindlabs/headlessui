@@ -1,6 +1,6 @@
 <template>
-  <div class="container my-24">
-    <div class="prose mx-auto">
+  <div class="container mx-auto my-24">
+    <div class="prose">
       <h2>Examples</h2>
       <Examples :examples="examples" />
     </div>
