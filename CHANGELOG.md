@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve controlled Tabs behaviour ([#1050](https://github.com/tailwindlabs/headlessui/pull/1050))
 - Improve typeahead search logic ([#1051](https://github.com/tailwindlabs/headlessui/pull/1051))
 - Improve overal codebase, use modern tech like `esbuild` and TypeScript 4! ([#1055](https://github.com/tailwindlabs/headlessui/pull/1055))
+- Improve build files ([#1078](https://github.com/tailwindlabs/headlessui/pull/1078))
 
 ### Added
 
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure correct order when conditionally rendering `MenuItem`, `ListboxOption` and `RadioGroupOption` ([#1045](https://github.com/tailwindlabs/headlessui/pull/1045))
 - Improve typeahead search logic ([#1051](https://github.com/tailwindlabs/headlessui/pull/1051))
 - Improve overal codebase, use modern tech like `esbuild` and TypeScript 4! ([#1055](https://github.com/tailwindlabs/headlessui/pull/1055))
+- Improve build files ([#1078](https://github.com/tailwindlabs/headlessui/pull/1078))
 
 ### Added
 
