@@ -25,6 +25,7 @@ import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 enum ComboboxStates {
   Open,
@@ -528,6 +529,19 @@ export let ComboboxOptions = defineComponent({
       }
 
       return api.comboboxState.value === ComboboxStates.Open
+    })
+
+    useTreeWalker({
+      container: computed(() => dom(api.optionsRef)),
+      enabled: computed(() => api.comboboxState.value === ComboboxStates.Open),
+      accept(node) {
+        if (node.getAttribute('role') === 'option') return NodeFilter.FILTER_REJECT
+        if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+        return NodeFilter.FILTER_ACCEPT
+      },
+      walk(node) {
+        node.setAttribute('role', 'none')
+      },
     })
 
     return () => {
