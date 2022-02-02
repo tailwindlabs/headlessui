@@ -36,7 +36,6 @@ type StateDefinition = {
   // State
   ComboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
-  orientation: Ref<'vertical' | 'horizontal'>
 
   labelRef: Ref<HTMLLabelElement | null>
   inputRef: Ref<HTMLInputElement | null>
@@ -100,7 +99,6 @@ export let Combobox = defineComponent({
     let api = {
       ComboboxState,
       value,
-      orientation: computed(() => (props.horizontal ? 'horizontal' : 'vertical')),
       inputRef,
       labelRef,
       buttonRef,
@@ -310,10 +308,7 @@ export let ComboboxButton = defineComponent({
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        case match(api.orientation.value, {
-          vertical: Keys.ArrowDown,
-          horizontal: Keys.ArrowRight,
-        }):
+        case Keys.ArrowDown:
           event.preventDefault()
           event.stopPropagation()
           if (api.ComboboxState.value === ComboboxStates.Closed) {
@@ -334,7 +329,7 @@ export let ComboboxButton = defineComponent({
           nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
           return
 
-        case match(api.orientation.value, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+        case Keys.ArrowUp:
           event.preventDefault()
           event.stopPropagation()
           if (api.ComboboxState.value === ComboboxStates.Closed) {
@@ -424,10 +419,7 @@ export let ComboboxInput = defineComponent({
           api.closeCombobox()
           break
 
-        case match(api.orientation.value, {
-          vertical: Keys.ArrowDown,
-          horizontal: Keys.ArrowRight,
-        }):
+        case Keys.ArrowDown:
           event.preventDefault()
           event.stopPropagation()
           return match(api.ComboboxState.value, {
@@ -442,7 +434,7 @@ export let ComboboxInput = defineComponent({
             },
           })
 
-        case match(api.orientation.value, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+        case Keys.ArrowUp:
           event.preventDefault()
           event.stopPropagation()
           return match(api.ComboboxState.value, {
@@ -495,7 +487,6 @@ export let ComboboxInput = defineComponent({
             ? undefined
             : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
-        'aria-orientation': api.orientation.value,
         id,
         onKeydown: handleKeyDown,
         onChange: handleChange,
@@ -547,7 +538,6 @@ export let ComboboxOptions = defineComponent({
             ? undefined
             : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
-        'aria-orientation': api.orientation.value,
         id,
         ref: api.optionsRef,
         role: 'listbox',

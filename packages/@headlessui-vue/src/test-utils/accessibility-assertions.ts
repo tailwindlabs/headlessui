@@ -271,12 +271,9 @@ export function assertCombobox(
     attributes?: Record<string, string | null>
     textContent?: string
     state: ComboboxState
-    orientation?: 'horizontal' | 'vertical'
   },
   combobox = getComboboxInput()
 ) {
-  let { orientation = 'vertical' } = options
-
   try {
     switch (options.state) {
       case ComboboxState.InvisibleHidden:
@@ -285,7 +282,6 @@ export function assertCombobox(
         assertHidden(combobox)
 
         expect(combobox).toHaveAttribute('aria-labelledby')
-        expect(combobox).toHaveAttribute('aria-orientation', orientation)
         expect(combobox).toHaveAttribute('role', 'combobox')
 
         if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)
@@ -301,7 +297,6 @@ export function assertCombobox(
         assertVisible(combobox)
 
         expect(combobox).toHaveAttribute('aria-labelledby')
-        expect(combobox).toHaveAttribute('aria-orientation', orientation)
         expect(combobox).toHaveAttribute('role', 'combobox')
 
         if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)
@@ -329,12 +324,9 @@ export function assertComboboxList(
     attributes?: Record<string, string | null>
     textContent?: string
     state: ComboboxState
-    orientation?: 'horizontal' | 'vertical'
   },
   listbox = getCombobox()
 ) {
-  let { orientation = 'vertical' } = options
-
   try {
     switch (options.state) {
       case ComboboxState.InvisibleHidden:
@@ -343,7 +335,6 @@ export function assertComboboxList(
         assertHidden(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
-        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
@@ -359,7 +350,6 @@ export function assertComboboxList(
         assertVisible(listbox)
 
         expect(listbox).toHaveAttribute('aria-labelledby')
-        expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
