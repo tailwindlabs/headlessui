@@ -50,8 +50,6 @@ type ComboboxOptionDataRef = MutableRefObject<{
 interface StateDefinition {
   comboboxState: ComboboxStates
 
-  orientation: 'horizontal' | 'vertical'
-
   propsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
@@ -74,7 +72,6 @@ enum ActionTypes {
   CloseCombobox,
 
   SetDisabled,
-  SetOrientation,
 
   GoToOption,
 
@@ -86,7 +83,6 @@ type Actions =
   | { type: ActionTypes.CloseCombobox }
   | { type: ActionTypes.OpenCombobox }
   | { type: ActionTypes.SetDisabled; disabled: boolean }
-  | { type: ActionTypes.SetOrientation; orientation: StateDefinition['orientation'] }
   | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
   | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef }
@@ -111,10 +107,6 @@ let reducers: {
   [ActionTypes.SetDisabled](state, action) {
     if (state.disabled === action.disabled) return state
     return { ...state, disabled: action.disabled }
-  },
-  [ActionTypes.SetOrientation](state, action) {
-    if (state.orientation === action.orientation) return state
-    return { ...state, orientation: action.orientation }
   },
   [ActionTypes.GoToOption](state, action) {
     if (state.disabled) return state
@@ -226,19 +218,13 @@ interface ComboboxRenderPropArg<T> {
 }
 
 export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
-  props: Props<
-    TTag,
-    ComboboxRenderPropArg<TType>,
-    'value' | 'onChange' | 'disabled' | 'horizontal'
-  > & {
+  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
-    horizontal?: boolean
   }
 ) {
-  let { value, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
-  const orientation = horizontal ? 'horizontal' : 'vertical'
+  let { value, onChange, disabled = false, ...passThroughProps } = props
 
   let reducerBag = useReducer(stateReducer, {
     comboboxState: ComboboxStates.Closed,
@@ -258,7 +244,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     buttonRef: createRef(),
     optionsRef: createRef(),
     disabled,
-    orientation,
     options: [],
     activeOptionIndex: null,
   } as StateDefinition)
@@ -284,10 +269,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   }, [onChange, propsRef])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
-  useIsoMorphicEffect(
-    () => dispatch({ type: ActionTypes.SetOrientation, orientation }),
-    [orientation]
-  )
 
   // Handle outside click
   useWindowEvent('mousedown', (event) => {
@@ -447,7 +428,7 @@ let Input = forwardRefWithAs(function Input<
           dispatch({ type: ActionTypes.CloseCombobox })
           break
 
-        case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
+        case Keys.ArrowDown:
           event.preventDefault()
           event.stopPropagation()
           return match(state.comboboxState, {
@@ -471,7 +452,7 @@ let Input = forwardRefWithAs(function Input<
             },
           })
 
-        case match(state.orientation, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+        case Keys.ArrowUp:
           event.preventDefault()
           event.stopPropagation()
           return match(state.comboboxState, {
@@ -592,7 +573,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
+        case Keys.ArrowDown:
           event.preventDefault()
           event.stopPropagation()
           if (state.comboboxState === ComboboxStates.Closed) {
@@ -612,7 +593,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           }
           return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
 
-        case match(state.orientation, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+        case Keys.ArrowUp:
           event.preventDefault()
           event.stopPropagation()
           if (state.comboboxState === ComboboxStates.Closed) {
@@ -724,7 +705,6 @@ interface OptionsRenderPropArg {
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
-  | 'aria-orientation'
   | 'id'
   | 'onKeyDown'
   | 'role'
@@ -772,7 +752,6 @@ let Options = forwardRefWithAs(function Options<
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
-    'aria-orientation': state.orientation,
     role: 'listbox',
     id,
     ref: optionsRef,
