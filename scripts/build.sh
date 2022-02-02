@@ -14,7 +14,7 @@ tsc=$(yarn bin tsc)
 sharedOptions=()
 sharedOptions+=("--bundle")
 sharedOptions+=("--platform=browser")
-sharedOptions+=("--target=es2020")
+sharedOptions+=("--target=es2019")
 
 # Generate actual builds
 NODE_ENV=production  $esbuild $input --format=esm  --outfile=$outdir/$name.esm.js    --minify ${sharedOptions[@]} $@ &
