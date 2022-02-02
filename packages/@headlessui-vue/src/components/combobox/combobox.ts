@@ -34,7 +34,7 @@ enum ComboboxStates {
 type ComboboxOptionDataRef = Ref<{ disabled: boolean; value: unknown }>
 type StateDefinition = {
   // State
-  ComboboxState: Ref<ComboboxStates>
+  comboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
 
   labelRef: Ref<HTMLLabelElement | null>
@@ -84,7 +84,7 @@ export let Combobox = defineComponent({
     modelValue: { type: [Object, String, Number, Boolean] },
   },
   setup(props, { slots, attrs, emit }) {
-    let ComboboxState = ref<StateDefinition['ComboboxState']['value']>(ComboboxStates.Closed)
+    let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
     let inputRef = ref<StateDefinition['inputRef']['value']>(null) as StateDefinition['inputRef']
     let buttonRef = ref<StateDefinition['buttonRef']['value']>(null) as StateDefinition['buttonRef']
@@ -97,7 +97,7 @@ export let Combobox = defineComponent({
     let value = computed(() => props.modelValue)
 
     let api = {
-      ComboboxState,
+      comboboxState,
       value,
       inputRef,
       labelRef,
@@ -109,18 +109,18 @@ export let Combobox = defineComponent({
       inputPropsRef: ref<{ displayValue?: (item: unknown) => string }>({ displayValue: undefined }),
       closeCombobox() {
         if (props.disabled) return
-        if (ComboboxState.value === ComboboxStates.Closed) return
-        ComboboxState.value = ComboboxStates.Closed
+        if (comboboxState.value === ComboboxStates.Closed) return
+        comboboxState.value = ComboboxStates.Closed
         activeOptionIndex.value = null
       },
       openCombobox() {
         if (props.disabled) return
-        if (ComboboxState.value === ComboboxStates.Open) return
-        ComboboxState.value = ComboboxStates.Open
+        if (comboboxState.value === ComboboxStates.Open) return
+        comboboxState.value = ComboboxStates.Open
       },
       goToOption(focus: Focus, id?: string) {
         if (props.disabled) return
-        if (ComboboxState.value === ComboboxStates.Closed) return
+        if (comboboxState.value === ComboboxStates.Closed) return
 
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
@@ -209,7 +209,7 @@ export let Combobox = defineComponent({
       let target = event.target as HTMLElement
       let active = document.activeElement
 
-      if (ComboboxState.value !== ComboboxStates.Open) return
+      if (comboboxState.value !== ComboboxStates.Open) return
 
       if (dom(inputRef)?.contains(target)) return
       if (dom(buttonRef)?.contains(target)) return
@@ -229,7 +229,7 @@ export let Combobox = defineComponent({
     provide(ComboboxContext, api)
     useOpenClosedProvider(
       computed(() =>
-        match(ComboboxState.value, {
+        match(comboboxState.value, {
           [ComboboxStates.Open]: State.Open,
           [ComboboxStates.Closed]: State.Closed,
         })
@@ -237,7 +237,7 @@ export let Combobox = defineComponent({
     )
 
     return () => {
-      let slot = { open: ComboboxState.value === ComboboxStates.Open, disabled: props.disabled }
+      let slot = { open: comboboxState.value === ComboboxStates.Open, disabled: props.disabled }
       return render({
         props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
         slot,
@@ -264,7 +264,7 @@ export let ComboboxLabel = defineComponent({
 
     return () => {
       let slot = {
-        open: api.ComboboxState.value === ComboboxStates.Open,
+        open: api.comboboxState.value === ComboboxStates.Open,
         disabled: api.disabled.value,
       }
 
@@ -294,7 +294,7 @@ export let ComboboxButton = defineComponent({
 
     function handleClick(event: MouseEvent) {
       if (api.disabled.value) return
-      if (api.ComboboxState.value === ComboboxStates.Open) {
+      if (api.comboboxState.value === ComboboxStates.Open) {
         api.closeCombobox()
       } else {
         event.preventDefault()
@@ -311,7 +311,7 @@ export let ComboboxButton = defineComponent({
         case Keys.ArrowDown:
           event.preventDefault()
           event.stopPropagation()
-          if (api.ComboboxState.value === ComboboxStates.Closed) {
+          if (api.comboboxState.value === ComboboxStates.Closed) {
             api.openCombobox()
             // TODO: We can't do this outside next frame because the options aren't rendered yet
             // But doing this in next frame results in a flicker because the dom mutations are async here
@@ -332,7 +332,7 @@ export let ComboboxButton = defineComponent({
         case Keys.ArrowUp:
           event.preventDefault()
           event.stopPropagation()
-          if (api.ComboboxState.value === ComboboxStates.Closed) {
+          if (api.comboboxState.value === ComboboxStates.Closed) {
             api.openCombobox()
             nextTick(() => {
               if (!api.value.value) {
@@ -359,7 +359,7 @@ export let ComboboxButton = defineComponent({
 
     return () => {
       let slot = {
-        open: api.ComboboxState.value === ComboboxStates.Open,
+        open: api.comboboxState.value === ComboboxStates.Open,
         disabled: api.disabled.value,
       }
       let propsWeControl = {
@@ -371,7 +371,7 @@ export let ComboboxButton = defineComponent({
         'aria-controls': dom(api.optionsRef)?.id,
         'aria-expanded': api.disabled.value
           ? undefined
-          : api.ComboboxState.value === ComboboxStates.Open,
+          : api.comboboxState.value === ComboboxStates.Open,
         'aria-labelledby': api.labelRef.value ? [dom(api.labelRef)?.id, id].join(' ') : undefined,
         disabled: api.disabled.value === true ? true : undefined,
         onKeydown: handleKeydown,
@@ -422,7 +422,7 @@ export let ComboboxInput = defineComponent({
         case Keys.ArrowDown:
           event.preventDefault()
           event.stopPropagation()
-          return match(api.ComboboxState.value, {
+          return match(api.comboboxState.value, {
             [ComboboxStates.Open]: () => api.goToOption(Focus.Next),
             [ComboboxStates.Closed]: () => {
               api.openCombobox()
@@ -437,7 +437,7 @@ export let ComboboxInput = defineComponent({
         case Keys.ArrowUp:
           event.preventDefault()
           event.stopPropagation()
-          return match(api.ComboboxState.value, {
+          return match(api.comboboxState.value, {
             [ComboboxStates.Open]: () => api.goToOption(Focus.Previous),
             [ComboboxStates.Closed]: () => {
               api.openCombobox()
@@ -480,7 +480,7 @@ export let ComboboxInput = defineComponent({
     }
 
     return () => {
-      let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
+      let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let propsWeControl = {
         'aria-activedescendant':
           api.activeOptionIndex.value === null
@@ -527,11 +527,11 @@ export let ComboboxOptions = defineComponent({
         return usesOpenClosedState.value === State.Open
       }
 
-      return api.ComboboxState.value === ComboboxStates.Open
+      return api.comboboxState.value === ComboboxStates.Open
     })
 
     return () => {
-      let slot = { open: api.ComboboxState.value === ComboboxStates.Open }
+      let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let propsWeControl = {
         'aria-activedescendant':
           api.activeOptionIndex.value === null
@@ -586,9 +586,9 @@ export let ComboboxOption = defineComponent({
 
     onMounted(() => {
       watch(
-        [api.ComboboxState, selected],
+        [api.comboboxState, selected],
         () => {
-          if (api.ComboboxState.value !== ComboboxStates.Open) return
+          if (api.comboboxState.value !== ComboboxStates.Open) return
           if (!selected.value) return
           api.goToOption(Focus.Specific, id)
         },
@@ -597,7 +597,7 @@ export let ComboboxOption = defineComponent({
     })
 
     watchEffect(() => {
-      if (api.ComboboxState.value !== ComboboxStates.Open) return
+      if (api.comboboxState.value !== ComboboxStates.Open) return
       if (!active.value) return
       nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     })
