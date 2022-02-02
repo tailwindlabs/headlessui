@@ -35,6 +35,7 @@ import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 enum ComboboxStates {
   Open,
@@ -732,6 +733,19 @@ let Options = forwardRefWithAs(function Options<
 
     return state.comboboxState === ComboboxStates.Open
   })()
+
+  useTreeWalker({
+    container: state.optionsRef.current,
+    enabled: state.comboboxState === ComboboxStates.Open,
+    accept(node) {
+      if (node.getAttribute('role') === 'option') return NodeFilter.FILTER_REJECT
+      if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
+      return NodeFilter.FILTER_ACCEPT
+    },
+    walk(node) {
+      node.setAttribute('role', 'none')
+    },
+  })
 
   let labelledby = useComputed(
     () => state.labelRef.current?.id ?? state.buttonRef.current?.id,

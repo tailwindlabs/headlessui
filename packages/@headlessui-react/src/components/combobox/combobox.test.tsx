@@ -741,6 +741,52 @@ describe('Rendering composition', () => {
       getComboboxOptions().forEach((option) => assertComboboxOption(option, { tag: 'button' }))
     })
   )
+
+  it(
+    'should mark all the elements between Combobox.Options and Combobox.Option with role none',
+    suppressConsoleLogs(async () => {
+      render(
+        <Combobox value="test" onChange={console.log}>
+          <Combobox.Input onChange={NOOP} />
+          <Combobox.Button />
+          <div className="outer">
+            <Combobox.Options>
+              <div className="inner py-1">
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+              </div>
+              <div className="inner py-1">
+                <Combobox.Option value="c">Option C</Combobox.Option>
+                <Combobox.Option value="d">
+                  <div>
+                    <div className="outer">Option D</div>
+                  </div>
+                </Combobox.Option>
+              </div>
+              <div className="inner py-1">
+                <form className="inner">
+                  <Combobox.Option value="e">Option E</Combobox.Option>
+                </form>
+              </div>
+            </Combobox.Options>
+          </div>
+        </Combobox>
+      )
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      expect.hasAssertions()
+
+      document.querySelectorAll('.outer').forEach((element) => {
+        expect(element).not.toHaveAttribute('role', 'none')
+      })
+
+      document.querySelectorAll('.inner').forEach((element) => {
+        expect(element).toHaveAttribute('role', 'none')
+      })
+    })
+  )
 })
 
 describe('Composition', () => {
