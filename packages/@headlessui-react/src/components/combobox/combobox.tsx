@@ -292,24 +292,24 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     }
   })
 
-  let [latestActiveOption, setLatestActiveOption] = useState<TType | null>(null)
+  let latestActiveOption = useRef<TType | null>(null)
 
   useEffect(() => {
     if (activeOptionIndex !== null) {
-      setLatestActiveOption(options[activeOptionIndex].dataRef.current.value as TType)
+      latestActiveOption.current = options[activeOptionIndex].dataRef.current.value as TType
     }
   }, [activeOptionIndex])
+
+  let activeOption =
+    activeOptionIndex === null ? null : (options[activeOptionIndex].dataRef.current.value as TType)
 
   let slot = useMemo<ComboboxRenderPropArg<TType>>(
     () => ({
       open: comboboxState === ComboboxStates.Open,
       disabled,
       activeIndex: activeOptionIndex,
-      activeOption:
-        activeOptionIndex === null
-          ? null
-          : (options[activeOptionIndex].dataRef.current.value as TType),
-      latestActiveOption,
+      activeOption: activeOption,
+      latestActiveOption: activeOption ?? (latestActiveOption.current as TType),
     }),
     [comboboxState, disabled, options, activeOptionIndex, latestActiveOption]
   )

@@ -238,6 +238,11 @@ export let Combobox = defineComponent({
     )
 
     let latestActiveOption = ref(null)
+    let activeOption = computed(() =>
+      activeOptionIndex.value === null
+        ? null
+        : (options.value[activeOptionIndex.value].dataRef.value as any)
+    )
 
     watch(
       activeOptionIndex,
@@ -254,10 +259,7 @@ export let Combobox = defineComponent({
         open: comboboxState.value === ComboboxStates.Open,
         disabled: props.disabled,
         activeIndex: activeOptionIndex.value,
-        activeOption:
-          activeOptionIndex.value === null
-            ? null
-            : (options.value[activeOptionIndex.value].dataRef.value as any),
+        activeOption: activeOption.value,
         latestActiveOption: latestActiveOption.value,
       }
 
