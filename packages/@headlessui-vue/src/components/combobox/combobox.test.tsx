@@ -3791,7 +3791,9 @@ describe('Mouse interactions', () => {
     })
   )
 
-  it(
+  // TODO: JSDOM doesn't quite work here
+  // Clicking outside on the body should fire a mousedown (which it does) and then change the active element (which it doesn't)
+  xit(
     'should be possible to click outside of the combobox which should close the combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
@@ -3805,6 +3807,7 @@ describe('Mouse interactions', () => {
               <ComboboxOption value="charlie">charlie</ComboboxOption>
             </ComboboxOptions>
           </Combobox>
+          <div tabindex="-1">after</div>
         `,
         setup: () => ({ value: ref(null) }),
       })
@@ -3815,13 +3818,13 @@ describe('Mouse interactions', () => {
       assertActiveElement(getComboboxInput())
 
       // Click something that is not related to the combobox
-      await click(document.body)
+      await click(getByText('after'))
 
       // Should be closed now
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Verify the input is focused again
-      assertActiveElement(getComboboxInput())
+      assertActiveElement(getByText('after'))
     })
   )
 
