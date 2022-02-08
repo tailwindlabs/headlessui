@@ -106,13 +106,15 @@ export let Menu = defineComponent({
         activeItemIndex.value = nextActiveItemIndex
       },
       search(value: string) {
+        let wasAlreadySearching = searchQuery.value !== ''
+        let offset = wasAlreadySearching ? 0 : 1
         searchQuery.value += value.toLowerCase()
 
         let reOrderedItems =
           activeItemIndex.value !== null
             ? items.value
-                .slice(activeItemIndex.value + 1)
-                .concat(items.value.slice(0, activeItemIndex.value + 1))
+                .slice(activeItemIndex.value + offset)
+                .concat(items.value.slice(0, activeItemIndex.value + offset))
             : items.value
 
         let matchingItem = reOrderedItems.find(
