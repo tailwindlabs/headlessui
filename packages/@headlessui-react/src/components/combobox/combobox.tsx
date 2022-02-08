@@ -309,7 +309,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
         activeOptionIndex === null
           ? null
           : (options[activeOptionIndex].dataRef.current.value as TType),
-      latestActiveOption: latestActiveOption as TType,
+      latestActiveOption,
     }),
     [comboboxState, disabled, options, activeOptionIndex, latestActiveOption]
   )
