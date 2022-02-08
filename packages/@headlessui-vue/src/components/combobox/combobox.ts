@@ -483,6 +483,8 @@ export let ComboboxInput = defineComponent({
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let propsWeControl = {
+        'aria-controls': api.optionsRef.value?.id,
+        'aria-expanded': api.disabled ? undefined : api.comboboxState.value === ComboboxStates.Open,
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined
@@ -492,6 +494,7 @@ export let ComboboxInput = defineComponent({
         onKeydown: handleKeyDown,
         onChange: handleChange,
         role: 'combobox',
+        type: 'text',
         tabIndex: 0,
         ref: api.inputRef,
       }
