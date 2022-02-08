@@ -99,13 +99,15 @@ let reducers: {
     return { ...state, searchQuery: '', activeItemIndex }
   },
   [ActionTypes.Search]: (state, action) => {
+    let wasAlreadySearching = state.searchQuery !== ''
+    let offset = wasAlreadySearching ? 0 : 1
     let searchQuery = state.searchQuery + action.value.toLowerCase()
 
     let reOrderedItems =
       state.activeItemIndex !== null
         ? state.items
-            .slice(state.activeItemIndex + 1)
-            .concat(state.items.slice(0, state.activeItemIndex + 1))
+            .slice(state.activeItemIndex + offset)
+            .concat(state.items.slice(0, state.activeItemIndex + offset))
         : state.items
 
     let matchingItem = reOrderedItems.find(

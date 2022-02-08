@@ -2698,6 +2698,79 @@ describe('Keyboard interactions', () => {
         assertMenuLinkedWithMenuItem(items[3])
       })
     )
+
+    it(
+      'should stay on the same item while keystrokes still match',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item as="a">alice</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+              <Menu.Item as="a">charlie</Menu.Item>
+              <Menu.Item as="a">bob</Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        // Open menu
+        await click(getMenuButton())
+
+        let items = getMenuItems()
+
+        // ---
+
+        // Reset: Go to first item
+        await press(Keys.Home)
+
+        // Search for "b" in "bob"
+        await type(word('b'))
+
+        // We should be on the first `bob`
+        assertMenuLinkedWithMenuItem(items[1])
+
+        // Search for "b" in "bob" again
+        await type(word('b'))
+
+        // We should be on the next `bob`
+        assertMenuLinkedWithMenuItem(items[3])
+
+        // ---
+
+        // Reset: Go to first item
+        await press(Keys.Home)
+
+        // Search for "bo" in "bob"
+        await type(word('bo'))
+
+        // We should be on the first `bob`
+        assertMenuLinkedWithMenuItem(items[1])
+
+        // Search for "bo" in "bob" again
+        await type(word('bo'))
+
+        // We should be on the next `bob`
+        assertMenuLinkedWithMenuItem(items[3])
+
+        // ---
+
+        // Reset: Go to first item
+        await press(Keys.Home)
+
+        // Search for "bob" in "bob"
+        await type(word('bob'))
+
+        // We should be on the first `bob`
+        assertMenuLinkedWithMenuItem(items[1])
+
+        // Search for "bob" in "bob" again
+        await type(word('bob'))
+
+        // We should be on the next `bob`
+        assertMenuLinkedWithMenuItem(items[3])
+      })
+    )
   })
 })
 

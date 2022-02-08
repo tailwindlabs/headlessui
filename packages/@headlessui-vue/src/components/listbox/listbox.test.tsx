@@ -3231,6 +3231,82 @@ describe('Keyboard interactions', () => {
         assertActiveListboxOption(options[3])
       })
     )
+
+    it(
+      'should stay on the same item while keystrokes still match',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="a">alice</ListboxOption>
+                <ListboxOption value="b">bob</ListboxOption>
+                <ListboxOption value="c">charlie</ListboxOption>
+                <ListboxOption value="b">bob</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        // Open listbox
+        await click(getListboxButton())
+
+        let options = getListboxOptions()
+
+        // ---
+
+        // Reset: Go to first option
+        await press(Keys.Home)
+
+        // Search for "b" in "bob"
+        await type(word('b'))
+
+        // We should be on the first `bob`
+        assertActiveListboxOption(options[1])
+
+        // Search for "b" in "bob" again
+        await type(word('b'))
+
+        // We should be on the next `bob`
+        assertActiveListboxOption(options[3])
+
+        // ---
+
+        // Reset: Go to first option
+        await press(Keys.Home)
+
+        // Search for "bo" in "bob"
+        await type(word('bo'))
+
+        // We should be on the first `bob`
+        assertActiveListboxOption(options[1])
+
+        // Search for "bo" in "bob" again
+        await type(word('bo'))
+
+        // We should be on the next `bob`
+        assertActiveListboxOption(options[3])
+
+        // ---
+
+        // Reset: Go to first option
+        await press(Keys.Home)
+
+        // Search for "bob" in "bob"
+        await type(word('bob'))
+
+        // We should be on the first `bob`
+        assertActiveListboxOption(options[1])
+
+        // Search for "bob" in "bob" again
+        await type(word('bob'))
+
+        // We should be on the next `bob`
+        assertActiveListboxOption(options[3])
+      })
+    )
   })
 })
 

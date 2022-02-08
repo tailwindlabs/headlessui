@@ -143,13 +143,16 @@ export let Listbox = defineComponent({
         if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
 
+        let wasAlreadySearching = searchQuery.value !== ''
+        let offset = wasAlreadySearching ? 0 : 1
+
         searchQuery.value += value.toLowerCase()
 
         let reOrderedOptions =
           activeOptionIndex.value !== null
             ? options.value
-                .slice(activeOptionIndex.value + 1)
-                .concat(options.value.slice(0, activeOptionIndex.value + 1))
+                .slice(activeOptionIndex.value + offset)
+                .concat(options.value.slice(0, activeOptionIndex.value + offset))
             : options.value
 
         let matchingOption = reOrderedOptions.find(
