@@ -238,7 +238,16 @@ export let Combobox = defineComponent({
     )
 
     return () => {
-      let slot = { open: comboboxState.value === ComboboxStates.Open, disabled: props.disabled }
+      let slot = {
+        open: comboboxState.value === ComboboxStates.Open,
+        disabled: props.disabled,
+        activeIndex: activeOptionIndex,
+        activeOption:
+          activeOptionIndex.value === null
+            ? null
+            : (options.value[activeOptionIndex.value].dataRef.value as any),
+      }
+
       return render({
         props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
         slot,
