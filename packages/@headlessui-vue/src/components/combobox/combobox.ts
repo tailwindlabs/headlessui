@@ -241,7 +241,7 @@ export let Combobox = defineComponent({
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled: props.disabled,
-        activeIndex: activeOptionIndex,
+        activeIndex: activeOptionIndex.value,
         activeOption:
           activeOptionIndex.value === null
             ? null
