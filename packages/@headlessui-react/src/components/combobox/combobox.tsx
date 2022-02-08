@@ -16,6 +16,7 @@ import React, {
   MutableRefObject,
   Ref,
   ContextType,
+  useEffect,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'
@@ -30,7 +31,6 @@ import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -181,7 +181,7 @@ ComboboxContext.displayName = 'ComboboxContext'
 function useComboboxContext(component: string) {
   let context = useContext(ComboboxContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Combobox.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Combobox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useComboboxContext)
     throw err
   }
@@ -197,7 +197,7 @@ ComboboxActions.displayName = 'ComboboxActions'
 function useComboboxActions() {
   let context = useContext(ComboboxActions)
   if (context === null) {
-    let err = new Error(`ComboboxActions is missing a parent <${Combobox.name} /> component.`)
+    let err = new Error(`ComboboxActions is missing a parent <Combobox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useComboboxActions)
     throw err
   }
@@ -216,14 +216,19 @@ interface ComboboxRenderPropArg<T> {
   disabled: boolean
   activeIndex: number | null
   activeOption: T | null
+  latestActiveOption: T | null
 }
 
-export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
+let ComboboxRoot = forwardRefWithAs(function Combobox<
+  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
+  TType = string
+>(
   props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
-  }
+  },
+  ref: Ref<TTag>
 ) {
   let { value, onChange, disabled = false, ...passThroughProps } = props
 
@@ -282,24 +287,28 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     if (optionsRef.current?.contains(target)) return
 
     dispatch({ type: ActionTypes.CloseCombobox })
-
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      inputRef.current?.focus()
-    }
   })
+
+  let latestActiveOption = useRef<TType | null>(null)
+
+  useEffect(() => {
+    if (activeOptionIndex !== null) {
+      latestActiveOption.current = options[activeOptionIndex].dataRef.current.value as TType
+    }
+  }, [activeOptionIndex])
+
+  let activeOption =
+    activeOptionIndex === null ? null : (options[activeOptionIndex].dataRef.current.value as TType)
 
   let slot = useMemo<ComboboxRenderPropArg<TType>>(
     () => ({
       open: comboboxState === ComboboxStates.Open,
       disabled,
       activeIndex: activeOptionIndex,
-      activeOption:
-        activeOptionIndex === null
-          ? null
-          : (options[activeOptionIndex].dataRef.current.value as TType),
+      activeOption: activeOption,
+      latestActiveOption: activeOption ?? (latestActiveOption.current as TType),
     }),
-    [comboboxState, disabled, options, activeOptionIndex]
+    [comboboxState, disabled, options, activeOptionIndex, latestActiveOption]
   )
 
   let syncInputValue = useCallback(() => {
@@ -359,7 +368,13 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
           })}
         >
           {render({
-            props: passThroughProps,
+            props:
+              ref === null
+                ? passThroughProps
+                : {
+                    ...passThroughProps,
+                    ref,
+                  },
             slot,
             defaultTag: DEFAULT_COMBOBOX_TAG,
             name: 'Combobox',
@@ -368,7 +383,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
       </ComboboxContext.Provider>
     </ComboboxActions.Provider>
   )
-}
+})
 
 // ---
 
@@ -392,7 +407,7 @@ let Input = forwardRefWithAs(function Input<
   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
-  TType = Parameters<typeof Combobox>[0]['value']
+  TType = Parameters<typeof ComboboxRoot>[0]['value']
 >(
   props: Props<TTag, InputRenderPropArg, InputPropsWeControl> & {
     displayValue?(item: TType): string
@@ -807,7 +822,7 @@ function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
-  TType = Parameters<typeof Combobox>[0]['value']
+  TType = Parameters<typeof ComboboxRoot>[0]['value']
 >(
   props: Props<TTag, OptionRenderPropArg, ComboboxOptionPropsWeControl | 'value'> & {
     disabled?: boolean
@@ -911,8 +926,10 @@ function Option<
 
 // ---
 
-Combobox.Input = Input
-Combobox.Button = Button
-Combobox.Label = Label
-Combobox.Options = Options
-Combobox.Option = Option
+export let Combobox = Object.assign(ComboboxRoot, {
+  Input,
+  Button,
+  Label,
+  Options,
+  Option,
+})

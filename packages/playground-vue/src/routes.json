@@ -4,6 +4,27 @@
     "component": "./components/Home.vue"
   },
   {
+    "name": "Combobox",
+    "path": "/combobox",
+    "children": [
+      {
+        "name": "Combobox (w/ pure tailwind)",
+        "path": "/combobox/combobox-with-pure-tailwind",
+        "component": "./components/combobox/combobox-with-pure-tailwind.vue"
+      },
+      {
+        "name": "Command Palette",
+        "path": "/combobox/command-palette",
+        "component": "./components/combobox/command-palette.vue"
+      },
+      {
+        "name": "Command Palette (w/ Groups)",
+        "path": "/combobox/command-palette-with-groups",
+        "component": "./components/combobox/command-palette-with-groups.vue"
+      }
+    ]
+  },
+  {
     "name": "Menu",
     "path": "/menu",
     "children": [

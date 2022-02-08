@@ -208,7 +208,6 @@ export let Combobox = defineComponent({
 
     useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
-      let active = document.activeElement
 
       if (comboboxState.value !== ComboboxStates.Open) return
 
@@ -217,9 +216,6 @@ export let Combobox = defineComponent({
       if (dom(optionsRef)?.contains(target)) return
 
       api.closeCombobox()
-
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) dom(inputRef)?.focus({ preventScroll: true })
     })
 
     watchEffect(() => {
@@ -237,8 +233,32 @@ export let Combobox = defineComponent({
       )
     )
 
+    let latestActiveOption = ref(null)
+    let activeOption = computed(() =>
+      activeOptionIndex.value === null
+        ? null
+        : (options.value[activeOptionIndex.value].dataRef.value as any)
+    )
+
+    watch(
+      activeOptionIndex,
+      (activeOptionIndex) => {
+        if (activeOptionIndex !== null) {
+          latestActiveOption.value = options.value[activeOptionIndex].dataRef.value as any
+        }
+      },
+      { flush: 'sync' }
+    )
+
     return () => {
-      let slot = { open: comboboxState.value === ComboboxStates.Open, disabled: props.disabled }
+      let slot = {
+        open: comboboxState.value === ComboboxStates.Open,
+        disabled: props.disabled,
+        activeIndex: activeOptionIndex.value,
+        activeOption: activeOption.value,
+        latestActiveOption: latestActiveOption.value,
+      }
+
       return render({
         props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
         slot,
@@ -483,6 +503,8 @@ export let ComboboxInput = defineComponent({
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let propsWeControl = {
+        'aria-controls': api.optionsRef.value?.id,
+        'aria-expanded': api.disabled ? undefined : api.comboboxState.value === ComboboxStates.Open,
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined
@@ -491,7 +513,9 @@ export let ComboboxInput = defineComponent({
         id,
         onKeydown: handleKeyDown,
         onChange: handleChange,
+        onInput: handleChange,
         role: 'combobox',
+        type: 'text',
         tabIndex: 0,
         ref: api.inputRef,
       }

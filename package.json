@@ -28,7 +28,7 @@
     }
   },
   "lint-staged": {
-    "*": "yarn lint-check"
+    "*": "yarn lint"
   },
   "prettier": {
     "printWidth": 100,

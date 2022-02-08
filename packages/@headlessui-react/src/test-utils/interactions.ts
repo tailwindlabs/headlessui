@@ -92,6 +92,7 @@ let order: Record<
       return fireEvent.keyPress(element, event)
     },
     function input(element, event) {
+      // TODO: This should only fire when the element's value changes
       return fireEvent.input(element, event)
     },
     function keyup(element, event) {
@@ -134,6 +135,17 @@ let order: Record<
     },
     function blurAndfocus(_element, event) {
       return focusNext(event)
+    },
+    function keyup(element, event) {
+      return fireEvent.keyUp(element, event)
+    },
+  ],
+  [Keys.Escape.key!]: [
+    function keydown(element, event) {
+      return fireEvent.keyDown(element, event)
+    },
+    function keypress(element, event) {
+      return fireEvent.keyPress(element, event)
     },
     function keyup(element, event) {
       return fireEvent.keyUp(element, event)

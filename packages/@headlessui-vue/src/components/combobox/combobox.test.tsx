@@ -3791,7 +3791,9 @@ describe('Mouse interactions', () => {
     })
   )
 
-  it(
+  // TODO: JSDOM doesn't quite work here
+  // Clicking outside on the body should fire a mousedown (which it does) and then change the active element (which it doesn't)
+  xit(
     'should be possible to click outside of the combobox which should close the combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
@@ -3805,6 +3807,7 @@ describe('Mouse interactions', () => {
               <ComboboxOption value="charlie">charlie</ComboboxOption>
             </ComboboxOptions>
           </Combobox>
+          <div tabindex="-1">after</div>
         `,
         setup: () => ({ value: ref(null) }),
       })
@@ -3815,13 +3818,13 @@ describe('Mouse interactions', () => {
       assertActiveElement(getComboboxInput())
 
       // Click something that is not related to the combobox
-      await click(document.body)
+      await click(getByText('after'))
 
       // Should be closed now
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Verify the input is focused again
-      assertActiveElement(getComboboxInput())
+      assertActiveElement(getByText('after'))
     })
   )
 
@@ -4344,6 +4347,67 @@ describe('Mouse interactions', () => {
       // We should not be able to focus the first option
       await focus(options[1])
       assertNoActiveComboboxOption()
+    })
+  )
+
+  it(
+    'Combobox preserves the latest known active option after an option becomes inactive',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" v-slot="{ open, latestActiveOption }">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <div id="latestActiveOption">{{ latestActiveOption }}</div>
+            <ComboboxOptions v-show="open">
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      assertComboboxButton({
+        state: ComboboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-combobox-button-2' },
+      })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      await click(getComboboxButton())
+
+      assertComboboxButton({
+        state: ComboboxState.Visible,
+        attributes: { id: 'headlessui-combobox-button-2' },
+      })
+      assertComboboxList({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      // Hover the first item
+      await mouseMove(options[0])
+
+      // Verify that the first combobox option is active
+      assertActiveComboboxOption(options[0])
+      expect(document.getElementById('latestActiveOption')!.textContent).toBe('a')
+
+      // Focus the second item
+      await mouseMove(options[1])
+
+      // Verify that the second combobox option is active
+      assertActiveComboboxOption(options[1])
+      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
+
+      // Move the mouse off of the second combobox option
+      await mouseLeave(options[1])
+      await mouseMove(document.body)
+
+      // Verify that the second combobox option is NOT active
+      assertNoActiveComboboxOption()
+
+      // But the last known active option is still recorded
+      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
     })
   )
 })
