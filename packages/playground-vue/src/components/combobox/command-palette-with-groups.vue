@@ -62,7 +62,7 @@ export default defineComponent({
     })
 
     let groups = computed(() => {
-      return people.reduce((groups, person) => {
+      return people.value.reduce((groups, person) => {
         let lastNameLetter = person.name.split(' ')[1][0]
 
         groups.set(lastNameLetter, [...(groups.get(lastNameLetter) || []), person])
@@ -72,7 +72,7 @@ export default defineComponent({
     })
 
     let sortedGroups = computed(() => {
-      return Array.from(groups.entries()).sort(([letterA], [letterZ]) =>
+      return Array.from(groups.value.entries()).sort(([letterA], [letterZ]) =>
         letterA.localeCompare(letterZ)
       )
     })
@@ -83,6 +83,7 @@ export default defineComponent({
       people,
       groups,
       sortedGroups,
+      displayValue: (item) => item?.name,
     }
   },
 })
@@ -100,10 +101,10 @@ export default defineComponent({
         >
           <div class="flex w-full flex-col">
             <ComboboxInput
-              @hange="query = $event.target.value"
+              @change="query = $event.target.value"
               class="w-full rounded-none border-none bg-none px-3 py-1 outline-none"
               placeholder="Search users…"
-              displayValue="(item) => item?.name"
+              :displayValue="displayValue"
             />
             <div class="flex">
               <ComboboxOptions
@@ -152,7 +153,7 @@ export default defineComponent({
               <div v-if="people.length === 0" class="w-full py-4 text-center">
                 No person selected
               </div>
-              <div v-else-if="activeOption !== null" class="border-l">
+              <div v-else-if="activeOption" class="border-l">
                 <div class="flex flex-col">
                   <div class="p-8 text-center">
                     <img

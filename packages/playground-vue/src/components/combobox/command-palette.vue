@@ -52,6 +52,8 @@ export default defineComponent({
       query,
       activePerson,
       people,
+
+      displayValue: (item) => item?.name,
     }
   },
 })
@@ -72,7 +74,7 @@ export default defineComponent({
               @change="query = $event.target.value"
               class="w-full rounded-none border-none px-3 py-1 outline-none"
               placeholder="Search users…"
-              :displayValue="(item) => item?.name"
+              :displayValue="displayValue"
             />
             <div
               :class="[
