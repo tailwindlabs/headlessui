@@ -217,9 +217,6 @@ export let Combobox = defineComponent({
       if (dom(optionsRef)?.contains(target)) return
 
       api.closeCombobox()
-
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) dom(inputRef)?.focus({ preventScroll: true })
     })
 
     watchEffect(() => {

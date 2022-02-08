@@ -285,11 +285,6 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     if (optionsRef.current?.contains(target)) return
 
     dispatch({ type: ActionTypes.CloseCombobox })
-
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      inputRef.current?.focus()
-    }
   })
 
   let latestActiveOption = useRef<TType | null>(null)
