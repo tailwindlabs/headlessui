@@ -208,7 +208,6 @@ export let Combobox = defineComponent({
 
     useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
-      let active = document.activeElement
 
       if (comboboxState.value !== ComboboxStates.Open) return
 
