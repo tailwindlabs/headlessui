@@ -183,7 +183,7 @@ ComboboxContext.displayName = 'ComboboxContext'
 function useComboboxContext(component: string) {
   let context = useContext(ComboboxContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Combobox.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Combobox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useComboboxContext)
     throw err
   }
@@ -199,7 +199,7 @@ ComboboxActions.displayName = 'ComboboxActions'
 function useComboboxActions() {
   let context = useContext(ComboboxActions)
   if (context === null) {
-    let err = new Error(`ComboboxActions is missing a parent <${Combobox.name} /> component.`)
+    let err = new Error(`ComboboxActions is missing a parent <Combobox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useComboboxActions)
     throw err
   }
@@ -221,12 +221,27 @@ interface ComboboxRenderPropArg<T> {
   latestActiveOption: T | null
 }
 
-export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
+// let Combobox = forwardRefWithAs(…, ref)
+// if fragment we can't forward it
+// Forward ref if not null
+
+// let Input = forwardRefWithAs(function Input<
+//   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
+//   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
+//   // But today is not that day..
+//   TType = Parameters<typeof Combobox>[0]['value']
+// >(
+
+export let Combobox = forwardRefWithAs(function Combobox<
+  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
+  TType = string
+>(
   props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
-  }
+  },
+  ref: Ref<TTag>
 ) {
   let { value, onChange, disabled = false, ...passThroughProps } = props
 
@@ -366,7 +381,13 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
           })}
         >
           {render({
-            props: passThroughProps,
+            props:
+              ref === null
+                ? passThroughProps
+                : {
+                    ...passThroughProps,
+                    ref,
+                  },
             slot,
             defaultTag: DEFAULT_COMBOBOX_TAG,
             name: 'Combobox',
@@ -375,7 +396,7 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
       </ComboboxContext.Provider>
     </ComboboxActions.Provider>
   )
-}
+})
 
 // ---
 
