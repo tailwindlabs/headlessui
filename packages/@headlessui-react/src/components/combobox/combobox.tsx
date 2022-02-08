@@ -16,7 +16,6 @@ import React, {
   MutableRefObject,
   Ref,
   ContextType,
-  useState,
   useEffect,
 } from 'react'
 
@@ -32,7 +31,6 @@ import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -221,18 +219,7 @@ interface ComboboxRenderPropArg<T> {
   latestActiveOption: T | null
 }
 
-// let Combobox = forwardRefWithAs(…, ref)
-// if fragment we can't forward it
-// Forward ref if not null
-
-// let Input = forwardRefWithAs(function Input<
-//   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
-//   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
-//   // But today is not that day..
-//   TType = Parameters<typeof Combobox>[0]['value']
-// >(
-
-export let Combobox = forwardRefWithAs(function Combobox<
+let ComboboxRoot = forwardRefWithAs(function Combobox<
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   TType = string
 >(
@@ -420,7 +407,7 @@ let Input = forwardRefWithAs(function Input<
   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
-  TType = Parameters<typeof Combobox>[0]['value']
+  TType = Parameters<typeof ComboboxRoot>[0]['value']
 >(
   props: Props<TTag, InputRenderPropArg, InputPropsWeControl> & {
     displayValue?(item: TType): string
@@ -835,7 +822,7 @@ function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
-  TType = Parameters<typeof Combobox>[0]['value']
+  TType = Parameters<typeof ComboboxRoot>[0]['value']
 >(
   props: Props<TTag, OptionRenderPropArg, ComboboxOptionPropsWeControl | 'value'> & {
     disabled?: boolean
@@ -939,8 +926,10 @@ function Option<
 
 // ---
 
-Combobox.Input = Input
-Combobox.Button = Button
-Combobox.Label = Label
-Combobox.Options = Options
-Combobox.Option = Option
+export let Combobox = Object.assign(ComboboxRoot, {
+  Input,
+  Button,
+  Label,
+  Options,
+  Option,
+})
