@@ -16,7 +16,6 @@ if ! [ -z "$CI" ]; then
   prettierArgs+=("--check")
 else
   prettierArgs+=("--write")
-  prettierArgs+=("$RELATIVE_TARGET_DIR")
 fi
 
 # Add default arguments
@@ -27,11 +26,10 @@ prettierArgs+=($@)
 
 # Ensure that a path is passed, otherwise default to the current directory
 if [ -z "$@" ]; then
-  prettierArgs+=(.)
+  prettierArgs+=("$RELATIVE_TARGET_DIR")
 fi
 
 # Execute
 yarn prettier "${prettierArgs[@]}"
 
 popd > /dev/null
-
