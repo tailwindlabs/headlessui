@@ -4346,4 +4346,65 @@ describe('Mouse interactions', () => {
       assertNoActiveComboboxOption()
     })
   )
+
+  it(
+    'Combobox preserves the latest known active option after an option becomes inactive',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" v-slot="{ open, latestActiveOption }">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <div id="latestActiveOption">{{ latestActiveOption }}</div>
+            <ComboboxOptions v-show="open">
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      assertComboboxButton({
+        state: ComboboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-combobox-button-2' },
+      })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      await click(getComboboxButton())
+
+      assertComboboxButton({
+        state: ComboboxState.Visible,
+        attributes: { id: 'headlessui-combobox-button-2' },
+      })
+      assertComboboxList({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      // Hover the first item
+      await mouseMove(options[0])
+
+      // Verify that the first combobox option is active
+      assertActiveComboboxOption(options[0])
+      expect(document.getElementById('latestActiveOption')!.textContent).toBe('a')
+
+      // Focus the second item
+      await mouseMove(options[1])
+
+      // Verify that the second combobox option is active
+      assertActiveComboboxOption(options[1])
+      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
+
+      // Move the mouse off of the second combobox option
+      await mouseLeave(options[1])
+      await mouseMove(document.body)
+
+      // Verify that the second combobox option is NOT active
+      assertNoActiveComboboxOption()
+
+      // But the last known active option is still recorded
+      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
+    })
+  )
 })

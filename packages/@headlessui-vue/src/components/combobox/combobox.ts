@@ -237,6 +237,18 @@ export let Combobox = defineComponent({
       )
     )
 
+    let latestActiveOption = ref(null)
+
+    watch(
+      activeOptionIndex,
+      (activeOptionIndex) => {
+        if (activeOptionIndex !== null) {
+          latestActiveOption.value = options.value[activeOptionIndex].dataRef.value as any
+        }
+      },
+      { flush: 'sync' }
+    )
+
     return () => {
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
@@ -246,6 +258,7 @@ export let Combobox = defineComponent({
           activeOptionIndex.value === null
             ? null
             : (options.value[activeOptionIndex.value].dataRef.value as any),
+        latestActiveOption: latestActiveOption.value,
       }
 
       return render({
