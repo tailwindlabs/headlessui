@@ -16,6 +16,8 @@ import React, {
   MutableRefObject,
   Ref,
   ContextType,
+  useState,
+  useEffect,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'
@@ -216,6 +218,7 @@ interface ComboboxRenderPropArg<T> {
   disabled: boolean
   activeIndex: number | null
   activeOption: T | null
+  latestActiveOption: T | null
 }
 
 export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG, TType = string>(
@@ -289,6 +292,14 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
     }
   })
 
+  let [latestActiveOption, setLatestActiveOption] = useState<TType | null>(null)
+
+  useEffect(() => {
+    if (activeOptionIndex !== null) {
+      setLatestActiveOption(options[activeOptionIndex].dataRef.current.value as TType)
+    }
+  }, [activeOptionIndex])
+
   let slot = useMemo<ComboboxRenderPropArg<TType>>(
     () => ({
       open: comboboxState === ComboboxStates.Open,
@@ -298,8 +309,9 @@ export function Combobox<TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
         activeOptionIndex === null
           ? null
           : (options[activeOptionIndex].dataRef.current.value as TType),
+      latestActiveOption: latestActiveOption as TType,
     }),
-    [comboboxState, disabled, options, activeOptionIndex]
+    [comboboxState, disabled, options, activeOptionIndex, latestActiveOption]
   )
 
   let syncInputValue = useCallback(() => {
