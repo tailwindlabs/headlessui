@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve typeahead search logic ([#1051](https://github.com/tailwindlabs/headlessui/pull/1051))
 - Improve overal codebase, use modern tech like `esbuild` and TypeScript 4! ([#1055](https://github.com/tailwindlabs/headlessui/pull/1055))
 - Improve build files ([#1078](https://github.com/tailwindlabs/headlessui/pull/1078))
+- Ensure typeahead stays on same item if it still matches ([#1098](https://github.com/tailwindlabs/headlessui/pull/1098))
 
 ### Added
 
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve typeahead search logic ([#1051](https://github.com/tailwindlabs/headlessui/pull/1051))
 - Improve overal codebase, use modern tech like `esbuild` and TypeScript 4! ([#1055](https://github.com/tailwindlabs/headlessui/pull/1055))
 - Improve build files ([#1078](https://github.com/tailwindlabs/headlessui/pull/1078))
+- Ensure typeahead stays on same item if it still matches ([#1098](https://github.com/tailwindlabs/headlessui/pull/1098))
 
 ### Added
 
