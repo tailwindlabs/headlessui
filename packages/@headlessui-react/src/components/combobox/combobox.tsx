@@ -480,7 +480,9 @@ let Input = forwardRefWithAs(function Input<
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!state.optionsPropsRef.current.static) {
+            event.stopPropagation()
+          }
           return dispatch({ type: ActionTypes.CloseCombobox })
 
         case Keys.Tab:
@@ -605,7 +607,9 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!state.optionsPropsRef.current.static) {
+            event.stopPropagation()
+          }
           dispatch({ type: ActionTypes.CloseCombobox })
           return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
       }

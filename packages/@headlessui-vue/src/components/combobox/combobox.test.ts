@@ -1513,6 +1513,74 @@ describe('Keyboard interactions', () => {
           assertActiveElement(getComboboxInput())
         })
       )
+
+      it(
+        'Static options should allow escape to bubble',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value">
+                <ComboboxInput />
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions static>
+                  <ComboboxOption value="a">Option A</ComboboxOption>
+                  <ComboboxOption value="b">Option B</ComboboxOption>
+                  <ComboboxOption value="c">Option C</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => ({ value: ref(null) }),
+          })
+
+          let spy = jest.fn()
+
+          window.addEventListener(
+            'keydown',
+            (evt) => {
+              if (evt.key === 'Escape') {
+                spy()
+              }
+            },
+            { capture: true }
+          )
+
+          window.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Escape') {
+              spy()
+            }
+          })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Re-focus the button
+          getComboboxButton()?.focus()
+          assertActiveElement(getComboboxButton())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // TODO: Verify it is rendered — with static it's not visible or invisible from an assert perspective
+          // assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          // assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Verify the input is focused again
+          assertActiveElement(getComboboxInput())
+
+          // The external event handler should've been called twice
+          // Once in the capture phase and once in the bubble phase
+          expect(spy).toHaveBeenCalledTimes(2)
+        })
+      )
     })
 
     describe('`ArrowDown` key', () => {

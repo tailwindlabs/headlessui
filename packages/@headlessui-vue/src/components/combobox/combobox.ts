@@ -363,7 +363,9 @@ export let ComboboxButton = defineComponent({
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!api.optionsPropsRef.value.static) {
+            event.stopPropagation()
+          }
           api.closeCombobox()
           nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
           return
@@ -481,7 +483,9 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!api.optionsPropsRef.value.static) {
+            event.stopPropagation()
+          }
           api.closeCombobox()
           break
 
