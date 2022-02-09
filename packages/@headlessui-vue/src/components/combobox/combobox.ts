@@ -37,6 +37,7 @@ type StateDefinition = {
   // State
   comboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
+  hold: ComputedRef<Boolean>
 
   inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
   optionsPropsRef: Ref<{ static: boolean }>
@@ -84,6 +85,7 @@ export let Combobox = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
+    hold: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
@@ -100,10 +102,12 @@ export let Combobox = defineComponent({
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
     let value = computed(() => props.modelValue)
+    let hold = computed(() => props.hold)
 
     let api = {
       comboboxState,
       value,
+      hold,
       inputRef,
       labelRef,
       buttonRef,
@@ -238,21 +242,10 @@ export let Combobox = defineComponent({
       )
     )
 
-    let latestActiveOption = ref(null)
     let activeOption = computed(() =>
       activeOptionIndex.value === null
         ? null
         : (options.value[activeOptionIndex.value].dataRef.value as any)
-    )
-
-    watch(
-      activeOptionIndex,
-      (activeOptionIndex) => {
-        if (activeOptionIndex !== null) {
-          latestActiveOption.value = options.value[activeOptionIndex].dataRef.value as any
-        }
-      },
-      { flush: 'sync' }
     )
 
     return () => {
@@ -261,11 +254,10 @@ export let Combobox = defineComponent({
         disabled: props.disabled,
         activeIndex: activeOptionIndex.value,
         activeOption: activeOption.value,
-        latestActiveOption: latestActiveOption.value,
       }
 
       return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled']),
+        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'hold']),
         slot,
         slots,
         attrs,
@@ -668,6 +660,7 @@ export let ComboboxOption = defineComponent({
     function handleLeave() {
       if (props.disabled) return
       if (!active.value) return
+      if (api.hold.value) return
       api.goToOption(Focus.Nothing)
     }
 

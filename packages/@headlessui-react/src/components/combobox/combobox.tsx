@@ -4,7 +4,6 @@ import React, {
   createRef,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -54,6 +53,7 @@ interface StateDefinition {
   comboboxPropsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
+    hold: boolean
   }>
   inputPropsRef: MutableRefObject<{
     displayValue?(item: unknown): string
@@ -220,23 +220,27 @@ interface ComboboxRenderPropArg<T> {
   disabled: boolean
   activeIndex: number | null
   activeOption: T | null
-  latestActiveOption: T | null
 }
 
 let ComboboxRoot = forwardRefWithAs(function Combobox<
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   TType = string
 >(
-  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled'> & {
+  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled' | 'hold'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
+    hold?: boolean
   },
   ref: Ref<TTag>
 ) {
-  let { value, onChange, disabled = false, ...passThroughProps } = props
+  let { value, onChange, disabled = false, hold = false, ...passThroughProps } = props
 
-  let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({ value, onChange })
+  let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
+    value,
+    onChange,
+    hold,
+  })
   let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({ static: false })
   let inputPropsRef = useRef<StateDefinition['inputPropsRef']['current']>({
     displayValue: undefined,
@@ -264,6 +268,9 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   useIsoMorphicEffect(() => {
     comboboxPropsRef.current.onChange = onChange
   }, [onChange, comboboxPropsRef])
+  useIsoMorphicEffect(() => {
+    comboboxPropsRef.current.hold = hold
+  }, [hold, comboboxPropsRef])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
@@ -280,14 +287,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     dispatch({ type: ActionTypes.CloseCombobox })
   })
 
-  let latestActiveOption = useRef<TType | null>(null)
-
-  useEffect(() => {
-    if (activeOptionIndex !== null) {
-      latestActiveOption.current = options[activeOptionIndex].dataRef.current.value as TType
-    }
-  }, [activeOptionIndex])
-
   let activeOption =
     activeOptionIndex === null ? null : (options[activeOptionIndex].dataRef.current.value as TType)
 
@@ -297,9 +296,8 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       disabled,
       activeIndex: activeOptionIndex,
       activeOption: activeOption,
-      latestActiveOption: activeOption ?? (latestActiveOption.current as TType),
     }),
-    [comboboxState, disabled, options, activeOptionIndex, latestActiveOption]
+    [comboboxState, disabled, options, activeOptionIndex]
   )
 
   let syncInputValue = useCallback(() => {
@@ -874,8 +872,9 @@ function Option<
   let handleLeave = useCallback(() => {
     if (disabled) return
     if (!active) return
+    if (state.comboboxPropsRef.current.hold) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-  }, [disabled, active, dispatch, state.comboboxState])
+  }, [disabled, active, dispatch, state.comboboxState, state.comboboxPropsRef])
 
   let slot = useMemo<OptionRenderPropArg>(
     () => ({ active, selected, disabled }),

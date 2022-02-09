@@ -4384,15 +4384,14 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'Combobox preserves the latest known active option after an option becomes inactive',
+    'should be possible to hold the last active option',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value" v-slot="{ open, latestActiveOption }">
+          <Combobox v-model="value" hold>
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
-            <div id="latestActiveOption">{{ latestActiveOption }}</div>
-            <ComboboxOptions v-show="open">
+            <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
               <ComboboxOption value="b">Option B</ComboboxOption>
               <ComboboxOption value="c">Option C</ComboboxOption>
@@ -4423,24 +4422,19 @@ describe('Mouse interactions', () => {
 
       // Verify that the first combobox option is active
       assertActiveComboboxOption(options[0])
-      expect(document.getElementById('latestActiveOption')!.textContent).toBe('a')
 
       // Focus the second item
       await mouseMove(options[1])
 
       // Verify that the second combobox option is active
       assertActiveComboboxOption(options[1])
-      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
 
       // Move the mouse off of the second combobox option
       await mouseLeave(options[1])
       await mouseMove(document.body)
 
-      // Verify that the second combobox option is NOT active
-      assertNoActiveComboboxOption()
-
-      // But the last known active option is still recorded
-      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
+      // Verify that the second combobox option is still active
+      assertActiveComboboxOption(options[1])
     })
   )
 })
