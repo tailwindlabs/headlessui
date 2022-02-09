@@ -3779,6 +3779,36 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should be possible to hover an option and make it active when using `static`',
+    suppressConsoleLogs(async () => {
+      render(
+        <Combobox value="test" onChange={console.log}>
+          <Combobox.Input onChange={NOOP} />
+          <Combobox.Button>Trigger</Combobox.Button>
+          <Combobox.Options static>
+            <Combobox.Option value="alice">alice</Combobox.Option>
+            <Combobox.Option value="bob">bob</Combobox.Option>
+            <Combobox.Option value="charlie">charlie</Combobox.Option>
+          </Combobox.Options>
+        </Combobox>
+      )
+
+      let options = getComboboxOptions()
+      // We should be able to go to the second option
+      await mouseMove(options[1])
+      assertActiveComboboxOption(options[1])
+
+      // We should be able to go to the first option
+      await mouseMove(options[0])
+      assertActiveComboboxOption(options[0])
+
+      // We should be able to go to the last option
+      await mouseMove(options[2])
+      assertActiveComboboxOption(options[2])
+    })
+  )
+
+  it(
     'should make a combobox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       render(

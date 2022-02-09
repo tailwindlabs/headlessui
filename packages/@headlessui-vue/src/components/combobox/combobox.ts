@@ -38,11 +38,13 @@ type StateDefinition = {
   comboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
 
+  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
+  optionsPropsRef: Ref<{ static: boolean }>
+
   labelRef: Ref<HTMLLabelElement | null>
   inputRef: Ref<HTMLInputElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
   optionsRef: Ref<HTMLDivElement | null>
-  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
 
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComboboxOptionDataRef }[]>
@@ -92,6 +94,9 @@ export let Combobox = defineComponent({
     let optionsRef = ref<StateDefinition['optionsRef']['value']>(
       null
     ) as StateDefinition['optionsRef']
+    let optionsPropsRef = ref<StateDefinition['optionsPropsRef']['value']>({
+      static: false,
+    }) as StateDefinition['optionsPropsRef']
     let options = ref<StateDefinition['options']['value']>([])
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
@@ -107,7 +112,8 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       activeOptionIndex,
-      inputPropsRef: ref<{ displayValue?: (item: unknown) => string }>({ displayValue: undefined }),
+      inputPropsRef: ref<StateDefinition['inputPropsRef']['value']>({ displayValue: undefined }),
+      optionsPropsRef,
       closeCombobox() {
         if (props.disabled) return
         if (comboboxState.value === ComboboxStates.Closed) return
@@ -121,7 +127,7 @@ export let Combobox = defineComponent({
       },
       goToOption(focus: Focus, id?: string) {
         if (props.disabled) return
-        if (comboboxState.value === ComboboxStates.Closed) return
+        if (!optionsPropsRef.value.static && comboboxState.value === ComboboxStates.Closed) return
 
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
@@ -545,7 +551,9 @@ export let ComboboxOptions = defineComponent({
   setup(props, { attrs, slots }) {
     let api = useComboboxContext('ComboboxOptions')
     let id = `headlessui-combobox-options-${useId()}`
-
+    watchEffect(() => {
+      api.optionsPropsRef.value.static = props.static ?? false
+    })
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
