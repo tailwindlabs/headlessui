@@ -718,7 +718,7 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLUListElement>
 ) {
-  let [state, dispatch] = useComboboxContext('Combobox.Options')
+  let [state] = useComboboxContext('Combobox.Options')
   let { optionsPropsRef } = state
 
   let optionsRef = useSyncRefs(state.optionsRef, ref)
@@ -756,12 +756,6 @@ let Options = forwardRefWithAs(function Options<
     [state.labelRef.current, state.buttonRef.current]
   )
 
-  let handleLeave = useCallback(() => {
-    if (state.comboboxState !== ComboboxStates.Open) return
-    if (state.activeOptionIndex === null) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-  }, [state, dispatch])
-
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: state.comboboxState === ComboboxStates.Open }),
     [state]
@@ -773,8 +767,6 @@ let Options = forwardRefWithAs(function Options<
     role: 'listbox',
     id,
     ref: optionsRef,
-    onPointerLeave: handleLeave,
-    onMouseLeave: handleLeave,
   }
   let passthroughProps = props
 
