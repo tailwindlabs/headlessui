@@ -83,7 +83,6 @@ export let Combobox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
-    horizontal: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
   },
   setup(props, { slots, attrs, emit }) {
@@ -266,7 +265,7 @@ export let Combobox = defineComponent({
       }
 
       return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
+        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled']),
         slot,
         slots,
         attrs,
