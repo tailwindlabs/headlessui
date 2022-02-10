@@ -1513,6 +1513,74 @@ describe('Keyboard interactions', () => {
           assertActiveElement(getComboboxInput())
         })
       )
+
+      it(
+        'Static options should allow escape to bubble',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value">
+                <ComboboxInput />
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions static>
+                  <ComboboxOption value="a">Option A</ComboboxOption>
+                  <ComboboxOption value="b">Option B</ComboboxOption>
+                  <ComboboxOption value="c">Option C</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => ({ value: ref(null) }),
+          })
+
+          let spy = jest.fn()
+
+          window.addEventListener(
+            'keydown',
+            (evt) => {
+              if (evt.key === 'Escape') {
+                spy()
+              }
+            },
+            { capture: true }
+          )
+
+          window.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Escape') {
+              spy()
+            }
+          })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify it is visible
+          assertComboboxButton({ state: ComboboxState.Visible })
+          assertComboboxList({
+            state: ComboboxState.Visible,
+            attributes: { id: 'headlessui-combobox-options-3' },
+          })
+          assertActiveElement(getComboboxInput())
+          assertComboboxButtonLinkedWithCombobox()
+
+          // Re-focus the button
+          getComboboxButton()?.focus()
+          assertActiveElement(getComboboxButton())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // TODO: Verify it is rendered — with static it's not visible or invisible from an assert perspective
+          // assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          // assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Verify the input is focused again
+          assertActiveElement(getComboboxInput())
+
+          // The external event handler should've been called twice
+          // Once in the capture phase and once in the bubble phase
+          expect(spy).toHaveBeenCalledTimes(2)
+        })
+      )
     })
 
     describe('`ArrowDown` key', () => {
@@ -3993,6 +4061,39 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should be possible to hover an option and make it active when using `static`',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions static>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      let options = getComboboxOptions()
+      // We should be able to go to the second option
+      await mouseMove(options[1])
+      assertActiveComboboxOption(options[1])
+
+      // We should be able to go to the first option
+      await mouseMove(options[0])
+      assertActiveComboboxOption(options[0])
+
+      // We should be able to go to the last option
+      await mouseMove(options[2])
+      assertActiveComboboxOption(options[2])
+    })
+  )
+
+  it(
     'should make a combobox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       renderTemplate({
@@ -4351,15 +4452,14 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'Combobox preserves the latest known active option after an option becomes inactive',
+    'should be possible to hold the last active option',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value" v-slot="{ open, latestActiveOption }">
+          <Combobox v-model="value" hold>
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
-            <div id="latestActiveOption">{{ latestActiveOption }}</div>
-            <ComboboxOptions v-show="open">
+            <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
               <ComboboxOption value="b">Option B</ComboboxOption>
               <ComboboxOption value="c">Option C</ComboboxOption>
@@ -4390,24 +4490,19 @@ describe('Mouse interactions', () => {
 
       // Verify that the first combobox option is active
       assertActiveComboboxOption(options[0])
-      expect(document.getElementById('latestActiveOption')!.textContent).toBe('a')
 
       // Focus the second item
       await mouseMove(options[1])
 
       // Verify that the second combobox option is active
       assertActiveComboboxOption(options[1])
-      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
 
       // Move the mouse off of the second combobox option
       await mouseLeave(options[1])
       await mouseMove(document.body)
 
-      // Verify that the second combobox option is NOT active
-      assertNoActiveComboboxOption()
-
-      // But the last known active option is still recorded
-      expect(document.getElementById('latestActiveOption')!.textContent).toBe('b')
+      // Verify that the second combobox option is still active
+      assertActiveComboboxOption(options[1])
     })
   )
 })

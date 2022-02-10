@@ -16,7 +16,6 @@ import React, {
   MutableRefObject,
   Ref,
   ContextType,
-  useEffect,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'
@@ -51,12 +50,16 @@ type ComboboxOptionDataRef = MutableRefObject<{
 interface StateDefinition {
   comboboxState: ComboboxStates
 
-  propsRef: MutableRefObject<{
+  comboboxPropsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
+    hold: boolean
   }>
   inputPropsRef: MutableRefObject<{
     displayValue?(item: unknown): string
+  }>
+  optionsPropsRef: MutableRefObject<{
+    static: boolean
   }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
   inputRef: MutableRefObject<HTMLInputElement | null>
@@ -111,7 +114,8 @@ let reducers: {
   },
   [ActionTypes.GoToOption](state, action) {
     if (state.disabled) return state
-    if (state.comboboxState === ComboboxStates.Closed) return state
+    if (!state.optionsPropsRef.current.static && state.comboboxState === ComboboxStates.Closed)
+      return state
 
     let activeOptionIndex = calculateActiveIndex(action, {
       resolveItems: () => state.options,
@@ -216,35 +220,37 @@ interface ComboboxRenderPropArg<T> {
   disabled: boolean
   activeIndex: number | null
   activeOption: T | null
-  latestActiveOption: T | null
 }
 
 let ComboboxRoot = forwardRefWithAs(function Combobox<
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   TType = string
 >(
-  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled'> & {
+  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled' | 'hold'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
+    hold?: boolean
   },
   ref: Ref<TTag>
 ) {
-  let { value, onChange, disabled = false, ...passThroughProps } = props
+  let { value, onChange, disabled = false, hold = false, ...passThroughProps } = props
+
+  let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
+    value,
+    onChange,
+    hold,
+  })
+  let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({ static: false })
+  let inputPropsRef = useRef<StateDefinition['inputPropsRef']['current']>({
+    displayValue: undefined,
+  })
 
   let reducerBag = useReducer(stateReducer, {
     comboboxState: ComboboxStates.Closed,
-    propsRef: {
-      current: {
-        value,
-        onChange,
-      },
-    },
-    inputPropsRef: {
-      current: {
-        displayValue: undefined,
-      },
-    },
+    comboboxPropsRef,
+    optionsPropsRef,
+    inputPropsRef,
     labelRef: createRef(),
     inputRef: createRef(),
     buttonRef: createRef(),
@@ -253,26 +259,18 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     options: [],
     activeOptionIndex: null,
   } as StateDefinition)
-  let [
-    {
-      comboboxState,
-      options,
-      activeOptionIndex,
-      propsRef,
-      inputPropsRef,
-      optionsRef,
-      inputRef,
-      buttonRef,
-    },
-    dispatch,
-  ] = reducerBag
+  let [{ comboboxState, options, activeOptionIndex, optionsRef, inputRef, buttonRef }, dispatch] =
+    reducerBag
 
   useIsoMorphicEffect(() => {
-    propsRef.current.value = value
-  }, [value, propsRef])
+    comboboxPropsRef.current.value = value
+  }, [value, comboboxPropsRef])
   useIsoMorphicEffect(() => {
-    propsRef.current.onChange = onChange
-  }, [onChange, propsRef])
+    comboboxPropsRef.current.onChange = onChange
+  }, [onChange, comboboxPropsRef])
+  useIsoMorphicEffect(() => {
+    comboboxPropsRef.current.hold = hold
+  }, [hold, comboboxPropsRef])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
@@ -289,14 +287,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     dispatch({ type: ActionTypes.CloseCombobox })
   })
 
-  let latestActiveOption = useRef<TType | null>(null)
-
-  useEffect(() => {
-    if (activeOptionIndex !== null) {
-      latestActiveOption.current = options[activeOptionIndex].dataRef.current.value as TType
-    }
-  }, [activeOptionIndex])
-
   let activeOption =
     activeOptionIndex === null ? null : (options[activeOptionIndex].dataRef.current.value as TType)
 
@@ -306,9 +296,8 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       disabled,
       activeIndex: activeOptionIndex,
       activeOption: activeOption,
-      latestActiveOption: activeOption ?? (latestActiveOption.current as TType),
     }),
-    [comboboxState, disabled, options, activeOptionIndex, latestActiveOption]
+    [comboboxState, disabled, options, activeOptionIndex]
   )
 
   let syncInputValue = useCallback(() => {
@@ -329,19 +318,19 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       if (!option) return
 
       let { dataRef } = option
-      propsRef.current.onChange(dataRef.current.value)
+      comboboxPropsRef.current.onChange(dataRef.current.value)
       syncInputValue()
     },
-    [options, propsRef, inputRef]
+    [options, comboboxPropsRef, inputRef]
   )
 
   let selectActiveOption = useCallback(() => {
     if (activeOptionIndex !== null) {
       let { dataRef } = options[activeOptionIndex]
-      propsRef.current.onChange(dataRef.current.value)
+      comboboxPropsRef.current.onChange(dataRef.current.value)
       syncInputValue()
     }
-  }, [activeOptionIndex, options, propsRef, inputRef])
+  }, [activeOptionIndex, options, comboboxPropsRef, inputRef])
 
   let actionsBag = useMemo<ContextType<typeof ComboboxActions>>(
     () => ({ selectOption, selectActiveOption }),
@@ -349,9 +338,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   )
 
   useIsoMorphicEffect(() => {
-    if (comboboxState !== ComboboxStates.Closed) {
-      return
-    }
+    if (comboboxState !== ComboboxStates.Closed) return
     syncInputValue()
   }, [syncInputValue, comboboxState])
 
@@ -368,13 +355,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
           })}
         >
           {render({
-            props:
-              ref === null
-                ? passThroughProps
-                : {
-                    ...passThroughProps,
-                    ref,
-                  },
+            props: ref === null ? passThroughProps : { ...passThroughProps, ref },
             slot,
             defaultTag: DEFAULT_COMBOBOX_TAG,
             name: 'Combobox',
@@ -461,7 +442,7 @@ let Input = forwardRefWithAs(function Input<
 
               // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
               d.nextFrame(() => {
-                if (!state.propsRef.current.value) {
+                if (!state.comboboxPropsRef.current.value) {
                   dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
                 }
               })
@@ -478,7 +459,7 @@ let Input = forwardRefWithAs(function Input<
             [ComboboxStates.Closed]: () => {
               dispatch({ type: ActionTypes.OpenCombobox })
               d.nextFrame(() => {
-                if (!state.propsRef.current.value) {
+                if (!state.comboboxPropsRef.current.value) {
                   dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
                 }
               })
@@ -499,7 +480,9 @@ let Input = forwardRefWithAs(function Input<
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!state.optionsPropsRef.current.static) {
+            event.stopPropagation()
+          }
           return dispatch({ type: ActionTypes.CloseCombobox })
 
         case Keys.Tab:
@@ -602,7 +585,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 
             // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
             d.nextFrame(() => {
-              if (!state.propsRef.current.value) {
+              if (!state.comboboxPropsRef.current.value) {
                 dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
               }
             })
@@ -615,7 +598,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           if (state.comboboxState === ComboboxStates.Closed) {
             dispatch({ type: ActionTypes.OpenCombobox })
             d.nextFrame(() => {
-              if (!state.propsRef.current.value) {
+              if (!state.comboboxPropsRef.current.value) {
                 dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
               }
             })
@@ -624,7 +607,9 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!state.optionsPropsRef.current.static) {
+            event.stopPropagation()
+          }
           dispatch({ type: ActionTypes.CloseCombobox })
           return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
       }
@@ -735,7 +720,9 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLUListElement>
 ) {
-  let [state, dispatch] = useComboboxContext('Combobox.Options')
+  let [state] = useComboboxContext('Combobox.Options')
+  let { optionsPropsRef } = state
+
   let optionsRef = useSyncRefs(state.optionsRef, ref)
 
   let id = `headlessui-combobox-options-${useId()}`
@@ -748,6 +735,10 @@ let Options = forwardRefWithAs(function Options<
 
     return state.comboboxState === ComboboxStates.Open
   })()
+
+  useIsoMorphicEffect(() => {
+    optionsPropsRef.current.static = props.static ?? false
+  }, [optionsPropsRef, props.static])
 
   useTreeWalker({
     container: state.optionsRef.current,
@@ -767,12 +758,6 @@ let Options = forwardRefWithAs(function Options<
     [state.labelRef.current, state.buttonRef.current]
   )
 
-  let handleLeave = useCallback(() => {
-    if (state.comboboxState !== ComboboxStates.Open) return
-    if (state.activeOptionIndex === null) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-  }, [state, dispatch])
-
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: state.comboboxState === ComboboxStates.Open }),
     [state]
@@ -784,8 +769,6 @@ let Options = forwardRefWithAs(function Options<
     role: 'listbox',
     id,
     ref: optionsRef,
-    onPointerLeave: handleLeave,
-    onMouseLeave: handleLeave,
   }
   let passthroughProps = props
 
@@ -835,7 +818,7 @@ function Option<
   let id = `headlessui-combobox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
-  let selected = state.propsRef.current.value === value
+  let selected = state.comboboxPropsRef.current.value === value
   let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value })
 
   useIsoMorphicEffect(() => {
@@ -859,7 +842,7 @@ function Option<
     if (state.comboboxState !== ComboboxStates.Open) return
     if (!selected) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-  }, [state.comboboxState])
+  }, [state.comboboxState, selected, id])
 
   useIsoMorphicEffect(() => {
     if (state.comboboxState !== ComboboxStates.Open) return
@@ -893,8 +876,9 @@ function Option<
   let handleLeave = useCallback(() => {
     if (disabled) return
     if (!active) return
+    if (state.comboboxPropsRef.current.hold) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-  }, [disabled, active, dispatch])
+  }, [disabled, active, dispatch, state.comboboxState, state.comboboxPropsRef])
 
   let slot = useMemo<OptionRenderPropArg>(
     () => ({ active, selected, disabled }),

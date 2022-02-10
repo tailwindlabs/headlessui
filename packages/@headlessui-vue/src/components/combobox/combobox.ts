@@ -37,12 +37,15 @@ type StateDefinition = {
   // State
   comboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
+  hold: ComputedRef<Boolean>
+
+  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
+  optionsPropsRef: Ref<{ static: boolean }>
 
   labelRef: Ref<HTMLLabelElement | null>
   inputRef: Ref<HTMLInputElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
   optionsRef: Ref<HTMLDivElement | null>
-  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
 
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComboboxOptionDataRef }[]>
@@ -81,8 +84,8 @@ export let Combobox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
-    horizontal: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
+    hold: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
@@ -92,14 +95,19 @@ export let Combobox = defineComponent({
     let optionsRef = ref<StateDefinition['optionsRef']['value']>(
       null
     ) as StateDefinition['optionsRef']
+    let optionsPropsRef = ref<StateDefinition['optionsPropsRef']['value']>({
+      static: false,
+    }) as StateDefinition['optionsPropsRef']
     let options = ref<StateDefinition['options']['value']>([])
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
     let value = computed(() => props.modelValue)
+    let hold = computed(() => props.hold)
 
     let api = {
       comboboxState,
       value,
+      hold,
       inputRef,
       labelRef,
       buttonRef,
@@ -107,7 +115,8 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       activeOptionIndex,
-      inputPropsRef: ref<{ displayValue?: (item: unknown) => string }>({ displayValue: undefined }),
+      inputPropsRef: ref<StateDefinition['inputPropsRef']['value']>({ displayValue: undefined }),
+      optionsPropsRef,
       closeCombobox() {
         if (props.disabled) return
         if (comboboxState.value === ComboboxStates.Closed) return
@@ -121,7 +130,7 @@ export let Combobox = defineComponent({
       },
       goToOption(focus: Focus, id?: string) {
         if (props.disabled) return
-        if (comboboxState.value === ComboboxStates.Closed) return
+        if (!optionsPropsRef.value.static && comboboxState.value === ComboboxStates.Closed) return
 
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
@@ -233,21 +242,10 @@ export let Combobox = defineComponent({
       )
     )
 
-    let latestActiveOption = ref(null)
     let activeOption = computed(() =>
       activeOptionIndex.value === null
         ? null
         : (options.value[activeOptionIndex.value].dataRef.value as any)
-    )
-
-    watch(
-      activeOptionIndex,
-      (activeOptionIndex) => {
-        if (activeOptionIndex !== null) {
-          latestActiveOption.value = options.value[activeOptionIndex].dataRef.value as any
-        }
-      },
-      { flush: 'sync' }
     )
 
     return () => {
@@ -256,11 +254,10 @@ export let Combobox = defineComponent({
         disabled: props.disabled,
         activeIndex: activeOptionIndex.value,
         activeOption: activeOption.value,
-        latestActiveOption: latestActiveOption.value,
       }
 
       return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
+        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'hold']),
         slot,
         slots,
         attrs,
@@ -366,7 +363,9 @@ export let ComboboxButton = defineComponent({
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!api.optionsPropsRef.value.static) {
+            event.stopPropagation()
+          }
           api.closeCombobox()
           nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
           return
@@ -484,7 +483,9 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Escape:
           event.preventDefault()
-          event.stopPropagation()
+          if (!api.optionsPropsRef.value.static) {
+            event.stopPropagation()
+          }
           api.closeCombobox()
           break
 
@@ -545,7 +546,9 @@ export let ComboboxOptions = defineComponent({
   setup(props, { attrs, slots }) {
     let api = useComboboxContext('ComboboxOptions')
     let id = `headlessui-combobox-options-${useId()}`
-
+    watchEffect(() => {
+      api.optionsPropsRef.value.static = props.static ?? false
+    })
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
@@ -661,6 +664,7 @@ export let ComboboxOption = defineComponent({
     function handleLeave() {
       if (props.disabled) return
       if (!active.value) return
+      if (api.hold.value) return
       api.goToOption(Focus.Nothing)
     }
 
