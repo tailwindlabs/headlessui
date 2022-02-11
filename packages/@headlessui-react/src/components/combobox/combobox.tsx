@@ -501,7 +501,7 @@ let Input = forwardRefWithAs(function Input<
   let handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       dispatch({ type: ActionTypes.OpenCombobox })
-      onChangeRef.current(event)
+      onChangeRef.current?.(event)
     },
     [dispatch, onChangeRef]
   )
