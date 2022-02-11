@@ -130,7 +130,12 @@ export let Combobox = defineComponent({
       },
       goToOption(focus: Focus, id?: string) {
         if (props.disabled) return
-        if (!optionsPropsRef.value.static && comboboxState.value === ComboboxStates.Closed) return
+        if (
+          optionsRef.value &&
+          !optionsPropsRef.value.static &&
+          comboboxState.value === ComboboxStates.Closed
+        )
+          return
 
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
@@ -363,7 +368,7 @@ export let ComboboxButton = defineComponent({
 
         case Keys.Escape:
           event.preventDefault()
-          if (!api.optionsPropsRef.value.static) {
+          if (api.optionsRef.value && !api.optionsPropsRef.value.static) {
             event.stopPropagation()
           }
           api.closeCombobox()
@@ -483,7 +488,7 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Escape:
           event.preventDefault()
-          if (!api.optionsPropsRef.value.static) {
+          if (api.optionsRef.value && !api.optionsPropsRef.value.static) {
             event.stopPropagation()
           }
           api.closeCombobox()
