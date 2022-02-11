@@ -1387,71 +1387,6 @@ describe('Keyboard interactions', () => {
           assertActiveElement(getComboboxInput())
         })
       )
-
-      it(
-        'Static options should allow escape to bubble',
-        suppressConsoleLogs(async () => {
-          render(
-            <Combobox value="test" onChange={console.log}>
-              <Combobox.Input onChange={NOOP} />
-              <Combobox.Button>Trigger</Combobox.Button>
-              <Combobox.Options static>
-                <Combobox.Option value="a">Option A</Combobox.Option>
-                <Combobox.Option value="b">Option B</Combobox.Option>
-                <Combobox.Option value="c">Option C</Combobox.Option>
-              </Combobox.Options>
-            </Combobox>
-          )
-
-          let spy = jest.fn()
-
-          window.addEventListener(
-            'keydown',
-            (evt) => {
-              if (evt.key === 'Escape') {
-                spy()
-              }
-            },
-            { capture: true }
-          )
-
-          window.addEventListener('keydown', (evt) => {
-            if (evt.key === 'Escape') {
-              spy()
-            }
-          })
-
-          // Open combobox
-          await click(getComboboxButton())
-
-          // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
-            state: ComboboxState.Visible,
-            attributes: { id: 'headlessui-combobox-options-3' },
-          })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
-
-          // Re-focus the button
-          getComboboxButton()?.focus()
-          assertActiveElement(getComboboxButton())
-
-          // Close combobox
-          await press(Keys.Escape)
-
-          // TODO: Verify it is rendered — with static it's not visible or invisible from an assert perspective
-          // assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-          // assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-
-          // Verify the input is focused again
-          assertActiveElement(getComboboxInput())
-
-          // The external event handler should've been called twice
-          // Once in the capture phase and once in the bubble phase
-          expect(spy).toHaveBeenCalledTimes(2)
-        })
-      )
     })
 
     describe('`ArrowDown` key', () => {
@@ -2019,6 +1954,103 @@ describe('Keyboard interactions', () => {
 
           // Verify the button is focused again
           assertActiveElement(getComboboxInput())
+        })
+      )
+
+      it(
+        'should bubble escape when using `static` on Combobox.Options',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options static>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          let spy = jest.fn()
+
+          window.addEventListener(
+            'keydown',
+            (evt) => {
+              if (evt.key === 'Escape') {
+                spy()
+              }
+            },
+            { capture: true }
+          )
+
+          window.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Escape') {
+              spy()
+            }
+          })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify the input is focused
+          assertActiveElement(getComboboxInput())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // Verify the input is still focused
+          assertActiveElement(getComboboxInput())
+
+          // The external event handler should've been called twice
+          // Once in the capture phase and once in the bubble phase
+          expect(spy).toHaveBeenCalledTimes(2)
+        })
+      )
+
+      it(
+        'should bubble escape when not using Combobox.Options at all',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="test" onChange={console.log}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+            </Combobox>
+          )
+
+          let spy = jest.fn()
+
+          window.addEventListener(
+            'keydown',
+            (evt) => {
+              if (evt.key === 'Escape') {
+                spy()
+              }
+            },
+            { capture: true }
+          )
+
+          window.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Escape') {
+              spy()
+            }
+          })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify the input is focused
+          assertActiveElement(getComboboxInput())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // Verify the input is still focused
+          assertActiveElement(getComboboxInput())
+
+          // The external event handler should've been called twice
+          // Once in the capture phase and once in the bubble phase
+          expect(spy).toHaveBeenCalledTimes(2)
         })
       )
     })

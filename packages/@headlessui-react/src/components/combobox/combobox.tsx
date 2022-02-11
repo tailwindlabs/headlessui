@@ -114,7 +114,11 @@ let reducers: {
   },
   [ActionTypes.GoToOption](state, action) {
     if (state.disabled) return state
-    if (!state.optionsPropsRef.current.static && state.comboboxState === ComboboxStates.Closed)
+    if (
+      state.optionsRef.current &&
+      !state.optionsPropsRef.current.static &&
+      state.comboboxState === ComboboxStates.Closed
+    )
       return state
 
     let activeOptionIndex = calculateActiveIndex(action, {
@@ -480,7 +484,7 @@ let Input = forwardRefWithAs(function Input<
 
         case Keys.Escape:
           event.preventDefault()
-          if (!state.optionsPropsRef.current.static) {
+          if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
             event.stopPropagation()
           }
           return dispatch({ type: ActionTypes.CloseCombobox })
@@ -607,7 +611,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 
         case Keys.Escape:
           event.preventDefault()
-          if (!state.optionsPropsRef.current.static) {
+          if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
             event.stopPropagation()
           }
           dispatch({ type: ActionTypes.CloseCombobox })
