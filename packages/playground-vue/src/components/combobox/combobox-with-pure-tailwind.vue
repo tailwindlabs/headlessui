@@ -10,38 +10,17 @@ import {
 } from '@headlessui/vue'
 
 let everybody = [
-  'Wade Cooper',
-  'Arlene Mccoy',
-  'Devon Webb',
-  'Tom Cook',
-  'Tanya Fox',
-  'Hellen Schmidt',
-  'Caroline Schultz',
-  'Mason Heaney',
-  'Claudie Smitham',
-  'Emil Schaefer',
+  { id: 1, name: 'Wade Cooper' },
+  { id: 2, name: 'Arlene Mccoy' },
+  { id: 3, name: 'Devon Webb' },
+  { id: 4, name: 'Tom Cook' },
+  { id: 5, name: 'Tanya Fox' },
+  { id: 6, name: 'Hellen Schmidt' },
+  { id: 7, name: 'Caroline Schultz' },
+  { id: 8, name: 'Mason Heaney' },
+  { id: 9, name: 'Claudie Smitham' },
+  { id: 10, name: 'Emil Schaefer' },
 ]
-
-/**
- * @template T
- * @param {Ref<T>} value
- * @param {number} delay
- */
-function useDebounce(value, delay) {
-  let debouncedValue = ref(value.value)
-  let timer
-
-  return computed({
-    get() {
-      return debouncedValue.value
-    },
-
-    set(newValue) {
-      timer && clearTimeout(timer)
-      timer = setTimeout(() => (debouncedValue.value = newValue), delay)
-    },
-  })
-}
 
 export default defineComponent({
   components: {
@@ -54,27 +33,30 @@ export default defineComponent({
   },
   setup() {
     let query = ref('')
-    let activePerson = ref(everybody[2])
-
-    // Mimic delayed response from an API
-    let actualQuery = useDebounce(
-      query,
-      0 /* Change to higher value like 100 for testing purposes */
-    )
+    let activePerson = ref(null) // everybody[Math.floor(Math.random() * everybody.length)]
+    let filteredPeople = computed(() => {
+      return query.value === ''
+        ? everybody
+        : everybody.filter((person) => {
+            return person.name.toLowerCase().includes(query.value.toLowerCase())
+          })
+    })
 
     return {
       query,
       activePerson,
-      everybody,
-      actualQuery,
+      filteredPeople,
     }
   },
 })
 </script>
+
 <template>
   <div class="flex h-full w-screen justify-center bg-gray-50 p-12">
     <div class="mx-auto w-full max-w-xs">
-      <div class="py-8 font-mono text-xs">Selected person: {{ activePerson }}</div>
+      <div class="py-8 font-mono text-xs">
+        Selected person: {{ activePerson?.name ?? 'Nobody yet' }}
+      </div>
       <div class="space-y-1">
         <Combobox v-model="activePerson" as="div">
           <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
@@ -85,6 +67,7 @@ export default defineComponent({
             <span class="relative inline-flex flex-row overflow-hidden rounded-md border shadow-sm">
               <ComboboxInput
                 @change="query = $event.target.value"
+                :displayValue="(person) => person?.name ?? ''"
                 class="border-none px-3 py-1 outline-none"
               />
               <ComboboxButton
@@ -113,9 +96,9 @@ export default defineComponent({
                 class="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
               >
                 <ComboboxOption
-                  v-for="name in everybody"
-                  :key="name"
-                  :value="name"
+                  v-for="person in filteredPeople"
+                  :key="person.id"
+                  :value="person"
                   v-slot="{ active, selected }"
                 >
                   <div
@@ -125,7 +108,7 @@ export default defineComponent({
                     ]"
                   >
                     <span :class="['block truncate', selected ? 'font-semibold' : 'font-normal']">
-                      {{ name }}
+                      {{ person.name }}
                     </span>
                     <span
                       v-if="selected"

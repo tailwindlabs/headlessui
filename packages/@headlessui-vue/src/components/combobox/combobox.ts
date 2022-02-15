@@ -1,19 +1,19 @@
 import {
+  computed,
   defineComponent,
-  ref,
-  provide,
   inject,
+  nextTick,
   onMounted,
   onUnmounted,
-  computed,
-  nextTick,
-  InjectionKey,
-  Ref,
-  ComputedRef,
-  watchEffect,
+  provide,
+  ref,
   toRaw,
   watch,
+  watchEffect,
+  ComputedRef,
+  InjectionKey,
   PropType,
+  Ref,
 } from 'vue'
 
 import { Features, render, omit } from '../../utils/render'
@@ -232,9 +232,7 @@ export let Combobox = defineComponent({
       api.closeCombobox()
     })
 
-    watchEffect(() => {
-      api.syncInputValue()
-    })
+    watch([api.value, api.inputRef], () => api.syncInputValue(), { immediate: true })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
@@ -525,7 +523,7 @@ export let ComboboxInput = defineComponent({
         tabIndex: 0,
         ref: api.inputRef,
       }
-      let passThroughProps = props
+      let passThroughProps = omit(props, ['displayValue'])
 
       return render({
         props: { ...passThroughProps, ...propsWeControl },
