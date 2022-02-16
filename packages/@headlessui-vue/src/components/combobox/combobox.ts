@@ -37,10 +37,9 @@ type StateDefinition = {
   // State
   comboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
-  hold: ComputedRef<Boolean>
 
   inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
-  optionsPropsRef: Ref<{ static: boolean }>
+  optionsPropsRef: Ref<{ static: boolean; hold: boolean }>
 
   labelRef: Ref<HTMLLabelElement | null>
   inputRef: Ref<HTMLInputElement | null>
@@ -85,7 +84,6 @@ export let Combobox = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
-    hold: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
@@ -97,17 +95,16 @@ export let Combobox = defineComponent({
     ) as StateDefinition['optionsRef']
     let optionsPropsRef = ref<StateDefinition['optionsPropsRef']['value']>({
       static: false,
+      hold: false,
     }) as StateDefinition['optionsPropsRef']
     let options = ref<StateDefinition['options']['value']>([])
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
 
     let value = computed(() => props.modelValue)
-    let hold = computed(() => props.hold)
 
     let api = {
       comboboxState,
       value,
-      hold,
       inputRef,
       labelRef,
       buttonRef,
@@ -260,7 +257,7 @@ export let Combobox = defineComponent({
       }
 
       return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'hold']),
+        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled']),
         slot,
         slots,
         attrs,
@@ -545,12 +542,16 @@ export let ComboboxOptions = defineComponent({
     as: { type: [Object, String], default: 'ul' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
+    hold: { type: [Boolean], default: false },
   },
   setup(props, { attrs, slots }) {
     let api = useComboboxContext('ComboboxOptions')
     let id = `headlessui-combobox-options-${useId()}`
     watchEffect(() => {
-      api.optionsPropsRef.value.static = props.static ?? false
+      api.optionsPropsRef.value.static = props.static
+    })
+    watchEffect(() => {
+      api.optionsPropsRef.value.hold = props.hold
     })
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
@@ -586,7 +587,7 @@ export let ComboboxOptions = defineComponent({
         ref: api.optionsRef,
         role: 'listbox',
       }
-      let passThroughProps = props
+      let passThroughProps = omit(props, ['hold'])
 
       return render({
         props: { ...passThroughProps, ...propsWeControl },
@@ -667,7 +668,7 @@ export let ComboboxOption = defineComponent({
     function handleLeave() {
       if (props.disabled) return
       if (!active.value) return
-      if (api.hold.value) return
+      if (api.optionsPropsRef.value.hold) return
       api.goToOption(Focus.Nothing)
     }
 

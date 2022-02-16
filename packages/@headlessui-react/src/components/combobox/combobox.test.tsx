@@ -4269,10 +4269,10 @@ describe('Mouse interactions', () => {
     'should be possible to hold the last active option',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value="test" onChange={console.log} hold>
+        <Combobox value="test" onChange={console.log}>
           <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
-          <Combobox.Options>
+          <Combobox.Options hold>
             <Combobox.Option value="a">Option A</Combobox.Option>
             <Combobox.Option value="b">Option B</Combobox.Option>
             <Combobox.Option value="c">Option C</Combobox.Option>

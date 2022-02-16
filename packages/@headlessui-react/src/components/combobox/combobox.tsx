@@ -53,13 +53,13 @@ interface StateDefinition {
   comboboxPropsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
-    hold: boolean
   }>
   inputPropsRef: MutableRefObject<{
     displayValue?(item: unknown): string
   }>
   optionsPropsRef: MutableRefObject<{
     static: boolean
+    hold: boolean
   }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
   inputRef: MutableRefObject<HTMLInputElement | null>
@@ -230,22 +230,23 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   TType = string
 >(
-  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled' | 'hold'> & {
+  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
-    hold?: boolean
   },
   ref: Ref<TTag>
 ) {
-  let { value, onChange, disabled = false, hold = false, ...passThroughProps } = props
+  let { value, onChange, disabled = false, ...passThroughProps } = props
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
     onChange,
-    hold,
   })
-  let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({ static: false })
+  let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({
+    static: false,
+    hold: false,
+  })
   let inputPropsRef = useRef<StateDefinition['inputPropsRef']['current']>({
     displayValue: undefined,
   })
@@ -272,9 +273,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   useIsoMorphicEffect(() => {
     comboboxPropsRef.current.onChange = onChange
   }, [onChange, comboboxPropsRef])
-  useIsoMorphicEffect(() => {
-    comboboxPropsRef.current.hold = hold
-  }, [hold, comboboxPropsRef])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
@@ -710,6 +708,7 @@ interface OptionsRenderPropArg {
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
+  | 'hold'
   | 'id'
   | 'onKeyDown'
   | 'role'
@@ -721,9 +720,12 @@ let Options = forwardRefWithAs(function Options<
   TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG
 >(
   props: Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
-    PropsForFeatures<typeof OptionsRenderFeatures>,
+    PropsForFeatures<typeof OptionsRenderFeatures> & {
+      hold?: boolean
+    },
   ref: Ref<HTMLUListElement>
 ) {
+  let { hold = false, ...passthroughProps } = props
   let [state] = useComboboxContext('Combobox.Options')
   let { optionsPropsRef } = state
 
@@ -743,6 +745,9 @@ let Options = forwardRefWithAs(function Options<
   useIsoMorphicEffect(() => {
     optionsPropsRef.current.static = props.static ?? false
   }, [optionsPropsRef, props.static])
+  useIsoMorphicEffect(() => {
+    optionsPropsRef.current.hold = hold
+  }, [hold, optionsPropsRef])
 
   useTreeWalker({
     container: state.optionsRef.current,
@@ -774,7 +779,6 @@ let Options = forwardRefWithAs(function Options<
     id,
     ref: optionsRef,
   }
-  let passthroughProps = props
 
   return render({
     props: { ...passthroughProps, ...propsWeControl },
@@ -880,7 +884,7 @@ function Option<
   let handleLeave = useCallback(() => {
     if (disabled) return
     if (!active) return
-    if (state.comboboxPropsRef.current.hold) return
+    if (state.optionsPropsRef.current.hold) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
   }, [disabled, active, dispatch, state.comboboxState, state.comboboxPropsRef])
 
