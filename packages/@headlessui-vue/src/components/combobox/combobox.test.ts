@@ -4491,10 +4491,10 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value" hold>
+          <Combobox v-model="value">
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
+            <ComboboxOptions hold>
               <ComboboxOption value="a">Option A</ComboboxOption>
               <ComboboxOption value="b">Option B</ComboboxOption>
               <ComboboxOption value="c">Option C</ComboboxOption>
