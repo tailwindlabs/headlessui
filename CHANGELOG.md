@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve overal codebase, use modern tech like `esbuild` and TypeScript 4! ([#1055](https://github.com/tailwindlabs/headlessui/pull/1055))
 - Improve build files ([#1078](https://github.com/tailwindlabs/headlessui/pull/1078))
 - Ensure typeahead stays on same item if it still matches ([#1098](https://github.com/tailwindlabs/headlessui/pull/1098))
+- Fix off-by-one frame issue causing flicker ([#1111](https://github.com/tailwindlabs/headlessui/pull/1111))
 
 ### Added
 
