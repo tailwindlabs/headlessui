@@ -670,7 +670,12 @@ function Option<
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [id, active, state.listboxState])
+  }, [
+    id,
+    active,
+    state.listboxState,
+    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex,
+  ])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {

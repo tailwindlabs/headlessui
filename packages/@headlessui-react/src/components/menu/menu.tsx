@@ -539,7 +539,12 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [id, active, state.menuState])
+  }, [
+    id,
+    active,
+    state.menuState,
+    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex,
+  ])
 
   let bag = useRef<MenuItemDataRef['current']>({ disabled })
 
