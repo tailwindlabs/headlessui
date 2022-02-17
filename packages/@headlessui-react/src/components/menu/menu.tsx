@@ -535,7 +535,9 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     if (state.menuState !== MenuStates.Open) return
     if (!active) return
     let d = disposables()
-    d.nextFrame(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+    d.requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
+    })
     return d.dispose
   }, [id, active, state.menuState])
 

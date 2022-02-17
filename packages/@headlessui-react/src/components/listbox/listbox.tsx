@@ -666,7 +666,9 @@ function Option<
     if (state.listboxState !== ListboxStates.Open) return
     if (!active) return
     let d = disposables()
-    d.nextFrame(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+    d.requestAnimationFrame(() => {
+      document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
+    })
     return d.dispose
   }, [id, active, state.listboxState])
 
