@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve build files ([#1078](https://github.com/tailwindlabs/headlessui/pull/1078))
 - Ensure typeahead stays on same item if it still matches ([#1098](https://github.com/tailwindlabs/headlessui/pull/1098))
 - Fix off-by-one frame issue causing flicker ([#1111](https://github.com/tailwindlabs/headlessui/pull/1111))
+- Trigger scrollIntoView effect when position changes ([#1113](https://github.com/tailwindlabs/headlessui/pull/1113))
 
 ### Added
 
