@@ -110,7 +110,7 @@ PopoverContext.displayName = 'PopoverContext'
 function usePopoverContext(component: string) {
   let context = useContext(PopoverContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Popover.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Popover /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, usePopoverContext)
     throw err
   }
@@ -125,7 +125,7 @@ PopoverAPIContext.displayName = 'PopoverAPIContext'
 function usePopoverAPIContext(component: string) {
   let context = useContext(PopoverAPIContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Popover.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Popover /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, usePopoverAPIContext)
     throw err
   }
@@ -168,11 +168,12 @@ interface PopoverRenderPropArg {
   close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
 }
 
-export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
-  props: Props<TTag, PopoverRenderPropArg>
-) {
+let PopoverRoot = forwardRefWithAs(function Popover<
+  TTag extends ElementType = typeof DEFAULT_POPOVER_TAG
+>(props: Props<TTag, PopoverRenderPropArg>, ref: Ref<HTMLElement>) {
   let buttonId = `headlessui-popover-button-${useId()}`
   let panelId = `headlessui-popover-panel-${useId()}`
+  let popoverRef = useSyncRefs(ref)
 
   let reducerBag = useReducer(stateReducer, {
     popoverState: PopoverStates.Closed,
@@ -267,7 +268,7 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
           })}
         >
           {render({
-            props,
+            props: { ref: popoverRef, ...props },
             slot,
             defaultTag: DEFAULT_POPOVER_TAG,
             name: 'Popover',
@@ -276,7 +277,7 @@ export function Popover<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
       </PopoverAPIContext.Provider>
     </PopoverContext.Provider>
   )
-}
+})
 
 // ---
 
@@ -723,10 +724,12 @@ let DEFAULT_GROUP_TAG = 'div' as const
 interface GroupRenderPropArg {}
 type GroupPropsWeControl = 'id'
 
-function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, GroupRenderPropArg, GroupPropsWeControl>
+let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+  props: Props<TTag, GroupRenderPropArg, GroupPropsWeControl>,
+  ref: Ref<HTMLElement>
 ) {
-  let groupRef = useRef<HTMLElement | null>(null)
+  let internalGroupRef = useRef<HTMLElement | null>(null)
+  let groupRef = useSyncRefs(internalGroupRef, ref)
   let [popovers, setPopovers] = useState<PopoverRegisterBag[]>([])
 
   let unregisterPopover = useCallback(
@@ -755,7 +758,7 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let isFocusWithinPopoverGroup = useCallback(() => {
     let element = document.activeElement as HTMLElement
 
-    if (groupRef.current?.contains(element)) return true
+    if (internalGroupRef.current?.contains(element)) return true
 
     // Check if the focus is in one of the button or panel elements. This is important in case you are rendering inside a Portal.
     return popovers.some((bag) => {
@@ -764,7 +767,7 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
         document.getElementById(bag.panelId)?.contains(element)
       )
     })
-  }, [groupRef, popovers])
+  }, [internalGroupRef, popovers])
 
   let closeOthers = useCallback(
     (buttonId: string) => {
@@ -799,11 +802,8 @@ function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
       })}
     </PopoverGroupContext.Provider>
   )
-}
+})
 
 // ---
 
-Popover.Button = Button
-Popover.Overlay = Overlay
-Popover.Panel = Panel
-Popover.Group = Group
+export let Popover = Object.assign(PopoverRoot, { Button, Overlay, Panel, Group })

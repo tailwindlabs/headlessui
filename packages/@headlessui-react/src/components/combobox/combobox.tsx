@@ -687,11 +687,13 @@ interface LabelRenderPropArg {
 }
 type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 
-function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
+let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
+  ref: Ref<HTMLLabelElement>
 ) {
   let [state] = useComboboxContext('Combobox.Label')
   let id = `headlessui-combobox-label-${useId()}`
+  let labelRef = useSyncRefs(state.labelRef, ref)
 
   let handleClick = useCallback(
     () => state.inputRef.current?.focus({ preventScroll: true }),
@@ -702,14 +704,14 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     () => ({ open: state.comboboxState === ComboboxStates.Open, disabled: state.disabled }),
     [state]
   )
-  let propsWeControl = { ref: state.labelRef, id, onClick: handleClick }
+  let propsWeControl = { ref: labelRef, id, onClick: handleClick }
   return render({
     props: { ...props, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_LABEL_TAG,
     name: 'Combobox.Label',
   })
-}
+})
 
 // ---
 
@@ -821,7 +823,7 @@ type ComboboxOptionPropsWeControl =
   | 'onPointerMove'
   | 'onMouseMove'
 
-function Option<
+let Option = forwardRefWithAs(function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
@@ -830,7 +832,8 @@ function Option<
   props: Props<TTag, OptionRenderPropArg, ComboboxOptionPropsWeControl | 'value'> & {
     disabled?: boolean
     value: TType
-  }
+  },
+  ref: Ref<HTMLLIElement>
 ) {
   let { disabled = false, value, ...passthroughProps } = props
   let [state, dispatch] = useComboboxContext('Combobox.Option')
@@ -840,6 +843,7 @@ function Option<
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
   let selected = state.comboboxPropsRef.current.value === value
   let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value })
+  let optionRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled
@@ -883,12 +887,7 @@ function Option<
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [
-    id,
-    active,
-    state.comboboxState,
-    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex,
-  ])
+  }, [id, active, state.comboboxState, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {
@@ -925,6 +924,7 @@ function Option<
 
   let propsWeControl = {
     id,
+    ref: optionRef,
     role: 'option',
     tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
@@ -944,14 +944,8 @@ function Option<
     defaultTag: DEFAULT_OPTION_TAG,
     name: 'Combobox.Option',
   })
-}
+})
 
 // ---
 
-export let Combobox = Object.assign(ComboboxRoot, {
-  Input,
-  Button,
-  Label,
-  Options,
-  Option,
-})
+export let Combobox = Object.assign(ComboboxRoot, { Input, Button, Label, Options, Option })

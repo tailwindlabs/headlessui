@@ -11,10 +11,11 @@ import React, {
   MutableRefObject,
   KeyboardEvent as ReactKeyboardEvent,
   ContextType,
+  Ref,
 } from 'react'
 
 import { Props, Expand } from '../../types'
-import { render } from '../../utils/render'
+import { forwardRefWithAs, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -24,6 +25,7 @@ import { useFlags } from '../../hooks/use-flags'
 import { Label, useLabels } from '../../components/label/label'
 import { Description, useDescriptions } from '../../components/description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
 
 interface Option {
   id: string
@@ -81,7 +83,7 @@ RadioGroupContext.displayName = 'RadioGroupContext'
 function useRadioGroupContext(component: string) {
   let context = useContext(RadioGroupContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${RadioGroup.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <RadioGroup /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useRadioGroupContext)
     throw err
   }
@@ -98,7 +100,7 @@ let DEFAULT_RADIO_GROUP_TAG = 'div' as const
 interface RadioGroupRenderPropArg {}
 type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby' | 'id'
 
-export function RadioGroup<
+let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   TType = string
 >(
@@ -110,7 +112,8 @@ export function RadioGroup<
     value: TType
     onChange(value: TType): void
     disabled?: boolean
-  }
+  },
+  ref: Ref<HTMLElement>
 ) {
   let { value, onChange, disabled = false, ...passThroughProps } = props
   let [{ options }, dispatch] = useReducer(stateReducer, {
@@ -119,7 +122,8 @@ export function RadioGroup<
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
   let id = `headlessui-radiogroup-${useId()}`
-  let radioGroupRef = useRef<HTMLElement | null>(null)
+  let internalRadioGroupRef = useRef<HTMLElement | null>(null)
+  let radioGroupRef = useSyncRefs(internalRadioGroupRef, ref)
 
   let firstOption = useMemo(
     () =>
@@ -149,7 +153,7 @@ export function RadioGroup<
   )
 
   useTreeWalker({
-    container: radioGroupRef.current,
+    container: internalRadioGroupRef.current,
     accept(node) {
       if (node.getAttribute('role') === 'radio') return NodeFilter.FILTER_REJECT
       if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
@@ -162,7 +166,7 @@ export function RadioGroup<
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-      let container = radioGroupRef.current
+      let container = internalRadioGroupRef.current
       if (!container) return
 
       let all = options
@@ -217,7 +221,7 @@ export function RadioGroup<
           break
       }
     },
-    [radioGroupRef, options, triggerChange]
+    [internalRadioGroupRef, options, triggerChange]
   )
 
   let registerOption = useCallback(
@@ -262,7 +266,7 @@ export function RadioGroup<
       </LabelProvider>
     </DescriptionProvider>
   )
-}
+})
 
 // ---
 
@@ -287,18 +291,20 @@ type RadioPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-function Option<
+let Option = forwardRefWithAs(function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in RadioGroup itself.
   // But today is not that day..
-  TType = Parameters<typeof RadioGroup>[0]['value']
+  TType = Parameters<typeof RadioGroupRoot>[0]['value']
 >(
   props: Props<TTag, OptionRenderPropArg, RadioPropsWeControl | 'value' | 'disabled'> & {
     value: TType
     disabled?: boolean
-  }
+  },
+  ref: Ref<HTMLElement>
 ) {
-  let optionRef = useRef<HTMLElement | null>(null)
+  let internalOptionRef = useRef<HTMLElement | null>(null)
+  let optionRef = useSyncRefs(internalOptionRef, ref)
   let id = `headlessui-radiogroup-option-${useId()}`
 
   let [labelledby, LabelProvider] = useLabels()
@@ -325,15 +331,15 @@ function Option<
   } = useRadioGroupContext('RadioGroup.Option')
 
   useIsoMorphicEffect(
-    () => registerOption({ id, element: optionRef, propsRef }),
-    [id, registerOption, optionRef, props]
+    () => registerOption({ id, element: internalOptionRef, propsRef }),
+    [id, registerOption, internalOptionRef, props]
   )
 
   let handleClick = useCallback(() => {
     if (!change(value)) return
 
     addFlag(OptionState.Active)
-    optionRef.current?.focus()
+    internalOptionRef.current?.focus()
   }, [addFlag, change, value])
 
   let handleFocus = useCallback(() => addFlag(OptionState.Active), [addFlag])
@@ -378,10 +384,8 @@ function Option<
       </LabelProvider>
     </DescriptionProvider>
   )
-}
+})
 
 // ---
 
-RadioGroup.Option = Option
-RadioGroup.Label = Label
-RadioGroup.Description = Description
+export let RadioGroup = Object.assign(RadioGroupRoot, { Option, Label, Description })

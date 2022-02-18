@@ -14,10 +14,11 @@ import React, {
   KeyboardEvent as ReactKeyboardEvent,
   Dispatch,
   ContextType,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
-import { render, Features, PropsForFeatures } from '../../utils/render'
+import { render, Features, PropsForFeatures, forwardRefWithAs } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { Keys } from '../../components/keyboard'
@@ -123,14 +124,15 @@ interface TabsRenderPropArg {
   selectedIndex: number
 }
 
-function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
+let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
   props: Props<TTag, TabsRenderPropArg> & {
     defaultIndex?: number
     onChange?: (index: number) => void
     selectedIndex?: number
     vertical?: boolean
     manual?: boolean
-  }
+  },
+  ref: Ref<HTMLElement>
 ) {
   let {
     defaultIndex = 0,
@@ -143,6 +145,7 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
   const orientation = vertical ? 'vertical' : 'horizontal'
   const activation = manual ? 'manual' : 'auto'
 
+  let tabsRef = useSyncRefs(ref)
   let [state, dispatch] = useReducer(stateReducer, {
     selectedIndex: null,
     tabs: [],
@@ -225,14 +228,14 @@ function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
   return (
     <TabsContext.Provider value={providerBag}>
       {render({
-        props: { ...passThroughProps },
+        props: { ref: tabsRef, ...passThroughProps },
         slot,
         defaultTag: DEFAULT_TABS_TAG,
         name: 'Tabs',
       })}
     </TabsContext.Provider>
   )
-}
+})
 
 // ---
 
@@ -242,13 +245,16 @@ interface ListRenderPropArg {
 }
 type ListPropsWeControl = 'role' | 'aria-orientation'
 
-function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
-  props: Props<TTag, ListRenderPropArg, ListPropsWeControl> & {}
+let List = forwardRefWithAs(function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
+  props: Props<TTag, ListRenderPropArg, ListPropsWeControl> & {},
+  ref: Ref<HTMLElement>
 ) {
   let [{ selectedIndex, orientation }] = useTabsContext('Tab.List')
+  let listRef = useSyncRefs(ref)
 
   let slot = { selectedIndex }
   let propsWeControl = {
+    ref: listRef,
     role: 'tablist',
     'aria-orientation': orientation,
   }
@@ -260,7 +266,7 @@ function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
     defaultTag: DEFAULT_LIST_TAG,
     name: 'Tabs.List',
   })
-}
+})
 
 // ---
 
@@ -270,16 +276,17 @@ interface TabRenderPropArg {
 }
 type TabPropsWeControl = 'id' | 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
 
-export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
-  props: Props<TTag, TabRenderPropArg, TabPropsWeControl>
+let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
+  props: Props<TTag, TabRenderPropArg, TabPropsWeControl>,
+  ref: Ref<HTMLElement>
 ) {
   let id = `headlessui-tabs-tab-${useId()}`
 
   let [{ selectedIndex, tabs, panels, orientation, activation }, { dispatch, change }] =
-    useTabsContext(Tab.name)
+    useTabsContext('Tab')
 
   let internalTabRef = useRef<HTMLElement>(null)
-  let tabRef = useSyncRefs(internalTabRef, (element) => {
+  let tabRef = useSyncRefs(internalTabRef, ref, (element) => {
     if (!element) return
     dispatch({ type: ActionTypes.ForceRerender })
   })
@@ -366,7 +373,7 @@ export function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     defaultTag: DEFAULT_TAB_TAG,
     name: 'Tabs.Tab',
   })
-}
+})
 
 // ---
 
@@ -375,20 +382,22 @@ interface PanelsRenderPropArg {
   selectedIndex: number
 }
 
-function Panels<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
-  props: Props<TTag, PanelsRenderPropArg>
+let Panels = forwardRefWithAs(function Panels<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
+  props: Props<TTag, PanelsRenderPropArg>,
+  ref: Ref<HTMLElement>
 ) {
   let [{ selectedIndex }] = useTabsContext('Tab.Panels')
+  let panelsRef = useSyncRefs(ref)
 
   let slot = useMemo(() => ({ selectedIndex }), [selectedIndex])
 
   return render({
-    props,
+    props: { ref: panelsRef, ...props },
     slot,
     defaultTag: DEFAULT_PANELS_TAG,
     name: 'Tabs.Panels',
   })
-}
+})
 
 // ---
 
@@ -399,15 +408,16 @@ interface PanelRenderPropArg {
 type PanelPropsWeControl = 'id' | 'role' | 'aria-labelledby' | 'tabIndex'
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
-function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
-    PropsForFeatures<typeof PanelRenderFeatures>
+    PropsForFeatures<typeof PanelRenderFeatures>,
+  ref: Ref<HTMLElement>
 ) {
   let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext('Tab.Panel')
 
   let id = `headlessui-tabs-panel-${useId()}`
   let internalPanelRef = useRef<HTMLElement>(null)
-  let panelRef = useSyncRefs(internalPanelRef, (element) => {
+  let panelRef = useSyncRefs(internalPanelRef, ref, (element) => {
     if (!element) return
     dispatch({ type: ActionTypes.ForceRerender })
   })
@@ -439,11 +449,8 @@ function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     visible: selected,
     name: 'Tabs.Panel',
   })
-}
+})
 
 // ---
 
-Tab.Group = Tabs
-Tab.List = List
-Tab.Panels = Panels
-Tab.Panel = Panel
+export let Tab = Object.assign(TabRoot, { Group: Tabs, List, Panels, Panel })

@@ -203,7 +203,7 @@ ListboxContext.displayName = 'ListboxContext'
 function useListboxContext(component: string) {
   let context = useContext(ListboxContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Listbox.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Listbox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useListboxContext)
     throw err
   }
@@ -222,16 +222,21 @@ interface ListboxRenderPropArg {
   disabled: boolean
 }
 
-export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, TType = string>(
+let ListboxRoot = forwardRefWithAs(function Listbox<
+  TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
+  TType = string
+>(
   props: Props<TTag, ListboxRenderPropArg, 'value' | 'onChange'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
     horizontal?: boolean
-  }
+  },
+  ref: Ref<TTag>
 ) {
   let { value, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
+  let listboxRef = useSyncRefs(ref)
 
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
@@ -290,7 +295,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
         })}
       >
         {render({
-          props: passThroughProps,
+          props: { ref: listboxRef, ...passThroughProps },
           slot,
           defaultTag: DEFAULT_LISTBOX_TAG,
           name: 'Listbox',
@@ -298,7 +303,7 @@ export function Listbox<TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG, T
       </OpenClosedProvider>
     </ListboxContext.Provider>
   )
-}
+})
 
 // ---
 
@@ -423,11 +428,13 @@ interface LabelRenderPropArg {
 }
 type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
 
-function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
+let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
+  ref: Ref<HTMLElement>
 ) {
   let [state] = useListboxContext('Listbox.Label')
   let id = `headlessui-listbox-label-${useId()}`
+  let labelRef = useSyncRefs(state.labelRef, ref)
 
   let handleClick = useCallback(
     () => state.buttonRef.current?.focus({ preventScroll: true }),
@@ -438,14 +445,14 @@ function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
-  let propsWeControl = { ref: state.labelRef, id, onClick: handleClick }
+  let propsWeControl = { ref: labelRef, id, onClick: handleClick }
   return render({
     props: { ...props, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_LABEL_TAG,
     name: 'Listbox.Label',
   })
-}
+})
 
 // ---
 
@@ -469,7 +476,7 @@ let Options = forwardRefWithAs(function Options<
 >(
   props: Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
     PropsForFeatures<typeof OptionsRenderFeatures>,
-  ref: Ref<HTMLUListElement>
+  ref: Ref<HTMLElement>
 ) {
   let [state, dispatch] = useListboxContext('Listbox.Options')
   let optionsRef = useSyncRefs(state.optionsRef, ref)
@@ -618,16 +625,17 @@ type ListboxOptionPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
-function Option<
+let Option = forwardRefWithAs(function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Listbox itself.
   // But today is not that day..
-  TType = Parameters<typeof Listbox>[0]['value']
+  TType = Parameters<typeof ListboxRoot>[0]['value']
 >(
   props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'value'> & {
     disabled?: boolean
     value: TType
-  }
+  },
+  ref: Ref<HTMLElement>
 ) {
   let { disabled = false, value, ...passthroughProps } = props
   let [state, dispatch] = useListboxContext('Listbox.Option')
@@ -635,6 +643,7 @@ function Option<
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
   let selected = state.propsRef.current.value === value
+  let optionRef = useSyncRefs(ref)
 
   let bag = useRef<ListboxOptionDataRef['current']>({ disabled, value })
 
@@ -670,12 +679,7 @@ function Option<
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [
-    id,
-    active,
-    state.listboxState,
-    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex,
-  ])
+  }, [id, active, state.listboxState, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {
@@ -710,6 +714,7 @@ function Option<
   )
   let propsWeControl = {
     id,
+    ref: optionRef,
     role: 'option',
     tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
@@ -729,11 +734,8 @@ function Option<
     defaultTag: DEFAULT_OPTION_TAG,
     name: 'Listbox.Option',
   })
-}
+})
 
 // ---
 
-Listbox.Button = Button
-Listbox.Label = Label
-Listbox.Options = Options
-Listbox.Option = Option
+export let Listbox = Object.assign(ListboxRoot, { Button, Label, Options, Option })

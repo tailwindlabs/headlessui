@@ -122,7 +122,7 @@ function _render<TTag extends ElementType, TSlot>(
   }
 
   if (Component === Fragment) {
-    if (Object.keys(passThroughProps).length > 0) {
+    if (Object.keys(compact(passThroughProps)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
         (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)

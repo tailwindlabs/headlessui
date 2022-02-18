@@ -166,7 +166,7 @@ MenuContext.displayName = 'MenuContext'
 function useMenuContext(component: string) {
   let context = useContext(MenuContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Menu.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Menu /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
     throw err
   }
@@ -184,8 +184,9 @@ interface MenuRenderPropArg {
   open: boolean
 }
 
-export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-  props: Props<TTag, MenuRenderPropArg>
+let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
+  props: Props<TTag, MenuRenderPropArg>,
+  ref: Ref<HTMLElement>
 ) {
   let reducerBag = useReducer(stateReducer, {
     menuState: MenuStates.Closed,
@@ -196,6 +197,7 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     activeItemIndex: null,
   } as StateDefinition)
   let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
+  let menuRef = useSyncRefs(ref)
 
   // Handle outside click
   useWindowEvent('mousedown', (event) => {
@@ -227,11 +229,16 @@ export function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
           [MenuStates.Closed]: State.Closed,
         })}
       >
-        {render({ props, slot, defaultTag: DEFAULT_MENU_TAG, name: 'Menu' })}
+        {render({
+          props: { ref: menuRef, ...props },
+          slot,
+          defaultTag: DEFAULT_MENU_TAG,
+          name: 'Menu',
+        })}
       </OpenClosedProvider>
     </MenuContext.Provider>
   )
-}
+})
 
 // ---
 
@@ -520,16 +527,18 @@ type MenuItemPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
-function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
+let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl> & {
     disabled?: boolean
     onClick?: (event: { preventDefault: Function }) => void
-  }
+  },
+  ref: Ref<HTMLElement>
 ) {
   let { disabled = false, onClick, ...passthroughProps } = props
   let [state, dispatch] = useMenuContext('Menu.Item')
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
+  let itemRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => {
     if (state.menuState !== MenuStates.Open) return
@@ -539,12 +548,7 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [
-    id,
-    active,
-    state.menuState,
-    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex,
-  ])
+  }, [id, active, state.menuState, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])
 
   let bag = useRef<MenuItemDataRef['current']>({ disabled })
 
@@ -591,6 +595,7 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   let slot = useMemo<ItemRenderPropArg>(() => ({ active, disabled }), [active, disabled])
   let propsWeControl = {
     id,
+    ref: itemRef,
     role: 'menuitem',
     tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
@@ -609,10 +614,8 @@ function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     defaultTag: DEFAULT_ITEM_TAG,
     name: 'Menu.Item',
   })
-}
+})
 
 // ---
 
-Menu.Button = Button
-Menu.Items = Items
-Menu.Item = Item
+export let Menu = Object.assign(MenuRoot, { Button, Items, Item })

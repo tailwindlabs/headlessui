@@ -9,7 +9,7 @@ export function useSyncRefs<TType>(
     cache.current = refs
   }, [refs])
 
-  return useCallback(
+  let syncRefs = useCallback(
     (value: TType) => {
       for (let ref of cache.current) {
         if (ref == null) continue
@@ -19,4 +19,6 @@ export function useSyncRefs<TType>(
     },
     [cache]
   )
+
+  return refs.every((ref) => ref == null) ? undefined : syncRefs
 }
