@@ -234,10 +234,11 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     value: TType
     onChange(value: TType): void
     disabled?: boolean
+    __demoMode?: boolean
   },
   ref: Ref<TTag>
 ) {
-  let { value, onChange, disabled = false, ...passThroughProps } = props
+  let { value, onChange, disabled = false, __demoMode = false, ...passThroughProps } = props
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
@@ -252,7 +253,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   })
 
   let reducerBag = useReducer(stateReducer, {
-    comboboxState: ComboboxStates.Closed,
+    comboboxState: __demoMode ? ComboboxStates.Open : ComboboxStates.Closed,
     comboboxPropsRef,
     optionsPropsRef,
     inputPropsRef,

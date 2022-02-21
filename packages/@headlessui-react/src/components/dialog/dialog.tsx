@@ -112,10 +112,11 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       open?: boolean
       onClose(value: boolean): void
       initialFocus?: MutableRefObject<HTMLElement | null>
+      __demoMode?: boolean
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { open, onClose, initialFocus, ...rest } = props
+  let { open, onClose, initialFocus, __demoMode = false, ...rest } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
@@ -185,7 +186,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   )
 
   let ready = useServerHandoffComplete()
-  let enabled = ready && dialogState === DialogStates.Open
+  let enabled = ready ? (__demoMode ? false : dialogState === DialogStates.Open) : false
   let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
   let hasParentDialog = useContext(DialogContext) !== null
 
