@@ -53,6 +53,7 @@ interface StateDefinition {
   comboboxPropsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
+    __demoMode: boolean
   }>
   inputPropsRef: MutableRefObject<{
     displayValue?(item: unknown): string
@@ -146,7 +147,7 @@ let reducers: {
       (a, z) => orderMap[a.id] - orderMap[z.id]
     )
 
-    return {
+    let nextState = {
       ...state,
       options,
       activeOptionIndex: (() => {
@@ -158,6 +159,15 @@ let reducers: {
         return options.indexOf(currentActiveOption)
       })(),
     }
+
+    if (
+      state.comboboxPropsRef.current.__demoMode &&
+      state.comboboxPropsRef.current.value === undefined
+    ) {
+      nextState.activeOptionIndex = 0
+    }
+
+    return nextState
   },
   [ActionTypes.UnregisterOption]: (state, action) => {
     let nextOptions = state.options.slice()
@@ -243,6 +253,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
     onChange,
+    __demoMode,
   })
   let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({
     static: false,
@@ -853,9 +864,20 @@ function Option<
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
   }, [state.comboboxState, selected, id])
 
+  let enableScrollIntoView = useRef(state.comboboxPropsRef.current.__demoMode ? false : true)
+  useIsoMorphicEffect(() => {
+    if (!state.comboboxPropsRef.current.__demoMode) return
+    let d = disposables()
+    d.requestAnimationFrame(() => {
+      enableScrollIntoView.current = true
+    })
+    return d.dispose
+  }, [])
+
   useIsoMorphicEffect(() => {
     if (state.comboboxState !== ComboboxStates.Open) return
     if (!active) return
+    if (!enableScrollIntoView.current) return
     let d = disposables()
     d.requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
