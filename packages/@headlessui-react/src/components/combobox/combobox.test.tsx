@@ -2053,6 +2053,39 @@ describe('Keyboard interactions', () => {
           expect(spy).toHaveBeenCalledTimes(2)
         })
       )
+
+      it(
+        'should sync the input field correctly and reset it when pressing Escape',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value="option-b" onChange={console.log}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="option-a">Option A</Combobox.Option>
+                <Combobox.Option value="option-b">Option B</Combobox.Option>
+                <Combobox.Option value="option-c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify the input has the selected value
+          expect(getComboboxInput()?.value).toBe('option-b')
+
+          // Override the input by typing something
+          await type(word('test'), getComboboxInput())
+          expect(getComboboxInput()?.value).toBe('test')
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // Verify the input is reset correctly
+          expect(getComboboxInput()?.value).toBe('option-b')
+        })
+      )
     })
 
     describe('`ArrowDown` key', () => {
