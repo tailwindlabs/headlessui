@@ -229,7 +229,9 @@ export let Combobox = defineComponent({
       api.closeCombobox()
     })
 
-    watch([api.value, api.inputRef], () => api.syncInputValue(), { immediate: true })
+    watch([api.value, api.inputRef, api.comboboxState], () => api.syncInputValue(), {
+      immediate: true,
+    })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
