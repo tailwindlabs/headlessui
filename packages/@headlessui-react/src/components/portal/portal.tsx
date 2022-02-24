@@ -8,14 +8,16 @@ import React, {
   // Types
   ElementType,
   MutableRefObject,
+  Ref,
 } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Props } from '../../types'
-import { render } from '../../utils/render'
+import { forwardRefWithAs, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
 
 function usePortalTarget(): HTMLElement | null {
   let forceInRoot = usePortalRoot()
@@ -57,14 +59,15 @@ function usePortalTarget(): HTMLElement | null {
 let DEFAULT_PORTAL_TAG = Fragment
 interface PortalRenderPropArg {}
 
-export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
-  props: Props<TTag, PortalRenderPropArg>
-) {
+let PortalRoot = forwardRefWithAs(function Portal<
+  TTag extends ElementType = typeof DEFAULT_PORTAL_TAG
+>(props: Props<TTag, PortalRenderPropArg>, ref: Ref<HTMLElement>) {
   let passthroughProps = props
   let target = usePortalTarget()
   let [element] = useState<HTMLDivElement | null>(() =>
     typeof window === 'undefined' ? null : document.createElement('div')
   )
+  let portalRef = useSyncRefs(ref)
 
   let ready = useServerHandoffComplete()
 
@@ -91,10 +94,14 @@ export function Portal<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   return !target || !element
     ? null
     : createPortal(
-        render({ props: passthroughProps, defaultTag: DEFAULT_PORTAL_TAG, name: 'Portal' }),
+        render({
+          props: { ref: portalRef, ...passthroughProps },
+          defaultTag: DEFAULT_PORTAL_TAG,
+          name: 'Portal',
+        }),
         element
       )
-}
+})
 
 // ---
 
@@ -103,24 +110,26 @@ interface GroupRenderPropArg {}
 
 let PortalGroupContext = createContext<MutableRefObject<HTMLElement | null> | null>(null)
 
-function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
+let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
   props: Props<TTag, GroupRenderPropArg> & {
     target: MutableRefObject<HTMLElement | null>
-  }
+  },
+  ref: Ref<HTMLElement>
 ) {
   let { target, ...passthroughProps } = props
+  let groupRef = useSyncRefs(ref)
 
   return (
     <PortalGroupContext.Provider value={target}>
       {render({
-        props: passthroughProps,
+        props: { ref: groupRef, ...passthroughProps },
         defaultTag: DEFAULT_GROUP_TAG,
         name: 'Popover.Group',
       })}
     </PortalGroupContext.Provider>
   )
-}
+})
 
 // ---
 
-Portal.Group = Group
+export let Portal = Object.assign(PortalRoot, { Group })

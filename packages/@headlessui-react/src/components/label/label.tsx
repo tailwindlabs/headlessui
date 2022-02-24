@@ -8,12 +8,14 @@ import React, {
   // Types
   ElementType,
   ReactNode,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
 import { useId } from '../../hooks/use-id'
-import { render } from '../../utils/render'
+import { forwardRefWithAs, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
 
 // ---
 
@@ -77,21 +79,23 @@ export function useLabels(): [string | undefined, (props: LabelProviderProps) =>
 // ---
 
 let DEFAULT_LABEL_TAG = 'label' as const
-interface LabelRenderPropArg {}
-type LabelPropsWeControl = 'id'
 
-export function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl> & {
+export let Label = forwardRefWithAs(function Label<
+  TTag extends ElementType = typeof DEFAULT_LABEL_TAG
+>(
+  props: Props<TTag, {}, 'id'> & {
     passive?: boolean
-  }
+  },
+  ref: Ref<HTMLLabelElement>
 ) {
   let { passive = false, ...passThroughProps } = props
   let context = useLabelContext()
   let id = `headlessui-label-${useId()}`
+  let labelRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let propsWeControl = { ...context.props, id }
+  let propsWeControl = { ref: labelRef, ...context.props, id }
 
   let allProps = { ...passThroughProps, ...propsWeControl }
   // @ts-expect-error props are dynamic via context, some components will
@@ -104,4 +108,4 @@ export function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     defaultTag: DEFAULT_LABEL_TAG,
     name: context.name || 'Label',
   })
-}
+})

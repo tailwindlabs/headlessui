@@ -4,26 +4,32 @@ import {
   // Types
   ElementType,
   MutableRefObject,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
-import { render } from '../../utils/render'
+import { forwardRefWithAs, render } from '../../utils/render'
 import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
 
 let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 
-export function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
-  props: Props<TTag> & { initialFocus?: MutableRefObject<HTMLElement | null> }
+export let FocusTrap = forwardRefWithAs(function FocusTrap<
+  TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG
+>(
+  props: Props<TTag> & { initialFocus?: MutableRefObject<HTMLElement | null> },
+  ref: Ref<HTMLElement>
 ) {
   let container = useRef<HTMLElement | null>(null)
+  let focusTrapRef = useSyncRefs(container, ref)
   let { initialFocus, ...passthroughProps } = props
 
   let ready = useServerHandoffComplete()
   useFocusTrap(container, ready ? FocusTrapFeatures.All : FocusTrapFeatures.None, { initialFocus })
 
   let propsWeControl = {
-    ref: container,
+    ref: focusTrapRef,
   }
 
   return render({
@@ -31,4 +37,4 @@ export function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_T
     defaultTag: DEFAULT_FOCUS_TRAP_TAG,
     name: 'FocusTrap',
   })
-}
+})

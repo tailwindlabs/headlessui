@@ -11,10 +11,11 @@ import React, {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   useRef,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
-import { render } from '../../utils/render'
+import { forwardRefWithAs, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -84,11 +85,14 @@ type SwitchPropsWeControl =
   | 'onKeyUp'
   | 'onKeyPress'
 
-export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
+let SwitchRoot = forwardRefWithAs(function Switch<
+  TTag extends ElementType = typeof DEFAULT_SWITCH_TAG
+>(
   props: Props<TTag, SwitchRenderPropArg, SwitchPropsWeControl | 'checked' | 'onChange'> & {
     checked: boolean
     onChange(checked: boolean): void
-  }
+  },
+  ref: Ref<HTMLElement>
 ) {
   let { checked, onChange, ...passThroughProps } = props
   let id = `headlessui-switch-${useId()}`
@@ -96,6 +100,8 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
   let switchRef = useSyncRefs(
     internalSwitchRef,
+    ref,
+    // @ts-expect-error figure out the correct type here
     groupContext === null ? null : groupContext.setSwitch
   )
 
@@ -143,10 +149,8 @@ export function Switch<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     defaultTag: DEFAULT_SWITCH_TAG,
     name: 'Switch',
   })
-}
+})
 
 // ---
 
-Switch.Group = Group
-Switch.Label = Label
-Switch.Description = Description
+export let Switch = Object.assign(SwitchRoot, { Group, Label, Description })

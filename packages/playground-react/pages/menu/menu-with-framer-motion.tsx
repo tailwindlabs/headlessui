@@ -94,7 +94,7 @@ function SignOutButton(props) {
   )
 }
 
-function Item(props: React.ComponentProps<typeof Menu.Item>) {
+function Item(props) {
   return (
     <Menu.Item
       as="a"

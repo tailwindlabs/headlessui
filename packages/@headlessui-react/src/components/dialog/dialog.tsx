@@ -77,7 +77,7 @@ DialogContext.displayName = 'DialogContext'
 function useDialogContext(component: string) {
   let context = useContext(DialogContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Dialog.displayName} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Dialog /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useDialogContext)
     throw err
   }
@@ -394,12 +394,14 @@ interface TitleRenderPropArg {
 }
 type TitlePropsWeControl = 'id'
 
-function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
-  props: Props<TTag, TitleRenderPropArg, TitlePropsWeControl>
+let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
+  props: Props<TTag, TitleRenderPropArg, TitlePropsWeControl>,
+  ref: Ref<HTMLHeadingElement>
 ) {
   let [{ dialogState, setTitleId }] = useDialogContext('Dialog.Title')
 
   let id = `headlessui-dialog-title-${useId()}`
+  let titleRef = useSyncRefs(ref)
 
   useEffect(() => {
     setTitleId(id)
@@ -414,12 +416,12 @@ function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   let passthroughProps = props
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ref: titleRef, ...passthroughProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_TITLE_TAG,
     name: 'Dialog.Title',
   })
-}
+})
 
 // ---
 

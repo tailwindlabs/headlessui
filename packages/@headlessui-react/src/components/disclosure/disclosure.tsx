@@ -103,7 +103,7 @@ DisclosureContext.displayName = 'DisclosureContext'
 function useDisclosureContext(component: string) {
   let context = useContext(DisclosureContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Disclosure.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Disclosure /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useDisclosureContext)
     throw err
   }
@@ -118,7 +118,7 @@ DisclosureAPIContext.displayName = 'DisclosureAPIContext'
 function useDisclosureAPIContext(component: string) {
   let context = useContext(DisclosureAPIContext)
   if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <${Disclosure.name} /> component.`)
+    let err = new Error(`<${component} /> is missing a parent <Disclosure /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useDisclosureAPIContext)
     throw err
   }
@@ -144,14 +144,18 @@ interface DisclosureRenderPropArg {
   close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
 }
 
-export function Disclosure<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
+let DisclosureRoot = forwardRefWithAs(function Disclosure<
+  TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG
+>(
   props: Props<TTag, DisclosureRenderPropArg> & {
     defaultOpen?: boolean
-  }
+  },
+  ref: Ref<TTag>
 ) {
   let { defaultOpen = false, ...passthroughProps } = props
   let buttonId = `headlessui-disclosure-button-${useId()}`
   let panelId = `headlessui-disclosure-panel-${useId()}`
+  let disclosureRef = useSyncRefs(ref)
 
   let reducerBag = useReducer(stateReducer, {
     disclosureState: defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed,
@@ -198,7 +202,7 @@ export function Disclosure<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_
           })}
         >
           {render({
-            props: passthroughProps,
+            props: { ref: disclosureRef, ...passthroughProps },
             slot,
             defaultTag: DEFAULT_DISCLOSURE_TAG,
             name: 'Disclosure',
@@ -207,7 +211,7 @@ export function Disclosure<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_
       </DisclosureAPIContext.Provider>
     </DisclosureContext.Provider>
   )
-}
+})
 
 // ---
 
@@ -387,5 +391,4 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
 // ---
 
-Disclosure.Button = Button
-Disclosure.Panel = Panel
+export let Disclosure = Object.assign(DisclosureRoot, { Button, Panel })

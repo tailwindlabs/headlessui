@@ -11,6 +11,7 @@ import React, {
   // Types
   ElementType,
   MutableRefObject,
+  Ref,
 } from 'react'
 import { Props } from '../../types'
 
@@ -20,10 +21,17 @@ import { match } from '../../utils/match'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
-import { Features, PropsForFeatures, render, RenderStrategy } from '../../utils/render'
+import {
+  Features,
+  forwardRefWithAs,
+  PropsForFeatures,
+  render,
+  RenderStrategy,
+} from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
 
 type ID = ReturnType<typeof useId>
 
@@ -189,9 +197,9 @@ let DEFAULT_TRANSITION_CHILD_TAG = 'div' as const
 type TransitionChildRenderPropArg = MutableRefObject<HTMLDivElement>
 let TransitionChildRenderFeatures = Features.RenderStrategy
 
-function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: TransitionChildProps<TTag>
-) {
+let TransitionChild = forwardRefWithAs(function TransitionChild<
+  TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
+>(props: TransitionChildProps<TTag>, ref: Ref<HTMLElement>) {
   let {
     // Event "handlers"
     beforeEnter,
@@ -212,6 +220,7 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     ...rest
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
+  let transitionRef = useSyncRefs(container, ref)
   let [state, setState] = useState(TreeStates.Visible)
   let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
@@ -336,7 +345,7 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
     leaveToClasses,
   ])
 
-  let propsWeControl = { ref: container }
+  let propsWeControl = { ref: transitionRef }
   let passthroughProps = rest
 
   return (
@@ -357,13 +366,14 @@ function TransitionChild<TTag extends ElementType = typeof DEFAULT_TRANSITION_CH
       </OpenClosedProvider>
     </NestingContext.Provider>
   )
-}
+})
 
-export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: TransitionChildProps<TTag> & { show?: boolean; appear?: boolean }
-) {
+let TransitionRoot = forwardRefWithAs(function Transition<
+  TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
+>(props: TransitionChildProps<TTag> & { show?: boolean; appear?: boolean }, ref: Ref<HTMLElement>) {
   // @ts-expect-error
   let { show, appear = false, unmount, ...passthroughProps } = props as typeof props
+  let transitionRef = useSyncRefs(ref)
 
   let usesOpenClosedState = useOpenClosed()
 
@@ -407,7 +417,9 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
           props: {
             ...sharedProps,
             as: Fragment,
-            children: <TransitionChild {...sharedProps} {...passthroughProps} />,
+            children: (
+              <TransitionChild ref={transitionRef} {...sharedProps} {...passthroughProps} />
+            ),
           },
           defaultTag: Fragment,
           features: TransitionChildRenderFeatures,
@@ -417,18 +429,19 @@ export function Transition<TTag extends ElementType = typeof DEFAULT_TRANSITION_
       </TransitionContext.Provider>
     </NestingContext.Provider>
   )
-}
+})
 
-Transition.Child = function Child<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+function Child<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
   props: TransitionChildProps<TTag>
 ) {
   let hasTransitionContext = useContext(TransitionContext) !== null
   let hasOpenClosedContext = useOpenClosed() !== null
 
   return !hasTransitionContext && hasOpenClosedContext ? (
-    <Transition {...props} />
+    <TransitionRoot {...props} />
   ) : (
     <TransitionChild {...props} />
   )
 }
-Transition.Root = Transition
+
+export let Transition = Object.assign(TransitionRoot, { Child, Root: TransitionRoot })
