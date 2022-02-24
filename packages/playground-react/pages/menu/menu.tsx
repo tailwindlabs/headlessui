@@ -51,7 +51,7 @@ export default function Home() {
   )
 }
 
-function CustomMenuItem(props: React.ComponentProps<typeof Menu.Item>) {
+function CustomMenuItem(props) {
   return (
     <Menu.Item {...props}>
       {({ active, disabled }) => (
