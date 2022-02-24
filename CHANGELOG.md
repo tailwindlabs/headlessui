@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/react]
 
-- Nothing yet!
+### Fixed
+
+- Forward the `ref` to all components ([#1116](https://github.com/tailwindlabs/headlessui/pull/1116))
 
 ## [Unreleased - @headlessui/vue]
 
