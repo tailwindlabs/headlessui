@@ -18,9 +18,7 @@ export function useFocusTrap(
   enabled: Ref<boolean> = ref(true),
   options: Ref<{ initialFocus?: HTMLElement | null }> = ref({})
 ) {
-  let restoreElement = ref<HTMLElement | null>(
-    typeof window !== 'undefined' ? (document.activeElement as HTMLElement) : null
-  )
+  let restoreElement = ref<HTMLElement | null>(null)
   let previousActiveElement = ref<HTMLElement | null>(null)
 
   function handleFocus() {
