@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Make sure that the input syncs when the combobox closes ([#1137](https://github.com/tailwindlabs/headlessui/pull/1137))
+- Ensure that you can close the combobox initially ([#1148](https://github.com/tailwindlabs/headlessui/pull/1148))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
