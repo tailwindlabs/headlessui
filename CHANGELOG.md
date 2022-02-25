@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Forward the `ref` to all components ([#1116](https://github.com/tailwindlabs/headlessui/pull/1116))
 - Ensure links are triggered inside `Popover Panel` components ([#1153](https://github.com/tailwindlabs/headlessui/pull/1153))
+- Improve SSR for `Tab` component ([#1155](https://github.com/tailwindlabs/headlessui/pull/1155))
 
 ## [Unreleased - @headlessui/vue]
 
