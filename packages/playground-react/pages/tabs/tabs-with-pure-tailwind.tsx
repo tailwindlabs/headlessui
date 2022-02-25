@@ -40,7 +40,12 @@ export default function Home() {
         </Switch>
       </Switch.Group>
 
-      <Tab.Group className="flex w-full max-w-3xl flex-col" as="div" manual={manual}>
+      <Tab.Group
+        className="flex w-full max-w-3xl flex-col"
+        as="div"
+        manual={manual}
+        defaultIndex={2}
+      >
         <Tab.List className="relative z-0 flex divide-x divide-gray-200 rounded-lg shadow">
           {tabs.map((tab, tabIdx) => (
             <Tab

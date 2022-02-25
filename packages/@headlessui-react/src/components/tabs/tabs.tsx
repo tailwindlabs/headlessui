@@ -26,6 +26,7 @@ import { focusIn, Focus } from '../../utils/focus-management'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useLatestValue } from '../../hooks/use-latest-value'
 
 interface StateDefinition {
   selectedIndex: number | null
@@ -103,6 +104,9 @@ let TabsContext = createContext<
 >(null)
 TabsContext.displayName = 'TabsContext'
 
+let TabsSSRContext = createContext<MutableRefObject<number> | null>(null)
+TabsSSRContext.displayName = 'TabsSSRContext'
+
 function useTabsContext(component: string) {
   let context = useContext(TabsContext)
   if (context === null) {
@@ -147,14 +151,14 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
 
   let tabsRef = useSyncRefs(ref)
   let [state, dispatch] = useReducer(stateReducer, {
-    selectedIndex: null,
+    selectedIndex: typeof window === 'undefined' ? selectedIndex ?? defaultIndex : null,
     tabs: [],
     panels: [],
     orientation,
     activation,
   } as StateDefinition)
   let slot = useMemo(() => ({ selectedIndex: state.selectedIndex }), [state.selectedIndex])
-  let onChangeRef = useRef<(index: number) => void>(() => {})
+  let onChangeRef = useLatestValue(onChange || (() => {}))
 
   useEffect(() => {
     dispatch({ type: ActionTypes.SetOrientation, orientation })
@@ -163,12 +167,6 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   useEffect(() => {
     dispatch({ type: ActionTypes.SetActivation, activation })
   }, [activation])
-
-  useEffect(() => {
-    if (typeof onChange === 'function') {
-      onChangeRef.current = onChange
-    }
-  }, [onChange])
 
   useEffect(() => {
     if (state.tabs.length <= 0) return
@@ -225,15 +223,19 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     [state, dispatch]
   )
 
+  let SSRCounter = useRef(0)
+
   return (
-    <TabsContext.Provider value={providerBag}>
-      {render({
-        props: { ref: tabsRef, ...passThroughProps },
-        slot,
-        defaultTag: DEFAULT_TABS_TAG,
-        name: 'Tabs',
-      })}
-    </TabsContext.Provider>
+    <TabsSSRContext.Provider value={typeof window === 'undefined' ? SSRCounter : null}>
+      <TabsContext.Provider value={providerBag}>
+        {render({
+          props: { ref: tabsRef, ...passThroughProps },
+          slot,
+          defaultTag: DEFAULT_TABS_TAG,
+          name: 'Tabs',
+        })}
+      </TabsContext.Provider>
+    </TabsSSRContext.Provider>
   )
 })
 
@@ -414,6 +416,11 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   ref: Ref<HTMLElement>
 ) {
   let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext('Tab.Panel')
+  let SSRContext = useContext(TabsSSRContext)
+
+  if (SSRContext !== null && selectedIndex === null) {
+    selectedIndex = 0 // Should normally not happen, but in case the selectedIndex is null, we can default to 0.
+  }
 
   let id = `headlessui-tabs-panel-${useId()}`
   let internalPanelRef = useRef<HTMLElement>(null)
@@ -428,7 +435,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   }, [dispatch, internalPanelRef])
 
   let myIndex = panels.indexOf(internalPanelRef)
-  let selected = myIndex === selectedIndex
+  let selected =
+    SSRContext === null ? myIndex === selectedIndex : SSRContext.current++ === selectedIndex
 
   let slot = useMemo(() => ({ selected }), [selected])
   let propsWeControl = {
