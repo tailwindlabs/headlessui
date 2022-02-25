@@ -250,7 +250,8 @@ export let PopoverButton = defineComponent({
           case Keys.Space:
           case Keys.Enter:
             event.preventDefault() // Prevent triggering a *click* event
-            event.stopPropagation()
+            // @ts-expect-error
+            event.target.click?.()
             api.closePopover()
             dom(api.button)?.focus() // Re-focus the original opening Button
             break
