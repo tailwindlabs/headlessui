@@ -335,7 +335,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           case Keys.Space:
           case Keys.Enter:
             event.preventDefault() // Prevent triggering a *click* event
-            event.stopPropagation()
+            // @ts-expect-error
+            event.target.click?.()
             dispatch({ type: ActionTypes.ClosePopover })
             state.button?.focus() // Re-focus the original opening Button
             break

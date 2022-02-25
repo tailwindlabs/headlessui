@@ -1828,6 +1828,43 @@ describe('Keyboard interactions', () => {
         assertActiveElement(getPopoverButton())
       })
     )
+
+    it(
+      'should close the Popover by pressing `Enter` on a Popover.Button and go to the href of the `a` inside a Popover.Panel',
+      suppressConsoleLogs(async () => {
+        render(
+          <Popover>
+            <Popover.Button>Open</Popover.Button>
+            <Popover.Panel>
+              <Popover.Button as={React.Fragment}>
+                <a href="#closed">Close</a>
+              </Popover.Button>
+            </Popover.Panel>
+          </Popover>
+        )
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        let closeLink = getByText('Close')
+
+        expect(closeLink).not.toHaveAttribute('id')
+        expect(closeLink).not.toHaveAttribute('aria-controls')
+        expect(closeLink).not.toHaveAttribute('aria-expanded')
+
+        // The close button should close the popover
+        await press(Keys.Enter, closeLink)
+
+        // Verify it is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Verify we restored the Open button
+        assertActiveElement(getPopoverButton())
+
+        // Verify that we got redirected to the href
+        expect(window.location.hash).toEqual('#closed')
+      })
+    )
   })
 })
 
