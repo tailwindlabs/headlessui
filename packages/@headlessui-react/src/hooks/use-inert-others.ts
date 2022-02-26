@@ -1,4 +1,5 @@
 import { MutableRefObject } from 'react'
+import { getOwnerDocument } from '../utils/owner'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 let interactables = new Set<HTMLElement>()
@@ -29,6 +30,8 @@ export function useInertOthers<TElement extends HTMLElement>(
     if (!container.current) return
 
     let element = container.current
+    let ownerDocument = getOwnerDocument(element)
+    if (!ownerDocument) return
 
     // Mark myself as an interactable element
     interactables.add(element)
@@ -42,7 +45,7 @@ export function useInertOthers<TElement extends HTMLElement>(
     }
 
     // Collect direct children of the body
-    document.querySelectorAll('body > *').forEach((child) => {
+    ownerDocument.querySelectorAll('body > *').forEach((child) => {
       if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
       // Skip the interactables, and the parents of the interactables
@@ -71,7 +74,7 @@ export function useInertOthers<TElement extends HTMLElement>(
       // will become inert as well.
       if (interactables.size > 0) {
         // Collect direct children of the body
-        document.querySelectorAll('body > *').forEach((child) => {
+        ownerDocument!.querySelectorAll('body > *').forEach((child) => {
           if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
           // Skip already inert parents

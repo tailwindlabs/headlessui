@@ -10,8 +10,8 @@ import {
 
 import { Keys } from '../keyboard'
 import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
-import { useWindowEvent } from '../hooks/use-window-event'
-// import { contains } from '../internal/dom-containers'
+import { getOwnerDocument } from '../utils/owner'
+import { useEventListener } from './use-event-listener'
 
 export enum Features {
   /** No features enabled for the `useFocusTrap` hook. */
@@ -49,6 +49,8 @@ export function useFocusTrap(
   let featuresRestoreFocus = computed(() => Boolean(features.value & Features.RestoreFocus))
   let featuresInitialFocus = computed(() => Boolean(features.value & Features.InitialFocus))
 
+  let ownerDocument = computed(() => getOwnerDocument(container))
+
   onMounted(() => {
     // Capture the currently focused element, before we enable the focus trap.
     watch(
@@ -60,7 +62,7 @@ export function useFocusTrap(
         mounted.value = true
 
         if (!restoreElement.value) {
-          restoreElement.value = document.activeElement as HTMLElement
+          restoreElement.value = ownerDocument.value?.activeElement as HTMLElement
         }
       },
       { immediate: true }
@@ -94,7 +96,7 @@ export function useFocusTrap(
         let containerElement = container.value
         if (!containerElement) return
 
-        let activeElement = document.activeElement as HTMLElement
+        let activeElement = ownerDocument.value?.activeElement as HTMLElement
 
         if (options.value.initialFocus?.value) {
           if (options.value.initialFocus?.value === activeElement) {
@@ -115,14 +117,14 @@ export function useFocusTrap(
           }
         }
 
-        previousActiveElement.value = document.activeElement as HTMLElement
+        previousActiveElement.value = ownerDocument.value?.activeElement as HTMLElement
       },
       { immediate: true }
     )
   })
 
   // Handle Tab & Shift+Tab keyboard events
-  useWindowEvent('keydown', (event) => {
+  useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
     if (!(features.value & Features.TabLock)) return
 
     if (!container.value) return
@@ -136,12 +138,13 @@ export function useFocusTrap(
         (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
       ) === FocusResult.Success
     ) {
-      previousActiveElement.value = document.activeElement as HTMLElement
+      previousActiveElement.value = ownerDocument.value?.activeElement as HTMLElement
     }
   })
 
   // Prevent programmatically escaping
-  useWindowEvent(
+  useEventListener(
+    ownerDocument.value?.defaultView,
     'focus',
     (event) => {
       if (!(features.value & Features.FocusLock)) return

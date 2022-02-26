@@ -12,19 +12,27 @@ import {
   // Types
   InjectionKey,
   PropType,
+  computed,
 } from 'vue'
 import { render } from '../../utils/render'
 import { usePortalRoot } from '../../internal/portal-force-root'
+import { getOwnerDocument } from '../../utils/owner'
 
 // ---
 
-function getPortalRoot() {
-  let existingRoot = document.getElementById('headlessui-portal-root')
+function getPortalRoot(contextElement?: Element | null) {
+  let ownerDocument = getOwnerDocument(contextElement)
+  if (!ownerDocument) {
+    throw new Error(
+      `[Headless UI]: Cannot find ownerDocument for contextElement: ${contextElement}`
+    )
+  }
+  let existingRoot = ownerDocument.getElementById('headlessui-portal-root')
   if (existingRoot) return existingRoot
 
-  let root = document.createElement('div')
+  let root = ownerDocument.createElement('div')
   root.setAttribute('id', 'headlessui-portal-root')
-  return document.body.appendChild(root)
+  return ownerDocument.body.appendChild(root)
 }
 
 export let Portal = defineComponent({
@@ -33,13 +41,16 @@ export let Portal = defineComponent({
     as: { type: [Object, String], default: 'div' },
   },
   setup(props, { slots, attrs }) {
+    let element = ref<HTMLElement | null>(null)
+    let ownerDocument = computed(() => getOwnerDocument(element))
+
     let forcePortalRoot = usePortalRoot()
     let groupContext = inject(PortalGroupContext, null)
     let myTarget = ref(
       forcePortalRoot === true
-        ? getPortalRoot()
+        ? getPortalRoot(element.value)
         : groupContext === null
-        ? getPortalRoot()
+        ? getPortalRoot(element.value)
         : groupContext.resolveTarget()
     )
 
@@ -49,10 +60,8 @@ export let Portal = defineComponent({
       myTarget.value = groupContext.resolveTarget()
     })
 
-    let element = ref(null)
-
     onUnmounted(() => {
-      let root = document.getElementById('headlessui-portal-root')
+      let root = ownerDocument.value?.getElementById('headlessui-portal-root')
       if (!root) return
       if (myTarget.value !== root) return
 

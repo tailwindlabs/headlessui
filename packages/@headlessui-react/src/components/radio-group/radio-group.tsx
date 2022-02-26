@@ -28,6 +28,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { VisuallyHidden } from '../../internal/visually-hidden'
 import { objectToFormEntries } from '../../utils/form'
+import { getOwnerDocument } from '../../utils/owner'
 
 interface Option {
   id: string
@@ -174,6 +175,8 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
       let container = internalRadioGroupRef.current
       if (!container) return
 
+      let ownerDocument = getOwnerDocument(container)
+
       let all = options
         .filter((option) => option.propsRef.current.disabled === false)
         .map((radio) => radio.element.current) as HTMLElement[]
@@ -189,7 +192,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
 
             if (result === FocusResult.Success) {
               let activeOption = options.find(
-                (option) => option.element.current === document.activeElement
+                (option) => option.element.current === ownerDocument?.activeElement
               )
               if (activeOption) triggerChange(activeOption.propsRef.current.value)
             }
@@ -206,7 +209,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
 
             if (result === FocusResult.Success) {
               let activeOption = options.find(
-                (option) => option.element.current === document.activeElement
+                (option) => option.element.current === ownerDocument?.activeElement
               )
               if (activeOption) triggerChange(activeOption.propsRef.current.value)
             }
@@ -219,7 +222,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
             event.stopPropagation()
 
             let activeOption = options.find(
-              (option) => option.element.current === document.activeElement
+              (option) => option.element.current === ownerDocument?.activeElement
             )
             if (activeOption) triggerChange(activeOption.propsRef.current.value)
           }
