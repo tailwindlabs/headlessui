@@ -41,6 +41,11 @@ enum ComboboxStates {
   Closed,
 }
 
+enum ActivationTrigger {
+  Pointer,
+  Other,
+}
+
 type ComboboxOptionDataRef = MutableRefObject<{
   textValue?: string
   disabled: boolean
@@ -70,6 +75,7 @@ interface StateDefinition {
   disabled: boolean
   options: { id: string; dataRef: ComboboxOptionDataRef }[]
   activeOptionIndex: number | null
+  activationTrigger: ActivationTrigger
 }
 
 enum ActionTypes {
@@ -88,8 +94,12 @@ type Actions =
   | { type: ActionTypes.CloseCombobox }
   | { type: ActionTypes.OpenCombobox }
   | { type: ActionTypes.SetDisabled; disabled: boolean }
-  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
-  | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
+  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
+  | {
+      type: ActionTypes.GoToOption
+      focus: Exclude<Focus, Focus.Specific>
+      trigger?: ActivationTrigger
+    }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef }
   | { type: ActionTypes.UnregisterOption; id: string }
 
@@ -130,7 +140,11 @@ let reducers: {
     })
 
     if (state.activeOptionIndex === activeOptionIndex) return state
-    return { ...state, activeOptionIndex }
+    return {
+      ...state,
+      activeOptionIndex,
+      activationTrigger: action.trigger ?? ActivationTrigger.Other,
+    }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
     let currentActiveOption =
@@ -158,6 +172,7 @@ let reducers: {
         // the correct index.
         return options.indexOf(currentActiveOption)
       })(),
+      activationTrigger: ActivationTrigger.Other,
     }
 
     if (
@@ -189,6 +204,7 @@ let reducers: {
         // fix this, we will find the correct (new) index position.
         return nextOptions.indexOf(currentActiveOption)
       })(),
+      activationTrigger: ActivationTrigger.Other,
     }
   },
 }
@@ -275,6 +291,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     disabled,
     options: [],
     activeOptionIndex: null,
+    activationTrigger: ActivationTrigger.Other,
   } as StateDefinition)
   let [{ comboboxState, options, activeOptionIndex, optionsRef, inputRef, buttonRef }, dispatch] =
     reducerBag
@@ -882,12 +899,13 @@ let Option = forwardRefWithAs(function Option<
     if (state.comboboxState !== ComboboxStates.Open) return
     if (!active) return
     if (!enableScrollIntoView.current) return
+    if (state.activationTrigger === ActivationTrigger.Pointer) return
     let d = disposables()
     d.requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [id, active, state.comboboxState, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
+  }, [id, active, state.comboboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {
@@ -907,7 +925,12 @@ let Option = forwardRefWithAs(function Option<
   let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+    dispatch({
+      type: ActionTypes.GoToOption,
+      focus: Focus.Specific,
+      id,
+      trigger: ActivationTrigger.Pointer,
+    })
   }, [disabled, active, id, dispatch])
 
   let handleLeave = useCallback(() => {

@@ -32,6 +32,11 @@ enum ComboboxStates {
   Closed,
 }
 
+enum ActivationTrigger {
+  Pointer,
+  Other,
+}
+
 type ComboboxOptionDataRef = Ref<{ disabled: boolean; value: unknown }>
 type StateDefinition = {
   // State
@@ -49,11 +54,12 @@ type StateDefinition = {
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComboboxOptionDataRef }[]>
   activeOptionIndex: Ref<number | null>
+  activationTrigger: Ref<ActivationTrigger>
 
   // State mutators
   closeCombobox(): void
   openCombobox(): void
-  goToOption(focus: Focus, id?: string): void
+  goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   selectOption(id: string): void
   selectActiveOption(): void
   registerOption(id: string, dataRef: ComboboxOptionDataRef): void
@@ -99,7 +105,9 @@ export let Combobox = defineComponent({
     }) as StateDefinition['optionsPropsRef']
     let options = ref<StateDefinition['options']['value']>([])
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
-
+    let activationTrigger = ref<StateDefinition['activationTrigger']['value']>(
+      ActivationTrigger.Other
+    )
     let value = computed(() => props.modelValue)
 
     let api = {
@@ -112,6 +120,7 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       activeOptionIndex,
+      activationTrigger,
       inputPropsRef: ref<StateDefinition['inputPropsRef']['value']>({ displayValue: undefined }),
       optionsPropsRef,
       closeCombobox() {
@@ -125,7 +134,7 @@ export let Combobox = defineComponent({
         if (comboboxState.value === ComboboxStates.Open) return
         comboboxState.value = ComboboxStates.Open
       },
-      goToOption(focus: Focus, id?: string) {
+      goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
         if (props.disabled) return
         if (
           optionsRef.value &&
@@ -148,6 +157,7 @@ export let Combobox = defineComponent({
 
         if (activeOptionIndex.value === nextActiveOptionIndex) return
         activeOptionIndex.value = nextActiveOptionIndex
+        activationTrigger.value = trigger ?? ActivationTrigger.Other
       },
       syncInputValue() {
         let value = api.value.value
@@ -198,6 +208,7 @@ export let Combobox = defineComponent({
           if (currentActiveOption === null) return null
           return options.value.indexOf(currentActiveOption)
         })()
+        activationTrigger.value = ActivationTrigger.Other
       },
       unregisterOption(id: string) {
         let nextOptions = options.value.slice()
@@ -214,6 +225,7 @@ export let Combobox = defineComponent({
           // fix this, we will find the correct (new) index position.
           return nextOptions.indexOf(currentActiveOption)
         })()
+        activationTrigger.value = ActivationTrigger.Other
       },
     }
 
@@ -650,6 +662,7 @@ export let ComboboxOption = defineComponent({
     watchEffect(() => {
       if (api.comboboxState.value !== ComboboxStates.Open) return
       if (!active.value) return
+      if (api.activationTrigger.value === ActivationTrigger.Pointer) return
       nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
@@ -668,7 +681,7 @@ export let ComboboxOption = defineComponent({
     function handleMove() {
       if (props.disabled) return
       if (active.value) return
-      api.goToOption(Focus.Specific, id)
+      api.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
     }
 
     function handleLeave() {

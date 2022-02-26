@@ -27,6 +27,11 @@ enum MenuStates {
   Closed,
 }
 
+enum ActivationTrigger {
+  Pointer,
+  Other,
+}
+
 function nextFrame(cb: () => void) {
   requestAnimationFrame(() => requestAnimationFrame(cb))
 }
@@ -40,11 +45,12 @@ type StateDefinition = {
   items: Ref<{ id: string; dataRef: MenuItemDataRef }[]>
   searchQuery: Ref<string>
   activeItemIndex: Ref<number | null>
+  activationTrigger: Ref<ActivationTrigger>
 
   // State mutators
   closeMenu(): void
   openMenu(): void
-  goToItem(focus: Focus, id?: string): void
+  goToItem(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   search(value: string): void
   clearSearch(): void
   registerItem(id: string, dataRef: MenuItemDataRef): void
@@ -75,6 +81,9 @@ export let Menu = defineComponent({
     let items = ref<StateDefinition['items']['value']>([])
     let searchQuery = ref<StateDefinition['searchQuery']['value']>('')
     let activeItemIndex = ref<StateDefinition['activeItemIndex']['value']>(null)
+    let activationTrigger = ref<StateDefinition['activationTrigger']['value']>(
+      ActivationTrigger.Other
+    )
 
     let api = {
       menuState,
@@ -83,12 +92,13 @@ export let Menu = defineComponent({
       items,
       searchQuery,
       activeItemIndex,
+      activationTrigger,
       closeMenu: () => {
         menuState.value = MenuStates.Closed
         activeItemIndex.value = null
       },
       openMenu: () => (menuState.value = MenuStates.Open),
-      goToItem(focus: Focus, id?: string) {
+      goToItem(focus: Focus, id?: string, trigger?: ActivationTrigger) {
         let nextActiveItemIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
@@ -104,6 +114,7 @@ export let Menu = defineComponent({
         if (searchQuery.value === '' && activeItemIndex.value === nextActiveItemIndex) return
         searchQuery.value = ''
         activeItemIndex.value = nextActiveItemIndex
+        activationTrigger.value = trigger ?? ActivationTrigger.Other
       },
       search(value: string) {
         let wasAlreadySearching = searchQuery.value !== ''
@@ -125,6 +136,7 @@ export let Menu = defineComponent({
         if (matchIdx === -1 || matchIdx === activeItemIndex.value) return
 
         activeItemIndex.value = matchIdx
+        activationTrigger.value = ActivationTrigger.Other
       },
       clearSearch() {
         searchQuery.value = ''
@@ -157,6 +169,7 @@ export let Menu = defineComponent({
           // fix this, we will find the correct (new) index position.
           return nextItems.indexOf(currentActiveItem)
         })()
+        activationTrigger.value = ActivationTrigger.Other
       },
     }
 
@@ -455,6 +468,7 @@ export let MenuItem = defineComponent({
     watchEffect(() => {
       if (api.menuState.value !== MenuStates.Open) return
       if (!active.value) return
+      if (api.activationTrigger.value === ActivationTrigger.Pointer) return
       nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
@@ -472,7 +486,7 @@ export let MenuItem = defineComponent({
     function handleMove() {
       if (props.disabled) return
       if (active.value) return
-      api.goToItem(Focus.Specific, id)
+      api.goToItem(Focus.Specific, id, ActivationTrigger.Pointer)
     }
 
     function handleLeave() {

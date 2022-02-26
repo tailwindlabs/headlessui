@@ -166,7 +166,12 @@ let reducers: {
     let matchIdx = matchingOption ? state.options.indexOf(matchingOption) : -1
 
     if (matchIdx === -1 || matchIdx === state.activeOptionIndex) return { ...state, searchQuery }
-    return { ...state, searchQuery, activeOptionIndex: matchIdx }
+    return {
+      ...state,
+      searchQuery,
+      activeOptionIndex: matchIdx,
+      activationTrigger: ActivationTrigger.Other,
+    }
   },
   [ActionTypes.ClearSearch](state) {
     if (state.disabled) return state
@@ -208,6 +213,7 @@ let reducers: {
         // fix this, we will find the correct (new) index position.
         return nextOptions.indexOf(currentActiveOption)
       })(),
+      activationTrigger: ActivationTrigger.Other,
     }
   },
 }
@@ -696,7 +702,7 @@ let Option = forwardRefWithAs(function Option<
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [id, active, state.listboxState, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
+  }, [id, active, state.listboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {
