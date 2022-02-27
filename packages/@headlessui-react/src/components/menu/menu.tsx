@@ -41,6 +41,11 @@ enum MenuStates {
   Closed,
 }
 
+enum ActivationTrigger {
+  Pointer,
+  Other,
+}
+
 type MenuItemDataRef = MutableRefObject<{ textValue?: string; disabled: boolean }>
 
 interface StateDefinition {
@@ -50,6 +55,7 @@ interface StateDefinition {
   items: { id: string; dataRef: MenuItemDataRef }[]
   searchQuery: string
   activeItemIndex: number | null
+  activationTrigger: ActivationTrigger
 }
 
 enum ActionTypes {
@@ -66,8 +72,12 @@ enum ActionTypes {
 type Actions =
   | { type: ActionTypes.CloseMenu }
   | { type: ActionTypes.OpenMenu }
-  | { type: ActionTypes.GoToItem; focus: Focus.Specific; id: string }
-  | { type: ActionTypes.GoToItem; focus: Exclude<Focus, Focus.Specific> }
+  | { type: ActionTypes.GoToItem; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
+  | {
+      type: ActionTypes.GoToItem
+      focus: Exclude<Focus, Focus.Specific>
+      trigger?: ActivationTrigger
+    }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterItem; id: string; dataRef: MenuItemDataRef }
@@ -96,7 +106,12 @@ let reducers: {
     })
 
     if (state.searchQuery === '' && state.activeItemIndex === activeItemIndex) return state
-    return { ...state, searchQuery: '', activeItemIndex }
+    return {
+      ...state,
+      searchQuery: '',
+      activeItemIndex,
+      activationTrigger: action.trigger ?? ActivationTrigger.Other,
+    }
   },
   [ActionTypes.Search]: (state, action) => {
     let wasAlreadySearching = state.searchQuery !== ''
@@ -117,7 +132,12 @@ let reducers: {
 
     let matchIdx = matchingItem ? state.items.indexOf(matchingItem) : -1
     if (matchIdx === -1 || matchIdx === state.activeItemIndex) return { ...state, searchQuery }
-    return { ...state, searchQuery, activeItemIndex: matchIdx }
+    return {
+      ...state,
+      searchQuery,
+      activeItemIndex: matchIdx,
+      activationTrigger: ActivationTrigger.Other,
+    }
   },
   [ActionTypes.ClearSearch](state) {
     if (state.searchQuery === '') return state
@@ -156,6 +176,7 @@ let reducers: {
         // fix this, we will find the correct (new) index position.
         return nextItems.indexOf(currentActiveItem)
       })(),
+      activationTrigger: ActivationTrigger.Other,
     }
   },
 }
@@ -195,6 +216,7 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
     items: [],
     searchQuery: '',
     activeItemIndex: null,
+    activationTrigger: ActivationTrigger.Other,
   } as StateDefinition)
   let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
   let menuRef = useSyncRefs(ref)
@@ -543,12 +565,13 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   useIsoMorphicEffect(() => {
     if (state.menuState !== MenuStates.Open) return
     if (!active) return
+    if (state.activationTrigger === ActivationTrigger.Pointer) return
     let d = disposables()
     d.requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [id, active, state.menuState, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])
+  }, [id, active, state.menuState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])
 
   let bag = useRef<MenuItemDataRef['current']>({ disabled })
 
@@ -583,7 +606,12 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
-    dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
+    dispatch({
+      type: ActionTypes.GoToItem,
+      focus: Focus.Specific,
+      id,
+      trigger: ActivationTrigger.Pointer,
+    })
   }, [disabled, active, id, dispatch])
 
   let handleLeave = useCallback(() => {

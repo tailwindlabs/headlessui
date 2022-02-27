@@ -39,6 +39,11 @@ enum ListboxStates {
   Closed,
 }
 
+enum ActivationTrigger {
+  Pointer,
+  Other,
+}
+
 type ListboxOptionDataRef = MutableRefObject<{
   textValue?: string
   disabled: boolean
@@ -59,6 +64,7 @@ interface StateDefinition {
   options: { id: string; dataRef: ListboxOptionDataRef }[]
   searchQuery: string
   activeOptionIndex: number | null
+  activationTrigger: ActivationTrigger
 }
 
 enum ActionTypes {
@@ -81,8 +87,12 @@ type Actions =
   | { type: ActionTypes.OpenListbox }
   | { type: ActionTypes.SetDisabled; disabled: boolean }
   | { type: ActionTypes.SetOrientation; orientation: StateDefinition['orientation'] }
-  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string }
-  | { type: ActionTypes.GoToOption; focus: Exclude<Focus, Focus.Specific> }
+  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
+  | {
+      type: ActionTypes.GoToOption
+      focus: Exclude<Focus, Focus.Specific>
+      trigger?: ActivationTrigger
+    }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef }
@@ -124,7 +134,12 @@ let reducers: {
     })
 
     if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) return state
-    return { ...state, searchQuery: '', activeOptionIndex }
+    return {
+      ...state,
+      searchQuery: '',
+      activeOptionIndex,
+      activationTrigger: action.trigger ?? ActivationTrigger.Other,
+    }
   },
   [ActionTypes.Search]: (state, action) => {
     if (state.disabled) return state
@@ -151,7 +166,12 @@ let reducers: {
     let matchIdx = matchingOption ? state.options.indexOf(matchingOption) : -1
 
     if (matchIdx === -1 || matchIdx === state.activeOptionIndex) return { ...state, searchQuery }
-    return { ...state, searchQuery, activeOptionIndex: matchIdx }
+    return {
+      ...state,
+      searchQuery,
+      activeOptionIndex: matchIdx,
+      activationTrigger: ActivationTrigger.Other,
+    }
   },
   [ActionTypes.ClearSearch](state) {
     if (state.disabled) return state
@@ -193,6 +213,7 @@ let reducers: {
         // fix this, we will find the correct (new) index position.
         return nextOptions.indexOf(currentActiveOption)
       })(),
+      activationTrigger: ActivationTrigger.Other,
     }
   },
 }
@@ -249,6 +270,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     options: [],
     searchQuery: '',
     activeOptionIndex: null,
+    activationTrigger: ActivationTrigger.Other,
   } as StateDefinition)
   let [{ listboxState, propsRef, optionsRef, buttonRef }, dispatch] = reducerBag
 
@@ -674,12 +696,13 @@ let Option = forwardRefWithAs(function Option<
   useIsoMorphicEffect(() => {
     if (state.listboxState !== ListboxStates.Open) return
     if (!active) return
+    if (state.activationTrigger === ActivationTrigger.Pointer) return
     let d = disposables()
     d.requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [id, active, state.listboxState, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
+  }, [id, active, state.listboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {
@@ -699,7 +722,12 @@ let Option = forwardRefWithAs(function Option<
   let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+    dispatch({
+      type: ActionTypes.GoToOption,
+      focus: Focus.Specific,
+      id,
+      trigger: ActivationTrigger.Pointer,
+    })
   }, [disabled, active, id, dispatch])
 
   let handleLeave = useCallback(() => {

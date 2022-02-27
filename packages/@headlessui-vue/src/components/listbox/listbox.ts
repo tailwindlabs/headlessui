@@ -30,6 +30,11 @@ enum ListboxStates {
   Closed,
 }
 
+enum ActivationTrigger {
+  Pointer,
+  Other,
+}
+
 function nextFrame(cb: () => void) {
   requestAnimationFrame(() => requestAnimationFrame(cb))
 }
@@ -49,11 +54,12 @@ type StateDefinition = {
   options: Ref<{ id: string; dataRef: ListboxOptionDataRef }[]>
   searchQuery: Ref<string>
   activeOptionIndex: Ref<number | null>
+  activationTrigger: Ref<ActivationTrigger>
 
   // State mutators
   closeListbox(): void
   openListbox(): void
-  goToOption(focus: Focus, id?: string): void
+  goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   search(value: string): void
   clearSearch(): void
   registerOption(id: string, dataRef: ListboxOptionDataRef): void
@@ -94,6 +100,9 @@ export let Listbox = defineComponent({
     let options = ref<StateDefinition['options']['value']>([])
     let searchQuery = ref<StateDefinition['searchQuery']['value']>('')
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
+    let activationTrigger = ref<StateDefinition['activationTrigger']['value']>(
+      ActivationTrigger.Other
+    )
 
     let value = computed(() => props.modelValue)
 
@@ -108,6 +117,7 @@ export let Listbox = defineComponent({
       options,
       searchQuery,
       activeOptionIndex,
+      activationTrigger,
       closeListbox() {
         if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
@@ -119,7 +129,7 @@ export let Listbox = defineComponent({
         if (listboxState.value === ListboxStates.Open) return
         listboxState.value = ListboxStates.Open
       },
-      goToOption(focus: Focus, id?: string) {
+      goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
         if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
 
@@ -138,6 +148,7 @@ export let Listbox = defineComponent({
         if (searchQuery.value === '' && activeOptionIndex.value === nextActiveOptionIndex) return
         searchQuery.value = ''
         activeOptionIndex.value = nextActiveOptionIndex
+        activationTrigger.value = trigger ?? ActivationTrigger.Other
       },
       search(value: string) {
         if (props.disabled) return
@@ -164,6 +175,7 @@ export let Listbox = defineComponent({
         if (matchIdx === -1 || matchIdx === activeOptionIndex.value) return
 
         activeOptionIndex.value = matchIdx
+        activationTrigger.value = ActivationTrigger.Other
       },
       clearSearch() {
         if (props.disabled) return
@@ -200,6 +212,7 @@ export let Listbox = defineComponent({
           // fix this, we will find the correct (new) index position.
           return nextOptions.indexOf(currentActiveOption)
         })()
+        activationTrigger.value = ActivationTrigger.Other
       },
       select(value: unknown) {
         if (props.disabled) return
@@ -543,6 +556,7 @@ export let ListboxOption = defineComponent({
     watchEffect(() => {
       if (api.listboxState.value !== ListboxStates.Open) return
       if (!active.value) return
+      if (api.activationTrigger.value === ActivationTrigger.Pointer) return
       nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
@@ -561,7 +575,7 @@ export let ListboxOption = defineComponent({
     function handleMove() {
       if (props.disabled) return
       if (active.value) return
-      api.goToOption(Focus.Specific, id)
+      api.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
     }
 
     function handleLeave() {

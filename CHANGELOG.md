@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Forward the `ref` to all components ([#1116](https://github.com/tailwindlabs/headlessui/pull/1116))
 - Ensure links are triggered inside `Popover Panel` components ([#1153](https://github.com/tailwindlabs/headlessui/pull/1153))
 - Improve SSR for `Tab` component ([#1155](https://github.com/tailwindlabs/headlessui/pull/1155))
+- Fix `hover` scroll ([#1161](https://github.com/tailwindlabs/headlessui/pull/1161))
 
 ## [Unreleased - @headlessui/vue]
 
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure that you can close the combobox initially ([#1148](https://github.com/tailwindlabs/headlessui/pull/1148))
 - Fix Dialog usage in Tabs ([#1149](https://github.com/tailwindlabs/headlessui/pull/1149))
 - Ensure links are triggered inside `Popover Panel` components ([#1153](https://github.com/tailwindlabs/headlessui/pull/1153))
+- Fix `hover` scroll ([#1161](https://github.com/tailwindlabs/headlessui/pull/1161))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 

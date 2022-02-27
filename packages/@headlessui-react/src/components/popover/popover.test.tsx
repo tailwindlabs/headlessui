@@ -1862,7 +1862,7 @@ describe('Keyboard interactions', () => {
         assertActiveElement(getPopoverButton())
 
         // Verify that we got redirected to the href
-        expect(window.location.hash).toEqual('#closed')
+        expect(document.location.hash).toEqual('#closed')
       })
     )
   })
