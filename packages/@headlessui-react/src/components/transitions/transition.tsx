@@ -216,7 +216,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   let { show, appear, initial } = useTransitionContext()
   let { register, unregister } = useParentNesting()
-  let prevShow = useRef(show)
+  let prevShow = useRef(undefined)
 
   let id = useId()
 
