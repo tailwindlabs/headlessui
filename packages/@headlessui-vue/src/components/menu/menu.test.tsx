@@ -704,6 +704,7 @@ describe('Rendering', () => {
                 'However we need to passthrough the following props:',
                 '  - disabled',
                 '  - id',
+                '  - ref',
                 '  - role',
                 '  - tabIndex',
                 '  - aria-disabled',

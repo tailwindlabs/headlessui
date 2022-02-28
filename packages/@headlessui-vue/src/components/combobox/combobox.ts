@@ -26,6 +26,7 @@ import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { sortByDomNode } from '../../utils/focus-management'
 
 enum ComboboxStates {
   Open,
@@ -37,7 +38,11 @@ enum ActivationTrigger {
   Other,
 }
 
-type ComboboxOptionDataRef = Ref<{ disabled: boolean; value: unknown }>
+type ComboboxOptionDataRef = Ref<{
+  disabled: boolean
+  value: unknown
+  domRef: Ref<HTMLElement | null>
+}>
 type StateDefinition = {
   // State
   comboboxState: Ref<ComboboxStates>
@@ -140,24 +145,27 @@ export let Combobox = defineComponent({
           optionsRef.value &&
           !optionsPropsRef.value.static &&
           comboboxState.value === ComboboxStates.Closed
-        )
+        ) {
           return
+        }
+
+        let orderedOptions = sortByDomNode(options.value, (option) => option.dataRef.domRef.value)
 
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
             : { focus: focus as Exclude<Focus, Focus.Specific> },
           {
-            resolveItems: () => options.value,
+            resolveItems: () => orderedOptions,
             resolveActiveIndex: () => activeOptionIndex.value,
             resolveId: (option) => option.id,
             resolveDisabled: (option) => option.dataRef.disabled,
           }
         )
 
-        if (activeOptionIndex.value === nextActiveOptionIndex) return
         activeOptionIndex.value = nextActiveOptionIndex
         activationTrigger.value = trigger ?? ActivationTrigger.Other
+        options.value = orderedOptions
       },
       syncInputValue() {
         let value = api.value.value
@@ -189,17 +197,9 @@ export let Combobox = defineComponent({
       registerOption(id: string, dataRef: ComboboxOptionDataRef) {
         let currentActiveOption =
           activeOptionIndex.value !== null ? options.value[activeOptionIndex.value] : null
-        let orderMap = Array.from(
-          optionsRef.value?.querySelectorAll('[id^="headlessui-combobox-option-"]') ?? []
-        ).reduce(
-          (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
-          {}
-        ) as Record<string, number>
 
         // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
-        options.value = [...options.value, { id, dataRef }].sort(
-          (a, z) => orderMap[a.id] - orderMap[z.id]
-        )
+        options.value = [...options.value, { id, dataRef }]
 
         // If we inserted an option before the current active option then the
         // active option index would be wrong. To fix this, we will re-lookup
@@ -630,6 +630,7 @@ export let ComboboxOption = defineComponent({
   setup(props, { slots, attrs }) {
     let api = useComboboxContext('ComboboxOption')
     let id = `headlessui-combobox-option-${useId()}`
+    let internalOptionRef = ref<HTMLElement | null>(null)
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
@@ -642,6 +643,7 @@ export let ComboboxOption = defineComponent({
     let dataRef = computed<ComboboxOptionDataRef['value']>(() => ({
       disabled: props.disabled,
       value: props.value,
+      domRef: internalOptionRef,
     }))
 
     onMounted(() => api.registerOption(id, dataRef))
@@ -696,6 +698,7 @@ export let ComboboxOption = defineComponent({
       let slot = { active: active.value, selected: selected.value, disabled }
       let propsWeControl = {
         id,
+        ref: internalOptionRef,
         role: 'option',
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,

@@ -24,6 +24,7 @@ import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { sortByDomNode } from '../../utils/focus-management'
 
 enum ListboxStates {
   Open,
@@ -39,7 +40,12 @@ function nextFrame(cb: () => void) {
   requestAnimationFrame(() => requestAnimationFrame(cb))
 }
 
-type ListboxOptionDataRef = Ref<{ textValue: string; disabled: boolean; value: unknown }>
+type ListboxOptionDataRef = Ref<{
+  textValue: string
+  disabled: boolean
+  value: unknown
+  domRef: Ref<HTMLElement | null>
+}>
 type StateDefinition = {
   // State
   listboxState: Ref<ListboxStates>
@@ -133,22 +139,24 @@ export let Listbox = defineComponent({
         if (props.disabled) return
         if (listboxState.value === ListboxStates.Closed) return
 
+        let orderedOptions = sortByDomNode(options.value, (option) => option.dataRef.domRef.value)
+
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
             : { focus: focus as Exclude<Focus, Focus.Specific> },
           {
-            resolveItems: () => options.value,
+            resolveItems: () => orderedOptions,
             resolveActiveIndex: () => activeOptionIndex.value,
             resolveId: (option) => option.id,
             resolveDisabled: (option) => option.dataRef.disabled,
           }
         )
 
-        if (searchQuery.value === '' && activeOptionIndex.value === nextActiveOptionIndex) return
         searchQuery.value = ''
         activeOptionIndex.value = nextActiveOptionIndex
         activationTrigger.value = trigger ?? ActivationTrigger.Other
+        options.value = orderedOptions
       },
       search(value: string) {
         if (props.disabled) return
@@ -185,17 +193,8 @@ export let Listbox = defineComponent({
         searchQuery.value = ''
       },
       registerOption(id: string, dataRef: ListboxOptionDataRef) {
-        let orderMap = Array.from(
-          optionsRef.value?.querySelectorAll('[id^="headlessui-listbox-option-"]') ?? []
-        ).reduce(
-          (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
-          {}
-        ) as Record<string, number>
-
         // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
-        options.value = [...options.value, { id, dataRef }].sort(
-          (a, z) => orderMap[a.id] - orderMap[z.id]
-        )
+        options.value = [...options.value, { id, dataRef }]
       },
       unregisterOption(id: string) {
         let nextOptions = options.value.slice()
@@ -518,6 +517,7 @@ export let ListboxOption = defineComponent({
   setup(props, { slots, attrs }) {
     let api = useListboxContext('ListboxOption')
     let id = `headlessui-listbox-option-${useId()}`
+    let internalOptionRef = ref<HTMLElement | null>(null)
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
@@ -527,11 +527,12 @@ export let ListboxOption = defineComponent({
 
     let selected = computed(() => toRaw(api.value.value) === toRaw(props.value))
 
-    let dataRef = ref<ListboxOptionDataRef['value']>({
+    let dataRef = computed<ListboxOptionDataRef['value']>(() => ({
       disabled: props.disabled,
       value: props.value,
       textValue: '',
-    })
+      domRef: internalOptionRef,
+    }))
     onMounted(() => {
       let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
@@ -589,6 +590,7 @@ export let ListboxOption = defineComponent({
       let slot = { active: active.value, selected: selected.value, disabled }
       let propsWeControl = {
         id,
+        ref: internalOptionRef,
         role: 'option',
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,

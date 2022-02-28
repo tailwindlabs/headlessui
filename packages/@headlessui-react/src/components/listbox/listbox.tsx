@@ -29,7 +29,7 @@ import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
+import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -48,6 +48,7 @@ type ListboxOptionDataRef = MutableRefObject<{
   textValue?: string
   disabled: boolean
   value: unknown
+  domRef: MutableRefObject<HTMLElement | null>
 }>
 
 interface StateDefinition {
@@ -126,8 +127,10 @@ let reducers: {
     if (state.disabled) return state
     if (state.listboxState === ListboxStates.Closed) return state
 
+    let options = sortByDomNode(state.options, (option) => option.dataRef.current.domRef.current)
+
     let activeOptionIndex = calculateActiveIndex(action, {
-      resolveItems: () => state.options,
+      resolveItems: () => options,
       resolveActiveIndex: () => state.activeOptionIndex,
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
@@ -136,6 +139,7 @@ let reducers: {
     if (state.searchQuery === '' && state.activeOptionIndex === activeOptionIndex) return state
     return {
       ...state,
+      options, // Sorted options
       searchQuery: '',
       activeOptionIndex,
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
@@ -180,17 +184,7 @@ let reducers: {
     return { ...state, searchQuery: '' }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
-    let orderMap = Array.from(
-      state.optionsRef.current?.querySelectorAll('[id^="headlessui-listbox-option-"]')!
-    ).reduce(
-      (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
-      {}
-    ) as Record<string, number>
-
-    let options = [...state.options, { id: action.id, dataRef: action.dataRef }].sort(
-      (a, z) => orderMap[a.id] - orderMap[z.id]
-    )
-
+    let options = [...state.options, { id: action.id, dataRef: action.dataRef }]
     return { ...state, options }
   },
   [ActionTypes.UnregisterOption]: (state, action) => {
@@ -665,9 +659,10 @@ let Option = forwardRefWithAs(function Option<
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
   let selected = state.propsRef.current.value === value
-  let optionRef = useSyncRefs(ref)
+  let internalOptionRef = useRef<HTMLElement | null>(null)
+  let optionRef = useSyncRefs(ref, internalOptionRef)
 
-  let bag = useRef<ListboxOptionDataRef['current']>({ disabled, value })
+  let bag = useRef<ListboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled

@@ -21,6 +21,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { sortByDomNode } from '../../utils/focus-management'
 
 enum MenuStates {
   Open,
@@ -36,7 +37,11 @@ function nextFrame(cb: () => void) {
   requestAnimationFrame(() => requestAnimationFrame(cb))
 }
 
-type MenuItemDataRef = Ref<{ textValue: string; disabled: boolean }>
+type MenuItemDataRef = Ref<{
+  textValue: string
+  disabled: boolean
+  domRef: Ref<HTMLElement | null>
+}>
 type StateDefinition = {
   // State
   menuState: Ref<MenuStates>
@@ -99,22 +104,23 @@ export let Menu = defineComponent({
       },
       openMenu: () => (menuState.value = MenuStates.Open),
       goToItem(focus: Focus, id?: string, trigger?: ActivationTrigger) {
+        let orderedItems = sortByDomNode(items.value, (item) => item.dataRef.domRef.value)
         let nextActiveItemIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
             : { focus: focus as Exclude<Focus, Focus.Specific> },
           {
-            resolveItems: () => items.value,
+            resolveItems: () => orderedItems,
             resolveActiveIndex: () => activeItemIndex.value,
             resolveId: (item) => item.id,
             resolveDisabled: (item) => item.dataRef.disabled,
           }
         )
 
-        if (searchQuery.value === '' && activeItemIndex.value === nextActiveItemIndex) return
         searchQuery.value = ''
         activeItemIndex.value = nextActiveItemIndex
         activationTrigger.value = trigger ?? ActivationTrigger.Other
+        items.value = orderedItems
       },
       search(value: string) {
         let wasAlreadySearching = searchQuery.value !== ''
@@ -142,17 +148,8 @@ export let Menu = defineComponent({
         searchQuery.value = ''
       },
       registerItem(id: string, dataRef: MenuItemDataRef) {
-        let orderMap = Array.from(
-          itemsRef.value?.querySelectorAll('[id^="headlessui-menu-item-"]') ?? []
-        ).reduce(
-          (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
-          {}
-        ) as Record<string, number>
-
         // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
-        items.value = [...items.value, { id, dataRef }].sort(
-          (a, z) => orderMap[a.id] - orderMap[z.id]
-        )
+        items.value = [...items.value, { id, dataRef }]
       },
       unregisterItem(id: string) {
         let nextItems = items.value.slice()
@@ -449,6 +446,7 @@ export let MenuItem = defineComponent({
   setup(props, { slots, attrs }) {
     let api = useMenuContext('MenuItem')
     let id = `headlessui-menu-item-${useId()}`
+    let internalItemRef = ref<HTMLElement | null>(null)
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null
@@ -456,7 +454,11 @@ export let MenuItem = defineComponent({
         : false
     })
 
-    let dataRef = ref<MenuItemDataRef['value']>({ disabled: props.disabled, textValue: '' })
+    let dataRef = computed<MenuItemDataRef['value']>(() => ({
+      disabled: props.disabled,
+      textValue: '',
+      domRef: internalItemRef,
+    }))
     onMounted(() => {
       let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
@@ -500,6 +502,7 @@ export let MenuItem = defineComponent({
       let slot = { active: active.value, disabled }
       let propsWeControl = {
         id,
+        ref: internalItemRef,
         role: 'menuitem',
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
