@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure links are triggered inside `Popover Panel` components ([#1153](https://github.com/tailwindlabs/headlessui/pull/1153))
 - Improve SSR for `Tab` component ([#1155](https://github.com/tailwindlabs/headlessui/pull/1155))
 - Fix `hover` scroll ([#1161](https://github.com/tailwindlabs/headlessui/pull/1161))
+- Guarantee DOM sort order when performing actions ([#1168](https://github.com/tailwindlabs/headlessui/pull/1168))
 
 ## [Unreleased - @headlessui/vue]
 
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix Dialog usage in Tabs ([#1149](https://github.com/tailwindlabs/headlessui/pull/1149))
 - Ensure links are triggered inside `Popover Panel` components ([#1153](https://github.com/tailwindlabs/headlessui/pull/1153))
 - Fix `hover` scroll ([#1161](https://github.com/tailwindlabs/headlessui/pull/1161))
+- Guarantee DOM sort order when performing actions ([#1168](https://github.com/tailwindlabs/headlessui/pull/1168))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
