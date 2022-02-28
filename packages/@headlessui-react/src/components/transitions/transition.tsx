@@ -226,6 +226,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   let { show, appear, initial } = useTransitionContext()
   let { register, unregister } = useParentNesting()
+  let prevShow = useRef(show)
 
   let id = useId()
 
@@ -290,6 +291,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     let node = container.current
     if (!node) return
     if (skip) return
+    if (show === prevShow.current) return
 
     isTransitioning.current = true
 
@@ -344,6 +346,10 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     leaveFromClasses,
     leaveToClasses,
   ])
+
+  useIsoMorphicEffect(() => {
+    prevShow.current = show
+  }, [show])
 
   let propsWeControl = { ref: transitionRef }
   let passthroughProps = rest
