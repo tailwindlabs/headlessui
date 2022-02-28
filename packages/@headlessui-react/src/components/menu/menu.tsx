@@ -30,7 +30,7 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement, FocusableMode } from '../../utils/focus-management'
+import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/focus-management'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
@@ -46,7 +46,11 @@ enum ActivationTrigger {
   Other,
 }
 
-type MenuItemDataRef = MutableRefObject<{ textValue?: string; disabled: boolean }>
+type MenuItemDataRef = MutableRefObject<{
+  textValue?: string
+  disabled: boolean
+  domRef: MutableRefObject<HTMLElement | null>
+}>
 
 interface StateDefinition {
   menuState: MenuStates
@@ -98,8 +102,10 @@ let reducers: {
     return { ...state, menuState: MenuStates.Open }
   },
   [ActionTypes.GoToItem]: (state, action) => {
+    let items = sortByDomNode(state.items, (item) => item.dataRef.current.domRef.current)
+
     let activeItemIndex = calculateActiveIndex(action, {
-      resolveItems: () => state.items,
+      resolveItems: () => items,
       resolveActiveIndex: () => state.activeItemIndex,
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
@@ -108,6 +114,7 @@ let reducers: {
     if (state.searchQuery === '' && state.activeItemIndex === activeItemIndex) return state
     return {
       ...state,
+      items, // Sorted items
       searchQuery: '',
       activeItemIndex,
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
@@ -144,17 +151,7 @@ let reducers: {
     return { ...state, searchQuery: '', searchActiveItemIndex: null }
   },
   [ActionTypes.RegisterItem]: (state, action) => {
-    let orderMap = Array.from(
-      state.itemsRef.current?.querySelectorAll('[id^="headlessui-menu-item-"]')!
-    ).reduce(
-      (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
-      {}
-    ) as Record<string, number>
-
-    let items = [...state.items, { id: action.id, dataRef: action.dataRef }].sort(
-      (a, z) => orderMap[a.id] - orderMap[z.id]
-    )
-
+    let items = [...state.items, { id: action.id, dataRef: action.dataRef }]
     return { ...state, items }
   },
   [ActionTypes.UnregisterItem]: (state, action) => {
@@ -560,7 +557,8 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   let [state, dispatch] = useMenuContext('Menu.Item')
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
-  let itemRef = useSyncRefs(ref)
+  let internalItemRef = useRef<HTMLElement | null>(null)
+  let itemRef = useSyncRefs(ref, internalItemRef)
 
   useIsoMorphicEffect(() => {
     if (state.menuState !== MenuStates.Open) return
@@ -573,7 +571,7 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     return d.dispose
   }, [id, active, state.menuState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])
 
-  let bag = useRef<MenuItemDataRef['current']>({ disabled })
+  let bag = useRef<MenuItemDataRef['current']>({ disabled, domRef: internalItemRef })
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled

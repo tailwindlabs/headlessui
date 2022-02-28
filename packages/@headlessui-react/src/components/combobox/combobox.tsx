@@ -35,6 +35,7 @@ import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-cl
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { sortByDomNode } from '../../utils/focus-management'
 
 enum ComboboxStates {
   Open,
@@ -50,6 +51,7 @@ type ComboboxOptionDataRef = MutableRefObject<{
   textValue?: string
   disabled: boolean
   value: unknown
+  domRef: MutableRefObject<HTMLElement | null>
 }>
 
 interface StateDefinition {
@@ -129,11 +131,14 @@ let reducers: {
       state.optionsRef.current &&
       !state.optionsPropsRef.current.static &&
       state.comboboxState === ComboboxStates.Closed
-    )
+    ) {
       return state
+    }
+
+    let options = sortByDomNode(state.options, (option) => option.dataRef.current.domRef.current)
 
     let activeOptionIndex = calculateActiveIndex(action, {
-      resolveItems: () => state.options,
+      resolveItems: () => options,
       resolveActiveIndex: () => state.activeOptionIndex,
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
@@ -142,6 +147,7 @@ let reducers: {
     if (state.activeOptionIndex === activeOptionIndex) return state
     return {
       ...state,
+      options, // Sorted options
       activeOptionIndex,
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
     }
@@ -150,17 +156,7 @@ let reducers: {
     let currentActiveOption =
       state.activeOptionIndex !== null ? state.options[state.activeOptionIndex] : null
 
-    let orderMap = Array.from(
-      state.optionsRef.current?.querySelectorAll('[id^="headlessui-combobox-option-"]')!
-    ).reduce(
-      (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
-      {}
-    ) as Record<string, number>
-
-    let options = [...state.options, { id: action.id, dataRef: action.dataRef }].sort(
-      (a, z) => orderMap[a.id] - orderMap[z.id]
-    )
-
+    let options = [...state.options, { id: action.id, dataRef: action.dataRef }]
     let nextState = {
       ...state,
       options,
@@ -859,8 +855,9 @@ let Option = forwardRefWithAs(function Option<
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
   let selected = state.comboboxPropsRef.current.value === value
-  let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value })
-  let optionRef = useSyncRefs(ref)
+  let internalOptionRef = useRef<HTMLLIElement | null>(null)
+  let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })
+  let optionRef = useSyncRefs(ref, internalOptionRef)
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled

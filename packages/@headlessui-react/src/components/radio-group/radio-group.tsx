@@ -20,7 +20,7 @@ import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { Keys } from '../../components/keyboard'
-import { focusIn, Focus, FocusResult } from '../../utils/focus-management'
+import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { useFlags } from '../../hooks/use-flags'
 import { Label, useLabels } from '../../components/label/label'
 import { Description, useDescriptions } from '../../components/description/description'
@@ -53,12 +53,14 @@ let reducers: {
   ) => StateDefinition
 } = {
   [ActionTypes.RegisterOption](state, action) {
+    let nextOptions = [
+      ...state.options,
+      { id: action.id, element: action.element, propsRef: action.propsRef },
+    ]
+
     return {
       ...state,
-      options: [
-        ...state.options,
-        { id: action.id, element: action.element, propsRef: action.propsRef },
-      ],
+      options: sortByDomNode(nextOptions, (option) => option.element.current),
     }
   },
   [ActionTypes.UnregisterOption](state, action) {

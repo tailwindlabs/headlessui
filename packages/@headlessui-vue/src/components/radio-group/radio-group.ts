@@ -15,7 +15,7 @@ import {
 } from 'vue'
 import { dom } from '../../utils/dom'
 import { Keys } from '../../keyboard'
-import { focusIn, Focus, FocusResult } from '../../utils/focus-management'
+import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { useId } from '../../hooks/use-id'
 import { omit, render } from '../../utils/render'
 import { Label, useLabels } from '../label/label'
@@ -98,15 +98,8 @@ export let RadioGroup = defineComponent({
         return true
       },
       registerOption(action: UnwrapRef<Option>) {
-        let orderMap = Array.from(
-          radioGroupRef.value?.querySelectorAll('[id^="headlessui-radiogroup-option-"]')!
-        ).reduce(
-          (lookup, element, index) => Object.assign(lookup, { [element.id]: index }),
-          {}
-        ) as Record<string, number>
-
         options.value.push(action)
-        options.value.sort((a, z) => orderMap[a.id] - orderMap[z.id])
+        options.value = sortByDomNode(options.value, (option) => option.element)
       },
       unregisterOption(id: Option['id']) {
         let idx = options.value.findIndex((radio) => radio.id === id)

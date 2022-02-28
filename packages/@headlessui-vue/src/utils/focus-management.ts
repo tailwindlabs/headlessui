@@ -95,15 +95,27 @@ export function focusElement(element: HTMLElement | null) {
   element?.focus({ preventScroll: true })
 }
 
+export function sortByDomNode<T>(
+  nodes: T[],
+  resolveKey: (item: T) => HTMLElement | null = (i) => i as unknown as HTMLElement | null
+): T[] {
+  return nodes.slice().sort((aItem, zItem) => {
+    let a = resolveKey(aItem)
+    let z = resolveKey(zItem)
+
+    if (a === null || z === null) return 0
+
+    let position = a.compareDocumentPosition(z)
+
+    if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1
+    if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1
+    return 0
+  })
+}
+
 export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
   let elements = Array.isArray(container)
-    ? container.slice().sort((a, z) => {
-        let position = a.compareDocumentPosition(z)
-
-        if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1
-        if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1
-        return 0
-      })
+    ? sortByDomNode(container)
     : getFocusableElements(container)
   let active = document.activeElement as HTMLElement
 
