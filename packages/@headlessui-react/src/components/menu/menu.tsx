@@ -31,7 +31,7 @@ import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/focus-management'
-import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -219,13 +219,8 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
   let menuRef = useSyncRefs(ref)
 
   // Handle outside click
-  useWindowEvent('mousedown', (event) => {
-    let target = event.target as HTMLElement
-
+  useOutsideClick([buttonRef, itemsRef], (event, target) => {
     if (menuState !== MenuStates.Open) return
-
-    if (buttonRef.current?.contains(target)) return
-    if (itemsRef.current?.contains(target)) return
 
     dispatch({ type: ActionTypes.CloseMenu })
 

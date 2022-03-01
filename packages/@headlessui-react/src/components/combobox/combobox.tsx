@@ -30,7 +30,7 @@ import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { useWindowEvent } from '../../hooks/use-window-event'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
@@ -302,14 +302,8 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
   // Handle outside click
-  useWindowEvent('mousedown', (event) => {
-    let target = event.target as HTMLElement
-
+  useOutsideClick([buttonRef, inputRef, optionsRef], () => {
     if (comboboxState !== ComboboxStates.Open) return
-
-    if (buttonRef.current?.contains(target)) return
-    if (inputRef.current?.contains(target)) return
-    if (optionsRef.current?.contains(target)) return
 
     dispatch({ type: ActionTypes.CloseCombobox })
   })
