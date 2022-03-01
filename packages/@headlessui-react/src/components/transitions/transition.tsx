@@ -228,7 +228,6 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     if (!isTransitioning.current) {
       setState(TreeStates.Hidden)
       unregister.current(id)
-      events.current.afterLeave()
     }
   })
 
