@@ -1,7 +1,6 @@
 import React, {
   Fragment,
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -32,6 +31,7 @@ import { Reason, transition } from './utils/transition'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useLatestValue } from '../../hooks/use-latest-value'
 
 type ID = ReturnType<typeof useId>
 
@@ -103,8 +103,8 @@ function useParentNesting() {
 
 interface NestingContextValues {
   children: MutableRefObject<{ id: ID; state: TreeStates }[]>
-  register: (id: ID) => () => void
-  unregister: (id: ID, strategy?: RenderStrategy) => void
+  register: MutableRefObject<(id: ID) => () => void>
+  unregister: MutableRefObject<(id: ID, strategy?: RenderStrategy) => void>
 }
 
 let NestingContext = createContext<NestingContextValues | null>(null)
@@ -118,48 +118,38 @@ function hasChildren(
 }
 
 function useNesting(done?: () => void) {
-  let doneRef = useRef(done)
+  let doneRef = useLatestValue(done)
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
   let mounted = useIsMounted()
 
-  useEffect(() => {
-    doneRef.current = done
-  }, [done])
+  let unregister = useLatestValue((childId: ID, strategy = RenderStrategy.Hidden) => {
+    let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
+    if (idx === -1) return
 
-  let unregister = useCallback(
-    (childId: ID, strategy = RenderStrategy.Hidden) => {
-      let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
-      if (idx === -1) return
+    match(strategy, {
+      [RenderStrategy.Unmount]() {
+        transitionableChildren.current.splice(idx, 1)
+      },
+      [RenderStrategy.Hidden]() {
+        transitionableChildren.current[idx].state = TreeStates.Hidden
+      },
+    })
 
-      match(strategy, {
-        [RenderStrategy.Unmount]() {
-          transitionableChildren.current.splice(idx, 1)
-        },
-        [RenderStrategy.Hidden]() {
-          transitionableChildren.current[idx].state = TreeStates.Hidden
-        },
-      })
+    if (!hasChildren(transitionableChildren) && mounted.current) {
+      doneRef.current?.()
+    }
+  })
 
-      if (!hasChildren(transitionableChildren) && mounted.current) {
-        doneRef.current?.()
-      }
-    },
-    [doneRef, mounted, transitionableChildren]
-  )
+  let register = useLatestValue((childId: ID) => {
+    let child = transitionableChildren.current.find(({ id }) => id === childId)
+    if (!child) {
+      transitionableChildren.current.push({ id: childId, state: TreeStates.Visible })
+    } else if (child.state !== TreeStates.Visible) {
+      child.state = TreeStates.Visible
+    }
 
-  let register = useCallback(
-    (childId: ID) => {
-      let child = transitionableChildren.current.find(({ id }) => id === childId)
-      if (!child) {
-        transitionableChildren.current.push({ id: childId, state: TreeStates.Visible })
-      } else if (child.state !== TreeStates.Visible) {
-        child.state = TreeStates.Visible
-      }
-
-      return () => unregister(childId, RenderStrategy.Unmount)
-    },
-    [transitionableChildren, unregister]
-  )
+    return () => unregister.current(childId, RenderStrategy.Unmount)
+  })
 
   return useMemo(
     () => ({
@@ -226,6 +216,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   let { show, appear, initial } = useTransitionContext()
   let { register, unregister } = useParentNesting()
+  let prevShow = useRef(undefined)
 
   let id = useId()
 
@@ -236,14 +227,14 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
     if (!isTransitioning.current) {
       setState(TreeStates.Hidden)
-      unregister(id)
+      unregister.current(id)
       events.current.afterLeave()
     }
   })
 
   useIsoMorphicEffect(() => {
     if (!id) return
-    return register(id)
+    return register.current(id)
   }, [register, id])
 
   useIsoMorphicEffect(() => {
@@ -258,8 +249,8 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     }
 
     match(state, {
-      [TreeStates.Hidden]: () => unregister(id),
-      [TreeStates.Visible]: () => register(id),
+      [TreeStates.Hidden]: () => unregister.current(id),
+      [TreeStates.Visible]: () => register.current(id),
     })
   }, [state, id, register, unregister, show, strategy])
 
@@ -290,6 +281,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     let node = container.current
     if (!node) return
     if (skip) return
+    if (show === prevShow.current) return
 
     isTransitioning.current = true
 
@@ -323,7 +315,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
             // ourselves.
             if (!hasChildren(nesting)) {
               setState(TreeStates.Hidden)
-              unregister(id)
+              unregister.current(id)
               events.current.afterLeave()
             }
           }
@@ -344,6 +336,10 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     leaveFromClasses,
     leaveToClasses,
   ])
+
+  useIsoMorphicEffect(() => {
+    prevShow.current = show
+  }, [show])
 
   let propsWeControl = { ref: transitionRef }
   let passthroughProps = rest

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve SSR for `Tab` component ([#1155](https://github.com/tailwindlabs/headlessui/pull/1155))
 - Fix `hover` scroll ([#1161](https://github.com/tailwindlabs/headlessui/pull/1161))
 - Guarantee DOM sort order when performing actions ([#1168](https://github.com/tailwindlabs/headlessui/pull/1168))
+- Fix `<Transition>` flickering issue ([#1118](https://github.com/tailwindlabs/headlessui/pull/1118))
 
 ## [Unreleased - @headlessui/vue]
 
