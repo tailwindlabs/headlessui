@@ -46,6 +46,8 @@ interface StateDefinition {
   setTitleId(id: string | null): void
 
   close(): void
+
+  shouldCloseOnClickOutside: boolean
 }
 
 let DialogContext = Symbol('DialogContext') as InjectionKey<StateDefinition>
@@ -73,6 +75,8 @@ export let Dialog = defineComponent({
     unmount: { type: Boolean, default: true },
     open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
+    shouldCloseOnEsc: { type: Boolean, default: true },
+    shouldCloseOnClickOutside: { type: Boolean, default: true },
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots }) {
@@ -153,6 +157,7 @@ export let Dialog = defineComponent({
       close() {
         emit('close', false)
       },
+      shouldCloseOnClickOutside: props.shouldCloseOnClickOutside,
     }
 
     provide(DialogContext, api)
@@ -161,6 +166,7 @@ export let Dialog = defineComponent({
     useWindowEvent('mousedown', (event) => {
       let target = event.target as HTMLElement
 
+      if (!props.shouldCloseOnClickOutside) return
       if (dialogState.value !== DialogStates.Open) return
       if (containers.value.size !== 1) return
       if (contains(containers.value, target)) return
@@ -171,6 +177,7 @@ export let Dialog = defineComponent({
 
     // Handle `Escape` to close
     useWindowEvent('keydown', (event) => {
+      if (!props.shouldCloseOnEsc) return
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
       if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
@@ -275,6 +282,7 @@ export let DialogOverlay = defineComponent({
     let id = `headlessui-dialog-overlay-${useId()}`
 
     function handleClick(event: MouseEvent) {
+      if (!api.shouldCloseOnClickOutside) return
       if (event.target !== event.currentTarget) return
       event.preventDefault()
       event.stopPropagation()
