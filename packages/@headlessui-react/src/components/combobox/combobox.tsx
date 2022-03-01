@@ -220,7 +220,7 @@ function useComboboxContext(component: string) {
 
 let ComboboxActions = createContext<{
   selectOption(id: string): void
-  selectActiveOption(): void
+  selectActiveOption(): boolean
 } | null>(null)
 ComboboxActions.displayName = 'ComboboxActions'
 
@@ -356,7 +356,9 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       let { dataRef } = options[activeOptionIndex]
       comboboxPropsRef.current.onChange(dataRef.current.value)
       syncInputValue()
+      return true
     }
+    return false
   }, [activeOptionIndex, options, comboboxPropsRef, inputRef])
 
   let actionsBag = useMemo<ContextType<typeof ComboboxActions>>(
@@ -445,10 +447,11 @@ let Input = forwardRefWithAs(function Input<
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         case Keys.Enter:
-          event.preventDefault()
-          event.stopPropagation()
+          if (actions.selectActiveOption()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
 
-          actions.selectActiveOption()
           dispatch({ type: ActionTypes.CloseCombobox })
           break
 
