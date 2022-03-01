@@ -66,6 +66,7 @@ let DialogContext = createContext<
       {
         dialogState: DialogStates
         close(): void
+        shouldCloseOnClickOutside: boolean
         setTitleId(id: string | null): void
       },
       StateDefinition
@@ -286,8 +287,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let id = `headlessui-dialog-${useId()}`
 
   let contextBag = useMemo<ContextType<typeof DialogContext>>(
-    () => [{ dialogState, close, setTitleId }, state],
-    [dialogState, state, close, setTitleId]
+    () => [{ dialogState, close, setTitleId, shouldCloseOnClickOutside }, state],
+    [dialogState, state, close, setTitleId, shouldCloseOnClickOutside]
   )
 
   let slot = useMemo<DialogRenderPropArg>(
@@ -362,13 +363,14 @@ type OverlayPropsWeControl = 'id' | 'aria-hidden' | 'onClick'
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
 >(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
-  let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
+  let [{ dialogState, shouldCloseOnClickOutside, close }] = useDialogContext('Dialog.Overlay')
   let overlayRef = useSyncRefs(ref)
 
   let id = `headlessui-dialog-overlay-${useId()}`
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
+      if (!shouldCloseOnClickOutside) return
       if (event.target !== event.currentTarget) return
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       event.preventDefault()
