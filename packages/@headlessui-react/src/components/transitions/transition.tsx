@@ -216,7 +216,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   let { show, appear, initial } = useTransitionContext()
   let { register, unregister } = useParentNesting()
-  let prevShow = useRef(undefined)
+  let prevShow = useRef<boolean | null>(null)
 
   let id = useId()
 
@@ -338,8 +338,9 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   ])
 
   useIsoMorphicEffect(() => {
+    if (!skip) return
     prevShow.current = show
-  }, [show])
+  }, [show, skip])
 
   let propsWeControl = { ref: transitionRef }
   let passthroughProps = rest
@@ -392,7 +393,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
 
   let initial = useIsInitialRender()
   let transitionBag = useMemo<TransitionContextValues>(
-    () => ({ show: show as boolean, appear: appear || !initial, initial }),
+    () => ({ show: show as boolean, appear, initial }),
     [show, appear, initial]
   )
 
