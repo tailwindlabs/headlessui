@@ -30,9 +30,9 @@ import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/focus-management'
-import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum ListboxStates {
   Open,
@@ -281,13 +281,8 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   )
 
   // Handle outside click
-  useWindowEvent('mousedown', (event) => {
-    let target = event.target as HTMLElement
-
+  useOutsideClick([buttonRef, optionsRef], (event, target) => {
     if (listboxState !== ListboxStates.Open) return
-
-    if (buttonRef.current?.contains(target)) return
-    if (optionsRef.current?.contains(target)) return
 
     dispatch({ type: ActionTypes.CloseListbox })
 

@@ -23,7 +23,6 @@ import { Keys } from '../../keyboard'
 import { useId } from '../../hooks/use-id'
 import { useFocusTrap } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
-import { contains } from '../../internal/dom-containers'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { Portal, PortalGroup } from '../portal/portal'
 import { StackMessage, useStackProvider } from '../../internal/stack-context'
@@ -32,6 +31,7 @@ import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
 import { dom } from '../../utils/dom'
 import { useOpenClosed, State } from '../../internal/open-closed'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum DialogStates {
   Open,
@@ -158,12 +158,9 @@ export let Dialog = defineComponent({
     provide(DialogContext, api)
 
     // Handle outside click
-    useWindowEvent('mousedown', (event) => {
-      let target = event.target as HTMLElement
-
+    useOutsideClick(containers.value, (_event, target) => {
       if (dialogState.value !== DialogStates.Open) return
       if (containers.value.size !== 1) return
-      if (contains(containers.value, target)) return
 
       api.close()
       nextTick(() => target?.focus())

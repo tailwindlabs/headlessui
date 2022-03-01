@@ -20,11 +20,11 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { dom } from '../../utils/dom'
-import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { sortByDomNode } from '../../utils/focus-management'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum ListboxStates {
   Open,
@@ -219,12 +219,11 @@ export let Listbox = defineComponent({
       },
     }
 
-    useWindowEvent('mousedown', (event) => {
-      let target = event.target as HTMLElement
+    // Handle outside click
+    useOutsideClick(buttonRef, (event, target) => {
       let active = document.activeElement
 
       if (listboxState.value !== ListboxStates.Open) return
-      if (dom(buttonRef)?.contains(target)) return
 
       if (!dom(optionsRef)?.contains(target)) api.closeListbox()
       if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element

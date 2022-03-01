@@ -28,6 +28,7 @@ import { dom } from '../../utils/dom'
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum PopoverStates {
   Open,
@@ -175,13 +176,8 @@ export let Popover = defineComponent({
     )
 
     // Handle outside click
-    useWindowEvent('mousedown', (event: MouseEvent) => {
-      let target = event.target as HTMLElement
-
+    useOutsideClick([button, panel], (event, target) => {
       if (popoverState.value !== PopoverStates.Open) return
-
-      if (dom(button)?.contains(target)) return
-      if (dom(panel)?.contains(target)) return
 
       api.closePopover()
 

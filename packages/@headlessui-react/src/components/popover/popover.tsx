@@ -36,6 +36,7 @@ import {
 import { useWindowEvent } from '../../hooks/use-window-event'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum PopoverStates {
   Open,
@@ -218,13 +219,8 @@ let PopoverRoot = forwardRefWithAs(function Popover<
   )
 
   // Handle outside click
-  useWindowEvent('mousedown', (event) => {
-    let target = event.target as HTMLElement
-
+  useOutsideClick([button, panel], (event, target) => {
     if (popoverState !== PopoverStates.Open) return
-
-    if (button?.contains(target)) return
-    if (panel?.contains(target)) return
 
     dispatch({ type: ActionTypes.ClosePopover })
 

@@ -33,6 +33,7 @@ import { useWindowEvent } from '../../hooks/use-window-event'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum DialogStates {
   Open,
@@ -207,12 +208,9 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
 
   // Handle outside click
-  useWindowEvent('mousedown', (event) => {
-    let target = event.target as HTMLElement
-
+  useOutsideClick(internalDialogRef, () => {
     if (dialogState !== DialogStates.Open) return
     if (hasNestedDialogs) return
-    if (internalDialogRef.current?.contains(target)) return
 
     close()
   })
