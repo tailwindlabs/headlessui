@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve outside click support ([#1175](https://github.com/tailwindlabs/headlessui/pull/1175))
 - Ensure that `appear` works regardless of multiple rerenders ([#1179](https://github.com/tailwindlabs/headlessui/pull/1179))
 - Reset Combobox Input when the value gets reset ([#1181](https://github.com/tailwindlabs/headlessui/pull/1181))
+- Fix double `beforeEnter` due to SSR ([#1183](https://github.com/tailwindlabs/headlessui/pull/1183))
 
 ## [Unreleased - @headlessui/vue]
 
