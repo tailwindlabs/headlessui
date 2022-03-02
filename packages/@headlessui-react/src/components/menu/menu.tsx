@@ -73,6 +73,32 @@ enum ActionTypes {
   UnregisterItem,
 }
 
+function adjustOrderedState(
+  state: StateDefinition,
+  adjustment: (items: StateDefinition['items']) => StateDefinition['items'] = (i) => i
+) {
+  let currentActiveItem = state.activeItemIndex !== null ? state.items[state.activeItemIndex] : null
+
+  let sortedItems = sortByDomNode(
+    adjustment(state.items.slice()),
+    (item) => item.dataRef.current.domRef.current
+  )
+
+  // If we inserted an item before the current active item then the active item index
+  // would be wrong. To fix this, we will re-lookup the correct index.
+  let adjustedActiveItemIndex = currentActiveItem ? sortedItems.indexOf(currentActiveItem) : null
+
+  // Reset to `null` in case the currentActiveItem was removed.
+  if (adjustedActiveItemIndex === -1) {
+    adjustedActiveItemIndex = null
+  }
+
+  return {
+    items: sortedItems,
+    activeItemIndex: adjustedActiveItemIndex,
+  }
+}
+
 type Actions =
   | { type: ActionTypes.CloseMenu }
   | { type: ActionTypes.OpenMenu }
@@ -102,19 +128,17 @@ let reducers: {
     return { ...state, menuState: MenuStates.Open }
   },
   [ActionTypes.GoToItem]: (state, action) => {
-    let items = sortByDomNode(state.items, (item) => item.dataRef.current.domRef.current)
-
+    let adjustedState = adjustOrderedState(state)
     let activeItemIndex = calculateActiveIndex(action, {
-      resolveItems: () => items,
-      resolveActiveIndex: () => state.activeItemIndex,
+      resolveItems: () => adjustedState.items,
+      resolveActiveIndex: () => adjustedState.activeItemIndex,
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
     })
 
-    if (state.searchQuery === '' && state.activeItemIndex === activeItemIndex) return state
     return {
       ...state,
-      items, // Sorted items
+      ...adjustedState,
       searchQuery: '',
       activeItemIndex,
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
@@ -151,28 +175,23 @@ let reducers: {
     return { ...state, searchQuery: '', searchActiveItemIndex: null }
   },
   [ActionTypes.RegisterItem]: (state, action) => {
-    let items = [...state.items, { id: action.id, dataRef: action.dataRef }]
-    return { ...state, items }
+    let adjustedState = adjustOrderedState(state, (items) => [
+      ...items,
+      { id: action.id, dataRef: action.dataRef },
+    ])
+
+    return { ...state, ...adjustedState }
   },
   [ActionTypes.UnregisterItem]: (state, action) => {
-    let nextItems = state.items.slice()
-    let currentActiveItem = state.activeItemIndex !== null ? nextItems[state.activeItemIndex] : null
-
-    let idx = nextItems.findIndex((a) => a.id === action.id)
-
-    if (idx !== -1) nextItems.splice(idx, 1)
+    let adjustedState = adjustOrderedState(state, (items) => {
+      let idx = items.findIndex((a) => a.id === action.id)
+      if (idx !== -1) items.splice(idx, 1)
+      return items
+    })
 
     return {
       ...state,
-      items: nextItems,
-      activeItemIndex: (() => {
-        if (idx === state.activeItemIndex) return null
-        if (currentActiveItem === null) return null
-
-        // If we removed the item before the actual active index, then it would be out of sync. To
-        // fix this, we will find the correct (new) index position.
-        return nextItems.indexOf(currentActiveItem)
-      })(),
+      ...adjustedState,
       activationTrigger: ActivationTrigger.Other,
     }
   },
