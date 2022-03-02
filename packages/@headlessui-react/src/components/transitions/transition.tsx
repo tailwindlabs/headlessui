@@ -338,8 +338,13 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   useIsoMorphicEffect(() => {
     if (!skip) return
-    prevShow.current = show
-  }, [show, skip])
+
+    if (strategy === RenderStrategy.Hidden) {
+      prevShow.current = null
+    } else {
+      prevShow.current = show
+    }
+  }, [show, skip, state])
 
   let propsWeControl = { ref: transitionRef }
   let passthroughProps = rest
