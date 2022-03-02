@@ -14,6 +14,7 @@ import {
   InjectionKey,
   PropType,
   Ref,
+  UnwrapNestedRefs,
 } from 'vue'
 
 import { Features, render, omit } from '../../utils/render'
@@ -38,11 +39,11 @@ enum ActivationTrigger {
   Other,
 }
 
-type ComboboxOptionDataRef = Ref<{
+type ComboboxOptionData = {
   disabled: boolean
   value: unknown
   domRef: Ref<HTMLElement | null>
-}>
+}
 type StateDefinition = {
   // State
   comboboxState: Ref<ComboboxStates>
@@ -57,7 +58,7 @@ type StateDefinition = {
   optionsRef: Ref<HTMLDivElement | null>
 
   disabled: Ref<boolean>
-  options: Ref<{ id: string; dataRef: ComboboxOptionDataRef }[]>
+  options: Ref<{ id: string; dataRef: ComputedRef<ComboboxOptionData> }[]>
   activeOptionIndex: Ref<number | null>
   activationTrigger: Ref<ActivationTrigger>
 
@@ -67,7 +68,7 @@ type StateDefinition = {
   goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   selectOption(id: string): void
   selectActiveOption(): void
-  registerOption(id: string, dataRef: ComboboxOptionDataRef): void
+  registerOption(id: string, dataRef: ComputedRef<ComboboxOptionData>): void
   unregisterOption(id: string): void
   select(value: unknown): void
 }
@@ -113,6 +114,36 @@ export let Combobox = defineComponent({
     let activationTrigger = ref<StateDefinition['activationTrigger']['value']>(
       ActivationTrigger.Other
     )
+
+    function adjustOrderedState(
+      adjustment: (
+        options: UnwrapNestedRefs<StateDefinition['options']['value']>
+      ) => UnwrapNestedRefs<StateDefinition['options']['value']> = (i) => i
+    ) {
+      let currentActiveOption =
+        activeOptionIndex.value !== null ? options.value[activeOptionIndex.value] : null
+
+      let sortedOptions = sortByDomNode(adjustment(options.value.slice()), (option) =>
+        dom(option.dataRef.domRef)
+      )
+
+      // If we inserted an option before the current active option then the active option index
+      // would be wrong. To fix this, we will re-lookup the correct index.
+      let adjustedActiveOptionIndex = currentActiveOption
+        ? sortedOptions.indexOf(currentActiveOption)
+        : null
+
+      // Reset to `null` in case the currentActiveOption was removed.
+      if (adjustedActiveOptionIndex === -1) {
+        adjustedActiveOptionIndex = null
+      }
+
+      return {
+        options: sortedOptions,
+        activeOptionIndex: adjustedActiveOptionIndex,
+      }
+    }
+
     let value = computed(() => props.modelValue)
 
     let api = {
@@ -149,15 +180,14 @@ export let Combobox = defineComponent({
           return
         }
 
-        let orderedOptions = sortByDomNode(options.value, (option) => option.dataRef.domRef.value)
-
+        let adjustedState = adjustOrderedState()
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
             : { focus: focus as Exclude<Focus, Focus.Specific> },
           {
-            resolveItems: () => orderedOptions,
-            resolveActiveIndex: () => activeOptionIndex.value,
+            resolveItems: () => adjustedState.options,
+            resolveActiveIndex: () => adjustedState.activeOptionIndex,
             resolveId: (option) => option.id,
             resolveDisabled: (option) => option.dataRef.disabled,
           }
@@ -165,7 +195,7 @@ export let Combobox = defineComponent({
 
         activeOptionIndex.value = nextActiveOptionIndex
         activationTrigger.value = trigger ?? ActivationTrigger.Other
-        options.value = orderedOptions
+        options.value = adjustedState.options
       },
       syncInputValue() {
         let value = api.value.value
@@ -196,37 +226,24 @@ export let Combobox = defineComponent({
         emit('update:modelValue', dataRef.value)
         api.syncInputValue()
       },
-      registerOption(id: string, dataRef: ComboboxOptionDataRef) {
-        let currentActiveOption =
-          activeOptionIndex.value !== null ? options.value[activeOptionIndex.value] : null
+      registerOption(id: string, dataRef: ComboboxOptionData) {
+        let adjustedState = adjustOrderedState((options) => {
+          return [...options, { id, dataRef }]
+        })
 
-        // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
-        options.value = [...options.value, { id, dataRef }]
-
-        // If we inserted an option before the current active option then the
-        // active option index would be wrong. To fix this, we will re-lookup
-        // the correct index.
-        activeOptionIndex.value = (() => {
-          if (currentActiveOption === null) return null
-          return options.value.indexOf(currentActiveOption)
-        })()
+        options.value = adjustedState.options
+        activeOptionIndex.value = adjustedState.activeOptionIndex
         activationTrigger.value = ActivationTrigger.Other
       },
       unregisterOption(id: string) {
-        let nextOptions = options.value.slice()
-        let currentActiveOption =
-          activeOptionIndex.value !== null ? nextOptions[activeOptionIndex.value] : null
-        let idx = nextOptions.findIndex((a) => a.id === id)
-        if (idx !== -1) nextOptions.splice(idx, 1)
-        options.value = nextOptions
-        activeOptionIndex.value = (() => {
-          if (idx === activeOptionIndex.value) return null
-          if (currentActiveOption === null) return null
+        let adjustedState = adjustOrderedState((options) => {
+          let idx = options.findIndex((a) => a.id === id)
+          if (idx !== -1) options.splice(idx, 1)
+          return options
+        })
 
-          // If we removed the option before the actual active index, then it would be out of sync. To
-          // fix this, we will find the correct (new) index position.
-          return nextOptions.indexOf(currentActiveOption)
-        })()
+        options.value = adjustedState.options
+        activeOptionIndex.value = adjustedState.activeOptionIndex
         activationTrigger.value = ActivationTrigger.Other
       },
     }
@@ -636,7 +653,7 @@ export let ComboboxOption = defineComponent({
 
     let selected = computed(() => toRaw(api.value.value) === toRaw(props.value))
 
-    let dataRef = computed<ComboboxOptionDataRef['value']>(() => ({
+    let dataRef = computed<ComboboxOptionData>(() => ({
       disabled: props.disabled,
       value: props.value,
       domRef: internalOptionRef,

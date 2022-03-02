@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure that `appear` works regardless of multiple rerenders ([#1179](https://github.com/tailwindlabs/headlessui/pull/1179))
 - Reset Combobox Input when the value gets reset ([#1181](https://github.com/tailwindlabs/headlessui/pull/1181))
 - Fix double `beforeEnter` due to SSR ([#1183](https://github.com/tailwindlabs/headlessui/pull/1183))
+- Adjust active {item,option} index ([#1184](https://github.com/tailwindlabs/headlessui/pull/1184))
 
 ## [Unreleased - @headlessui/vue]
 
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Guarantee DOM sort order when performing actions ([#1168](https://github.com/tailwindlabs/headlessui/pull/1168))
 - Improve outside click support ([#1175](https://github.com/tailwindlabs/headlessui/pull/1175))
 - Reset Combobox Input when the value gets reset ([#1181](https://github.com/tailwindlabs/headlessui/pull/1181))
+- Adjust active {item,option} index ([#1184](https://github.com/tailwindlabs/headlessui/pull/1184))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 

@@ -10,6 +10,8 @@ import {
   InjectionKey,
   Ref,
   watchEffect,
+  ComputedRef,
+  UnwrapNestedRefs,
 } from 'vue'
 import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
@@ -37,17 +39,17 @@ function nextFrame(cb: () => void) {
   requestAnimationFrame(() => requestAnimationFrame(cb))
 }
 
-type MenuItemDataRef = Ref<{
+type MenuItemData = {
   textValue: string
   disabled: boolean
   domRef: Ref<HTMLElement | null>
-}>
+}
 type StateDefinition = {
   // State
   menuState: Ref<MenuStates>
   buttonRef: Ref<HTMLButtonElement | null>
   itemsRef: Ref<HTMLDivElement | null>
-  items: Ref<{ id: string; dataRef: MenuItemDataRef }[]>
+  items: Ref<{ id: string; dataRef: ComputedRef<MenuItemData> }[]>
   searchQuery: Ref<string>
   activeItemIndex: Ref<number | null>
   activationTrigger: Ref<ActivationTrigger>
@@ -58,7 +60,7 @@ type StateDefinition = {
   goToItem(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   search(value: string): void
   clearSearch(): void
-  registerItem(id: string, dataRef: MenuItemDataRef): void
+  registerItem(id: string, dataRef: ComputedRef<MenuItemData>): void
   unregisterItem(id: string): void
 }
 
@@ -90,6 +92,35 @@ export let Menu = defineComponent({
       ActivationTrigger.Other
     )
 
+    function adjustOrderedState(
+      adjustment: (
+        items: UnwrapNestedRefs<StateDefinition['items']['value']>
+      ) => UnwrapNestedRefs<StateDefinition['items']['value']> = (i) => i
+    ) {
+      let currentActiveItem =
+        activeItemIndex.value !== null ? items.value[activeItemIndex.value] : null
+
+      let sortedItems = sortByDomNode(adjustment(items.value.slice()), (item) =>
+        dom(item.dataRef.domRef)
+      )
+
+      // If we inserted an item before the current active item then the active item index
+      // would be wrong. To fix this, we will re-lookup the correct index.
+      let adjustedActiveItemIndex = currentActiveItem
+        ? sortedItems.indexOf(currentActiveItem)
+        : null
+
+      // Reset to `null` in case the currentActiveItem was removed.
+      if (adjustedActiveItemIndex === -1) {
+        adjustedActiveItemIndex = null
+      }
+
+      return {
+        items: sortedItems,
+        activeItemIndex: adjustedActiveItemIndex,
+      }
+    }
+
     let api = {
       menuState,
       buttonRef,
@@ -104,14 +135,14 @@ export let Menu = defineComponent({
       },
       openMenu: () => (menuState.value = MenuStates.Open),
       goToItem(focus: Focus, id?: string, trigger?: ActivationTrigger) {
-        let orderedItems = sortByDomNode(items.value, (item) => item.dataRef.domRef.value)
+        let adjustedState = adjustOrderedState()
         let nextActiveItemIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
             : { focus: focus as Exclude<Focus, Focus.Specific> },
           {
-            resolveItems: () => orderedItems,
-            resolveActiveIndex: () => activeItemIndex.value,
+            resolveItems: () => adjustedState.items,
+            resolveActiveIndex: () => adjustedState.activeItemIndex,
             resolveId: (item) => item.id,
             resolveDisabled: (item) => item.dataRef.disabled,
           }
@@ -120,7 +151,7 @@ export let Menu = defineComponent({
         searchQuery.value = ''
         activeItemIndex.value = nextActiveItemIndex
         activationTrigger.value = trigger ?? ActivationTrigger.Other
-        items.value = orderedItems
+        items.value = adjustedState.items
       },
       search(value: string) {
         let wasAlreadySearching = searchQuery.value !== ''
@@ -147,25 +178,24 @@ export let Menu = defineComponent({
       clearSearch() {
         searchQuery.value = ''
       },
-      registerItem(id: string, dataRef: MenuItemDataRef) {
-        // @ts-expect-error The expected type comes from property 'dataRef' which is declared here on type '{ id: string; dataRef: { textValue: string; disabled: boolean; }; }'
-        items.value = [...items.value, { id, dataRef }]
+      registerItem(id: string, dataRef: MenuItemData) {
+        let adjustedState = adjustOrderedState((items) => {
+          return [...items, { id, dataRef }]
+        })
+
+        items.value = adjustedState.items
+        activeItemIndex.value = adjustedState.activeItemIndex
+        activationTrigger.value = ActivationTrigger.Other
       },
       unregisterItem(id: string) {
-        let nextItems = items.value.slice()
-        let currentActiveItem =
-          activeItemIndex.value !== null ? nextItems[activeItemIndex.value] : null
-        let idx = nextItems.findIndex((a) => a.id === id)
-        if (idx !== -1) nextItems.splice(idx, 1)
-        items.value = nextItems
-        activeItemIndex.value = (() => {
-          if (idx === activeItemIndex.value) return null
-          if (currentActiveItem === null) return null
+        let adjustedState = adjustOrderedState((items) => {
+          let idx = items.findIndex((a) => a.id === id)
+          if (idx !== -1) items.splice(idx, 1)
+          return items
+        })
 
-          // If we removed the item before the actual active index, then it would be out of sync. To
-          // fix this, we will find the correct (new) index position.
-          return nextItems.indexOf(currentActiveItem)
-        })()
+        items.value = adjustedState.items
+        activeItemIndex.value = adjustedState.activeItemIndex
         activationTrigger.value = ActivationTrigger.Other
       },
     }
@@ -453,7 +483,7 @@ export let MenuItem = defineComponent({
         : false
     })
 
-    let dataRef = computed<MenuItemDataRef['value']>(() => ({
+    let dataRef = computed<MenuItemData>(() => ({
       disabled: props.disabled,
       textValue: '',
       domRef: internalItemRef,

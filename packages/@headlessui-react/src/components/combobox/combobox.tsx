@@ -92,6 +92,35 @@ enum ActionTypes {
   UnregisterOption,
 }
 
+function adjustOrderedState(
+  state: StateDefinition,
+  adjustment: (options: StateDefinition['options']) => StateDefinition['options'] = (i) => i
+) {
+  let currentActiveOption =
+    state.activeOptionIndex !== null ? state.options[state.activeOptionIndex] : null
+
+  let sortedOptions = sortByDomNode(
+    adjustment(state.options.slice()),
+    (option) => option.dataRef.current.domRef.current
+  )
+
+  // If we inserted an option before the current active option then the active option index
+  // would be wrong. To fix this, we will re-lookup the correct index.
+  let adjustedActiveOptionIndex = currentActiveOption
+    ? sortedOptions.indexOf(currentActiveOption)
+    : null
+
+  // Reset to `null` in case the currentActiveOption was removed.
+  if (adjustedActiveOptionIndex === -1) {
+    adjustedActiveOptionIndex = null
+  }
+
+  return {
+    options: sortedOptions,
+    activeOptionIndex: adjustedActiveOptionIndex,
+  }
+}
+
 type Actions =
   | { type: ActionTypes.CloseCombobox }
   | { type: ActionTypes.OpenCombobox }
@@ -135,39 +164,29 @@ let reducers: {
       return state
     }
 
-    let options = sortByDomNode(state.options, (option) => option.dataRef.current.domRef.current)
-
+    let adjustedState = adjustOrderedState(state)
     let activeOptionIndex = calculateActiveIndex(action, {
-      resolveItems: () => options,
-      resolveActiveIndex: () => state.activeOptionIndex,
+      resolveItems: () => adjustedState.options,
+      resolveActiveIndex: () => adjustedState.activeOptionIndex,
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
     })
 
-    if (state.activeOptionIndex === activeOptionIndex) return state
     return {
       ...state,
-      options, // Sorted options
+      ...adjustedState,
       activeOptionIndex,
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
     }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
-    let currentActiveOption =
-      state.activeOptionIndex !== null ? state.options[state.activeOptionIndex] : null
+    let adjustedState = adjustOrderedState(state, (options) => {
+      return [...options, { id: action.id, dataRef: action.dataRef }]
+    })
 
-    let options = [...state.options, { id: action.id, dataRef: action.dataRef }]
     let nextState = {
       ...state,
-      options,
-      activeOptionIndex: (() => {
-        if (currentActiveOption === null) return null
-
-        // If we inserted an option before the current active option then the
-        // active option index would be wrong. To fix this, we will re-lookup
-        // the correct index.
-        return options.indexOf(currentActiveOption)
-      })(),
+      ...adjustedState,
       activationTrigger: ActivationTrigger.Other,
     }
 
@@ -181,25 +200,15 @@ let reducers: {
     return nextState
   },
   [ActionTypes.UnregisterOption]: (state, action) => {
-    let nextOptions = state.options.slice()
-    let currentActiveOption =
-      state.activeOptionIndex !== null ? nextOptions[state.activeOptionIndex] : null
-
-    let idx = nextOptions.findIndex((a) => a.id === action.id)
-
-    if (idx !== -1) nextOptions.splice(idx, 1)
+    let adjustedState = adjustOrderedState(state, (options) => {
+      let idx = options.findIndex((a) => a.id === action.id)
+      if (idx !== -1) options.splice(idx, 1)
+      return options
+    })
 
     return {
       ...state,
-      options: nextOptions,
-      activeOptionIndex: (() => {
-        if (idx === state.activeOptionIndex) return null
-        if (currentActiveOption === null) return null
-
-        // If we removed the option before the actual active index, then it would be out of sync. To
-        // fix this, we will find the correct (new) index position.
-        return nextOptions.indexOf(currentActiveOption)
-      })(),
+      ...adjustedState,
       activationTrigger: ActivationTrigger.Other,
     }
   },
