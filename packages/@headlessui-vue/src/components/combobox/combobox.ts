@@ -177,6 +177,8 @@ export let Combobox = defineComponent({
           api.inputRef!.value!.value = displayValue(value)
         } else if (typeof value === 'string') {
           api.inputRef!.value!.value = value
+        } else {
+          api.inputRef!.value!.value = ''
         }
       },
       selectOption(id: string) {
