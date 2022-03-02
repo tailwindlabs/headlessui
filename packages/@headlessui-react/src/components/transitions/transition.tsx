@@ -279,6 +279,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   useIsoMorphicEffect(() => {
     let node = container.current
     if (!node) return
+    if (!ready) return
     if (skip) return
     if (show === prevShow.current) return
 
@@ -328,6 +329,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     container,
     skip,
     show,
+    ready,
     enterClasses,
     enterFromClasses,
     enterToClasses,
