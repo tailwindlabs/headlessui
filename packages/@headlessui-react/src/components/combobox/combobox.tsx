@@ -330,6 +330,8 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       inputRef.current.value = displayValue(value)
     } else if (typeof value === 'string') {
       inputRef.current.value = value
+    } else {
+      inputRef.current.value = ''
     }
   }, [value, inputRef, inputPropsRef])
 

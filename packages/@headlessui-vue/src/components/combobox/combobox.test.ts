@@ -4576,4 +4576,41 @@ describe('Mouse interactions', () => {
       assertActiveComboboxOption(options[1])
     })
   )
+
+  it(
+    'should sync the input field correctly and reset it when resetting the value from outside',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+          <button @click="value = null">reset</button>
+        `,
+        setup: () => ({ value: ref('bob') }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify the input has the selected value
+      expect(getComboboxInput()?.value).toBe('bob')
+
+      // Override the input by typing something
+      await type(word('test'), getComboboxInput())
+      expect(getComboboxInput()?.value).toBe('test')
+
+      // Reset from outside
+      await click(getByText('reset'))
+
+      // Verify the input is reset correctly
+      expect(getComboboxInput()?.value).toBe('')
+    })
+  )
 })

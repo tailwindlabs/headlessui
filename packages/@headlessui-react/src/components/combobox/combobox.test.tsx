@@ -4349,4 +4349,46 @@ describe('Mouse interactions', () => {
       assertActiveComboboxOption(options[1])
     })
   )
+
+  it(
+    'should sync the input field correctly and reset it when resetting the value from outside',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string | null>('bob')
+
+        return (
+          <>
+            <Combobox value={value} onChange={setValue}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+            <button onClick={() => setValue(null)}>reset</button>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify the input has the selected value
+      expect(getComboboxInput()?.value).toBe('bob')
+
+      // Override the input by typing something
+      await type(word('test'), getComboboxInput())
+      expect(getComboboxInput()?.value).toBe('test')
+
+      // Reset from outside
+      await click(getByText('reset'))
+
+      // Verify the input is reset correctly
+      expect(getComboboxInput()?.value).toBe('')
+    })
+  )
 })

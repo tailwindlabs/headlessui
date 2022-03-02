@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `<Transition>` flickering issue ([#1118](https://github.com/tailwindlabs/headlessui/pull/1118))
 - Improve outside click support ([#1175](https://github.com/tailwindlabs/headlessui/pull/1175))
 - Ensure that `appear` works regardless of multiple rerenders ([#1179](https://github.com/tailwindlabs/headlessui/pull/1179))
+- Reset Combobox Input when the value gets reset ([#1181](https://github.com/tailwindlabs/headlessui/pull/1181))
 
 ## [Unreleased - @headlessui/vue]
 
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `hover` scroll ([#1161](https://github.com/tailwindlabs/headlessui/pull/1161))
 - Guarantee DOM sort order when performing actions ([#1168](https://github.com/tailwindlabs/headlessui/pull/1168))
 - Improve outside click support ([#1175](https://github.com/tailwindlabs/headlessui/pull/1175))
+- Reset Combobox Input when the value gets reset ([#1181](https://github.com/tailwindlabs/headlessui/pull/1181))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
