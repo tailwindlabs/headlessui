@@ -22,7 +22,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { sortByDomNode } from '../../utils/focus-management'
+import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum MenuStates {
@@ -201,14 +201,15 @@ export let Menu = defineComponent({
     }
 
     // Handle outside click
-    useOutsideClick(buttonRef, (event, target) => {
-      let active = document.activeElement
-
+    useOutsideClick([buttonRef, itemsRef], (event, target) => {
       if (menuState.value !== MenuStates.Open) return
 
-      if (!dom(itemsRef)?.contains(target)) api.closeMenu()
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
+      api.closeMenu()
+
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        dom(buttonRef)?.focus()
+      }
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.

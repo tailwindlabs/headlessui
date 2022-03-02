@@ -24,7 +24,7 @@ import { dom } from '../../utils/dom'
 import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { sortByDomNode } from '../../utils/focus-management'
+import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum ListboxStates {
@@ -247,14 +247,15 @@ export let Listbox = defineComponent({
     }
 
     // Handle outside click
-    useOutsideClick(buttonRef, (event, target) => {
-      let active = document.activeElement
-
+    useOutsideClick([buttonRef, optionsRef], (event, target) => {
       if (listboxState.value !== ListboxStates.Open) return
 
-      if (!dom(optionsRef)?.contains(target)) api.closeListbox()
-      if (active !== document.body && active?.contains(target)) return // Keep focus on newly clicked/focused element
-      if (!event.defaultPrevented) dom(buttonRef)?.focus({ preventScroll: true })
+      api.closeListbox()
+
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        dom(buttonRef)?.focus()
+      }
     })
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.

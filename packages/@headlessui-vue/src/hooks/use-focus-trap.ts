@@ -24,8 +24,8 @@ export function useFocusTrap(
   function handleFocus() {
     if (!enabled.value) return
     if (containers.value.size !== 1) return
-    let { initialFocus } = options.value
 
+    let { initialFocus } = options.value
     let activeElement = document.activeElement as HTMLElement
 
     if (initialFocus) {
@@ -36,7 +36,10 @@ export function useFocusTrap(
       return // Already focused within Dialog
     }
 
-    restoreElement.value = activeElement
+    if (!restoreElement.value) {
+      // We already have a restore element
+      restoreElement.value = activeElement
+    }
 
     // Try to focus the initialFocus ref
     if (initialFocus) {
