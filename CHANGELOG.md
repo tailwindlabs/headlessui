@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve outside click support ([#1175](https://github.com/tailwindlabs/headlessui/pull/1175))
 - Reset Combobox Input when the value gets reset ([#1181](https://github.com/tailwindlabs/headlessui/pull/1181))
 - Adjust active {item,option} index ([#1184](https://github.com/tailwindlabs/headlessui/pull/1184))
+- Fix re-focusing element after close ([#1186](https://github.com/tailwindlabs/headlessui/pull/1186))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
