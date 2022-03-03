@@ -165,6 +165,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       `You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${onClose}`
     )
   }
+
   let dialogState = open ? DialogStates.Open : DialogStates.Closed
   let visible = (() => {
     if (usesOpenClosedState !== null) {
@@ -200,7 +201,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     enabled
       ? match(position, {
           parent: FocusTrapFeatures.RestoreFocus,
-          leaf: FocusTrapFeatures.All,
+          leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
         })
       : FocusTrapFeatures.None,
     { initialFocus, containers }

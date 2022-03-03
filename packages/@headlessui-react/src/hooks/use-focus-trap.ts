@@ -41,9 +41,7 @@ export function useFocusTrap(
     containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
   } = {}
 ) {
-  let restoreElement = useRef<HTMLElement | null>(
-    typeof window !== 'undefined' ? (document.activeElement as HTMLElement) : null
-  )
+  let restoreElement = useRef<HTMLElement | null>(null)
   let previousActiveElement = useRef<HTMLElement | null>(null)
   let mounted = useIsMounted()
 
@@ -54,7 +52,9 @@ export function useFocusTrap(
   useEffect(() => {
     if (!featuresRestoreFocus) return
 
-    restoreElement.current = document.activeElement as HTMLElement
+    if (!restoreElement.current) {
+      restoreElement.current = document.activeElement as HTMLElement
+    }
   }, [featuresRestoreFocus])
 
   // Restore the focus when we unmount the component.
@@ -70,7 +70,8 @@ export function useFocusTrap(
   // Handle initial focus
   useEffect(() => {
     if (!featuresInitialFocus) return
-    if (!container.current) return
+    let containerElement = container.current
+    if (!containerElement) return
 
     let activeElement = document.activeElement as HTMLElement
 
@@ -79,7 +80,7 @@ export function useFocusTrap(
         previousActiveElement.current = activeElement
         return // Initial focus ref is already the active element
       }
-    } else if (container.current.contains(activeElement)) {
+    } else if (containerElement.contains(activeElement)) {
       previousActiveElement.current = activeElement
       return // Already focused within Dialog
     }
@@ -88,7 +89,7 @@ export function useFocusTrap(
     if (initialFocus?.current) {
       focusElement(initialFocus.current)
     } else {
-      if (focusIn(container.current, Focus.First) === FocusResult.Error) {
+      if (focusIn(containerElement, Focus.First) === FocusResult.Error) {
         console.warn('There are no focusable elements inside the <FocusTrap />')
       }
     }
