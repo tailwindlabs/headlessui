@@ -1,4 +1,4 @@
-import React, { createElement, useState } from 'react'
+import React, { createElement, useRef, useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Dialog } from './dialog'
@@ -515,6 +515,57 @@ describe('Keyboard interactions', () => {
       })
     )
   })
+
+  describe('`Tab` key', () => {
+    it(
+      'should be possible to tab around when using the initialFocus ref',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          let initialFocusRef = useRef(null)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen} initialFocus={initialFocusRef}>
+                Contents
+                <TabSentinel id="a" />
+                <input type="text" id="b" ref={initialFocusRef} />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Verify that the input field is focused
+        assertActiveElement(document.getElementById('b'))
+
+        // Verify that we can tab around
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we can tab around
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('b'))
+
+        // Verify that we can tab around
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+      })
+    )
+  })
 })
 
 describe('Mouse interactions', () => {
@@ -762,19 +813,17 @@ describe('Nesting', () => {
     let [showChild, setShowChild] = useState(false)
 
     return (
-      <>
-        <Dialog open={true} onClose={onClose}>
-          <Dialog.Overlay />
+      <Dialog open={true} onClose={onClose}>
+        <Dialog.Overlay />
 
-          <div>
-            <p>Level: {level}</p>
-            <button onClick={() => setShowChild(true)}>Open {level + 1} a</button>
-            <button onClick={() => setShowChild(true)}>Open {level + 1} b</button>
-            <button onClick={() => setShowChild(true)}>Open {level + 1} c</button>
-          </div>
-          {showChild && <Nested onClose={setShowChild} level={level + 1} />}
-        </Dialog>
-      </>
+        <div>
+          <p>Level: {level}</p>
+          <button onClick={() => setShowChild(true)}>Open {level + 1} a</button>
+          <button onClick={() => setShowChild(true)}>Open {level + 1} b</button>
+          <button onClick={() => setShowChild(true)}>Open {level + 1} c</button>
+        </div>
+        {showChild && <Nested onClose={setShowChild} level={level + 1} />}
+      </Dialog>
     )
   }
 

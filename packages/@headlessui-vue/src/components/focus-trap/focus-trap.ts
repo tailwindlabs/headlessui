@@ -18,21 +18,10 @@ export let FocusTrap = defineComponent({
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
   setup(props, { attrs, slots }) {
-    let containers = ref(new Set<HTMLElement>())
     let container = ref<HTMLElement | null>(null)
-    let enabled = ref(true)
-    let focusTrapOptions = computed(() => ({ initialFocus: props.initialFocus }))
 
-    onMounted(() => {
-      if (!container.value) return
-      containers.value.add(container.value)
-
-      useFocusTrap(containers, enabled, focusTrapOptions)
-    })
-
-    onUnmounted(() => {
-      enabled.value = false
-    })
+    let focusTrapOptions = computed(() => ({ initialFocus: ref(props.initialFocus) }))
+    useFocusTrap(container, FocusTrap.All, focusTrapOptions)
 
     return () => {
       let slot = {}

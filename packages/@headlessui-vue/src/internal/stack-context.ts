@@ -1,39 +1,36 @@
 import {
   inject,
   provide,
-  watchEffect,
+  onMounted,
+  onUnmounted,
 
   // Types
   InjectionKey,
   Ref,
 } from 'vue'
 
-type OnUpdate = (message: StackMessage, element: HTMLElement) => void
+type OnUpdate = (message: StackMessage, type: string, element: Ref<HTMLElement | null>) => void
 
 let StackContext = Symbol('StackContext') as InjectionKey<OnUpdate>
 
 export enum StackMessage {
-  AddElement,
-  RemoveElement,
+  Add,
+  Remove,
 }
 
 export function useStackContext() {
   return inject(StackContext, () => {})
 }
 
-export function useElemenStack(element: Ref<HTMLElement | null> | null) {
-  let notify = useStackContext()
-
-  watchEffect((onInvalidate) => {
-    let domElement = element?.value
-    if (!domElement) return
-
-    notify(StackMessage.AddElement, domElement)
-    onInvalidate(() => notify(StackMessage.RemoveElement, domElement!))
-  })
-}
-
-export function useStackProvider(onUpdate?: OnUpdate) {
+export function useStackProvider({
+  type,
+  element,
+  onUpdate,
+}: {
+  type: string
+  element: Ref<HTMLElement | null>
+  onUpdate?: OnUpdate
+}) {
   let parentUpdate = useStackContext()
 
   function notify(...args: Parameters<OnUpdate>) {
@@ -43,6 +40,14 @@ export function useStackProvider(onUpdate?: OnUpdate) {
     // Notify the parent
     parentUpdate(...args)
   }
+
+  onMounted(() => {
+    notify(StackMessage.Add, type, element)
+
+    onUnmounted(() => {
+      notify(StackMessage.Remove, type, element)
+    })
+  })
 
   provide(StackContext, notify)
 }

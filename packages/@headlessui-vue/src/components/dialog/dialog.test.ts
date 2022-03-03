@@ -637,6 +637,68 @@ describe('Keyboard interactions', () => {
       })
     )
   })
+
+  describe('`Tab` key', () => {
+    it(
+      'should be possible to tab around when using the initialFocus ref',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="toggleOpen">
+                Trigger
+              </button>
+              <Dialog :open="isOpen" @close="setIsOpen" :initialFocus="initialFocusRef">
+                Contents
+                <TabSentinel id="a" />
+                <input type="text" id="b" ref="initialFocusRef" />
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            let initialFocusRef = ref(null)
+            return {
+              isOpen,
+              initialFocusRef,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+              toggleOpen() {
+                isOpen.value = !isOpen.value
+              },
+            }
+          },
+        })
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Verify that the input field is focused
+        assertActiveElement(document.getElementById('b'))
+
+        // Verify that we can tab around
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we can tab around
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('b'))
+
+        // Verify that we can tab around
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+      })
+    )
+  })
 })
 
 describe('Mouse interactions', () => {
@@ -950,31 +1012,13 @@ describe('Nesting', () => {
 
       return () => {
         let level = props.level ?? 1
-        return h(Dialog, { open: true, onClose: onClose }, () => [
+        return h(Dialog, { open: true, onClose }, () => [
           h(DialogOverlay),
           h('div', [
             h('p', `Level: ${level}`),
-            h(
-              'button',
-              {
-                onClick: () => (showChild.value = true),
-              },
-              `Open ${level + 1} a`
-            ),
-            h(
-              'button',
-              {
-                onClick: () => (showChild.value = true),
-              },
-              `Open ${level + 1} b`
-            ),
-            h(
-              'button',
-              {
-                onClick: () => (showChild.value = true),
-              },
-              `Open ${level + 1} c`
-            ),
+            h('button', { onClick: () => (showChild.value = true) }, `Open ${level + 1} a`),
+            h('button', { onClick: () => (showChild.value = true) }, `Open ${level + 1} b`),
+            h('button', { onClick: () => (showChild.value = true) }, `Open ${level + 1} c`),
           ]),
           showChild.value &&
             h(Nested, {

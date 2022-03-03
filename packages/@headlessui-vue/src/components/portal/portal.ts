@@ -14,7 +14,6 @@ import {
   PropType,
 } from 'vue'
 import { render } from '../../utils/render'
-import { useElemenStack, useStackProvider } from '../../internal/stack-context'
 import { usePortalRoot } from '../../internal/portal-force-root'
 
 // ---
@@ -51,7 +50,6 @@ export let Portal = defineComponent({
     })
 
     let element = ref(null)
-    useElemenStack(element)
 
     onUnmounted(() => {
       let root = document.getElementById('headlessui-portal-root')
@@ -62,8 +60,6 @@ export let Portal = defineComponent({
         myTarget.value.parentElement?.removeChild(myTarget.value)
       }
     })
-
-    useStackProvider()
 
     return () => {
       if (myTarget.value === null) return null
