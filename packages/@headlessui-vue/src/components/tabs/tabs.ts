@@ -245,6 +245,13 @@ export let Tab = defineComponent({
       api.setSelectedIndex(myIndex.value)
     }
 
+    // This is important because we want to only focus the tab when it gets focus
+    // OR it finished the click event (mouseup). However, if you perform a `click`,
+    // then you will first get the `focus` and then get the `click` event.
+    function handleMouseDown(event: MouseEvent) {
+      event.preventDefault()
+    }
+
     let type = useResolveButtonType(
       computed(() => ({ as: props.as, type: attrs.type })),
       tabRef
@@ -256,6 +263,7 @@ export let Tab = defineComponent({
         ref: tabRef,
         onKeydown: handleKeyDown,
         onFocus: api.activation.value === 'manual' ? handleFocus : handleSelection,
+        onMousedown: handleMouseDown,
         onClick: handleSelection,
         id,
         role: 'tab',

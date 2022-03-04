@@ -11,6 +11,7 @@ import React, {
   // Types
   ElementType,
   MutableRefObject,
+  MouseEvent as ReactMouseEvent,
   KeyboardEvent as ReactKeyboardEvent,
   Dispatch,
   ContextType,
@@ -354,11 +355,19 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
     change(myIndex)
   }, [change, myIndex, internalTabRef])
 
+  // This is important because we want to only focus the tab when it gets focus
+  // OR it finished the click event (mouseup). However, if you perform a `click`,
+  // then you will first get the `focus` and then get the `click` event.
+  let handleMouseDown = useCallback((event: ReactMouseEvent<HTMLElement>) => {
+    event.preventDefault()
+  }, [])
+
   let slot = useMemo(() => ({ selected }), [selected])
   let propsWeControl = {
     ref: tabRef,
     onKeyDown: handleKeyDown,
     onFocus: activation === 'manual' ? handleFocus : handleSelection,
+    onMouseDown: handleMouseDown,
     onClick: handleSelection,
     id,
     role: 'tab',
