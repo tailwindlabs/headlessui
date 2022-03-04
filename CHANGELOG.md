@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reset Combobox Input when the value gets reset ([#1181](https://github.com/tailwindlabs/headlessui/pull/1181))
 - Fix double `beforeEnter` due to SSR ([#1183](https://github.com/tailwindlabs/headlessui/pull/1183))
 - Adjust active {item,option} index ([#1184](https://github.com/tailwindlabs/headlessui/pull/1184))
+- Only activate the `Tab` on mouseup ([#1192](https://github.com/tailwindlabs/headlessui/pull/1192))
+- Ignore "outside click" on removed elements ([#1193](https://github.com/tailwindlabs/headlessui/pull/1193))
 
 ## [Unreleased - @headlessui/vue]
 
@@ -36,6 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjust active {item,option} index ([#1184](https://github.com/tailwindlabs/headlessui/pull/1184))
 - Fix re-focusing element after close ([#1186](https://github.com/tailwindlabs/headlessui/pull/1186))
 - Fix `Dialog` cycling ([#553](https://github.com/tailwindlabs/headlessui/pull/553))
+- Only activate the `Tab` on mouseup ([#1192](https://github.com/tailwindlabs/headlessui/pull/1192))
+- Ignore "outside click" on removed elements ([#1193](https://github.com/tailwindlabs/headlessui/pull/1193))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
