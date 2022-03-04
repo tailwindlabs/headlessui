@@ -806,6 +806,43 @@ describe('Mouse interactions', () => {
       expect(wrapperFn).toHaveBeenCalledTimes(0)
     })
   )
+
+  it(
+    'should should be possible to click on removed elements without closing the Dialog',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+        let wrapper = useRef<HTMLDivElement | null>(null)
+
+        return (
+          <Dialog open={isOpen} onClose={setIsOpen}>
+            <div ref={wrapper}>
+              Contents
+              <button
+                onMouseDown={() => {
+                  // Remove this button before the Dialog's mousedown listener fires:
+                  wrapper.current?.remove()
+                }}
+              >
+                Inside
+              </button>
+              <TabSentinel />
+            </div>
+          </Dialog>
+        )
+      }
+      render(<Example />)
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button inside the the Dialog
+      await click(getByText('Inside'))
+
+      // Verify it is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
 })
 
 describe('Nesting', () => {

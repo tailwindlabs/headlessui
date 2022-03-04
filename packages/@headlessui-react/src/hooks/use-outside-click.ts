@@ -47,6 +47,10 @@ export function useOutsideClick(
 
     let target = event.target as HTMLElement
 
+    // Ignore if the target doesn't exist in the DOM anymore
+    if (!target.ownerDocument.documentElement.contains(target)) return
+
+    // Ignore if the target exists in one of the containers
     for (let container of _containers) {
       if (container === null) continue
       let domNode = container instanceof HTMLElement ? container : container.current
