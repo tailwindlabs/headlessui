@@ -1,22 +1,26 @@
 import {
+  Fragment,
+  computed,
   defineComponent,
-  ref,
-  provide,
+  h,
   inject,
+  nextTick,
   onMounted,
   onUnmounted,
-  computed,
-  nextTick,
-  InjectionKey,
-  Ref,
-  ComputedRef,
-  watchEffect,
+  provide,
+  ref,
   toRaw,
   watch,
+  watchEffect,
+
+  // Types
+  ComputedRef,
+  InjectionKey,
+  Ref,
   UnwrapNestedRefs,
 } from 'vue'
 
-import { Features, render, omit } from '../../utils/render'
+import { Features, render, omit, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
@@ -26,6 +30,8 @@ import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 enum ListboxStates {
   Open,
@@ -98,6 +104,7 @@ export let Listbox = defineComponent({
     disabled: { type: [Boolean], default: false },
     horizontal: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
+    name: { type: String, optional: true },
   },
   setup(props, { slots, attrs, emit }) {
     let listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
@@ -270,14 +277,38 @@ export let Listbox = defineComponent({
     )
 
     return () => {
-      let slot = { open: listboxState.value === ListboxStates.Open, disabled: props.disabled }
-      return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
+      let { name, modelValue, disabled, ...passThroughProps } = props
+
+      let slot = { open: listboxState.value === ListboxStates.Open, disabled }
+      let renderConfiguration = {
+        props: omit(passThroughProps, ['onUpdate:modelValue', 'horizontal']),
         slot,
         slots,
         attrs,
         name: 'Listbox',
-      })
+      }
+
+      if (name != null && modelValue != null) {
+        return h(Fragment, [
+          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+            h(
+              VisuallyHidden,
+              compact({
+                key: name,
+                as: 'input',
+                type: 'hidden',
+                hidden: true,
+                readOnly: true,
+                name,
+                value,
+              })
+            )
+          ),
+          render(renderConfiguration),
+        ])
+      }
+
+      return render(renderConfiguration)
     }
   },
 })

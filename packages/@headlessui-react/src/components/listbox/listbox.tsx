@@ -23,7 +23,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useComputed } from '../../hooks/use-computed'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Props } from '../../types'
-import { Features, forwardRefWithAs, PropsForFeatures, render } from '../../utils/render'
+import { Features, forwardRefWithAs, PropsForFeatures, render, compact } from '../../utils/render'
 import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
@@ -33,6 +33,8 @@ import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/fo
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 enum ListboxStates {
   Open,
@@ -262,15 +264,20 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string
 >(
-  props: Props<TTag, ListboxRenderPropArg, 'value' | 'onChange'> & {
+  props: Props<
+    TTag,
+    ListboxRenderPropArg,
+    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name'
+  > & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
     horizontal?: boolean
+    name?: string
   },
   ref: Ref<TTag>
 ) {
-  let { value, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
+  let { value, name, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
@@ -318,6 +325,13 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     [listboxState, disabled]
   )
 
+  let renderConfiguration = {
+    props: { ref: listboxRef, ...passThroughProps },
+    slot,
+    defaultTag: DEFAULT_LISTBOX_TAG,
+    name: 'Listbox',
+  }
+
   return (
     <ListboxContext.Provider value={reducerBag}>
       <OpenClosedProvider
@@ -326,12 +340,26 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
           [ListboxStates.Closed]: State.Closed,
         })}
       >
-        {render({
-          props: { ref: listboxRef, ...passThroughProps },
-          slot,
-          defaultTag: DEFAULT_LISTBOX_TAG,
-          name: 'Listbox',
-        })}
+        {name != null && value != null ? (
+          <>
+            {objectToFormEntries({ [name]: value }).map(([name, value]) => (
+              <VisuallyHidden
+                {...compact({
+                  key: name,
+                  as: 'input',
+                  type: 'hidden',
+                  hidden: true,
+                  readOnly: true,
+                  name,
+                  value,
+                })}
+              />
+            ))}
+            {render(renderConfiguration)}
+          </>
+        ) : (
+          render(renderConfiguration)
+        )}
       </OpenClosedProvider>
     </ListboxContext.Provider>
   )
