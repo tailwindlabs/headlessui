@@ -15,7 +15,7 @@ import React, {
 } from 'react'
 
 import { Props, Expand } from '../../types'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, render, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -26,6 +26,8 @@ import { Label, useLabels } from '../../components/label/label'
 import { Description, useDescriptions } from '../../components/description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 interface Option {
   id: string
@@ -109,15 +111,16 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   props: Props<
     TTag,
     RadioGroupRenderPropArg,
-    RadioGroupPropsWeControl | 'value' | 'onChange' | 'disabled'
+    RadioGroupPropsWeControl | 'value' | 'onChange' | 'disabled' | 'name'
   > & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
+    name?: string
   },
   ref: Ref<HTMLElement>
 ) {
-  let { value, onChange, disabled = false, ...passThroughProps } = props
+  let { value, name, onChange, disabled = false, ...passThroughProps } = props
   let [{ options }, dispatch] = useReducer(stateReducer, {
     options: [],
   } as StateDefinition)
@@ -255,15 +258,37 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     onKeyDown: handleKeyDown,
   }
 
+  let renderConfiguration = {
+    props: { ...passThroughProps, ...propsWeControl },
+    defaultTag: DEFAULT_RADIO_GROUP_TAG,
+    name: 'RadioGroup',
+  }
+
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
         <RadioGroupContext.Provider value={api}>
-          {render({
-            props: { ...passThroughProps, ...propsWeControl },
-            defaultTag: DEFAULT_RADIO_GROUP_TAG,
-            name: 'RadioGroup',
-          })}
+          {name != null && value != null ? (
+            <>
+              {objectToFormEntries({ [name]: value }).map(([name, value]) => (
+                <VisuallyHidden
+                  {...compact({
+                    key: name,
+                    as: 'input',
+                    type: 'radio',
+                    checked: value != null,
+                    hidden: true,
+                    readOnly: true,
+                    name,
+                    value,
+                  })}
+                />
+              ))}
+              {render(renderConfiguration)}
+            </>
+          ) : (
+            render(renderConfiguration)
+          )}
         </RadioGroupContext.Provider>
       </LabelProvider>
     </DescriptionProvider>
