@@ -125,6 +125,14 @@ function _render({
   return h(as, passThroughProps, children)
 }
 
+export function compact<T extends Record<any, any>>(object: T) {
+  let clone = Object.assign({}, object)
+  for (let key in clone) {
+    if (clone[key] === undefined) delete clone[key]
+  }
+  return clone
+}
+
 export function omit<T extends Record<any, any>, Keys extends keyof T>(
   object: T,
   keysToOmit: readonly Keys[] = []
