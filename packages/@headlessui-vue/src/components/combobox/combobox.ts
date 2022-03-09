@@ -261,9 +261,24 @@ export let Combobox = defineComponent({
       api.closeCombobox()
     })
 
-    watch([api.value, api.inputRef, api.comboboxState], () => api.syncInputValue(), {
+    watch([api.value, api.inputRef], () => api.syncInputValue(), {
       immediate: true,
     })
+
+    // Only sync the input value on close as typing into the input will trigger it to open
+    // causing a resync of the input value with the currently stored, stale value that is
+    // one character behind since the input's value has just been updated by the browser
+    watch(
+      api.comboboxState,
+      (state) => {
+        if (state === ComboboxStates.Closed) {
+          api.syncInputValue()
+        }
+      },
+      {
+        immediate: true,
+      }
+    )
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
