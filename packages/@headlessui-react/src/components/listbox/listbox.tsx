@@ -15,6 +15,7 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  useEffect,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'
@@ -554,7 +555,7 @@ let Options = forwardRefWithAs(function Options<
     return state.listboxState === ListboxStates.Open
   })()
 
-  useIsoMorphicEffect(() => {
+  useEffect(() => {
     let container = state.optionsRef.current
     if (!container) return
     if (state.listboxState !== ListboxStates.Open) return
@@ -706,6 +707,17 @@ let Option = forwardRefWithAs(function Option<
   let internalOptionRef = useRef<HTMLElement | null>(null)
   let optionRef = useSyncRefs(ref, internalOptionRef)
 
+  useIsoMorphicEffect(() => {
+    if (state.listboxState !== ListboxStates.Open) return
+    if (!active) return
+    if (state.activationTrigger === ActivationTrigger.Pointer) return
+    let d = disposables()
+    d.requestAnimationFrame(() => {
+      internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
+    })
+    return d.dispose
+  }, [internalOptionRef, active, state.listboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
+
   let bag = useRef<ListboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })
 
   useIsoMorphicEffect(() => {
@@ -715,8 +727,8 @@ let Option = forwardRefWithAs(function Option<
     bag.current.value = value
   }, [bag, value])
   useIsoMorphicEffect(() => {
-    bag.current.textValue = document.getElementById(id)?.textContent?.toLowerCase()
-  }, [bag, id])
+    bag.current.textValue = internalOptionRef.current?.textContent?.toLowerCase()
+  }, [bag, internalOptionRef])
 
   let select = useCallback(() => state.propsRef.current.onChange(value), [state.propsRef, value])
 
@@ -729,19 +741,7 @@ let Option = forwardRefWithAs(function Option<
     if (state.listboxState !== ListboxStates.Open) return
     if (!selected) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-    document.getElementById(id)?.focus?.()
   }, [state.listboxState])
-
-  useIsoMorphicEffect(() => {
-    if (state.listboxState !== ListboxStates.Open) return
-    if (!active) return
-    if (state.activationTrigger === ActivationTrigger.Pointer) return
-    let d = disposables()
-    d.requestAnimationFrame(() => {
-      document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
-    })
-    return d.dispose
-  }, [id, active, state.listboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {
