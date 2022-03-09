@@ -453,8 +453,8 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
           event.stopPropagation()
           dispatch({ type: ActionTypes.CloseMenu })
           if (state.activeItemIndex !== null) {
-            let { id } = state.items[state.activeItemIndex]
-            document.getElementById(id)?.click()
+            let { dataRef } = state.items[state.activeItemIndex]
+            dataRef.current?.domRef.current?.click()
           }
           disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
           break
@@ -580,20 +580,19 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     if (state.activationTrigger === ActivationTrigger.Pointer) return
     let d = disposables()
     d.requestAnimationFrame(() => {
-      document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
+      internalItemRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [id, active, state.menuState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])
+  }, [internalItemRef, active, state.menuState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])
 
   let bag = useRef<MenuItemDataRef['current']>({ disabled, domRef: internalItemRef })
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled
   }, [bag, disabled])
-
   useIsoMorphicEffect(() => {
-    bag.current.textValue = document.getElementById(id)?.textContent?.toLowerCase()
-  }, [bag, id])
+    bag.current.textValue = internalItemRef.current?.textContent?.toLowerCase()
+  }, [bag, internalItemRef])
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.RegisterItem, id, dataRef: bag })

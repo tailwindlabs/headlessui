@@ -366,8 +366,9 @@ export let MenuItems = defineComponent({
           event.preventDefault()
           event.stopPropagation()
           if (api.activeItemIndex.value !== null) {
-            let { id } = api.items.value[api.activeItemIndex.value]
-            document.getElementById(id)?.click()
+            let activeItem = api.items.value[api.activeItemIndex.value]
+            let _activeItem = activeItem as unknown as UnwrapNestedRefs<typeof activeItem>
+            dom(_activeItem.dataRef.domRef)?.click()
           }
           api.closeMenu()
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
@@ -490,7 +491,7 @@ export let MenuItem = defineComponent({
       domRef: internalItemRef,
     }))
     onMounted(() => {
-      let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
+      let textValue = dom(internalItemRef)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 
@@ -501,7 +502,7 @@ export let MenuItem = defineComponent({
       if (api.menuState.value !== MenuStates.Open) return
       if (!active.value) return
       if (api.activationTrigger.value === ActivationTrigger.Pointer) return
-      nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+      nextTick(() => dom(internalItemRef)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
     function handleClick(event: MouseEvent) {
