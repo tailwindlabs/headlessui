@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ignore "outside click" on removed elements ([#1193](https://github.com/tailwindlabs/headlessui/pull/1193))
 - Remove `focus()` from Listbox Option ([#1218](https://github.com/tailwindlabs/headlessui/pull/1218))
 - Improve some internal code ([#1221](https://github.com/tailwindlabs/headlessui/pull/1221))
+- Don’t drop initial character when searching in Combobox ([#1223](https://github.com/tailwindlabs/headlessui/pull/1223))
 
 ### Added
 
