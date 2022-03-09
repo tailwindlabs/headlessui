@@ -473,8 +473,8 @@ export let ListboxOptions = defineComponent({
           event.preventDefault()
           event.stopPropagation()
           if (api.activeOptionIndex.value !== null) {
-            let { dataRef } = api.options.value[api.activeOptionIndex.value]
-            api.select(dataRef.value)
+            let activeOption = api.options.value[api.activeOptionIndex.value]
+            api.select(activeOption.dataRef.value)
           }
           api.closeListbox()
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
@@ -592,7 +592,7 @@ export let ListboxOption = defineComponent({
       domRef: internalOptionRef,
     }))
     onMounted(() => {
-      let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
+      let textValue = dom(internalOptionRef)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 
@@ -606,7 +606,6 @@ export let ListboxOption = defineComponent({
           if (api.listboxState.value !== ListboxStates.Open) return
           if (!selected.value) return
           api.goToOption(Focus.Specific, id)
-          document.getElementById(id)?.focus?.()
         },
         { immediate: true }
       )
@@ -616,7 +615,7 @@ export let ListboxOption = defineComponent({
       if (api.listboxState.value !== ListboxStates.Open) return
       if (!active.value) return
       if (api.activationTrigger.value === ActivationTrigger.Pointer) return
-      nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+      nextTick(() => dom(internalOptionRef)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
     function handleClick(event: MouseEvent) {
