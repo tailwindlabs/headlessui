@@ -5,17 +5,17 @@ import React, {
   useContext,
   useMemo,
   useState,
+  useRef,
 
   // Types
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
-  useRef,
   Ref,
 } from 'react'
 
 import { Props } from '../../types'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, render, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -23,6 +23,7 @@ import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { VisuallyHidden } from '../../internal/visually-hidden'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null
@@ -88,13 +89,19 @@ type SwitchPropsWeControl =
 let SwitchRoot = forwardRefWithAs(function Switch<
   TTag extends ElementType = typeof DEFAULT_SWITCH_TAG
 >(
-  props: Props<TTag, SwitchRenderPropArg, SwitchPropsWeControl | 'checked' | 'onChange'> & {
+  props: Props<
+    TTag,
+    SwitchRenderPropArg,
+    SwitchPropsWeControl | 'checked' | 'onChange' | 'name' | 'value'
+  > & {
     checked: boolean
     onChange(checked: boolean): void
+    name?: string
+    value?: string
   },
   ref: Ref<HTMLElement>
 ) {
-  let { checked, onChange, ...passThroughProps } = props
+  let { checked, onChange, name, value, ...passThroughProps } = props
   let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
@@ -143,12 +150,33 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     onKeyPress: handleKeyPress,
   }
 
-  return render({
+  let renderConfiguration = {
     props: { ...passThroughProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_SWITCH_TAG,
     name: 'Switch',
-  })
+  }
+
+  if (name != null && checked) {
+    return (
+      <>
+        <VisuallyHidden
+          {...compact({
+            as: 'input',
+            type: 'checkbox',
+            hidden: true,
+            readOnly: true,
+            checked,
+            name,
+            value,
+          })}
+        />
+        {render(renderConfiguration)}
+      </>
+    )
+  }
+
+  return render(renderConfiguration)
 })
 
 // ---

@@ -841,3 +841,143 @@ describe('Mouse interactions', () => {
     expect(changeFn).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('Form compatibility', () => {
+  it('should be possible to submit a form with a value', async () => {
+    let submits = jest.fn()
+
+    function Example() {
+      let [value, setValue] = useState(null)
+      return (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget).entries()])
+          }}
+        >
+          <RadioGroup value={value} onChange={setValue} name="delivery">
+            <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
+            <RadioGroup.Option value="pickup">Pickup</RadioGroup.Option>
+            <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
+            <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
+          </RadioGroup>
+          <button>Submit</button>
+        </form>
+      )
+    }
+
+    render(<Example />)
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([]) // no data
+
+    // Choose home delivery
+    await click(getByText('Home delivery'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([['delivery', 'home-delivery']])
+
+    // Choose pickup
+    await click(getByText('Pickup'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([['delivery', 'pickup']])
+  })
+
+  it('should be possible to submit a form with a complex value object', async () => {
+    let submits = jest.fn()
+    let options = [
+      {
+        id: 1,
+        value: 'pickup',
+        label: 'Pickup',
+        extra: { info: 'Some extra info' },
+      },
+      {
+        id: 2,
+        value: 'home-delivery',
+        label: 'Home delivery',
+        extra: { info: 'Some extra info' },
+      },
+      {
+        id: 3,
+        value: 'dine-in',
+        label: 'Dine in',
+        extra: { info: 'Some extra info' },
+      },
+    ]
+
+    function Example() {
+      let [value, setValue] = useState(options[0])
+
+      return (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget).entries()])
+          }}
+        >
+          <RadioGroup value={value} onChange={setValue} name="delivery">
+            <RadioGroup.Label>Pizza Delivery</RadioGroup.Label>
+            {options.map((option) => (
+              <RadioGroup.Option key={option.id} value={option}>
+                {option.label}
+              </RadioGroup.Option>
+            ))}
+          </RadioGroup>
+          <button>Submit</button>
+        </form>
+      )
+    }
+
+    render(<Example />)
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([
+      ['delivery[id]', '1'],
+      ['delivery[value]', 'pickup'],
+      ['delivery[label]', 'Pickup'],
+      ['delivery[extra][info]', 'Some extra info'],
+    ])
+
+    // Choose home delivery
+    await click(getByText('Home delivery'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([
+      ['delivery[id]', '2'],
+      ['delivery[value]', 'home-delivery'],
+      ['delivery[label]', 'Home delivery'],
+      ['delivery[extra][info]', 'Some extra info'],
+    ])
+
+    // Choose pickup
+    await click(getByText('Pickup'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([
+      ['delivery[id]', '1'],
+      ['delivery[value]', 'pickup'],
+      ['delivery[label]', 'Pickup'],
+      ['delivery[extra][info]', 'Some extra info'],
+    ])
+  })
+})

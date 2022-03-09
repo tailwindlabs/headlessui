@@ -24,7 +24,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useComputed } from '../../hooks/use-computed'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Props } from '../../types'
-import { Features, forwardRefWithAs, PropsForFeatures, render } from '../../utils/render'
+import { Features, forwardRefWithAs, PropsForFeatures, render, compact } from '../../utils/render'
 import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
@@ -36,6 +36,8 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { sortByDomNode } from '../../utils/focus-management'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 enum ComboboxStates {
   Open,
@@ -261,15 +263,16 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
   TType = string
 >(
-  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled'> & {
+  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled' | 'name'> & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
     __demoMode?: boolean
+    name?: string
   },
   ref: Ref<TTag>
 ) {
-  let { value, onChange, disabled = false, __demoMode = false, ...passThroughProps } = props
+  let { name, value, onChange, disabled = false, __demoMode = false, ...passThroughProps } = props
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
@@ -377,6 +380,13 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   // Ensure that we update the inputRef if the value changes
   useIsoMorphicEffect(syncInputValue, [syncInputValue])
 
+  let renderConfiguration = {
+    props: ref === null ? passThroughProps : { ...passThroughProps, ref },
+    slot,
+    defaultTag: DEFAULT_COMBOBOX_TAG,
+    name: 'Combobox',
+  }
+
   return (
     <ComboboxActions.Provider value={actionsBag}>
       <ComboboxContext.Provider value={reducerBag}>
@@ -386,12 +396,26 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
             [ComboboxStates.Closed]: State.Closed,
           })}
         >
-          {render({
-            props: ref === null ? passThroughProps : { ...passThroughProps, ref },
-            slot,
-            defaultTag: DEFAULT_COMBOBOX_TAG,
-            name: 'Combobox',
-          })}
+          {name != null && value != null ? (
+            <>
+              {objectToFormEntries({ [name]: value }).map(([name, value]) => (
+                <VisuallyHidden
+                  {...compact({
+                    key: name,
+                    as: 'input',
+                    type: 'hidden',
+                    hidden: true,
+                    readOnly: true,
+                    name,
+                    value,
+                  })}
+                />
+              ))}
+              {render(renderConfiguration)}
+            </>
+          ) : (
+            render(renderConfiguration)
+          )}
         </OpenClosedProvider>
       </ComboboxContext.Provider>
     </ComboboxActions.Provider>

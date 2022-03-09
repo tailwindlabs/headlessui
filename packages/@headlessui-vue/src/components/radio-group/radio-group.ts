@@ -1,6 +1,8 @@
 import {
+  Fragment,
   computed,
   defineComponent,
+  h,
   inject,
   onMounted,
   onUnmounted,
@@ -17,10 +19,12 @@ import { dom } from '../../utils/dom'
 import { Keys } from '../../keyboard'
 import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { useId } from '../../hooks/use-id'
-import { omit, render } from '../../utils/render'
+import { compact, omit, render } from '../../utils/render'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 interface Option {
   id: string
@@ -65,6 +69,7 @@ export let RadioGroup = defineComponent({
     as: { type: [Object, String], default: 'div' },
     disabled: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
+    name: { type: String, optional: true },
   },
   setup(props, { emit, attrs, slots }) {
     let radioGroupRef = ref<HTMLElement | null>(null)
@@ -183,7 +188,7 @@ export let RadioGroup = defineComponent({
     let id = `headlessui-radiogroup-${useId()}`
 
     return () => {
-      let { modelValue, disabled, ...passThroughProps } = props
+      let { modelValue, disabled, name, ...passThroughProps } = props
 
       let propsWeControl = {
         ref: radioGroupRef,
@@ -194,13 +199,35 @@ export let RadioGroup = defineComponent({
         onKeydown: handleKeyDown,
       }
 
-      return render({
+      let renderConfiguration = {
         props: { ...passThroughProps, ...propsWeControl },
         slot: {},
         attrs,
         slots,
         name: 'RadioGroup',
-      })
+      }
+
+      if (name != null && modelValue != null) {
+        return h(Fragment, [
+          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+            h(
+              VisuallyHidden,
+              compact({
+                key: name,
+                as: 'input',
+                type: 'hidden',
+                hidden: true,
+                readOnly: true,
+                name,
+                value,
+              })
+            )
+          ),
+          render(renderConfiguration),
+        ])
+      }
+
+      return render(renderConfiguration)
     }
   },
 })

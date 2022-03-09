@@ -1,5 +1,8 @@
 import {
+  Fragment,
+  computed,
   defineComponent,
+  h,
   inject,
   provide,
   ref,
@@ -7,15 +10,15 @@ import {
   // Types
   InjectionKey,
   Ref,
-  computed,
 } from 'vue'
 
-import { render } from '../../utils/render'
+import { render, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { VisuallyHidden } from '../../internal/visually-hidden'
 
 type StateDefinition = {
   // State
@@ -63,6 +66,8 @@ export let Switch = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: false },
+    name: { type: String, optional: true },
+    value: { type: String, optional: true },
   },
 
   setup(props, { emit, attrs, slots }) {
@@ -96,14 +101,15 @@ export let Switch = defineComponent({
     }
 
     return () => {
-      let slot = { checked: props.modelValue }
+      let { name, value, modelValue, ...passThroughProps } = props
+      let slot = { checked: modelValue }
       let propsWeControl = {
         id,
         ref: switchRef,
         role: 'switch',
         type: type.value,
         tabIndex: 0,
-        'aria-checked': props.modelValue,
+        'aria-checked': modelValue,
         'aria-labelledby': api?.labelledby.value,
         'aria-describedby': api?.describedby.value,
         onClick: handleClick,
@@ -111,13 +117,33 @@ export let Switch = defineComponent({
         onKeypress: handleKeyPress,
       }
 
-      return render({
-        props: { ...props, ...propsWeControl },
+      let renderConfiguration = {
+        props: { ...passThroughProps, ...propsWeControl },
         slot,
         attrs,
         slots,
         name: 'Switch',
-      })
+      }
+
+      if (name != null && modelValue != null) {
+        return h(Fragment, [
+          h(
+            VisuallyHidden,
+            compact({
+              as: 'input',
+              type: 'checkbox',
+              hidden: true,
+              readOnly: true,
+              checked: modelValue,
+              name,
+              value,
+            })
+          ),
+          render(renderConfiguration),
+        ])
+      }
+
+      return render(renderConfiguration)
     }
   },
 })

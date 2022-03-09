@@ -1,6 +1,8 @@
 import {
+  Fragment,
   computed,
   defineComponent,
+  h,
   inject,
   nextTick,
   onMounted,
@@ -10,6 +12,8 @@ import {
   toRaw,
   watch,
   watchEffect,
+
+  // Types
   ComputedRef,
   InjectionKey,
   PropType,
@@ -17,7 +21,7 @@ import {
   UnwrapNestedRefs,
 } from 'vue'
 
-import { Features, render, omit } from '../../utils/render'
+import { Features, render, omit, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
@@ -28,6 +32,8 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 enum ComboboxStates {
   Open,
@@ -96,6 +102,7 @@ export let Combobox = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
+    name: { type: String },
   },
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
@@ -276,20 +283,43 @@ export let Combobox = defineComponent({
     )
 
     return () => {
+      let { name, modelValue, disabled, ...passThroughProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
-        disabled: props.disabled,
+        disabled,
         activeIndex: activeOptionIndex.value,
         activeOption: activeOption.value,
       }
 
-      return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled']),
+      let renderConfiguration = {
+        props: omit(passThroughProps, ['onUpdate:modelValue']),
         slot,
         slots,
         attrs,
         name: 'Combobox',
-      })
+      }
+
+      if (name != null && modelValue != null) {
+        return h(Fragment, [
+          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+            h(
+              VisuallyHidden,
+              compact({
+                key: name,
+                as: 'input',
+                type: 'hidden',
+                hidden: true,
+                readOnly: true,
+                name,
+                value,
+              })
+            )
+          ),
+          render(renderConfiguration),
+        ])
+      }
+
+      return render(renderConfiguration)
     }
   },
 })

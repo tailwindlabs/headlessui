@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only activate the `Tab` on mouseup ([#1192](https://github.com/tailwindlabs/headlessui/pull/1192))
 - Ignore "outside click" on removed elements ([#1193](https://github.com/tailwindlabs/headlessui/pull/1193))
 
+### Added
+
+- Add `<form>` compatibility ([#1214](https://github.com/tailwindlabs/headlessui/pull/1214))
+
 ## [Unreleased - @headlessui/vue]
 
 ### Fixed
@@ -40,6 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `Dialog` cycling ([#553](https://github.com/tailwindlabs/headlessui/pull/553))
 - Only activate the `Tab` on mouseup ([#1192](https://github.com/tailwindlabs/headlessui/pull/1192))
 - Ignore "outside click" on removed elements ([#1193](https://github.com/tailwindlabs/headlessui/pull/1193))
+
+### Added
+
+- Add `<form>` compatibility ([#1214](https://github.com/tailwindlabs/headlessui/pull/1214))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
