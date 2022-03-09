@@ -1,8 +1,6 @@
 import {
   computed,
   defineComponent,
-  onMounted,
-  onUnmounted,
   ref,
 
   // Types
