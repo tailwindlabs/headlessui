@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only activate the `Tab` on mouseup ([#1192](https://github.com/tailwindlabs/headlessui/pull/1192))
 - Ignore "outside click" on removed elements ([#1193](https://github.com/tailwindlabs/headlessui/pull/1193))
 - Remove `focus()` from Listbox Option ([#1218](https://github.com/tailwindlabs/headlessui/pull/1218))
+- Improve some internal code ([#1221](https://github.com/tailwindlabs/headlessui/pull/1221))
 
 ### Added
 
@@ -46,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only activate the `Tab` on mouseup ([#1192](https://github.com/tailwindlabs/headlessui/pull/1192))
 - Ignore "outside click" on removed elements ([#1193](https://github.com/tailwindlabs/headlessui/pull/1193))
 - Remove `focus()` from Listbox Option ([#1218](https://github.com/tailwindlabs/headlessui/pull/1218))
+- Improve some internal code ([#1221](https://github.com/tailwindlabs/headlessui/pull/1221))
 
 ### Added
 
