@@ -139,17 +139,17 @@ export let DisclosureButton = defineComponent({
     let panelContext = useDisclosurePanelContext()
     let isWithinPanel = panelContext === null ? false : panelContext === api.panelId
 
-    let elementRef = ref(null)
+    let internalButtonRef = ref(null)
 
     if (!isWithinPanel) {
       watchEffect(() => {
-        api.button.value = elementRef.value
+        api.button.value = internalButtonRef.value
       })
     }
 
     let type = useResolveButtonType(
       computed(() => ({ as: props.as, type: attrs.type })),
-      elementRef
+      internalButtonRef
     )
 
     function handleClick() {
@@ -201,14 +201,14 @@ export let DisclosureButton = defineComponent({
       let slot = { open: api.disclosureState.value === DisclosureStates.Open }
       let propsWeControl = isWithinPanel
         ? {
-            ref: elementRef,
+            ref: internalButtonRef,
             type: type.value,
             onClick: handleClick,
             onKeydown: handleKeyDown,
           }
         : {
             id: api.buttonId,
-            ref: elementRef,
+            ref: internalButtonRef,
             type: type.value,
             'aria-expanded': props.disabled
               ? undefined

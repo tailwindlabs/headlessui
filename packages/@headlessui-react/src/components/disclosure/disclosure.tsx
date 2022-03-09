@@ -39,6 +39,9 @@ interface StateDefinition {
 
   linkedPanel: boolean
 
+  buttonRef: MutableRefObject<HTMLButtonElement | null>
+  panelRef: MutableRefObject<HTMLDivElement | null>
+
   buttonId: string
   panelId: string
 }
@@ -157,9 +160,14 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
   let panelId = `headlessui-disclosure-panel-${useId()}`
   let disclosureRef = useSyncRefs(ref)
 
+  let panelRef = useRef<StateDefinition['panelRef']['current']>(null)
+  let buttonRef = useRef<StateDefinition['buttonRef']['current']>(null)
+
   let reducerBag = useReducer(stateReducer, {
     disclosureState: defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed,
     linkedPanel: false,
+    buttonRef,
+    panelRef,
     buttonId,
     panelId,
   } as StateDefinition)
@@ -232,11 +240,11 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   ref: Ref<HTMLButtonElement>
 ) {
   let [state, dispatch] = useDisclosureContext('Disclosure.Button')
-  let internalButtonRef = useRef<HTMLButtonElement | null>(null)
-  let buttonRef = useSyncRefs(internalButtonRef, ref)
-
   let panelContext = useDisclosurePanelContext()
   let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
+
+  let internalButtonRef = useRef<HTMLButtonElement | null>(null)
+  let buttonRef = useSyncRefs(internalButtonRef, ref, !isWithinPanel ? state.buttonRef : null)
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -249,7 +257,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
             event.preventDefault()
             event.stopPropagation()
             dispatch({ type: ActionTypes.ToggleDisclosure })
-            document.getElementById(state.buttonId)?.focus()
+            state.buttonRef.current?.focus()
             break
         }
       } else {
@@ -263,7 +271,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         }
       }
     },
-    [dispatch, isWithinPanel, state.disclosureState, state.buttonId]
+    [dispatch, isWithinPanel, state.disclosureState, state.buttonRef]
   )
 
   let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -284,12 +292,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 
       if (isWithinPanel) {
         dispatch({ type: ActionTypes.ToggleDisclosure })
-        document.getElementById(state.buttonId)?.focus()
+        state.buttonRef.current?.focus()
       } else {
         dispatch({ type: ActionTypes.ToggleDisclosure })
       }
     },
-    [dispatch, props.disabled, state.buttonId, isWithinPanel]
+    [dispatch, props.disabled, state.buttonRef, isWithinPanel]
   )
 
   let slot = useMemo<ButtonRenderPropArg>(
@@ -341,7 +349,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
 
-  let panelRef = useSyncRefs(ref, () => {
+  let panelRef = useSyncRefs(ref, state.panelRef, () => {
     if (state.linkedPanel) return
     dispatch({ type: ActionTypes.LinkPanel })
   })
