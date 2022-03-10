@@ -169,7 +169,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     dispatch({ type: ActionTypes.SetActivation, activation })
   }, [activation])
 
-  useEffect(() => {
+  useIsoMorphicEffect(() => {
     if (state.tabs.length <= 0) return
     if (selectedIndex === null && state.selectedIndex !== null) return
 
