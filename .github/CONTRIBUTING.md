@@ -49,7 +49,7 @@ You can run the test suite using the following commands:
 yarn test
 ```
 
-You can also run them for React of Vue individually:
+You can also run them for React or Vue individually:
 
 ```sh
 yarn react test
