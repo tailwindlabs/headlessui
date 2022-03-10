@@ -1,14 +1,18 @@
 import {
+  Fragment,
+  computed,
   defineComponent,
-  ref,
-  provide,
+  h,
   inject,
   onMounted,
   onUnmounted,
-  computed,
+  provide,
+  ref,
+  watchEffect,
+
+  // Types
   InjectionKey,
   Ref,
-  watchEffect,
 } from 'vue'
 
 import { Features, render, omit } from '../../utils/render'
@@ -18,6 +22,7 @@ import { dom } from '../../utils/dom'
 import { match } from '../../utils/match'
 import { focusIn, Focus } from '../../utils/focus-management'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { FocusSentinel } from '../../internal/focus-sentinel'
 
 type StateDefinition = {
   // State
@@ -132,13 +137,28 @@ export let TabGroup = defineComponent({
     return () => {
       let slot = { selectedIndex: selectedIndex.value }
 
-      return render({
-        props: omit(props, ['selectedIndex', 'defaultIndex', 'manual', 'vertical', 'onChange']),
-        slot,
-        slots,
-        attrs,
-        name: 'TabGroup',
-      })
+      return h(Fragment, [
+        h(FocusSentinel, {
+          onFocus: () => {
+            for (let tab of tabs.value) {
+              let el = dom(tab)
+              if (el?.tabIndex === 0) {
+                el.focus()
+                return true
+              }
+            }
+
+            return false
+          },
+        }),
+        render({
+          props: omit(props, ['selectedIndex', 'defaultIndex', 'manual', 'vertical', 'onChange']),
+          slot,
+          slots,
+          attrs,
+          name: 'TabGroup',
+        }),
+      ])
     }
   },
 })
