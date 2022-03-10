@@ -133,13 +133,15 @@ export let DisclosureButton = defineComponent({
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosureButton')
 
     let panelContext = useDisclosurePanelContext()
     let isWithinPanel = panelContext === null ? false : panelContext === api.panelId
 
-    let internalButtonRef = ref(null)
+    let internalButtonRef = ref<HTMLButtonElement | null>(null)
+
+    expose({ el: internalButtonRef, $el: internalButtonRef })
 
     if (!isWithinPanel) {
       watchEffect(() => {
@@ -240,8 +242,10 @@ export let DisclosurePanel = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosurePanel')
+
+    expose({ el: api.panel, $el: api.panel })
 
     provide(DisclosurePanelContext, api.panelId)
 

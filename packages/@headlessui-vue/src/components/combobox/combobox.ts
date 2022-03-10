@@ -378,9 +378,11 @@ export let ComboboxButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxButton')
     let id = `headlessui-combobox-button-${useId()}`
+
+    expose({ el: api.buttonRef, $el: api.buttonRef })
 
     function handleClick(event: MouseEvent) {
       if (api.disabled.value) return
@@ -494,10 +496,12 @@ export let ComboboxInput = defineComponent({
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
   },
-  setup(props, { emit, attrs, slots }) {
+  setup(props, { emit, attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
     api.inputPropsRef = computed(() => props)
+
+    expose({ el: api.inputRef, $el: api.inputRef })
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -620,15 +624,20 @@ export let ComboboxOptions = defineComponent({
     unmount: { type: Boolean, default: true },
     hold: { type: [Boolean], default: false },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxOptions')
     let id = `headlessui-combobox-options-${useId()}`
+
+    expose({ el: api.optionsRef, $el: api.optionsRef })
+
     watchEffect(() => {
       api.optionsPropsRef.value.static = props.static
     })
+
     watchEffect(() => {
       api.optionsPropsRef.value.hold = props.hold
     })
+
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
@@ -685,10 +694,12 @@ export let ComboboxOption = defineComponent({
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
   },
-  setup(props, { slots, attrs }) {
+  setup(props, { slots, attrs, expose }) {
     let api = useComboboxContext('ComboboxOption')
     let id = `headlessui-combobox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
+
+    expose({ el: internalOptionRef, $el: internalOptionRef })
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null

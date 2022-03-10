@@ -70,7 +70,7 @@ export let Switch = defineComponent({
     value: { type: String, optional: true },
   },
 
-  setup(props, { emit, attrs, slots }) {
+  setup(props, { emit, attrs, slots, expose }) {
     let api = inject(GroupContext, null)
     let id = `headlessui-switch-${useId()}`
 
@@ -84,6 +84,8 @@ export let Switch = defineComponent({
       computed(() => ({ as: props.as, type: attrs.type })),
       switchRef
     )
+
+    expose({ el: switchRef, $el: switchRef })
 
     function handleClick(event: MouseEvent) {
       event.preventDefault()

@@ -181,16 +181,18 @@ export let Tab = defineComponent({
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useTabsContext('Tab')
     let id = `headlessui-tabs-tab-${useId()}`
 
-    let tabRef = ref()
+    let internalTabRef = ref<HTMLElement | null>(null)
 
-    onMounted(() => api.registerTab(tabRef))
-    onUnmounted(() => api.unregisterTab(tabRef))
+    expose({ el: internalTabRef, $el: internalTabRef })
 
-    let myIndex = computed(() => api.tabs.value.indexOf(tabRef))
+    onMounted(() => api.registerTab(internalTabRef))
+    onUnmounted(() => api.unregisterTab(internalTabRef))
+
+    let myIndex = computed(() => api.tabs.value.indexOf(internalTabRef))
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -235,13 +237,13 @@ export let Tab = defineComponent({
     }
 
     function handleFocus() {
-      dom(tabRef)?.focus()
+      dom(internalTabRef)?.focus()
     }
 
     function handleSelection() {
       if (props.disabled) return
 
-      dom(tabRef)?.focus()
+      dom(internalTabRef)?.focus()
       api.setSelectedIndex(myIndex.value)
     }
 
@@ -254,13 +256,13 @@ export let Tab = defineComponent({
 
     let type = useResolveButtonType(
       computed(() => ({ as: props.as, type: attrs.type })),
-      tabRef
+      internalTabRef
     )
 
     return () => {
       let slot = { selected: selected.value }
       let propsWeControl = {
-        ref: tabRef,
+        ref: internalTabRef,
         onKeydown: handleKeyDown,
         onFocus: api.activation.value === 'manual' ? handleFocus : handleSelection,
         onMousedown: handleMouseDown,
@@ -316,22 +318,24 @@ export let TabPanel = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useTabsContext('TabPanel')
     let id = `headlessui-tabs-panel-${useId()}`
 
-    let panelRef = ref()
+    let internalPanelRef = ref<HTMLElement | null>(null)
 
-    onMounted(() => api.registerPanel(panelRef))
-    onUnmounted(() => api.unregisterPanel(panelRef))
+    expose({ el: internalPanelRef, $el: internalPanelRef })
 
-    let myIndex = computed(() => api.panels.value.indexOf(panelRef))
+    onMounted(() => api.registerPanel(internalPanelRef))
+    onUnmounted(() => api.unregisterPanel(internalPanelRef))
+
+    let myIndex = computed(() => api.panels.value.indexOf(internalPanelRef))
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
     return () => {
       let slot = { selected: selected.value }
       let propsWeControl = {
-        ref: panelRef,
+        ref: internalPanelRef,
         id,
         role: 'tabpanel',
         'aria-labelledby': api.tabs.value[myIndex.value]?.value?.id,

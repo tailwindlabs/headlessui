@@ -75,7 +75,7 @@ export let Dialog = defineComponent({
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
   emits: { close: (_close: boolean) => true },
-  setup(props, { emit, attrs, slots }) {
+  setup(props, { emit, attrs, slots, expose }) {
     let nestedDialogCount = ref(0)
 
     let usesOpenClosedState = useOpenClosed()
@@ -93,6 +93,8 @@ export let Dialog = defineComponent({
     let containers = ref<Set<Ref<HTMLElement | null>>>(new Set())
     let internalDialogRef = ref<HTMLDivElement | null>(null)
     let ownerDocument = computed(() => getOwnerDocument(internalDialogRef))
+
+    expose({ el: internalDialogRef, $el: internalDialogRef })
 
     // Validations
     let hasOpen = props.open !== Missing || usesOpenClosedState !== null
