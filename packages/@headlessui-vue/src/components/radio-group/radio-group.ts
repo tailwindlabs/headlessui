@@ -72,11 +72,13 @@ export let RadioGroup = defineComponent({
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String, optional: true },
   },
-  setup(props, { emit, attrs, slots }) {
+  setup(props, { emit, attrs, slots, expose }) {
     let radioGroupRef = ref<HTMLElement | null>(null)
     let options = ref<StateDefinition['options']['value']>([])
     let labelledby = useLabels({ name: 'RadioGroupLabel' })
     let describedby = useDescriptions({ name: 'RadioGroupDescription' })
+
+    expose({ el: radioGroupRef, $el: radioGroupRef })
 
     let value = computed(() => props.modelValue)
 
@@ -247,7 +249,7 @@ export let RadioGroupOption = defineComponent({
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useRadioGroupContext('RadioGroupOption')
     let id = `headlessui-radiogroup-option-${useId()}`
     let labelledby = useLabels({ name: 'RadioGroupLabel' })
@@ -256,6 +258,8 @@ export let RadioGroupOption = defineComponent({
     let optionRef = ref<HTMLElement | null>(null)
     let propsRef = computed(() => ({ value: props.value, disabled: props.disabled }))
     let state = ref(OptionState.Empty)
+
+    expose({ el: optionRef, $el: optionRef })
 
     onMounted(() => api.registerOption({ id, element: optionRef, propsRef }))
     onUnmounted(() => api.unregisterOption(id))

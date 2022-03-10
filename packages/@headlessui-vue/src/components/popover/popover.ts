@@ -92,11 +92,13 @@ export let Popover = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  setup(props, { slots, attrs }) {
+  setup(props, { slots, attrs, expose }) {
     let buttonId = `headlessui-popover-button-${useId()}`
     let panelId = `headlessui-popover-panel-${useId()}`
 
     let internalPopoverRef = ref<HTMLElement | null>(null)
+
+    expose({ el: internalPopoverRef, $el: internalPopoverRef })
 
     let popoverState = ref<StateDefinition['popoverState']['value']>(PopoverStates.Closed)
     let button = ref<StateDefinition['button']['value']>(null)
@@ -217,9 +219,11 @@ export let PopoverButton = defineComponent({
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = usePopoverContext('PopoverButton')
     let ownerDocument = computed(() => getOwnerDocument(api.button))
+
+    expose({ el: api.button, $el: api.button })
 
     let groupContext = usePopoverGroupContext()
     let closeOthers = groupContext?.closeOthers
@@ -462,10 +466,12 @@ export let PopoverPanel = defineComponent({
     unmount: { type: Boolean, default: true },
     focus: { type: Boolean, default: false },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let { focus } = props
     let api = usePopoverContext('PopoverPanel')
     let ownerDocument = computed(() => getOwnerDocument(api.panel))
+
+    expose({ el: api.panel, $el: api.panel })
 
     provide(PopoverPanelContext, api.panelId)
 
@@ -599,10 +605,12 @@ export let PopoverGroup = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let groupRef = ref<HTMLElement | null>(null)
     let popovers = ref<PopoverRegisterBag[]>([])
     let ownerDocument = computed(() => getOwnerDocument(groupRef))
+
+    expose({ el: groupRef, $el: groupRef })
 
     function unregisterPopover(registerBag: PopoverRegisterBag) {
       let idx = popovers.value.indexOf(registerBag)

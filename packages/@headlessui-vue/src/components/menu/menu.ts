@@ -237,9 +237,11 @@ export let MenuButton = defineComponent({
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useMenuContext('MenuButton')
     let id = `headlessui-menu-button-${useId()}`
+
+    expose({ el: api.buttonRef, $el: api.buttonRef })
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -330,10 +332,12 @@ export let MenuItems = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useMenuContext('MenuItems')
     let id = `headlessui-menu-items-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
+
+    expose({ el: api.itemsRef, $el: api.itemsRef })
 
     useTreeWalker({
       container: computed(() => dom(api.itemsRef)),
@@ -474,10 +478,12 @@ export let MenuItem = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
   },
-  setup(props, { slots, attrs }) {
+  setup(props, { slots, attrs, expose }) {
     let api = useMenuContext('MenuItem')
     let id = `headlessui-menu-item-${useId()}`
     let internalItemRef = ref<HTMLElement | null>(null)
+
+    expose({ el: internalItemRef, $el: internalItemRef })
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null

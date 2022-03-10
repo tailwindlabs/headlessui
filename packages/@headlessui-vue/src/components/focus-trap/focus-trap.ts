@@ -15,8 +15,10 @@ export let FocusTrap = defineComponent({
     as: { type: [Object, String], default: 'div' },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let container = ref<HTMLElement | null>(null)
+
+    expose({ el: container, $el: container })
 
     let focusTrapOptions = computed(() => ({ initialFocus: ref(props.initialFocus) }))
     useFocusTrap(container, FocusTrap.All, focusTrapOptions)

@@ -152,7 +152,7 @@ export let TransitionChild = defineComponent({
     beforeLeave: () => true,
     afterLeave: () => true,
   },
-  setup(props, { emit, attrs, slots }) {
+  setup(props, { emit, attrs, slots, expose }) {
     if (!hasTransitionContext() && hasOpenClosed()) {
       return () =>
         h(
@@ -171,6 +171,8 @@ export let TransitionChild = defineComponent({
     let container = ref<HTMLElement | null>(null)
     let state = ref(TreeStates.Visible)
     let strategy = computed(() => (props.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden))
+
+    expose({ el: container, $el: container })
 
     let { show, appear } = useTransitionContext()
     let { register, unregister } = useParentNesting()
