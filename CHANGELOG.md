@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `focus()` from Listbox Option ([#1218](https://github.com/tailwindlabs/headlessui/pull/1218))
 - Improve some internal code ([#1221](https://github.com/tailwindlabs/headlessui/pull/1221))
 - Use `ownerDocument` instead of `document` ([#1158](https://github.com/tailwindlabs/headlessui/pull/1158))
+- Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
 
 ### Added
 
@@ -52,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don’t drop initial character when searching in Combobox ([#1223](https://github.com/tailwindlabs/headlessui/pull/1223))
 - Use `ownerDocument` instead of `document` ([#1158](https://github.com/tailwindlabs/headlessui/pull/1158))
 - Re-expose `el` ([#1230](https://github.com/tailwindlabs/headlessui/pull/1230))
+- Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
 
 ### Added
 
