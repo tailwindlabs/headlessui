@@ -4,6 +4,17 @@
     "component": "./components/Home.vue"
   },
   {
+    "name": "Combinations",
+    "path": "/combinations",
+    "children": [
+      {
+        "name": "Tabs in Dialog",
+        "path": "/combinations/tabs-in-dialog",
+        "component": "./components/combinations/tabs-in-dialog.vue"
+      }
+    ]
+  },
+  {
     "name": "Combobox",
     "path": "/combobox",
     "children": [
