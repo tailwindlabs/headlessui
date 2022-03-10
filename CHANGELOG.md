@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve some internal code ([#1221](https://github.com/tailwindlabs/headlessui/pull/1221))
 - Don’t drop initial character when searching in Combobox ([#1223](https://github.com/tailwindlabs/headlessui/pull/1223))
 - Use `ownerDocument` instead of `document` ([#1158](https://github.com/tailwindlabs/headlessui/pull/1158))
+- Re-expose `el` ([#1230](https://github.com/tailwindlabs/headlessui/pull/1230))
 
 ### Added
 
