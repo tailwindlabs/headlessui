@@ -1,16 +1,17 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
+
+import { useLatestValue } from './use-latest-value'
 
 export function useWindowEvent<TType extends keyof WindowEventMap>(
   type: TType,
-  listener: (this: Window, ev: WindowEventMap[TType]) => any,
+  listener: (ev: WindowEventMap[TType]) => any,
   options?: boolean | AddEventListenerOptions
 ) {
-  let listenerRef = useRef(listener)
-  listenerRef.current = listener
+  let listenerRef = useLatestValue(listener)
 
   useEffect(() => {
     function handler(event: WindowEventMap[TType]) {
-      listenerRef.current.call(window, event)
+      listenerRef.current(event)
     }
 
     window.addEventListener(type, handler, options)

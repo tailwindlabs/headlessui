@@ -22,7 +22,6 @@ import { Keys } from '../../keyboard'
 import { useId } from '../../hooks/use-id'
 import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
-import { useWindowEvent } from '../../hooks/use-window-event'
 import { Portal, PortalGroup } from '../portal/portal'
 import { StackMessage, useStackProvider } from '../../internal/stack-context'
 import { match } from '../../utils/match'
@@ -31,6 +30,8 @@ import { Description, useDescriptions } from '../description/description'
 import { dom } from '../../utils/dom'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { getOwnerDocument } from '../../utils/owner'
+import { useEventListener } from '../../hooks/use-event-listener'
 
 enum DialogStates {
   Open,
@@ -91,6 +92,7 @@ export let Dialog = defineComponent({
 
     let containers = ref<Set<Ref<HTMLElement | null>>>(new Set())
     let internalDialogRef = ref<HTMLDivElement | null>(null)
+    let ownerDocument = computed(() => getOwnerDocument(internalDialogRef))
 
     // Validations
     let hasOpen = props.open !== Missing || usesOpenClosedState !== null
@@ -196,7 +198,7 @@ export let Dialog = defineComponent({
     })
 
     // Handle `Escape` to close
-    useWindowEvent('keydown', (event) => {
+    useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
       if (hasNestedDialogs.value) return
@@ -210,17 +212,23 @@ export let Dialog = defineComponent({
       if (dialogState.value !== DialogStates.Open) return
       if (hasParentDialog) return
 
-      let overflow = document.documentElement.style.overflow
-      let paddingRight = document.documentElement.style.paddingRight
+      let owner = ownerDocument.value
+      if (!owner) return
 
-      let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+      let documentElement = owner?.documentElement
+      let ownerWindow = owner.defaultView ?? window
 
-      document.documentElement.style.overflow = 'hidden'
-      document.documentElement.style.paddingRight = `${scrollbarWidth}px`
+      let overflow = documentElement.style.overflow
+      let paddingRight = documentElement.style.paddingRight
+
+      let scrollbarWidth = ownerWindow.innerWidth - documentElement.clientWidth
+
+      documentElement.style.overflow = 'hidden'
+      documentElement.style.paddingRight = `${scrollbarWidth}px`
 
       onInvalidate(() => {
-        document.documentElement.style.overflow = overflow
-        document.documentElement.style.paddingRight = paddingRight
+        documentElement.style.overflow = overflow
+        documentElement.style.paddingRight = paddingRight
       })
     })
 

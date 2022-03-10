@@ -35,6 +35,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useOwnerDocument } from '../../hooks/use-owner'
 
 enum MenuStates {
   Open,
@@ -398,6 +399,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
 ) {
   let [state, dispatch] = useMenuContext('Menu.Items')
   let itemsRef = useSyncRefs(state.itemsRef, ref)
+  let ownerDocument = useOwnerDocument(state.itemsRef)
 
   let id = `headlessui-menu-items-${useId()}`
   let searchDisposables = useDisposables()
@@ -415,10 +417,10 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     let container = state.itemsRef.current
     if (!container) return
     if (state.menuState !== MenuStates.Open) return
-    if (container === document.activeElement) return
+    if (container === ownerDocument?.activeElement) return
 
     container.focus({ preventScroll: true })
-  }, [state.menuState, state.itemsRef])
+  }, [state.menuState, state.itemsRef, ownerDocument])
 
   useTreeWalker({
     container: state.itemsRef.current,
@@ -501,7 +503,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
           break
       }
     },
-    [dispatch, searchDisposables, state]
+    [dispatch, searchDisposables, state, ownerDocument]
   )
 
   let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {

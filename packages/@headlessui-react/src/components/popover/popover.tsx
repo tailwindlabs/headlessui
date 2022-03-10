@@ -33,10 +33,12 @@ import {
   isFocusableElement,
   FocusableMode,
 } from '../../utils/focus-management'
-import { useWindowEvent } from '../../hooks/use-window-event'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { getOwnerDocument } from '../../utils/owner'
+import { useOwnerDocument } from '../../hooks/use-owner'
+import { useEventListener } from '../../hooks/use-event-listener'
 
 enum PopoverStates {
   Open,
@@ -174,7 +176,9 @@ let PopoverRoot = forwardRefWithAs(function Popover<
 >(props: Props<TTag, PopoverRenderPropArg>, ref: Ref<HTMLElement>) {
   let buttonId = `headlessui-popover-button-${useId()}`
   let panelId = `headlessui-popover-panel-${useId()}`
-  let popoverRef = useSyncRefs(ref)
+  let internalPopoverRef = useRef<HTMLElement | null>(null)
+  let popoverRef = useSyncRefs(ref, internalPopoverRef)
+  let ownerDocument = useOwnerDocument(internalPopoverRef)
 
   let reducerBag = useReducer(stateReducer, {
     popoverState: PopoverStates.Closed,
@@ -198,14 +202,17 @@ let PopoverRoot = forwardRefWithAs(function Popover<
   let isFocusWithinPopoverGroup = useCallback(() => {
     return (
       groupContext?.isFocusWithinPopoverGroup() ??
-      (button?.contains(document.activeElement) || panel?.contains(document.activeElement))
+      (ownerDocument?.activeElement &&
+        (button?.contains(ownerDocument.activeElement) ||
+          panel?.contains(ownerDocument.activeElement)))
     )
   }, [groupContext, button, panel])
 
   useEffect(() => registerPopover?.(registerBag), [registerPopover, registerBag])
 
   // Handle focus out
-  useWindowEvent(
+  useEventListener(
+    ownerDocument?.defaultView,
     'focus',
     () => {
       if (popoverState !== PopoverStates.Open) return
@@ -308,17 +315,17 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     isWithinPanel ? null : (button) => dispatch({ type: ActionTypes.SetButton, button })
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
+  let ownerDocument = useOwnerDocument(internalButtonRef)
 
   // TODO: Revisit when handling Tab/Shift+Tab when using Portal's
   let activeElementRef = useRef<Element | null>(null)
-  let previousActiveElementRef = useRef<Element | null>(
-    typeof window === 'undefined' ? null : document.activeElement
-  )
-  useWindowEvent(
+  let previousActiveElementRef = useRef<Element | null>(null)
+  useEventListener(
+    ownerDocument?.defaultView,
     'focus',
     () => {
       previousActiveElementRef.current = activeElementRef.current
-      activeElementRef.current = document.activeElement
+      activeElementRef.current = ownerDocument?.activeElement as HTMLElement
     },
     true
   )
@@ -350,7 +357,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           case Keys.Escape:
             if (state.popoverState !== PopoverStates.Open) return closeOthers?.(state.buttonId)
             if (!internalButtonRef.current) return
-            if (!internalButtonRef.current.contains(document.activeElement)) return
+            if (
+              ownerDocument?.activeElement &&
+              !internalButtonRef.current.contains(ownerDocument.activeElement)
+            ) {
+              return
+            }
             event.preventDefault()
             event.stopPropagation()
             dispatch({ type: ActionTypes.ClosePopover })
@@ -369,7 +381,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
               if (state.panel.contains(previousActiveElementRef.current)) return
 
               // Check if the last focused element is *after* the button in the DOM
-              let focusableElements = getFocusableElements()
+              let focusableElements = getFocusableElements(ownerDocument?.body)
               let previousIdx = focusableElements.indexOf(
                 previousActiveElementRef.current as HTMLElement
               )
@@ -425,7 +437,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           if (state.panel.contains(previousActiveElementRef.current)) return
 
           // Check if the last focused element is *after* the button in the DOM
-          let focusableElements = getFocusableElements()
+          let focusableElements = getFocusableElements(ownerDocument?.body)
           let previousIdx = focusableElements.indexOf(
             previousActiveElementRef.current as HTMLElement
           )
@@ -586,6 +598,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let panelRef = useSyncRefs(internalPanelRef, ref, (panel) => {
     dispatch({ type: ActionTypes.SetPanel, panel })
   })
+  let ownerDocument = useOwnerDocument(internalPanelRef)
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -602,7 +615,12 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
         case Keys.Escape:
           if (state.popoverState !== PopoverStates.Open) return
           if (!internalPanelRef.current) return
-          if (!internalPanelRef.current.contains(document.activeElement)) return
+          if (
+            ownerDocument?.activeElement &&
+            !internalPanelRef.current.contains(ownerDocument.activeElement)
+          ) {
+            return
+          }
           event.preventDefault()
           event.stopPropagation()
           dispatch({ type: ActionTypes.ClosePopover })
@@ -631,20 +649,20 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     if (state.popoverState !== PopoverStates.Open) return
     if (!internalPanelRef.current) return
 
-    let activeElement = document.activeElement as HTMLElement
+    let activeElement = ownerDocument?.activeElement as HTMLElement
     if (internalPanelRef.current.contains(activeElement)) return // Already focused within Dialog
 
     focusIn(internalPanelRef.current, Focus.First)
   }, [focus, internalPanelRef, state.popoverState])
 
   // Handle Tab / Shift+Tab focus positioning
-  useWindowEvent('keydown', (event) => {
+  useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
     if (state.popoverState !== PopoverStates.Open) return
     if (!internalPanelRef.current) return
     if (event.key !== Keys.Tab) return
-    if (!document.activeElement) return
+    if (!ownerDocument?.activeElement) return
     if (!internalPanelRef.current) return
-    if (!internalPanelRef.current.contains(document.activeElement)) return
+    if (!internalPanelRef.current.contains(ownerDocument.activeElement)) return
 
     // We will take-over the default tab behaviour so that we have a bit
     // control over what is focused next. It will behave exactly the same,
@@ -659,7 +677,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     } else if (result === FocusResult.Overflow) {
       if (!state.button) return
 
-      let elements = getFocusableElements()
+      let elements = getFocusableElements(ownerDocument.body)
       let buttonIdx = elements.indexOf(state.button)
 
       let nextElements = elements
@@ -672,20 +690,26 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
       // focusable). Therefore we will try and focus the very first item in
       // the document.body.
       if (focusIn(nextElements, Focus.First) === FocusResult.Error) {
-        focusIn(document.body, Focus.First)
+        focusIn(ownerDocument.body, Focus.First)
       }
     }
   })
 
   // Handle focus out when we are in special "focus" mode
-  useWindowEvent(
+  useEventListener(
+    ownerDocument?.defaultView,
     'focus',
     () => {
       if (!focus) return
       if (state.popoverState !== PopoverStates.Open) return
       if (!internalPanelRef.current) return
 
-      if (internalPanelRef.current?.contains(document.activeElement as HTMLElement)) return
+      if (
+        ownerDocument?.activeElement &&
+        internalPanelRef.current?.contains(ownerDocument.activeElement)
+      ) {
+        return
+      }
       dispatch({ type: ActionTypes.ClosePopover })
     },
     true
@@ -753,15 +777,17 @@ let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DE
   )
 
   let isFocusWithinPopoverGroup = useCallback(() => {
-    let element = document.activeElement as HTMLElement
+    let ownerDocument = getOwnerDocument(internalGroupRef)
+    if (!ownerDocument) return false
+    let element = ownerDocument.activeElement
 
     if (internalGroupRef.current?.contains(element)) return true
 
     // Check if the focus is in one of the button or panel elements. This is important in case you are rendering inside a Portal.
     return popovers.some((bag) => {
       return (
-        document.getElementById(bag.buttonId)?.contains(element) ||
-        document.getElementById(bag.panelId)?.contains(element)
+        ownerDocument!.getElementById(bag.buttonId)?.contains(element) ||
+        ownerDocument!.getElementById(bag.panelId)?.contains(element)
       )
     })
   }, [internalGroupRef, popovers])

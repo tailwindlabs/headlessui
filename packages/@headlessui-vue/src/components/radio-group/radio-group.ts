@@ -25,6 +25,7 @@ import { Description, useDescriptions } from '../description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { VisuallyHidden } from '../../internal/visually-hidden'
 import { objectToFormEntries } from '../../utils/form'
+import { getOwnerDocument } from '../../utils/owner'
 
 interface Option {
   id: string
@@ -147,7 +148,7 @@ export let RadioGroup = defineComponent({
 
             if (result === FocusResult.Success) {
               let activeOption = options.value.find(
-                (option) => option.element === document.activeElement
+                (option) => option.element === getOwnerDocument(radioGroupRef)?.activeElement
               )
               if (activeOption) api.change(activeOption.propsRef.value)
             }
@@ -164,7 +165,7 @@ export let RadioGroup = defineComponent({
 
             if (result === FocusResult.Success) {
               let activeOption = options.value.find(
-                (option) => option.element === document.activeElement
+                (option) => option.element === getOwnerDocument(option.element)?.activeElement
               )
               if (activeOption) api.change(activeOption.propsRef.value)
             }
@@ -177,7 +178,7 @@ export let RadioGroup = defineComponent({
             event.stopPropagation()
 
             let activeOption = options.value.find(
-              (option) => option.element === document.activeElement
+              (option) => option.element === getOwnerDocument(option.element)?.activeElement
             )
             if (activeOption) api.change(activeOption.propsRef.value)
           }

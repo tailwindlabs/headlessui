@@ -9,9 +9,6 @@ export function useWindowEvent<TType extends keyof WindowEventMap>(
 
   watchEffect((onInvalidate) => {
     window.addEventListener(type, listener, options)
-
-    onInvalidate(() => {
-      window.removeEventListener(type, listener, options)
-    })
+    onInvalidate(() => window.removeEventListener(type, listener, options))
   })
 }
