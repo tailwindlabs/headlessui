@@ -44,6 +44,11 @@ enum ComboboxStates {
   Closed,
 }
 
+enum ValueMode {
+  Single,
+  Multi,
+}
+
 enum ActivationTrigger {
   Pointer,
   Other,
@@ -62,6 +67,7 @@ interface StateDefinition {
   comboboxPropsRef: MutableRefObject<{
     value: unknown
     onChange(value: unknown): void
+    mode: ValueMode
     __demoMode: boolean
   }>
   inputPropsRef: MutableRefObject<{
@@ -261,7 +267,8 @@ interface ComboboxRenderPropArg<T> {
 
 let ComboboxRoot = forwardRefWithAs(function Combobox<
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
-  TType = string
+  TType = string,
+  TActualType = TType extends (infer U)[] ? U : TType
 >(
   props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled' | 'name'> & {
     value: TType
@@ -277,6 +284,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
     onChange,
+    mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single,
     __demoMode,
   })
   let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({
@@ -304,11 +312,29 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let [{ comboboxState, options, activeOptionIndex, optionsRef, inputRef, buttonRef }, dispatch] =
     reducerBag
 
+  comboboxPropsRef.current.value = value
+  comboboxPropsRef.current.mode = Array.isArray(value) ? ValueMode.Multi : ValueMode.Single
+
   useIsoMorphicEffect(() => {
-    comboboxPropsRef.current.value = value
-  }, [value, comboboxPropsRef])
-  useIsoMorphicEffect(() => {
-    comboboxPropsRef.current.onChange = onChange
+    comboboxPropsRef.current.onChange = (value: unknown) => {
+      return match(comboboxPropsRef.current.mode, {
+        [ValueMode.Single]() {
+          return onChange(value as TType)
+        },
+        [ValueMode.Multi]() {
+          let copy = (comboboxPropsRef.current.value as TActualType[]).slice()
+
+          let idx = copy.indexOf(value as TActualType)
+          if (idx === -1) {
+            copy.push(value as TActualType)
+          } else {
+            copy.splice(idx, 1)
+          }
+
+          return onChange(copy as unknown as TType)
+        },
+      })
+    }
   }, [onChange, comboboxPropsRef])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
@@ -478,7 +504,9 @@ let Input = forwardRefWithAs(function Input<
           event.stopPropagation()
 
           actions.selectActiveOption()
-          dispatch({ type: ActionTypes.CloseCombobox })
+          if (state.comboboxPropsRef.current.mode === ValueMode.Single) {
+            dispatch({ type: ActionTypes.CloseCombobox })
+          }
           break
 
         case Keys.ArrowDown:
@@ -579,6 +607,8 @@ let Input = forwardRefWithAs(function Input<
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
+    'aria-multiselectable':
+      state.comboboxPropsRef.current.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
@@ -883,7 +913,22 @@ let Option = forwardRefWithAs(function Option<
   let id = `headlessui-combobox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
-  let selected = state.comboboxPropsRef.current.value === value
+  let selected = match(state.comboboxPropsRef.current.mode, {
+    [ValueMode.Multi]: () => (state.comboboxPropsRef.current.value as TType[]).includes(value),
+    [ValueMode.Single]: () => state.comboboxPropsRef.current.value === value,
+  })
+  let isFirstSelected = match(state.comboboxPropsRef.current.mode, {
+    [ValueMode.Multi]: () => {
+      let currentValues = state.comboboxPropsRef.current.value as TType[]
+
+      return (
+        state.options.find((option) =>
+          currentValues.includes(option.dataRef.current.value as TType)
+        )?.id === id
+      )
+    },
+    [ValueMode.Single]: () => selected,
+  })
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })
   let optionRef = useSyncRefs(ref, internalOptionRef)
@@ -908,8 +953,17 @@ let Option = forwardRefWithAs(function Option<
   useIsoMorphicEffect(() => {
     if (state.comboboxState !== ComboboxStates.Open) return
     if (!selected) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-  }, [state.comboboxState, selected, id])
+    if (state.activeOptionIndex !== null) return
+
+    match(state.comboboxPropsRef.current.mode, {
+      [ValueMode.Multi]: () => {
+        if (isFirstSelected) dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+      },
+      [ValueMode.Single]: () => {
+        dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+      },
+    })
+  }, [state.comboboxState, state.activeOptionIndex, selected, isFirstSelected, state.comboboxPropsRef.current.mode, id])
 
   let enableScrollIntoView = useRef(state.comboboxPropsRef.current.__demoMode ? false : true)
   useIsoMorphicEffect(() => {
@@ -937,8 +991,10 @@ let Option = forwardRefWithAs(function Option<
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
       select()
-      dispatch({ type: ActionTypes.CloseCombobox })
-      disposables().nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+      if (state.comboboxPropsRef.current.mode === ValueMode.Single) {
+        dispatch({ type: ActionTypes.CloseCombobox })
+        disposables().nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+      }
     },
     [dispatch, state.inputRef, disabled, select]
   )
@@ -977,6 +1033,9 @@ let Option = forwardRefWithAs(function Option<
     role: 'option',
     tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
+    // According to the WAI-ARIA best practices, we should use aria-checked for
+    // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
+    // both single and multi-select.
     'aria-selected': selected === true ? true : undefined,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,

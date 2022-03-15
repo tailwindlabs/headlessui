@@ -40,6 +40,11 @@ enum ComboboxStates {
   Closed,
 }
 
+enum ValueMode {
+  Single,
+  Multi,
+}
+
 enum ActivationTrigger {
   Pointer,
   Other,
@@ -54,6 +59,8 @@ type StateDefinition = {
   // State
   comboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
+
+  mode: ComputedRef<ValueMode>
 
   inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
   optionsPropsRef: Ref<{ static: boolean; hold: boolean }>
@@ -152,10 +159,12 @@ export let Combobox = defineComponent({
     }
 
     let value = computed(() => props.modelValue)
+    let mode = computed(() => (Array.isArray(value.value) ? ValueMode.Multi : ValueMode.Single))
 
     let api = {
       comboboxState,
       value,
+      mode,
       inputRef,
       labelRef,
       buttonRef,
@@ -223,14 +232,50 @@ export let Combobox = defineComponent({
         if (!option) return
 
         let { dataRef } = option
-        emit('update:modelValue', dataRef.value)
+        emit(
+          'update:modelValue',
+          match(mode.value, {
+            [ValueMode.Single]: () => dataRef.value,
+            [ValueMode.Multi]: () => {
+              let copy = toRaw(api.value.value as unknown[]).slice()
+              let raw = toRaw(dataRef.value)
+
+              let idx = copy.indexOf(raw)
+              if (idx === -1) {
+                copy.push(raw)
+              } else {
+                copy.splice(idx, 1)
+              }
+
+              return copy
+            },
+          })
+        )
         api.syncInputValue()
       },
       selectActiveOption() {
         if (activeOptionIndex.value === null) return
 
         let { dataRef } = options.value[activeOptionIndex.value]
-        emit('update:modelValue', dataRef.value)
+        emit(
+          'update:modelValue',
+          match(mode.value, {
+            [ValueMode.Single]: () => dataRef.value,
+            [ValueMode.Multi]: () => {
+              let copy = toRaw(api.value.value as unknown[]).slice()
+              let raw = toRaw(dataRef.value)
+
+              let idx = copy.indexOf(raw)
+              if (idx === -1) {
+                copy.push(raw)
+              } else {
+                copy.splice(idx, 1)
+              }
+
+              return copy
+            },
+          })
+        )
         api.syncInputValue()
       },
       registerOption(id: string, dataRef: ComboboxOptionData) {
@@ -512,7 +557,9 @@ export let ComboboxInput = defineComponent({
           event.stopPropagation()
 
           api.selectActiveOption()
-          api.closeCombobox()
+          if (api.mode.value === ValueMode.Single) {
+            api.closeCombobox()
+          }
           break
 
         case Keys.ArrowDown:
@@ -590,6 +637,7 @@ export let ComboboxInput = defineComponent({
           api.activeOptionIndex.value === null
             ? undefined
             : api.options.value[api.activeOptionIndex.value]?.id,
+        'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         id,
         onKeydown: handleKeyDown,
@@ -707,7 +755,25 @@ export let ComboboxOption = defineComponent({
         : false
     })
 
-    let selected = computed(() => toRaw(api.value.value) === toRaw(props.value))
+    let selected = computed(() =>
+      match(api.mode.value, {
+        [ValueMode.Single]: () => toRaw(api.value.value) === toRaw(props.value),
+        [ValueMode.Multi]: () => (toRaw(api.value.value) as unknown[]).includes(toRaw(props.value)),
+      })
+    )
+    let isFirstSelected = computed(() => {
+      return match(api.mode.value, {
+        [ValueMode.Multi]: () => {
+          let currentValues = toRaw(api.value.value) as unknown[]
+
+          return (
+            api.options.value.find((option) => currentValues.includes(option.dataRef.value))?.id ===
+            id
+          )
+        },
+        [ValueMode.Single]: () => selected.value,
+      })
+    })
 
     let dataRef = computed<ComboboxOptionData>(() => ({
       disabled: props.disabled,
@@ -724,7 +790,14 @@ export let ComboboxOption = defineComponent({
         () => {
           if (api.comboboxState.value !== ComboboxStates.Open) return
           if (!selected.value) return
-          api.goToOption(Focus.Specific, id)
+          match(api.mode.value, {
+            [ValueMode.Multi]: () => {
+              if (isFirstSelected.value) api.goToOption(Focus.Specific, id)
+            },
+            [ValueMode.Single]: () => {
+              api.goToOption(Focus.Specific, id)
+            },
+          })
         },
         { immediate: true }
       )
@@ -740,8 +813,10 @@ export let ComboboxOption = defineComponent({
     function handleClick(event: MouseEvent) {
       if (props.disabled) return event.preventDefault()
       api.selectOption(id)
-      api.closeCombobox()
-      nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
+      if (api.mode.value === ValueMode.Single) {
+        api.closeCombobox()
+        nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
+      }
     }
 
     function handleFocus() {
@@ -771,6 +846,9 @@ export let ComboboxOption = defineComponent({
         role: 'option',
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
+        // According to the WAI-ARIA best practices, we should use aria-checked for
+        // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
+        // both single and multi-select.
         'aria-selected': selected.value === true ? selected.value : undefined,
         disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
