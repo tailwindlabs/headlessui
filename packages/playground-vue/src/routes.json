@@ -79,6 +79,11 @@
         "name": "Listbox multiple elements",
         "path": "/listbox/multiple-elements",
         "component": "./components/listbox/multiple-elements.vue"
+      },
+      {
+        "name": "Listbox multi select",
+        "path": "/listbox/multi-select",
+        "component": "./components/listbox/multi-select.vue"
       }
     ]
   },
