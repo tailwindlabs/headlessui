@@ -35,6 +35,7 @@ import {
   getListboxLabel,
   ListboxState,
   getByText,
+  ListboxMode,
 } from '../../test-utils/accessibility-assertions'
 import { Transition } from '../transitions/transition'
 
@@ -3958,18 +3959,74 @@ describe('Multi-select', () => {
   it(
     'should be possible to pass multiple values to the Listbox component',
     suppressConsoleLogs(async () => {
-      let handleChange = jest.fn()
       function Example() {
-        let [value, setValue] = useState([])
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Listbox
-            value={value}
-            onChange={(value) => {
-              setValue(value)
-              handleChange(value)
-            }}
-          >
+          <Listbox value={value} onChange={setValue}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">alice</Listbox.Option>
+              <Listbox.Option value="bob">bob</Listbox.Option>
+              <Listbox.Option value="charlie">charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Verify that we have an open listbox with multiple mode
+      assertListbox({ state: ListboxState.Visible, mode: ListboxMode.Multiple })
+
+      // Verify that we have multiple selected listbox options
+      let options = getListboxOptions()
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
+      assertListboxOption(options[2], { selected: true })
+    })
+  )
+
+  it(
+    'should make the first selected option the active item',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
+
+        return (
+          <Listbox value={value} onChange={setValue}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">alice</Listbox.Option>
+              <Listbox.Option value="bob">bob</Listbox.Option>
+              <Listbox.Option value="charlie">charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Verify that bob is the active option
+      assertActiveListboxOption(getListboxOptions()[1])
+    })
+  )
+
+  it(
+    'should keep the listbox open when selecting an item via the keyboard',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
+
+        return (
+          <Listbox value={value} onChange={setValue}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -3985,39 +4042,57 @@ describe('Multi-select', () => {
       // Open listbox
       await click(getListboxButton())
       assertListbox({ state: ListboxState.Visible })
-      assertActiveElement(getListbox())
+
+      // Verify that bob is the active option
+      await click(getListboxOptions()[0])
+
+      // Verify that the listbox is still open
+      assertListbox({ state: ListboxState.Visible })
+    })
+  )
+
+  it(
+    'should toggle the selected state of an option when clicking on it',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
+
+        return (
+          <Listbox value={value} onChange={setValue}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">alice</Listbox.Option>
+              <Listbox.Option value="bob">bob</Listbox.Option>
+              <Listbox.Option value="charlie">charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open listbox
+      await click(getListboxButton())
+      assertListbox({ state: ListboxState.Visible })
 
       let options = getListboxOptions()
 
-      // We should be able to click the first option (the options should still be shown in multiple mode)
-      await click(options[0])
-      assertListbox({ state: ListboxState.Visible })
-      expect(handleChange).toHaveBeenCalledTimes(1)
-      expect(handleChange).toHaveBeenCalledWith(['alice'])
-      assertListboxOption(options[0], { selected: true })
-      assertNoActiveListboxOption()
-
-      // The listbox itself should still be active
-      assertActiveElement(getListbox())
-
-      // Let's select the third option
-      handleChange.mockReset()
-      await click(options[2])
-      expect(handleChange).toHaveBeenCalledTimes(1)
-      expect(handleChange).toHaveBeenCalledWith(['alice', 'charlie'])
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
       assertListboxOption(options[2], { selected: true })
-      assertNoActiveListboxOption()
 
-      // Close/Hide the listbox
-      await press(Keys.Escape)
-      assertListbox({ state: ListboxState.InvisibleUnmounted })
+      // Click on bob
+      await click(getListboxOptions()[1])
 
-      // Verify the active option is the previously selected one
-      await click(getListboxButton())
-      assertNoActiveListboxOption()
-
-      assertListboxOption(options[0], { selected: true })
+      assertListboxOption(options[0], { selected: false })
       assertListboxOption(options[1], { selected: false })
+      assertListboxOption(options[2], { selected: true })
+
+      // Click on bob again
+      await click(getListboxOptions()[1])
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
       assertListboxOption(options[2], { selected: true })
     })
   )

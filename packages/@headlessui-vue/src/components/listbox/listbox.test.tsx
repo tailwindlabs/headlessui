@@ -30,6 +30,7 @@ import {
   getListboxLabel,
   ListboxState,
   getByText,
+  ListboxMode,
 } from '../../test-utils/accessibility-assertions'
 import {
   click,
@@ -4075,6 +4076,189 @@ describe('Mouse interactions', () => {
       // We should not be able to focus the first option
       await focus(options[1])
       assertNoActiveListboxOption()
+    })
+  )
+})
+
+describe('Multi-select', () => {
+  it(
+    'should be possible to pass multiple values to the Listbox component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Verify that we have an open listbox with multiple mode
+      assertListbox({ state: ListboxState.Visible, mode: ListboxMode.Multiple })
+
+      // Verify that we have multiple selected listbox options
+      let options = getListboxOptions()
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
+      assertListboxOption(options[2], { selected: true })
+    })
+  )
+
+  it(
+    'should make the first selected option the active item',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Verify that bob is the active option
+      assertActiveListboxOption(getListboxOptions()[1])
+    })
+  )
+
+  it(
+    'should keep the listbox open when selecting an item via the keyboard',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+      assertListbox({ state: ListboxState.Visible })
+
+      // Verify that bob is the active option
+      await click(getListboxOptions()[0])
+
+      // Verify that the listbox is still open
+      assertListbox({ state: ListboxState.Visible })
+    })
+  )
+
+  it(
+    'should toggle the selected state of an option when clicking on it',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="alice">alice</ListboxOption>
+              <ListboxOption value="bob">bob</ListboxOption>
+              <ListboxOption value="charlie">charlie</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+      assertListbox({ state: ListboxState.Visible })
+
+      let options = getListboxOptions()
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
+      assertListboxOption(options[2], { selected: true })
+
+      // Click on bob
+      await click(getListboxOptions()[1])
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: false })
+      assertListboxOption(options[2], { selected: true })
+
+      // Click on bob again
+      await click(getListboxOptions()[1])
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
+      assertListboxOption(options[2], { selected: true })
+    })
+  )
+
+  it(
+    'should toggle the selected state of an option when clicking on it (using objects instead of primitives)',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Listbox v-model="value">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption v-for="person in people" :value="person"
+                >{{ person.name }}</ListboxOption
+              >
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => {
+          let people = [
+            { id: 1, name: 'alice' },
+            { id: 2, name: 'bob' },
+            { id: 3, name: 'charlie' },
+          ]
+
+          let value = ref([people[1], people[2]])
+          return { people, value }
+        },
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+      assertListbox({ state: ListboxState.Visible })
+
+      let options = getListboxOptions()
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
+      assertListboxOption(options[2], { selected: true })
+
+      // Click on bob
+      await click(getListboxOptions()[1])
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: false })
+      assertListboxOption(options[2], { selected: true })
+
+      // Click on bob again
+      await click(getListboxOptions()[1])
+
+      assertListboxOption(options[0], { selected: false })
+      assertListboxOption(options[1], { selected: true })
+      assertListboxOption(options[2], { selected: true })
     })
   )
 })

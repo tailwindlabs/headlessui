@@ -634,11 +634,20 @@ export enum ListboxState {
   InvisibleUnmounted,
 }
 
+export enum ListboxMode {
+  /** The listbox is in the `single` mode. */
+  Single,
+
+  /** The listbox is in the `multiple` mode. */
+  Multiple,
+}
+
 export function assertListbox(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
     state: ListboxState
+    mode?: ListboxMode
     orientation?: 'horizontal' | 'vertical'
   },
   listbox = getListbox()
@@ -671,6 +680,10 @@ export function assertListbox(
         expect(listbox).toHaveAttribute('aria-labelledby')
         expect(listbox).toHaveAttribute('aria-orientation', orientation)
         expect(listbox).toHaveAttribute('role', 'listbox')
+
+        if (options.mode && options.mode === ListboxMode.Multiple) {
+          expect(listbox).toHaveAttribute('aria-multiselectable', 'true')
+        }
 
         if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
 
