@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
 - Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 - Improve Combobox Input value ([#1248](https://github.com/tailwindlabs/headlessui/pull/1248))
+- Fix Tree-shaking support ([#1247](https://github.com/tailwindlabs/headlessui/pull/1247))
 
 ### Added
 
@@ -58,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
 - Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 - Improve Combobox Input value ([#1248](https://github.com/tailwindlabs/headlessui/pull/1248))
+- Fix Tree-shaking support ([#1247](https://github.com/tailwindlabs/headlessui/pull/1247))
 
 ### Added
 
