@@ -36,6 +36,8 @@ import {
   ComboboxState,
   getByText,
   getComboboxes,
+  assertCombobox,
+  ComboboxMode,
 } from '../../test-utils/accessibility-assertions'
 import { Transition } from '../transitions/transition'
 
@@ -4389,6 +4391,153 @@ describe('Mouse interactions', () => {
 
       // Verify the input is reset correctly
       expect(getComboboxInput()?.value).toBe('')
+    })
+  )
+})
+
+describe('Multi-select', () => {
+  it(
+    'should be possible to pass multiple values to the Combobox component',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
+
+        return (
+          <Combobox value={value} onChange={setValue}>
+            <Combobox.Input onChange={() => {}} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value="alice">alice</Combobox.Option>
+              <Combobox.Option value="bob">bob</Combobox.Option>
+              <Combobox.Option value="charlie">charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify that we have an open combobox with multiple mode
+      assertCombobox({ state: ComboboxState.Visible, mode: ComboboxMode.Multiple })
+
+      // Verify that we have multiple selected combobox options
+      let options = getComboboxOptions()
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
+    })
+  )
+
+  it(
+    'should make the first selected option the active item',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
+
+        return (
+          <Combobox value={value} onChange={setValue}>
+            <Combobox.Input onChange={() => {}} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value="alice">alice</Combobox.Option>
+              <Combobox.Option value="bob">bob</Combobox.Option>
+              <Combobox.Option value="charlie">charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify that bob is the active option
+      assertActiveComboboxOption(getComboboxOptions()[1])
+    })
+  )
+
+  it(
+    'should keep the combobox open when selecting an item via the keyboard',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
+
+        return (
+          <Combobox value={value} onChange={setValue}>
+            <Combobox.Input onChange={() => {}} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value="alice">alice</Combobox.Option>
+              <Combobox.Option value="bob">bob</Combobox.Option>
+              <Combobox.Option value="charlie">charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertCombobox({ state: ComboboxState.Visible })
+
+      // Verify that bob is the active option
+      await click(getComboboxOptions()[0])
+
+      // Verify that the combobox is still open
+      assertCombobox({ state: ComboboxState.Visible })
+    })
+  )
+
+  it(
+    'should toggle the selected state of an option when clicking on it',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState<string[]>(['bob', 'charlie'])
+
+        return (
+          <Combobox value={value} onChange={setValue}>
+            <Combobox.Input onChange={() => {}} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value="alice">alice</Combobox.Option>
+              <Combobox.Option value="bob">bob</Combobox.Option>
+              <Combobox.Option value="charlie">charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertCombobox({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
+
+      // Click on bob
+      await click(getComboboxOptions()[1])
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: false })
+      assertComboboxOption(options[2], { selected: true })
+
+      // Click on bob again
+      await click(getComboboxOptions()[1])
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
     })
   )
 })

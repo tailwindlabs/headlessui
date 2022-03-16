@@ -49,14 +49,14 @@ export let Portal = defineComponent({
     let myTarget = ref(
       forcePortalRoot === true
         ? getPortalRoot(element.value)
-        : groupContext === null
+        : groupContext == null
         ? getPortalRoot(element.value)
         : groupContext.resolveTarget()
     )
 
     watchEffect(() => {
       if (forcePortalRoot) return
-      if (groupContext === null) return
+      if (groupContext == null) return
       myTarget.value = groupContext.resolveTarget()
     })
 

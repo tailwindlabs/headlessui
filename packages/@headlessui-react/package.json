@@ -43,11 +43,11 @@
   },
   "devDependencies": {
     "@testing-library/react": "^11.2.3",
-    "@types/react": "^16.14.2",
-    "@types/react-dom": "^16.9.10",
+    "@types/react": "16.14.21",
+    "@types/react-dom": "^16.9.0",
+    "esbuild": "^0.11.18",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
-    "snapshot-diff": "^0.8.1",
-    "esbuild": "^0.11.18"
+    "snapshot-diff": "^0.8.1"
   }
 }
