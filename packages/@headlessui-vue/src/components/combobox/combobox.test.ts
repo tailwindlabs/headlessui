@@ -4615,6 +4615,54 @@ describe('Mouse interactions', () => {
       expect(getComboboxInput()?.value).toBe('')
     })
   )
+
+  it(
+    'should sync the input field correctly and reset it when resetting the value from outside (when using displayValue)',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput :displayValue="person => person?.name" />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption v-for="person in people" :key="person.id" :value="person"
+                >{{ person.name }}</ComboboxOption
+              >
+            </ComboboxOptions>
+          </Combobox>
+          <button @click="value = null">reset</button>
+        `,
+        setup: () => {
+          let people = [
+            { id: 1, name: 'Alice' },
+            { id: 2, name: 'Bob' },
+            { id: 3, name: 'Charlie' },
+          ]
+
+          return {
+            people,
+            value: ref(people[1]),
+          }
+        },
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify the input has the selected value
+      expect(getComboboxInput()?.value).toBe('Bob')
+
+      // Override the input by typing something
+      await type(word('test'), getComboboxInput())
+      expect(getComboboxInput()?.value).toBe('test')
+
+      // Reset from outside
+      await click(getByText('reset'))
+
+      // Verify the input is reset correctly
+      expect(getComboboxInput()?.value).toBe('')
+    })
+  )
 })
 
 describe('Multi-select', () => {

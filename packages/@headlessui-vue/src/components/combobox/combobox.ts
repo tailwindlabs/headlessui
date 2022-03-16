@@ -216,11 +216,10 @@ export let Combobox = defineComponent({
       syncInputValue() {
         let value = api.value.value
         if (!dom(api.inputRef)) return
-        if (value === undefined) return
         let displayValue = api.inputPropsRef.value.displayValue
 
         if (typeof displayValue === 'function') {
-          api.inputRef!.value!.value = displayValue(value)
+          api.inputRef!.value!.value = displayValue(value) ?? ''
         } else if (typeof value === 'string') {
           api.inputRef!.value!.value = value
         } else {
