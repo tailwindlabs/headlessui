@@ -38,6 +38,11 @@ enum ListboxStates {
   Closed,
 }
 
+enum ValueMode {
+  Single,
+  Multi,
+}
+
 enum ActivationTrigger {
   Pointer,
   Other,
@@ -53,11 +58,14 @@ type ListboxOptionData = {
   value: unknown
   domRef: Ref<HTMLElement | null>
 }
+
 type StateDefinition = {
   // State
   listboxState: Ref<ListboxStates>
   value: ComputedRef<unknown>
   orientation: Ref<'vertical' | 'horizontal'>
+
+  mode: ComputedRef<ValueMode>
 
   labelRef: Ref<HTMLLabelElement | null>
   buttonRef: Ref<HTMLButtonElement | null>
@@ -148,10 +156,12 @@ export let Listbox = defineComponent({
     }
 
     let value = computed(() => props.modelValue)
+    let mode = computed(() => (Array.isArray(value.value) ? ValueMode.Multi : ValueMode.Single))
 
     let api = {
       listboxState,
       value,
+      mode,
       orientation: computed(() => (props.horizontal ? 'horizontal' : 'vertical')),
       labelRef,
       buttonRef,
@@ -249,7 +259,25 @@ export let Listbox = defineComponent({
       },
       select(value: unknown) {
         if (props.disabled) return
-        emit('update:modelValue', value)
+        emit(
+          'update:modelValue',
+          match(mode.value, {
+            [ValueMode.Single]: () => value,
+            [ValueMode.Multi]: () => {
+              let copy = toRaw(api.value.value as unknown[]).slice()
+              let raw = toRaw(value)
+
+              let idx = copy.indexOf(raw)
+              if (idx === -1) {
+                copy.push(raw)
+              } else {
+                copy.splice(idx, 1)
+              }
+
+              return copy
+            },
+          })
+        )
       },
     }
 
@@ -480,8 +508,10 @@ export let ListboxOptions = defineComponent({
             let activeOption = api.options.value[api.activeOptionIndex.value]
             api.select(activeOption.dataRef.value)
           }
-          api.closeListbox()
-          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+          if (api.mode.value === ValueMode.Single) {
+            api.closeListbox()
+            nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+          }
           break
 
         case match(api.orientation.value, {
@@ -546,6 +576,7 @@ export let ListboxOptions = defineComponent({
           api.activeOptionIndex.value === null
             ? undefined
             : api.options.value[api.activeOptionIndex.value]?.id,
+        'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         'aria-orientation': api.orientation.value,
         id,
@@ -589,7 +620,25 @@ export let ListboxOption = defineComponent({
         : false
     })
 
-    let selected = computed(() => toRaw(api.value.value) === toRaw(props.value))
+    let selected = computed(() =>
+      match(api.mode.value, {
+        [ValueMode.Single]: () => toRaw(api.value.value) === toRaw(props.value),
+        [ValueMode.Multi]: () => (toRaw(api.value.value) as unknown[]).includes(toRaw(props.value)),
+      })
+    )
+    let isFirstSelected = computed(() => {
+      return match(api.mode.value, {
+        [ValueMode.Multi]: () => {
+          let currentValues = toRaw(api.value.value) as unknown[]
+
+          return (
+            api.options.value.find((option) => currentValues.includes(option.dataRef.value))?.id ===
+            id
+          )
+        },
+        [ValueMode.Single]: () => selected.value,
+      })
+    })
 
     let dataRef = computed<ListboxOptionData>(() => ({
       disabled: props.disabled,
@@ -611,7 +660,15 @@ export let ListboxOption = defineComponent({
         () => {
           if (api.listboxState.value !== ListboxStates.Open) return
           if (!selected.value) return
-          api.goToOption(Focus.Specific, id)
+
+          match(api.mode.value, {
+            [ValueMode.Multi]: () => {
+              if (isFirstSelected.value) api.goToOption(Focus.Specific, id)
+            },
+            [ValueMode.Single]: () => {
+              api.goToOption(Focus.Specific, id)
+            },
+          })
         },
         { immediate: true }
       )
@@ -627,8 +684,10 @@ export let ListboxOption = defineComponent({
     function handleClick(event: MouseEvent) {
       if (props.disabled) return event.preventDefault()
       api.select(props.value)
-      api.closeListbox()
-      nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+      if (api.mode.value === ValueMode.Single) {
+        api.closeListbox()
+        nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+      }
     }
 
     function handleFocus() {
@@ -657,6 +716,9 @@ export let ListboxOption = defineComponent({
         role: 'option',
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
+        // According to the WAI-ARIA best practices, we should use aria-checked for
+        // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
+        // both single and multi-select.
         'aria-selected': selected.value === true ? selected.value : undefined,
         disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
@@ -668,7 +730,7 @@ export let ListboxOption = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...omit(props, ['value', 'disabled']), ...propsWeControl },
         slot,
         attrs,
         slots,

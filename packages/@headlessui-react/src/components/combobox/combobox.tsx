@@ -44,6 +44,11 @@ enum ComboboxStates {
   Closed,
 }
 
+enum ValueMode {
+  Single,
+  Multi,
+}
+
 enum ActivationTrigger {
   Pointer,
   Other,
@@ -230,6 +235,11 @@ function useComboboxContext(component: string) {
 }
 
 let ComboboxActions = createContext<{
+  openCombobox(): void
+  closeCombobox(): void
+  registerOption(id: string, dataRef: ComboboxOptionDataRef): () => void
+  goToOption(focus: Focus.Specific, id: string, trigger?: ActivationTrigger): void
+  goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   selectOption(id: string): void
   selectActiveOption(): void
 } | null>(null)
@@ -240,6 +250,22 @@ function useComboboxActions() {
   if (context === null) {
     let err = new Error(`ComboboxActions is missing a parent <Combobox /> component.`)
     if (Error.captureStackTrace) Error.captureStackTrace(err, useComboboxActions)
+    throw err
+  }
+  return context
+}
+
+let ComboboxData = createContext<{
+  value: unknown
+  mode: ValueMode
+} | null>(null)
+ComboboxData.displayName = 'ComboboxData'
+
+function useComboboxData() {
+  let context = useContext(ComboboxData)
+  if (context === null) {
+    let err = new Error(`ComboboxData is missing a parent <Combobox /> component.`)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useComboboxData)
     throw err
   }
   return context
@@ -261,7 +287,8 @@ interface ComboboxRenderPropArg<T> {
 
 let ComboboxRoot = forwardRefWithAs(function Combobox<
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
-  TType = string
+  TType = string,
+  TActualType = TType extends (infer U)[] ? U : TType
 >(
   props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled' | 'name'> & {
     value: TType
@@ -304,12 +331,36 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let [{ comboboxState, options, activeOptionIndex, optionsRef, inputRef, buttonRef }, dispatch] =
     reducerBag
 
+  let dataBag = useMemo<Exclude<ContextType<typeof ComboboxData>, null>>(
+    () => ({ value, mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single }),
+    [value]
+  )
+
   useIsoMorphicEffect(() => {
     comboboxPropsRef.current.value = value
-  }, [value, comboboxPropsRef])
+  }, [value])
+
   useIsoMorphicEffect(() => {
-    comboboxPropsRef.current.onChange = onChange
-  }, [onChange, comboboxPropsRef])
+    comboboxPropsRef.current.onChange = (value: unknown) => {
+      return match(dataBag.mode, {
+        [ValueMode.Single]() {
+          return onChange(value as TType)
+        },
+        [ValueMode.Multi]() {
+          let copy = (dataBag.value as TActualType[]).slice()
+
+          let idx = copy.indexOf(value as TActualType)
+          if (idx === -1) {
+            copy.push(value as TActualType)
+          } else {
+            copy.splice(idx, 1)
+          }
+
+          return onChange(copy as unknown as TType)
+        },
+      })
+    }
+  }, [dataBag, onChange, comboboxPropsRef, dataBag])
 
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
 
@@ -368,8 +419,28 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   }, [activeOptionIndex, options, comboboxPropsRef, inputRef])
 
   let actionsBag = useMemo<ContextType<typeof ComboboxActions>>(
-    () => ({ selectOption, selectActiveOption }),
-    [selectOption, selectActiveOption]
+    () => ({
+      selectOption,
+      selectActiveOption,
+      openCombobox() {
+        dispatch({ type: ActionTypes.OpenCombobox })
+      },
+      closeCombobox() {
+        dispatch({ type: ActionTypes.CloseCombobox })
+      },
+      goToOption(focus, id, trigger) {
+        if (focus === Focus.Specific) {
+          return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id: id!, trigger })
+        }
+
+        return dispatch({ type: ActionTypes.GoToOption, focus, trigger })
+      },
+      registerOption(id, dataRef) {
+        dispatch({ type: ActionTypes.RegisterOption, id, dataRef })
+        return () => dispatch({ type: ActionTypes.UnregisterOption, id })
+      },
+    }),
+    [selectOption, selectActiveOption, dispatch]
   )
 
   useIsoMorphicEffect(() => {
@@ -389,35 +460,37 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   return (
     <ComboboxActions.Provider value={actionsBag}>
-      <ComboboxContext.Provider value={reducerBag}>
-        <OpenClosedProvider
-          value={match(comboboxState, {
-            [ComboboxStates.Open]: State.Open,
-            [ComboboxStates.Closed]: State.Closed,
-          })}
-        >
-          {name != null && value != null ? (
-            <>
-              {objectToFormEntries({ [name]: value }).map(([name, value]) => (
-                <VisuallyHidden
-                  {...compact({
-                    key: name,
-                    as: 'input',
-                    type: 'hidden',
-                    hidden: true,
-                    readOnly: true,
-                    name,
-                    value,
-                  })}
-                />
-              ))}
-              {render(renderConfiguration)}
-            </>
-          ) : (
-            render(renderConfiguration)
-          )}
-        </OpenClosedProvider>
-      </ComboboxContext.Provider>
+      <ComboboxData.Provider value={dataBag}>
+        <ComboboxContext.Provider value={reducerBag}>
+          <OpenClosedProvider
+            value={match(comboboxState, {
+              [ComboboxStates.Open]: State.Open,
+              [ComboboxStates.Closed]: State.Closed,
+            })}
+          >
+            {name != null && value != null ? (
+              <>
+                {objectToFormEntries({ [name]: value }).map(([name, value]) => (
+                  <VisuallyHidden
+                    {...compact({
+                      key: name,
+                      as: 'input',
+                      type: 'hidden',
+                      hidden: true,
+                      readOnly: true,
+                      name,
+                      value,
+                    })}
+                  />
+                ))}
+                {render(renderConfiguration)}
+              </>
+            ) : (
+              render(renderConfiguration)
+            )}
+          </OpenClosedProvider>
+        </ComboboxContext.Provider>
+      </ComboboxData.Provider>
     </ComboboxActions.Provider>
   )
 })
@@ -453,7 +526,8 @@ let Input = forwardRefWithAs(function Input<
   ref: Ref<HTMLInputElement>
 ) {
   let { value, onChange, displayValue, ...passThroughProps } = props
-  let [state, dispatch] = useComboboxContext('Combobox.Input')
+  let [state] = useComboboxContext('Combobox.Input')
+  let data = useComboboxData()
   let actions = useComboboxActions()
 
   let inputRef = useSyncRefs(state.inputRef, ref)
@@ -478,7 +552,9 @@ let Input = forwardRefWithAs(function Input<
           event.stopPropagation()
 
           actions.selectActiveOption()
-          dispatch({ type: ActionTypes.CloseCombobox })
+          if (data.mode === ValueMode.Single) {
+            actions.closeCombobox()
+          }
           break
 
         case Keys.ArrowDown:
@@ -486,10 +562,10 @@ let Input = forwardRefWithAs(function Input<
           event.stopPropagation()
           return match(state.comboboxState, {
             [ComboboxStates.Open]: () => {
-              return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Next })
+              actions.goToOption(Focus.Next)
             },
             [ComboboxStates.Closed]: () => {
-              dispatch({ type: ActionTypes.OpenCombobox })
+              actions.openCombobox()
               // TODO: We can't do this outside next frame because the options aren't rendered yet
               // But doing this in next frame results in a flicker because the dom mutations are async here
               // Basically:
@@ -498,8 +574,8 @@ let Input = forwardRefWithAs(function Input<
 
               // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
               d.nextFrame(() => {
-                if (!state.comboboxPropsRef.current.value) {
-                  dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
+                if (!data.value) {
+                  actions.goToOption(Focus.Next)
                 }
               })
             },
@@ -510,13 +586,13 @@ let Input = forwardRefWithAs(function Input<
           event.stopPropagation()
           return match(state.comboboxState, {
             [ComboboxStates.Open]: () => {
-              return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Previous })
+              actions.goToOption(Focus.Previous)
             },
             [ComboboxStates.Closed]: () => {
-              dispatch({ type: ActionTypes.OpenCombobox })
+              actions.openCombobox()
               d.nextFrame(() => {
-                if (!state.comboboxPropsRef.current.value) {
-                  dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
+                if (!data.value) {
+                  actions.goToOption(Focus.Last)
                 }
               })
             },
@@ -526,36 +602,36 @@ let Input = forwardRefWithAs(function Input<
         case Keys.PageUp:
           event.preventDefault()
           event.stopPropagation()
-          return dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
+          return actions.goToOption(Focus.First)
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
           event.stopPropagation()
-          return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
+          return actions.goToOption(Focus.Last)
 
         case Keys.Escape:
           event.preventDefault()
           if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
             event.stopPropagation()
           }
-          return dispatch({ type: ActionTypes.CloseCombobox })
+          return actions.closeCombobox()
 
         case Keys.Tab:
           actions.selectActiveOption()
-          dispatch({ type: ActionTypes.CloseCombobox })
+          actions.closeCombobox()
           break
       }
     },
-    [d, dispatch, state, actions]
+    [d, state, actions, data]
   )
 
   let handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      dispatch({ type: ActionTypes.OpenCombobox })
+      actions.openCombobox()
       onChangeRef.current?.(event)
     },
-    [dispatch, onChangeRef]
+    [actions, onChangeRef]
   )
 
   // TODO: Verify this. The spec says that, for the input/combobox, the lebel is the labelling element when present
@@ -579,6 +655,7 @@ let Input = forwardRefWithAs(function Input<
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
+    'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
     onKeyDown: handleKeyDown,
@@ -616,7 +693,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let [state, dispatch] = useComboboxContext('Combobox.Button')
+  let [state] = useComboboxContext('Combobox.Button')
+  let data = useComboboxData()
   let actions = useComboboxActions()
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
@@ -632,7 +710,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           event.stopPropagation()
           if (state.comboboxState === ComboboxStates.Closed) {
-            dispatch({ type: ActionTypes.OpenCombobox })
+            actions.openCombobox()
             // TODO: We can't do this outside next frame because the options aren't rendered yet
             // But doing this in next frame results in a flicker because the dom mutations are async here
             // Basically:
@@ -641,8 +719,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 
             // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
             d.nextFrame(() => {
-              if (!state.comboboxPropsRef.current.value) {
-                dispatch({ type: ActionTypes.GoToOption, focus: Focus.First })
+              if (!data.value) {
+                actions.goToOption(Focus.First)
               }
             })
           }
@@ -652,10 +730,10 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           event.preventDefault()
           event.stopPropagation()
           if (state.comboboxState === ComboboxStates.Closed) {
-            dispatch({ type: ActionTypes.OpenCombobox })
+            actions.openCombobox()
             d.nextFrame(() => {
-              if (!state.comboboxPropsRef.current.value) {
-                dispatch({ type: ActionTypes.GoToOption, focus: Focus.Last })
+              if (!data.value) {
+                actions.goToOption(Focus.Last)
               }
             })
           }
@@ -666,26 +744,26 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
             event.stopPropagation()
           }
-          dispatch({ type: ActionTypes.CloseCombobox })
+          actions.closeCombobox()
           return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
       }
     },
-    [d, dispatch, state, actions]
+    [d, state, actions, data]
   )
 
   let handleClick = useCallback(
     (event: ReactMouseEvent) => {
       if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
       if (state.comboboxState === ComboboxStates.Open) {
-        dispatch({ type: ActionTypes.CloseCombobox })
+        actions.closeCombobox()
       } else {
         event.preventDefault()
-        dispatch({ type: ActionTypes.OpenCombobox })
+        actions.openCombobox()
       }
 
       d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
     },
-    [dispatch, d, state]
+    [actions, d, state]
   )
 
   let labelledby = useComputed(() => {
@@ -878,12 +956,28 @@ let Option = forwardRefWithAs(function Option<
   ref: Ref<HTMLLIElement>
 ) {
   let { disabled = false, value, ...passthroughProps } = props
-  let [state, dispatch] = useComboboxContext('Combobox.Option')
+  let [state] = useComboboxContext('Combobox.Option')
+  let data = useComboboxData()
   let actions = useComboboxActions()
   let id = `headlessui-combobox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
-  let selected = state.comboboxPropsRef.current.value === value
+  let selected = match(data.mode, {
+    [ValueMode.Multi]: () => (data.value as TType[]).includes(value),
+    [ValueMode.Single]: () => data.value === value,
+  })
+  let isFirstSelected = match(data.mode, {
+    [ValueMode.Multi]: () => {
+      let currentValues = data.value as TType[]
+
+      return (
+        state.options.find((option) =>
+          currentValues.includes(option.dataRef.current.value as TType)
+        )?.id === id
+      )
+    },
+    [ValueMode.Single]: () => selected,
+  })
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })
   let optionRef = useSyncRefs(ref, internalOptionRef)
@@ -900,16 +994,22 @@ let Option = forwardRefWithAs(function Option<
 
   let select = useCallback(() => actions.selectOption(id), [actions, id])
 
-  useIsoMorphicEffect(() => {
-    dispatch({ type: ActionTypes.RegisterOption, id, dataRef: bag })
-    return () => dispatch({ type: ActionTypes.UnregisterOption, id })
-  }, [bag, id])
+  useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
 
   useIsoMorphicEffect(() => {
     if (state.comboboxState !== ComboboxStates.Open) return
     if (!selected) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-  }, [state.comboboxState, selected, id])
+    if (state.activeOptionIndex !== null) return
+
+    match(data.mode, {
+      [ValueMode.Multi]: () => {
+        if (isFirstSelected) actions.goToOption(Focus.Specific, id)
+      },
+      [ValueMode.Single]: () => {
+        actions.goToOption(Focus.Specific, id)
+      },
+    })
+  }, [state.comboboxState, state.activeOptionIndex, selected, isFirstSelected, id, actions, data])
 
   let enableScrollIntoView = useRef(state.comboboxPropsRef.current.__demoMode ? false : true)
   useIsoMorphicEffect(() => {
@@ -937,34 +1037,31 @@ let Option = forwardRefWithAs(function Option<
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
       select()
-      dispatch({ type: ActionTypes.CloseCombobox })
-      disposables().nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+      if (data.mode === ValueMode.Single) {
+        actions.closeCombobox()
+        disposables().nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+      }
     },
-    [dispatch, state.inputRef, disabled, select]
+    [actions, state.inputRef, disabled, select]
   )
 
   let handleFocus = useCallback(() => {
-    if (disabled) return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-  }, [disabled, id, dispatch])
+    if (disabled) return actions.goToOption(Focus.Nothing)
+    actions.goToOption(Focus.Specific, id)
+  }, [disabled, id, actions])
 
   let handleMove = useCallback(() => {
     if (disabled) return
     if (active) return
-    dispatch({
-      type: ActionTypes.GoToOption,
-      focus: Focus.Specific,
-      id,
-      trigger: ActivationTrigger.Pointer,
-    })
-  }, [disabled, active, id, dispatch])
+    actions.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
+  }, [disabled, active, id, actions])
 
   let handleLeave = useCallback(() => {
     if (disabled) return
     if (!active) return
     if (state.optionsPropsRef.current.hold) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Nothing })
-  }, [disabled, active, dispatch, state.comboboxState, state.comboboxPropsRef])
+    actions.goToOption(Focus.Nothing)
+  }, [disabled, active, actions, state.comboboxState, state.comboboxPropsRef])
 
   let slot = useMemo<OptionRenderPropArg>(
     () => ({ active, selected, disabled }),
@@ -977,6 +1074,9 @@ let Option = forwardRefWithAs(function Option<
     role: 'option',
     tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
+    // According to the WAI-ARIA best practices, we should use aria-checked for
+    // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
+    // both single and multi-select.
     'aria-selected': selected === true ? true : undefined,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,

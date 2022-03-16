@@ -52,6 +52,8 @@ import {
   ComboboxState,
   getByText,
   getComboboxes,
+  assertCombobox,
+  ComboboxMode,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
@@ -4611,6 +4613,194 @@ describe('Mouse interactions', () => {
 
       // Verify the input is reset correctly
       expect(getComboboxInput()?.value).toBe('')
+    })
+  )
+})
+
+describe('Multi-select', () => {
+  it(
+    'should be possible to pass multiple values to the Combobox component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify that we have an open combobox with multiple mode
+      assertCombobox({ state: ComboboxState.Visible, mode: ComboboxMode.Multiple })
+
+      // Verify that we have multiple selected combobox options
+      let options = getComboboxOptions()
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
+    })
+  )
+
+  it(
+    'should make the first selected option the active item',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify that bob is the active option
+      assertActiveComboboxOption(getComboboxOptions()[1])
+    })
+  )
+
+  it(
+    'should keep the combobox open when selecting an item via the keyboard',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertCombobox({ state: ComboboxState.Visible })
+
+      // Verify that bob is the active option
+      await click(getComboboxOptions()[0])
+
+      // Verify that the combobox is still open
+      assertCombobox({ state: ComboboxState.Visible })
+    })
+  )
+
+  it(
+    'should toggle the selected state of an option when clicking on it',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(['bob', 'charlie']) }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertCombobox({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
+
+      // Click on bob
+      await click(getComboboxOptions()[1])
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: false })
+      assertComboboxOption(options[2], { selected: true })
+
+      // Click on bob again
+      await click(getComboboxOptions()[1])
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
+    })
+  )
+
+  it(
+    'should toggle the selected state of an option when clicking on it (using objects instead of primitives)',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption v-for="person in people" :value="person"
+                >{{ person.name }}</ComboboxOption
+              >
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => {
+          let people = [
+            { id: 1, name: 'alice' },
+            { id: 2, name: 'bob' },
+            { id: 3, name: 'charlie' },
+          ]
+
+          let value = ref([people[1], people[2]])
+          return { people, value }
+        },
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertCombobox({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
+
+      // Click on bob
+      await click(getComboboxOptions()[1])
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: false })
+      assertComboboxOption(options[2], { selected: true })
+
+      // Click on bob again
+      await click(getComboboxOptions()[1])
+
+      assertComboboxOption(options[0], { selected: false })
+      assertComboboxOption(options[1], { selected: true })
+      assertComboboxOption(options[2], { selected: true })
     })
   )
 })

@@ -43,6 +43,11 @@ enum ListboxStates {
   Closed,
 }
 
+enum ValueMode {
+  Single,
+  Multi,
+}
+
 enum ActivationTrigger {
   Pointer,
   Other,
@@ -60,7 +65,7 @@ interface StateDefinition {
 
   orientation: 'horizontal' | 'vertical'
 
-  propsRef: MutableRefObject<{ value: unknown; onChange(value: unknown): void }>
+  propsRef: MutableRefObject<{ value: unknown; onChange(value: unknown): void; mode: ValueMode }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
   buttonRef: MutableRefObject<HTMLButtonElement | null>
   optionsRef: MutableRefObject<HTMLUListElement | null>
@@ -264,7 +269,8 @@ interface ListboxRenderPropArg {
 
 let ListboxRoot = forwardRefWithAs(function Listbox<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
-  TType = string
+  TType = string,
+  TActualType = TType extends (infer U)[] ? U : TType
 >(
   props: Props<
     TTag,
@@ -285,7 +291,9 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
 
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
-    propsRef: { current: { value, onChange } },
+    propsRef: {
+      current: { value, onChange, mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single },
+    },
     labelRef: createRef(),
     buttonRef: createRef(),
     optionsRef: createRef(),
@@ -298,11 +306,29 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   } as StateDefinition)
   let [{ listboxState, propsRef, optionsRef, buttonRef }, dispatch] = reducerBag
 
+  propsRef.current.value = value
+  propsRef.current.mode = Array.isArray(value) ? ValueMode.Multi : ValueMode.Single
+
   useIsoMorphicEffect(() => {
-    propsRef.current.value = value
-  }, [value, propsRef])
-  useIsoMorphicEffect(() => {
-    propsRef.current.onChange = onChange
+    propsRef.current.onChange = (value: unknown) => {
+      return match(propsRef.current.mode, {
+        [ValueMode.Single]() {
+          return onChange(value as TType)
+        },
+        [ValueMode.Multi]() {
+          let copy = (propsRef.current.value as TActualType[]).slice()
+
+          let idx = copy.indexOf(value as TActualType)
+          if (idx === -1) {
+            copy.push(value as TActualType)
+          } else {
+            copy.splice(idx, 1)
+          }
+
+          return onChange(copy as unknown as TType)
+        },
+      })
+    }
   }, [onChange, propsRef])
   useIsoMorphicEffect(() => dispatch({ type: ActionTypes.SetDisabled, disabled }), [disabled])
   useIsoMorphicEffect(
@@ -583,12 +609,15 @@ let Options = forwardRefWithAs(function Options<
         case Keys.Enter:
           event.preventDefault()
           event.stopPropagation()
-          dispatch({ type: ActionTypes.CloseListbox })
+
           if (state.activeOptionIndex !== null) {
             let { dataRef } = state.options[state.activeOptionIndex]
             state.propsRef.current.onChange(dataRef.current.value)
           }
-          disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+          if (state.propsRef.current.mode === ValueMode.Single) {
+            dispatch({ type: ActionTypes.CloseListbox })
+            disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+          }
           break
 
         case match(state.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
@@ -647,6 +676,7 @@ let Options = forwardRefWithAs(function Options<
   let propsWeControl = {
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
+    'aria-multiselectable': state.propsRef.current.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     'aria-orientation': state.orientation,
     id,
@@ -704,7 +734,23 @@ let Option = forwardRefWithAs(function Option<
   let id = `headlessui-listbox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
-  let selected = state.propsRef.current.value === value
+  let selected = match(state.propsRef.current.mode, {
+    [ValueMode.Multi]: () => (state.propsRef.current.value as TType[]).includes(value),
+    [ValueMode.Single]: () => state.propsRef.current.value === value,
+  })
+  let isFirstSelected = match(state.propsRef.current.mode, {
+    [ValueMode.Multi]: () => {
+      let currentValues = state.propsRef.current.value as TType[]
+
+      return (
+        state.options.find((option) =>
+          currentValues.includes(option.dataRef.current.value as TType)
+        )?.id === id
+      )
+    },
+    [ValueMode.Single]: () => selected,
+  })
+
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let optionRef = useSyncRefs(ref, internalOptionRef)
 
@@ -741,15 +787,26 @@ let Option = forwardRefWithAs(function Option<
   useIsoMorphicEffect(() => {
     if (state.listboxState !== ListboxStates.Open) return
     if (!selected) return
-    dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-  }, [state.listboxState])
+    if (state.activeOptionIndex !== null) return
+
+    match(state.propsRef.current.mode, {
+      [ValueMode.Multi]: () => {
+        if (isFirstSelected) dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+      },
+      [ValueMode.Single]: () => {
+        dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+      },
+    })
+  }, [state.listboxState, state.activeOptionIndex, selected, isFirstSelected, state.propsRef.current.mode, id])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {
       if (disabled) return event.preventDefault()
       select()
-      dispatch({ type: ActionTypes.CloseListbox })
-      disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+      if (state.propsRef.current.mode === ValueMode.Single) {
+        dispatch({ type: ActionTypes.CloseListbox })
+        disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+      }
     },
     [dispatch, state.buttonRef, disabled, select]
   )
@@ -786,6 +843,9 @@ let Option = forwardRefWithAs(function Option<
     role: 'option',
     tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
+    // According to the WAI-ARIA best practices, we should use aria-checked for
+    // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
+    // both single and multi-select.
     'aria-selected': selected === true ? true : undefined,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,

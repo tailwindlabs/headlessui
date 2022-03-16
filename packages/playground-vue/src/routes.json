@@ -32,6 +32,11 @@
         "name": "Command Palette (w/ Groups)",
         "path": "/combobox/command-palette-with-groups",
         "component": "./components/combobox/command-palette-with-groups.vue"
+      },
+      {
+        "name": "Combobox multi select",
+        "path": "/combobox/multi-select",
+        "component": "./components/combobox/multi-select.vue"
       }
     ]
   },
@@ -79,6 +84,11 @@
         "name": "Listbox multiple elements",
         "path": "/listbox/multiple-elements",
         "component": "./components/listbox/multiple-elements.vue"
+      },
+      {
+        "name": "Listbox multi select",
+        "path": "/listbox/multi-select",
+        "component": "./components/listbox/multi-select.vue"
       }
     ]
   },
