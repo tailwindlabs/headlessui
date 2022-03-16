@@ -4392,3 +4392,169 @@ describe('Mouse interactions', () => {
     })
   )
 })
+
+describe('Form compatibility', () => {
+  it('should be possible to submit a form with a value', async () => {
+    let submits = jest.fn()
+
+    function Example() {
+      let [value, setValue] = useState(null)
+      return (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget).entries()])
+          }}
+        >
+          <Combobox value={value} onChange={setValue} name="delivery">
+            <Combobox.Input onChange={console.log} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Label>Pizza Delivery</Combobox.Label>
+            <Combobox.Options>
+              <Combobox.Option value="pickup">Pickup</Combobox.Option>
+              <Combobox.Option value="home-delivery">Home delivery</Combobox.Option>
+              <Combobox.Option value="dine-in">Dine in</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+          <button>Submit</button>
+        </form>
+      )
+    }
+
+    render(<Example />)
+
+    // Open combobox
+    await click(getComboboxButton())
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([]) // no data
+
+    // Open combobox again
+    await click(getComboboxButton())
+
+    // Choose home delivery
+    await click(getByText('Home delivery'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([['delivery', 'home-delivery']])
+
+    // Open combobox again
+    await click(getComboboxButton())
+
+    // Choose pickup
+    await click(getByText('Pickup'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([['delivery', 'pickup']])
+  })
+
+  it('should be possible to submit a form with a complex value object', async () => {
+    let submits = jest.fn()
+    let options = [
+      {
+        id: 1,
+        value: 'pickup',
+        label: 'Pickup',
+        extra: { info: 'Some extra info' },
+      },
+      {
+        id: 2,
+        value: 'home-delivery',
+        label: 'Home delivery',
+        extra: { info: 'Some extra info' },
+      },
+      {
+        id: 3,
+        value: 'dine-in',
+        label: 'Dine in',
+        extra: { info: 'Some extra info' },
+      },
+    ]
+
+    function Example() {
+      let [value, setValue] = useState(options[0])
+
+      return (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget).entries()])
+          }}
+        >
+          <Combobox value={value} onChange={setValue} name="delivery">
+            <Combobox.Input onChange={console.log} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Label>Pizza Delivery</Combobox.Label>
+            <Combobox.Options>
+              {options.map((option) => (
+                <Combobox.Option key={option.id} value={option}>
+                  {option.label}
+                </Combobox.Option>
+              ))}
+            </Combobox.Options>
+          </Combobox>
+          <button>Submit</button>
+        </form>
+      )
+    }
+
+    render(<Example />)
+
+    // Open combobox
+    await click(getComboboxButton())
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([
+      ['delivery[id]', '1'],
+      ['delivery[value]', 'pickup'],
+      ['delivery[label]', 'Pickup'],
+      ['delivery[extra][info]', 'Some extra info'],
+    ])
+
+    // Open combobox
+    await click(getComboboxButton())
+
+    // Choose home delivery
+    await click(getByText('Home delivery'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([
+      ['delivery[id]', '2'],
+      ['delivery[value]', 'home-delivery'],
+      ['delivery[label]', 'Home delivery'],
+      ['delivery[extra][info]', 'Some extra info'],
+    ])
+
+    // Open combobox
+    await click(getComboboxButton())
+
+    // Choose pickup
+    await click(getByText('Pickup'))
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([
+      ['delivery[id]', '1'],
+      ['delivery[value]', 'pickup'],
+      ['delivery[label]', 'Pickup'],
+      ['delivery[extra][info]', 'Some extra info'],
+    ])
+  })
+})

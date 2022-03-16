@@ -1,6 +1,8 @@
 import {
+  Fragment,
   computed,
   defineComponent,
+  h,
   inject,
   nextTick,
   onMounted,
@@ -10,6 +12,8 @@ import {
   toRaw,
   watch,
   watchEffect,
+
+  // Types
   ComputedRef,
   InjectionKey,
   PropType,
@@ -17,7 +21,7 @@ import {
   UnwrapNestedRefs,
 } from 'vue'
 
-import { Features, render, omit } from '../../utils/render'
+import { Features, render, omit, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
@@ -28,6 +32,8 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 enum ComboboxStates {
   Open,
@@ -96,6 +102,7 @@ export let Combobox = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
+    name: { type: String },
   },
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
@@ -254,9 +261,24 @@ export let Combobox = defineComponent({
       api.closeCombobox()
     })
 
-    watch([api.value, api.inputRef, api.comboboxState], () => api.syncInputValue(), {
+    watch([api.value, api.inputRef], () => api.syncInputValue(), {
       immediate: true,
     })
+
+    // Only sync the input value on close as typing into the input will trigger it to open
+    // causing a resync of the input value with the currently stored, stale value that is
+    // one character behind since the input's value has just been updated by the browser
+    watch(
+      api.comboboxState,
+      (state) => {
+        if (state === ComboboxStates.Closed) {
+          api.syncInputValue()
+        }
+      },
+      {
+        immediate: true,
+      }
+    )
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
@@ -276,20 +298,43 @@ export let Combobox = defineComponent({
     )
 
     return () => {
+      let { name, modelValue, disabled, ...passThroughProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
-        disabled: props.disabled,
+        disabled,
         activeIndex: activeOptionIndex.value,
         activeOption: activeOption.value,
       }
 
-      return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled']),
+      let renderConfiguration = {
+        props: omit(passThroughProps, ['onUpdate:modelValue']),
         slot,
         slots,
         attrs,
         name: 'Combobox',
-      })
+      }
+
+      if (name != null && modelValue != null) {
+        return h(Fragment, [
+          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+            h(
+              VisuallyHidden,
+              compact({
+                key: name,
+                as: 'input',
+                type: 'hidden',
+                hidden: true,
+                readOnly: true,
+                name,
+                value,
+              })
+            )
+          ),
+          render(renderConfiguration),
+        ])
+      }
+
+      return render(renderConfiguration)
     }
   },
 })
@@ -333,9 +378,11 @@ export let ComboboxButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxButton')
     let id = `headlessui-combobox-button-${useId()}`
+
+    expose({ el: api.buttonRef, $el: api.buttonRef })
 
     function handleClick(event: MouseEvent) {
       if (api.disabled.value) return
@@ -449,10 +496,12 @@ export let ComboboxInput = defineComponent({
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
   },
-  setup(props, { emit, attrs, slots }) {
+  setup(props, { emit, attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
     api.inputPropsRef = computed(() => props)
+
+    expose({ el: api.inputRef, $el: api.inputRef })
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -575,15 +624,20 @@ export let ComboboxOptions = defineComponent({
     unmount: { type: Boolean, default: true },
     hold: { type: [Boolean], default: false },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxOptions')
     let id = `headlessui-combobox-options-${useId()}`
+
+    expose({ el: api.optionsRef, $el: api.optionsRef })
+
     watchEffect(() => {
       api.optionsPropsRef.value.static = props.static
     })
+
     watchEffect(() => {
       api.optionsPropsRef.value.hold = props.hold
     })
+
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
@@ -640,10 +694,12 @@ export let ComboboxOption = defineComponent({
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
   },
-  setup(props, { slots, attrs }) {
+  setup(props, { slots, attrs, expose }) {
     let api = useComboboxContext('ComboboxOption')
     let id = `headlessui-combobox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
+
+    expose({ el: internalOptionRef, $el: internalOptionRef })
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
@@ -678,7 +734,7 @@ export let ComboboxOption = defineComponent({
       if (api.comboboxState.value !== ComboboxStates.Open) return
       if (!active.value) return
       if (api.activationTrigger.value === ActivationTrigger.Pointer) return
-      nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+      nextTick(() => dom(internalOptionRef)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
     function handleClick(event: MouseEvent) {

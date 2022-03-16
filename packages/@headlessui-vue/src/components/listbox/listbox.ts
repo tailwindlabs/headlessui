@@ -1,22 +1,26 @@
 import {
+  Fragment,
+  computed,
   defineComponent,
-  ref,
-  provide,
+  h,
   inject,
+  nextTick,
   onMounted,
   onUnmounted,
-  computed,
-  nextTick,
-  InjectionKey,
-  Ref,
-  ComputedRef,
-  watchEffect,
+  provide,
+  ref,
   toRaw,
   watch,
+  watchEffect,
+
+  // Types
+  ComputedRef,
+  InjectionKey,
+  Ref,
   UnwrapNestedRefs,
 } from 'vue'
 
-import { Features, render, omit } from '../../utils/render'
+import { Features, render, omit, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
@@ -26,6 +30,8 @@ import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
 
 enum ListboxStates {
   Open,
@@ -98,6 +104,7 @@ export let Listbox = defineComponent({
     disabled: { type: [Boolean], default: false },
     horizontal: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
+    name: { type: String, optional: true },
   },
   setup(props, { slots, attrs, emit }) {
     let listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
@@ -270,14 +277,38 @@ export let Listbox = defineComponent({
     )
 
     return () => {
-      let slot = { open: listboxState.value === ListboxStates.Open, disabled: props.disabled }
-      return render({
-        props: omit(props, ['modelValue', 'onUpdate:modelValue', 'disabled', 'horizontal']),
+      let { name, modelValue, disabled, ...passThroughProps } = props
+
+      let slot = { open: listboxState.value === ListboxStates.Open, disabled }
+      let renderConfiguration = {
+        props: omit(passThroughProps, ['onUpdate:modelValue', 'horizontal']),
         slot,
         slots,
         attrs,
         name: 'Listbox',
-      })
+      }
+
+      if (name != null && modelValue != null) {
+        return h(Fragment, [
+          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+            h(
+              VisuallyHidden,
+              compact({
+                key: name,
+                as: 'input',
+                type: 'hidden',
+                hidden: true,
+                readOnly: true,
+                name,
+                value,
+              })
+            )
+          ),
+          render(renderConfiguration),
+        ])
+      }
+
+      return render(renderConfiguration)
     }
   },
 })
@@ -320,9 +351,11 @@ export let ListboxButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useListboxContext('ListboxButton')
     let id = `headlessui-listbox-button-${useId()}`
+
+    expose({ el: api.buttonRef, $el: api.buttonRef })
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -419,10 +452,12 @@ export let ListboxOptions = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useListboxContext('ListboxOptions')
     let id = `headlessui-listbox-options-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
+
+    expose({ el: api.optionsRef, $el: api.optionsRef })
 
     function handleKeyDown(event: KeyboardEvent) {
       if (searchDebounce.value) clearTimeout(searchDebounce.value)
@@ -442,8 +477,8 @@ export let ListboxOptions = defineComponent({
           event.preventDefault()
           event.stopPropagation()
           if (api.activeOptionIndex.value !== null) {
-            let { dataRef } = api.options.value[api.activeOptionIndex.value]
-            api.select(dataRef.value)
+            let activeOption = api.options.value[api.activeOptionIndex.value]
+            api.select(activeOption.dataRef.value)
           }
           api.closeListbox()
           nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
@@ -541,10 +576,12 @@ export let ListboxOption = defineComponent({
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
   },
-  setup(props, { slots, attrs }) {
+  setup(props, { slots, attrs, expose }) {
     let api = useListboxContext('ListboxOption')
     let id = `headlessui-listbox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
+
+    expose({ el: internalOptionRef, $el: internalOptionRef })
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
@@ -561,7 +598,7 @@ export let ListboxOption = defineComponent({
       domRef: internalOptionRef,
     }))
     onMounted(() => {
-      let textValue = document.getElementById(id)?.textContent?.toLowerCase().trim()
+      let textValue = dom(internalOptionRef)?.textContent?.toLowerCase().trim()
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 
@@ -575,7 +612,6 @@ export let ListboxOption = defineComponent({
           if (api.listboxState.value !== ListboxStates.Open) return
           if (!selected.value) return
           api.goToOption(Focus.Specific, id)
-          document.getElementById(id)?.focus?.()
         },
         { immediate: true }
       )
@@ -585,7 +621,7 @@ export let ListboxOption = defineComponent({
       if (api.listboxState.value !== ListboxStates.Open) return
       if (!active.value) return
       if (api.activationTrigger.value === ActivationTrigger.Pointer) return
-      nextTick(() => document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' }))
+      nextTick(() => dom(internalOptionRef)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
     function handleClick(event: MouseEvent) {

@@ -15,6 +15,7 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  useEffect,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'
@@ -23,7 +24,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useComputed } from '../../hooks/use-computed'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Props } from '../../types'
-import { Features, forwardRefWithAs, PropsForFeatures, render } from '../../utils/render'
+import { Features, forwardRefWithAs, PropsForFeatures, render, compact } from '../../utils/render'
 import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
@@ -33,6 +34,9 @@ import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/fo
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { VisuallyHidden } from '../../internal/visually-hidden'
+import { objectToFormEntries } from '../../utils/form'
+import { getOwnerDocument } from '../../utils/owner'
 
 enum ListboxStates {
   Open,
@@ -262,15 +266,20 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string
 >(
-  props: Props<TTag, ListboxRenderPropArg, 'value' | 'onChange'> & {
+  props: Props<
+    TTag,
+    ListboxRenderPropArg,
+    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name'
+  > & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
     horizontal?: boolean
+    name?: string
   },
   ref: Ref<TTag>
 ) {
-  let { value, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
+  let { value, name, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
@@ -318,6 +327,13 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     [listboxState, disabled]
   )
 
+  let renderConfiguration = {
+    props: { ref: listboxRef, ...passThroughProps },
+    slot,
+    defaultTag: DEFAULT_LISTBOX_TAG,
+    name: 'Listbox',
+  }
+
   return (
     <ListboxContext.Provider value={reducerBag}>
       <OpenClosedProvider
@@ -326,12 +342,26 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
           [ListboxStates.Closed]: State.Closed,
         })}
       >
-        {render({
-          props: { ref: listboxRef, ...passThroughProps },
-          slot,
-          defaultTag: DEFAULT_LISTBOX_TAG,
-          name: 'Listbox',
-        })}
+        {name != null && value != null ? (
+          <>
+            {objectToFormEntries({ [name]: value }).map(([name, value]) => (
+              <VisuallyHidden
+                {...compact({
+                  key: name,
+                  as: 'input',
+                  type: 'hidden',
+                  hidden: true,
+                  readOnly: true,
+                  name,
+                  value,
+                })}
+              />
+            ))}
+            {render(renderConfiguration)}
+          </>
+        ) : (
+          render(renderConfiguration)
+        )}
       </OpenClosedProvider>
     </ListboxContext.Provider>
   )
@@ -526,11 +556,11 @@ let Options = forwardRefWithAs(function Options<
     return state.listboxState === ListboxStates.Open
   })()
 
-  useIsoMorphicEffect(() => {
+  useEffect(() => {
     let container = state.optionsRef.current
     if (!container) return
     if (state.listboxState !== ListboxStates.Open) return
-    if (container === document.activeElement) return
+    if (container === getOwnerDocument(container)?.activeElement) return
 
     container.focus({ preventScroll: true })
   }, [state.listboxState, state.optionsRef])
@@ -675,8 +705,19 @@ let Option = forwardRefWithAs(function Option<
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
   let selected = state.propsRef.current.value === value
-  let internalOptionRef = useRef<HTMLElement | null>(null)
+  let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let optionRef = useSyncRefs(ref, internalOptionRef)
+
+  useIsoMorphicEffect(() => {
+    if (state.listboxState !== ListboxStates.Open) return
+    if (!active) return
+    if (state.activationTrigger === ActivationTrigger.Pointer) return
+    let d = disposables()
+    d.requestAnimationFrame(() => {
+      internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
+    })
+    return d.dispose
+  }, [internalOptionRef, active, state.listboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let bag = useRef<ListboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })
 
@@ -687,8 +728,8 @@ let Option = forwardRefWithAs(function Option<
     bag.current.value = value
   }, [bag, value])
   useIsoMorphicEffect(() => {
-    bag.current.textValue = document.getElementById(id)?.textContent?.toLowerCase()
-  }, [bag, id])
+    bag.current.textValue = internalOptionRef.current?.textContent?.toLowerCase()
+  }, [bag, internalOptionRef])
 
   let select = useCallback(() => state.propsRef.current.onChange(value), [state.propsRef, value])
 
@@ -701,19 +742,7 @@ let Option = forwardRefWithAs(function Option<
     if (state.listboxState !== ListboxStates.Open) return
     if (!selected) return
     dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-    document.getElementById(id)?.focus?.()
   }, [state.listboxState])
-
-  useIsoMorphicEffect(() => {
-    if (state.listboxState !== ListboxStates.Open) return
-    if (!active) return
-    if (state.activationTrigger === ActivationTrigger.Pointer) return
-    let d = disposables()
-    d.requestAnimationFrame(() => {
-      document.getElementById(id)?.scrollIntoView?.({ block: 'nearest' })
-    })
-    return d.dispose
-  }, [id, active, state.listboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {

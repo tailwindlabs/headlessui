@@ -7,6 +7,9 @@
     Toggle!
   </button>
 
+  <button @click="nested = true">Show nested</button>
+  <Nested v-if="nested" @close="nested = false" />
+
   <TransitionRoot :show="isOpen" as="template">
     <Dialog @close="setIsOpen">
       <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -177,7 +180,7 @@
 </template>
 
 <script>
-import { ref, defineComponent } from 'vue'
+import { ref, defineComponent, h } from 'vue'
 import {
   Dialog,
   DialogTitle,
@@ -204,8 +207,60 @@ function resolveClass({ active, disabled }) {
   )
 }
 
+let Nested = defineComponent({
+  components: { Dialog, DialogOverlay },
+  emits: ['close'],
+  props: ['level'],
+  setup(props, { emit }) {
+    let showChild = ref(false)
+    function onClose() {
+      emit('close', false)
+    }
+
+    return () => {
+      let level = props.level ?? 0
+      return h(Dialog, { open: true, onClose, class: 'fixed inset-0 z-10' }, () => [
+        h(DialogOverlay, { class: 'fixed inset-0 bg-gray-500 opacity-25' }),
+        h(
+          'div',
+          {
+            class: 'fixed left-12 top-24 z-10 w-96 bg-white p-4',
+            style: { transform: `translate(calc(50px * ${level}), calc(50px * ${level}))` },
+          },
+          [
+            h('p', `Level: ${level}`),
+            h('div', { class: 'space-x-4' }, [
+              h(
+                'button',
+                { class: 'rounded bg-gray-200 px-2 py-1', onClick: () => (showChild.value = true) },
+                `Open ${level + 1} a`
+              ),
+              h(
+                'button',
+                { class: 'rounded bg-gray-200 px-2 py-1', onClick: () => (showChild.value = true) },
+                `Open ${level + 1} b`
+              ),
+              h(
+                'button',
+                { class: 'rounded bg-gray-200 px-2 py-1', onClick: () => (showChild.value = true) },
+                `Open ${level + 1} c`
+              ),
+            ]),
+          ]
+        ),
+        showChild.value &&
+          h(Nested, {
+            onClose: () => (showChild.value = false),
+            level: level + 1,
+          }),
+      ])
+    }
+  },
+})
+
 export default {
   components: {
+    Nested,
     Dialog,
     DialogTitle,
     DialogOverlay,
@@ -224,8 +279,10 @@ export default {
       strategy: 'fixed',
       modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
     })
+    let nested = ref(false)
 
     return {
+      nested,
       isOpen,
       trigger,
       container,

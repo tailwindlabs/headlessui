@@ -515,3 +515,87 @@ describe('Mouse interactions', () => {
     assertSwitch({ state: SwitchState.Off })
   })
 })
+
+describe('Form compatibility', () => {
+  it('should be possible to submit a form with an boolean value', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <form @submit="handleSubmit">
+          <SwitchGroup>
+            <Switch v-model="checked" name="notifications" />
+            <SwitchLabel>Enable notifications</SwitchLabel>
+          </SwitchGroup>
+          <button>Submit</button>
+        </form>
+      `,
+      setup() {
+        let checked = ref(false)
+        return {
+          checked,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([]) // no data
+
+    // Toggle
+    await click(getSwitchLabel())
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([['notifications', 'on']])
+  })
+
+  it('should be possible to submit a form with a provided string value', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <form @submit="handleSubmit">
+          <SwitchGroup>
+            <Switch v-model="checked" name="fruit" value="apple" />
+            <SwitchLabel>Apple</SwitchLabel>
+          </SwitchGroup>
+          <button>Submit</button>
+        </form>
+      `,
+      setup() {
+        let checked = ref(false)
+        return {
+          checked,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([]) // no data
+
+    // Toggle
+    await click(getSwitchLabel())
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([['fruit', 'apple']])
+  })
+})

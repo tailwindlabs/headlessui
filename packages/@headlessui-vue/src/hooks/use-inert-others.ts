@@ -5,6 +5,7 @@ import {
   // Types
   Ref,
 } from 'vue'
+import { getOwnerDocument } from '../utils/owner'
 
 // TODO: Figure out a nice way to attachTo document.body in the tests without automagically inserting a div with data-v-app
 let CHILDREN_SELECTOR = process.env.NODE_ENV === 'test' ? '[data-v-app=""] > *' : 'body > *'
@@ -37,6 +38,8 @@ export function useInertOthers<TElement extends HTMLElement>(
     if (!container.value) return
 
     let element = container.value
+    let ownerDocument = getOwnerDocument(element)
+    if (!ownerDocument) return
 
     // Mark myself as an interactable element
     interactables.add(element)
@@ -50,7 +53,7 @@ export function useInertOthers<TElement extends HTMLElement>(
     }
 
     // Collect direct children of the body
-    document.querySelectorAll(CHILDREN_SELECTOR).forEach((child) => {
+    ownerDocument.querySelectorAll(CHILDREN_SELECTOR).forEach((child) => {
       if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
       // Skip the interactables, and the parents of the interactables
@@ -79,7 +82,7 @@ export function useInertOthers<TElement extends HTMLElement>(
       // will become inert as well.
       if (interactables.size > 0) {
         // Collect direct children of the body
-        document.querySelectorAll(CHILDREN_SELECTOR).forEach((child) => {
+        ownerDocument!.querySelectorAll(CHILDREN_SELECTOR).forEach((child) => {
           if (!(child instanceof HTMLElement)) return // Skip non-HTMLElements
 
           // Skip already inert parents

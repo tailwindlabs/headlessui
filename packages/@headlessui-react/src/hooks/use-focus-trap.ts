@@ -7,8 +7,9 @@ import {
 
 import { Keys } from '../components/keyboard'
 import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
-import { useWindowEvent } from './use-window-event'
+import { useEventListener } from './use-event-listener'
 import { useIsMounted } from './use-is-mounted'
+import { useOwnerDocument } from './use-owner'
 
 export enum Features {
   /** No features enabled for the `useFocusTrap` hook. */
@@ -41,21 +42,23 @@ export function useFocusTrap(
     containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
   } = {}
 ) {
-  let restoreElement = useRef<HTMLElement | null>(
-    typeof window !== 'undefined' ? (document.activeElement as HTMLElement) : null
-  )
+  let restoreElement = useRef<HTMLElement | null>(null)
   let previousActiveElement = useRef<HTMLElement | null>(null)
   let mounted = useIsMounted()
 
   let featuresRestoreFocus = Boolean(features & Features.RestoreFocus)
   let featuresInitialFocus = Boolean(features & Features.InitialFocus)
 
+  let ownerDocument = useOwnerDocument(container)
+
   // Capture the currently focused element, before we enable the focus trap.
   useEffect(() => {
     if (!featuresRestoreFocus) return
 
-    restoreElement.current = document.activeElement as HTMLElement
-  }, [featuresRestoreFocus])
+    if (!restoreElement.current) {
+      restoreElement.current = ownerDocument?.activeElement as HTMLElement
+    }
+  }, [featuresRestoreFocus, ownerDocument])
 
   // Restore the focus when we unmount the component.
   useEffect(() => {
@@ -70,16 +73,17 @@ export function useFocusTrap(
   // Handle initial focus
   useEffect(() => {
     if (!featuresInitialFocus) return
-    if (!container.current) return
+    let containerElement = container.current
+    if (!containerElement) return
 
-    let activeElement = document.activeElement as HTMLElement
+    let activeElement = ownerDocument?.activeElement as HTMLElement
 
     if (initialFocus?.current) {
       if (initialFocus?.current === activeElement) {
         previousActiveElement.current = activeElement
         return // Initial focus ref is already the active element
       }
-    } else if (container.current.contains(activeElement)) {
+    } else if (containerElement.contains(activeElement)) {
       previousActiveElement.current = activeElement
       return // Already focused within Dialog
     }
@@ -88,16 +92,16 @@ export function useFocusTrap(
     if (initialFocus?.current) {
       focusElement(initialFocus.current)
     } else {
-      if (focusIn(container.current, Focus.First) === FocusResult.Error) {
+      if (focusIn(containerElement, Focus.First) === FocusResult.Error) {
         console.warn('There are no focusable elements inside the <FocusTrap />')
       }
     }
 
-    previousActiveElement.current = document.activeElement as HTMLElement
-  }, [container, initialFocus, featuresInitialFocus])
+    previousActiveElement.current = ownerDocument?.activeElement as HTMLElement
+  }, [container, initialFocus, featuresInitialFocus, ownerDocument])
 
   // Handle `Tab` & `Shift+Tab` keyboard events
-  useWindowEvent('keydown', (event) => {
+  useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
     if (!(features & Features.TabLock)) return
 
     if (!container.current) return
@@ -111,12 +115,13 @@ export function useFocusTrap(
         (event.shiftKey ? Focus.Previous : Focus.Next) | Focus.WrapAround
       ) === FocusResult.Success
     ) {
-      previousActiveElement.current = document.activeElement as HTMLElement
+      previousActiveElement.current = ownerDocument?.activeElement as HTMLElement
     }
   })
 
   // Prevent programmatically escaping the container
-  useWindowEvent(
+  useEventListener(
+    ownerDocument?.defaultView,
     'focus',
     (event) => {
       if (!(features & Features.FocusLock)) return

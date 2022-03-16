@@ -7,7 +7,6 @@ import {
   nextTick,
   onMounted,
   onUnmounted,
-  onUpdated,
   provide,
   ref,
   watchEffect,
@@ -21,9 +20,8 @@ import {
 import { render, Features } from '../../utils/render'
 import { Keys } from '../../keyboard'
 import { useId } from '../../hooks/use-id'
-import { useFocusTrap } from '../../hooks/use-focus-trap'
+import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
-import { useWindowEvent } from '../../hooks/use-window-event'
 import { Portal, PortalGroup } from '../portal/portal'
 import { StackMessage, useStackProvider } from '../../internal/stack-context'
 import { match } from '../../utils/match'
@@ -32,6 +30,8 @@ import { Description, useDescriptions } from '../description/description'
 import { dom } from '../../utils/dom'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { getOwnerDocument } from '../../utils/owner'
+import { useEventListener } from '../../hooks/use-event-listener'
 
 enum DialogStates {
   Open,
@@ -75,8 +75,8 @@ export let Dialog = defineComponent({
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
   },
   emits: { close: (_close: boolean) => true },
-  setup(props, { emit, attrs, slots }) {
-    let containers = ref<Set<HTMLElement>>(new Set())
+  setup(props, { emit, attrs, slots, expose }) {
+    let nestedDialogCount = ref(0)
 
     let usesOpenClosedState = useOpenClosed()
     let open = computed(() => {
@@ -89,6 +89,12 @@ export let Dialog = defineComponent({
       }
       return props.open
     })
+
+    let containers = ref<Set<Ref<HTMLElement | null>>>(new Set())
+    let internalDialogRef = ref<HTMLDivElement | null>(null)
+    let ownerDocument = computed(() => getOwnerDocument(internalDialogRef))
+
+    expose({ el: internalDialogRef, $el: internalDialogRef })
 
     // Validations
     let hasOpen = props.open !== Missing || usesOpenClosedState !== null
@@ -105,7 +111,7 @@ export let Dialog = defineComponent({
       )
     }
 
-    let dialogState = computed(() => (props.open ? DialogStates.Open : DialogStates.Closed))
+    let dialogState = computed(() => (open.value ? DialogStates.Open : DialogStates.Closed))
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
         return usesOpenClosedState.value === State.Open
@@ -113,33 +119,60 @@ export let Dialog = defineComponent({
 
       return dialogState.value === DialogStates.Open
     })
-    let internalDialogRef = ref<HTMLDivElement | null>(null)
-    let enabled = ref(dialogState.value === DialogStates.Open)
 
-    onUpdated(() => {
-      enabled.value = dialogState.value === DialogStates.Open
-    })
+    let enabled = computed(() => dialogState.value === DialogStates.Open)
 
-    let id = `headlessui-dialog-${useId()}`
-    let focusTrapOptions = computed(() => ({ initialFocus: props.initialFocus }))
+    let hasNestedDialogs = computed(() => nestedDialogCount.value > 1) // 1 is the current dialog
+    let hasParentDialog = inject(DialogContext, null) !== null
 
-    useFocusTrap(containers, enabled, focusTrapOptions)
-    useInertOthers(internalDialogRef, enabled)
-    useStackProvider((message, element) => {
-      return match(message, {
-        [StackMessage.AddElement]() {
-          containers.value.add(element)
-        },
-        [StackMessage.RemoveElement]() {
-          containers.value.delete(element)
-        },
-      })
+    // If there are multiple dialogs, then you can be the root, the leaf or one
+    // in between. We only care abou whether you are the top most one or not.
+    let position = computed(() => (!hasNestedDialogs.value ? 'leaf' : 'parent'))
+
+    useFocusTrap(
+      internalDialogRef,
+      computed(() => {
+        return enabled.value
+          ? match(position.value, {
+              parent: FocusTrapFeatures.RestoreFocus,
+              leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
+            })
+          : FocusTrapFeatures.None
+      }),
+      computed(() => ({
+        initialFocus: ref(props.initialFocus),
+        containers,
+      }))
+    )
+    useInertOthers(
+      internalDialogRef,
+      computed(() => (hasNestedDialogs.value ? enabled.value : false))
+    )
+    useStackProvider({
+      type: 'Dialog',
+      element: internalDialogRef,
+      onUpdate: (message, type, element) => {
+        if (type !== 'Dialog') return
+
+        return match(message, {
+          [StackMessage.Add]() {
+            containers.value.add(element)
+            nestedDialogCount.value += 1
+          },
+          [StackMessage.Remove]() {
+            containers.value.delete(element)
+            nestedDialogCount.value -= 1
+          },
+        })
+      },
     })
 
     let describedby = useDescriptions({
       name: 'DialogDescription',
       slot: computed(() => ({ open: open.value })),
     })
+
+    let id = `headlessui-dialog-${useId()}`
 
     let titleId = ref<StateDefinition['titleId']['value']>(null)
 
@@ -158,19 +191,19 @@ export let Dialog = defineComponent({
     provide(DialogContext, api)
 
     // Handle outside click
-    useOutsideClick(containers.value, (_event, target) => {
+    useOutsideClick(internalDialogRef, (_event, target) => {
       if (dialogState.value !== DialogStates.Open) return
-      if (containers.value.size !== 1) return
+      if (hasNestedDialogs.value) return
 
       api.close()
       nextTick(() => target?.focus())
     })
 
     // Handle `Escape` to close
-    useWindowEvent('keydown', (event) => {
+    useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
-      if (containers.value.size > 1) return // 1 is myself, otherwise other elements in the Stack
+      if (hasNestedDialogs.value) return
       event.preventDefault()
       event.stopPropagation()
       api.close()
@@ -179,18 +212,25 @@ export let Dialog = defineComponent({
     // Scroll lock
     watchEffect((onInvalidate) => {
       if (dialogState.value !== DialogStates.Open) return
+      if (hasParentDialog) return
 
-      let overflow = document.documentElement.style.overflow
-      let paddingRight = document.documentElement.style.paddingRight
+      let owner = ownerDocument.value
+      if (!owner) return
 
-      let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+      let documentElement = owner?.documentElement
+      let ownerWindow = owner.defaultView ?? window
 
-      document.documentElement.style.overflow = 'hidden'
-      document.documentElement.style.paddingRight = `${scrollbarWidth}px`
+      let overflow = documentElement.style.overflow
+      let paddingRight = documentElement.style.paddingRight
+
+      let scrollbarWidth = ownerWindow.innerWidth - documentElement.clientWidth
+
+      documentElement.style.overflow = 'hidden'
+      documentElement.style.paddingRight = `${scrollbarWidth}px`
 
       onInvalidate(() => {
-        document.documentElement.style.overflow = overflow
-        document.documentElement.style.paddingRight = paddingRight
+        documentElement.style.overflow = overflow
+        documentElement.style.paddingRight = paddingRight
       })
     })
 

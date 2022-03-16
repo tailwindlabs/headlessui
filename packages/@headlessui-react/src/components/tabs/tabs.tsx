@@ -11,6 +11,7 @@ import React, {
   // Types
   ElementType,
   MutableRefObject,
+  MouseEvent as ReactMouseEvent,
   KeyboardEvent as ReactKeyboardEvent,
   Dispatch,
   ContextType,
@@ -27,6 +28,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { FocusSentinel } from '../../internal/focus-sentinel'
 
 interface StateDefinition {
   selectedIndex: number | null
@@ -159,6 +161,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   } as StateDefinition)
   let slot = useMemo(() => ({ selectedIndex: state.selectedIndex }), [state.selectedIndex])
   let onChangeRef = useLatestValue(onChange || (() => {}))
+  let stableTabsRef = useLatestValue(state.tabs)
 
   useEffect(() => {
     dispatch({ type: ActionTypes.SetOrientation, orientation })
@@ -168,7 +171,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     dispatch({ type: ActionTypes.SetActivation, activation })
   }, [activation])
 
-  useEffect(() => {
+  useIsoMorphicEffect(() => {
     if (state.tabs.length <= 0) return
     if (selectedIndex === null && state.selectedIndex !== null) return
 
@@ -228,6 +231,18 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   return (
     <TabsSSRContext.Provider value={typeof window === 'undefined' ? SSRCounter : null}>
       <TabsContext.Provider value={providerBag}>
+        <FocusSentinel
+          onFocus={() => {
+            for (let tab of stableTabsRef.current) {
+              if (tab.current?.tabIndex === 0) {
+                tab.current?.focus()
+                return true
+              }
+            }
+
+            return false
+          }}
+        />
         {render({
           props: { ref: tabsRef, ...passThroughProps },
           slot,
@@ -354,11 +369,19 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
     change(myIndex)
   }, [change, myIndex, internalTabRef])
 
+  // This is important because we want to only focus the tab when it gets focus
+  // OR it finished the click event (mouseup). However, if you perform a `click`,
+  // then you will first get the `focus` and then get the `click` event.
+  let handleMouseDown = useCallback((event: ReactMouseEvent<HTMLElement>) => {
+    event.preventDefault()
+  }, [])
+
   let slot = useMemo(() => ({ selected }), [selected])
   let propsWeControl = {
     ref: tabRef,
     onKeyDown: handleKeyDown,
     onFocus: activation === 'manual' ? handleFocus : handleSelection,
+    onMouseDown: handleMouseDown,
     onClick: handleSelection,
     id,
     role: 'tab',
