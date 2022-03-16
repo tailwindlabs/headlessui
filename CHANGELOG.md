@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `ownerDocument` instead of `document` ([#1158](https://github.com/tailwindlabs/headlessui/pull/1158))
 - Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
 - Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
+- Improve Combobox Input value ([#1248](https://github.com/tailwindlabs/headlessui/pull/1248))
 
 ### Added
 
@@ -56,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Re-expose `el` ([#1230](https://github.com/tailwindlabs/headlessui/pull/1230))
 - Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
 - Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
+- Improve Combobox Input value ([#1248](https://github.com/tailwindlabs/headlessui/pull/1248))
 
 ### Added
 
