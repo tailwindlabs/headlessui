@@ -149,7 +149,7 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
   let next = undefined
   do {
     // Guard against infinite loops
-    if (offset >= total || offset + total <= 0) return FocusResult.Error
+    if (offset > total || offset + total <= 0) return FocusResult.Error
 
     let nextIdx = startIndex + offset
 
