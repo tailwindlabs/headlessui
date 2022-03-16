@@ -386,11 +386,10 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   let syncInputValue = useCallback(() => {
     if (!inputRef.current) return
-    if (value === undefined) return
     let displayValue = inputPropsRef.current.displayValue
 
     if (typeof displayValue === 'function') {
-      inputRef.current.value = displayValue(value)
+      inputRef.current.value = displayValue(value) ?? ''
     } else if (typeof value === 'string') {
       inputRef.current.value = value
     } else {

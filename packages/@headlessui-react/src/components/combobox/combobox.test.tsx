@@ -4393,6 +4393,59 @@ describe('Mouse interactions', () => {
       expect(getComboboxInput()?.value).toBe('')
     })
   )
+
+  it(
+    'should sync the input field correctly and reset it when resetting the value from outside (when using displayValue)',
+    suppressConsoleLogs(async () => {
+      let people = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
+      ]
+
+      function Example() {
+        let [value, setValue] = useState<typeof people[number] | null>(people[1])
+
+        return (
+          <>
+            <Combobox value={value} onChange={setValue}>
+              <Combobox.Input
+                onChange={NOOP}
+                displayValue={(person: typeof people[number]) => person?.name}
+              />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                {people.map((person) => (
+                  <Combobox.Option key={person.id} value={person}>
+                    {person.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+            <button onClick={() => setValue(null)}>reset</button>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify the input has the selected value
+      expect(getComboboxInput()?.value).toBe('Bob')
+
+      // Override the input by typing something
+      await type(word('test'), getComboboxInput())
+      expect(getComboboxInput()?.value).toBe('test')
+
+      // Reset from outside
+      await click(getByText('reset'))
+
+      // Verify the input is reset correctly
+      expect(getComboboxInput()?.value).toBe('')
+    })
+  )
 })
 
 describe('Multi-select', () => {
