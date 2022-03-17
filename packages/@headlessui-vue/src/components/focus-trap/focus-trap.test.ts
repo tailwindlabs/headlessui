@@ -124,6 +124,7 @@ it('should warn when there is no focusable element inside the FocusTrap', async 
   await new Promise<void>(nextTick)
 
   expect(spy.mock.calls[0][0]).toBe('There are no focusable elements inside the <FocusTrap />')
+  spy.mockReset()
 })
 
 it(
@@ -378,4 +379,71 @@ it('should be possible skip disabled elements within the focus trap', async () =
   // Loop around!
   await press(Keys.Tab)
   assertActiveElement(document.getElementById('item-a'))
+})
+
+it('should try to focus all focusable items in order (and fail)', async () => {
+  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+  let focusHandler = jest.fn()
+
+  renderTemplate({
+    template: html`
+      <div>
+        <button id="before">Before</button>
+        <FocusTrap>
+          <button id="item-a" @focus="handleFocus">Item A</button>
+          <button id="item-b" @focus="handleFocus">Item B</button>
+          <button id="item-c" @focus="handleFocus">Item C</button>
+          <button id="item-d" @focus="handleFocus">Item D</button>
+        </FocusTrap>
+        <button>After</button>
+      </div>
+    `,
+    setup() {
+      return {
+        handleFocus(e: Event) {
+          let target = e.target as HTMLElement
+          focusHandler(target.id)
+          getByText('After')?.focus()
+        },
+      }
+    },
+  })
+
+  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c'], ['item-d']])
+  expect(spy).toHaveBeenCalledWith('There are no focusable elements inside the <FocusTrap />')
+  spy.mockReset()
+})
+
+it('should end up at the last focusable element', async () => {
+  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+  let focusHandler = jest.fn()
+
+  renderTemplate({
+    template: html`
+      <div>
+        <button id="before">Before</button>
+        <FocusTrap>
+          <button id="item-a" @focus="handleFocus">Item A</button>
+          <button id="item-b" @focus="handleFocus">Item B</button>
+          <button id="item-c" @focus="handleFocus">Item C</button>
+          <button id="item-d">Item D</button>
+        </FocusTrap>
+        <button>After</button>
+      </div>
+    `,
+    setup() {
+      return {
+        handleFocus(e: Event) {
+          let target = e.target as HTMLElement
+          focusHandler(target.id)
+          getByText('After')?.focus()
+        },
+      }
+    },
+  })
+
+  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c']])
+  assertActiveElement(getByText('Item D'))
+  expect(spy).not.toHaveBeenCalled()
+  spy.mockReset()
 })
