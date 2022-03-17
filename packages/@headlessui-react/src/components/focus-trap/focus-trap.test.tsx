@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react'
-import { render } from '@testing-library/react'
+import React, { useState, useRef, FocusEvent } from 'react'
+import { render, screen } from '@testing-library/react'
 
 import { FocusTrap } from './focus-trap'
 import { assertActiveElement } from '../../test-utils/accessibility-assertions'
@@ -7,13 +7,13 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { click, press, shift, Keys } from '../../test-utils/interactions'
 
 it('should focus the first focusable element inside the FocusTrap', () => {
-  let { getByText } = render(
+  render(
     <FocusTrap>
       <button>Trigger</button>
     </FocusTrap>
   )
 
-  assertActiveElement(getByText('Trigger'))
+  assertActiveElement(screen.getByText('Trigger'))
 })
 
 it('should focus the autoFocus element inside the FocusTrap if that exists', () => {
@@ -74,6 +74,7 @@ it('should warn when there is no focusable element inside the FocusTrap', () => 
   }
   render(<Example />)
   expect(spy.mock.calls[0][0]).toBe('There are no focusable elements inside the <FocusTrap />')
+  spy.mockReset()
 })
 
 it(
@@ -324,4 +325,74 @@ it('should be possible skip disabled elements within the focus trap', async () =
   // Loop around!
   await press(Keys.Tab)
   assertActiveElement(document.getElementById('item-a'))
+})
+
+it('should try to focus all focusable items (and fail)', async () => {
+  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+  let focusHandler = jest.fn()
+  function handleFocus(e: FocusEvent) {
+    let target = e.target as HTMLElement
+    focusHandler(target.id)
+    screen.getByText('After')?.focus()
+  }
+
+  render(
+    <>
+      <button id="before">Before</button>
+      <FocusTrap>
+        <button id="item-a" onFocus={handleFocus}>
+          Item A
+        </button>
+        <button id="item-b" onFocus={handleFocus}>
+          Item B
+        </button>
+        <button id="item-c" onFocus={handleFocus}>
+          Item C
+        </button>
+        <button id="item-d" onFocus={handleFocus}>
+          Item D
+        </button>
+      </FocusTrap>
+      <button>After</button>
+    </>
+  )
+
+  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c'], ['item-d']])
+  expect(spy).toHaveBeenCalledWith('There are no focusable elements inside the <FocusTrap />')
+  spy.mockReset()
+})
+
+it('should end up at the last focusable element', async () => {
+  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+
+  let focusHandler = jest.fn()
+  function handleFocus(e: FocusEvent) {
+    let target = e.target as HTMLElement
+    focusHandler(target.id)
+    screen.getByText('After')?.focus()
+  }
+
+  render(
+    <>
+      <button id="before">Before</button>
+      <FocusTrap>
+        <button id="item-a" onFocus={handleFocus}>
+          Item A
+        </button>
+        <button id="item-b" onFocus={handleFocus}>
+          Item B
+        </button>
+        <button id="item-c" onFocus={handleFocus}>
+          Item C
+        </button>
+        <button id="item-d">Item D</button>
+      </FocusTrap>
+      <button>After</button>
+    </>
+  )
+
+  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c']])
+  assertActiveElement(screen.getByText('Item D'))
+  expect(spy).not.toHaveBeenCalled()
+  spy.mockReset()
 })
