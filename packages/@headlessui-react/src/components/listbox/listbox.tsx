@@ -151,7 +151,25 @@ let reducers: {
   [ActionTypes.OpenListbox](state) {
     if (state.disabled) return state
     if (state.listboxState === ListboxStates.Open) return state
-    return { ...state, listboxState: ListboxStates.Open }
+
+    // Check if we have a selected value that we can make active
+    let activeOptionIndex = state.activeOptionIndex
+    let { value, mode } = state.propsRef.current
+    let optionIdx = state.options.findIndex((option) => {
+      let optionValue = option.dataRef.current.value
+      let selected = match(mode, {
+        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
+        [ValueMode.Single]: () => value === optionValue,
+      })
+
+      return selected
+    })
+
+    if (optionIdx !== -1) {
+      activeOptionIndex = optionIdx
+    }
+
+    return { ...state, listboxState: ListboxStates.Open, activeOptionIndex }
   },
   [ActionTypes.SetDisabled](state, action) {
     if (state.disabled === action.disabled) return state
@@ -220,10 +238,21 @@ let reducers: {
     return { ...state, searchQuery: '' }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (options) => [
-      ...options,
-      { id: action.id, dataRef: action.dataRef },
-    ])
+    let option = { id: action.id, dataRef: action.dataRef }
+    let adjustedState = adjustOrderedState(state, (options) => [...options, option])
+
+    // Check if we need to make the newly registered option active.
+    if (state.activeOptionIndex === null) {
+      let { value, mode } = state.propsRef.current
+      let optionValue = action.dataRef.current.value
+      let selected = match(mode, {
+        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
+        [ValueMode.Single]: () => value === optionValue,
+      })
+      if (selected) {
+        adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
+      }
+    }
 
     return { ...state, ...adjustedState }
   },
@@ -738,18 +767,6 @@ let Option = forwardRefWithAs(function Option<
     [ValueMode.Multi]: () => (state.propsRef.current.value as TType[]).includes(value),
     [ValueMode.Single]: () => state.propsRef.current.value === value,
   })
-  let isFirstSelected = match(state.propsRef.current.mode, {
-    [ValueMode.Multi]: () => {
-      let currentValues = state.propsRef.current.value as TType[]
-
-      return (
-        state.options.find((option) =>
-          currentValues.includes(option.dataRef.current.value as TType)
-        )?.id === id
-      )
-    },
-    [ValueMode.Single]: () => selected,
-  })
 
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let optionRef = useSyncRefs(ref, internalOptionRef)
@@ -783,21 +800,6 @@ let Option = forwardRefWithAs(function Option<
     dispatch({ type: ActionTypes.RegisterOption, id, dataRef: bag })
     return () => dispatch({ type: ActionTypes.UnregisterOption, id })
   }, [bag, id])
-
-  useIsoMorphicEffect(() => {
-    if (state.listboxState !== ListboxStates.Open) return
-    if (!selected) return
-    if (state.activeOptionIndex !== null) return
-
-    match(state.propsRef.current.mode, {
-      [ValueMode.Multi]: () => {
-        if (isFirstSelected) dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-      },
-      [ValueMode.Single]: () => {
-        dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-      },
-    })
-  }, [state.listboxState, state.activeOptionIndex, selected, isFirstSelected, state.propsRef.current.mode, id])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {

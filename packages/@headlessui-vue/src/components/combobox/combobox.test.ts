@@ -4302,7 +4302,7 @@ describe('Mouse interactions', () => {
             </ComboboxOptions>
           </Combobox>
         `,
-        setup: () => ({ value: ref(null) }),
+        setup: () => ({ value: ref('bob') }),
       })
 
       // Open combobox

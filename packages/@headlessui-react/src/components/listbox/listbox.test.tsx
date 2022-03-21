@@ -3723,7 +3723,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value="bob" onChange={console.log}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>

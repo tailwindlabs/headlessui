@@ -3862,7 +3862,7 @@ describe('Mouse interactions', () => {
             </ListboxOptions>
           </Listbox>
         `,
-        setup: () => ({ value: ref(null) }),
+        setup: () => ({ value: ref('bob') }),
       })
 
       // Open listbox

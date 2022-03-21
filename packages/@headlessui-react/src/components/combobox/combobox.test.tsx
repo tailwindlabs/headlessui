@@ -4057,7 +4057,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value="test" onChange={console.log}>
+        <Combobox value="bob" onChange={console.log}>
           <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
