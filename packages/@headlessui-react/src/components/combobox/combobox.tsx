@@ -66,6 +66,7 @@ interface StateDefinition {
 
   comboboxPropsRef: MutableRefObject<{
     value: unknown
+    mode: ValueMode
     onChange(value: unknown): void
     __demoMode: boolean
   }>
@@ -155,7 +156,25 @@ let reducers: {
   [ActionTypes.OpenCombobox](state) {
     if (state.disabled) return state
     if (state.comboboxState === ComboboxStates.Open) return state
-    return { ...state, comboboxState: ComboboxStates.Open }
+
+    // Check if we have a selected value that we can make active
+    let activeOptionIndex = state.activeOptionIndex
+    let { value, mode } = state.comboboxPropsRef.current
+    let optionIdx = state.options.findIndex((option) => {
+      let optionValue = option.dataRef.current.value
+      let selected = match(mode, {
+        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
+        [ValueMode.Single]: () => value === optionValue,
+      })
+
+      return selected
+    })
+
+    if (optionIdx !== -1) {
+      activeOptionIndex = optionIdx
+    }
+
+    return { ...state, comboboxState: ComboboxStates.Open, activeOptionIndex }
   },
   [ActionTypes.SetDisabled](state, action) {
     if (state.disabled === action.disabled) return state
@@ -187,9 +206,21 @@ let reducers: {
     }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (options) => {
-      return [...options, { id: action.id, dataRef: action.dataRef }]
-    })
+    let option = { id: action.id, dataRef: action.dataRef }
+    let adjustedState = adjustOrderedState(state, (options) => [...options, option])
+
+    // Check if we need to make the newly registered option active.
+    if (state.activeOptionIndex === null) {
+      let { value, mode } = state.comboboxPropsRef.current
+      let optionValue = action.dataRef.current.value
+      let selected = match(mode, {
+        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
+        [ValueMode.Single]: () => value === optionValue,
+      })
+      if (selected) {
+        adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
+      }
+    }
 
     let nextState = {
       ...state,
@@ -303,9 +334,14 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
+    mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single,
     onChange,
     __demoMode,
   })
+
+  comboboxPropsRef.current.value = value
+  comboboxPropsRef.current.mode = Array.isArray(value) ? ValueMode.Multi : ValueMode.Single
+
   let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({
     static: false,
     hold: false,
@@ -335,10 +371,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     () => ({ value, mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single }),
     [value]
   )
-
-  useIsoMorphicEffect(() => {
-    comboboxPropsRef.current.value = value
-  }, [value])
 
   useIsoMorphicEffect(() => {
     comboboxPropsRef.current.onChange = (value: unknown) => {
@@ -965,18 +997,6 @@ let Option = forwardRefWithAs(function Option<
     [ValueMode.Multi]: () => (data.value as TType[]).includes(value),
     [ValueMode.Single]: () => data.value === value,
   })
-  let isFirstSelected = match(data.mode, {
-    [ValueMode.Multi]: () => {
-      let currentValues = data.value as TType[]
-
-      return (
-        state.options.find((option) =>
-          currentValues.includes(option.dataRef.current.value as TType)
-        )?.id === id
-      )
-    },
-    [ValueMode.Single]: () => selected,
-  })
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })
   let optionRef = useSyncRefs(ref, internalOptionRef)
@@ -994,21 +1014,6 @@ let Option = forwardRefWithAs(function Option<
   let select = useCallback(() => actions.selectOption(id), [actions, id])
 
   useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
-
-  useIsoMorphicEffect(() => {
-    if (state.comboboxState !== ComboboxStates.Open) return
-    if (!selected) return
-    if (state.activeOptionIndex !== null) return
-
-    match(data.mode, {
-      [ValueMode.Multi]: () => {
-        if (isFirstSelected) actions.goToOption(Focus.Specific, id)
-      },
-      [ValueMode.Single]: () => {
-        actions.goToOption(Focus.Specific, id)
-      },
-    })
-  }, [state.comboboxState, state.activeOptionIndex, selected, isFirstSelected, id, actions, data])
 
   let enableScrollIntoView = useRef(state.comboboxPropsRef.current.__demoMode ? false : true)
   useIsoMorphicEffect(() => {
