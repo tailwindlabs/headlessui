@@ -461,6 +461,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         dispatch({ type: ActionTypes.ClosePopover })
         state.button?.focus() // Re-focus the original opening Button
       } else {
+        event.preventDefault()
+        event.stopPropagation()
         if (state.popoverState === PopoverStates.Closed) closeOthers?.(state.buttonId)
         state.button?.focus()
         dispatch({ type: ActionTypes.TogglePopover })

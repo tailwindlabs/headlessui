@@ -363,12 +363,14 @@ export let PopoverButton = defineComponent({
       }
     }
 
-    function handleClick() {
+    function handleClick(event: MouseEvent) {
       if (props.disabled) return
       if (isWithinPanel) {
         api.closePopover()
         dom(api.button)?.focus() // Re-focus the original opening Button
       } else {
+        event.preventDefault()
+        event.stopPropagation()
         if (api.popoverState.value === PopoverStates.Closed) closeOthers?.(api.buttonId)
         dom(api.button)?.focus()
         api.togglePopover()
