@@ -47,20 +47,24 @@ export type PropsForFeatures<T extends Features> = XOR<
 >
 
 export function render<TFeature extends Features, TTag extends ElementType, TSlot>({
-  props,
+  propsWeControl,
+  propsTheyControl,
   slot,
   defaultTag,
   features,
   visible = true,
   name,
 }: {
-  props: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  propsWeControl: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  propsTheyControl: Expand<Props<TTag, TSlot, any>>
   slot?: TSlot
   defaultTag: ElementType
   features?: TFeature
   visible?: boolean
   name: string
 }) {
+  let props = mergeProps(propsTheyControl, propsWeControl)
+
   // Visible always render
   if (visible) return _render(props, slot, defaultTag, name)
 
@@ -106,7 +110,7 @@ function _render<TTag extends ElementType, TSlot>(
     as: Component = tag,
     children,
     refName = 'ref',
-    ...incomingProps
+    ...rest
   } = omit(props, ['unmount', 'static'])
 
   // This allows us to use `<HeadlessUIComponent as={MyComponent} refName="innerRef" />`
@@ -117,12 +121,12 @@ function _render<TTag extends ElementType, TSlot>(
     | ReactElement[]
 
   // Allow for className to be a function with the slot as the contents
-  if (incomingProps.className && typeof incomingProps.className === 'function') {
-    ;(incomingProps as any).className = incomingProps.className(slot)
+  if (rest.className && typeof rest.className === 'function') {
+    ;(rest as any).className = rest.className(slot)
   }
 
   if (Component === Fragment) {
-    if (Object.keys(compact(incomingProps)).length > 0) {
+    if (Object.keys(compact(rest)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
         (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
@@ -133,7 +137,7 @@ function _render<TTag extends ElementType, TSlot>(
             '',
             `The current component <${name} /> is rendering a "Fragment".`,
             `However we need to passthrough the following props:`,
-            Object.keys(incomingProps)
+            Object.keys(rest)
               .map((line) => `  - ${line}`)
               .join('\n'),
             '',
