@@ -348,8 +348,8 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     }
   }, [show, skip, state])
 
+  let propsTheyControl = rest
   let propsWeControl = { ref: transitionRef }
-  let incomingProps = rest
 
   return (
     <NestingContext.Provider value={nesting}>
@@ -360,7 +360,8 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
         })}
       >
         {render({
-          props: { ...incomingProps, ...propsWeControl },
+          propsWeControl,
+          propsTheyControl,
           defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
           features: TransitionChildRenderFeatures,
           visible: state === TreeStates.Visible,
@@ -375,7 +376,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
   TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
 >(props: TransitionChildProps<TTag> & { show?: boolean; appear?: boolean }, ref: Ref<HTMLElement>) {
   // @ts-expect-error
-  let { show, appear = false, unmount, ...incomingProps } = props as typeof props
+  let { show, appear = false, unmount, ...propsTheyControl } = props as typeof props
   let transitionRef = useSyncRefs(ref)
 
   let usesOpenClosedState = useOpenClosed()
@@ -417,11 +418,14 @@ let TransitionRoot = forwardRefWithAs(function Transition<
     <NestingContext.Provider value={nestingBag}>
       <TransitionContext.Provider value={transitionBag}>
         {render({
-          props: {
+          propsWeControl: {
             ...sharedProps,
             as: Fragment,
-            children: <TransitionChild ref={transitionRef} {...sharedProps} {...incomingProps} />,
+            children: (
+              <TransitionChild ref={transitionRef} {...sharedProps} {...propsTheyControl} />
+            ),
           },
+          propsTheyControl: {},
           defaultTag: Fragment,
           features: TransitionChildRenderFeatures,
           visible: state === TreeStates.Visible,

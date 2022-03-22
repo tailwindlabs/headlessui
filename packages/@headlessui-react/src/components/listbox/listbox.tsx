@@ -314,7 +314,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   },
   ref: Ref<TTag>
 ) {
-  let { value, name, onChange, disabled = false, horizontal = false, ...incomingProps } = props
+  let { value, name, onChange, disabled = false, horizontal = false, ...propsTheyControl } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
@@ -382,8 +382,11 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     [listboxState, disabled]
   )
 
+  let propsWeControl = { ref: listboxRef }
+
   let renderConfiguration = {
-    props: { ref: listboxRef, ...incomingProps },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_LISTBOX_TAG,
     name: 'Listbox',
@@ -513,7 +516,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
-  let incomingProps = props
+  let propsTheyControl = props
   let propsWeControl = {
     ref: buttonRef,
     id,
@@ -529,7 +532,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Listbox.Button',
@@ -562,9 +566,12 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
+  let propsTheyControl = props
   let propsWeControl = { ref: labelRef, id, onClick: handleClick }
+
   return render({
-    props: { ...props, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_LABEL_TAG,
     name: 'Listbox.Label',
@@ -702,6 +709,8 @@ let Options = forwardRefWithAs(function Options<
     () => ({ open: state.listboxState === ListboxStates.Open }),
     [state]
   )
+
+  let propsTheyControl = props
   let propsWeControl = {
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
@@ -714,10 +723,10 @@ let Options = forwardRefWithAs(function Options<
     tabIndex: 0,
     ref: optionsRef,
   }
-  let incomingProps = props
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_OPTIONS_TAG,
     features: OptionsRenderFeatures,
@@ -758,7 +767,7 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLElement>
 ) {
-  let { disabled = false, value, ...incomingProps } = props
+  let { disabled = false, value, ...propsTheyControl } = props
   let [state, dispatch] = useListboxContext('Listbox.Option')
   let id = `headlessui-listbox-option-${useId()}`
   let active =
@@ -859,7 +868,8 @@ let Option = forwardRefWithAs(function Option<
   }
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_OPTION_TAG,
     name: 'Listbox.Option',

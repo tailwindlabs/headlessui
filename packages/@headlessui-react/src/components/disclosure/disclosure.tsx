@@ -156,7 +156,7 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
   },
   ref: Ref<TTag>
 ) {
-  let { defaultOpen = false, ...incomingProps } = props
+  let { defaultOpen = false, ...propsTheyControl } = props
   let buttonId = `headlessui-disclosure-button-${useId()}`
   let panelId = `headlessui-disclosure-panel-${useId()}`
   let internalDisclosureRef = useRef<HTMLElement | null>(null)
@@ -214,6 +214,10 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
     [disclosureState, close]
   )
 
+  let propsWeControl = {
+    ref: disclosureRef,
+  }
+
   return (
     <DisclosureContext.Provider value={reducerBag}>
       <DisclosureAPIContext.Provider value={api}>
@@ -224,7 +228,8 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
           })}
         >
           {render({
-            props: { ref: disclosureRef, ...incomingProps },
+            propsWeControl,
+            propsTheyControl,
             slot,
             defaultTag: DEFAULT_DISCLOSURE_TAG,
             name: 'Disclosure',
@@ -320,7 +325,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   )
 
   let type = useResolveButtonType(props, internalButtonRef)
-  let incomingProps = props
+  let propsTheyControl = props
   let propsWeControl = isWithinPanel
     ? { ref: buttonRef, type, onKeyDown: handleKeyDown, onClick: handleClick }
     : {
@@ -337,7 +342,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       }
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Disclosure.Button',
@@ -391,16 +397,18 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     () => ({ open: state.disclosureState === DisclosureStates.Open, close }),
     [state, close]
   )
+
+  let propsTheyControl = props
   let propsWeControl = {
     ref: panelRef,
     id: state.panelId,
   }
-  let incomingProps = props
 
   return (
     <DisclosurePanelContext.Provider value={state.panelId}>
       {render({
-        props: { ...incomingProps, ...propsWeControl },
+        propsWeControl,
+        propsTheyControl,
         slot,
         defaultTag: DEFAULT_PANEL_TAG,
         features: PanelRenderFeatures,

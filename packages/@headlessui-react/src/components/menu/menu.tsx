@@ -255,6 +255,9 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
     [menuState]
   )
 
+  let propsTheyControl = props
+  let propsWeControl = { ref: menuRef }
+
   return (
     <MenuContext.Provider value={reducerBag}>
       <OpenClosedProvider
@@ -264,7 +267,8 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
         })}
       >
         {render({
-          props: { ref: menuRef, ...props },
+          propsWeControl,
+          propsTheyControl,
           slot,
           defaultTag: DEFAULT_MENU_TAG,
           name: 'Menu',
@@ -355,7 +359,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     () => ({ open: state.menuState === MenuStates.Open }),
     [state]
   )
-  let incomingProps = props
+  let propsTheyControl = props
   let propsWeControl = {
     ref: buttonRef,
     id,
@@ -369,7 +373,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Menu.Button',
@@ -521,6 +526,8 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     () => ({ open: state.menuState === MenuStates.Open }),
     [state]
   )
+
+  let propsTheyControl = props
   let propsWeControl = {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
@@ -532,10 +539,10 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     tabIndex: 0,
     ref: itemsRef,
   }
-  let incomingProps = props
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_ITEMS_TAG,
     features: ItemsRenderFeatures,
@@ -565,11 +572,10 @@ type MenuItemPropsWeControl =
 let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl> & {
     disabled?: boolean
-    onClick?: (event: { preventDefault: Function }) => void
   },
   ref: Ref<HTMLElement>
 ) {
-  let { disabled = false, onClick, ...incomingProps } = props
+  let { disabled = false, ...propsTheyControl } = props
   let [state, dispatch] = useMenuContext('Menu.Item')
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
@@ -606,9 +612,8 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
       if (disabled) return event.preventDefault()
       dispatch({ type: ActionTypes.CloseMenu })
       disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
-      if (onClick) return onClick(event)
     },
-    [dispatch, state.buttonRef, disabled, onClick]
+    [dispatch, state.buttonRef, disabled]
   )
 
   let handleFocus = useCallback(() => {
@@ -650,7 +655,8 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   }
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_ITEM_TAG,
     name: 'Menu.Item',

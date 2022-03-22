@@ -121,7 +121,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   },
   ref: Ref<HTMLElement>
 ) {
-  let { value, name, onChange, disabled = false, ...incomingProps } = props
+  let { value, name, onChange, disabled = false, ...propsTheyControl } = props
   let [{ options }, dispatch] = useReducer(stateReducer, {
     options: [],
   } as StateDefinition)
@@ -262,7 +262,8 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   }
 
   let renderConfiguration = {
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     defaultTag: DEFAULT_RADIO_GROUP_TAG,
     name: 'RadioGroup',
   }
@@ -341,7 +342,7 @@ let Option = forwardRefWithAs(function Option<
   let [describedby, DescriptionProvider] = useDescriptions()
   let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
 
-  let { value, disabled = false, ...incomingProps } = props
+  let { value, disabled = false, ...propsTheyControl } = props
   let propsRef = useRef({ value, disabled })
 
   useIsoMorphicEffect(() => {
@@ -406,7 +407,8 @@ let Option = forwardRefWithAs(function Option<
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
         {render({
-          props: { ...incomingProps, ...propsWeControl },
+          propsWeControl,
+          propsTheyControl,
           slot,
           defaultTag: DEFAULT_OPTION_TAG,
           name: 'RadioGroup.Option',

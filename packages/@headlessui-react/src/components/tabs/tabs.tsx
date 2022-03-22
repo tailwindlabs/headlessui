@@ -146,7 +146,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     manual = false,
     onChange,
     selectedIndex = null,
-    ...incomingProps
+    ...propsTheyControl
   } = props
   const orientation = vertical ? 'vertical' : 'horizontal'
   const activation = manual ? 'manual' : 'auto'
@@ -228,6 +228,10 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
 
   let SSRCounter = useRef(0)
 
+  let propsWeControl = {
+    ref: tabsRef,
+  }
+
   return (
     <TabsSSRContext.Provider value={typeof window === 'undefined' ? SSRCounter : null}>
       <TabsContext.Provider value={providerBag}>
@@ -244,7 +248,8 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
           }}
         />
         {render({
-          props: { ref: tabsRef, ...incomingProps },
+          propsWeControl,
+          propsTheyControl,
           slot,
           defaultTag: DEFAULT_TABS_TAG,
           name: 'Tabs',
@@ -270,15 +275,17 @@ let List = forwardRefWithAs(function List<TTag extends ElementType = typeof DEFA
   let listRef = useSyncRefs(ref)
 
   let slot = { selectedIndex }
+
+  let propsTheyControl = props
   let propsWeControl = {
     ref: listRef,
     role: 'tablist',
     'aria-orientation': orientation,
   }
-  let incomingProps = props
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_LIST_TAG,
     name: 'Tabs.List',
@@ -377,6 +384,8 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   }, [])
 
   let slot = useMemo(() => ({ selected }), [selected])
+
+  let propsTheyControl = props
   let propsWeControl = {
     ref: tabRef,
     onKeyDown: handleKeyDown,
@@ -390,10 +399,10 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
     'aria-selected': selected,
     tabIndex: selected ? 0 : -1,
   }
-  let incomingProps = props
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_TAB_TAG,
     name: 'Tabs.Tab',
@@ -416,8 +425,12 @@ let Panels = forwardRefWithAs(function Panels<TTag extends ElementType = typeof 
 
   let slot = useMemo(() => ({ selectedIndex }), [selectedIndex])
 
+  let propsTheyControl = props
+  let propsWeControl = { ref: panelsRef }
+
   return render({
-    props: { ref: panelsRef, ...props },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_PANELS_TAG,
     name: 'Tabs.Panels',
@@ -462,6 +475,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     SSRContext === null ? myIndex === selectedIndex : SSRContext.current++ === selectedIndex
 
   let slot = useMemo(() => ({ selected }), [selected])
+
+  let propsTheyControl = props
   let propsWeControl = {
     ref: panelRef,
     id,
@@ -470,10 +485,9 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     tabIndex: selected ? 0 : -1,
   }
 
-  let incomingProps = props
-
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_PANEL_TAG,
     features: PanelRenderFeatures,

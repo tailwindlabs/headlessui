@@ -119,7 +119,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { open, onClose, initialFocus, __demoMode = false, ...rest } = props
+  let { open, onClose, initialFocus, __demoMode = false, ...propsTheyControl } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
@@ -303,7 +303,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       event.stopPropagation()
     },
   }
-  let incomingProps = rest
 
   return (
     <StackProvider
@@ -331,7 +330,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
               <ForcePortalRoot force={false}>
                 <DescriptionProvider slot={slot} name="Dialog.Description">
                   {render({
-                    props: { ...incomingProps, ...propsWeControl },
+                    propsWeControl,
+                    propsTheyControl,
                     slot,
                     defaultTag: DEFAULT_DIALOG_TAG,
                     features: DialogRenderFeatures,
@@ -379,16 +379,18 @@ let Overlay = forwardRefWithAs(function Overlay<
     () => ({ open: dialogState === DialogStates.Open }),
     [dialogState]
   )
+
+  let propsTheyControl = props
   let propsWeControl = {
     ref: overlayRef,
     id,
     'aria-hidden': true,
     onClick: handleClick,
   }
-  let incomingProps = props
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_OVERLAY_TAG,
     name: 'Dialog.Overlay',
@@ -421,11 +423,13 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
     () => ({ open: dialogState === DialogStates.Open }),
     [dialogState]
   )
-  let propsWeControl = { id }
-  let incomingProps = props
+
+  let propsTheyControl = props
+  let propsWeControl = { ref: titleRef, id }
 
   return render({
-    props: { ref: titleRef, ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_TITLE_TAG,
     name: 'Dialog.Title',

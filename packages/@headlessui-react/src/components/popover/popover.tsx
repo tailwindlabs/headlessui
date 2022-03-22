@@ -261,6 +261,9 @@ let PopoverRoot = forwardRefWithAs(function Popover<
     [popoverState, close]
   )
 
+  let propsTheyControl = props
+  let propsWeControl = { ref: popoverRef }
+
   return (
     <PopoverContext.Provider value={reducerBag}>
       <PopoverAPIContext.Provider value={api}>
@@ -271,7 +274,8 @@ let PopoverRoot = forwardRefWithAs(function Popover<
           })}
         >
           {render({
-            props: { ref: popoverRef, ...props },
+            propsWeControl,
+            propsTheyControl,
             slot,
             defaultTag: DEFAULT_POPOVER_TAG,
             name: 'Popover',
@@ -485,7 +489,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   )
 
   let type = useResolveButtonType(props, internalButtonRef)
-  let incomingProps = props
+  let propsTheyControl = props
   let propsWeControl = isWithinPanel
     ? {
         ref: withinPanelButtonRef,
@@ -505,7 +509,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       }
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Popover.Button',
@@ -555,16 +560,18 @@ let Overlay = forwardRefWithAs(function Overlay<
     () => ({ open: popoverState === PopoverStates.Open }),
     [popoverState]
   )
+
+  let propsTheyControl = props
   let propsWeControl = {
     ref: overlayRef,
     id,
     'aria-hidden': true,
     onClick: handleClick,
   }
-  let incomingProps = props
 
   return render({
-    props: { ...incomingProps, ...propsWeControl },
+    propsWeControl,
+    propsTheyControl,
     slot,
     defaultTag: DEFAULT_OVERLAY_TAG,
     features: OverlayRenderFeatures,
@@ -591,7 +598,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { focus = false, ...incomingProps } = props
+  let { focus = false, ...propsTheyControl } = props
 
   let [state, dispatch] = usePopoverContext('Popover.Panel')
   let { close } = usePopoverAPIContext('Popover.Panel')
@@ -730,7 +737,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   return (
     <PopoverPanelContext.Provider value={state.panelId}>
       {render({
-        props: { ...incomingProps, ...propsWeControl },
+        propsWeControl,
+        propsTheyControl,
         slot,
         defaultTag: DEFAULT_PANEL_TAG,
         features: PanelRenderFeatures,
@@ -814,13 +822,15 @@ let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DE
   )
 
   let slot = useMemo<GroupRenderPropArg>(() => ({}), [])
+
+  let propsTheyControl = props
   let propsWeControl = { ref: groupRef }
-  let incomingProps = props
 
   return (
     <PopoverGroupContext.Provider value={contextBag}>
       {render({
-        props: { ...incomingProps, ...propsWeControl },
+        propsWeControl,
+        propsTheyControl,
         slot,
         defaultTag: DEFAULT_GROUP_TAG,
         name: 'Popover.Group',
