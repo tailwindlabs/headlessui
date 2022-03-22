@@ -342,7 +342,7 @@ export let Combobox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...passThroughProps } = props
+      let { name, modelValue, disabled, ...incomingProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
@@ -351,7 +351,7 @@ export let Combobox = defineComponent({
       }
 
       let renderConfiguration = {
-        props: omit(passThroughProps, ['onUpdate:modelValue']),
+        props: omit(incomingProps, ['onUpdate:modelValue']),
         slot,
         slots,
         attrs,
@@ -402,10 +402,10 @@ export let ComboboxLabel = defineComponent({
         disabled: api.disabled.value,
       }
 
-      let propsWeControl = { id, ref: api.labelRef, onClick: handleClick }
+      let ourProps = { id, ref: api.labelRef, onClick: handleClick }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -500,7 +500,7 @@ export let ComboboxButton = defineComponent({
         open: api.comboboxState.value === ComboboxStates.Open,
         disabled: api.disabled.value,
       }
-      let propsWeControl = {
+      let ourProps = {
         ref: api.buttonRef,
         id,
         type: type.value,
@@ -517,7 +517,7 @@ export let ComboboxButton = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -629,7 +629,7 @@ export let ComboboxInput = defineComponent({
 
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
-      let propsWeControl = {
+      let ourProps = {
         'aria-controls': api.optionsRef.value?.id,
         'aria-expanded': api.disabled ? undefined : api.comboboxState.value === ComboboxStates.Open,
         'aria-activedescendant':
@@ -647,10 +647,10 @@ export let ComboboxInput = defineComponent({
         tabIndex: 0,
         ref: api.inputRef,
       }
-      let passThroughProps = omit(props, ['displayValue'])
+      let incomingProps = omit(props, ['displayValue'])
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot,
         attrs,
         slots,
@@ -709,7 +709,7 @@ export let ComboboxOptions = defineComponent({
 
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
-      let propsWeControl = {
+      let ourProps = {
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined
@@ -719,10 +719,10 @@ export let ComboboxOptions = defineComponent({
         ref: api.optionsRef,
         role: 'listbox',
       }
-      let passThroughProps = omit(props, ['hold'])
+      let incomingProps = omit(props, ['hold'])
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot,
         attrs,
         slots,
@@ -839,7 +839,7 @@ export let ComboboxOption = defineComponent({
     return () => {
       let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
-      let propsWeControl = {
+      let ourProps = {
         id,
         ref: internalOptionRef,
         role: 'option',
@@ -859,7 +859,7 @@ export let ComboboxOption = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,

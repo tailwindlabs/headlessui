@@ -88,22 +88,28 @@ export let Label = forwardRefWithAs(function Label<
   },
   ref: Ref<HTMLLabelElement>
 ) {
-  let { passive = false, ...passThroughProps } = props
+  let { passive = false, ...theirProps } = props
   let context = useLabelContext()
   let id = `headlessui-label-${useId()}`
   let labelRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let propsWeControl = { ref: labelRef, ...context.props, id }
+  let ourProps = { ref: labelRef, ...context.props, id }
 
-  let allProps = { ...passThroughProps, ...propsWeControl }
-  // @ts-expect-error props are dynamic via context, some components will
-  //                  provide an onClick then we can delete it.
-  if (passive) delete allProps['onClick']
+  if (passive) {
+    if ('onClick' in ourProps) {
+      delete (ourProps as any)['onClick']
+    }
+
+    if ('onClick' in theirProps) {
+      delete (theirProps as any)['onClick']
+    }
+  }
 
   return render({
-    props: allProps,
+    ourProps,
+    theirProps,
     slot: context.slot || {},
     defaultTag: DEFAULT_LABEL_TAG,
     name: context.name || 'Label',

@@ -156,7 +156,7 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
   },
   ref: Ref<TTag>
 ) {
-  let { defaultOpen = false, ...passthroughProps } = props
+  let { defaultOpen = false, ...theirProps } = props
   let buttonId = `headlessui-disclosure-button-${useId()}`
   let panelId = `headlessui-disclosure-panel-${useId()}`
   let internalDisclosureRef = useRef<HTMLElement | null>(null)
@@ -214,6 +214,10 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
     [disclosureState, close]
   )
 
+  let ourProps = {
+    ref: disclosureRef,
+  }
+
   return (
     <DisclosureContext.Provider value={reducerBag}>
       <DisclosureAPIContext.Provider value={api}>
@@ -224,7 +228,8 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
           })}
         >
           {render({
-            props: { ref: disclosureRef, ...passthroughProps },
+            ourProps,
+            theirProps,
             slot,
             defaultTag: DEFAULT_DISCLOSURE_TAG,
             name: 'Disclosure',
@@ -320,8 +325,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   )
 
   let type = useResolveButtonType(props, internalButtonRef)
-  let passthroughProps = props
-  let propsWeControl = isWithinPanel
+  let theirProps = props
+  let ourProps = isWithinPanel
     ? { ref: buttonRef, type, onKeyDown: handleKeyDown, onClick: handleClick }
     : {
         ref: buttonRef,
@@ -337,7 +342,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       }
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Disclosure.Button',
@@ -391,16 +397,18 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     () => ({ open: state.disclosureState === DisclosureStates.Open, close }),
     [state, close]
   )
-  let propsWeControl = {
+
+  let theirProps = props
+  let ourProps = {
     ref: panelRef,
     id: state.panelId,
   }
-  let passthroughProps = props
 
   return (
     <DisclosurePanelContext.Provider value={state.panelId}>
       {render({
-        props: { ...passthroughProps, ...propsWeControl },
+        ourProps,
+        theirProps,
         slot,
         defaultTag: DEFAULT_PANEL_TAG,
         features: PanelRenderFeatures,

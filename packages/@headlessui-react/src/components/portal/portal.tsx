@@ -69,7 +69,7 @@ interface PortalRenderPropArg {}
 let PortalRoot = forwardRefWithAs(function Portal<
   TTag extends ElementType = typeof DEFAULT_PORTAL_TAG
 >(props: Props<TTag, PortalRenderPropArg>, ref: Ref<HTMLElement>) {
-  let passthroughProps = props
+  let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
     optionalRef<typeof internalPortalRootRef['current']>((ref) => {
@@ -105,11 +105,14 @@ let PortalRoot = forwardRefWithAs(function Portal<
 
   if (!ready) return null
 
+  let ourProps = { ref: portalRef }
+
   return !target || !element
     ? null
     : createPortal(
         render({
-          props: { ref: portalRef, ...passthroughProps },
+          ourProps,
+          theirProps,
           defaultTag: DEFAULT_PORTAL_TAG,
           name: 'Portal',
         }),
@@ -130,13 +133,16 @@ let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DE
   },
   ref: Ref<HTMLElement>
 ) {
-  let { target, ...passthroughProps } = props
+  let { target, ...theirProps } = props
   let groupRef = useSyncRefs(ref)
+
+  let ourProps = { ref: groupRef }
 
   return (
     <PortalGroupContext.Provider value={target}>
       {render({
-        props: { ref: groupRef, ...passthroughProps },
+        ourProps,
+        theirProps,
         defaultTag: DEFAULT_GROUP_TAG,
         name: 'Popover.Group',
       })}

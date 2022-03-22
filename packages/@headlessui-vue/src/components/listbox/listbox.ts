@@ -305,11 +305,11 @@ export let Listbox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...passThroughProps } = props
+      let { name, modelValue, disabled, ...incomingProps } = props
 
       let slot = { open: listboxState.value === ListboxStates.Open, disabled }
       let renderConfiguration = {
-        props: omit(passThroughProps, ['onUpdate:modelValue', 'horizontal']),
+        props: omit(incomingProps, ['onUpdate:modelValue', 'horizontal']),
         slot,
         slots,
         attrs,
@@ -359,10 +359,10 @@ export let ListboxLabel = defineComponent({
         open: api.listboxState.value === ListboxStates.Open,
         disabled: api.disabled.value,
       }
-      let propsWeControl = { id, ref: api.labelRef, onClick: handleClick }
+      let ourProps = { id, ref: api.labelRef, onClick: handleClick }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -444,7 +444,7 @@ export let ListboxButton = defineComponent({
         open: api.listboxState.value === ListboxStates.Open,
         disabled: api.disabled.value,
       }
-      let propsWeControl = {
+      let ourProps = {
         ref: api.buttonRef,
         id,
         type: type.value,
@@ -461,7 +461,7 @@ export let ListboxButton = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -571,7 +571,7 @@ export let ListboxOptions = defineComponent({
 
     return () => {
       let slot = { open: api.listboxState.value === ListboxStates.Open }
-      let propsWeControl = {
+      let ourProps = {
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined
@@ -585,10 +585,10 @@ export let ListboxOptions = defineComponent({
         tabIndex: 0,
         ref: api.optionsRef,
       }
-      let passThroughProps = props
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot,
         attrs,
         slots,
@@ -710,7 +710,7 @@ export let ListboxOption = defineComponent({
     return () => {
       let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
-      let propsWeControl = {
+      let ourProps = {
         id,
         ref: internalOptionRef,
         role: 'option',
@@ -730,7 +730,7 @@ export let ListboxOption = defineComponent({
       }
 
       return render({
-        props: { ...omit(props, ['value', 'disabled']), ...propsWeControl },
+        props: { ...omit(props, ['value', 'disabled']), ...ourProps },
         slot,
         attrs,
         slots,

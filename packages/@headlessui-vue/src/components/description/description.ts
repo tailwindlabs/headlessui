@@ -78,8 +78,8 @@ export let Description = defineComponent({
 
     return () => {
       let { name = 'Description', slot = ref({}), props = {} } = context
-      let passThroughProps = myProps
-      let propsWeControl = {
+      let incomingProps = myProps
+      let ourProps = {
         ...Object.entries(props).reduce(
           (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
           {}
@@ -88,7 +88,7 @@ export let Description = defineComponent({
       }
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot: slot.value,
         attrs,
         slots,

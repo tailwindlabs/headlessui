@@ -19,7 +19,8 @@ describe('Default functionality', () => {
     return (
       <div data-testid="wrapper">
         {render({
-          props,
+          ourProps: {},
+          theirProps: props,
           slot,
           defaultTag: 'div',
           name: 'Dummy',
@@ -80,7 +81,8 @@ describe('Default functionality', () => {
       return (
         <div data-testid="wrapper">
           {render({
-            props: { ...props, ref },
+            ourProps: { ref },
+            theirProps: props,
             slot,
             defaultTag: 'div',
             name: 'OtherDummy',
@@ -323,7 +325,8 @@ describe('Features.Static', () => {
     return (
       <div data-testid="wrapper">
         {render({
-          props: rest,
+          ourProps: {},
+          theirProps: rest,
           slot,
           defaultTag: 'div',
           features: EnabledFeatures,
@@ -428,7 +431,8 @@ describe('Features.RenderStrategy', () => {
     return (
       <div data-testid="wrapper">
         {render({
-          props: rest,
+          ourProps: {},
+          theirProps: rest,
           slot,
           defaultTag: 'div',
           features: EnabledFeatures,
@@ -455,7 +459,8 @@ describe('Features.Static | Features.RenderStrategy', () => {
     return (
       <div data-testid="wrapper">
         {render({
-          props: rest,
+          ourProps: {},
+          theirProps: rest,
           slot,
           defaultTag: 'div',
           features: EnabledFeatures,

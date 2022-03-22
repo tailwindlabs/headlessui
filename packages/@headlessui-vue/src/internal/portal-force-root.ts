@@ -24,8 +24,8 @@ export let ForcePortalRoot = defineComponent({
     provide(ForcePortalRootContext, props.force)
 
     return () => {
-      let { force, ...passThroughProps } = props
-      return render({ props: passThroughProps, slot: {}, slots, attrs, name: 'ForcePortalRoot' })
+      let { force, ...incomingProps } = props
+      return render({ props: incomingProps, slot: {}, slots, attrs, name: 'ForcePortalRoot' })
     }
   },
 })

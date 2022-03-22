@@ -121,7 +121,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   },
   ref: Ref<HTMLElement>
 ) {
-  let { value, name, onChange, disabled = false, ...passThroughProps } = props
+  let { value, name, onChange, disabled = false, ...theirProps } = props
   let [{ options }, dispatch] = useReducer(stateReducer, {
     options: [],
   } as StateDefinition)
@@ -252,7 +252,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     [registerOption, firstOption, containsCheckedOption, triggerChange, disabled, value]
   )
 
-  let propsWeControl = {
+  let ourProps = {
     ref: radioGroupRef,
     id,
     role: 'radiogroup',
@@ -262,7 +262,8 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   }
 
   let renderConfiguration = {
-    props: { ...passThroughProps, ...propsWeControl },
+    ourProps,
+    theirProps,
     defaultTag: DEFAULT_RADIO_GROUP_TAG,
     name: 'RadioGroup',
   }
@@ -341,7 +342,7 @@ let Option = forwardRefWithAs(function Option<
   let [describedby, DescriptionProvider] = useDescriptions()
   let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
 
-  let { value, disabled = false, ...passThroughProps } = props
+  let { value, disabled = false, ...theirProps } = props
   let propsRef = useRef({ value, disabled })
 
   useIsoMorphicEffect(() => {
@@ -379,7 +380,7 @@ let Option = forwardRefWithAs(function Option<
   let isDisabled = radioGroupDisabled || disabled
 
   let checked = radioGroupValue === value
-  let propsWeControl = {
+  let ourProps = {
     ref: optionRef,
     id,
     role: 'radio',
@@ -406,7 +407,8 @@ let Option = forwardRefWithAs(function Option<
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
         {render({
-          props: { ...passThroughProps, ...propsWeControl },
+          ourProps,
+          theirProps,
           slot,
           defaultTag: DEFAULT_OPTION_TAG,
           name: 'RadioGroup.Option',

@@ -176,14 +176,14 @@ export let TabList = defineComponent({
     return () => {
       let slot = { selectedIndex: api.selectedIndex.value }
 
-      let propsWeControl = {
+      let ourProps = {
         role: 'tablist',
         'aria-orientation': api.orientation.value,
       }
-      let passThroughProps = props
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot,
         attrs,
         slots,
@@ -281,7 +281,7 @@ export let Tab = defineComponent({
 
     return () => {
       let slot = { selected: selected.value }
-      let propsWeControl = {
+      let ourProps = {
         ref: internalTabRef,
         onKeydown: handleKeyDown,
         onFocus: api.activation.value === 'manual' ? handleFocus : handleSelection,
@@ -297,7 +297,7 @@ export let Tab = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -354,7 +354,7 @@ export let TabPanel = defineComponent({
 
     return () => {
       let slot = { selected: selected.value }
-      let propsWeControl = {
+      let ourProps = {
         ref: internalPanelRef,
         id,
         role: 'tabpanel',
@@ -363,7 +363,7 @@ export let TabPanel = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,

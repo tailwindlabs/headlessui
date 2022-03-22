@@ -302,7 +302,7 @@ export let MenuButton = defineComponent({
 
     return () => {
       let slot = { open: api.menuState.value === MenuStates.Open }
-      let propsWeControl = {
+      let ourProps = {
         ref: api.buttonRef,
         id,
         type: type.value,
@@ -315,7 +315,7 @@ export let MenuButton = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -443,7 +443,7 @@ export let MenuItems = defineComponent({
 
     return () => {
       let slot = { open: api.menuState.value === MenuStates.Open }
-      let propsWeControl = {
+      let ourProps = {
         'aria-activedescendant':
           api.activeItemIndex.value === null
             ? undefined
@@ -457,10 +457,10 @@ export let MenuItems = defineComponent({
         ref: api.itemsRef,
       }
 
-      let passThroughProps = props
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot,
         attrs,
         slots,
@@ -537,7 +537,7 @@ export let MenuItem = defineComponent({
     return () => {
       let { disabled } = props
       let slot = { active: active.value, disabled }
-      let propsWeControl = {
+      let ourProps = {
         id,
         ref: internalItemRef,
         role: 'menuitem',
@@ -552,7 +552,7 @@ export let MenuItem = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,

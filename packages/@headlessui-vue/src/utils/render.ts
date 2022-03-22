@@ -81,12 +81,12 @@ function _render({
   slots: Slots
   name: string
 }) {
-  let { as, ...passThroughProps } = omit(props, ['unmount', 'static'])
+  let { as, ...incomingProps } = omit(props, ['unmount', 'static'])
 
   let children = slots.default?.(slot)
 
   if (as === 'template') {
-    if (Object.keys(passThroughProps).length > 0 || Object.keys(attrs).length > 0) {
+    if (Object.keys(incomingProps).length > 0 || Object.keys(attrs).length > 0) {
       let [firstChild, ...other] = children ?? []
 
       if (!isValidElement(firstChild) || other.length > 0) {
@@ -96,7 +96,7 @@ function _render({
             '',
             `The current component <${name} /> is rendering a "template".`,
             `However we need to passthrough the following props:`,
-            Object.keys(passThroughProps)
+            Object.keys(incomingProps)
               .concat(Object.keys(attrs))
               .map((line) => `  - ${line}`)
               .join('\n'),
@@ -112,7 +112,7 @@ function _render({
         )
       }
 
-      return cloneVNode(firstChild, passThroughProps as Record<string, any>)
+      return cloneVNode(firstChild, incomingProps as Record<string, any>)
     }
 
     if (Array.isArray(children) && children.length === 1) {
@@ -122,7 +122,7 @@ function _render({
     return children
   }
 
-  return h(as, passThroughProps, children)
+  return h(as, incomingProps, children)
 }
 
 export function compact<T extends Record<any, any>>(object: T) {

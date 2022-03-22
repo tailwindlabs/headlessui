@@ -73,7 +73,7 @@ export let Portal = defineComponent({
     return () => {
       if (myTarget.value === null) return null
 
-      let propsWeControl = {
+      let ourProps = {
         ref: element,
       }
 
@@ -83,7 +83,7 @@ export let Portal = defineComponent({
         Teleport,
         { to: myTarget.value },
         render({
-          props: { ...props, ...propsWeControl },
+          props: { ...props, ...ourProps },
           slot: {},
           attrs,
           slots,
@@ -116,9 +116,9 @@ export let PortalGroup = defineComponent({
     provide(PortalGroupContext, api)
 
     return () => {
-      let { target: _, ...passThroughProps } = props
+      let { target: _, ...incomingProps } = props
 
-      return render({ props: passThroughProps, slot: {}, attrs, slots, name: 'PortalGroup' })
+      return render({ props: incomingProps, slot: {}, attrs, slots, name: 'PortalGroup' })
     }
   },
 })

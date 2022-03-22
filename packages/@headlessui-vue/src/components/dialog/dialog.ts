@@ -263,7 +263,7 @@ export let Dialog = defineComponent({
     }
 
     return () => {
-      let propsWeControl = {
+      let ourProps = {
         // Manually passthrough the attributes, because Vue can't automatically pass
         // it to the underlying div because of all the wrapper components below.
         ...attrs,
@@ -275,7 +275,7 @@ export let Dialog = defineComponent({
         'aria-describedby': describedby.value,
         onClick: handleClick,
       }
-      let { open: _, initialFocus, ...passThroughProps } = props
+      let { open: _, initialFocus, ...incomingProps } = props
 
       let slot = { open: dialogState.value === DialogStates.Open }
 
@@ -284,7 +284,7 @@ export let Dialog = defineComponent({
           h(PortalGroup, { target: internalDialogRef.value }, () =>
             h(ForcePortalRoot, { force: false }, () =>
               render({
-                props: { ...passThroughProps, ...propsWeControl },
+                props: { ...incomingProps, ...ourProps },
                 slot,
                 attrs,
                 slots,
@@ -319,15 +319,15 @@ export let DialogOverlay = defineComponent({
     }
 
     return () => {
-      let propsWeControl = {
+      let ourProps = {
         id,
         'aria-hidden': true,
         onClick: handleClick,
       }
-      let passThroughProps = props
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot: { open: api.dialogState.value === DialogStates.Open },
         attrs,
         slots,
@@ -354,11 +354,11 @@ export let DialogTitle = defineComponent({
     })
 
     return () => {
-      let propsWeControl = { id }
-      let passThroughProps = props
+      let ourProps = { id }
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot: { open: api.dialogState.value === DialogStates.Open },
         attrs,
         slots,

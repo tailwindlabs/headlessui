@@ -47,20 +47,24 @@ export type PropsForFeatures<T extends Features> = XOR<
 >
 
 export function render<TFeature extends Features, TTag extends ElementType, TSlot>({
-  props,
+  ourProps,
+  theirProps,
   slot,
   defaultTag,
   features,
   visible = true,
   name,
 }: {
-  props: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  ourProps: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  theirProps: Expand<Props<TTag, TSlot, any>>
   slot?: TSlot
   defaultTag: ElementType
   features?: TFeature
   visible?: boolean
   name: string
 }) {
+  let props = mergeProps(theirProps, ourProps)
+
   // Visible always render
   if (visible) return _render(props, slot, defaultTag, name)
 
@@ -106,7 +110,7 @@ function _render<TTag extends ElementType, TSlot>(
     as: Component = tag,
     children,
     refName = 'ref',
-    ...passThroughProps
+    ...rest
   } = omit(props, ['unmount', 'static'])
 
   // This allows us to use `<HeadlessUIComponent as={MyComponent} refName="innerRef" />`
@@ -117,12 +121,12 @@ function _render<TTag extends ElementType, TSlot>(
     | ReactElement[]
 
   // Allow for className to be a function with the slot as the contents
-  if (passThroughProps.className && typeof passThroughProps.className === 'function') {
-    ;(passThroughProps as any).className = passThroughProps.className(slot)
+  if (rest.className && typeof rest.className === 'function') {
+    ;(rest as any).className = rest.className(slot)
   }
 
   if (Component === Fragment) {
-    if (Object.keys(compact(passThroughProps)).length > 0) {
+    if (Object.keys(compact(rest)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
         (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
@@ -133,7 +137,7 @@ function _render<TTag extends ElementType, TSlot>(
             '',
             `The current component <${name} /> is rendering a "Fragment".`,
             `However we need to passthrough the following props:`,
-            Object.keys(passThroughProps)
+            Object.keys(rest)
               .map((line) => `  - ${line}`)
               .join('\n'),
             '',
@@ -153,9 +157,7 @@ function _render<TTag extends ElementType, TSlot>(
         Object.assign(
           {},
           // Filter out undefined values so that they don't override the existing values
-          mergeEventFunctions(compact(omit(passThroughProps, ['ref'])), resolvedChildren.props, [
-            'onClick',
-          ]),
+          mergeProps(resolvedChildren.props, compact(omit(rest, ['ref']))),
           refRelatedProps
         )
       )
@@ -164,46 +166,63 @@ function _render<TTag extends ElementType, TSlot>(
 
   return createElement(
     Component,
-    Object.assign({}, omit(passThroughProps, ['ref']), Component !== Fragment && refRelatedProps),
+    Object.assign({}, omit(rest, ['ref']), Component !== Fragment && refRelatedProps),
     resolvedChildren
   )
 }
 
-/**
- * We can use this function for the following useCase:
- *
- * <Menu.Item> <button onClick={console.log} /> </Menu.Item>
- *
- * Our `Menu.Item` will have an internal `onClick`, if you passthrough an `onClick` to the actual
- * `Menu.Item` component we will call it correctly. However, when we have an `onClick` on the actual
- * first child, that one should _also_ be called (but before this implementation, it was just
- * overriding the `onClick`). But it is only when we *render* that we have access to the existing
- * props of this component.
- *
- * It's a bit hacky, and not that clean, but it is something internal and we have tests to rely on
- * so that we can refactor this later (if needed).
- */
-function mergeEventFunctions(
-  passThroughProps: Record<string, any>,
-  existingProps: Record<string, any>,
-  functionsToMerge: string[]
-) {
-  let clone = Object.assign({}, passThroughProps)
-  for (let func of functionsToMerge) {
-    if (passThroughProps[func] !== undefined && existingProps[func] !== undefined) {
-      Object.assign(clone, {
-        [func](event: { defaultPrevented: boolean }) {
-          // Props we control
-          if (!event.defaultPrevented) passThroughProps[func](event)
+function mergeProps(...listOfProps: Props<any, any>[]) {
+  if (listOfProps.length === 0) return {}
+  if (listOfProps.length === 1) return listOfProps[0]
 
-          // Existing props on the component
-          if (!event.defaultPrevented) existingProps[func](event)
-        },
-      })
+  let target: Props<any, any> = {}
+
+  let eventHandlers: Record<
+    string,
+    ((event: { defaultPrevented: boolean }) => void | undefined)[]
+  > = {}
+
+  for (let props of listOfProps) {
+    for (let prop in props) {
+      // Collect event handlers
+      if (prop.startsWith('on') && typeof props[prop] === 'function') {
+        eventHandlers[prop] ??= []
+        eventHandlers[prop].push(props[prop])
+      } else {
+        // Override incoming prop
+        target[prop] = props[prop]
+      }
     }
   }
 
-  return clone
+  // Do not attach any event handlers when there is a `disabled` or `aria-disabled` prop set.
+  if (target.disabled || target['aria-disabled']) {
+    return Object.assign(
+      target,
+      // Set all event listeners that we collected to `undefined`. This is
+      // important because of the `cloneElement` from above, which merges the
+      // existing and new props, they don't just override therefore we have to
+      // explicitly nullify them.
+      Object.fromEntries(Object.keys(eventHandlers).map((eventName) => [eventName, undefined]))
+    )
+  }
+
+  // Merge event handlers
+  for (let eventName in eventHandlers) {
+    Object.assign(target, {
+      [eventName](event: { defaultPrevented: boolean }) {
+        let handlers = eventHandlers[eventName]
+
+        for (let handler of handlers) {
+          if (event.defaultPrevented) return
+
+          handler(event)
+        }
+      },
+    })
+  }
+
+  return target
 }
 
 /**

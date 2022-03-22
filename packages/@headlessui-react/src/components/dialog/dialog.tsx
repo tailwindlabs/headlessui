@@ -119,7 +119,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { open, onClose, initialFocus, __demoMode = false, ...rest } = props
+  let { open, onClose, initialFocus, __demoMode = false, ...theirProps } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
@@ -292,7 +292,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     [dialogState]
   )
 
-  let propsWeControl = {
+  let ourProps = {
     ref: dialogRef,
     id,
     role: 'dialog',
@@ -303,7 +303,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       event.stopPropagation()
     },
   }
-  let passthroughProps = rest
 
   return (
     <StackProvider
@@ -331,7 +330,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
               <ForcePortalRoot force={false}>
                 <DescriptionProvider slot={slot} name="Dialog.Description">
                   {render({
-                    props: { ...passthroughProps, ...propsWeControl },
+                    ourProps,
+                    theirProps,
                     slot,
                     defaultTag: DEFAULT_DIALOG_TAG,
                     features: DialogRenderFeatures,
@@ -379,16 +379,18 @@ let Overlay = forwardRefWithAs(function Overlay<
     () => ({ open: dialogState === DialogStates.Open }),
     [dialogState]
   )
-  let propsWeControl = {
+
+  let theirProps = props
+  let ourProps = {
     ref: overlayRef,
     id,
     'aria-hidden': true,
     onClick: handleClick,
   }
-  let passthroughProps = props
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_OVERLAY_TAG,
     name: 'Dialog.Overlay',
@@ -421,11 +423,13 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
     () => ({ open: dialogState === DialogStates.Open }),
     [dialogState]
   )
-  let propsWeControl = { id }
-  let passthroughProps = props
+
+  let theirProps = props
+  let ourProps = { ref: titleRef, id }
 
   return render({
-    props: { ref: titleRef, ...passthroughProps, ...propsWeControl },
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_TITLE_TAG,
     name: 'Dialog.Title',

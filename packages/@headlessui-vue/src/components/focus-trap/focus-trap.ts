@@ -25,11 +25,11 @@ export let FocusTrap = defineComponent({
 
     return () => {
       let slot = {}
-      let propsWeControl = { ref: container }
-      let { initialFocus, ...passThroughProps } = props
+      let ourProps = { ref: container }
+      let { initialFocus, ...incomingProps } = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot,
         attrs,
         slots,
