@@ -330,7 +330,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   },
   ref: Ref<TTag>
 ) {
-  let { name, value, onChange, disabled = false, __demoMode = false, ...propsTheyControl } = props
+  let { name, value, onChange, disabled = false, __demoMode = false, ...theirProps } = props
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
@@ -481,11 +481,11 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   // Ensure that we update the inputRef if the value changes
   useIsoMorphicEffect(syncInputValue, [syncInputValue])
-  let propsWeControl = ref === null ? {} : { ref }
+  let ourProps = ref === null ? {} : { ref }
 
   let renderConfiguration = {
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_COMBOBOX_TAG,
     name: 'Combobox',
@@ -558,7 +558,7 @@ let Input = forwardRefWithAs(function Input<
   },
   ref: Ref<HTMLInputElement>
 ) {
-  let { value, onChange, displayValue, ...propsTheyControl } = props
+  let { value, onChange, displayValue, ...theirProps } = props
   let [state] = useComboboxContext('Combobox.Input')
   let data = useComboboxData()
   let actions = useComboboxActions()
@@ -679,7 +679,7 @@ let Input = forwardRefWithAs(function Input<
     [state]
   )
 
-  let propsWeControl = {
+  let ourProps = {
     ref: inputRef,
     id,
     role: 'combobox',
@@ -696,8 +696,8 @@ let Input = forwardRefWithAs(function Input<
   }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_INPUT_TAG,
     name: 'Combobox.Input',
@@ -809,8 +809,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     () => ({ open: state.comboboxState === ComboboxStates.Open, disabled: state.disabled }),
     [state]
   )
-  let propsTheyControl = props
-  let propsWeControl = {
+  let theirProps = props
+  let ourProps = {
     ref: buttonRef,
     id,
     type: useResolveButtonType(props, state.buttonRef),
@@ -825,8 +825,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Combobox.Button',
@@ -860,12 +860,12 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
     [state]
   )
 
-  let propsTheyControl = props
-  let propsWeControl = { ref: labelRef, id, onClick: handleClick }
+  let theirProps = props
+  let ourProps = { ref: labelRef, id, onClick: handleClick }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_LABEL_TAG,
     name: 'Combobox.Label',
@@ -898,7 +898,7 @@ let Options = forwardRefWithAs(function Options<
     },
   ref: Ref<HTMLUListElement>
 ) {
-  let { hold = false, ...propsTheyControl } = props
+  let { hold = false, ...theirProps } = props
   let [state] = useComboboxContext('Combobox.Options')
   let { optionsPropsRef } = state
 
@@ -944,7 +944,7 @@ let Options = forwardRefWithAs(function Options<
     () => ({ open: state.comboboxState === ComboboxStates.Open }),
     [state]
   )
-  let propsWeControl = {
+  let ourProps = {
     'aria-activedescendant':
       state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
@@ -954,8 +954,8 @@ let Options = forwardRefWithAs(function Options<
   }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_OPTIONS_TAG,
     features: OptionsRenderFeatures,
@@ -995,7 +995,7 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLLIElement>
 ) {
-  let { disabled = false, value, ...propsTheyControl } = props
+  let { disabled = false, value, ...theirProps } = props
   let [state] = useComboboxContext('Combobox.Option')
   let data = useComboboxData()
   let actions = useComboboxActions()
@@ -1081,7 +1081,7 @@ let Option = forwardRefWithAs(function Option<
     [active, selected, disabled]
   )
 
-  let propsWeControl = {
+  let ourProps = {
     id,
     ref: optionRef,
     role: 'option',
@@ -1101,8 +1101,8 @@ let Option = forwardRefWithAs(function Option<
   }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_OPTION_TAG,
     name: 'Combobox.Option',

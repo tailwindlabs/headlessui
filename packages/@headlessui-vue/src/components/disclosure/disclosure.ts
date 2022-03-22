@@ -201,7 +201,7 @@ export let DisclosureButton = defineComponent({
 
     return () => {
       let slot = { open: api.disclosureState.value === DisclosureStates.Open }
-      let propsWeControl = isWithinPanel
+      let ourProps = isWithinPanel
         ? {
             ref: internalButtonRef,
             type: type.value,
@@ -223,7 +223,7 @@ export let DisclosureButton = defineComponent({
           }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -260,10 +260,10 @@ export let DisclosurePanel = defineComponent({
 
     return () => {
       let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
-      let propsWeControl = { id: api.panelId, ref: api.panel }
+      let ourProps = { id: api.panelId, ref: api.panel }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,

@@ -47,23 +47,23 @@ export type PropsForFeatures<T extends Features> = XOR<
 >
 
 export function render<TFeature extends Features, TTag extends ElementType, TSlot>({
-  propsWeControl,
-  propsTheyControl,
+  ourProps,
+  theirProps,
   slot,
   defaultTag,
   features,
   visible = true,
   name,
 }: {
-  propsWeControl: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
-  propsTheyControl: Expand<Props<TTag, TSlot, any>>
+  ourProps: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  theirProps: Expand<Props<TTag, TSlot, any>>
   slot?: TSlot
   defaultTag: ElementType
   features?: TFeature
   visible?: boolean
   name: string
 }) {
-  let props = mergeProps(propsTheyControl, propsWeControl)
+  let props = mergeProps(theirProps, ourProps)
 
   // Visible always render
   if (visible) return _render(props, slot, defaultTag, name)

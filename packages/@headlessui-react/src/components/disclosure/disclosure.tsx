@@ -156,7 +156,7 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
   },
   ref: Ref<TTag>
 ) {
-  let { defaultOpen = false, ...propsTheyControl } = props
+  let { defaultOpen = false, ...theirProps } = props
   let buttonId = `headlessui-disclosure-button-${useId()}`
   let panelId = `headlessui-disclosure-panel-${useId()}`
   let internalDisclosureRef = useRef<HTMLElement | null>(null)
@@ -214,7 +214,7 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
     [disclosureState, close]
   )
 
-  let propsWeControl = {
+  let ourProps = {
     ref: disclosureRef,
   }
 
@@ -228,8 +228,8 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
           })}
         >
           {render({
-            propsWeControl,
-            propsTheyControl,
+            ourProps,
+            theirProps,
             slot,
             defaultTag: DEFAULT_DISCLOSURE_TAG,
             name: 'Disclosure',
@@ -325,8 +325,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   )
 
   let type = useResolveButtonType(props, internalButtonRef)
-  let propsTheyControl = props
-  let propsWeControl = isWithinPanel
+  let theirProps = props
+  let ourProps = isWithinPanel
     ? { ref: buttonRef, type, onKeyDown: handleKeyDown, onClick: handleClick }
     : {
         ref: buttonRef,
@@ -342,8 +342,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Disclosure.Button',
@@ -398,8 +398,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     [state, close]
   )
 
-  let propsTheyControl = props
-  let propsWeControl = {
+  let theirProps = props
+  let ourProps = {
     ref: panelRef,
     id: state.panelId,
   }
@@ -407,8 +407,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   return (
     <DisclosurePanelContext.Provider value={state.panelId}>
       {render({
-        propsWeControl,
-        propsTheyControl,
+        ourProps,
+        theirProps,
         slot,
         defaultTag: DEFAULT_PANEL_TAG,
         features: PanelRenderFeatures,

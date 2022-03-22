@@ -119,7 +119,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { open, onClose, initialFocus, __demoMode = false, ...propsTheyControl } = props
+  let { open, onClose, initialFocus, __demoMode = false, ...theirProps } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
@@ -292,7 +292,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     [dialogState]
   )
 
-  let propsWeControl = {
+  let ourProps = {
     ref: dialogRef,
     id,
     role: 'dialog',
@@ -330,8 +330,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
               <ForcePortalRoot force={false}>
                 <DescriptionProvider slot={slot} name="Dialog.Description">
                   {render({
-                    propsWeControl,
-                    propsTheyControl,
+                    ourProps,
+                    theirProps,
                     slot,
                     defaultTag: DEFAULT_DIALOG_TAG,
                     features: DialogRenderFeatures,
@@ -380,8 +380,8 @@ let Overlay = forwardRefWithAs(function Overlay<
     [dialogState]
   )
 
-  let propsTheyControl = props
-  let propsWeControl = {
+  let theirProps = props
+  let ourProps = {
     ref: overlayRef,
     id,
     'aria-hidden': true,
@@ -389,8 +389,8 @@ let Overlay = forwardRefWithAs(function Overlay<
   }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_OVERLAY_TAG,
     name: 'Dialog.Overlay',
@@ -424,12 +424,12 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
     [dialogState]
   )
 
-  let propsTheyControl = props
-  let propsWeControl = { ref: titleRef, id }
+  let theirProps = props
+  let ourProps = { ref: titleRef, id }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_TITLE_TAG,
     name: 'Dialog.Title',

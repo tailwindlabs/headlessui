@@ -49,8 +49,8 @@ function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props
     [switchElement, setSwitchElement, labelledby, describedby]
   )
 
-  let propsWeControl = {}
-  let propsTheyControl = props
+  let ourProps = {}
+  let theirProps = props
 
   return (
     <DescriptionProvider name="Switch.Description">
@@ -66,8 +66,8 @@ function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props
       >
         <GroupContext.Provider value={context}>
           {render({
-            propsWeControl,
-            propsTheyControl,
+            ourProps,
+            theirProps,
             defaultTag: DEFAULT_GROUP_TAG,
             name: 'Switch.Group',
           })}
@@ -109,7 +109,7 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   },
   ref: Ref<HTMLElement>
 ) {
-  let { checked, onChange, name, value, ...propsTheyControl } = props
+  let { checked, onChange, name, value, ...theirProps } = props
   let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
@@ -144,7 +144,7 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   )
 
   let slot = useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
-  let propsWeControl = {
+  let ourProps = {
     id,
     ref: switchRef,
     role: 'switch',
@@ -159,8 +159,8 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   }
 
   let renderConfiguration = {
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot,
     defaultTag: DEFAULT_SWITCH_TAG,
     name: 'Switch',

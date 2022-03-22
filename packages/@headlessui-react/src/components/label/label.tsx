@@ -88,28 +88,28 @@ export let Label = forwardRefWithAs(function Label<
   },
   ref: Ref<HTMLLabelElement>
 ) {
-  let { passive = false, ...propsTheyControl } = props
+  let { passive = false, ...theirProps } = props
   let context = useLabelContext()
   let id = `headlessui-label-${useId()}`
   let labelRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let propsWeControl = { ref: labelRef, ...context.props, id }
+  let ourProps = { ref: labelRef, ...context.props, id }
 
   if (passive) {
-    if ('onClick' in propsWeControl) {
-      delete (propsWeControl as any)['onClick']
+    if ('onClick' in ourProps) {
+      delete (ourProps as any)['onClick']
     }
 
-    if ('onClick' in propsTheyControl) {
-      delete (propsTheyControl as any)['onClick']
+    if ('onClick' in theirProps) {
+      delete (theirProps as any)['onClick']
     }
   }
 
   return render({
-    propsWeControl,
-    propsTheyControl,
+    ourProps,
+    theirProps,
     slot: context.slot || {},
     defaultTag: DEFAULT_LABEL_TAG,
     name: context.name || 'Label',

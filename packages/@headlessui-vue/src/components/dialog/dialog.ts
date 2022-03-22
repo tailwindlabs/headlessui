@@ -263,7 +263,7 @@ export let Dialog = defineComponent({
     }
 
     return () => {
-      let propsWeControl = {
+      let ourProps = {
         // Manually passthrough the attributes, because Vue can't automatically pass
         // it to the underlying div because of all the wrapper components below.
         ...attrs,
@@ -284,7 +284,7 @@ export let Dialog = defineComponent({
           h(PortalGroup, { target: internalDialogRef.value }, () =>
             h(ForcePortalRoot, { force: false }, () =>
               render({
-                props: { ...incomingProps, ...propsWeControl },
+                props: { ...incomingProps, ...ourProps },
                 slot,
                 attrs,
                 slots,
@@ -319,7 +319,7 @@ export let DialogOverlay = defineComponent({
     }
 
     return () => {
-      let propsWeControl = {
+      let ourProps = {
         id,
         'aria-hidden': true,
         onClick: handleClick,
@@ -327,7 +327,7 @@ export let DialogOverlay = defineComponent({
       let incomingProps = props
 
       return render({
-        props: { ...incomingProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot: { open: api.dialogState.value === DialogStates.Open },
         attrs,
         slots,
@@ -354,11 +354,11 @@ export let DialogTitle = defineComponent({
     })
 
     return () => {
-      let propsWeControl = { id }
+      let ourProps = { id }
       let incomingProps = props
 
       return render({
-        props: { ...incomingProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot: { open: api.dialogState.value === DialogStates.Open },
         attrs,
         slots,

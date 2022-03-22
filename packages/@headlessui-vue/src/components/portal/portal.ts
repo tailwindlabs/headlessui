@@ -73,7 +73,7 @@ export let Portal = defineComponent({
     return () => {
       if (myTarget.value === null) return null
 
-      let propsWeControl = {
+      let ourProps = {
         ref: element,
       }
 
@@ -83,7 +83,7 @@ export let Portal = defineComponent({
         Teleport,
         { to: myTarget.value },
         render({
-          props: { ...props, ...propsWeControl },
+          props: { ...props, ...ourProps },
           slot: {},
           attrs,
           slots,

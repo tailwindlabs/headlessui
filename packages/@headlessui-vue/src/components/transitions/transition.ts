@@ -326,11 +326,11 @@ export let TransitionChild = defineComponent({
         ...rest
       } = props
 
-      let propsWeControl = { ref: container }
+      let ourProps = { ref: container }
       let incomingProps = rest
 
       return render({
-        props: { ...incomingProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot: {},
         slots,
         attrs,

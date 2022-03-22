@@ -193,7 +193,7 @@ export let RadioGroup = defineComponent({
     return () => {
       let { modelValue, disabled, name, ...incomingProps } = props
 
-      let propsWeControl = {
+      let ourProps = {
         ref: radioGroupRef,
         id,
         role: 'radiogroup',
@@ -203,7 +203,7 @@ export let RadioGroup = defineComponent({
       }
 
       let renderConfiguration = {
-        props: { ...incomingProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot: {},
         attrs,
         slots,
@@ -298,7 +298,7 @@ export let RadioGroupOption = defineComponent({
         active: Boolean(state.value & OptionState.Active),
       }
 
-      let propsWeControl = {
+      let ourProps = {
         id,
         ref: optionRef,
         role: 'radio',
@@ -313,7 +313,7 @@ export let RadioGroupOption = defineComponent({
       }
 
       return render({
-        props: { ...incomingProps, ...propsWeControl },
+        props: { ...incomingProps, ...ourProps },
         slot,
         attrs,
         slots,

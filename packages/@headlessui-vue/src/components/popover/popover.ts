@@ -379,7 +379,7 @@ export let PopoverButton = defineComponent({
 
     return () => {
       let slot = { open: api.popoverState.value === PopoverStates.Open }
-      let propsWeControl = isWithinPanel
+      let ourProps = isWithinPanel
         ? {
             ref: elementRef,
             type: type.value,
@@ -401,7 +401,7 @@ export let PopoverButton = defineComponent({
           }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs: attrs,
         slots: slots,
@@ -439,14 +439,14 @@ export let PopoverOverlay = defineComponent({
 
     return () => {
       let slot = { open: api.popoverState.value === PopoverStates.Open }
-      let propsWeControl = {
+      let ourProps = {
         id,
         'aria-hidden': true,
         onClick: handleClick,
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -581,14 +581,14 @@ export let PopoverPanel = defineComponent({
         close: api.close,
       }
 
-      let propsWeControl = {
+      let ourProps = {
         ref: api.panel,
         id: api.panelId,
         onKeydown: handleKeyDown,
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot,
         attrs,
         slots,
@@ -656,10 +656,10 @@ export let PopoverGroup = defineComponent({
     })
 
     return () => {
-      let propsWeControl = { ref: groupRef }
+      let ourProps = { ref: groupRef }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot: {},
         attrs,
         slots,

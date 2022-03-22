@@ -8,7 +8,7 @@ export let VisuallyHidden = defineComponent({
   },
   setup(props, { slots, attrs }) {
     return () => {
-      let propsWeControl = {
+      let ourProps = {
         style: {
           position: 'absolute',
           width: 1,
@@ -23,7 +23,7 @@ export let VisuallyHidden = defineComponent({
       }
 
       return render({
-        props: { ...props, ...propsWeControl },
+        props: { ...props, ...ourProps },
         slot: {},
         attrs,
         slots,
