@@ -1358,7 +1358,7 @@ describe('Keyboard interactions', () => {
     // Click the menu button again
     await click(getMenuButton())
 
-    // Active the last menu item
+    // Activate the last menu item
     await mouseMove(getMenuItems()[2])
 
     // Close menu, and invoke the item
