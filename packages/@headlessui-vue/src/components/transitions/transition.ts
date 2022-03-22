@@ -327,10 +327,10 @@ export let TransitionChild = defineComponent({
       } = props
 
       let propsWeControl = { ref: container }
-      let passthroughProps = rest
+      let incomingProps = rest
 
       return render({
-        props: { ...passthroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot: {},
         slots,
         attrs,
@@ -416,7 +416,7 @@ export let TransitionRoot = defineComponent({
     provide(TransitionContext, transitionBag)
 
     return () => {
-      let passThroughProps = omit(props, ['show', 'appear', 'unmount'])
+      let incomingProps = omit(props, ['show', 'appear', 'unmount'])
       let sharedProps = { unmount: props.unmount }
 
       return render({
@@ -437,7 +437,7 @@ export let TransitionRoot = defineComponent({
                 onAfterLeave: () => emit('afterLeave'),
                 ...attrs,
                 ...sharedProps,
-                ...passThroughProps,
+                ...incomingProps,
               },
               slots.default
             ),

@@ -305,11 +305,11 @@ export let Listbox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...passThroughProps } = props
+      let { name, modelValue, disabled, ...incomingProps } = props
 
       let slot = { open: listboxState.value === ListboxStates.Open, disabled }
       let renderConfiguration = {
-        props: omit(passThroughProps, ['onUpdate:modelValue', 'horizontal']),
+        props: omit(incomingProps, ['onUpdate:modelValue', 'horizontal']),
         slot,
         slots,
         attrs,
@@ -585,10 +585,10 @@ export let ListboxOptions = defineComponent({
         tabIndex: 0,
         ref: api.optionsRef,
       }
-      let passThroughProps = props
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot,
         attrs,
         slots,

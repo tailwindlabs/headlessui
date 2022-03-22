@@ -98,11 +98,11 @@ export let Description = forwardRefWithAs(function Description<
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let passThroughProps = props
+  let incomingProps = props
   let propsWeControl = { ref: descriptionRef, ...context.props, id }
 
   return render({
-    props: { ...passThroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot: context.slot || {},
     defaultTag: DEFAULT_DESCRIPTION_TAG,
     name: context.name || 'Description',

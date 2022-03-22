@@ -180,10 +180,10 @@ export let TabList = defineComponent({
         role: 'tablist',
         'aria-orientation': api.orientation.value,
       }
-      let passThroughProps = props
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot,
         attrs,
         slots,

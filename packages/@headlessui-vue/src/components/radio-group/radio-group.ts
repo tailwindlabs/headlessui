@@ -191,7 +191,7 @@ export let RadioGroup = defineComponent({
     let id = `headlessui-radiogroup-${useId()}`
 
     return () => {
-      let { modelValue, disabled, name, ...passThroughProps } = props
+      let { modelValue, disabled, name, ...incomingProps } = props
 
       let propsWeControl = {
         ref: radioGroupRef,
@@ -203,7 +203,7 @@ export let RadioGroup = defineComponent({
       }
 
       let renderConfiguration = {
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot: {},
         attrs,
         slots,
@@ -290,7 +290,7 @@ export let RadioGroupOption = defineComponent({
     }
 
     return () => {
-      let passThroughProps = omit(props, ['value', 'disabled'])
+      let incomingProps = omit(props, ['value', 'disabled'])
 
       let slot = {
         checked: checked.value,
@@ -313,7 +313,7 @@ export let RadioGroupOption = defineComponent({
       }
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot,
         attrs,
         slots,

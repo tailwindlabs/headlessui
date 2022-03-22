@@ -101,7 +101,7 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   },
   ref: Ref<HTMLElement>
 ) {
-  let { checked, onChange, name, value, ...passThroughProps } = props
+  let { checked, onChange, name, value, ...incomingProps } = props
   let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
@@ -151,7 +151,7 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   }
 
   let renderConfiguration = {
-    props: { ...passThroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_SWITCH_TAG,
     name: 'Switch',

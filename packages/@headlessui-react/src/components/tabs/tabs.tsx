@@ -146,7 +146,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     manual = false,
     onChange,
     selectedIndex = null,
-    ...passThroughProps
+    ...incomingProps
   } = props
   const orientation = vertical ? 'vertical' : 'horizontal'
   const activation = manual ? 'manual' : 'auto'
@@ -244,7 +244,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
           }}
         />
         {render({
-          props: { ref: tabsRef, ...passThroughProps },
+          props: { ref: tabsRef, ...incomingProps },
           slot,
           defaultTag: DEFAULT_TABS_TAG,
           name: 'Tabs',
@@ -275,10 +275,10 @@ let List = forwardRefWithAs(function List<TTag extends ElementType = typeof DEFA
     role: 'tablist',
     'aria-orientation': orientation,
   }
-  let passThroughProps = props
+  let incomingProps = props
 
   return render({
-    props: { ...passThroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_LIST_TAG,
     name: 'Tabs.List',
@@ -390,10 +390,10 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
     'aria-selected': selected,
     tabIndex: selected ? 0 : -1,
   }
-  let passThroughProps = props
+  let incomingProps = props
 
   return render({
-    props: { ...passThroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_TAB_TAG,
     name: 'Tabs.Tab',
@@ -470,10 +470,10 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     tabIndex: selected ? 0 : -1,
   }
 
-  let passThroughProps = props
+  let incomingProps = props
 
   return render({
-    props: { ...passThroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_PANEL_TAG,
     features: PanelRenderFeatures,

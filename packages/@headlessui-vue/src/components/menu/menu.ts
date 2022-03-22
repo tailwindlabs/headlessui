@@ -457,10 +457,10 @@ export let MenuItems = defineComponent({
         ref: api.itemsRef,
       }
 
-      let passThroughProps = props
+      let incomingProps = props
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot,
         attrs,
         slots,

@@ -118,9 +118,9 @@ export let Disclosure = defineComponent({
     )
 
     return () => {
-      let { defaultOpen: _, ...passThroughProps } = props
+      let { defaultOpen: _, ...incomingProps } = props
       let slot = { open: disclosureState.value === DisclosureStates.Open, close: api.close }
-      return render({ props: passThroughProps, slot, slots, attrs, name: 'Disclosure' })
+      return render({ props: incomingProps, slot, slots, attrs, name: 'Disclosure' })
     }
   },
 })

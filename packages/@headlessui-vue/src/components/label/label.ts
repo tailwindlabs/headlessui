@@ -77,7 +77,7 @@ export let Label = defineComponent({
 
     return () => {
       let { name = 'Label', slot = {}, props = {} } = context
-      let { passive, ...passThroughProps } = myProps
+      let { passive, ...incomingProps } = myProps
       let propsWeControl = {
         ...Object.entries(props).reduce(
           (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
@@ -85,7 +85,7 @@ export let Label = defineComponent({
         ),
         id,
       }
-      let allProps = { ...passThroughProps, ...propsWeControl }
+      let allProps = { ...incomingProps, ...propsWeControl }
 
       // @ts-expect-error props are dynamic via context, some components will
       //                  provide an onClick then we can delete it.

@@ -355,7 +355,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     () => ({ open: state.menuState === MenuStates.Open }),
     [state]
   )
-  let passthroughProps = props
+  let incomingProps = props
   let propsWeControl = {
     ref: buttonRef,
     id,
@@ -369,7 +369,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Menu.Button',
@@ -532,10 +532,10 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     tabIndex: 0,
     ref: itemsRef,
   }
-  let passthroughProps = props
+  let incomingProps = props
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_ITEMS_TAG,
     features: ItemsRenderFeatures,
@@ -569,7 +569,7 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   },
   ref: Ref<HTMLElement>
 ) {
-  let { disabled = false, onClick, ...passthroughProps } = props
+  let { disabled = false, onClick, ...incomingProps } = props
   let [state, dispatch] = useMenuContext('Menu.Item')
   let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
@@ -650,7 +650,7 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   }
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_ITEM_TAG,
     name: 'Menu.Item',

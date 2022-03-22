@@ -23,7 +23,7 @@ export let FocusTrap = forwardRefWithAs(function FocusTrap<
 ) {
   let container = useRef<HTMLElement | null>(null)
   let focusTrapRef = useSyncRefs(container, ref)
-  let { initialFocus, ...passthroughProps } = props
+  let { initialFocus, ...incomingProps } = props
 
   let ready = useServerHandoffComplete()
   useFocusTrap(container, ready ? FocusTrapFeatures.All : FocusTrapFeatures.None, { initialFocus })
@@ -33,7 +33,7 @@ export let FocusTrap = forwardRefWithAs(function FocusTrap<
   }
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     defaultTag: DEFAULT_FOCUS_TRAP_TAG,
     name: 'FocusTrap',
   })

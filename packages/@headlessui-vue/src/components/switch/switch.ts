@@ -103,7 +103,7 @@ export let Switch = defineComponent({
     }
 
     return () => {
-      let { name, value, modelValue, ...passThroughProps } = props
+      let { name, value, modelValue, ...incomingProps } = props
       let slot = { checked: modelValue }
       let propsWeControl = {
         id,
@@ -120,7 +120,7 @@ export let Switch = defineComponent({
       }
 
       let renderConfiguration = {
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot,
         attrs,
         slots,

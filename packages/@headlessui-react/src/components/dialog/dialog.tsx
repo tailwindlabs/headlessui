@@ -303,7 +303,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       event.stopPropagation()
     },
   }
-  let passthroughProps = rest
+  let incomingProps = rest
 
   return (
     <StackProvider
@@ -331,7 +331,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
               <ForcePortalRoot force={false}>
                 <DescriptionProvider slot={slot} name="Dialog.Description">
                   {render({
-                    props: { ...passthroughProps, ...propsWeControl },
+                    props: { ...incomingProps, ...propsWeControl },
                     slot,
                     defaultTag: DEFAULT_DIALOG_TAG,
                     features: DialogRenderFeatures,
@@ -385,10 +385,10 @@ let Overlay = forwardRefWithAs(function Overlay<
     'aria-hidden': true,
     onClick: handleClick,
   }
-  let passthroughProps = props
+  let incomingProps = props
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_OVERLAY_TAG,
     name: 'Dialog.Overlay',
@@ -422,10 +422,10 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
     [dialogState]
   )
   let propsWeControl = { id }
-  let passthroughProps = props
+  let incomingProps = props
 
   return render({
-    props: { ref: titleRef, ...passthroughProps, ...propsWeControl },
+    props: { ref: titleRef, ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_TITLE_TAG,
     name: 'Dialog.Title',

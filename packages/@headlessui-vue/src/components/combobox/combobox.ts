@@ -342,7 +342,7 @@ export let Combobox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...passThroughProps } = props
+      let { name, modelValue, disabled, ...incomingProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
@@ -351,7 +351,7 @@ export let Combobox = defineComponent({
       }
 
       let renderConfiguration = {
-        props: omit(passThroughProps, ['onUpdate:modelValue']),
+        props: omit(incomingProps, ['onUpdate:modelValue']),
         slot,
         slots,
         attrs,
@@ -647,10 +647,10 @@ export let ComboboxInput = defineComponent({
         tabIndex: 0,
         ref: api.inputRef,
       }
-      let passThroughProps = omit(props, ['displayValue'])
+      let incomingProps = omit(props, ['displayValue'])
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot,
         attrs,
         slots,
@@ -719,10 +719,10 @@ export let ComboboxOptions = defineComponent({
         ref: api.optionsRef,
         role: 'listbox',
       }
-      let passThroughProps = omit(props, ['hold'])
+      let incomingProps = omit(props, ['hold'])
 
       return render({
-        props: { ...passThroughProps, ...propsWeControl },
+        props: { ...incomingProps, ...propsWeControl },
         slot,
         attrs,
         slots,

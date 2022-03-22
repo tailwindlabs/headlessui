@@ -314,7 +314,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   },
   ref: Ref<TTag>
 ) {
-  let { value, name, onChange, disabled = false, horizontal = false, ...passThroughProps } = props
+  let { value, name, onChange, disabled = false, horizontal = false, ...incomingProps } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
@@ -383,7 +383,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   )
 
   let renderConfiguration = {
-    props: { ref: listboxRef, ...passThroughProps },
+    props: { ref: listboxRef, ...incomingProps },
     slot,
     defaultTag: DEFAULT_LISTBOX_TAG,
     name: 'Listbox',
@@ -513,7 +513,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
     [state]
   )
-  let passthroughProps = props
+  let incomingProps = props
   let propsWeControl = {
     ref: buttonRef,
     id,
@@ -529,7 +529,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Listbox.Button',
@@ -714,10 +714,10 @@ let Options = forwardRefWithAs(function Options<
     tabIndex: 0,
     ref: optionsRef,
   }
-  let passthroughProps = props
+  let incomingProps = props
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_OPTIONS_TAG,
     features: OptionsRenderFeatures,
@@ -758,7 +758,7 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLElement>
 ) {
-  let { disabled = false, value, ...passthroughProps } = props
+  let { disabled = false, value, ...incomingProps } = props
   let [state, dispatch] = useListboxContext('Listbox.Option')
   let id = `headlessui-listbox-option-${useId()}`
   let active =
@@ -859,7 +859,7 @@ let Option = forwardRefWithAs(function Option<
   }
 
   return render({
-    props: { ...passthroughProps, ...propsWeControl },
+    props: { ...incomingProps, ...propsWeControl },
     slot,
     defaultTag: DEFAULT_OPTION_TAG,
     name: 'Listbox.Option',

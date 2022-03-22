@@ -106,7 +106,7 @@ function _render<TTag extends ElementType, TSlot>(
     as: Component = tag,
     children,
     refName = 'ref',
-    ...passThroughProps
+    ...incomingProps
   } = omit(props, ['unmount', 'static'])
 
   // This allows us to use `<HeadlessUIComponent as={MyComponent} refName="innerRef" />`
@@ -117,12 +117,12 @@ function _render<TTag extends ElementType, TSlot>(
     | ReactElement[]
 
   // Allow for className to be a function with the slot as the contents
-  if (passThroughProps.className && typeof passThroughProps.className === 'function') {
-    ;(passThroughProps as any).className = passThroughProps.className(slot)
+  if (incomingProps.className && typeof incomingProps.className === 'function') {
+    ;(incomingProps as any).className = incomingProps.className(slot)
   }
 
   if (Component === Fragment) {
-    if (Object.keys(compact(passThroughProps)).length > 0) {
+    if (Object.keys(compact(incomingProps)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
         (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
@@ -133,7 +133,7 @@ function _render<TTag extends ElementType, TSlot>(
             '',
             `The current component <${name} /> is rendering a "Fragment".`,
             `However we need to passthrough the following props:`,
-            Object.keys(passThroughProps)
+            Object.keys(incomingProps)
               .map((line) => `  - ${line}`)
               .join('\n'),
             '',
@@ -153,7 +153,7 @@ function _render<TTag extends ElementType, TSlot>(
         Object.assign(
           {},
           // Filter out undefined values so that they don't override the existing values
-          mergeEventFunctions(compact(omit(passThroughProps, ['ref'])), resolvedChildren.props, [
+          mergeEventFunctions(compact(omit(incomingProps, ['ref'])), resolvedChildren.props, [
             'onClick',
           ]),
           refRelatedProps
@@ -164,7 +164,7 @@ function _render<TTag extends ElementType, TSlot>(
 
   return createElement(
     Component,
-    Object.assign({}, omit(passThroughProps, ['ref']), Component !== Fragment && refRelatedProps),
+    Object.assign({}, omit(incomingProps, ['ref']), Component !== Fragment && refRelatedProps),
     resolvedChildren
   )
 }
@@ -184,17 +184,17 @@ function _render<TTag extends ElementType, TSlot>(
  * so that we can refactor this later (if needed).
  */
 function mergeEventFunctions(
-  passThroughProps: Record<string, any>,
+  incomingProps: Record<string, any>,
   existingProps: Record<string, any>,
   functionsToMerge: string[]
 ) {
-  let clone = Object.assign({}, passThroughProps)
+  let clone = Object.assign({}, incomingProps)
   for (let func of functionsToMerge) {
-    if (passThroughProps[func] !== undefined && existingProps[func] !== undefined) {
+    if (incomingProps[func] !== undefined && existingProps[func] !== undefined) {
       Object.assign(clone, {
         [func](event: { defaultPrevented: boolean }) {
           // Props we control
-          if (!event.defaultPrevented) passThroughProps[func](event)
+          if (!event.defaultPrevented) incomingProps[func](event)
 
           // Existing props on the component
           if (!event.defaultPrevented) existingProps[func](event)

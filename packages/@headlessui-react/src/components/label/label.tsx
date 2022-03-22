@@ -88,7 +88,7 @@ export let Label = forwardRefWithAs(function Label<
   },
   ref: Ref<HTMLLabelElement>
 ) {
-  let { passive = false, ...passThroughProps } = props
+  let { passive = false, ...incomingProps } = props
   let context = useLabelContext()
   let id = `headlessui-label-${useId()}`
   let labelRef = useSyncRefs(ref)
@@ -97,7 +97,7 @@ export let Label = forwardRefWithAs(function Label<
 
   let propsWeControl = { ref: labelRef, ...context.props, id }
 
-  let allProps = { ...passThroughProps, ...propsWeControl }
+  let allProps = { ...incomingProps, ...propsWeControl }
   // @ts-expect-error props are dynamic via context, some components will
   //                  provide an onClick then we can delete it.
   if (passive) delete allProps['onClick']
