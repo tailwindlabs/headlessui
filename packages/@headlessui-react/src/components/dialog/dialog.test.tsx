@@ -19,6 +19,7 @@ import {
 import { click, press, Keys } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
 import { Transition } from '../transitions/transition'
+import { createPortal } from 'react-dom'
 
 jest.mock('../../hooks/use-id')
 
@@ -840,6 +841,53 @@ describe('Mouse interactions', () => {
       await click(getByText('Inside'))
 
       // Verify it is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
+    'should be possible to click on elements created by third party libraries',
+    suppressConsoleLogs(async () => {
+      let fn = jest.fn()
+      function ThirdPartyLibrary() {
+        return createPortal(
+          <>
+            <button data-lib onClick={fn}>
+              3rd party button
+            </button>
+          </>,
+          document.body
+        )
+      }
+
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+
+        return (
+          <div>
+            <span>Main app</span>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <div>
+                Contents
+                <TabSentinel />
+              </div>
+            </Dialog>
+            <ThirdPartyLibrary />
+          </div>
+        )
+      }
+      render(<Example />)
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button inside the 3rd party library
+      await click(document.querySelector('[data-lib]'))
+
+      // Verify we clicked on the 3rd party button
+      expect(fn).toHaveBeenCalledTimes(1)
+
+      // Verify the dialog is still open
       assertDialog({ state: DialogState.Visible })
     })
   )

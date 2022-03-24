@@ -1,7 +1,10 @@
 import React, { useState, Fragment } from 'react'
+import Flatpickr from 'react-flatpickr'
 import { Dialog, Menu, Portal, Transition } from '@headlessui/react'
 import { usePopper } from '../../utils/hooks/use-popper'
 import { classNames } from '../../utils/class-names'
+
+import 'flatpickr/dist/themes/light.css'
 
 function resolveClass({ active, disabled }) {
   return classNames(
@@ -52,6 +55,8 @@ export default function Home() {
     strategy: 'fixed',
     modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
   })
+
+  let [date, setDate] = useState(new Date())
 
   return (
     <>
@@ -207,6 +212,7 @@ export default function Home() {
                               </Transition>
                             </Menu>
                           </div>
+                          <Flatpickr value={date} onChange={([date]) => setDate(date)} />
                         </div>
                       </div>
                     </div>

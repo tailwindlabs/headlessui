@@ -16,6 +16,7 @@
   "dependencies": {
     "@headlessui/vue": "*",
     "vue": "^3.2.27",
+    "vue-flatpickr-component": "^9.0.5",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {

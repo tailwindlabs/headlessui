@@ -151,6 +151,7 @@
                           </TransitionRoot>
                         </Menu>
                       </div>
+                      <Flatpickr v-model="date" />
                     </div>
                   </div>
                 </div>
@@ -193,7 +194,10 @@ import {
   TransitionRoot,
   TransitionChild,
 } from '@headlessui/vue'
+import Flatpickr from 'vue-flatpickr-component'
 import { usePopper } from '../../playground-utils/hooks/use-popper'
+
+import 'flatpickr/dist/themes/light.css'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -269,6 +273,7 @@ export default {
     MenuItems,
     MenuItem,
     Portal,
+    Flatpickr,
     TransitionRoot,
     TransitionChild,
   },
@@ -280,9 +285,11 @@ export default {
       modifiers: [{ name: 'offset', options: { offset: [0, 10] } }],
     })
     let nested = ref(false)
+    let date = ref(new Date())
 
     return {
       nested,
+      date,
       isOpen,
       trigger,
       container,
