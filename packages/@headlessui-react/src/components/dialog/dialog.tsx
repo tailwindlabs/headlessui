@@ -200,7 +200,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // in between. We only care abou whether you are the top most one or not.
   let position = !hasNestedDialogs ? 'leaf' : 'parent'
 
-  useFocusTrap(
+  let previousElement = useFocusTrap(
     internalDialogRef,
     enabled
       ? match(position, {
@@ -213,12 +213,26 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
 
   // Handle outside click
-  useOutsideClick(internalDialogRef, () => {
-    if (dialogState !== DialogStates.Open) return
-    if (hasNestedDialogs) return
+  useOutsideClick(
+    () => {
+      // Third party roots
+      let rootContainers = Array.from(ownerDocument?.querySelectorAll('body > *') ?? []).filter(
+        (container) => {
+          if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
+          if (container.contains(previousElement.current)) return false // Skip if it is the main app
+          return true // Keep
+        }
+      )
 
-    close()
-  })
+      return [...rootContainers, internalDialogRef.current] as HTMLElement[]
+    },
+    () => {
+      if (dialogState !== DialogStates.Open) return
+      if (hasNestedDialogs) return
+
+      close()
+    }
+  )
 
   // Handle `Escape` to close
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {

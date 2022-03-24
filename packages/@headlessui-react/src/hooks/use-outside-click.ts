@@ -17,26 +17,14 @@ function microTask(cb: () => void) {
   }
 }
 
+type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
+type ContainerCollection = Container[] | Set<Container>
+type ContainerInput = Container | ContainerCollection
+
 export function useOutsideClick(
-  containers:
-    | HTMLElement
-    | MutableRefObject<HTMLElement | null>
-    | (MutableRefObject<HTMLElement | null> | HTMLElement | null)[]
-    | Set<HTMLElement>,
+  containers: ContainerInput | (() => ContainerInput),
   cb: (event: MouseEvent | PointerEvent, target: HTMLElement) => void
 ) {
-  let _containers = useMemo(() => {
-    if (Array.isArray(containers)) {
-      return containers
-    }
-
-    if (containers instanceof Set) {
-      return containers
-    }
-
-    return [containers]
-  }, [containers])
-
   let called = useRef(false)
   let handler = useLatestValue((event: MouseEvent | PointerEvent) => {
     if (called.current) return
@@ -44,6 +32,22 @@ export function useOutsideClick(
     microTask(() => {
       called.current = false
     })
+
+    let _containers = (function resolve(containers): ContainerCollection {
+      if (typeof containers === 'function') {
+        return resolve(containers())
+      }
+
+      if (Array.isArray(containers)) {
+        return containers
+      }
+
+      if (containers instanceof Set) {
+        return containers
+      }
+
+      return [containers]
+    })(containers)
 
     let target = event.target as HTMLElement
 

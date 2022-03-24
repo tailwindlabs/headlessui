@@ -1035,6 +1035,59 @@ describe('Mouse interactions', () => {
       assertDialog({ state: DialogState.Visible })
     })
   )
+
+  it(
+    'should be possible to click on elements created by third party libraries',
+    suppressConsoleLogs(async () => {
+      let fn = jest.fn()
+
+      let ThirdPartyLibrary = defineComponent({
+        template: html`
+          <teleport to="body">
+            <button data-lib @click="fn">3rd party button</button>
+          </teleport>
+        `,
+        setup: () => ({ fn }),
+      })
+
+      renderTemplate({
+        components: { ThirdPartyLibrary },
+        template: `
+          <div>
+            <span>Main app</span>
+            <Dialog :open="isOpen" @close="setIsOpen">
+              <div>
+                Contents
+                <TabSentinel />
+              </div>
+            </Dialog>
+            <ThirdPartyLibrary />
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button inside the 3rd party library
+      await click(document.querySelector('[data-lib]'))
+
+      // Verify we clicked on the 3rd party button
+      expect(fn).toHaveBeenCalledTimes(1)
+
+      // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
 })
 
 describe('Nesting', () => {

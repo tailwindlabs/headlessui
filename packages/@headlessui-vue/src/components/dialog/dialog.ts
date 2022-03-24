@@ -129,7 +129,7 @@ export let Dialog = defineComponent({
     // in between. We only care abou whether you are the top most one or not.
     let position = computed(() => (!hasNestedDialogs.value ? 'leaf' : 'parent'))
 
-    useFocusTrap(
+    let previousElement = useFocusTrap(
       internalDialogRef,
       computed(() => {
         return enabled.value
@@ -191,13 +191,28 @@ export let Dialog = defineComponent({
     provide(DialogContext, api)
 
     // Handle outside click
-    useOutsideClick(internalDialogRef, (_event, target) => {
-      if (dialogState.value !== DialogStates.Open) return
-      if (hasNestedDialogs.value) return
+    useOutsideClick(
+      () => {
+        // Third party roots
+        let rootContainers = Array.from(
+          ownerDocument.value?.querySelectorAll('body > *') ?? []
+        ).filter((container) => {
+          if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
+          if (container.contains(previousElement.value)) return false // Skip if it is the main app
+          return true // Keep
+        })
 
-      api.close()
-      nextTick(() => target?.focus())
-    })
+        return [...rootContainers, internalDialogRef.value] as HTMLElement[]
+      },
+
+      (_event, target) => {
+        if (dialogState.value !== DialogStates.Open) return
+        if (hasNestedDialogs.value) return
+
+        api.close()
+        nextTick(() => target?.focus())
+      }
+    )
 
     // Handle `Escape` to close
     useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {

@@ -175,6 +175,8 @@ export function useFocusTrap(
     },
     true
   )
+
+  return restoreElement
 }
 
 function contains(containers: Set<Ref<HTMLElement | null>>, element: HTMLElement) {

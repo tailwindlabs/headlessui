@@ -152,6 +152,8 @@ export function useFocusTrap(
     },
     true
   )
+
+  return restoreElement
 }
 
 function contains(containers: Set<MutableRefObject<HTMLElement | null>>, element: HTMLElement) {

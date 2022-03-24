@@ -17,12 +17,12 @@ function microTask(cb: () => void) {
   }
 }
 
+type Container = Ref<HTMLElement | null> | HTMLElement | null
+type ContainerCollection = Container[] | Set<Container>
+type ContainerInput = Container | ContainerCollection
+
 export function useOutsideClick(
-  containers:
-    | HTMLElement
-    | Ref<HTMLElement | null>
-    | (Ref<HTMLElement | null> | HTMLElement | null)[]
-    | Set<HTMLElement>,
+  containers: ContainerInput | (() => ContainerInput),
   cb: (event: MouseEvent | PointerEvent, target: HTMLElement) => void
 ) {
   let called = false
@@ -38,7 +38,11 @@ export function useOutsideClick(
     // Ignore if the target doesn't exist in the DOM anymore
     if (!target.ownerDocument.documentElement.contains(target)) return
 
-    let _containers = (() => {
+    let _containers = (function resolve(containers): ContainerCollection {
+      if (typeof containers === 'function') {
+        return resolve(containers())
+      }
+
       if (Array.isArray(containers)) {
         return containers
       }
@@ -48,7 +52,7 @@ export function useOutsideClick(
       }
 
       return [containers]
-    })()
+    })(containers)
 
     // Ignore if the target exists in one of the containers
     for (let container of _containers) {
