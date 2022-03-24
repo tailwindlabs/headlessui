@@ -2229,6 +2229,11 @@ find-versions@^4.0.0:
   dependencies:
     semver-regex "^3.1.2"
 
+flatpickr@^4.6.2, flatpickr@^4.6.9:
+  version "4.6.11"
+  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.6.11.tgz#c92f5108269c551c6b5069ecd754be610574574c"
+  integrity sha512-/rnbE/hu5I5zndLEyYfYvqE4vPDvI5At0lFcQA5eOPfjquZLcQ0HMKTL7rv5/+DvbPM3/vJcXpXjB/DjBh+1jw==
+
 for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
@@ -4107,7 +4112,7 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.6.2:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -4158,6 +4163,14 @@ react-dom@16.14.0, react-dom@^16.14.0:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.19.1"
+
+react-flatpickr@^3.10.9:
+  version "3.10.9"
+  resolved "https://registry.yarnpkg.com/react-flatpickr/-/react-flatpickr-3.10.9.tgz#88cf987b58e9502593a9e478d5e77eaa94d4ec53"
+  integrity sha512-n151Q1eXeQ8vycz7rTDaZy4VApbcNz5BUtj9exlkSft1JSSGlzzcPXrjdF3CUhnftRvE0LYV51drkonkjVogBQ==
+  dependencies:
+    flatpickr "^4.6.2"
+    prop-types "^15.5.10"
 
 react-is@^16.13.1:
   version "16.13.1"
@@ -5039,6 +5052,13 @@ vite@^2.7.13:
     rollup "^2.59.0"
   optionalDependencies:
     fsevents "~2.3.2"
+
+vue-flatpickr-component@^9.0.5:
+  version "9.0.5"
+  resolved "https://registry.yarnpkg.com/vue-flatpickr-component/-/vue-flatpickr-component-9.0.5.tgz#350ec73b7f3d7f80b050c170c088234f9c3bd14c"
+  integrity sha512-fKuz/D4ePQKi+jPo4xjYRgBCLTWrTsCoKbx8nam63x4kTDtSqvFOjNwLvy0QgwC0lC+aFpUWa1dNYTH0hgUcCA==
+  dependencies:
+    flatpickr "^4.6.9"
 
 vue-router@^4.0.0:
   version "4.0.14"
