@@ -26,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve some internal code ([#1221](https://github.com/tailwindlabs/headlessui/pull/1221))
 - Use `ownerDocument` instead of `document` ([#1158](https://github.com/tailwindlabs/headlessui/pull/1158))
 - Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
-- Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 - Improve Combobox Input value ([#1248](https://github.com/tailwindlabs/headlessui/pull/1248))
 - Fix Tree-shaking support ([#1247](https://github.com/tailwindlabs/headlessui/pull/1247))
 - Stop propagation on the Popover Button ([#1263](https://github.com/tailwindlabs/headlessui/pull/1263))
@@ -37,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `<form>` compatibility ([#1214](https://github.com/tailwindlabs/headlessui/pull/1214))
+- Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 
 ## [Unreleased - @headlessui/vue]
 
@@ -61,7 +61,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `ownerDocument` instead of `document` ([#1158](https://github.com/tailwindlabs/headlessui/pull/1158))
 - Re-expose `el` ([#1230](https://github.com/tailwindlabs/headlessui/pull/1230))
 - Ensure focus trap, Tabs and Dialog play well together ([#1231](https://github.com/tailwindlabs/headlessui/pull/1231))
-- Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 - Improve Combobox Input value ([#1248](https://github.com/tailwindlabs/headlessui/pull/1248))
 - Fix Tree-shaking support ([#1247](https://github.com/tailwindlabs/headlessui/pull/1247))
 - Stop propagation on the Popover Button ([#1263](https://github.com/tailwindlabs/headlessui/pull/1263))
@@ -70,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `<form>` compatibility ([#1214](https://github.com/tailwindlabs/headlessui/pull/1214))
+- Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
