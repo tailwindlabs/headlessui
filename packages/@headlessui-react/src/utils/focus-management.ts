@@ -103,6 +103,17 @@ export function focusElement(element: HTMLElement | null) {
   element?.focus({ preventScroll: true })
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/select
+export function isSelectableElement(
+  element: HTMLElement | null
+): element is HTMLInputElement | HTMLTextAreaElement {
+  return !!element && element.matches(['textarea', 'input'].join(','))
+}
+
+export function selectElementText(element: HTMLInputElement | HTMLTextAreaElement | null) {
+  element?.select()
+}
+
 export function sortByDomNode<T>(
   nodes: T[],
   resolveKey: (item: T) => HTMLElement | null = (i) => i as unknown as HTMLElement | null
@@ -171,6 +182,10 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
 
     // Try the focus the next element, might not work if it is "hidden" to the user.
     next?.focus(focusOptions)
+
+    if (isSelectableElement(next)) {
+      next.select()
+    }
 
     // Try the next one in line
     offset += direction
