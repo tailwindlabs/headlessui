@@ -12,6 +12,7 @@ import { Keys } from '../keyboard'
 import { focusElement, focusIn, Focus, FocusResult } from '../utils/focus-management'
 import { getOwnerDocument } from '../utils/owner'
 import { useEventListener } from './use-event-listener'
+import { dom } from '../utils/dom'
 
 export enum Features {
   /** No features enabled for the `useFocusTrap` hook. */
@@ -96,10 +97,12 @@ export function useFocusTrap(
         let containerElement = container.value
         if (!containerElement) return
 
+        let initialFocusElement = dom(options.value.initialFocus)
+
         let activeElement = ownerDocument.value?.activeElement as HTMLElement
 
-        if (options.value.initialFocus?.value) {
-          if (options.value.initialFocus?.value === activeElement) {
+        if (initialFocusElement) {
+          if (initialFocusElement === activeElement) {
             previousActiveElement.value = activeElement
             return // Initial focus ref is already the active element
           }
@@ -109,8 +112,8 @@ export function useFocusTrap(
         }
 
         // Try to focus the initialFocus ref
-        if (options.value.initialFocus?.value) {
-          focusElement(options.value.initialFocus.value)
+        if (initialFocusElement) {
+          focusElement(initialFocusElement)
         } else {
           if (focusIn(containerElement, Focus.First) === FocusResult.Error) {
             console.warn('There are no focusable elements inside the <FocusTrap />')
