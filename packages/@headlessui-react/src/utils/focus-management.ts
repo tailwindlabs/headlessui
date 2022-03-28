@@ -104,14 +104,11 @@ export function focusElement(element: HTMLElement | null) {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/select
-export function isSelectableElement(
-  element: HTMLElement | null
+let selectableSelector = ['textarea', 'input'].join(',')
+function isSelectableElement(
+  element: Element | null
 ): element is HTMLInputElement | HTMLTextAreaElement {
-  return !!element && element.matches(['textarea', 'input'].join(','))
-}
-
-export function selectElementText(element: HTMLInputElement | HTMLTextAreaElement | null) {
-  element?.select()
+  return element?.matches?.(selectableSelector) ?? false
 }
 
 export function sortByDomNode<T>(
@@ -183,13 +180,21 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
     // Try the focus the next element, might not work if it is "hidden" to the user.
     next?.focus(focusOptions)
 
-    if (isSelectableElement(next)) {
-      next.select()
-    }
-
     // Try the next one in line
     offset += direction
   } while (next !== ownerDocument.activeElement)
+
+  // By default if you <Tab> to a text input or a textarea, the browser will
+  // select all the text once the focus is inside these DOM Nodes. However,
+  // since we are manually moving focus this behaviour is not happening. This
+  // code will make sure that the text gets selected as-if you did it manually.
+  // Note: We only do this when going forward / backward. Not for the
+  // Focus.First or Focus.Last actions. This is similar to the `autoFocus`
+  // behaviour on an input where the input will get focus but won't be
+  // selected.
+  if (focus & (Focus.Next | Focus.Previous) && isSelectableElement(next)) {
+    next.select()
+  }
 
   // This is a little weird, but let me try and explain: There are a few scenario's
   // in chrome for example where a focused `<a>` tag does not get the default focus
