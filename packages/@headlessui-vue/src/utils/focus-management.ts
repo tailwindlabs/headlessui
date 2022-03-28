@@ -96,6 +96,14 @@ export function focusElement(element: HTMLElement | null) {
   element?.focus({ preventScroll: true })
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/select
+let selectableSelector = ['textarea', 'input'].join(',')
+function isSelectableElement(
+  element: Element | null
+): element is HTMLInputElement | HTMLTextAreaElement {
+  return element?.matches?.(selectableSelector) ?? false
+}
+
 export function sortByDomNode<T>(
   nodes: T[],
   resolveKey: (item: T) => HTMLElement | null = (i) => i as unknown as HTMLElement | null
@@ -178,6 +186,18 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
   // However in that case the default focus styles are not applied *unless* you
   // also add this tabindex.
   if (!next.hasAttribute('tabindex')) next.setAttribute('tabindex', '0')
+
+  // By default if you <Tab> to a text input or a textarea, the browser will
+  // select all the text once the focus is inside these DOM Nodes. However,
+  // since we are manually moving focus this behaviour is not happening. This
+  // code will make sure that the text gets selected as-if you did it manually.
+  // Note: We only do this when going forward / backward. Not for the
+  // Focus.First or Focus.Last actions. This is similar to the `autoFocus`
+  // behaviour on an input where the input will get focus but won't be
+  // selected.
+  if (focus & (Focus.Next | Focus.Previous) && isSelectableElement(next)) {
+    next.select()
+  }
 
   return FocusResult.Success
 }

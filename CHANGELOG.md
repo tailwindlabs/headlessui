@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix incorrect `active` option in the Listbox/Combobox component ([#1264](https://github.com/tailwindlabs/headlessui/pull/1264))
 - Properly merge incoming props ([#1265](https://github.com/tailwindlabs/headlessui/pull/1265))
 - Fix incorrect closing while interacting with third party libraries in `Dialog` component ([#1268](https://github.com/tailwindlabs/headlessui/pull/1268))
+- Mimic browser select on focus when navigating via `Tab` ([#1272](https://github.com/tailwindlabs/headlessui/pull/1272))
 
 ### Added
 
@@ -65,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix Tree-shaking support ([#1247](https://github.com/tailwindlabs/headlessui/pull/1247))
 - Stop propagation on the Popover Button ([#1263](https://github.com/tailwindlabs/headlessui/pull/1263))
 - Fix incorrect closing while interacting with third party libraries in `Dialog` component ([#1268](https://github.com/tailwindlabs/headlessui/pull/1268))
+- Mimic browser select on focus when navigating via `Tab` ([#1272](https://github.com/tailwindlabs/headlessui/pull/1272))
 - Resolve `initialFocusRef` correctly ([#1276](https://github.com/tailwindlabs/headlessui/pull/1276))
 
 ### Added
