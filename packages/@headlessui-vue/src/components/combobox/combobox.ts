@@ -234,6 +234,20 @@ export let Combobox = defineComponent({
         }
 
         let adjustedState = adjustOrderedState()
+
+        // It's possible that the activeOptionIndex is set to `null` internally, but
+        // this means that we will fallback to the first non-disabled option by default.
+        // We have to take this into account.
+        if (adjustedState.activeOptionIndex === null) {
+          let localActiveOptionIndex = adjustedState.options.findIndex(
+            (option) => !option.dataRef.disabled
+          )
+
+          if (localActiveOptionIndex !== -1) {
+            adjustedState.activeOptionIndex = localActiveOptionIndex
+          }
+        }
+
         let nextActiveOptionIndex = calculateActiveIndex(
           focus === Focus.Specific
             ? { focus: Focus.Specific, id: id! }
