@@ -289,6 +289,7 @@ function useComboboxActions() {
 let ComboboxData = createContext<{
   value: unknown
   mode: ValueMode
+  activeOptionIndex: number | null
 } | null>(null)
 ComboboxData.displayName = 'ComboboxData'
 
@@ -331,6 +332,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   ref: Ref<TTag>
 ) {
   let { name, value, onChange, disabled = false, __demoMode = false, ...theirProps } = props
+  let defaultToFirstOption = useRef(false)
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
@@ -364,13 +366,40 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
   } as StateDefinition)
-  let [{ comboboxState, options, activeOptionIndex, optionsRef, inputRef, buttonRef }, dispatch] =
-    reducerBag
+  let [
+    {
+      comboboxState,
+      options,
+      activeOptionIndex: _activeOptionIndex,
+      optionsRef,
+      inputRef,
+      buttonRef,
+    },
+    dispatch,
+  ] = reducerBag
 
   let dataBag = useMemo<Exclude<ContextType<typeof ComboboxData>, null>>(
-    () => ({ value, mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single }),
-    [value]
+    () => ({
+      value,
+      mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single,
+      get activeOptionIndex() {
+        if (defaultToFirstOption.current && _activeOptionIndex === null && options.length > 0) {
+          let localActiveOptionIndex = options.findIndex(
+            (option) => !option.dataRef.current.disabled
+          )
+
+          if (localActiveOptionIndex !== -1) {
+            return localActiveOptionIndex
+          }
+        }
+
+        return _activeOptionIndex
+      },
+    }),
+    [value, _activeOptionIndex, options]
   )
+
+  let activeOptionIndex = dataBag.activeOptionIndex
 
   useIsoMorphicEffect(() => {
     comboboxPropsRef.current.onChange = (value: unknown) => {
@@ -443,9 +472,13 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   let selectActiveOption = useCallback(() => {
     if (activeOptionIndex !== null) {
-      let { dataRef } = options[activeOptionIndex]
+      let { dataRef, id } = options[activeOptionIndex]
       comboboxPropsRef.current.onChange(dataRef.current.value)
       syncInputValue()
+
+      // It could happen that the `activeOptionIndex` stored in state is actually null,
+      // but we are getting the fallback active option back instead.
+      dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
     }
   }, [activeOptionIndex, options, comboboxPropsRef, inputRef])
 
@@ -455,11 +488,15 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       selectActiveOption,
       openCombobox() {
         dispatch({ type: ActionTypes.OpenCombobox })
+        defaultToFirstOption.current = true
       },
       closeCombobox() {
         dispatch({ type: ActionTypes.CloseCombobox })
+        defaultToFirstOption.current = false
       },
       goToOption(focus, id, trigger) {
+        defaultToFirstOption.current = false
+
         if (focus === Focus.Specific) {
           return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id: id!, trigger })
         }
@@ -687,7 +724,7 @@ let Input = forwardRefWithAs(function Input<
     'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-activedescendant':
-      state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
+      data.activeOptionIndex === null ? undefined : state.options[data.activeOptionIndex]?.id,
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     disabled: state.disabled,
@@ -900,6 +937,7 @@ let Options = forwardRefWithAs(function Options<
 ) {
   let { hold = false, ...theirProps } = props
   let [state] = useComboboxContext('Combobox.Options')
+  let data = useComboboxData()
   let { optionsPropsRef } = state
 
   let optionsRef = useSyncRefs(state.optionsRef, ref)
@@ -946,7 +984,7 @@ let Options = forwardRefWithAs(function Options<
   )
   let ourProps = {
     'aria-activedescendant':
-      state.activeOptionIndex === null ? undefined : state.options[state.activeOptionIndex]?.id,
+      data.activeOptionIndex === null ? undefined : state.options[data.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     role: 'listbox',
     id,
@@ -1001,7 +1039,7 @@ let Option = forwardRefWithAs(function Option<
   let actions = useComboboxActions()
   let id = `headlessui-combobox-option-${useId()}`
   let active =
-    state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
+    data.activeOptionIndex !== null ? state.options[data.activeOptionIndex].id === id : false
   let selected = match(data.mode, {
     [ValueMode.Multi]: () => (data.value as TType[]).includes(value),
     [ValueMode.Single]: () => data.value === value,
@@ -1021,7 +1059,6 @@ let Option = forwardRefWithAs(function Option<
   }, [bag, internalOptionRef])
 
   let select = useCallback(() => actions.selectOption(id), [actions, id])
-
   useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
 
   let enableScrollIntoView = useRef(state.comboboxPropsRef.current.__demoMode ? false : true)
@@ -1044,7 +1081,7 @@ let Option = forwardRefWithAs(function Option<
       internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [internalOptionRef, active, state.comboboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])
+  }, [internalOptionRef, active, state.comboboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex])
 
   let handleClick = useCallback(
     (event: { preventDefault: Function }) => {

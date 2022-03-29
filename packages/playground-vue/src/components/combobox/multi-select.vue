@@ -66,7 +66,9 @@
                   class="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
                 >
                   <ComboboxOption
-                    v-for="person in people"
+                    v-for="person in people.filter((person) =>
+                      person.name.toLowerCase().includes(query.toLowerCase())
+                    )"
                     :key="person.id"
                     :value="person"
                     as="template"

@@ -38,6 +38,7 @@ import {
   getComboboxes,
   assertCombobox,
   ComboboxMode,
+  assertNotActiveComboboxOption,
 } from '../../test-utils/accessibility-assertions'
 import { Transition } from '../transitions/transition'
 
@@ -579,7 +580,7 @@ describe('Rendering', () => {
         })
         assertComboboxList({
           state: ComboboxState.Visible,
-          textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
+          textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
         })
       })
     )
@@ -667,15 +668,12 @@ describe('Rendering composition', () => {
 
       // Verify correct classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: false })
+        JSON.stringify({ active: true, selected: false, disabled: false })
       )
       expect('' + options[1].classList).toEqual(
         JSON.stringify({ active: false, selected: false, disabled: true })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
-
-      // Double check that nothing is active
-      assertNoActiveComboboxOption(getComboboxInput())
 
       // Make the first option active
       await press(Keys.ArrowDown)
@@ -841,7 +839,7 @@ describe('Composition', () => {
       })
       assertComboboxList({
         state: ComboboxState.Visible,
-        textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
+        textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
       })
 
       await click(getComboboxButton())
@@ -905,7 +903,7 @@ describe('Keyboard interactions', () => {
           expect(options).toHaveLength(3)
           options.forEach((option) => assertComboboxOption(option, { selected: false }))
 
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[0])
           assertNoSelectedComboboxOption()
         })
       )
@@ -1191,7 +1189,7 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
           options.forEach((option) => assertComboboxOption(option))
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[0])
         })
       )
 
@@ -1434,7 +1432,7 @@ describe('Keyboard interactions', () => {
           options.forEach((option) => assertComboboxOption(option))
 
           // Verify that the first combobox option is active
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[0])
         })
       )
 
@@ -2133,7 +2131,7 @@ describe('Keyboard interactions', () => {
           options.forEach((option) => assertComboboxOption(option))
 
           // Verify that the first combobox option is active
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[0])
         })
       )
 
@@ -2272,7 +2270,7 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
           options.forEach((option) => assertComboboxOption(option))
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go down once
           await press(Keys.ArrowDown)
@@ -2322,7 +2320,7 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
           options.forEach((option) => assertComboboxOption(option))
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[1])
 
           // We should be able to go down once
           await press(Keys.ArrowDown)
@@ -2362,7 +2360,7 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
           options.forEach((option) => assertComboboxOption(option))
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[2])
 
           // Open combobox
           await press(Keys.ArrowDown)
@@ -2596,7 +2594,7 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
           options.forEach((option) => assertComboboxOption(option))
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[2])
 
           // Going up or down should select the single available option
           await press(Keys.ArrowUp)
@@ -2689,8 +2687,8 @@ describe('Keyboard interactions', () => {
 
           let options = getComboboxOptions()
 
-          // We should have no option selected
-          assertNoActiveComboboxOption()
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await press(Keys.End)
@@ -2723,8 +2721,8 @@ describe('Keyboard interactions', () => {
 
           let options = getComboboxOptions()
 
-          // We should have no option selected
-          assertNoActiveComboboxOption()
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last non-disabled option
           await press(Keys.End)
@@ -2757,13 +2755,14 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await click(getComboboxButton())
 
-          // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          let options = getComboboxOptions()
 
-          // We should not be able to go to the end
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[0])
+
+          // We should not be able to go to the end (no-op)
           await press(Keys.End)
 
-          let options = getComboboxOptions()
           assertActiveComboboxOption(options[0])
         })
       )
@@ -2828,7 +2827,7 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first option
-          assertNoActiveComboboxOption()
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await press(Keys.PageDown)
@@ -2864,8 +2863,8 @@ describe('Keyboard interactions', () => {
 
           let options = getComboboxOptions()
 
-          // We should have nothing active
-          assertNoActiveComboboxOption()
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last non-disabled option
           await press(Keys.PageDown)
@@ -2898,13 +2897,14 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await click(getComboboxButton())
 
-          // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          let options = getComboboxOptions()
+
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[0])
 
           // We should not be able to go to the end
           await press(Keys.PageDown)
 
-          let options = getComboboxOptions()
           assertActiveComboboxOption(options[0])
         })
       )
@@ -3003,13 +3003,13 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await click(getComboboxButton())
 
-          // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          let options = getComboboxOptions()
+
+          // We should be on the first non-disabled option
+          assertActiveComboboxOption(options[2])
 
           // We should not be able to go to the end
           await press(Keys.Home)
-
-          let options = getComboboxOptions()
 
           // We should be on the first non-disabled option
           assertActiveComboboxOption(options[2])
@@ -3041,13 +3041,14 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await click(getComboboxButton())
 
-          // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          let options = getComboboxOptions()
+
+          // We should be on the last option
+          assertActiveComboboxOption(options[3])
 
           // We should not be able to go to the end
           await press(Keys.Home)
 
-          let options = getComboboxOptions()
           assertActiveComboboxOption(options[3])
         })
       )
@@ -3146,15 +3147,14 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await click(getComboboxButton())
 
-          // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
-
-          // We should not be able to go to the end
-          await press(Keys.PageUp)
-
           let options = getComboboxOptions()
 
-          // We should be on the first non-disabled option
+          // We opened via click, we default to the first non-disabled option
+          assertActiveComboboxOption(options[2])
+
+          // We should not be able to go to the end (no-op — already there)
+          await press(Keys.PageUp)
+
           assertActiveComboboxOption(options[2])
         })
       )
@@ -3184,13 +3184,14 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await click(getComboboxButton())
 
-          // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          let options = getComboboxOptions()
 
-          // We should not be able to go to the end
+          // We opened via click, we default to the first non-disabled option
+          assertActiveComboboxOption(options[3])
+
+          // We should not be able to go to the end (no-op — already there)
           await press(Keys.PageUp)
 
-          let options = getComboboxOptions()
           assertActiveComboboxOption(options[3])
         })
       )
@@ -4019,7 +4020,7 @@ describe('Mouse interactions', () => {
       let options = getComboboxOptions()
 
       await mouseMove(options[1])
-      assertNoActiveComboboxOption()
+      assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4048,8 +4049,8 @@ describe('Mouse interactions', () => {
       // Try to hover over option 1, which is disabled
       await mouseMove(options[1])
 
-      // We should not have an active option now
-      assertNoActiveComboboxOption()
+      // We should not have option 1 as the active option now
+      assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4120,10 +4121,10 @@ describe('Mouse interactions', () => {
 
       // Try to hover over option 1, which is disabled
       await mouseMove(options[1])
-      assertNoActiveComboboxOption()
+      assertNotActiveComboboxOption(options[1])
 
       await mouseLeave(options[1])
-      assertNoActiveComboboxOption()
+      assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4216,9 +4217,10 @@ describe('Mouse interactions', () => {
 
       let options = getComboboxOptions()
 
-      // We should be able to click the first option
+      // We should not be able to click the disabled option
       await click(options[1])
       assertComboboxList({ state: ComboboxState.Visible })
+      assertNotActiveComboboxOption(options[1])
       assertActiveElement(getComboboxInput())
       expect(handleChange).toHaveBeenCalledTimes(0)
 
@@ -4228,8 +4230,10 @@ describe('Mouse interactions', () => {
       // Open combobox again
       await click(getComboboxButton())
 
-      // Verify the active option is non existing
-      assertNoActiveComboboxOption()
+      options = getComboboxOptions()
+
+      // Verify the active option is not the disabled one
+      assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4261,10 +4265,10 @@ describe('Mouse interactions', () => {
 
       let options = getComboboxOptions()
 
-      // Verify that nothing is active yet
-      assertNoActiveComboboxOption()
+      // Verify that the first item is active
+      assertActiveComboboxOption(options[0])
 
-      // We should be able to focus the first option
+      // We should be able to focus the second option
       await focus(options[1])
       assertActiveComboboxOption(options[1])
     })
@@ -4296,7 +4300,7 @@ describe('Mouse interactions', () => {
 
       // We should not be able to focus the first option
       await focus(options[1])
-      assertNoActiveComboboxOption()
+      assertNotActiveComboboxOption(options[1])
     })
   )
 

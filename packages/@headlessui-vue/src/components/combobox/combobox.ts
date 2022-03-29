@@ -128,6 +128,7 @@ export let Combobox = defineComponent({
     let activationTrigger = ref<StateDefinition['activationTrigger']['value']>(
       ActivationTrigger.Other
     )
+    let defaultToFirstOption = ref(false)
 
     function adjustOrderedState(
       adjustment: (
@@ -171,22 +172,58 @@ export let Combobox = defineComponent({
       optionsRef,
       disabled: computed(() => props.disabled),
       options,
-      activeOptionIndex,
+      activeOptionIndex: computed(() => {
+        if (
+          defaultToFirstOption.value &&
+          activeOptionIndex.value === null &&
+          options.value.length > 0
+        ) {
+          let localActiveOptionIndex = options.value.findIndex((option) => !option.dataRef.disabled)
+          if (localActiveOptionIndex !== -1) {
+            return localActiveOptionIndex
+          }
+        }
+
+        return activeOptionIndex.value
+      }),
       activationTrigger,
       inputPropsRef: ref<StateDefinition['inputPropsRef']['value']>({ displayValue: undefined }),
       optionsPropsRef,
       closeCombobox() {
+        defaultToFirstOption.value = false
+
         if (props.disabled) return
         if (comboboxState.value === ComboboxStates.Closed) return
         comboboxState.value = ComboboxStates.Closed
         activeOptionIndex.value = null
       },
       openCombobox() {
+        defaultToFirstOption.value = true
+
         if (props.disabled) return
         if (comboboxState.value === ComboboxStates.Open) return
+
+        // Check if we have a selected value that we can make active.
+        let optionIdx = options.value.findIndex((option) => {
+          let optionValue = toRaw(option.dataRef.value)
+          let selected = match(mode.value, {
+            [ValueMode.Single]: () => toRaw(api.value.value) === toRaw(optionValue),
+            [ValueMode.Multi]: () =>
+              (toRaw(api.value.value) as unknown[]).includes(toRaw(optionValue)),
+          })
+
+          return selected
+        })
+
+        if (optionIdx !== -1) {
+          activeOptionIndex.value = optionIdx
+        }
+
         comboboxState.value = ComboboxStates.Open
       },
       goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
+        defaultToFirstOption.value = false
+
         if (props.disabled) return
         if (
           optionsRef.value &&
@@ -253,9 +290,9 @@ export let Combobox = defineComponent({
         api.syncInputValue()
       },
       selectActiveOption() {
-        if (activeOptionIndex.value === null) return
+        if (api.activeOptionIndex.value === null) return
 
-        let { dataRef } = options.value[activeOptionIndex.value]
+        let { dataRef, id } = options.value[api.activeOptionIndex.value]
         emit(
           'update:modelValue',
           match(mode.value, {
@@ -276,11 +313,28 @@ export let Combobox = defineComponent({
           })
         )
         api.syncInputValue()
+
+        // It could happen that the `activeOptionIndex` stored in state is actually null,
+        // but we are getting the fallback active option back instead.
+        api.goToOption(Focus.Specific, id)
       },
       registerOption(id: string, dataRef: ComboboxOptionData) {
-        let adjustedState = adjustOrderedState((options) => {
-          return [...options, { id, dataRef }]
-        })
+        let option = { id, dataRef }
+        let adjustedState = adjustOrderedState((options) => [...options, option])
+
+        // Check if we have a selected value that we can make active.
+        if (activeOptionIndex.value === null) {
+          let optionValue = (dataRef.value as any).value
+          let selected = match(mode.value, {
+            [ValueMode.Single]: () => toRaw(api.value.value) === toRaw(optionValue),
+            [ValueMode.Multi]: () =>
+              (toRaw(api.value.value) as unknown[]).includes(toRaw(optionValue)),
+          })
+
+          if (selected) {
+            adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
+          }
+        }
 
         options.value = adjustedState.options
         activeOptionIndex.value = adjustedState.activeOptionIndex
@@ -336,9 +390,9 @@ export let Combobox = defineComponent({
     )
 
     let activeOption = computed(() =>
-      activeOptionIndex.value === null
+      api.activeOptionIndex.value === null
         ? null
-        : (options.value[activeOptionIndex.value].dataRef.value as any)
+        : (options.value[api.activeOptionIndex.value].dataRef.value as any)
     )
 
     return () => {
@@ -346,7 +400,7 @@ export let Combobox = defineComponent({
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
-        activeIndex: activeOptionIndex.value,
+        activeIndex: api.activeOptionIndex.value,
         activeOption: activeOption.value,
       }
 
@@ -760,19 +814,6 @@ export let ComboboxOption = defineComponent({
         [ValueMode.Multi]: () => (toRaw(api.value.value) as unknown[]).includes(toRaw(props.value)),
       })
     )
-    let isFirstSelected = computed(() => {
-      return match(api.mode.value, {
-        [ValueMode.Multi]: () => {
-          let currentValues = toRaw(api.value.value) as unknown[]
-
-          return (
-            api.options.value.find((option) => currentValues.includes(option.dataRef.value))?.id ===
-            id
-          )
-        },
-        [ValueMode.Single]: () => selected.value,
-      })
-    })
 
     let dataRef = computed<ComboboxOptionData>(() => ({
       disabled: props.disabled,
@@ -782,25 +823,6 @@ export let ComboboxOption = defineComponent({
 
     onMounted(() => api.registerOption(id, dataRef))
     onUnmounted(() => api.unregisterOption(id))
-
-    onMounted(() => {
-      watch(
-        [api.comboboxState, selected],
-        () => {
-          if (api.comboboxState.value !== ComboboxStates.Open) return
-          if (!selected.value) return
-          match(api.mode.value, {
-            [ValueMode.Multi]: () => {
-              if (isFirstSelected.value) api.goToOption(Focus.Specific, id)
-            },
-            [ValueMode.Single]: () => {
-              api.goToOption(Focus.Specific, id)
-            },
-          })
-        },
-        { immediate: true }
-      )
-    })
 
     watchEffect(() => {
       if (api.comboboxState.value !== ComboboxStates.Open) return
