@@ -191,6 +191,20 @@ let reducers: {
     }
 
     let adjustedState = adjustOrderedState(state)
+
+    // It's possible that the activeOptionIndex is set to `null` internally, but
+    // this means that we will fallback to the first non-disabled option by default.
+    // We have to take this into account.
+    if (adjustedState.activeOptionIndex === null) {
+      let localActiveOptionIndex = adjustedState.options.findIndex(
+        (option) => !option.dataRef.current.disabled
+      )
+
+      if (localActiveOptionIndex !== -1) {
+        adjustedState.activeOptionIndex = localActiveOptionIndex
+      }
+    }
+
     let activeOptionIndex = calculateActiveIndex(action, {
       resolveItems: () => adjustedState.options,
       resolveActiveIndex: () => adjustedState.activeOptionIndex,

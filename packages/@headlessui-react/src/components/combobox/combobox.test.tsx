@@ -615,9 +615,6 @@ describe('Rendering', () => {
 
     let options = getComboboxOptions()
 
-    // Focus the first item
-    await press(Keys.ArrowDown)
-
     // Verify that the first combobox option is active
     assertActiveComboboxOption(options[0])
 
@@ -666,6 +663,9 @@ describe('Rendering composition', () => {
 
       let options = getComboboxOptions()
 
+      // Verify that the first combobox option is active
+      assertActiveComboboxOption(options[0])
+
       // Verify correct classNames
       expect('' + options[0].classList).toEqual(
         JSON.stringify({ active: true, selected: false, disabled: false })
@@ -674,21 +674,6 @@ describe('Rendering composition', () => {
         JSON.stringify({ active: false, selected: false, disabled: true })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
-
-      // Make the first option active
-      await press(Keys.ArrowDown)
-
-      // Verify the classNames
-      expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: true, selected: false, disabled: false })
-      )
-      expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
-      )
-      expect('' + options[2].classList).toEqual('no-special-treatment')
-
-      // Double check that the first option is the active one
-      assertActiveComboboxOption(options[0])
 
       // Let's go down, this should go to the third option since the second option is disabled!
       await press(Keys.ArrowDown)
@@ -1846,7 +1831,6 @@ describe('Keyboard interactions', () => {
 
           // Select the 2nd option
           await press(Keys.ArrowDown)
-          await press(Keys.ArrowDown)
 
           // Tab to the next DOM node
           await press(Keys.Tab)
@@ -1898,7 +1882,6 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // Select the 2nd option
-          await press(Keys.ArrowDown)
           await press(Keys.ArrowDown)
 
           // Tab to the next DOM node
@@ -2274,17 +2257,14 @@ describe('Keyboard interactions', () => {
 
           // We should be able to go down once
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[0])
-
-          // We should be able to go down again
-          await press(Keys.ArrowDown)
           assertActiveComboboxOption(options[1])
 
           // We should be able to go down again
           await press(Keys.ArrowDown)
           assertActiveComboboxOption(options[2])
 
-          // We should NOT be able to go down again (because last option). Current implementation won't go around.
+          // We should NOT be able to go down again (because last option).
+          // Current implementation won't go around.
           await press(Keys.ArrowDown)
           assertActiveComboboxOption(options[2])
         })
@@ -2324,7 +2304,7 @@ describe('Keyboard interactions', () => {
 
           // We should be able to go down once
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[1])
+          assertActiveComboboxOption(options[2])
         })
       )
 
@@ -2365,6 +2345,43 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await press(Keys.ArrowDown)
           assertActiveComboboxOption(options[2])
+        })
+      )
+
+      it(
+        'should be possible to go to the next item if no value is set',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={null} onChange={console.log}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          assertComboboxButton({
+            state: ComboboxState.InvisibleUnmounted,
+            attributes: { id: 'headlessui-combobox-button-2' },
+          })
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          let options = getComboboxOptions()
+
+          // Verify that we are on the first option
+          assertActiveComboboxOption(options[0])
+
+          // Go down once
+          await press(Keys.ArrowDown)
+
+          // We should be on the next item
+          assertActiveComboboxOption(options[1])
         })
       )
     })
@@ -3440,7 +3457,6 @@ describe('Keyboard interactions', () => {
 
           let options: ReturnType<typeof getComboboxOptions>
 
-          await press(Keys.ArrowDown)
           await press(Keys.ArrowDown)
 
           // Person B should be active
