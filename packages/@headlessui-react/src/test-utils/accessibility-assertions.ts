@@ -537,6 +537,22 @@ export function assertActiveComboboxOption(
   }
 }
 
+export function assertNotActiveComboboxOption(
+  item: HTMLElement | null,
+  combobox = getComboboxInput()
+) {
+  try {
+    if (combobox === null) return expect(combobox).not.toBe(null)
+    if (item === null) return expect(item).not.toBe(null)
+
+    // Ensure link between combobox & combobox item does not exist
+    expect(combobox).not.toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertNotActiveComboboxOption)
+    throw err
+  }
+}
+
 export function assertNoActiveComboboxOption(combobox = getComboboxInput()) {
   try {
     if (combobox === null) return expect(combobox).not.toBe(null)
