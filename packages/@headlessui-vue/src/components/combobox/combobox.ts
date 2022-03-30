@@ -616,8 +616,15 @@ export let ComboboxInput = defineComponent({
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         case Keys.Enter:
+          if (api.comboboxState.value !== ComboboxStates.Open) return
+
           event.preventDefault()
           event.stopPropagation()
+
+          if (api.activeOptionIndex.value === null) {
+            api.closeCombobox()
+            return
+          }
 
           api.selectActiveOption()
           if (api.mode.value === ValueMode.Single) {

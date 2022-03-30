@@ -626,8 +626,15 @@ let Input = forwardRefWithAs(function Input<
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         case Keys.Enter:
+          if (state.comboboxState !== ComboboxStates.Open) return
+
           event.preventDefault()
           event.stopPropagation()
+
+          if (data.activeOptionIndex === null) {
+            actions.closeCombobox()
+            return
+          }
 
           actions.selectActiveOption()
           if (data.mode === ValueMode.Single) {
