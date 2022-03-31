@@ -1724,6 +1724,74 @@ describe('Keyboard interactions', () => {
     })
   })
 
+  describe('`Backspace` key', () => {
+    it(
+      'should reset the value when the last character is removed, when in `nullable` mode',
+      suppressConsoleLogs(async () => {
+        let handleChange = jest.fn()
+        function Example() {
+          let [value, setValue] = useState<string>('bob')
+          let [query, setQuery] = useState<string>('')
+
+          return (
+            <Combobox
+              value={value}
+              onChange={(value) => {
+                setValue(value)
+                handleChange(value)
+              }}
+              nullable
+            >
+              <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">Alice</Combobox.Option>
+                <Combobox.Option value="bob">Bob</Combobox.Option>
+                <Combobox.Option value="charlie">Charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        // Open combobox
+        await click(getComboboxButton())
+
+        let options: ReturnType<typeof getComboboxOptions>
+
+        // Bob should be active
+        options = getComboboxOptions()
+        expect(getComboboxInput()).toHaveValue('bob')
+        assertActiveComboboxOption(options[1])
+
+        assertActiveElement(getComboboxInput())
+
+        // Delete a character
+        await press(Keys.Backspace)
+        expect(getComboboxInput()?.value).toBe('bo')
+        assertActiveComboboxOption(options[1])
+
+        // Delete a character
+        await press(Keys.Backspace)
+        expect(getComboboxInput()?.value).toBe('b')
+        assertActiveComboboxOption(options[1])
+
+        // Delete a character
+        await press(Keys.Backspace)
+        expect(getComboboxInput()?.value).toBe('')
+
+        // Verify that we don't have an active option anymore since we are in `nullable` mode
+        assertNotActiveComboboxOption(options[1])
+        assertNoActiveComboboxOption()
+
+        // Verify that we saw the `null` change coming in
+        expect(handleChange).toHaveBeenCalledTimes(1)
+        expect(handleChange).toHaveBeenCalledWith(null)
+      })
+    )
+  })
+
   describe('Input', () => {
     describe('`Enter` key', () => {
       it(
