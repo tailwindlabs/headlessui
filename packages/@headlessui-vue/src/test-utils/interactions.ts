@@ -151,6 +151,23 @@ let order: Record<
       return fireEvent.keyUp(element, event)
     },
   ],
+  [Keys.Backspace.key!]: [
+    function keydown(element, event) {
+      if (element instanceof HTMLInputElement) {
+        let ev = Object.assign({}, event, {
+          target: Object.assign({}, event.target, {
+            value: element.value.slice(0, -1),
+          }),
+        })
+        return fireEvent.keyDown(element, ev)
+      }
+
+      return fireEvent.keyDown(element, event)
+    },
+    function keyup(element, event) {
+      return fireEvent.keyUp(element, event)
+    },
+  ],
 }
 
 export async function type(events: Partial<KeyboardEvent>[], element = document.activeElement) {
