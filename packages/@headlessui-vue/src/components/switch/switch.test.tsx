@@ -391,6 +391,39 @@ describe('Keyboard interactions', () => {
 
       expect(handleChange).not.toHaveBeenCalled()
     })
+
+    it('should submit the form on `Enter`', async () => {
+      let submits = jest.fn()
+      renderTemplate({
+        template: html`
+          <form @submit="handleSubmit">
+            <Switch v-model="checked" name="option" />
+            <button>Submit</button>
+          </form>
+        `,
+        setup() {
+          let checked = ref(true)
+          return {
+            checked,
+            handleSubmit(event: KeyboardEvent) {
+              event.preventDefault()
+              submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+            },
+          }
+        },
+      })
+
+      // Focus the input field
+      getSwitch()?.focus()
+      assertActiveElement(getSwitch())
+
+      // Press enter (which should submit the form)
+      await press(Keys.Enter)
+
+      // Verify the form was submitted
+      expect(submits).toHaveBeenCalledTimes(1)
+      expect(submits).toHaveBeenCalledWith([['option', 'on']])
+    })
   })
 
   describe('`Tab` key', () => {

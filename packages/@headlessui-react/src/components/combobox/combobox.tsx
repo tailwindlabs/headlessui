@@ -534,14 +534,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   useIsoMorphicEffect(syncInputValue, [syncInputValue])
   let ourProps = ref === null ? {} : { ref }
 
-  let renderConfiguration = {
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_COMBOBOX_TAG,
-    name: 'Combobox',
-  }
-
   return (
     <ComboboxActions.Provider value={actionsBag}>
       <ComboboxData.Provider value={dataBag}>
@@ -552,26 +544,28 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
               [ComboboxStates.Closed]: State.Closed,
             })}
           >
-            {name != null && value != null ? (
-              <>
-                {objectToFormEntries({ [name]: value }).map(([name, value]) => (
-                  <VisuallyHidden
-                    {...compact({
-                      key: name,
-                      as: 'input',
-                      type: 'hidden',
-                      hidden: true,
-                      readOnly: true,
-                      name,
-                      value,
-                    })}
-                  />
-                ))}
-                {render(renderConfiguration)}
-              </>
-            ) : (
-              render(renderConfiguration)
-            )}
+            {name != null &&
+              value != null &&
+              objectToFormEntries({ [name]: value }).map(([name, value]) => (
+                <VisuallyHidden
+                  {...compact({
+                    key: name,
+                    as: 'input',
+                    type: 'hidden',
+                    hidden: true,
+                    readOnly: true,
+                    name,
+                    value,
+                  })}
+                />
+              ))}
+            {render({
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_COMBOBOX_TAG,
+              name: 'Combobox',
+            })}
           </OpenClosedProvider>
         </ComboboxContext.Provider>
       </ComboboxData.Provider>
@@ -632,8 +626,15 @@ let Input = forwardRefWithAs(function Input<
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         case Keys.Enter:
+          if (state.comboboxState !== ComboboxStates.Open) return
+
           event.preventDefault()
           event.stopPropagation()
+
+          if (data.activeOptionIndex === null) {
+            actions.closeCombobox()
+            return
+          }
 
           actions.selectActiveOption()
           if (data.mode === ValueMode.Single) {

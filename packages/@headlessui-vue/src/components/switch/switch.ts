@@ -19,6 +19,7 @@ import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { VisuallyHidden } from '../../internal/visually-hidden'
+import { attemptSubmit } from '../../utils/form'
 
 type StateDefinition = {
   // State
@@ -69,7 +70,7 @@ export let Switch = defineComponent({
     name: { type: String, optional: true },
     value: { type: String, optional: true },
   },
-
+  inheritAttrs: false,
   setup(props, { emit, attrs, slots, expose }) {
     let api = inject(GroupContext, null)
     let id = `headlessui-switch-${useId()}`
@@ -93,8 +94,12 @@ export let Switch = defineComponent({
     }
 
     function handleKeyUp(event: KeyboardEvent) {
-      if (event.key !== Keys.Tab) event.preventDefault()
-      if (event.key === Keys.Space) toggle()
+      if (event.key === Keys.Space) {
+        event.preventDefault()
+        toggle()
+      } else if (event.key === Keys.Enter) {
+        attemptSubmit(event.currentTarget)
+      }
     }
 
     // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
@@ -119,33 +124,29 @@ export let Switch = defineComponent({
         onKeypress: handleKeyPress,
       }
 
-      let renderConfiguration = {
-        props: { ...incomingProps, ...ourProps },
-        slot,
-        attrs,
-        slots,
-        name: 'Switch',
-      }
-
-      if (name != null && modelValue != null) {
-        return h(Fragment, [
-          h(
-            VisuallyHidden,
-            compact({
-              as: 'input',
-              type: 'checkbox',
-              hidden: true,
-              readOnly: true,
-              checked: modelValue,
-              name,
-              value,
-            })
-          ),
-          render(renderConfiguration),
-        ])
-      }
-
-      return render(renderConfiguration)
+      return h(Fragment, [
+        name != null && modelValue != null
+          ? h(
+              VisuallyHidden,
+              compact({
+                as: 'input',
+                type: 'checkbox',
+                hidden: true,
+                readOnly: true,
+                checked: modelValue,
+                name,
+                value,
+              })
+            )
+          : null,
+        render({
+          props: { ...attrs, ...incomingProps, ...ourProps },
+          slot,
+          attrs,
+          slots,
+          name: 'Switch',
+        }),
+      ])
     }
   },
 })

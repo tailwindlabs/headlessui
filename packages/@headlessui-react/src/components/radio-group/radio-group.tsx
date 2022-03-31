@@ -27,7 +27,7 @@ import { Description, useDescriptions } from '../../components/description/descr
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { VisuallyHidden } from '../../internal/visually-hidden'
-import { objectToFormEntries } from '../../utils/form'
+import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
 interface Option {
@@ -182,6 +182,9 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
         .map((radio) => radio.element.current) as HTMLElement[]
 
       switch (event.key) {
+        case Keys.Enter:
+          attemptSubmit(event.currentTarget)
+          break
         case Keys.ArrowLeft:
         case Keys.ArrowUp:
           {
@@ -261,38 +264,32 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     onKeyDown: handleKeyDown,
   }
 
-  let renderConfiguration = {
-    ourProps,
-    theirProps,
-    defaultTag: DEFAULT_RADIO_GROUP_TAG,
-    name: 'RadioGroup',
-  }
-
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
         <RadioGroupContext.Provider value={api}>
-          {name != null && value != null ? (
-            <>
-              {objectToFormEntries({ [name]: value }).map(([name, value]) => (
-                <VisuallyHidden
-                  {...compact({
-                    key: name,
-                    as: 'input',
-                    type: 'radio',
-                    checked: value != null,
-                    hidden: true,
-                    readOnly: true,
-                    name,
-                    value,
-                  })}
-                />
-              ))}
-              {render(renderConfiguration)}
-            </>
-          ) : (
-            render(renderConfiguration)
-          )}
+          {name != null &&
+            value != null &&
+            objectToFormEntries({ [name]: value }).map(([name, value]) => (
+              <VisuallyHidden
+                {...compact({
+                  key: name,
+                  as: 'input',
+                  type: 'radio',
+                  checked: value != null,
+                  hidden: true,
+                  readOnly: true,
+                  name,
+                  value,
+                })}
+              />
+            ))}
+          {render({
+            ourProps,
+            theirProps,
+            defaultTag: DEFAULT_RADIO_GROUP_TAG,
+            name: 'RadioGroup',
+          })}
         </RadioGroupContext.Provider>
       </LabelProvider>
     </DescriptionProvider>

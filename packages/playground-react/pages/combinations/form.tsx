@@ -24,11 +24,9 @@ export default function App() {
   let [notifications, setNotifications] = useState(false)
   let [apple, setApple] = useState(false)
   let [banana, setBanana] = useState(false)
-  let [size, setSize] = useState(sizes[(Math.random() * sizes.length) | 0])
-  let [person, setPerson] = useState(people[(Math.random() * people.length) | 0])
-  let [activeLocation, setActiveLocation] = useState(
-    locations[(Math.random() * locations.length) | 0]
-  )
+  let [size, setSize] = useState(sizes[0])
+  let [person, setPerson] = useState(people[0])
+  let [activeLocation, setActiveLocation] = useState(locations[0])
   let [query, setQuery] = useState('')
 
   return (
@@ -47,26 +45,23 @@ export default function App() {
                 <Switch.Label>Enable notifications</Switch.Label>
 
                 <Switch
-                  as="button"
                   checked={notifications}
                   onChange={setNotifications}
                   name="notifications"
                   className={({ checked }) =>
                     classNames(
-                      'focus:shadow-outline relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                      checked ? 'bg-indigo-600' : 'bg-gray-200'
+                      'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
                 >
                   {({ checked }) => (
-                    <>
-                      <span
-                        className={classNames(
-                          'inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out',
-                          checked ? 'translate-x-5' : 'translate-x-0'
-                        )}
-                      />
-                    </>
+                    <span
+                      className={classNames(
+                        'inline-block h-5 w-5 transform rounded-full bg-white',
+                        checked ? 'translate-x-5' : 'translate-x-0'
+                      )}
+                    />
                   )}
                 </Switch>
               </Switch.Group>
@@ -77,27 +72,24 @@ export default function App() {
                 <Switch.Label>Apple</Switch.Label>
 
                 <Switch
-                  as="button"
                   checked={apple}
                   onChange={setApple}
                   name="fruit[]"
                   value="apple"
                   className={({ checked }) =>
                     classNames(
-                      'focus:shadow-outline relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                      checked ? 'bg-indigo-600' : 'bg-gray-200'
+                      'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
                 >
                   {({ checked }) => (
-                    <>
-                      <span
-                        className={classNames(
-                          'inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out',
-                          checked ? 'translate-x-5' : 'translate-x-0'
-                        )}
-                      />
-                    </>
+                    <span
+                      className={classNames(
+                        'inline-block h-5 w-5 transform rounded-full bg-white',
+                        checked ? 'translate-x-5' : 'translate-x-0'
+                      )}
+                    />
                   )}
                 </Switch>
               </Switch.Group>
@@ -105,27 +97,24 @@ export default function App() {
               <Switch.Group as="div" className="flex items-center justify-between space-x-4">
                 <Switch.Label>Banana</Switch.Label>
                 <Switch
-                  as="button"
                   checked={banana}
                   onChange={setBanana}
                   name="fruit[]"
                   value="banana"
                   className={({ checked }) =>
                     classNames(
-                      'focus:shadow-outline relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                      checked ? 'bg-indigo-600' : 'bg-gray-200'
+                      'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                      checked ? 'bg-blue-600' : 'bg-gray-200'
                     )
                   }
                 >
                   {({ checked }) => (
-                    <>
-                      <span
-                        className={classNames(
-                          'inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out',
-                          checked ? 'translate-x-5' : 'translate-x-0'
-                        )}
-                      />
-                    </>
+                    <span
+                      className={classNames(
+                        'inline-block h-5 w-5 transform rounded-full bg-white',
+                        checked ? 'translate-x-5' : 'translate-x-0'
+                      )}
+                    />
                   )}
                 </Switch>
               </Switch.Group>
@@ -141,8 +130,8 @@ export default function App() {
                       value={size}
                       className={({ active }) =>
                         classNames(
-                          'relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:outline-none',
-                          active ? 'z-10 border-indigo-200 bg-indigo-50' : 'border-gray-200'
+                          'relative flex w-20 border px-2 py-4 first:rounded-l-md last:rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                          active ? 'z-10 border-blue-200 bg-blue-50' : 'border-gray-200'
                         )
                       }
                     >
@@ -152,7 +141,7 @@ export default function App() {
                             <span
                               className={classNames(
                                 'block text-sm font-medium leading-5',
-                                active ? 'text-indigo-900' : 'text-gray-900'
+                                active ? 'text-blue-900' : 'text-gray-900'
                               )}
                             >
                               {size}
@@ -165,7 +154,7 @@ export default function App() {
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"
-                                className="h-5 w-5 text-indigo-500"
+                                className="h-5 w-5 text-blue-500"
                               >
                                 <path
                                   strokeLinecap="round"
@@ -189,7 +178,7 @@ export default function App() {
               <Listbox value={person} onChange={setPerson} name="person">
                 <div className="relative">
                   <span className="inline-block w-full rounded-md shadow-sm">
-                    <Listbox.Button className="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
                       <span className="block truncate">{person.name.first}</span>
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                         <svg
@@ -209,7 +198,7 @@ export default function App() {
                     </Listbox.Button>
                   </span>
 
-                  <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
+                  <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                     <Listbox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
                       {people.map((person) => (
                         <Listbox.Option
@@ -217,8 +206,8 @@ export default function App() {
                           value={person}
                           className={({ active }) => {
                             return classNames(
-                              'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
-                              active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                              'relative cursor-default select-none py-2 pl-3 pr-9 ',
+                              active ? 'bg-blue-600 text-white' : 'text-gray-900'
                             )
                           }}
                         >
@@ -236,7 +225,7 @@ export default function App() {
                                 <span
                                   className={classNames(
                                     'absolute inset-y-0 right-0 flex items-center pr-4',
-                                    active ? 'text-white' : 'text-indigo-600'
+                                    active ? 'text-white' : 'text-blue-600'
                                   )}
                                 >
                                   <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -261,11 +250,12 @@ export default function App() {
           <Section title="Combobox">
             <div className="w-full space-y-1">
               <Combobox
-                as="div"
                 name="location"
                 value={activeLocation}
-                onChange={(location) => setActiveLocation(location)}
-                className="w-full rounded border border-black/5 bg-white bg-clip-padding shadow-sm"
+                onChange={(location) => {
+                  setActiveLocation(location)
+                  setQuery('')
+                }}
               >
                 {({ open }) => {
                   return (
@@ -273,7 +263,7 @@ export default function App() {
                       <div className="flex w-full flex-col">
                         <Combobox.Input
                           onChange={(e) => setQuery(e.target.value)}
-                          className="w-full rounded-md border-none px-3 py-1 outline-none"
+                          className="w-full rounded-md rounded border-gray-300 bg-clip-padding px-3 py-1 shadow-sm focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                           placeholder="Search users..."
                         />
                         <div
@@ -282,51 +272,59 @@ export default function App() {
                             activeLocation && !open ? 'border-transparent' : 'border-gray-200'
                           )}
                         >
-                          <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                            <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
-                              {locations.map((location) => (
-                                <Combobox.Option
-                                  key={location}
-                                  value={location}
-                                  className={({ active }) => {
-                                    return classNames(
-                                      'relative  flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 focus:outline-none',
-                                      active ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                                    )
-                                  }}
-                                >
-                                  {({ active, selected }) => (
-                                    <>
-                                      <span
-                                        className={classNames(
-                                          'block truncate',
-                                          selected ? 'font-semibold' : 'font-normal'
-                                        )}
-                                      >
-                                        {location}
-                                      </span>
-                                      {active && (
+                          <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                            <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 sm:text-sm sm:leading-5">
+                              {locations
+                                .filter((location) =>
+                                  location.toLowerCase().includes(query.toLowerCase())
+                                )
+                                .map((location) => (
+                                  <Combobox.Option
+                                    key={location}
+                                    value={location}
+                                    className={({ active }) => {
+                                      return classNames(
+                                        'relative flex cursor-default select-none space-x-4 py-2 pl-3 pr-9 ',
+                                        active ? 'bg-blue-600 text-white' : 'text-gray-900'
+                                      )
+                                    }}
+                                  >
+                                    {({ active, selected }) => (
+                                      <>
                                         <span
                                           className={classNames(
-                                            'absolute inset-y-0 right-0 flex items-center pr-4',
-                                            active ? 'text-white' : 'text-indigo-600'
+                                            'block truncate',
+                                            selected ? 'font-semibold' : 'font-normal'
                                           )}
                                         >
-                                          <svg className="h-5 w-5" viewBox="0 0 25 24" fill="none">
-                                            <path
-                                              d="M11.25 8.75L14.75 12L11.25 15.25"
-                                              stroke="currentColor"
-                                              strokeWidth="1.5"
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                            />
-                                          </svg>
+                                          {location}
                                         </span>
-                                      )}
-                                    </>
-                                  )}
-                                </Combobox.Option>
-                              ))}
+                                        {active && (
+                                          <span
+                                            className={classNames(
+                                              'absolute inset-y-0 right-0 flex items-center pr-4',
+                                              active ? 'text-white' : 'text-blue-600'
+                                            )}
+                                          >
+                                            <svg
+                                              className="h-5 w-5"
+                                              viewBox="0 0 25 24"
+                                              fill="none"
+                                            >
+                                              <path
+                                                d="M11.25 8.75L14.75 12L11.25 15.25"
+                                                stroke="currentColor"
+                                                strokeWidth="1.5"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                              />
+                                            </svg>
+                                          </span>
+                                        )}
+                                      </>
+                                    )}
+                                  </Combobox.Option>
+                                ))}
                             </Combobox.Options>
                           </div>
                         </div>
@@ -339,7 +337,7 @@ export default function App() {
           </Section>
         </div>
 
-        <button className="focus:shadow-outline-blue rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5">
+        <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
           Submit
         </button>
 

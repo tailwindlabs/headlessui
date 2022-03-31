@@ -24,6 +24,7 @@ import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { VisuallyHidden } from '../../internal/visually-hidden'
+import { attemptSubmit } from '../../utils/form'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null
@@ -130,9 +131,13 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     [toggle]
   )
   let handleKeyUp = useCallback(
-    (event: ReactKeyboardEvent<HTMLElement>) => {
-      if (event.key !== Keys.Tab) event.preventDefault()
-      if (event.key === Keys.Space) toggle()
+    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+      if (event.key === Keys.Space) {
+        event.preventDefault()
+        toggle()
+      } else if (event.key === Keys.Enter) {
+        attemptSubmit(event.currentTarget)
+      }
     },
     [toggle]
   )
@@ -158,17 +163,9 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     onKeyPress: handleKeyPress,
   }
 
-  let renderConfiguration = {
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_SWITCH_TAG,
-    name: 'Switch',
-  }
-
-  if (name != null && checked) {
-    return (
-      <>
+  return (
+    <>
+      {name != null && checked && (
         <VisuallyHidden
           {...compact({
             as: 'input',
@@ -180,12 +177,10 @@ let SwitchRoot = forwardRefWithAs(function Switch<
             value,
           })}
         />
-        {render(renderConfiguration)}
-      </>
-    )
-  }
-
-  return render(renderConfiguration)
+      )}
+      {render({ ourProps, theirProps, slot, defaultTag: DEFAULT_SWITCH_TAG, name: 'Switch' })}
+    </>
+  )
 })
 
 // ---

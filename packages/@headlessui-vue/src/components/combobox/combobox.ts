@@ -418,35 +418,31 @@ export let Combobox = defineComponent({
         activeOption: activeOption.value,
       }
 
-      let renderConfiguration = {
-        props: omit(incomingProps, ['onUpdate:modelValue']),
-        slot,
-        slots,
-        attrs,
-        name: 'Combobox',
-      }
-
-      if (name != null && modelValue != null) {
-        return h(Fragment, [
-          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
-            h(
-              VisuallyHidden,
-              compact({
-                key: name,
-                as: 'input',
-                type: 'hidden',
-                hidden: true,
-                readOnly: true,
-                name,
-                value,
-              })
+      return h(Fragment, [
+        ...(name != null && modelValue != null
+          ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+              h(
+                VisuallyHidden,
+                compact({
+                  key: name,
+                  as: 'input',
+                  type: 'hidden',
+                  hidden: true,
+                  readOnly: true,
+                  name,
+                  value,
+                })
+              )
             )
-          ),
-          render(renderConfiguration),
-        ])
-      }
-
-      return render(renderConfiguration)
+          : []),
+        render({
+          props: omit(incomingProps, ['onUpdate:modelValue']),
+          slot,
+          slots,
+          attrs,
+          name: 'Combobox',
+        }),
+      ])
     }
   },
 })
@@ -620,8 +616,15 @@ export let ComboboxInput = defineComponent({
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
         case Keys.Enter:
+          if (api.comboboxState.value !== ComboboxStates.Open) return
+
           event.preventDefault()
           event.stopPropagation()
+
+          if (api.activeOptionIndex.value === null) {
+            api.closeCombobox()
+            return
+          }
 
           api.selectActiveOption()
           if (api.mode.value === ValueMode.Single) {

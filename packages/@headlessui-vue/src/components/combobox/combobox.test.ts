@@ -1950,6 +1950,57 @@ describe('Keyboard interactions', () => {
           assertActiveComboboxOption(getComboboxOptions()[0])
         })
       )
+
+      it(
+        'should submit the form on `Enter`',
+        suppressConsoleLogs(async () => {
+          let submits = jest.fn()
+
+          renderTemplate({
+            template: html`
+              <form @submit="handleSubmit" @keyup="handleKeyUp">
+                <Combobox v-model="value" name="option">
+                  <ComboboxInput />
+                  <ComboboxButton>Trigger</ComboboxButton>
+                  <ComboboxOptions>
+                    <ComboboxOption value="a">Option A</ComboboxOption>
+                    <ComboboxOption value="b">Option B</ComboboxOption>
+                    <ComboboxOption value="c">Option C</ComboboxOption>
+                  </ComboboxOptions>
+                </Combobox>
+
+                <button>Submit</button>
+              </form>
+            `,
+            setup() {
+              let value = ref('b')
+              return {
+                value,
+                handleKeyUp(event: KeyboardEvent) {
+                  // JSDom doesn't automatically submit the form but if we can
+                  // catch an `Enter` event, we can assume it was a submit.
+                  if (event.key === 'Enter') (event.currentTarget as HTMLFormElement).submit()
+                },
+                handleSubmit(event: SubmitEvent) {
+                  event.preventDefault()
+                  submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+                },
+              }
+            },
+          })
+
+          // Focus the input field
+          getComboboxInput()?.focus()
+          assertActiveElement(getComboboxInput())
+
+          // Press enter (which should submit the form)
+          await press(Keys.Enter)
+
+          // Verify the form was submitted
+          expect(submits).toHaveBeenCalledTimes(1)
+          expect(submits).toHaveBeenCalledWith([['option', 'b']])
+        })
+      )
     })
 
     describe('`Tab` key', () => {
