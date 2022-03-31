@@ -308,35 +308,32 @@ export let Listbox = defineComponent({
       let { name, modelValue, disabled, ...incomingProps } = props
 
       let slot = { open: listboxState.value === ListboxStates.Open, disabled }
-      let renderConfiguration = {
-        props: omit(incomingProps, ['onUpdate:modelValue', 'horizontal']),
-        slot,
-        slots,
-        attrs,
-        name: 'Listbox',
-      }
 
-      if (name != null && modelValue != null) {
-        return h(Fragment, [
-          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
-            h(
-              VisuallyHidden,
-              compact({
-                key: name,
-                as: 'input',
-                type: 'hidden',
-                hidden: true,
-                readOnly: true,
-                name,
-                value,
-              })
+      return h(Fragment, [
+        ...(name != null && modelValue != null
+          ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+              h(
+                VisuallyHidden,
+                compact({
+                  key: name,
+                  as: 'input',
+                  type: 'hidden',
+                  hidden: true,
+                  readOnly: true,
+                  name,
+                  value,
+                })
+              )
             )
-          ),
-          render(renderConfiguration),
-        ])
-      }
-
-      return render(renderConfiguration)
+          : []),
+        render({
+          props: omit(incomingProps, ['onUpdate:modelValue', 'horizontal']),
+          slot,
+          slots,
+          attrs,
+          name: 'Listbox',
+        }),
+      ])
     }
   },
 })

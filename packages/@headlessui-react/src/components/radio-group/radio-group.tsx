@@ -261,38 +261,32 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     onKeyDown: handleKeyDown,
   }
 
-  let renderConfiguration = {
-    ourProps,
-    theirProps,
-    defaultTag: DEFAULT_RADIO_GROUP_TAG,
-    name: 'RadioGroup',
-  }
-
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
         <RadioGroupContext.Provider value={api}>
-          {name != null && value != null ? (
-            <>
-              {objectToFormEntries({ [name]: value }).map(([name, value]) => (
-                <VisuallyHidden
-                  {...compact({
-                    key: name,
-                    as: 'input',
-                    type: 'radio',
-                    checked: value != null,
-                    hidden: true,
-                    readOnly: true,
-                    name,
-                    value,
-                  })}
-                />
-              ))}
-              {render(renderConfiguration)}
-            </>
-          ) : (
-            render(renderConfiguration)
-          )}
+          {name != null &&
+            value != null &&
+            objectToFormEntries({ [name]: value }).map(([name, value]) => (
+              <VisuallyHidden
+                {...compact({
+                  key: name,
+                  as: 'input',
+                  type: 'radio',
+                  checked: value != null,
+                  hidden: true,
+                  readOnly: true,
+                  name,
+                  value,
+                })}
+              />
+            ))}
+          {render({
+            ourProps,
+            theirProps,
+            defaultTag: DEFAULT_RADIO_GROUP_TAG,
+            name: 'RadioGroup',
+          })}
         </RadioGroupContext.Provider>
       </LabelProvider>
     </DescriptionProvider>

@@ -384,14 +384,6 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
 
   let ourProps = { ref: listboxRef }
 
-  let renderConfiguration = {
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_LISTBOX_TAG,
-    name: 'Listbox',
-  }
-
   return (
     <ListboxContext.Provider value={reducerBag}>
       <OpenClosedProvider
@@ -400,26 +392,22 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
           [ListboxStates.Closed]: State.Closed,
         })}
       >
-        {name != null && value != null ? (
-          <>
-            {objectToFormEntries({ [name]: value }).map(([name, value]) => (
-              <VisuallyHidden
-                {...compact({
-                  key: name,
-                  as: 'input',
-                  type: 'hidden',
-                  hidden: true,
-                  readOnly: true,
-                  name,
-                  value,
-                })}
-              />
-            ))}
-            {render(renderConfiguration)}
-          </>
-        ) : (
-          render(renderConfiguration)
-        )}
+        {name != null &&
+          value != null &&
+          objectToFormEntries({ [name]: value }).map(([name, value]) => (
+            <VisuallyHidden
+              {...compact({
+                key: name,
+                as: 'input',
+                type: 'hidden',
+                hidden: true,
+                readOnly: true,
+                name,
+                value,
+              })}
+            />
+          ))}
+        {render({ ourProps, theirProps, slot, defaultTag: DEFAULT_LISTBOX_TAG, name: 'Listbox' })}
       </OpenClosedProvider>
     </ListboxContext.Provider>
   )

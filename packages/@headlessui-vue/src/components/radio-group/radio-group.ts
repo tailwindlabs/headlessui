@@ -202,35 +202,31 @@ export let RadioGroup = defineComponent({
         onKeydown: handleKeyDown,
       }
 
-      let renderConfiguration = {
-        props: { ...incomingProps, ...ourProps },
-        slot: {},
-        attrs,
-        slots,
-        name: 'RadioGroup',
-      }
-
-      if (name != null && modelValue != null) {
-        return h(Fragment, [
-          ...objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
-            h(
-              VisuallyHidden,
-              compact({
-                key: name,
-                as: 'input',
-                type: 'hidden',
-                hidden: true,
-                readOnly: true,
-                name,
-                value,
-              })
+      return h(Fragment, [
+        ...(name != null && modelValue != null
+          ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+              h(
+                VisuallyHidden,
+                compact({
+                  key: name,
+                  as: 'input',
+                  type: 'hidden',
+                  hidden: true,
+                  readOnly: true,
+                  name,
+                  value,
+                })
+              )
             )
-          ),
-          render(renderConfiguration),
-        ])
-      }
-
-      return render(renderConfiguration)
+          : []),
+        render({
+          props: { ...attrs, ...incomingProps, ...ourProps },
+          slot: {},
+          attrs,
+          slots,
+          name: 'RadioGroup',
+        }),
+      ])
     }
   },
 })

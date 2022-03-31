@@ -534,14 +534,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   useIsoMorphicEffect(syncInputValue, [syncInputValue])
   let ourProps = ref === null ? {} : { ref }
 
-  let renderConfiguration = {
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_COMBOBOX_TAG,
-    name: 'Combobox',
-  }
-
   return (
     <ComboboxActions.Provider value={actionsBag}>
       <ComboboxData.Provider value={dataBag}>
@@ -552,26 +544,28 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
               [ComboboxStates.Closed]: State.Closed,
             })}
           >
-            {name != null && value != null ? (
-              <>
-                {objectToFormEntries({ [name]: value }).map(([name, value]) => (
-                  <VisuallyHidden
-                    {...compact({
-                      key: name,
-                      as: 'input',
-                      type: 'hidden',
-                      hidden: true,
-                      readOnly: true,
-                      name,
-                      value,
-                    })}
-                  />
-                ))}
-                {render(renderConfiguration)}
-              </>
-            ) : (
-              render(renderConfiguration)
-            )}
+            {name != null &&
+              value != null &&
+              objectToFormEntries({ [name]: value }).map(([name, value]) => (
+                <VisuallyHidden
+                  {...compact({
+                    key: name,
+                    as: 'input',
+                    type: 'hidden',
+                    hidden: true,
+                    readOnly: true,
+                    name,
+                    value,
+                  })}
+                />
+              ))}
+            {render({
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_COMBOBOX_TAG,
+              name: 'Combobox',
+            })}
           </OpenClosedProvider>
         </ComboboxContext.Provider>
       </ComboboxData.Provider>

@@ -158,17 +158,9 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     onKeyPress: handleKeyPress,
   }
 
-  let renderConfiguration = {
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_SWITCH_TAG,
-    name: 'Switch',
-  }
-
-  if (name != null && checked) {
-    return (
-      <>
+  return (
+    <>
+      {name != null && checked && (
         <VisuallyHidden
           {...compact({
             as: 'input',
@@ -180,12 +172,10 @@ let SwitchRoot = forwardRefWithAs(function Switch<
             value,
           })}
         />
-        {render(renderConfiguration)}
-      </>
-    )
-  }
-
-  return render(renderConfiguration)
+      )}
+      {render({ ourProps, theirProps, slot, defaultTag: DEFAULT_SWITCH_TAG, name: 'Switch' })}
+    </>
+  )
 })
 
 // ---
