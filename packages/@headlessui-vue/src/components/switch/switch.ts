@@ -19,6 +19,7 @@ import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { VisuallyHidden } from '../../internal/visually-hidden'
+import { attemptSubmit } from '../../utils/form'
 
 type StateDefinition = {
   // State
@@ -93,8 +94,12 @@ export let Switch = defineComponent({
     }
 
     function handleKeyUp(event: KeyboardEvent) {
-      if (event.key !== Keys.Tab) event.preventDefault()
-      if (event.key === Keys.Space) toggle()
+      if (event.key === Keys.Space) {
+        event.preventDefault()
+        toggle()
+      } else if (event.key === Keys.Enter) {
+        attemptSubmit(event.currentTarget)
+      }
     }
 
     // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
