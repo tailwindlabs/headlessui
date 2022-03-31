@@ -780,6 +780,44 @@ describe('Keyboard interactions', () => {
       expect(changeFn).toHaveBeenNthCalledWith(1, 'pickup')
     })
   })
+
+  describe('`Enter`', () => {
+    it('should submit the form on `Enter`', async () => {
+      let submits = jest.fn()
+
+      function Example() {
+        let [value, setValue] = useState('bob')
+
+        return (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              submits([...new FormData(event.currentTarget).entries()])
+            }}
+          >
+            <RadioGroup value={value} onChange={setValue} name="option">
+              <RadioGroup.Option value="alice">Alice</RadioGroup.Option>
+              <RadioGroup.Option value="bob">Bob</RadioGroup.Option>
+              <RadioGroup.Option value="charlie">Charlie</RadioGroup.Option>
+            </RadioGroup>
+            <button>Submit</button>
+          </form>
+        )
+      }
+
+      render(<Example />)
+
+      // Focus the RadioGroup
+      await press(Keys.Tab)
+
+      // Press enter (which should submit the form)
+      await press(Keys.Enter)
+
+      // Verify the form was submitted
+      expect(submits).toHaveBeenCalledTimes(1)
+      expect(submits).toHaveBeenCalledWith([['option', 'bob']])
+    })
+  })
 })
 
 describe('Mouse interactions', () => {

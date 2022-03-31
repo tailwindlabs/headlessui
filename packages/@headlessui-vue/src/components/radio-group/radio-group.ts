@@ -24,7 +24,7 @@ import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { VisuallyHidden } from '../../internal/visually-hidden'
-import { objectToFormEntries } from '../../utils/form'
+import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
 interface Option {
@@ -72,6 +72,7 @@ export let RadioGroup = defineComponent({
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String, optional: true },
   },
+  inheritAttrs: false,
   setup(props, { emit, attrs, slots, expose }) {
     let radioGroupRef = ref<HTMLElement | null>(null)
     let options = ref<StateDefinition['options']['value']>([])
@@ -140,6 +141,9 @@ export let RadioGroup = defineComponent({
         .map((radio) => radio.element) as HTMLElement[]
 
       switch (event.key) {
+        case Keys.Enter:
+          attemptSubmit(event.currentTarget as unknown as EventTarget & HTMLButtonElement)
+          break
         case Keys.ArrowLeft:
         case Keys.ArrowUp:
           {

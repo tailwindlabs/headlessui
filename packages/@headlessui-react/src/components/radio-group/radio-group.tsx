@@ -27,7 +27,7 @@ import { Description, useDescriptions } from '../../components/description/descr
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { VisuallyHidden } from '../../internal/visually-hidden'
-import { objectToFormEntries } from '../../utils/form'
+import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
 interface Option {
@@ -182,6 +182,9 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
         .map((radio) => radio.element.current) as HTMLElement[]
 
       switch (event.key) {
+        case Keys.Enter:
+          attemptSubmit(event.currentTarget)
+          break
         case Keys.ArrowLeft:
         case Keys.ArrowUp:
           {
