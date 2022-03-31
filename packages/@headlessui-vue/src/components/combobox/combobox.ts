@@ -61,6 +61,7 @@ type StateDefinition = {
   value: ComputedRef<unknown>
 
   mode: ComputedRef<ValueMode>
+  nullable: ComputedRef<boolean>
 
   inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
   optionsPropsRef: Ref<{ static: boolean; hold: boolean }>
@@ -79,6 +80,7 @@ type StateDefinition = {
   closeCombobox(): void
   openCombobox(): void
   goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
+  change(value: unknown): void
   selectOption(id: string): void
   selectActiveOption(): void
   registerOption(id: string, dataRef: ComputedRef<ComboboxOptionData>): void
@@ -110,6 +112,7 @@ export let Combobox = defineComponent({
     disabled: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String },
+    nullable: { type: Boolean, default: false },
   },
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
@@ -161,17 +164,22 @@ export let Combobox = defineComponent({
 
     let value = computed(() => props.modelValue)
     let mode = computed(() => (Array.isArray(value.value) ? ValueMode.Multi : ValueMode.Single))
+    let nullable = computed(() => props.nullable)
 
     let api = {
       comboboxState,
       value,
       mode,
+      nullable,
       inputRef,
       labelRef,
       buttonRef,
       optionsRef,
       disabled: computed(() => props.disabled),
       options,
+      change(value: unknown) {
+        emit('update:modelValue', value)
+      },
       activeOptionIndex: computed(() => {
         if (
           defaultToFirstOption.value &&
@@ -436,7 +444,7 @@ export let Combobox = defineComponent({
             )
           : []),
         render({
-          props: omit(incomingProps, ['onUpdate:modelValue']),
+          props: omit(incomingProps, ['nullable', 'onUpdate:modelValue']),
           slot,
           slots,
           attrs,
@@ -614,6 +622,24 @@ export let ComboboxInput = defineComponent({
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+
+        case Keys.Backspace:
+        case Keys.Delete:
+          if (api.mode.value !== ValueMode.Single) return
+          if (!api.nullable) return
+
+          let input = event.currentTarget as HTMLInputElement
+          requestAnimationFrame(() => {
+            if (input.value === '') {
+              api.change(null)
+              let options = dom(api.optionsRef)
+              if (options) {
+                options.scrollTop = 0
+              }
+              api.goToOption(Focus.Nothing)
+            }
+          })
+          break
 
         case Keys.Enter:
           if (api.comboboxState.value !== ComboboxStates.Open) return

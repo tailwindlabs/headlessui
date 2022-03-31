@@ -68,6 +68,7 @@ interface StateDefinition {
     value: unknown
     mode: ValueMode
     onChange(value: unknown): void
+    nullable: boolean
     __demoMode: boolean
   }>
   inputPropsRef: MutableRefObject<{
@@ -336,27 +337,42 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType
 >(
-  props: Props<TTag, ComboboxRenderPropArg<TType>, 'value' | 'onChange' | 'disabled' | 'name'> & {
+  props: Props<
+    TTag,
+    ComboboxRenderPropArg<TType>,
+    'value' | 'onChange' | 'disabled' | 'name' | 'nullable'
+  > & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
     __demoMode?: boolean
     name?: string
+    nullable?: boolean
   },
   ref: Ref<TTag>
 ) {
-  let { name, value, onChange, disabled = false, __demoMode = false, ...theirProps } = props
+  let {
+    name,
+    value,
+    onChange,
+    disabled = false,
+    __demoMode = false,
+    nullable = false,
+    ...theirProps
+  } = props
   let defaultToFirstOption = useRef(false)
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
     mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single,
     onChange,
+    nullable,
     __demoMode,
   })
 
   comboboxPropsRef.current.value = value
   comboboxPropsRef.current.mode = Array.isArray(value) ? ValueMode.Multi : ValueMode.Single
+  comboboxPropsRef.current.nullable = nullable
 
   let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({
     static: false,
@@ -621,9 +637,26 @@ let Input = forwardRefWithAs(function Input<
   }, [displayValue, inputPropsRef])
 
   let handleKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLUListElement>) => {
+    (event: ReactKeyboardEvent<HTMLInputElement>) => {
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+
+        case Keys.Backspace:
+        case Keys.Delete:
+          if (data.mode !== ValueMode.Single) return
+          if (!state.comboboxPropsRef.current.nullable) return
+
+          let input = event.currentTarget
+          d.requestAnimationFrame(() => {
+            if (input.value === '') {
+              state.comboboxPropsRef.current.onChange(null)
+              if (state.optionsRef.current) {
+                state.optionsRef.current.scrollTop = 0
+              }
+              actions.goToOption(Focus.Nothing)
+            }
+          })
+          break
 
         case Keys.Enter:
           if (state.comboboxState !== ComboboxStates.Open) return

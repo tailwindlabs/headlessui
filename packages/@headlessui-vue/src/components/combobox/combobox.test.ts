@@ -3469,6 +3469,67 @@ describe('Keyboard interactions', () => {
       )
     })
 
+    describe('`Backspace` key', () => {
+      it(
+        'should reset the value when the last character is removed, when in `nullable` mode',
+        suppressConsoleLogs(async () => {
+          let handleChange = jest.fn()
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value">
+                <ComboboxInput />
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption value="alice">Alice</ComboboxOption>
+                  <ComboboxOption value="bob">Bob</ComboboxOption>
+                  <ComboboxOption value="charlie">Charlie</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => {
+              let value = ref('bob')
+              watch([value], () => handleChange(value.value))
+              return { value }
+            },
+          })
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          let options: ReturnType<typeof getComboboxOptions>
+
+          // Bob should be active
+          options = getComboboxOptions()
+          expect(getComboboxInput()).toHaveValue('bob')
+          assertActiveComboboxOption(options[1])
+
+          assertActiveElement(getComboboxInput())
+
+          // Delete a character
+          await press(Keys.Backspace)
+          expect(getComboboxInput()?.value).toBe('bo')
+          assertActiveComboboxOption(options[1])
+
+          // Delete a character
+          await press(Keys.Backspace)
+          expect(getComboboxInput()?.value).toBe('b')
+          assertActiveComboboxOption(options[1])
+
+          // Delete a character
+          await press(Keys.Backspace)
+          expect(getComboboxInput()?.value).toBe('')
+
+          // Verify that we don't have an active option anymore since we are in `nullable` mode
+          assertNotActiveComboboxOption(options[1])
+          assertNoActiveComboboxOption()
+
+          // Verify that we saw the `null` change coming in
+          expect(handleChange).toHaveBeenCalledTimes(1)
+          expect(handleChange).toHaveBeenCalledWith(null)
+        })
+      )
+    })
+
     describe('`Any` key aka search', () => {
       let Example = defineComponent({
         components: getDefaultComponents(),
