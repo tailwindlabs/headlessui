@@ -19,7 +19,7 @@ import {
   PropType,
   Ref,
   UnwrapNestedRefs,
-} from 'vue'
+} from 'vue-demi'
 
 import { Features, render, omit, compact } from '../../utils/render'
 import { useId } from '../../hooks/use-id'

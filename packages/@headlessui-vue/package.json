@@ -37,8 +37,17 @@
     "playground": "yarn workspace playground-vue dev",
     "clean": "rimraf ./dist"
   },
+  "dependencies": {
+    "vue-demi": "latest"
+  },
   "peerDependencies": {
-    "vue": "^3.2.0"
+    "vue": "^2.0.0 || >=3.0.0",
+    "vue-demi": "^0.12.5"
+  },
+  "peerDependenciesMeta": {
+    "@vue/composition-api": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@testing-library/vue": "^5.8.2",
