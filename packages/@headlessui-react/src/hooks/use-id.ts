@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { useServerHandoffComplete } from './use-server-handoff-complete'
 
@@ -13,13 +13,17 @@ function generateId() {
   return ++id
 }
 
-export function useId() {
-  let ready = useServerHandoffComplete()
-  let [id, setId] = useState(ready ? generateId : null)
+export let useId =
+  // Prefer React's `useId` if it's available.
+  // @ts-expect-error - `useId` doesn't exist in React < 18.
+  React.useId ??
+  function useId() {
+    let ready = useServerHandoffComplete()
+    let [id, setId] = React.useState(ready ? generateId : null)
 
-  useIsoMorphicEffect(() => {
-    if (id === null) setId(generateId())
-  }, [id])
+    useIsoMorphicEffect(() => {
+      if (id === null) setId(generateId())
+    }, [id])
 
-  return id != null ? '' + id : undefined
-}
+    return id != null ? '' + id : undefined
+  }
