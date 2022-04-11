@@ -4,11 +4,13 @@ import { disposables } from '../utils/disposables'
 let d = disposables()
 
 function nextFrame(cb: Function): void {
-  setImmediate(() =>
+  setImmediate(() => {
     setImmediate(() => {
-      cb()
+      setImmediate(() => {
+        cb()
+      })
     })
-  )
+  })
 }
 
 export let Keys: Record<string, Partial<KeyboardEvent>> = {
