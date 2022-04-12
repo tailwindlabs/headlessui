@@ -55,7 +55,7 @@ it('should be possible to transition', async () => {
   // necessary to put the classes on the element and immediately remove them.
 
   // Cleanup phase
-  expect(snapshots[2].content).toEqual('<div class="entered"></div>')
+  expect(snapshots[2].content).toEqual('<div class="enterTo entered"></div>')
 
   d.dispose()
 })
@@ -124,7 +124,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
 
   // Cleanup phase
   expect(snapshots[3].content).toEqual(
-    `<div style="transition-duration: ${duration}ms;" class="entered"></div>`
+    `<div style="transition-duration: ${duration}ms;" class="enterTo entered"></div>`
   )
 })
 

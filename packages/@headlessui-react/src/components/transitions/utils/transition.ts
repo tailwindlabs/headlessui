@@ -146,7 +146,7 @@ export function transition(
 
     waitForTransition(node, (reason) => {
       if (reason === Reason.Ended) {
-        removeClasses(node, ...base, ...to)
+        removeClasses(node, ...base)
         addClasses(node, ...classes.entered)
       }
 

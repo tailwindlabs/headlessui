@@ -474,7 +474,7 @@ describe('Transitions', () => {
 
         Render 3: Transition took at least 50ms (yes)
             -  class=\\"enter to\\"
-            +  class=\\"\\""
+            +  class=\\"to\\""
       `)
     })
 
@@ -525,7 +525,7 @@ describe('Transitions', () => {
 
         Render 3: Transition took at least 50ms (yes)
             -  class=\\"enter to\\"
-            +  class=\\"\\""
+            +  class=\\"to\\""
       `)
     })
 
@@ -573,7 +573,7 @@ describe('Transitions', () => {
 
         Render 3: Transition took at least 50ms (yes)
             -  class=\\"enter to\\"
-            +  class=\\"\\""
+            +  class=\\"to\\""
       `)
     })
 
@@ -622,7 +622,7 @@ describe('Transitions', () => {
 
         Render 3: Transition took at least 50ms (yes)
             -  class=\\"enter to\\"
-            +  class=\\"\\""
+            +  class=\\"to\\""
       `)
     })
 
@@ -724,7 +724,7 @@ describe('Transitions', () => {
 
           Render 3: Transition took at least 50ms (yes)
               -  class=\\"leave to\\"
-              +  class=\\"\\"
+              +  class=\\"to\\"
               +  hidden=\\"\\"
               +  style=\\"display: none;\\""
         `)
@@ -794,10 +794,10 @@ describe('Transitions', () => {
 
           Render 3: Transition took at least 50ms (yes)
               -  class=\\"enter enter-to\\"
-              +  class=\\"\\"
+              +  class=\\"enter-to\\"
 
           Render 4:
-              -  class=\\"\\"
+              -  class=\\"enter-to\\"
               +  class=\\"leave leave-from\\"
 
           Render 5:
@@ -883,10 +883,10 @@ describe('Transitions', () => {
 
           Render 3: Transition took at least 50ms (yes)
               -  class=\\"enter enter-to\\"
-              +  class=\\"\\"
+              +  class=\\"enter-to\\"
 
           Render 4:
-              -  class=\\"\\"
+              -  class=\\"enter-to\\"
               +  class=\\"leave leave-from\\"
 
           Render 5:
@@ -896,12 +896,12 @@ describe('Transitions', () => {
           Render 6: Transition took at least 75ms (yes)
               -  class=\\"leave leave-to\\"
               -  style=\\"\\"
-              +  class=\\"\\"
+              +  class=\\"leave-to\\"
               +  hidden=\\"\\"
               +  style=\\"display: none;\\"
 
           Render 7:
-              -  class=\\"\\"
+              -  class=\\"leave-to\\"
               -  hidden=\\"\\"
               -  style=\\"display: none;\\"
               +  class=\\"enter enter-from\\"
@@ -913,7 +913,7 @@ describe('Transitions', () => {
 
           Render 9: Transition took at least 75ms (yes)
               -  class=\\"enter enter-to\\"
-              +  class=\\"\\""
+              +  class=\\"enter-to\\""
         `)
       })
     )
@@ -1174,10 +1174,10 @@ describe('Events', () => {
 
         Render 3: Transition took at least 50ms (yes)
             -  class=\\"enter enter-to\\"
-            +  class=\\"\\"
+            +  class=\\"enter-to\\"
 
         Render 4:
-            -  class=\\"\\"
+            -  class=\\"enter-to\\"
             +  class=\\"leave leave-from\\"
 
         Render 5:
