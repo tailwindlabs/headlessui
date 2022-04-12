@@ -1,10 +1,11 @@
 import React, { createElement, useState } from 'react'
+
 import { render } from '@testing-library/react'
 
 import { RadioGroup } from './radio-group'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { press, Keys, shift, click } from '../../test-utils/interactions'
+import { press, focus, Keys, shift, click } from '../../test-utils/interactions'
 import {
   getByText,
   assertRadioGroupLabel,

@@ -677,7 +677,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -721,7 +721,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Try to open the menu
         await press(Keys.Enter)
@@ -748,7 +748,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -781,7 +781,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -818,7 +818,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -857,7 +857,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1041,7 +1041,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Space)
@@ -1083,7 +1083,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Try to open the menu
         await press(Keys.Space)
@@ -1110,7 +1110,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Space)
@@ -1143,7 +1143,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Space)
@@ -1180,7 +1180,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Space)
@@ -1219,7 +1219,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Space)
@@ -1331,7 +1331,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Space)
@@ -1379,7 +1379,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1428,7 +1428,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1479,7 +1479,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowDown)
@@ -1523,7 +1523,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Try to open the menu
         await press(Keys.ArrowDown)
@@ -1550,7 +1550,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowDown)
@@ -1581,7 +1581,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1629,7 +1629,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1671,7 +1671,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1707,7 +1707,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -1751,7 +1751,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Try to open the menu
         await press(Keys.ArrowUp)
@@ -1778,7 +1778,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -1813,7 +1813,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -1851,7 +1851,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1893,7 +1893,7 @@ describe('Keyboard interactions', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -1943,7 +1943,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -1979,7 +1979,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -2083,7 +2083,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -2119,7 +2119,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
@@ -2223,7 +2223,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -2362,7 +2362,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -2534,7 +2534,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -2573,7 +2573,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -2614,7 +2614,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
@@ -2647,7 +2647,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getMenuButton()?.focus()
+        await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)

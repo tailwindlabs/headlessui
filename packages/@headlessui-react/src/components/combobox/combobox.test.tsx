@@ -866,7 +866,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Enter)
@@ -915,7 +915,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Try to focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Try to open the combobox
           await press(Keys.Enter)
@@ -951,7 +951,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Enter)
@@ -1000,7 +1000,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleHidden })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Enter)
@@ -1073,7 +1073,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Enter)
@@ -1114,7 +1114,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Enter)
@@ -1153,7 +1153,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Space)
@@ -1200,7 +1200,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Try to open the combobox
           await press(Keys.Space)
@@ -1238,7 +1238,7 @@ describe('Keyboard interactions', () => {
           })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Space)
@@ -1278,7 +1278,7 @@ describe('Keyboard interactions', () => {
           })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Space)
@@ -1319,7 +1319,7 @@ describe('Keyboard interactions', () => {
           })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.Space)
@@ -1358,7 +1358,7 @@ describe('Keyboard interactions', () => {
           assertComboboxButtonLinkedWithCombobox()
 
           // Re-focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
           assertActiveElement(getComboboxButton())
 
           // Close combobox
@@ -1397,7 +1397,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowDown)
@@ -1443,7 +1443,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Try to open the combobox
           await press(Keys.ArrowDown)
@@ -1479,7 +1479,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowDown)
@@ -1517,7 +1517,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowDown)
@@ -1552,7 +1552,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -1598,7 +1598,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Try to open the combobox
           await press(Keys.ArrowUp)
@@ -1634,7 +1634,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -1672,7 +1672,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -1709,7 +1709,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
-          getComboboxButton()?.focus()
+          await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -1899,7 +1899,7 @@ describe('Keyboard interactions', () => {
           render(<Example />)
 
           // Focus the input field
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
           assertActiveElement(getComboboxInput())
 
           // Press enter (which should submit the form)
@@ -2212,7 +2212,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowDown)
@@ -2258,7 +2258,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Try to open the combobox
           await press(Keys.ArrowDown)
@@ -2294,7 +2294,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowDown)
@@ -2332,7 +2332,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowDown)
@@ -2527,7 +2527,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -2573,7 +2573,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Try to open the combobox
           await press(Keys.ArrowUp)
@@ -2609,7 +2609,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -2647,7 +2647,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -2684,7 +2684,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -2766,7 +2766,7 @@ describe('Keyboard interactions', () => {
           assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -3099,7 +3099,7 @@ describe('Keyboard interactions', () => {
           )
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)
@@ -3243,7 +3243,7 @@ describe('Keyboard interactions', () => {
           )
 
           // Focus the input
-          getComboboxInput()?.focus()
+          await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)

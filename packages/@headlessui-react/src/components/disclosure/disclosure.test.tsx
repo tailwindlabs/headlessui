@@ -12,7 +12,7 @@ import {
   assertActiveElement,
   getByText,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, Keys, MouseButton } from '../../test-utils/interactions'
+import { click, press, focus, Keys, MouseButton } from '../../test-utils/interactions'
 import { Transition } from '../transitions/transition'
 
 jest.mock('../../hooks/use-id')
@@ -133,7 +133,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Ensure the button is focused
         assertActiveElement(getDisclosureButton())
@@ -174,7 +174,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Ensure the button is focused
         assertActiveElement(getDisclosureButton())
@@ -218,7 +218,7 @@ describe('Rendering', () => {
         render(<Example />)
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Ensure the button is focused
         assertActiveElement(getDisclosureButton())
@@ -437,7 +437,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Ensure the button is focused
         assertActiveElement(getDisclosureButton())
@@ -474,7 +474,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Ensure the button is focused
         assertActiveElement(getDisclosureButton())
@@ -514,7 +514,7 @@ describe('Rendering', () => {
         render(<Example />)
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Ensure the button is focused
         assertActiveElement(getDisclosureButton())
@@ -611,7 +611,7 @@ describe('Keyboard interactions', () => {
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Open disclosure
         await press(Keys.Enter)
@@ -646,7 +646,7 @@ describe('Keyboard interactions', () => {
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Try to open the disclosure
         await press(Keys.Enter)
@@ -677,7 +677,7 @@ describe('Keyboard interactions', () => {
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Open disclosure
         await press(Keys.Enter)
@@ -717,7 +717,7 @@ describe('Keyboard interactions', () => {
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Open disclosure
         await press(Keys.Space)
@@ -748,7 +748,7 @@ describe('Keyboard interactions', () => {
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Try to open the disclosure
         await press(Keys.Space)
@@ -779,7 +779,7 @@ describe('Keyboard interactions', () => {
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
-        getDisclosureButton()?.focus()
+        await focus(getDisclosureButton())
 
         // Open disclosure
         await press(Keys.Space)
