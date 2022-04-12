@@ -71,7 +71,20 @@ export default function Home() {
       <button onClick={() => setNested(true)}>Show nested</button>
       {nested && <Nested onClose={() => setNested(false)} />}
 
-      <Transition show={isOpen} as={Fragment} afterLeave={() => console.log('done')}>
+      <div
+        data-preload
+        className="translate-y-4 translate-y-0 translate-y-0 translate-y-4 scale-95 scale-100 scale-100 scale-95 transform transform transform transform transform transform opacity-0 opacity-75 opacity-75 opacity-0 opacity-75 opacity-0 opacity-100 opacity-100 opacity-0 opacity-0 opacity-100 opacity-100 opacity-0 transition transition duration-1000 duration-300 duration-200 duration-300 duration-200 duration-300 duration-75 ease-out ease-in ease-out ease-in ease-out ease-out sm:translate-y-0 sm:translate-y-0 sm:scale-95 sm:scale-100 sm:scale-100 sm:scale-95"
+      />
+
+      <Transition
+        data-debug="Dialog"
+        show={isOpen}
+        as={Fragment}
+        beforeEnter={() => console.log('[Transition] Before enter')}
+        afterEnter={() => console.log('[Transition] After enter')}
+        beforeLeave={() => console.log('[Transition] Before leave')}
+        afterLeave={() => console.log('[Transition] After leave')}
+      >
         <Dialog onClose={setIsOpen}>
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -84,6 +97,10 @@ export default function Home() {
                 leaveFrom="opacity-75"
                 leaveTo="opacity-0"
                 entered="opacity-75"
+                beforeEnter={() => console.log('[Transition.Child] [Overlay] Before enter')}
+                afterEnter={() => console.log('[Transition.Child] [Overlay] After enter')}
+                beforeLeave={() => console.log('[Transition.Child] [Overlay] Before leave')}
+                afterLeave={() => console.log('[Transition.Child] [Overlay] After leave')}
               >
                 <Dialog.Overlay className="fixed inset-0 bg-gray-500 transition-opacity" />
               </Transition.Child>
@@ -95,6 +112,10 @@ export default function Home() {
                 leave="ease-in transform duration-200"
                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                beforeEnter={() => console.log('[Transition.Child] [Panel] Before enter')}
+                afterEnter={() => console.log('[Transition.Child] [Panel] After enter')}
+                beforeLeave={() => console.log('[Transition.Child] [Panel] Before leave')}
+                afterLeave={() => console.log('[Transition.Child] [Panel] After leave')}
               >
                 {/* This element is to trick the browser into centering the modal contents. */}
                 <span

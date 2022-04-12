@@ -17,6 +17,10 @@ export default function Home() {
 
   return (
     <div>
+      <div
+        data-preload
+        className="translate-y-4 translate-y-0 translate-y-0 translate-y-4 opacity-0 opacity-100 opacity-100 opacity-0 opacity-0 opacity-100 opacity-100 opacity-0 duration-300 duration-200 duration-300 duration-200 ease-out ease-in ease-out ease-in sm:translate-y-0 sm:translate-y-0 sm:scale-95 sm:scale-100 sm:scale-100 sm:scale-95"
+      />
       <div className="flex space-x-4 p-12">
         <div className="inline-block p-12">
           <span className="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
@@ -44,21 +48,17 @@ export default function Home() {
         show={isOpen}
         className="fixed inset-0 z-10 overflow-y-auto"
         beforeEnter={() => {
-          addEvent('Before enter')
+          addEvent('[Root] Before enter')
         }}
         afterEnter={() => {
-          inputRef.current.focus()
-          addEvent('After enter')
+          inputRef.current?.focus()
+          addEvent('[Root] After enter')
         }}
         beforeLeave={() => {
-          addEvent('Before leave (before confirm)')
-          window.confirm('Are you sure?')
-          addEvent('Before leave (after confirm)')
+          addEvent('[Root] Before leave')
         }}
         afterLeave={() => {
-          addEvent('After leave (before alert)')
-          window.alert('Consider it done!')
-          addEvent('After leave (after alert)')
+          addEvent('[Root] After leave')
           setEmail('')
         }}
       >
@@ -70,6 +70,10 @@ export default function Home() {
             leave="ease-in duration-200"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
+            beforeEnter={() => addEvent('[Overlay] Before enter')}
+            afterEnter={() => addEvent('[Overlay] After enter')}
+            beforeLeave={() => addEvent('[Overlay] Before leave')}
+            afterLeave={() => addEvent('[Overlay] After leave')}
           >
             <div className="fixed inset-0 transition-opacity">
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -88,6 +92,10 @@ export default function Home() {
             leave="ease-in duration-200"
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            beforeEnter={() => addEvent('[Panel] Before enter')}
+            afterEnter={() => addEvent('[Panel] After enter')}
+            beforeLeave={() => addEvent('[Panel] Before leave')}
+            afterLeave={() => addEvent('[Panel] After leave')}
           >
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
@@ -131,6 +139,7 @@ export default function Home() {
                           ref={inputRef}
                           value={email}
                           onChange={(event) => setEmail(event.target.value)}
+                          type="email"
                           id="email"
                           className="form-input block w-full px-3 sm:text-sm sm:leading-5"
                           placeholder="name@example.com"
