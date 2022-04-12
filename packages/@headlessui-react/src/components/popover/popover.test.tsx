@@ -715,14 +715,15 @@ describe('Composition', () => {
 
       // Wait for all transitions to finish
       await nextFrame()
+      await nextFrame()
 
       // Verify that we tracked the `mounts` and `unmounts` in the correct order
       expect(orderFn.mock.calls).toEqual([
         ['Mounting - Popover'],
         ['Mounting - Transition'],
         ['Mounting - Transition.Child'],
-        ['Unmounting - Transition.Child'],
         ['Unmounting - Transition'],
+        ['Unmounting - Transition.Child'],
       ])
     })
   )
