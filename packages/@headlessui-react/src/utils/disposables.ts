@@ -7,24 +7,41 @@ export function disposables() {
       queue.push(fn)
     },
 
+    addEventListener<TEventName extends keyof WindowEventMap>(
+      element: HTMLElement,
+      name: TEventName,
+      listener: (event: WindowEventMap[TEventName]) => any,
+      options?: boolean | AddEventListenerOptions
+    ) {
+      element.addEventListener(name, listener as any, options)
+      return api.add(() => element.removeEventListener(name, listener as any, options))
+    },
+
     requestAnimationFrame(...args: Parameters<typeof requestAnimationFrame>) {
       let raf = requestAnimationFrame(...args)
-      api.add(() => cancelAnimationFrame(raf))
+      return api.add(() => cancelAnimationFrame(raf))
     },
 
     nextFrame(...args: Parameters<typeof requestAnimationFrame>) {
-      api.requestAnimationFrame(() => {
-        api.requestAnimationFrame(...args)
+      return api.requestAnimationFrame(() => {
+        return api.requestAnimationFrame(...args)
       })
     },
 
     setTimeout(...args: Parameters<typeof setTimeout>) {
       let timer = setTimeout(...args)
-      api.add(() => clearTimeout(timer))
+      return api.add(() => clearTimeout(timer))
     },
 
     add(cb: () => void) {
       disposables.push(cb)
+      return () => {
+        let idx = disposables.indexOf(cb)
+        if (idx >= 0) {
+          let [dispose] = disposables.splice(idx, 1)
+          dispose()
+        }
+      }
     },
 
     dispose() {

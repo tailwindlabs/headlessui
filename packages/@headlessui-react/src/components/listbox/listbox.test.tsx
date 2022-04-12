@@ -741,7 +741,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -787,7 +787,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Try to open the listbox
         await press(Keys.Enter)
@@ -822,7 +822,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -867,7 +867,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleHidden })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -936,7 +936,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -973,7 +973,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1007,7 +1007,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1044,7 +1044,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1083,7 +1083,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1219,7 +1219,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Space)
@@ -1262,7 +1262,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Try to open the listbox
         await press(Keys.Space)
@@ -1297,7 +1297,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Space)
@@ -1334,7 +1334,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Space)
@@ -1368,7 +1368,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Space)
@@ -1405,7 +1405,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Space)
@@ -1444,7 +1444,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Space)
@@ -1536,7 +1536,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Space)
@@ -1585,7 +1585,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1636,7 +1636,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1689,7 +1689,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowDown)
@@ -1734,7 +1734,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Try to open the listbox
         await press(Keys.ArrowDown)
@@ -1769,7 +1769,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowDown)
@@ -1806,7 +1806,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowDown)
@@ -1838,7 +1838,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1886,7 +1886,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1928,7 +1928,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -1964,7 +1964,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -2012,7 +2012,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2057,7 +2057,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Try to open the listbox
         await press(Keys.ArrowUp)
@@ -2092,7 +2092,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2129,7 +2129,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2165,7 +2165,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2203,7 +2203,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -2245,7 +2245,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2302,7 +2302,7 @@ describe('Keyboard interactions', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2354,7 +2354,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -2390,7 +2390,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -2494,7 +2494,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -2530,7 +2530,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.Enter)
@@ -2634,7 +2634,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2773,7 +2773,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2945,7 +2945,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -2984,7 +2984,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -3025,7 +3025,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)
@@ -3058,7 +3058,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getListboxButton()?.focus()
+        await focus(getListboxButton())
 
         // Open listbox
         await press(Keys.ArrowUp)

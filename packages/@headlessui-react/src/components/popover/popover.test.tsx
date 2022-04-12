@@ -14,7 +14,7 @@ import {
   assertContainsActiveElement,
   getPopoverOverlay,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, Keys, MouseButton, shift } from '../../test-utils/interactions'
+import { click, press, focus, Keys, MouseButton, shift } from '../../test-utils/interactions'
 import { Portal } from '../portal/portal'
 import { Transition } from '../transitions/transition'
 
@@ -156,7 +156,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -197,7 +197,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -241,7 +241,7 @@ describe('Rendering', () => {
         render(<Example />)
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -431,7 +431,7 @@ describe('Rendering', () => {
         </Popover>
       )
 
-      getPopoverButton()?.focus()
+      await focus(getPopoverButton())
 
       assertPopoverButton({ state: PopoverState.InvisibleHidden })
       assertPopoverPanel({ state: PopoverState.InvisibleHidden })
@@ -462,7 +462,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -489,7 +489,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -502,7 +502,7 @@ describe('Rendering', () => {
         assertActiveElement(getByText('Link 1'))
 
         // Focus the button again
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the Popover is closed again
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
@@ -525,7 +525,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -552,7 +552,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -579,7 +579,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -616,7 +616,7 @@ describe('Rendering', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -656,7 +656,7 @@ describe('Rendering', () => {
         render(<Example />)
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Ensure the button is focused
         assertActiveElement(getPopoverButton())
@@ -715,14 +715,15 @@ describe('Composition', () => {
 
       // Wait for all transitions to finish
       await nextFrame()
+      await nextFrame()
 
       // Verify that we tracked the `mounts` and `unmounts` in the correct order
       expect(orderFn.mock.calls).toEqual([
         ['Mounting - Popover'],
         ['Mounting - Transition'],
         ['Mounting - Transition.Child'],
-        ['Unmounting - Transition.Child'],
         ['Unmounting - Transition'],
+        ['Unmounting - Transition.Child'],
       ])
     })
   )
@@ -747,7 +748,7 @@ describe('Keyboard interactions', () => {
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Open popover
         await press(Keys.Enter)
@@ -782,7 +783,7 @@ describe('Keyboard interactions', () => {
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Try to open the popover
         await press(Keys.Enter)
@@ -813,7 +814,7 @@ describe('Keyboard interactions', () => {
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Open popover
         await press(Keys.Enter)
@@ -918,7 +919,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Verify popover is closed
         assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
@@ -953,7 +954,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Verify popover is closed
         assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
@@ -1425,7 +1426,7 @@ describe('Keyboard interactions', () => {
         )
 
         // Focus the button of the Popover
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Open popover
         await click(getPopoverButton())
@@ -1675,7 +1676,7 @@ describe('Keyboard interactions', () => {
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Open popover
         await press(Keys.Space)
@@ -1706,7 +1707,7 @@ describe('Keyboard interactions', () => {
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Try to open the popover
         await press(Keys.Space)
@@ -1737,7 +1738,7 @@ describe('Keyboard interactions', () => {
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
-        getPopoverButton()?.focus()
+        await focus(getPopoverButton())
 
         // Open popover
         await press(Keys.Space)
@@ -1963,7 +1964,7 @@ describe('Mouse interactions', () => {
         </Popover>
       )
 
-      getPopoverButton()?.focus()
+      await focus(getPopoverButton())
 
       // Open popover
       await click(getPopoverButton())

@@ -1,5 +1,6 @@
 import { once } from '../../../utils/once'
 import { disposables } from '../../../utils/disposables'
+import { match } from '../../../utils/match'
 
 function addClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.add(...classes)
@@ -10,7 +11,10 @@ function removeClasses(node: HTMLElement, ...classes: string[]) {
 }
 
 export enum Reason {
-  Finished = 'finished',
+  // Transition succesfully ended
+  Ended = 'ended',
+
+  // Transition was cancelled
   Cancelled = 'cancelled',
 }
 
@@ -22,7 +26,7 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   // Safari returns a comma separated list of values, so let's sort them and take the highest value.
   let { transitionDuration, transitionDelay } = getComputedStyle(node)
 
-  let [durationMs, delaysMs] = [transitionDuration, transitionDelay].map((value) => {
+  let [durationMs, delayMs] = [transitionDuration, transitionDelay].map((value) => {
     let [resolvedValue = 0] = value
       .split(',')
       // Remove falsy we can't work with
@@ -34,22 +38,60 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
     return resolvedValue
   })
 
-  // Waiting for the transition to end. We could use the `transitionend` event, however when no
-  // actual transition/duration is defined then the `transitionend` event is not fired.
-  //
-  // TODO: Downside is, when you slow down transitions via devtools this timeout is still using the
-  // full 100% speed instead of the 25% or 10%.
-  if (durationMs !== 0) {
-    d.setTimeout(() => {
-      done(Reason.Finished)
-    }, durationMs + delaysMs)
+  let totalDuration = durationMs + delayMs
+
+  if (totalDuration !== 0) {
+    let listeners: (() => void)[] = []
+
+    if (process.env.NODE_ENV === 'test') {
+      listeners.push(
+        d.setTimeout(() => {
+          done(Reason.Ended)
+          listeners.splice(0).forEach((dispose) => dispose())
+        }, totalDuration)
+      )
+    } else {
+      listeners.push(
+        d.addEventListener(
+          node,
+          'transitionrun',
+          () => {
+            // Cleanup "old" listeners
+            listeners.splice(0).forEach((dispose) => dispose())
+
+            // Register new listeners
+            listeners.push(
+              d.addEventListener(
+                node,
+                'transitionend',
+                () => {
+                  done(Reason.Ended)
+                  listeners.splice(0).forEach((dispose) => dispose())
+                },
+                { once: true }
+              ),
+              d.addEventListener(
+                node,
+                'transitioncancel',
+                () => {
+                  done(Reason.Cancelled)
+                  listeners.splice(0).forEach((dispose) => dispose())
+                },
+                { once: true }
+              )
+            )
+          },
+          { once: true }
+        )
+      )
+    }
   } else {
     // No transition is happening, so we should cleanup already. Otherwise we have to wait until we
     // get disposed.
-    done(Reason.Finished)
+    done(Reason.Ended)
   }
 
-  // If we get disposed before the timeout runs we should cleanup anyway
+  // If we get disposed before the transition finishes, we should cleanup anyway.
   d.add(() => done(Reason.Cancelled))
 
   return d.dispose
@@ -57,39 +99,60 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
 
 export function transition(
   node: HTMLElement,
-  base: string[],
-  from: string[],
-  to: string[],
-  entered: string[],
+  classes: {
+    enter: string[]
+    enterFrom: string[]
+    enterTo: string[]
+    leave: string[]
+    leaveFrom: string[]
+    leaveTo: string[]
+    entered: string[]
+  },
+  show: boolean,
   done?: (reason: Reason) => void
 ) {
+  let direction = show ? 'enter' : 'leave'
   let d = disposables()
   let _done = done !== undefined ? once(done) : () => {}
 
-  removeClasses(node, ...entered)
+  let base = match(direction, {
+    enter: () => classes.enter,
+    leave: () => classes.leave,
+  })
+  let to = match(direction, {
+    enter: () => classes.enterTo,
+    leave: () => classes.leaveTo,
+  })
+  let from = match(direction, {
+    enter: () => classes.enterFrom,
+    leave: () => classes.leaveFrom,
+  })
+
+  removeClasses(
+    node,
+    ...classes.enter,
+    ...classes.enterTo,
+    ...classes.enterFrom,
+    ...classes.leave,
+    ...classes.leaveFrom,
+    ...classes.leaveTo,
+    ...classes.entered
+  )
   addClasses(node, ...base, ...from)
 
   d.nextFrame(() => {
     removeClasses(node, ...from)
     addClasses(node, ...to)
 
-    d.add(
-      waitForTransition(node, (reason) => {
-        removeClasses(node, ...to, ...base)
-        addClasses(node, ...entered)
-        return _done(reason)
-      })
-    )
+    waitForTransition(node, (reason) => {
+      if (reason === Reason.Ended) {
+        removeClasses(node, ...base)
+        addClasses(node, ...classes.entered)
+      }
+
+      return _done(reason)
+    })
   })
-
-  // Once we get disposed, we should ensure that we cleanup after ourselves. In case of an unmount,
-  // the node itself will be nullified and will be a no-op. In case of a full transition the classes
-  // are already removed which is also a no-op. However if you go from enter -> leave mid-transition
-  // then we have some leftovers that should be cleaned.
-  d.add(() => removeClasses(node, ...base, ...from, ...to, ...entered))
-
-  // When we get disposed early, than we should also call the done method but switch the reason.
-  d.add(() => _done(Reason.Cancelled))
 
   return d.dispose
 }

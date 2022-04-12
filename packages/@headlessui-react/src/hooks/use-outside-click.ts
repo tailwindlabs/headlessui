@@ -1,21 +1,7 @@
 import { MutableRefObject, useMemo, useRef } from 'react'
+import { microTask } from '../utils/micro-task'
 import { useLatestValue } from './use-latest-value'
 import { useWindowEvent } from './use-window-event'
-
-// Polyfill
-function microTask(cb: () => void) {
-  if (typeof queueMicrotask === 'function') {
-    queueMicrotask(cb)
-  } else {
-    Promise.resolve()
-      .then(cb)
-      .catch((e) =>
-        setTimeout(() => {
-          throw e
-        })
-      )
-  }
-}
 
 type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>

@@ -18,16 +18,27 @@ export default function Home() {
             </button>
           </span>
 
+          <div
+            hidden
+            data-preload
+            className="transform transform transform transform rounded-md rounded-md bg-red-500 bg-blue-500 bg-red-500 bg-green-500 bg-green-500 bg-blue-500 bg-white p-4 p-4 opacity-0 opacity-100 opacity-100 opacity-0 shadow shadow transition-colors transition-colors transition-colors transition transition duration-[5s] duration-1000 duration-1000 duration-1000 duration-1000 ease-out ease-in ease-out ease-in"
+          />
+
           <Transition
             show={isOpen}
-            unmount={false}
-            enter="transition ease-out duration-300"
-            enterFrom="transform opacity-0"
-            enterTo="transform opacity-100"
-            leave="transition ease-in duration-300"
-            leaveFrom="transform opacity-100"
-            leaveTo="transform opacity-0"
-            className="rounded-md bg-white p-4 shadow"
+            appear={false}
+            beforeEnter={() => console.log('beforeEnter')}
+            afterEnter={() => console.log('afterEnter')}
+            beforeLeave={() => console.log('beforeLeave')}
+            afterLeave={() => console.log('afterLeave')}
+            enter="transition-colors ease-out duration-[5s]"
+            enterFrom="transform bg-red-500"
+            enterTo="transform bg-blue-500"
+            leave="transition-colors ease-in duration-[5s]"
+            leaveFrom="transform bg-blue-500"
+            leaveTo="transform bg-red-500"
+            entered="bg-blue-500"
+            className="h-64 rounded-md p-4 shadow"
           >
             Contents to show and hide
           </Transition>

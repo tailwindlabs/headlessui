@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mimic browser select on focus when navigating via `Tab` ([#1272](https://github.com/tailwindlabs/headlessui/pull/1272))
 - Ensure that there is always an active option in the `Combobox` ([#1279](https://github.com/tailwindlabs/headlessui/pull/1279), [#1281](https://github.com/tailwindlabs/headlessui/pull/1281))
 - Allow `Enter` for form submit in `RadioGroup`, `Switch` and `Combobox` improvements ([#1285](https://github.com/tailwindlabs/headlessui/pull/1285))
+- add React 18 compatibility ([#1326](https://github.com/tailwindlabs/headlessui/pull/1326))
 
 ### Added
 

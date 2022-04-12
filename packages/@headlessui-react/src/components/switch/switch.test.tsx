@@ -10,7 +10,7 @@ import {
   getSwitchLabel,
   getByText,
 } from '../../test-utils/accessibility-assertions'
-import { press, click, Keys } from '../../test-utils/interactions'
+import { press, click, focus, Keys } from '../../test-utils/interactions'
 
 jest.mock('../../hooks/use-id')
 
@@ -229,7 +229,7 @@ describe('Keyboard interactions', () => {
       assertSwitch({ state: SwitchState.Off })
 
       // Focus the switch
-      getSwitch()?.focus()
+      await focus(getSwitch())
 
       // Toggle
       await press(Keys.Space)
@@ -254,7 +254,7 @@ describe('Keyboard interactions', () => {
       assertSwitch({ state: SwitchState.Off })
 
       // Focus the switch
-      getSwitch()?.focus()
+      await focus(getSwitch())
 
       // Try to toggle
       await press(Keys.Enter)
@@ -284,7 +284,7 @@ describe('Keyboard interactions', () => {
       render(<Example />)
 
       // Focus the input field
-      getSwitch()?.focus()
+      await focus(getSwitch())
       assertActiveElement(getSwitch())
 
       // Press enter (which should submit the form)
@@ -309,7 +309,7 @@ describe('Keyboard interactions', () => {
       assertSwitch({ state: SwitchState.Off })
 
       // Focus the switch
-      getSwitch()?.focus()
+      await focus(getSwitch())
 
       // Expect the switch to be active
       assertActiveElement(getSwitch())

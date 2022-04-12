@@ -27,7 +27,20 @@ it('should be possible to transition', async () => {
   )
 
   await new Promise((resolve) => {
-    transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
+    transition(
+      element,
+      {
+        enter: ['enter'],
+        enterFrom: ['enterFrom'],
+        enterTo: ['enterTo'],
+        leave: [],
+        leaveFrom: [],
+        leaveTo: [],
+        entered: ['entered'],
+      },
+      true, // Show
+      resolve
+    )
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))
@@ -42,7 +55,7 @@ it('should be possible to transition', async () => {
   // necessary to put the classes on the element and immediately remove them.
 
   // Cleanup phase
-  expect(snapshots[2].content).toEqual('<div class="entered"></div>')
+  expect(snapshots[2].content).toEqual('<div class="enterTo entered"></div>')
 
   d.dispose()
 })
@@ -71,11 +84,24 @@ it('should wait the correct amount of time to finish a transition', async () => 
   )
 
   let reason = await new Promise((resolve) => {
-    transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
+    transition(
+      element,
+      {
+        enter: ['enter'],
+        enterFrom: ['enterFrom'],
+        enterTo: ['enterTo'],
+        leave: [],
+        leaveFrom: [],
+        leaveTo: [],
+        entered: ['entered'],
+      },
+      true, // Show
+      resolve
+    )
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))
-  expect(reason).toBe(Reason.Finished)
+  expect(reason).toBe(Reason.Ended)
 
   // Initial render:
   expect(snapshots[0].content).toEqual(`<div style="transition-duration: ${duration}ms;"></div>`)
@@ -98,7 +124,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
 
   // Cleanup phase
   expect(snapshots[3].content).toEqual(
-    `<div style="transition-duration: ${duration}ms;" class="entered"></div>`
+    `<div style="transition-duration: ${duration}ms;" class="enterTo entered"></div>`
   )
 })
 
@@ -128,11 +154,24 @@ it('should keep the delay time into account', async () => {
   )
 
   let reason = await new Promise((resolve) => {
-    transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], resolve)
+    transition(
+      element,
+      {
+        enter: ['enter'],
+        enterFrom: ['enterFrom'],
+        enterTo: ['enterTo'],
+        leave: [],
+        leaveFrom: [],
+        leaveTo: [],
+        entered: ['entered'],
+      },
+      true, // Show
+      resolve
+    )
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))
-  expect(reason).toBe(Reason.Finished)
+  expect(reason).toBe(Reason.Ended)
 
   let estimatedDuration = Number(
     (snapshots[snapshots.length - 1].recordedAt - snapshots[snapshots.length - 2].recordedAt) /
@@ -140,54 +179,4 @@ it('should keep the delay time into account', async () => {
   )
 
   expect(estimatedDuration).toBeWithinRenderFrame(duration + delayDuration)
-})
-
-it('should be possible to cancel a transition at any time', async () => {
-  let d = disposables()
-
-  let snapshots: {
-    content: string
-    recordedAt: bigint
-    relativeTime: number
-  }[] = []
-  let element = document.createElement('div')
-  document.body.appendChild(element)
-
-  // This duration is so overkill, however it will demonstrate that we can cancel transitions.
-  let duration = 5000
-
-  element.style.transitionDuration = `${duration}ms`
-
-  d.add(
-    reportChanges(
-      () => document.body.innerHTML,
-      (content) => {
-        let recordedAt = process.hrtime.bigint()
-        let total = snapshots.length
-
-        snapshots.push({
-          content,
-          recordedAt,
-          relativeTime:
-            total === 0 ? 0 : Number((recordedAt - snapshots[total - 1].recordedAt) / BigInt(1e6)),
-        })
-      }
-    )
-  )
-
-  expect.assertions(2)
-
-  // Setup the transition
-  let cancel = transition(element, ['enter'], ['enterFrom'], ['enterTo'], ['entered'], (reason) => {
-    expect(reason).toBe(Reason.Cancelled)
-  })
-
-  // Wait for a bit
-  await new Promise((resolve) => setTimeout(resolve, 20))
-
-  // Cancel the transition
-  cancel()
-  await new Promise((resolve) => d.nextFrame(resolve))
-
-  expect(snapshots.map((snapshot) => snapshot.content).join('\n')).not.toContain('enterTo')
 })

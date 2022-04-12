@@ -1,9 +1,10 @@
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
+import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 export function useIsMounted() {
   let mounted = useRef(false)
 
-  useEffect(() => {
+  useIsoMorphicEffect(() => {
     mounted.current = true
 
     return () => {
