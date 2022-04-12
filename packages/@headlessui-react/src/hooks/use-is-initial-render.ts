@@ -5,6 +5,10 @@ export function useIsInitialRender() {
 
   useEffect(() => {
     initial.current = false
+
+    return () => {
+      initial.current = true
+    }
   }, [])
 
   return initial.current
