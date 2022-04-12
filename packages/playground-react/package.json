@@ -15,9 +15,9 @@
     "@headlessui/react": "*",
     "@popperjs/core": "^2.6.0",
     "framer-motion": "^6.0.0",
-    "next": "^12.0.8",
-    "react": "16.14.0",
-    "react-dom": "16.14.0",
+    "next": "^12.1.4",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-flatpickr": "^3.10.9"
   }
 }
