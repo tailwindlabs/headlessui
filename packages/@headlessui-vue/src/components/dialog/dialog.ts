@@ -29,7 +29,7 @@ import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
 import { dom } from '../../utils/dom'
 import { useOpenClosed, State } from '../../internal/open-closed'
-import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useOutsideClick, Features as OutsideClickFeatures } from '../../hooks/use-outside-click'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 
@@ -42,6 +42,7 @@ interface StateDefinition {
   dialogState: Ref<DialogStates>
 
   titleId: Ref<string | null>
+  panelRef: Ref<HTMLDivElement | null>
 
   setTitleId(id: string | null): void
 
@@ -178,6 +179,7 @@ export let Dialog = defineComponent({
 
     let api = {
       titleId,
+      panelRef: ref(null),
       dialogState,
       setTitleId(id: string | null) {
         if (titleId.value === id) return
@@ -199,10 +201,11 @@ export let Dialog = defineComponent({
         ).filter((container) => {
           if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
           if (container.contains(previousElement.value)) return false // Skip if it is the main app
+          if (api.panelRef.value && container.contains(api.panelRef.value)) return false
           return true // Keep
         })
 
-        return [...rootContainers, internalDialogRef.value] as HTMLElement[]
+        return [...rootContainers, api.panelRef.value ?? internalDialogRef.value] as HTMLElement[]
       },
 
       (_event, target) => {
@@ -211,7 +214,8 @@ export let Dialog = defineComponent({
 
         api.close()
         nextTick(() => target?.focus())
-      }
+      },
+      OutsideClickFeatures.IgnoreScrollbars
     )
 
     // Handle `Escape` to close
@@ -347,6 +351,81 @@ export let DialogOverlay = defineComponent({
         attrs,
         slots,
         name: 'DialogOverlay',
+      })
+    }
+  },
+})
+
+// ---
+
+export let DialogBackdrop = defineComponent({
+  name: 'DialogBackdrop',
+  props: {
+    as: { type: [Object, String], default: 'div' },
+  },
+  inheritAttrs: false,
+  setup(props, { attrs, slots, expose }) {
+    let api = useDialogContext('DialogBackdrop')
+    let id = `headlessui-dialog-backdrop-${useId()}`
+    let internalBackdropRef = ref(null)
+
+    expose({ el: internalBackdropRef, $el: internalBackdropRef })
+
+    onMounted(() => {
+      if (api.panelRef.value === null) {
+        throw new Error(
+          `A <DialogBackdrop /> component is being used, but a <DialogPanel /> component is missing.`
+        )
+      }
+    })
+
+    return () => {
+      let incomingProps = props
+      let ourProps = {
+        id,
+        ref: internalBackdropRef,
+        'aria-hidden': true,
+      }
+
+      return h(ForcePortalRoot, { force: true }, () =>
+        h(Portal, () =>
+          render({
+            props: { ...attrs, ...incomingProps, ...ourProps },
+            slot: { open: api.dialogState.value === DialogStates.Open },
+            attrs,
+            slots,
+            name: 'DialogBackdrop',
+          })
+        )
+      )
+    }
+  },
+})
+
+// ---
+
+export let DialogPanel = defineComponent({
+  name: 'DialogPanel',
+  props: {
+    as: { type: [Object, String], default: 'div' },
+  },
+  setup(props, { attrs, slots }) {
+    let api = useDialogContext('DialogPanel')
+    let id = `headlessui-dialog-panel-${useId()}`
+
+    return () => {
+      let ourProps = {
+        id,
+        ref: api.panelRef,
+      }
+      let incomingProps = props
+
+      return render({
+        props: { ...incomingProps, ...ourProps },
+        slot: { open: api.dialogState.value === DialogStates.Open },
+        attrs,
+        slots,
+        name: 'DialogPanel',
       })
     }
   },

@@ -8,7 +8,14 @@ import {
 } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
-import { Dialog, DialogOverlay, DialogTitle, DialogDescription } from './dialog'
+import {
+  Dialog,
+  DialogOverlay,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+  DialogDescription,
+} from './dialog'
 import { TransitionRoot } from '../transitions/transition'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
@@ -19,6 +26,7 @@ import {
   assertDialogTitle,
   getDialog,
   getDialogOverlay,
+  getDialogBackdrop,
   getByText,
   assertActiveElement,
   getDialogs,
@@ -50,7 +58,15 @@ beforeAll(() => {
 afterAll(() => jest.restoreAllMocks())
 
 function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { Dialog, DialogOverlay, DialogTitle, DialogDescription, TabSentinel }
+  let defaultComponents = {
+    Dialog,
+    DialogOverlay,
+    DialogBackdrop,
+    DialogPanel,
+    DialogTitle,
+    DialogDescription,
+    TabSentinel,
+  }
 
   if (typeof input === 'string') {
     return render(defineComponent({ template: input, components: defaultComponents }))
@@ -69,6 +85,8 @@ describe('Safe guards', () => {
   it.each([
     ['DialogOverlay', DialogOverlay],
     ['DialogTitle', DialogTitle],
+    ['DialogBackdrop', DialogBackdrop],
+    ['DialogPanel', DialogPanel],
   ])(
     'should error when we are using a <%s /> without a parent <Dialog />',
     suppressConsoleLogs((name, Component) => {
@@ -377,6 +395,140 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-dialog-overlay-2' },
           textContent: JSON.stringify({ open: true }),
         })
+      })
+    )
+  })
+
+  describe('DialogBackdrop', () => {
+    it(
+      'should throw an error if a DialogBackdrop is used without a DialogPanel',
+      suppressConsoleLogs(async () => {
+        expect.hasAssertions()
+
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="toggleOpen">
+                Trigger
+              </button>
+              <Dialog :open="isOpen" @close="setIsOpen">
+                <DialogBackdrop />
+                <TabSentinel />
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+              toggleOpen() {
+                isOpen.value = !isOpen.value
+              },
+            }
+          },
+          errorCaptured(err) {
+            expect(err as Error).toEqual(
+              new Error(
+                'A <DialogBackdrop /> component is being used, but a <DialogPanel /> component is missing.'
+              )
+            )
+
+            return false
+          },
+        })
+
+        await click(document.getElementById('trigger'))
+      })
+    )
+
+    it(
+      'should not throw an error if a DialogBackdrop is used with a DialogPanel',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="toggleOpen">
+                Trigger
+              </button>
+              <Dialog :open="isOpen" @close="setIsOpen">
+                <DialogBackdrop />
+                <DialogPanel>
+                  <TabSentinel />
+                </DialogPanel>
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+              toggleOpen() {
+                isOpen.value = !isOpen.value
+              },
+            }
+          },
+        })
+
+        await click(document.getElementById('trigger'))
+      })
+    )
+
+    it(
+      'should portal the DialogBackdrop',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="toggleOpen">
+                Trigger
+              </button>
+              <Dialog :open="isOpen" @close="setIsOpen">
+                <DialogBackdrop />
+                <DialogPanel>
+                  <TabSentinel />
+                <DialogPanel>
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+              toggleOpen() {
+                isOpen.value = !isOpen.value
+              },
+            }
+          },
+        })
+
+        await click(document.getElementById('trigger'))
+
+        let dialog = getDialog()
+        let backdrop = getDialogBackdrop()
+
+        expect(dialog).not.toBe(null)
+        dialog = dialog as HTMLElement
+
+        expect(backdrop).not.toBe(null)
+        backdrop = backdrop as HTMLElement
+
+        // It should not be nested
+        let position = dialog.compareDocumentPosition(backdrop)
+        expect(position & Node.DOCUMENT_POSITION_CONTAINED_BY).not.toBe(
+          Node.DOCUMENT_POSITION_CONTAINED_BY
+        )
+
+        // It should be a sibling
+        expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
       })
     )
   })
@@ -1155,6 +1307,90 @@ describe('Mouse interactions', () => {
       expect(fn).toHaveBeenCalledTimes(1)
 
       // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
+    'should close the Dialog if we click outside the DialogPanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <div>
+            <button id="trigger" @click="toggleOpen">
+              Trigger
+            </button>
+            <Dialog :open="isOpen" @close="setIsOpen">
+              <DialogBackdrop />
+              <DialogPanel>
+                <TabSentinel />
+              </DialogPanel>
+              <button id="outside">Outside, technically</button>
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(false)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+            toggleOpen() {
+              isOpen.value = !isOpen.value
+            },
+          }
+        },
+      })
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('outside'))
+
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should not close the Dialog if we click inside the DialogPanel',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <div>
+            <button id="trigger" @click="toggleOpen">
+              Trigger
+            </button>
+            <Dialog :open="isOpen" @close="setIsOpen">
+              <DialogBackdrop />
+              <DialogPanel>
+                <button id="inside">Inside</button>
+                <TabSentinel />
+              </DialogPanel>
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(false)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+            toggleOpen() {
+              isOpen.value = !isOpen.value
+            },
+          }
+        },
+      })
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('inside'))
+
       assertDialog({ state: DialogState.Visible })
     })
   )

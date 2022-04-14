@@ -865,6 +865,9 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
           }
           actions.closeCombobox()
           return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+
+        default:
+          return
       }
     },
     [d, state, actions, data]

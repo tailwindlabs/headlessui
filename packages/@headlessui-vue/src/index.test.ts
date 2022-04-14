@@ -17,6 +17,8 @@ it('should expose the correct components', () => {
     // Dialog
     'Dialog',
     'DialogOverlay',
+    'DialogBackdrop',
+    'DialogPanel',
     'DialogTitle',
     'DialogDescription',
 

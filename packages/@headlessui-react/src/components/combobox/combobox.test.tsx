@@ -1731,7 +1731,7 @@ describe('Keyboard interactions', () => {
         let handleChange = jest.fn()
         function Example() {
           let [value, setValue] = useState<string>('bob')
-          let [query, setQuery] = useState<string>('')
+          let [, setQuery] = useState<string>('')
 
           return (
             <Combobox
