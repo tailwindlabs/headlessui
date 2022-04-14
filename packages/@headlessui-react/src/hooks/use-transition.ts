@@ -1,4 +1,4 @@
-import { MutableRefObject, useRef } from 'react'
+import { MutableRefObject } from 'react'
 
 import { Reason, transition } from '../components/transitions/utils/transition'
 import { disposables } from '../utils/disposables'

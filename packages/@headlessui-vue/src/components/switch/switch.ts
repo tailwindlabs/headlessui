@@ -98,7 +98,7 @@ export let Switch = defineComponent({
         event.preventDefault()
         toggle()
       } else if (event.key === Keys.Enter) {
-        attemptSubmit(event.currentTarget)
+        attemptSubmit(event.currentTarget as HTMLElement)
       }
     }
 
