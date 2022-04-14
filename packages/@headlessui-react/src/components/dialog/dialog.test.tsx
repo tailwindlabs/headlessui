@@ -11,6 +11,7 @@ import {
   assertDialogTitle,
   getDialog,
   getDialogOverlay,
+  getDialogBackdrop,
   getByText,
   assertActiveElement,
   getDialogs,
@@ -39,6 +40,8 @@ describe('Safe guards', () => {
   it.each([
     ['Dialog.Overlay', Dialog.Overlay],
     ['Dialog.Title', Dialog.Title],
+    ['Dialog.Backdrop', Dialog.Backdrop],
+    ['Dialog.Panel', Dialog.Panel],
   ])(
     'should error when we are using a <%s /> without a parent <Dialog />',
     suppressConsoleLogs((name, Component) => {
@@ -303,6 +306,110 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-dialog-overlay-2' },
         })
         expect(overlay).toHaveBeenCalledWith({ open: true })
+      })
+    )
+  })
+
+  describe('Dialog.Backdrop', () => {
+    it(
+      'should throw an error if a Dialog.Backdrop is used without a Dialog.Panel',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                <Dialog.Backdrop />
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        try {
+          await click(document.getElementById('trigger'))
+
+          expect(true).toBe(false)
+        } catch (e: unknown) {
+          expect((e as Error).message).toBe(
+            'A <Dialog.Backdrop /> component is being used, but a <Dialog.Panel /> component is missing.'
+          )
+        }
+      })
+    )
+
+    it(
+      'should not throw an error if a Dialog.Backdrop is used with a Dialog.Panel',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                <Dialog.Backdrop />
+                <Dialog.Panel>
+                  <TabSentinel />
+                </Dialog.Panel>
+              </Dialog>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        await click(document.getElementById('trigger'))
+      })
+    )
+
+    it(
+      'should portal the Dialog.Backdrop',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                <Dialog.Backdrop />
+                <Dialog.Panel>
+                  <TabSentinel />
+                </Dialog.Panel>
+              </Dialog>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        await click(document.getElementById('trigger'))
+
+        let dialog = getDialog()
+        let backdrop = getDialogBackdrop()
+
+        expect(dialog).not.toBe(null)
+        dialog = dialog as HTMLElement
+
+        expect(backdrop).not.toBe(null)
+        backdrop = backdrop as HTMLElement
+
+        // It should not be nested
+        let position = dialog.compareDocumentPosition(backdrop)
+        expect(position & Node.DOCUMENT_POSITION_CONTAINED_BY).not.toBe(
+          Node.DOCUMENT_POSITION_CONTAINED_BY
+        )
+
+        // It should be a sibling
+        expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
       })
     )
   })
@@ -888,6 +995,72 @@ describe('Mouse interactions', () => {
       expect(fn).toHaveBeenCalledTimes(1)
 
       // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
+    'should close the Dialog if we click outside the Dialog.Panel',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+              Trigger
+            </button>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog.Backdrop />
+              <Dialog.Panel>
+                <TabSentinel />
+              </Dialog.Panel>
+              <button id="outside">Outside, technically</button>
+            </Dialog>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('outside'))
+
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
+
+  it(
+    'should not close the Dialog if we click inside the Dialog.Panel',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+              Trigger
+            </button>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog.Backdrop />
+              <Dialog.Panel>
+                <button id="inside">Inside</button>
+                <TabSentinel />
+              </Dialog.Panel>
+            </Dialog>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('inside'))
+
       assertDialog({ state: DialogState.Visible })
     })
   )
