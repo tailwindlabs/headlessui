@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `<form>` compatibility ([#1214](https://github.com/tailwindlabs/headlessui/pull/1214))
 - Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 - Implement `nullable` mode on `Combobox` in single value mode ([#1295](https://github.com/tailwindlabs/headlessui/pull/1295))
+- Add `Dialog.Backdrop` and `Dialog.Panel` components ([#1333](https://github.com/tailwindlabs/headlessui/pull/1333))
 
 ## [Unreleased - @headlessui/vue]
 
@@ -80,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `<form>` compatibility ([#1214](https://github.com/tailwindlabs/headlessui/pull/1214))
 - Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
 - Implement `nullable` mode on `Combobox` in single value mode ([#1295](https://github.com/tailwindlabs/headlessui/pull/1295))
+- Add `Dialog.Backdrop` and `Dialog.Panel` components ([#1333](https://github.com/tailwindlabs/headlessui/pull/1333))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
 
