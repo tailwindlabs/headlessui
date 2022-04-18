@@ -369,7 +369,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
     }
 
     // Track the changes
-    if (changes.current.at(-1) !== show) {
+    if (changes.current[changes.current.length - 1] !== show) {
       changes.current.push(show)
       setInitial(false)
     }
