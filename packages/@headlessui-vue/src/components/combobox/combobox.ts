@@ -113,6 +113,7 @@ export let Combobox = defineComponent({
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String },
     nullable: { type: Boolean, default: false },
+    multiple: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
@@ -163,7 +164,7 @@ export let Combobox = defineComponent({
     }
 
     let value = computed(() => props.modelValue)
-    let mode = computed(() => (Array.isArray(value.value) ? ValueMode.Multi : ValueMode.Single))
+    let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
     let nullable = computed(() => props.nullable)
 
     let api = {
@@ -444,7 +445,7 @@ export let Combobox = defineComponent({
             )
           : []),
         render({
-          props: omit(incomingProps, ['nullable', 'onUpdate:modelValue']),
+          props: omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue']),
           slot,
           slots,
           attrs,
