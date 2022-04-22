@@ -77,12 +77,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure that there is always an active option in the `Combobox` ([#1279](https://github.com/tailwindlabs/headlessui/pull/1279), [#1281](https://github.com/tailwindlabs/headlessui/pull/1281))
 - Allow `Enter` for form submit in `RadioGroup`, `Switch` and `Combobox` improvements ([#1285](https://github.com/tailwindlabs/headlessui/pull/1285))
 - Add explicit `multiple` prop ([#1355](https://github.com/tailwindlabs/headlessui/pull/1355))
+- fix `nullable` prop for Vue ([2b109548b1a94a30858cf58c8f525554a1c12cbb](https://github.com/tailwindlabs/headlessui/commit/2b109548b1a94a30858cf58c8f525554a1c12cbb))
 
 ### Added
 
 - Add `<form>` compatibility ([#1214](https://github.com/tailwindlabs/headlessui/pull/1214))
 - Add `multi` value support for Listbox & Combobox ([#1243](https://github.com/tailwindlabs/headlessui/pull/1243))
-- Implement `nullable` mode on `Combobox` in single value mode ([#1295](https://github.com/tailwindlabs/headlessui/pull/1295))
+- Implement `nullable` mode on `Combobox` in single value mode ([#1295](https://github.com/tailwindlabs/headlessui/pull/1295), [2b1095](https://github.com/tailwindlabs/headlessui/commit/2b109548b1a94a30858cf58c8f525554a1c12cbb))
 - Add `Dialog.Backdrop` and `Dialog.Panel` components ([#1333](https://github.com/tailwindlabs/headlessui/pull/1333))
 
 ## [@headlessui/react@v1.5.0] - 2022-02-17
