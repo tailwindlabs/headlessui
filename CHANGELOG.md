@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure that there is always an active option in the `Combobox` ([#1279](https://github.com/tailwindlabs/headlessui/pull/1279), [#1281](https://github.com/tailwindlabs/headlessui/pull/1281))
 - Allow `Enter` for form submit in `RadioGroup`, `Switch` and `Combobox` improvements ([#1285](https://github.com/tailwindlabs/headlessui/pull/1285))
 - add React 18 compatibility ([#1326](https://github.com/tailwindlabs/headlessui/pull/1326))
+- Add explicit `multiple` prop ([#1355](https://github.com/tailwindlabs/headlessui/pull/1355))
 
 ### Added
 
@@ -75,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolve `initialFocusRef` correctly ([#1276](https://github.com/tailwindlabs/headlessui/pull/1276))
 - Ensure that there is always an active option in the `Combobox` ([#1279](https://github.com/tailwindlabs/headlessui/pull/1279), [#1281](https://github.com/tailwindlabs/headlessui/pull/1281))
 - Allow `Enter` for form submit in `RadioGroup`, `Switch` and `Combobox` improvements ([#1285](https://github.com/tailwindlabs/headlessui/pull/1285))
+- Add explicit `multiple` prop ([#1355](https://github.com/tailwindlabs/headlessui/pull/1355))
 
 ### Added
 
