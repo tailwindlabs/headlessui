@@ -38,7 +38,7 @@ function MultiPeopleList() {
             console.log([...new FormData(e.currentTarget).entries()])
           }}
         >
-          <Listbox value={activePersons} onChange={setActivePersons} name="people">
+          <Listbox value={activePersons} onChange={setActivePersons} name="people" multiple>
             <Listbox.Label className="block text-sm font-medium leading-5 text-gray-700">
               Assigned to
             </Listbox.Label>
