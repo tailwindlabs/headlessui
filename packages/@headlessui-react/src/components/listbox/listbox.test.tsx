@@ -3963,7 +3963,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Listbox value={value} onChange={setValue}>
+          <Listbox value={value} onChange={setValue} multiple>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -3998,7 +3998,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Listbox value={value} onChange={setValue}>
+          <Listbox value={value} onChange={setValue} multiple>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4026,7 +4026,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Listbox value={value} onChange={setValue}>
+          <Listbox value={value} onChange={setValue} multiple>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4058,7 +4058,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Listbox value={value} onChange={setValue}>
+          <Listbox value={value} onChange={setValue} multiple>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
