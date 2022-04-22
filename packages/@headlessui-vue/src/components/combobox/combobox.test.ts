@@ -4821,7 +4821,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
+          <Combobox v-model="value" multiple>
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
@@ -4854,7 +4854,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
+          <Combobox v-model="value" multiple>
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
@@ -4880,7 +4880,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
+          <Combobox v-model="value" multiple>
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
@@ -4910,7 +4910,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
+          <Combobox v-model="value" multiple>
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
@@ -4954,7 +4954,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
+          <Combobox v-model="value" multiple>
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>

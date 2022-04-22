@@ -4086,7 +4086,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Listbox v-model="value">
+          <Listbox v-model="value" multiple>
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
@@ -4118,7 +4118,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Listbox v-model="value">
+          <Listbox v-model="value" multiple>
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
@@ -4143,7 +4143,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Listbox v-model="value">
+          <Listbox v-model="value" multiple>
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
@@ -4172,7 +4172,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Listbox v-model="value">
+          <Listbox v-model="value" multiple>
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption value="alice">alice</ListboxOption>
@@ -4215,7 +4215,7 @@ describe('Multi-select', () => {
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Listbox v-model="value">
+          <Listbox v-model="value" multiple>
             <ListboxButton>Trigger</ListboxButton>
             <ListboxOptions>
               <ListboxOption v-for="person in people" :value="person"

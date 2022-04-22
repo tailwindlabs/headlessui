@@ -340,7 +340,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   props: Props<
     TTag,
     ComboboxRenderPropArg<TType>,
-    'value' | 'onChange' | 'disabled' | 'name' | 'nullable'
+    'value' | 'onChange' | 'disabled' | 'name' | 'nullable' | 'multiple'
   > & {
     value: TType
     onChange(value: TType): void
@@ -348,6 +348,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     __demoMode?: boolean
     name?: string
     nullable?: boolean
+    multiple?: boolean
   },
   ref: Ref<TTag>
 ) {
@@ -358,20 +359,21 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     disabled = false,
     __demoMode = false,
     nullable = false,
+    multiple = false,
     ...theirProps
   } = props
   let defaultToFirstOption = useRef(false)
 
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
-    mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single,
+    mode: multiple ? ValueMode.Multi : ValueMode.Single,
     onChange,
     nullable,
     __demoMode,
   })
 
   comboboxPropsRef.current.value = value
-  comboboxPropsRef.current.mode = Array.isArray(value) ? ValueMode.Multi : ValueMode.Single
+  comboboxPropsRef.current.mode = multiple ? ValueMode.Multi : ValueMode.Single
   comboboxPropsRef.current.nullable = nullable
 
   let optionsPropsRef = useRef<StateDefinition['optionsPropsRef']['current']>({
@@ -411,7 +413,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let dataBag = useMemo<Exclude<ContextType<typeof ComboboxData>, null>>(
     () => ({
       value,
-      mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single,
+      mode: multiple ? ValueMode.Multi : ValueMode.Single,
       get activeOptionIndex() {
         if (defaultToFirstOption.current && _activeOptionIndex === null && options.length > 0) {
           let localActiveOptionIndex = options.findIndex(

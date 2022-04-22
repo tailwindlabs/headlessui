@@ -304,24 +304,33 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   props: Props<
     TTag,
     ListboxRenderPropArg,
-    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name'
+    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name' | 'multiple'
   > & {
     value: TType
     onChange(value: TType): void
     disabled?: boolean
     horizontal?: boolean
     name?: string
+    multiple?: boolean
   },
   ref: Ref<TTag>
 ) {
-  let { value, name, onChange, disabled = false, horizontal = false, ...theirProps } = props
+  let {
+    value,
+    name,
+    onChange,
+    disabled = false,
+    horizontal = false,
+    multiple = false,
+    ...theirProps
+  } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
     propsRef: {
-      current: { value, onChange, mode: Array.isArray(value) ? ValueMode.Multi : ValueMode.Single },
+      current: { value, onChange, mode: multiple ? ValueMode.Multi : ValueMode.Single },
     },
     labelRef: createRef(),
     buttonRef: createRef(),
@@ -336,7 +345,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   let [{ listboxState, propsRef, optionsRef, buttonRef }, dispatch] = reducerBag
 
   propsRef.current.value = value
-  propsRef.current.mode = Array.isArray(value) ? ValueMode.Multi : ValueMode.Single
+  propsRef.current.mode = multiple ? ValueMode.Multi : ValueMode.Single
 
   useIsoMorphicEffect(() => {
     propsRef.current.onChange = (value: unknown) => {

@@ -3,7 +3,7 @@
     <div class="w-full max-w-4xl">
       <div class="space-y-1">
         <form @submit="onSubmit">
-          <Listbox v-model="activePersons" name="people">
+          <Listbox v-model="activePersons" name="people" multiple>
             <ListboxLabel class="block text-sm font-medium leading-5 text-gray-700">
               Assigned to
             </ListboxLabel>

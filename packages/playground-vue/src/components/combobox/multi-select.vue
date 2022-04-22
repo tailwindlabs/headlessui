@@ -3,7 +3,7 @@
     <div class="w-full max-w-4xl">
       <div class="space-y-1">
         <form @submit="onSubmit">
-          <Combobox v-model="activePersons" name="people">
+          <Combobox v-model="activePersons" name="people" multiple>
             <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
               Assigned to
             </ComboboxLabel>

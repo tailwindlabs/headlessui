@@ -113,6 +113,7 @@ export let Listbox = defineComponent({
     horizontal: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String, optional: true },
+    multiple: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs, emit }) {
     let listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
@@ -156,7 +157,7 @@ export let Listbox = defineComponent({
     }
 
     let value = computed(() => props.modelValue)
-    let mode = computed(() => (Array.isArray(value.value) ? ValueMode.Multi : ValueMode.Single))
+    let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
 
     let api = {
       listboxState,
@@ -327,7 +328,7 @@ export let Listbox = defineComponent({
             )
           : []),
         render({
-          props: omit(incomingProps, ['onUpdate:modelValue', 'horizontal']),
+          props: omit(incomingProps, ['onUpdate:modelValue', 'horizontal', 'multiple']),
           slot,
           slots,
           attrs,
