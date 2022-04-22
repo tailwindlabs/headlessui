@@ -3476,7 +3476,7 @@ describe('Keyboard interactions', () => {
           let handleChange = jest.fn()
           renderTemplate({
             template: html`
-              <Combobox v-model="value">
+              <Combobox v-model="value" nullable>
                 <ComboboxInput />
                 <ComboboxButton>Trigger</ComboboxButton>
                 <ComboboxOptions>

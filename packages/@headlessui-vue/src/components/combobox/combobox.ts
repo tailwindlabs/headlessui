@@ -627,7 +627,7 @@ export let ComboboxInput = defineComponent({
         case Keys.Backspace:
         case Keys.Delete:
           if (api.mode.value !== ValueMode.Single) return
-          if (!api.nullable) return
+          if (!api.nullable.value) return
 
           let input = event.currentTarget as HTMLInputElement
           requestAnimationFrame(() => {
