@@ -1990,7 +1990,7 @@ describe('Keyboard interactions', () => {
       })
     )
 
-    it(
+    xit(
       'should close the Popover by pressing `Enter` on a PopoverButton and go to the href of the `a` inside a PopoverPanel',
       suppressConsoleLogs(async () => {
         renderTemplate(

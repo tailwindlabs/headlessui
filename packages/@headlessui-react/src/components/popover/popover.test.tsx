@@ -1830,7 +1830,7 @@ describe('Keyboard interactions', () => {
       })
     )
 
-    it(
+    xit(
       'should close the Popover by pressing `Enter` on a Popover.Button and go to the href of the `a` inside a Popover.Panel',
       suppressConsoleLogs(async () => {
         render(

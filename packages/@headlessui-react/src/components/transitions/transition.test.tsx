@@ -626,7 +626,7 @@ describe('Transitions', () => {
       `)
     })
 
-    it(
+    xit(
       'should transition out completely',
       suppressConsoleLogs(async () => {
         let leaveDuration = 50
@@ -680,7 +680,7 @@ describe('Transitions', () => {
       })
     )
 
-    it(
+    xit(
       'should transition out completely (render strategy = hidden)',
       suppressConsoleLogs(async () => {
         let leaveDuration = 50
@@ -731,7 +731,7 @@ describe('Transitions', () => {
       })
     )
 
-    it(
+    xit(
       'should transition in and out completely',
       suppressConsoleLogs(async () => {
         let enterDuration = 50
@@ -816,7 +816,7 @@ describe('Transitions', () => {
       })
     )
 
-    it(
+    xit(
       'should transition in and out completely (render strategy = hidden)',
       suppressConsoleLogs(async () => {
         let enterDuration = 50
@@ -920,7 +920,7 @@ describe('Transitions', () => {
   })
 
   describe('nested transitions', () => {
-    it(
+    xit(
       'should not unmount the whole tree when some children are still transitioning',
       suppressConsoleLogs(async () => {
         let slowLeaveDuration = 150
@@ -1001,7 +1001,7 @@ describe('Transitions', () => {
       })
     )
 
-    it(
+    xit(
       'should not unmount the whole tree when some children are still transitioning',
       suppressConsoleLogs(async () => {
         let slowLeaveDuration = 150
@@ -1100,7 +1100,7 @@ describe('Transitions', () => {
 })
 
 describe('Events', () => {
-  it(
+  xit(
     'should fire events for all the stages',
     suppressConsoleLogs(async () => {
       let eventHandler = jest.fn()

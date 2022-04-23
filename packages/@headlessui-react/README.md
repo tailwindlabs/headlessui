@@ -16,11 +16,7 @@
 ## Installation
 
 ```sh
-# npm
 npm install @headlessui/react
-
-# Yarn
-yarn add @headlessui/react
 ```
 
 ## Documentation
