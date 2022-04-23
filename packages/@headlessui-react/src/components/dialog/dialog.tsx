@@ -173,13 +173,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   }
 
   let dialogState = open ? DialogStates.Open : DialogStates.Closed
-  let visible = (() => {
-    if (usesOpenClosedState !== null) {
-      return usesOpenClosedState === State.Open
-    }
-
-    return dialogState === DialogStates.Open
-  })()
 
   let [state, dispatch] = useReducer(stateReducer, {
     titleId: null,
@@ -357,7 +350,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
                     slot,
                     defaultTag: DEFAULT_DIALOG_TAG,
                     features: DialogRenderFeatures,
-                    visible,
+                    visible: dialogState === DialogStates.Open,
                     name: 'Dialog',
                   })}
                 </DescriptionProvider>
