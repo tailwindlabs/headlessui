@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow `Enter` for form submit in `RadioGroup`, `Switch` and `Combobox` improvements ([#1285](https://github.com/tailwindlabs/headlessui/pull/1285))
 - add React 18 compatibility ([#1326](https://github.com/tailwindlabs/headlessui/pull/1326))
 - Add explicit `multiple` prop ([#1355](https://github.com/tailwindlabs/headlessui/pull/1355))
+- Prefer incoming `open` prop over OpenClosed state ([#1360](https://github.com/tailwindlabs/headlessui/pull/1360))
 
 ### Added
 
@@ -78,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow `Enter` for form submit in `RadioGroup`, `Switch` and `Combobox` improvements ([#1285](https://github.com/tailwindlabs/headlessui/pull/1285))
 - Add explicit `multiple` prop ([#1355](https://github.com/tailwindlabs/headlessui/pull/1355))
 - fix `nullable` prop for Vue ([2b109548b1a94a30858cf58c8f525554a1c12cbb](https://github.com/tailwindlabs/headlessui/commit/2b109548b1a94a30858cf58c8f525554a1c12cbb))
+- Prefer incoming `open` prop over OpenClosed state ([#1360](https://github.com/tailwindlabs/headlessui/pull/1360))
 
 ### Added
 

@@ -113,14 +113,6 @@ export let Dialog = defineComponent({
     }
 
     let dialogState = computed(() => (open.value ? DialogStates.Open : DialogStates.Closed))
-    let visible = computed(() => {
-      if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
-      }
-
-      return dialogState.value === DialogStates.Open
-    })
-
     let enabled = computed(() => dialogState.value === DialogStates.Open)
 
     let hasNestedDialogs = computed(() => nestedDialogCount.value > 1) // 1 is the current dialog
@@ -307,7 +299,7 @@ export let Dialog = defineComponent({
                 slot,
                 attrs,
                 slots,
-                visible: visible.value,
+                visible: dialogState.value === DialogStates.Open,
                 features: Features.RenderStrategy | Features.Static,
                 name: 'Dialog',
               })
