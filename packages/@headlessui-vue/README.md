@@ -18,11 +18,7 @@
 Please note that **this library only supports Vue 3**.
 
 ```sh
-# npm
 npm install @headlessui/vue
-
-# Yarn
-yarn add @headlessui/vue
 ```
 
 ## Documentation
