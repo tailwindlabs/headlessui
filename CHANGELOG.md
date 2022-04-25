@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/react]
 
+- Nothing yet!
+
+## [Unreleased - @headlessui/vue]
+
+- Nothing yet!
+
+## [@headlessui/react@v1.6.0] - 2022-04-25
+
 ### Fixed
 
 - Forward the `ref` to all components ([#1116](https://github.com/tailwindlabs/headlessui/pull/1116))
@@ -46,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement `nullable` mode on `Combobox` in single value mode ([#1295](https://github.com/tailwindlabs/headlessui/pull/1295))
 - Add `Dialog.Backdrop` and `Dialog.Panel` components ([#1333](https://github.com/tailwindlabs/headlessui/pull/1333))
 
-## [Unreleased - @headlessui/vue]
+## [@headlessui/vue@v1.6.0] - 2022-04-25
 
 ### Fixed
 
@@ -450,8 +458,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.5.0...HEAD
-[unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.5.0...HEAD
+[unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...HEAD
+[unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.0...HEAD
+[@headlessui/react@v1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.5.0...@headlessui/react@v1.6.0
+[@headlessui/vue@v1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.5.0...@headlessui/vue@v1.6.0
 [@headlessui/react@v1.5.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.3...@headlessui/react@v1.5.0
 [@headlessui/vue@v1.5.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.3...@headlessui/vue@v1.5.0
 [@headlessui/react@v1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...@headlessui/react@v1.4.3
