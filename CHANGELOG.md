@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/vue]
 
-- Nothing yet!
+### Fixed
+
+- Manually passthrough `attrs` for `Combobox`, `Listbox` and `TabsGroup` component ([#1372](https://github.com/tailwindlabs/headlessui/pull/1372))
 
 ## [@headlessui/react@v1.6.0] - 2022-04-25
 
