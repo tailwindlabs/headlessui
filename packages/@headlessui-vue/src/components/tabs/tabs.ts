@@ -69,6 +69,7 @@ export let TabGroup = defineComponent({
     vertical: { type: [Boolean], default: false },
     manual: { type: [Boolean], default: false },
   },
+  inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
     let selectedIndex = ref<StateDefinition['selectedIndex']['value']>(null)
     let tabs = ref<StateDefinition['tabs']['value']>([])
@@ -152,7 +153,10 @@ export let TabGroup = defineComponent({
           },
         }),
         render({
-          props: omit(props, ['selectedIndex', 'defaultIndex', 'manual', 'vertical', 'onChange']),
+          props: {
+            ...attrs,
+            ...omit(props, ['selectedIndex', 'defaultIndex', 'manual', 'vertical', 'onChange']),
+          },
           slot,
           slots,
           attrs,
