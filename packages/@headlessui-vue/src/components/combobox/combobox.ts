@@ -115,6 +115,7 @@ export let Combobox = defineComponent({
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
   },
+  inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
     let comboboxState = ref<StateDefinition['comboboxState']['value']>(ComboboxStates.Closed)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
@@ -445,7 +446,10 @@ export let Combobox = defineComponent({
             )
           : []),
         render({
-          props: omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue']),
+          props: {
+            ...attrs,
+            ...omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue']),
+          },
           slot,
           slots,
           attrs,

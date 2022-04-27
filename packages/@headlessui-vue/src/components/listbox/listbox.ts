@@ -115,6 +115,7 @@ export let Listbox = defineComponent({
     name: { type: String, optional: true },
     multiple: { type: [Boolean], default: false },
   },
+  inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
     let listboxState = ref<StateDefinition['listboxState']['value']>(ListboxStates.Closed)
     let labelRef = ref<StateDefinition['labelRef']['value']>(null)
@@ -328,7 +329,10 @@ export let Listbox = defineComponent({
             )
           : []),
         render({
-          props: omit(incomingProps, ['onUpdate:modelValue', 'horizontal', 'multiple']),
+          props: {
+            ...attrs,
+            ...omit(incomingProps, ['onUpdate:modelValue', 'horizontal', 'multiple']),
+          },
           slot,
           slots,
           attrs,
