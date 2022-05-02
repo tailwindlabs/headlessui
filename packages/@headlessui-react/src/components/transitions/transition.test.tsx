@@ -429,7 +429,7 @@ describe('Setup API', () => {
 
 describe('Transitions', () => {
   describe('shallow transitions', () => {
-    it('should transition in completely (duration defined in milliseconds)', async () => {
+    xit('should transition in completely (duration defined in milliseconds)', async () => {
       let enterDuration = 50
 
       function Example() {
