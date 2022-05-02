@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/react]
 
-- Nothing yet!
+### Fixed
+
+- Fix hydration issue with `Tab` component ([#1393](https://github.com/tailwindlabs/headlessui/pull/1393))
 
 ## [Unreleased - @headlessui/vue]
 

@@ -23,7 +23,7 @@ import { render, Features, PropsForFeatures, forwardRefWithAs } from '../../util
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { Keys } from '../../components/keyboard'
-import { focusIn, Focus } from '../../utils/focus-management'
+import { focusIn, Focus, sortByDomNode } from '../../utils/focus-management'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -31,7 +31,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 
 interface StateDefinition {
-  selectedIndex: number | null
+  selectedIndex: number
 
   orientation: 'horizontal' | 'vertical'
   activation: 'auto' | 'manual'
@@ -71,8 +71,29 @@ let reducers: {
   ) => StateDefinition
 } = {
   [ActionTypes.SetSelectedIndex](state, action) {
-    if (state.selectedIndex === action.index) return state
-    return { ...state, selectedIndex: action.index }
+    let focusableTabs = state.tabs.filter((tab) => !tab.current?.hasAttribute('disabled'))
+
+    // Underflow
+    if (action.index < 0) {
+      return { ...state, selectedIndex: state.tabs.indexOf(focusableTabs[0]) }
+    }
+
+    // Overflow
+    else if (action.index > state.tabs.length) {
+      return {
+        ...state,
+        selectedIndex: state.tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
+      }
+    }
+
+    // Middle
+    let before = state.tabs.slice(0, action.index)
+    let after = state.tabs.slice(action.index)
+
+    let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
+    if (!next) return state
+
+    return { ...state, selectedIndex: state.tabs.indexOf(next) }
   },
   [ActionTypes.SetOrientation](state, action) {
     if (state.orientation === action.orientation) return state
@@ -84,10 +105,16 @@ let reducers: {
   },
   [ActionTypes.RegisterTab](state, action) {
     if (state.tabs.includes(action.tab)) return state
-    return { ...state, tabs: [...state.tabs, action.tab] }
+    return { ...state, tabs: sortByDomNode([...state.tabs, action.tab], (tab) => tab.current) }
   },
   [ActionTypes.UnregisterTab](state, action) {
-    return { ...state, tabs: state.tabs.filter((tab) => tab !== action.tab) }
+    return {
+      ...state,
+      tabs: sortByDomNode(
+        state.tabs.filter((tab) => tab !== action.tab),
+        (tab) => tab.current
+      ),
+    }
   },
   [ActionTypes.RegisterPanel](state, action) {
     if (state.panels.includes(action.panel)) return state
@@ -106,8 +133,20 @@ let TabsContext = createContext<
 >(null)
 TabsContext.displayName = 'TabsContext'
 
-let TabsSSRContext = createContext<MutableRefObject<number> | null>(null)
+let TabsSSRContext = createContext<MutableRefObject<{ tabs: string[]; panels: string[] }> | null>(
+  null
+)
 TabsSSRContext.displayName = 'TabsSSRContext'
+
+function useSSRTabsCounter(component: string) {
+  let context = useContext(TabsSSRContext)
+  if (context === null) {
+    let err = new Error(`<${component} /> is missing a parent <Tab.Group /> component.`)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useSSRTabsCounter)
+    throw err
+  }
+  return context
+}
 
 function useTabsContext(component: string) {
   let context = useContext(TabsContext)
@@ -153,7 +192,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
 
   let tabsRef = useSyncRefs(ref)
   let [state, dispatch] = useReducer(stateReducer, {
-    selectedIndex: typeof window === 'undefined' ? selectedIndex ?? defaultIndex : null,
+    selectedIndex: selectedIndex ?? defaultIndex,
     tabs: [],
     panels: [],
     orientation,
@@ -172,38 +211,9 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   }, [activation])
 
   useIsoMorphicEffect(() => {
-    if (state.tabs.length <= 0) return
-    if (selectedIndex === null && state.selectedIndex !== null) return
-
-    let tabs = state.tabs.map((tab) => tab.current).filter(Boolean) as HTMLElement[]
-    let focusableTabs = tabs.filter((tab) => !tab.hasAttribute('disabled'))
-
     let indexToSet = selectedIndex ?? defaultIndex
-
-    // Underflow
-    if (indexToSet < 0) {
-      dispatch({ type: ActionTypes.SetSelectedIndex, index: tabs.indexOf(focusableTabs[0]) })
-    }
-
-    // Overflow
-    else if (indexToSet > state.tabs.length) {
-      dispatch({
-        type: ActionTypes.SetSelectedIndex,
-        index: tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
-      })
-    }
-
-    // Middle
-    else {
-      let before = tabs.slice(0, indexToSet)
-      let after = tabs.slice(indexToSet)
-
-      let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
-      if (!next) return
-
-      dispatch({ type: ActionTypes.SetSelectedIndex, index: tabs.indexOf(next) })
-    }
-  }, [defaultIndex, selectedIndex, state.tabs, state.selectedIndex])
+    dispatch({ type: ActionTypes.SetSelectedIndex, index: indexToSet })
+  }, [selectedIndex /* Deliberately skipping defaultIndex */])
 
   let lastChangedIndex = useRef(state.selectedIndex)
   useEffect(() => {
@@ -226,14 +236,17 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     [state, dispatch]
   )
 
-  let SSRCounter = useRef(0)
+  let SSRCounter = useRef({
+    tabs: [],
+    panels: [],
+  })
 
   let ourProps = {
     ref: tabsRef,
   }
 
   return (
-    <TabsSSRContext.Provider value={typeof window === 'undefined' ? SSRCounter : null}>
+    <TabsSSRContext.Provider value={SSRCounter}>
       <TabsContext.Provider value={providerBag}>
         <FocusSentinel
           onFocus={() => {
@@ -308,6 +321,7 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
 
   let [{ selectedIndex, tabs, panels, orientation, activation }, { dispatch, change }] =
     useTabsContext('Tab')
+  let SSRContext = useSSRTabsCounter('Tab')
 
   let internalTabRef = useRef<HTMLElement>(null)
   let tabRef = useSyncRefs(internalTabRef, ref, (element) => {
@@ -320,7 +334,11 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
     return () => dispatch({ type: ActionTypes.UnregisterTab, tab: internalTabRef })
   }, [dispatch, internalTabRef])
 
+  let mySSRIndex = SSRContext.current.tabs.indexOf(id)
+  if (mySSRIndex === -1) mySSRIndex = SSRContext.current.tabs.push(id) - 1
+
   let myIndex = tabs.indexOf(internalTabRef)
+  if (myIndex === -1) myIndex = mySSRIndex
   let selected = myIndex === selectedIndex
 
   let handleKeyDown = useCallback(
@@ -452,11 +470,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   ref: Ref<HTMLElement>
 ) {
   let [{ selectedIndex, tabs, panels }, { dispatch }] = useTabsContext('Tab.Panel')
-  let SSRContext = useContext(TabsSSRContext)
-
-  if (SSRContext !== null && selectedIndex === null) {
-    selectedIndex = 0 // Should normally not happen, but in case the selectedIndex is null, we can default to 0.
-  }
+  let SSRContext = useSSRTabsCounter('Tab.Panel')
 
   let id = `headlessui-tabs-panel-${useId()}`
   let internalPanelRef = useRef<HTMLElement>(null)
@@ -470,9 +484,13 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     return () => dispatch({ type: ActionTypes.UnregisterPanel, panel: internalPanelRef })
   }, [dispatch, internalPanelRef])
 
+  let mySSRIndex = SSRContext.current.panels.indexOf(id)
+  if (mySSRIndex === -1) mySSRIndex = SSRContext.current.panels.push(id) - 1
+
   let myIndex = panels.indexOf(internalPanelRef)
-  let selected =
-    SSRContext === null ? myIndex === selectedIndex : SSRContext.current++ === selectedIndex
+  if (myIndex === -1) myIndex = mySSRIndex
+
+  let selected = myIndex === selectedIndex
 
   let slot = useMemo(() => ({ selected }), [selected])
 
