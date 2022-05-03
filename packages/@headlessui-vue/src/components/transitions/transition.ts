@@ -291,7 +291,7 @@ export let TransitionChild = defineComponent({
 
     onMounted(() => {
       watch(
-        [show, appear],
+        [show],
         (_oldValues, _newValues, onInvalidate) => {
           executeTransition(onInvalidate)
           initial.value = false
@@ -394,7 +394,7 @@ export let TransitionRoot = defineComponent({
       state.value = TreeStates.Hidden
     })
 
-    let initial = { value: true }
+    let initial = ref(true)
     let transitionBag = {
       show,
       appear: computed(() => props.appear || !initial.value),
