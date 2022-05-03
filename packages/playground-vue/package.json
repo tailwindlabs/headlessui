@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@headlessui/vue": "*",
+    "@heroicons/vue": "^1.0.6",
     "vue": "^3.2.27",
     "vue-flatpickr-component": "^9.0.5",
     "vue-router": "^4.0.0"

@@ -166,6 +166,11 @@
         "name": "Dialog",
         "path": "/dialog/dialog",
         "component": "./components/dialog/dialog.vue"
+      },
+      {
+        "name": "Dialog Slide Over",
+        "path": "/dialog/slide-over",
+        "component": "./components/dialog/slide-over.vue"
       }
     ]
   },
