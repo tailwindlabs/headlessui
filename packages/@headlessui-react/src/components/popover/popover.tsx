@@ -640,9 +640,6 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     [state, internalPanelRef, dispatch]
   )
 
-  // Unlink on "unmount" myself
-  useEffect(() => () => dispatch({ type: ActionTypes.SetPanel, panel: null }), [dispatch])
-
   // Unlink on "unmount" children
   useEffect(() => {
     if (props.static) return
