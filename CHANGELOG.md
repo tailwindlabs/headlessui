@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/vue]
 
-- Nothing yet!
+### Fixed
+
+- Ensure `DialogPanel` exposes its ref ([#1404](https://github.com/tailwindlabs/headlessui/pull/1404))
 
 ## [Unreleased - @headlessui/react]
 
