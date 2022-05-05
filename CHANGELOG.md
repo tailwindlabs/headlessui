@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/react]
 
-- Nothing yet!
+### Fixed
+
+- Fix closing of `Popover.Panel` in React 18 ([#1409](https://github.com/tailwindlabs/headlessui/pull/1409))
 
 ## [@headlessui/react@1.6.1] - 2022-05-03
 

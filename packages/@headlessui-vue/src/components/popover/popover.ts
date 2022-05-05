@@ -1,7 +1,7 @@
 import {
+  computed,
   defineComponent,
   inject,
-  onUnmounted,
   provide,
   ref,
   watchEffect,
@@ -9,7 +9,6 @@ import {
   // Types
   InjectionKey,
   Ref,
-  computed,
 } from 'vue'
 
 import { match } from '../../utils/match'
@@ -476,10 +475,6 @@ export let PopoverPanel = defineComponent({
     expose({ el: api.panel, $el: api.panel })
 
     provide(PopoverPanelContext, api.panelId)
-
-    onUnmounted(() => {
-      api.panel.value = null
-    })
 
     // Move focus within panel
     watchEffect(() => {
