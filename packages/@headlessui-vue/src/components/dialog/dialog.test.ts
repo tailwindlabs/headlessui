@@ -5,6 +5,7 @@ import {
   h,
   ComponentOptionsWithoutProps,
   ConcreteComponent,
+  onMounted,
 } from 'vue'
 import { render } from '../../test-utils/vue-testing-library'
 
@@ -118,6 +119,49 @@ describe('Safe guards', () => {
       })
     })
   )
+})
+
+describe('refs', () => {
+  it('should be possible to access the ref on the DialogBackdrop', async () => {
+    renderTemplate({
+      template: `
+        <Dialog :open="true">
+          <DialogBackdrop ref="backdrop" />
+          <DialogPanel>
+            <button>element</button>
+          </DialogPanel>
+        </Dialog>
+      `,
+      setup() {
+        let backdrop = ref<{ el: Element; $el: Element } | null>(null)
+        onMounted(() => {
+          expect(backdrop.value?.el).toBeInstanceOf(HTMLDivElement)
+          expect(backdrop.value?.$el).toBeInstanceOf(HTMLDivElement)
+        })
+        return { backdrop }
+      },
+    })
+  })
+
+  it('should be possible to access the ref on the DialogPanel', async () => {
+    renderTemplate({
+      template: `
+        <Dialog :open="true">
+          <DialogPanel ref="panel">
+            <button>element</button>
+          </DialogPanel>
+        </Dialog>
+      `,
+      setup() {
+        let panel = ref<{ el: Element; $el: Element } | null>(null)
+        onMounted(() => {
+          expect(panel.value?.el).toBeInstanceOf(HTMLDivElement)
+          expect(panel.value?.$el).toBeInstanceOf(HTMLDivElement)
+        })
+        return { panel }
+      },
+    })
+  })
 })
 
 describe('Rendering', () => {

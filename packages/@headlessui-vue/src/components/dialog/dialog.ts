@@ -401,9 +401,11 @@ export let DialogPanel = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  setup(props, { attrs, slots }) {
+  setup(props, { attrs, slots, expose }) {
     let api = useDialogContext('DialogPanel')
     let id = `headlessui-dialog-panel-${useId()}`
+
+    expose({ el: api.panelRef, $el: api.panelRef })
 
     return () => {
       let ourProps = {
