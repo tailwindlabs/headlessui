@@ -36,6 +36,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 enum MenuStates {
   Open,
@@ -588,7 +589,9 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     if (state.activationTrigger === ActivationTrigger.Pointer) return
     let d = disposables()
     d.requestAnimationFrame(() => {
-      internalItemRef.current?.scrollIntoView?.({ block: 'nearest' })
+      if (internalItemRef.current) {
+        scrollIntoView(internalItemRef.current, { block: 'nearest' })
+      }
     })
     return d.dispose
   }, [internalItemRef, active, state.menuState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])

@@ -38,6 +38,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { sortByDomNode } from '../../utils/focus-management'
 import { VisuallyHidden } from '../../internal/visually-hidden'
 import { objectToFormEntries } from '../../utils/form'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 enum ComboboxStates {
   Open,
@@ -1131,7 +1132,9 @@ let Option = forwardRefWithAs(function Option<
     if (state.activationTrigger === ActivationTrigger.Pointer) return
     let d = disposables()
     d.requestAnimationFrame(() => {
-      internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
+      if (internalOptionRef.current) {
+        scrollIntoView(internalOptionRef.current, { block: 'nearest' })
+      }
     })
     return d.dispose
   }, [internalOptionRef, active, state.comboboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex])

@@ -24,6 +24,7 @@ import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 enum MenuStates {
   Open,
@@ -508,7 +509,12 @@ export let MenuItem = defineComponent({
       if (api.menuState.value !== MenuStates.Open) return
       if (!active.value) return
       if (api.activationTrigger.value === ActivationTrigger.Pointer) return
-      nextTick(() => dom(internalItemRef)?.scrollIntoView?.({ block: 'nearest' }))
+      nextTick(() => {
+        const target = dom(internalItemRef)
+        if (target) {
+          scrollIntoView(target, { block: 'nearest' })
+        }
+      })
     })
 
     function handleClick(event: MouseEvent) {

@@ -17,7 +17,7 @@ import React, {
   Ref,
   useEffect,
 } from 'react'
-
+import scrollIntoView from 'scroll-into-view-if-needed'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -783,7 +783,9 @@ let Option = forwardRefWithAs(function Option<
     if (state.activationTrigger === ActivationTrigger.Pointer) return
     let d = disposables()
     d.requestAnimationFrame(() => {
-      internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
+      if (internalOptionRef.current) {
+        scrollIntoView(internalOptionRef.current, { block: 'nearest' })
+      }
     })
     return d.dispose
   }, [internalOptionRef, active, state.listboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeOptionIndex])

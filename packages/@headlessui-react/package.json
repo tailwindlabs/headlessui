@@ -41,6 +41,9 @@
     "react": "^16 || ^17 || ^18",
     "react-dom": "^16 || ^17 || ^18"
   },
+  "dependencies": {
+    "scroll-into-view-if-needed": "^2.2.29"
+  },
   "devDependencies": {
     "@testing-library/react": "^13.0.0",
     "@types/react": "^17.0.43",

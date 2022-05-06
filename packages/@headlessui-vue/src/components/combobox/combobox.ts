@@ -34,6 +34,7 @@ import { sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { VisuallyHidden } from '../../internal/visually-hidden'
 import { objectToFormEntries } from '../../utils/form'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 enum ComboboxStates {
   Open,
@@ -876,7 +877,12 @@ export let ComboboxOption = defineComponent({
       if (api.comboboxState.value !== ComboboxStates.Open) return
       if (!active.value) return
       if (api.activationTrigger.value === ActivationTrigger.Pointer) return
-      nextTick(() => dom(internalOptionRef)?.scrollIntoView?.({ block: 'nearest' }))
+      nextTick(() => {
+        const target = dom(internalOptionRef)
+        if (target) {
+          scrollIntoView(target, { block: 'nearest' })
+        }
+      })
     })
 
     function handleClick(event: MouseEvent) {
