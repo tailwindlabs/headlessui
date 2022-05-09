@@ -212,6 +212,7 @@ export let Dialog = defineComponent({
 
     // Handle `Escape` to close
     useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
+      if (event.defaultPrevented) return
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
       if (hasNestedDialogs.value) return

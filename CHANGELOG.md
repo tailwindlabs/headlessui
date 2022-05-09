@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ensure `DialogPanel` exposes its ref ([#1404](https://github.com/tailwindlabs/headlessui/pull/1404))
+- Ignore `Escape` when event got prevented in `Dialog` component ([#1424](https://github.com/tailwindlabs/headlessui/pull/1424))
 
 ## [Unreleased - @headlessui/react]
 
 ### Fixed
 
 - Fix closing of `Popover.Panel` in React 18 ([#1409](https://github.com/tailwindlabs/headlessui/pull/1409))
+- Ignore `Escape` when event got prevented in `Dialog` component ([#1424](https://github.com/tailwindlabs/headlessui/pull/1424))
 
 ## [@headlessui/react@1.6.1] - 2022-05-03
 
