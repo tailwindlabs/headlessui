@@ -237,6 +237,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   // Handle `Escape` to close
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
+    if (event.defaultPrevented) return
     if (event.key !== Keys.Escape) return
     if (dialogState !== DialogStates.Open) return
     if (hasNestedDialogs) return
