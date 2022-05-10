@@ -46,7 +46,7 @@ afterAll(() => jest.restoreAllMocks())
 
 let TabSentinel = defineComponent({
   name: 'TabSentinel',
-  template: html` <div :tabindex="0"></div> `,
+  template: html`<div :tabindex="0"></div>`,
 })
 
 jest.mock('../../hooks/use-id')

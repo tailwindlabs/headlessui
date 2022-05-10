@@ -25,7 +25,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
-import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
+import { FocusTrap } from '../../components/focus-trap/focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
@@ -37,6 +37,7 @@ import { useOutsideClick, Features as OutsideClickFeatures } from '../../hooks/u
 import { getOwnerDocument } from '../../utils/owner'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 
 enum DialogStates {
   Open,
@@ -137,6 +138,9 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
+  // Reference to a node in the "main" tree, not in the portalled Dialog tree.
+  let mainTreeNode = useRef<HTMLDivElement | null>(null)
+
   let ownerDocument = useOwnerDocument(internalDialogRef)
 
   // Validations
@@ -196,26 +200,17 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // in between. We only care abou whether you are the top most one or not.
   let position = !hasNestedDialogs ? 'leaf' : 'parent'
 
-  let previousElement = useFocusTrap(
-    internalDialogRef,
-    enabled
-      ? match(position, {
-          parent: FocusTrapFeatures.RestoreFocus,
-          leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
-        })
-      : FocusTrapFeatures.None,
-    { initialFocus, containers }
-  )
+  // Ensure other elements can't be interacted with
   useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
 
-  // Handle outside click
+  // Close Dialog on outside click
   useOutsideClick(
     () => {
       // Third party roots
       let rootContainers = Array.from(ownerDocument?.querySelectorAll('body > *') ?? []).filter(
         (container) => {
           if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-          if (container.contains(previousElement.current)) return false // Skip if it is the main app
+          if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
           if (state.panelRef.current && container.contains(state.panelRef.current)) return false
           return true // Keep
         }
@@ -345,21 +340,35 @@ let DialogRoot = forwardRefWithAs(function Dialog<
             <Portal.Group target={internalDialogRef}>
               <ForcePortalRoot force={false}>
                 <DescriptionProvider slot={slot} name="Dialog.Description">
-                  {render({
-                    ourProps,
-                    theirProps,
-                    slot,
-                    defaultTag: DEFAULT_DIALOG_TAG,
-                    features: DialogRenderFeatures,
-                    visible: dialogState === DialogStates.Open,
-                    name: 'Dialog',
-                  })}
+                  <FocusTrap
+                    initialFocus={initialFocus}
+                    containers={containers}
+                    features={
+                      enabled
+                        ? match(position, {
+                            parent: FocusTrap.features.RestoreFocus,
+                            leaf: FocusTrap.features.All & ~FocusTrap.features.FocusLock,
+                          })
+                        : FocusTrap.features.None
+                    }
+                  >
+                    {render({
+                      ourProps,
+                      theirProps,
+                      slot,
+                      defaultTag: DEFAULT_DIALOG_TAG,
+                      features: DialogRenderFeatures,
+                      visible: dialogState === DialogStates.Open,
+                      name: 'Dialog',
+                    })}
+                  </FocusTrap>
                 </DescriptionProvider>
               </ForcePortalRoot>
             </Portal.Group>
           </DialogContext.Provider>
         </Portal>
       </ForcePortalRoot>
+      <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNode} />
     </StackProvider>
   )
 })

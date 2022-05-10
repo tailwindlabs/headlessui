@@ -25,7 +25,7 @@ import { useWatch } from '../../hooks/use-watch'
 
 let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 
-export enum FocusTrapFeatures {
+enum Features {
   /** No features enabled for the focus trap. */
   None = 1 << 0,
 
@@ -38,93 +38,94 @@ export enum FocusTrapFeatures {
   /** Ensure that programmatically moving focus outside of the container is disallowed. */
   FocusLock = 1 << 3,
 
-  /** Ensure that we restore the focus when unmounting the component that uses this `useFocusTrap` hook. */
+  /** Ensure that we restore the focus when unmounting the focus trap. */
   RestoreFocus = 1 << 4,
 
   /** Enable all features. */
   All = InitialFocus | TabLock | FocusLock | RestoreFocus,
 }
 
-export let FocusTrap = forwardRefWithAs(function FocusTrap<
-  TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG
->(
-  props: Props<TTag> & {
-    initialFocus?: MutableRefObject<HTMLElement | null>
-    features?: FocusTrapFeatures
-    containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
-  },
-  ref: Ref<HTMLDivElement>
-) {
-  let container = useRef<HTMLDivElement | null>(null)
-  let focusTrapRef = useSyncRefs(container, ref)
-  let { initialFocus, containers, features = FocusTrapFeatures.All, ...theirProps } = props
+export let FocusTrap = Object.assign(
+  forwardRefWithAs(function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
+    props: Props<TTag> & {
+      initialFocus?: MutableRefObject<HTMLElement | null>
+      features?: Features
+      containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
+    },
+    ref: Ref<HTMLDivElement>
+  ) {
+    let container = useRef<HTMLDivElement | null>(null)
+    let focusTrapRef = useSyncRefs(container, ref)
+    let { initialFocus, containers, features = Features.All, ...theirProps } = props
 
-  if (!useServerHandoffComplete()) {
-    features = FocusTrapFeatures.None
-  }
+    if (!useServerHandoffComplete()) {
+      features = Features.None
+    }
 
-  let ownerDocument = useOwnerDocument(container)
+    let ownerDocument = useOwnerDocument(container)
 
-  useRestoreFocus({ ownerDocument }, Boolean(features & FocusTrapFeatures.RestoreFocus))
-  let previousActiveElement = useInitialFocus(
-    { ownerDocument, container, initialFocus },
-    Boolean(features & FocusTrapFeatures.InitialFocus)
-  )
-  useFocusLock(
-    { ownerDocument, container, containers, previousActiveElement },
-    Boolean(features & FocusTrapFeatures.FocusLock)
-  )
+    useRestoreFocus({ ownerDocument }, Boolean(features & Features.RestoreFocus))
+    let previousActiveElement = useInitialFocus(
+      { ownerDocument, container, initialFocus },
+      Boolean(features & Features.InitialFocus)
+    )
+    useFocusLock(
+      { ownerDocument, container, containers, previousActiveElement },
+      Boolean(features & Features.FocusLock)
+    )
 
-  let direction = useTabDirection()
-  let handleFocus = useEvent(() => {
-    let el = container.current as HTMLElement
-    if (!el) return
+    let direction = useTabDirection()
+    let handleFocus = useEvent(() => {
+      let el = container.current as HTMLElement
+      if (!el) return
 
-    // TODO: Cleanup once we are using real browser tests
-    if (process.env.NODE_ENV === 'test') {
-      microTask(() => {
+      // TODO: Cleanup once we are using real browser tests
+      if (process.env.NODE_ENV === 'test') {
+        microTask(() => {
+          match(direction.current, {
+            [TabDirection.Forwards]: () => focusIn(el, Focus.First),
+            [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+          })
+        })
+      } else {
         match(direction.current, {
           [TabDirection.Forwards]: () => focusIn(el, Focus.First),
           [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
         })
-      })
-    } else {
-      match(direction.current, {
-        [TabDirection.Forwards]: () => focusIn(el, Focus.First),
-        [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
-      })
-    }
-  })
+      }
+    })
 
-  let ourProps = { ref: focusTrapRef }
+    let ourProps = { ref: focusTrapRef }
 
-  return (
-    <>
-      {Boolean(features & FocusTrapFeatures.TabLock) && (
-        <Hidden
-          as="button"
-          type="button"
-          onFocus={handleFocus}
-          features={HiddenFeatures.Focusable}
-        />
-      )}
-      {render({
-        ourProps,
-        theirProps,
-        defaultTag: DEFAULT_FOCUS_TRAP_TAG,
-        name: 'FocusTrap',
-      })}
-      {Boolean(features & FocusTrapFeatures.TabLock) && (
-        <Hidden
-          as="button"
-          type="button"
-          onFocus={handleFocus}
-          features={HiddenFeatures.Focusable}
-        />
-      )}
-    </>
-  )
-})
+    return (
+      <>
+        {Boolean(features & Features.TabLock) && (
+          <Hidden
+            as="button"
+            type="button"
+            onFocus={handleFocus}
+            features={HiddenFeatures.Focusable}
+          />
+        )}
+        {render({
+          ourProps,
+          theirProps,
+          defaultTag: DEFAULT_FOCUS_TRAP_TAG,
+          name: 'FocusTrap',
+        })}
+        {Boolean(features & Features.TabLock) && (
+          <Hidden
+            as="button"
+            type="button"
+            onFocus={handleFocus}
+            features={HiddenFeatures.Focusable}
+          />
+        )}
+      </>
+    )
+  }),
+  { features: Features }
+)
 
 function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, enabled: boolean) {
   let restoreElement = useRef<HTMLElement | null>(null)
