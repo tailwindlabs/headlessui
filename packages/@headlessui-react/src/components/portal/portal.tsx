@@ -20,6 +20,7 @@ import { usePortalRoot } from '../../internal/portal-force-root'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { microTask } from '../../utils/micro-task'
 
 function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
   let forceInRoot = usePortalRoot()
@@ -85,21 +86,31 @@ let PortalRoot = forwardRefWithAs(function Portal<
 
   let ready = useServerHandoffComplete()
 
+  let trulyUnmounted = useRef(false)
   useIsoMorphicEffect(() => {
-    if (!target) return
-    if (!element) return
+    trulyUnmounted.current = false
 
-    target.appendChild(element)
+    if (!target || !element) return
+
+    // Element already exists in target, always calling target.appendChild(element) will cause a
+    // brief unmount/remount.
+    if (!target.contains(element)) {
+      target.appendChild(element)
+    }
 
     return () => {
-      if (!target) return
-      if (!element) return
+      trulyUnmounted.current = true
 
-      target.removeChild(element)
+      microTask(() => {
+        if (!trulyUnmounted.current) return
+        if (!target || !element) return
 
-      if (target.childNodes.length <= 0) {
-        target.parentElement?.removeChild(target)
-      }
+        target.removeChild(element)
+
+        if (target.childNodes.length <= 0) {
+          target.parentElement?.removeChild(target)
+        }
+      })
     }
   }, [target, element])
 
