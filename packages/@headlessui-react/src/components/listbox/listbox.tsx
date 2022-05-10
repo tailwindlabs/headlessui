@@ -34,7 +34,7 @@ import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/fo
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { VisuallyHidden } from '../../internal/visually-hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
@@ -404,7 +404,8 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
         {name != null &&
           value != null &&
           objectToFormEntries({ [name]: value }).map(([name, value]) => (
-            <VisuallyHidden
+            <Hidden
+              features={HiddenFeatures.Hidden}
               {...compact({
                 key: name,
                 as: 'input',

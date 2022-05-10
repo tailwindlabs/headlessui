@@ -18,7 +18,7 @@ import { Keys } from '../../keyboard'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { VisuallyHidden } from '../../internal/visually-hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit } from '../../utils/form'
 
 type StateDefinition = {
@@ -127,8 +127,9 @@ export let Switch = defineComponent({
       return h(Fragment, [
         name != null && modelValue != null
           ? h(
-              VisuallyHidden,
+              Hidden,
               compact({
+                features: HiddenFeatures.Hidden,
                 as: 'input',
                 type: 'checkbox',
                 hidden: true,

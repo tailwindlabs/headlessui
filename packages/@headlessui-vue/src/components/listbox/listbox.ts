@@ -30,7 +30,7 @@ import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { VisuallyHidden } from '../../internal/visually-hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 
 enum ListboxStates {
@@ -315,8 +315,9 @@ export let Listbox = defineComponent({
         ...(name != null && modelValue != null
           ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
               h(
-                VisuallyHidden,
+                Hidden,
                 compact({
+                  features: HiddenFeatures.Hidden,
                   key: name,
                   as: 'input',
                   type: 'hidden',

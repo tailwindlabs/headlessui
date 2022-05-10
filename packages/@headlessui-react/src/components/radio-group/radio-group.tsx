@@ -26,7 +26,7 @@ import { Label, useLabels } from '../../components/label/label'
 import { Description, useDescriptions } from '../../components/description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { VisuallyHidden } from '../../internal/visually-hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
@@ -271,7 +271,8 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
           {name != null &&
             value != null &&
             objectToFormEntries({ [name]: value }).map(([name, value]) => (
-              <VisuallyHidden
+              <Hidden
+                features={HiddenFeatures.Hidden}
                 {...compact({
                   key: name,
                   as: 'input',
