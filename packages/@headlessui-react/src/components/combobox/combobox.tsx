@@ -36,7 +36,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { sortByDomNode } from '../../utils/focus-management'
-import { VisuallyHidden } from '../../internal/visually-hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 
 enum ComboboxStates {
@@ -565,7 +565,8 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
             {name != null &&
               value != null &&
               objectToFormEntries({ [name]: value }).map(([name, value]) => (
-                <VisuallyHidden
+                <Hidden
+                  features={HiddenFeatures.Hidden}
                   {...compact({
                     key: name,
                     as: 'input',

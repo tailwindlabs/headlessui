@@ -1,6 +1,6 @@
 import { MutableRefObject, useRef } from 'react'
 import { microTask } from '../utils/micro-task'
-import { useLatestValue } from './use-latest-value'
+import { useEvent } from './use-event'
 import { useWindowEvent } from './use-window-event'
 
 type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
@@ -18,7 +18,7 @@ export function useOutsideClick(
   features: Features = Features.None
 ) {
   let called = useRef(false)
-  let handler = useLatestValue((event: MouseEvent | PointerEvent) => {
+  let handler = useEvent((event: MouseEvent | PointerEvent) => {
     if (called.current) return
     called.current = true
     microTask(() => {
@@ -77,6 +77,6 @@ export function useOutsideClick(
     return cb(event, target)
   })
 
-  useWindowEvent('pointerdown', (...args) => handler.current(...args))
-  useWindowEvent('mousedown', (...args) => handler.current(...args))
+  useWindowEvent('pointerdown', handler)
+  useWindowEvent('mousedown', handler)
 }

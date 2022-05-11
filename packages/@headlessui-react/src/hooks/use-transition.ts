@@ -5,6 +5,7 @@ import { disposables } from '../utils/disposables'
 import { match } from '../utils/match'
 
 import { useDisposables } from './use-disposables'
+import { useEvent } from './use-event'
 import { useIsMounted } from './use-is-mounted'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { useLatestValue } from './use-latest-value'
@@ -46,7 +47,7 @@ export function useTransition({
 
   let latestDirection = useLatestValue(direction)
 
-  let beforeEvent = useLatestValue(() => {
+  let beforeEvent = useEvent(() => {
     return match(latestDirection.current, {
       enter: () => events.current.beforeEnter(),
       leave: () => events.current.beforeLeave(),
@@ -54,7 +55,7 @@ export function useTransition({
     })
   })
 
-  let afterEvent = useLatestValue(() => {
+  let afterEvent = useEvent(() => {
     return match(latestDirection.current, {
       enter: () => events.current.afterEnter(),
       leave: () => events.current.afterLeave(),
@@ -73,7 +74,7 @@ export function useTransition({
 
     dd.dispose()
 
-    beforeEvent.current()
+    beforeEvent()
 
     onStart.current(latestDirection.current)
 
@@ -83,7 +84,7 @@ export function useTransition({
 
         match(reason, {
           [Reason.Ended]() {
-            afterEvent.current()
+            afterEvent()
             onStop.current(latestDirection.current)
           },
           [Reason.Cancelled]: () => {},

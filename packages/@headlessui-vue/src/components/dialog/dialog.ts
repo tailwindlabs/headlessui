@@ -20,7 +20,7 @@ import {
 import { render, Features } from '../../utils/render'
 import { Keys } from '../../keyboard'
 import { useId } from '../../hooks/use-id'
-import { useFocusTrap, Features as FocusTrapFeatures } from '../../hooks/use-focus-trap'
+import { FocusTrap } from '../../components/focus-trap/focus-trap'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal, PortalGroup } from '../portal/portal'
 import { StackMessage, useStackProvider } from '../../internal/stack-context'
@@ -32,6 +32,7 @@ import { useOpenClosed, State } from '../../internal/open-closed'
 import { useOutsideClick, Features as OutsideClickFeatures } from '../../hooks/use-outside-click'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 
 enum DialogStates {
   Open,
@@ -93,6 +94,10 @@ export let Dialog = defineComponent({
 
     let containers = ref<Set<Ref<HTMLElement | null>>>(new Set())
     let internalDialogRef = ref<HTMLDivElement | null>(null)
+
+    // Reference to a node in the "main" tree, not in the portalled Dialog tree.
+    let mainTreeNode = ref<HTMLDivElement | null>(null)
+
     let ownerDocument = computed(() => getOwnerDocument(internalDialogRef))
 
     expose({ el: internalDialogRef, $el: internalDialogRef })
@@ -122,21 +127,6 @@ export let Dialog = defineComponent({
     // in between. We only care abou whether you are the top most one or not.
     let position = computed(() => (!hasNestedDialogs.value ? 'leaf' : 'parent'))
 
-    let previousElement = useFocusTrap(
-      internalDialogRef,
-      computed(() => {
-        return enabled.value
-          ? match(position.value, {
-              parent: FocusTrapFeatures.RestoreFocus,
-              leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
-            })
-          : FocusTrapFeatures.None
-      }),
-      computed(() => ({
-        initialFocus: ref(props.initialFocus),
-        containers,
-      }))
-    )
     useInertOthers(
       internalDialogRef,
       computed(() => (hasNestedDialogs.value ? enabled.value : false))
@@ -192,7 +182,7 @@ export let Dialog = defineComponent({
           ownerDocument.value?.querySelectorAll('body > *') ?? []
         ).filter((container) => {
           if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-          if (container.contains(previousElement.value)) return false // Skip if it is the main app
+          if (container.contains(dom(mainTreeNode))) return false // Skip if it is the main app
           if (api.panelRef.value && container.contains(api.panelRef.value)) return false
           return true // Keep
         })
@@ -291,23 +281,38 @@ export let Dialog = defineComponent({
 
       let slot = { open: dialogState.value === DialogStates.Open }
 
-      return h(ForcePortalRoot, { force: true }, () =>
+      return h(ForcePortalRoot, { force: true }, () => [
         h(Portal, () =>
           h(PortalGroup, { target: internalDialogRef.value }, () =>
             h(ForcePortalRoot, { force: false }, () =>
-              render({
-                props: { ...incomingProps, ...ourProps },
-                slot,
-                attrs,
-                slots,
-                visible: dialogState.value === DialogStates.Open,
-                features: Features.RenderStrategy | Features.Static,
-                name: 'Dialog',
-              })
+              h(
+                FocusTrap,
+                {
+                  initialFocus,
+                  containers,
+                  features: enabled.value
+                    ? match(position.value, {
+                        parent: FocusTrap.features.RestoreFocus,
+                        leaf: FocusTrap.features.All & ~FocusTrap.features.FocusLock,
+                      })
+                    : FocusTrap.features.None,
+                },
+                () =>
+                  render({
+                    props: { ...incomingProps, ...ourProps },
+                    slot,
+                    attrs,
+                    slots,
+                    visible: dialogState.value === DialogStates.Open,
+                    features: Features.RenderStrategy | Features.Static,
+                    name: 'Dialog',
+                  })
+              )
             )
           )
-        )
-      )
+        ),
+        h(Hidden, { features: HiddenFeatures.Hidden, ref: mainTreeNode }),
+      ])
     }
   },
 })

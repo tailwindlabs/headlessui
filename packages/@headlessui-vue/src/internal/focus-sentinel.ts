@@ -1,6 +1,6 @@
 import { h, ref, defineComponent } from 'vue'
 
-import { VisuallyHidden } from './visually-hidden'
+import { Hidden, Features } from './hidden'
 
 export let FocusSentinel = defineComponent({
   props: {
@@ -15,9 +15,10 @@ export let FocusSentinel = defineComponent({
     return () => {
       if (!enabled.value) return null
 
-      return h(VisuallyHidden, {
+      return h(Hidden, {
         as: 'button',
         type: 'button',
+        features: Features.Focusable,
         onFocus(event: FocusEvent) {
           event.preventDefault()
           let frame: ReturnType<typeof requestAnimationFrame>

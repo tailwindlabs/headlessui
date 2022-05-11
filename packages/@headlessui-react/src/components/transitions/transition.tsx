@@ -30,6 +30,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
+import { useEvent } from '../../hooks/use-event'
 
 type ID = ReturnType<typeof useId>
 
@@ -98,8 +99,8 @@ function useParentNesting() {
 
 interface NestingContextValues {
   children: MutableRefObject<{ id: ID; state: TreeStates }[]>
-  register: MutableRefObject<(id: ID) => () => void>
-  unregister: MutableRefObject<(id: ID, strategy?: RenderStrategy) => void>
+  register: (id: ID) => () => void
+  unregister: (id: ID, strategy?: RenderStrategy) => void
 }
 
 let NestingContext = createContext<NestingContextValues | null>(null)
@@ -117,7 +118,7 @@ function useNesting(done?: () => void) {
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
   let mounted = useIsMounted()
 
-  let unregister = useLatestValue((childId: ID, strategy = RenderStrategy.Hidden) => {
+  let unregister = useEvent((childId: ID, strategy = RenderStrategy.Hidden) => {
     let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
     if (idx === -1) return
 
@@ -137,7 +138,7 @@ function useNesting(done?: () => void) {
     })
   })
 
-  let register = useLatestValue((childId: ID) => {
+  let register = useEvent((childId: ID) => {
     let child = transitionableChildren.current.find(({ id }) => id === childId)
     if (!child) {
       transitionableChildren.current.push({ id: childId, state: TreeStates.Visible })
@@ -145,7 +146,7 @@ function useNesting(done?: () => void) {
       child.state = TreeStates.Visible
     }
 
-    return () => unregister.current(childId, RenderStrategy.Unmount)
+    return () => unregister(childId, RenderStrategy.Unmount)
   })
 
   return useMemo(
@@ -224,13 +225,13 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
     if (!transitionInFlight.current) {
       setState(TreeStates.Hidden)
-      unregister.current(id)
+      unregister(id)
     }
   })
 
   useEffect(() => {
     if (!id) return
-    return register.current(id)
+    return register(id)
   }, [register, id])
 
   useEffect(() => {
@@ -245,8 +246,8 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     }
 
     match(state, {
-      [TreeStates.Hidden]: () => unregister.current(id),
-      [TreeStates.Visible]: () => register.current(id),
+      [TreeStates.Hidden]: () => unregister(id),
+      [TreeStates.Visible]: () => register(id),
     })
   }, [state, id, register, unregister, show, strategy])
 
@@ -290,7 +291,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
         // When we don't have children anymore we can safely unregister from the parent and hide
         // ourselves.
         setState(TreeStates.Hidden)
-        unregister.current(id)
+        unregister(id)
       }
     }),
   })

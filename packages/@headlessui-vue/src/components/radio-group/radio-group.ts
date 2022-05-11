@@ -23,7 +23,7 @@ import { compact, omit, render } from '../../utils/render'
 import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { VisuallyHidden } from '../../internal/visually-hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
@@ -210,8 +210,9 @@ export let RadioGroup = defineComponent({
         ...(name != null && modelValue != null
           ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
               h(
-                VisuallyHidden,
+                Hidden,
                 compact({
+                  features: HiddenFeatures.Hidden,
                   key: name,
                   as: 'input',
                   type: 'hidden',

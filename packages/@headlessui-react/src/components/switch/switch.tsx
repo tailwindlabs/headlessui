@@ -23,7 +23,7 @@ import { Label, useLabels } from '../label/label'
 import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { VisuallyHidden } from '../../internal/visually-hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit } from '../../utils/form'
 
 interface StateDefinition {
@@ -166,7 +166,8 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   return (
     <>
       {name != null && checked && (
-        <VisuallyHidden
+        <Hidden
+          features={HiddenFeatures.Hidden}
           {...compact({
             as: 'input',
             type: 'checkbox',
