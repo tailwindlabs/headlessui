@@ -1,21 +1,7 @@
 import { useWindowEvent } from './use-window-event'
 import { Ref } from 'vue'
 import { dom } from '../utils/dom'
-
-// Polyfill
-function microTask(cb: () => void) {
-  if (typeof queueMicrotask === 'function') {
-    queueMicrotask(cb)
-  } else {
-    Promise.resolve()
-      .then(cb)
-      .catch((e) =>
-        setTimeout(() => {
-          throw e
-        })
-      )
-  }
-}
+import { microTask } from '../utils/micro-task'
 
 type Container = Ref<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
