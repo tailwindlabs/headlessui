@@ -20,14 +20,14 @@
           >Normal</PopoverButton
         >
         <PopoverPanel class="absolute z-30 flex w-64 flex-col border-2 border-blue-900 bg-gray-100">
-          <a
+          <button
             v-for="(link, i) of links"
+            :key="i"
             :hidden="i === 2"
-            href="/"
-            class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
+            class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
           >
             Normal - {{ link }}
-          </a>
+          </button>
         </PopoverPanel>
       </Popover>
 
@@ -40,13 +40,13 @@
           focus
           class="absolute flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
         >
-          <a
+          <button
             v-for="(link, i) of links"
-            href="/"
-            class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
+            :key="i"
+            class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
           >
             Focus - {{ link }}
-          </a>
+          </button>
         </PopoverPanel>
       </Popover>
 
@@ -61,13 +61,13 @@
             ref="container1"
             class="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
           >
-            <a
+            <button
               v-for="(link, i) of links"
-              href="/"
-              class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
+              :key="i"
+              class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
             >
               Portal - {{ link }}
-            </a>
+            </button>
           </PopoverPanel>
         </Portal>
       </Popover>
@@ -84,13 +84,13 @@
             focus
             class="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
           >
-            <a
+            <button
               v-for="(link, i) of links"
-              href="/"
-              class="border-2 border-transparent px-3 py-2 hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
+              :key="i"
+              class="border-2 border-transparent px-3 py-2 text-left hover:bg-gray-200 focus:border-blue-900 focus:bg-gray-200 focus:outline-none"
             >
               Focus in Portal - {{ link }}
-            </a>
+            </button>
           </PopoverPanel>
         </Portal>
       </Popover>
