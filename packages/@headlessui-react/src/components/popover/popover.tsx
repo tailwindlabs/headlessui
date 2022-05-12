@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -14,8 +15,8 @@ import React, {
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
-  Ref,
   MutableRefObject,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
@@ -29,7 +30,6 @@ import {
   getFocusableElements,
   Focus,
   focusIn,
-  FocusResult,
   isFocusableElement,
   FocusableMode,
 } from '../../utils/focus-management'
@@ -39,6 +39,10 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { getOwnerDocument } from '../../utils/owner'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
+import { useEvent } from '../../hooks/use-event'
+import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
+import { microTask } from '../../utils/micro-task'
 
 enum PopoverStates {
   Open,
@@ -52,6 +56,9 @@ interface StateDefinition {
   buttonId: string
   panel: HTMLElement | null
   panelId: string
+
+  beforePanelSentinel: MutableRefObject<HTMLButtonElement | null>
+  afterPanelSentinel: MutableRefObject<HTMLButtonElement | null>
 }
 
 enum ActionTypes {
@@ -122,6 +129,7 @@ function usePopoverContext(component: string) {
 
 let PopoverAPIContext = createContext<{
   close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
+  isPortalled: boolean
 } | null>(null)
 PopoverAPIContext.displayName = 'PopoverAPIContext'
 
@@ -186,11 +194,27 @@ let PopoverRoot = forwardRefWithAs(function Popover<
     buttonId,
     panel: null,
     panelId,
+    beforePanelSentinel: createRef(),
+    afterPanelSentinel: createRef(),
   } as StateDefinition)
-  let [{ popoverState, button, panel }, dispatch] = reducerBag
+  let [{ popoverState, button, panel, beforePanelSentinel, afterPanelSentinel }, dispatch] =
+    reducerBag
 
   useEffect(() => dispatch({ type: ActionTypes.SetButtonId, buttonId }), [buttonId, dispatch])
   useEffect(() => dispatch({ type: ActionTypes.SetPanelId, panelId }), [panelId, dispatch])
+
+  let isPortalled = useMemo(() => {
+    if (!button) return false
+    if (!panel) return false
+
+    for (let root of document.querySelectorAll('body > *')) {
+      if (Number(root?.contains(button)) ^ Number(root?.contains(panel))) {
+        return true
+      }
+    }
+
+    return false
+  }, [button, panel])
 
   let registerBag = useMemo(
     () => ({ buttonId, panelId, close: () => dispatch({ type: ActionTypes.ClosePopover }) }),
@@ -214,11 +238,13 @@ let PopoverRoot = forwardRefWithAs(function Popover<
   useEventListener(
     ownerDocument?.defaultView,
     'focus',
-    () => {
+    (event) => {
       if (popoverState !== PopoverStates.Open) return
       if (isFocusWithinPopoverGroup()) return
       if (!button) return
       if (!panel) return
+      if (beforePanelSentinel.current?.contains?.(event.target as HTMLElement)) return
+      if (afterPanelSentinel.current?.contains?.(event.target as HTMLElement)) return
 
       dispatch({ type: ActionTypes.ClosePopover })
     },
@@ -254,7 +280,10 @@ let PopoverRoot = forwardRefWithAs(function Popover<
     [dispatch, button]
   )
 
-  let api = useMemo<ContextType<typeof PopoverAPIContext>>(() => ({ close }), [close])
+  let api = useMemo<ContextType<typeof PopoverAPIContext>>(
+    () => ({ close, isPortalled }),
+    [close, isPortalled]
+  )
 
   let slot = useMemo<PopoverRenderPropArg>(
     () => ({ open: popoverState === PopoverStates.Open, close }),
@@ -305,7 +334,10 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   ref: Ref<HTMLButtonElement>
 ) {
   let [state, dispatch] = usePopoverContext('Popover.Button')
+  let { isPortalled } = usePopoverAPIContext('Popover.Button')
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
+
+  let sentinelId = `headlessui-focus-sentinel-${useId()}`
 
   let groupContext = usePopoverGroupContext()
   let closeOthers = groupContext?.closeOthers
@@ -320,19 +352,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
   let ownerDocument = useOwnerDocument(internalButtonRef)
-
-  // TODO: Revisit when handling Tab/Shift+Tab when using Portal's
-  let activeElementRef = useRef<Element | null>(null)
-  let previousActiveElementRef = useRef<Element | null>(null)
-  useEventListener(
-    ownerDocument?.defaultView,
-    'focus',
-    () => {
-      previousActiveElementRef.current = activeElementRef.current
-      activeElementRef.current = ownerDocument?.activeElement as HTMLElement
-    },
-    true
-  )
 
   let handleKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -371,39 +390,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
             event.stopPropagation()
             dispatch({ type: ActionTypes.ClosePopover })
             break
-
-          case Keys.Tab:
-            if (state.popoverState !== PopoverStates.Open) return
-            if (!state.panel) return
-            if (!state.button) return
-
-            // TODO: Revisit when handling Tab/Shift+Tab when using Portal's
-            if (event.shiftKey) {
-              // Check if the last focused element exists, and check that it is not inside button or panel itself
-              if (!previousActiveElementRef.current) return
-              if (state.button?.contains(previousActiveElementRef.current)) return
-              if (state.panel.contains(previousActiveElementRef.current)) return
-
-              // Check if the last focused element is *after* the button in the DOM
-              let focusableElements = getFocusableElements(ownerDocument?.body)
-              let previousIdx = focusableElements.indexOf(
-                previousActiveElementRef.current as HTMLElement
-              )
-              let buttonIdx = focusableElements.indexOf(state.button)
-              if (buttonIdx > previousIdx) return
-
-              event.preventDefault()
-              event.stopPropagation()
-
-              focusIn(state.panel, Focus.Last)
-            } else {
-              event.preventDefault()
-              event.stopPropagation()
-
-              focusIn(state.panel, Focus.First)
-            }
-
-            break
         }
       }
     },
@@ -428,33 +414,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         // triggers a *click*.
         event.preventDefault()
       }
-      if (state.popoverState !== PopoverStates.Open) return
-      if (!state.panel) return
-      if (!state.button) return
-
-      // TODO: Revisit when handling Tab/Shift+Tab when using Portal's
-      switch (event.key) {
-        case Keys.Tab:
-          // Check if the last focused element exists, and check that it is not inside button or panel itself
-          if (!previousActiveElementRef.current) return
-          if (state.button?.contains(previousActiveElementRef.current)) return
-          if (state.panel.contains(previousActiveElementRef.current)) return
-
-          // Check if the last focused element is *after* the button in the DOM
-          let focusableElements = getFocusableElements(ownerDocument?.body)
-          let previousIdx = focusableElements.indexOf(
-            previousActiveElementRef.current as HTMLElement
-          )
-          let buttonIdx = focusableElements.indexOf(state.button)
-          if (buttonIdx > previousIdx) return
-
-          event.preventDefault()
-          event.stopPropagation()
-          focusIn(state.panel, Focus.Last)
-          break
-      }
     },
-    [state.popoverState, state.panel, state.button, isWithinPanel]
+    [isWithinPanel]
   )
 
   let handleClick = useCallback(
@@ -483,10 +444,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     ]
   )
 
-  let slot = useMemo<ButtonRenderPropArg>(
-    () => ({ open: state.popoverState === PopoverStates.Open }),
-    [state]
-  )
+  let visible = state.popoverState === PopoverStates.Open
+  let slot = useMemo<ButtonRenderPropArg>(() => ({ open: visible }), [visible])
 
   let type = useResolveButtonType(props, internalButtonRef)
   let theirProps = props
@@ -508,13 +467,46 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         onClick: handleClick,
       }
 
-  return render({
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_BUTTON_TAG,
-    name: 'Popover.Button',
+  let direction = useTabDirection()
+  let handleFocus = useEvent(() => {
+    let el = state.panel as HTMLElement
+    if (!el) return
+
+    function run() {
+      match(direction.current, {
+        [TabDirection.Forwards]: () => focusIn(el, Focus.First),
+        [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+      })
+    }
+
+    // TODO: Cleanup once we are using real browser tests
+    if (process.env.NODE_ENV === 'test') {
+      microTask(run)
+    } else {
+      run()
+    }
   })
+
+  return (
+    <>
+      {render({
+        ourProps,
+        theirProps,
+        slot,
+        defaultTag: DEFAULT_BUTTON_TAG,
+        name: 'Popover.Button',
+      })}
+      {visible && !isWithinPanel && isPortalled && (
+        <Hidden
+          id={sentinelId}
+          features={HiddenFeatures.Focusable}
+          as="button"
+          type="button"
+          onFocus={handleFocus}
+        />
+      )}
+    </>
+  )
 })
 
 // ---
@@ -601,7 +593,10 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let { focus = false, ...theirProps } = props
 
   let [state, dispatch] = usePopoverContext('Popover.Panel')
-  let { close } = usePopoverAPIContext('Popover.Panel')
+  let { close, isPortalled } = usePopoverAPIContext('Popover.Panel')
+
+  let beforePanelSentinelId = `headlessui-focus-sentinel-before-${useId()}`
+  let afterPanelSentinelId = `headlessui-focus-sentinel-after-${useId()}`
 
   let internalPanelRef = useRef<HTMLDivElement | null>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref, (panel) => {
@@ -661,46 +656,6 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     focusIn(internalPanelRef.current, Focus.First)
   }, [focus, internalPanelRef, state.popoverState])
 
-  // Handle Tab / Shift+Tab focus positioning
-  useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
-    if (state.popoverState !== PopoverStates.Open) return
-    if (!internalPanelRef.current) return
-    if (event.key !== Keys.Tab) return
-    if (!ownerDocument?.activeElement) return
-    if (!internalPanelRef.current) return
-    if (!internalPanelRef.current.contains(ownerDocument.activeElement)) return
-
-    // We will take-over the default tab behaviour so that we have a bit
-    // control over what is focused next. It will behave exactly the same,
-    // but it will also "fix" some issues based on whether you are using a
-    // Portal or not.
-    event.preventDefault()
-
-    let result = focusIn(internalPanelRef.current, event.shiftKey ? Focus.Previous : Focus.Next)
-
-    if (result === FocusResult.Underflow) {
-      return state.button?.focus()
-    } else if (result === FocusResult.Overflow) {
-      if (!state.button) return
-
-      let elements = getFocusableElements(ownerDocument.body)
-      let buttonIdx = elements.indexOf(state.button)
-
-      let nextElements = elements
-        .splice(buttonIdx + 1) // Elements after button
-        .filter((element) => !internalPanelRef.current?.contains(element)) // Ignore items in panel
-
-      // Try to focus the next element, however it could fail if we are in a
-      // Portal that happens to be the very last one in the DOM. In that
-      // case we would Error (because nothing after the button is
-      // focusable). Therefore we will try and focus the very first item in
-      // the document.body.
-      if (focusIn(nextElements, Focus.First) === FocusResult.Error) {
-        focusIn(ownerDocument.body, Focus.First)
-      }
-    }
-  })
-
   // Handle focus out when we are in special "focus" mode
   useEventListener(
     ownerDocument?.defaultView,
@@ -710,12 +665,17 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
       if (state.popoverState !== PopoverStates.Open) return
       if (!internalPanelRef.current) return
 
+      let activeElement = ownerDocument?.activeElement as HTMLElement
+
       if (
-        ownerDocument?.activeElement &&
-        internalPanelRef.current?.contains(ownerDocument.activeElement)
+        activeElement &&
+        (internalPanelRef.current?.contains(activeElement) ||
+          state.beforePanelSentinel.current?.contains?.(activeElement) ||
+          state.afterPanelSentinel.current?.contains?.(activeElement))
       ) {
         return
       }
+
       dispatch({ type: ActionTypes.ClosePopover })
     },
     true
@@ -731,8 +691,86 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     onKeyDown: handleKeyDown,
   }
 
+  let direction = useTabDirection()
+  let handleBeforeFocus = useEvent(() => {
+    let el = internalPanelRef.current as HTMLElement
+    if (!el) return
+
+    function run() {
+      match(direction.current, {
+        [TabDirection.Forwards]: () => {
+          focusIn(el, Focus.First)
+        },
+        [TabDirection.Backwards]: () => {
+          // Coming from the Popover.Panel (which is portalled to somewhere else). Let's redirect
+          // the focus to the Popover.Button again.
+          state.button?.focus({ preventScroll: true })
+        },
+      })
+    }
+
+    // TODO: Cleanup once we are using real browser tests
+    if (process.env.NODE_ENV === 'test') {
+      microTask(run)
+    } else {
+      run()
+    }
+  })
+
+  let handleAfterFocus = useEvent(() => {
+    let el = internalPanelRef.current as HTMLElement
+    if (!el) return
+
+    function run() {
+      match(direction.current, {
+        [TabDirection.Forwards]: () => {
+          if (!state.button) return
+
+          let elements = getFocusableElements()
+
+          let idx = elements.indexOf(state.button)
+          let before = elements.slice(0, idx + 1)
+          let after = elements.slice(idx + 1)
+
+          let combined = [...after, ...before]
+
+          // Ignore sentinel buttons and items inside the panel
+          for (let element of combined.slice()) {
+            if (
+              element?.id?.startsWith?.('headlessui-focus-sentinel-') ||
+              state.panel?.contains(element)
+            ) {
+              let idx = combined.indexOf(element)
+              if (idx !== -1) combined.splice(idx, 1)
+            }
+          }
+
+          focusIn(combined, Focus.First, false)
+        },
+        [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+      })
+    }
+
+    // TODO: Cleanup once we are using real browser tests
+    if (process.env.NODE_ENV === 'test') {
+      microTask(run)
+    } else {
+      run()
+    }
+  })
+
   return (
     <PopoverPanelContext.Provider value={state.panelId}>
+      {visible && isPortalled && (
+        <Hidden
+          id={beforePanelSentinelId}
+          ref={state.beforePanelSentinel}
+          features={HiddenFeatures.Focusable}
+          as="button"
+          type="button"
+          onFocus={handleBeforeFocus}
+        />
+      )}
       {render({
         ourProps,
         theirProps,
@@ -742,6 +780,16 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
         visible,
         name: 'Popover.Panel',
       })}
+      {visible && isPortalled && (
+        <Hidden
+          id={afterPanelSentinelId}
+          ref={state.afterPanelSentinel}
+          features={HiddenFeatures.Focusable}
+          as="button"
+          type="button"
+          onFocus={handleAfterFocus}
+        />
+      )}
     </PopoverPanelContext.Provider>
   )
 })

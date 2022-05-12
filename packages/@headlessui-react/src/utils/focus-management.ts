@@ -129,7 +129,7 @@ export function sortByDomNode<T>(
   })
 }
 
-export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
+export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus, sorted = true) {
   let ownerDocument = Array.isArray(container)
     ? container.length > 0
       ? container[0].ownerDocument
@@ -137,7 +137,9 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus) {
     : container.ownerDocument
 
   let elements = Array.isArray(container)
-    ? sortByDomNode(container)
+    ? sorted
+      ? sortByDomNode(container)
+      : container
     : getFocusableElements(container)
   let active = ownerDocument.activeElement as HTMLElement
 
