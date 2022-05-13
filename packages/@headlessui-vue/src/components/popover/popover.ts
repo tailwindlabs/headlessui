@@ -614,6 +614,7 @@ export let PopoverPanel = defineComponent({
         ref: api.panel,
         id: api.panelId,
         onKeydown: handleKeyDown,
+        tabIndex: -1,
       }
 
       return h(Fragment, [

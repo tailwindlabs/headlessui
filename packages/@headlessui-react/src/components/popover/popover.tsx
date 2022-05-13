@@ -689,6 +689,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     ref: panelRef,
     id: state.panelId,
     onKeyDown: handleKeyDown,
+    tabIndex: -1,
   }
 
   let direction = useTabDirection()
