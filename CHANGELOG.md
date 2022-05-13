@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ignore `Escape` when event got prevented in `Dialog` component ([#1424](https://github.com/tailwindlabs/headlessui/pull/1424))
 - Improve `FocusTrap` behaviour ([#1432](https://github.com/tailwindlabs/headlessui/pull/1432))
 - Simplify `Popover` Tab logic by using sentinel nodes instead of keydown event interception ([#1440](https://github.com/tailwindlabs/headlessui/pull/1440))
+- Ensure the `PopoverPanel` is clickable without closing the `Popover` ([#1443](https://github.com/tailwindlabs/headlessui/pull/1443))
 
 ## [Unreleased - @headlessui/react]
 
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ignore `Escape` when event got prevented in `Dialog` component ([#1424](https://github.com/tailwindlabs/headlessui/pull/1424))
 - Improve `FocusTrap` behaviour ([#1432](https://github.com/tailwindlabs/headlessui/pull/1432))
 - Simplify `Popover` Tab logic by using sentinel nodes instead of keydown event interception ([#1440](https://github.com/tailwindlabs/headlessui/pull/1440))
+- Ensure the `Popover.Panel` is clickable without closing the `Popover` ([#1443](https://github.com/tailwindlabs/headlessui/pull/1443))
 
 ## [@headlessui/react@1.6.1] - 2022-05-03
 
