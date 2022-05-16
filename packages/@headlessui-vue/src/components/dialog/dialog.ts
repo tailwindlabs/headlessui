@@ -225,10 +225,14 @@ export let Dialog = defineComponent({
       let overflow = documentElement.style.overflow
       let paddingRight = documentElement.style.paddingRight
 
-      let scrollbarWidth = ownerWindow.innerWidth - documentElement.clientWidth
-
+      let scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
       documentElement.style.overflow = 'hidden'
-      documentElement.style.paddingRight = `${scrollbarWidth}px`
+
+      if (scrollbarWidthBefore > 0) {
+        let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
+        let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
+        documentElement.style.paddingRight = `${scrollbarWidth}px`
+      }
 
       onInvalidate(() => {
         documentElement.style.overflow = overflow
