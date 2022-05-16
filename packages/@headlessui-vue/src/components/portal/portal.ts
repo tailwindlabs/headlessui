@@ -23,6 +23,10 @@ import { getOwnerDocument } from '../../utils/owner'
 function getPortalRoot(contextElement?: Element | null) {
   let ownerDocument = getOwnerDocument(contextElement)
   if (!ownerDocument) {
+    if (contextElement === null) {
+      return null
+    }
+
     throw new Error(
       `[Headless UI]: Cannot find ownerDocument for contextElement: ${contextElement}`
     )
