@@ -138,27 +138,6 @@ function KeyCaster() {
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <Head>
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-        <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="https://headlessui.dev/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="https://headlessui.dev/favicon-16x16.png"
-        />
-      </Head>
-
       <div className="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased">
         <header className="relative z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
           <NextLink href="/">
