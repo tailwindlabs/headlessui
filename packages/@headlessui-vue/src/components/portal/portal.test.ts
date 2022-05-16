@@ -1,6 +1,7 @@
-import { defineComponent, ref, nextTick, ComponentOptionsWithoutProps } from 'vue'
+import { h, defineComponent, ref, nextTick, ComponentOptionsWithoutProps, createSSRApp } from 'vue'
 
 import { render } from '../../test-utils/vue-testing-library'
+import { renderToString } from 'vue/server-renderer'
 import { Portal, PortalGroup } from './portal'
 import { click } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
@@ -37,6 +38,80 @@ function renderTemplate(input: string | ComponentOptionsWithoutProps) {
     )
   )
 }
+
+async function ssrRenderTemplate(input: string | ComponentOptionsWithoutProps) {
+  let defaultComponents = { Portal, PortalGroup }
+
+  if (typeof input === 'string') {
+    let app = createSSRApp({
+      render: () => h(defineComponent({ template: input, components: defaultComponents })),
+    })
+
+    return await renderToString(app)
+  }
+
+  let app = createSSRApp({
+    render: () =>
+      h(
+        defineComponent(
+          Object.assign({}, input, {
+            components: { ...defaultComponents, ...input.components },
+          }) as Parameters<typeof defineComponent>[0]
+        )
+      ),
+  })
+
+  return await renderToString(app)
+}
+
+async function withoutBrowserGlobals<T>(fn: () => Promise<T>) {
+  let oldWindow = globalThis.window
+  let oldDocument = globalThis.document
+
+  Object.defineProperty(globalThis, '_document', {
+    value: undefined,
+    configurable: true,
+  })
+
+  Object.defineProperty(globalThis, '_globalProxy', {
+    value: undefined,
+    configurable: true,
+  })
+
+  try {
+    return await fn()
+  } finally {
+    Object.defineProperty(globalThis, '_globalProxy', {
+      value: oldWindow,
+      configurable: true,
+    })
+
+    Object.defineProperty(globalThis, '_document', {
+      value: oldDocument,
+      configurable: true,
+    })
+  }
+}
+
+it('SSR-rendering a Portal should not error', async () => {
+  expect(getPortalRoot()).toBe(null)
+
+  let result = await withoutBrowserGlobals(() =>
+    ssrRenderTemplate(
+      html`
+        <main id="parent">
+          <Portal>
+            <p id="content">Contents...</p>
+          </Portal>
+        </main>
+      `
+    )
+  )
+
+  expect(getPortalRoot()).toBe(null)
+
+  expect(result).toBe(html`<main id="parent"><!----></main>`)
+})
 
 it('should be possible to use a Portal', () => {
   expect(getPortalRoot()).toBe(null)
