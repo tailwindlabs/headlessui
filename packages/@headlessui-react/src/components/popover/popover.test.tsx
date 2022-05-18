@@ -1,4 +1,4 @@
-import React, { createElement, useEffect, useRef } from 'react'
+import React, { createElement, useEffect, useRef, Fragment } from 'react'
 import { render } from '@testing-library/react'
 
 import { Popover } from './popover'
@@ -259,6 +259,38 @@ describe('Rendering', () => {
         assertActiveElement(getByText('restoreable'))
       })
     )
+
+    describe('refs', () => {
+      it(
+        'should be possible to get a ref to the Popover',
+        suppressConsoleLogs(async () => {
+          let popoverRef = { current: null }
+
+          render(
+            <Popover as="div" ref={popoverRef}>
+              <Popover.Button>Trigger</Popover.Button>
+              <Popover.Panel>Popover</Popover.Panel>
+            </Popover>
+          )
+
+          expect(popoverRef.current).not.toBeNull()
+        })
+      )
+
+      it(
+        'should be possible to use a Fragment with an optional ref',
+        suppressConsoleLogs(async () => {
+          render(
+            <Popover as={Fragment}>
+              <Popover.Button>Trigger</Popover.Button>
+              <Popover.Panel>Popover</Popover.Panel>
+            </Popover>
+          )
+
+          // It should not throw
+        })
+      )
+    })
   })
 
   describe('Popover.Button', () => {

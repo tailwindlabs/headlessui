@@ -22,7 +22,7 @@ import React, {
 import { Props } from '../../types'
 import { match } from '../../utils/match'
 import { forwardRefWithAs, render, Features, PropsForFeatures } from '../../utils/render'
-import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -185,8 +185,12 @@ let PopoverRoot = forwardRefWithAs(function Popover<
   let buttonId = `headlessui-popover-button-${useId()}`
   let panelId = `headlessui-popover-panel-${useId()}`
   let internalPopoverRef = useRef<HTMLElement | null>(null)
-  let popoverRef = useSyncRefs(ref, internalPopoverRef)
-  let ownerDocument = useOwnerDocument(internalPopoverRef)
+  let popoverRef = useSyncRefs(
+    ref,
+    optionalRef((ref) => {
+      internalPopoverRef.current = ref
+    })
+  )
 
   let reducerBag = useReducer(stateReducer, {
     popoverState: PopoverStates.Closed,
@@ -199,6 +203,8 @@ let PopoverRoot = forwardRefWithAs(function Popover<
   } as StateDefinition)
   let [{ popoverState, button, panel, beforePanelSentinel, afterPanelSentinel }, dispatch] =
     reducerBag
+
+  let ownerDocument = useOwnerDocument(internalPopoverRef.current ?? button)
 
   useEffect(() => dispatch({ type: ActionTypes.SetButtonId, buttonId }), [buttonId, dispatch])
   useEffect(() => dispatch({ type: ActionTypes.SetPanelId, panelId }), [panelId, dispatch])
