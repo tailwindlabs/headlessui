@@ -63,7 +63,7 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
   visible?: boolean
   name: string
 }) {
-  let props = mergeProps(theirProps, ourProps)
+  let props = mergeProps(ourProps, theirProps)
 
   // Visible always render
   if (visible) return _render(props, slot, defaultTag, name)
