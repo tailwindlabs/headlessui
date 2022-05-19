@@ -30,13 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make the `ref` optional in the `Popover` component ([#1465](https://github.com/tailwindlabs/headlessui/pull/1465))
 - Ensure the `ref` is forwarded on the `Transition.Child` component ([#1473](https://github.com/tailwindlabs/headlessui/pull/1473))
 
-## [@headlessui/react@1.6.1] - 2022-05-03
+## [@headlessui/react@v1.6.1] - 2022-05-03
 
 ### Fixed
 
 - Fix hydration issue with `Tab` component ([#1393](https://github.com/tailwindlabs/headlessui/pull/1393))
 
-## [@headlessui/vue@1.6.1] - 2022-05-03
+## [@headlessui/vue@v1.6.1] - 2022-05-03
 
 ### Fixed
 
@@ -488,8 +488,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.1...HEAD
 [unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...HEAD
-[@headlessui/react@1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...@headlessui/react@v1.6.1
-[@headlessui/vue@1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.0...@headlessui/vue@v1.6.1
+[@headlessui/react@v1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...@headlessui/react@v1.6.1
+[@headlessui/vue@v1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.0...@headlessui/vue@v1.6.1
 [@headlessui/react@v1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.5.0...@headlessui/react@v1.6.0
 [@headlessui/vue@v1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.5.0...@headlessui/vue@v1.6.0
 [@headlessui/react@v1.5.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.3...@headlessui/react@v1.5.0
