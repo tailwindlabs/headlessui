@@ -411,21 +411,21 @@ let TransitionRoot = forwardRefWithAs(function Transition<
   )
 })
 
-function Child<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: TransitionChildProps<TTag>
-) {
+let Child = forwardRefWithAs(function Child<
+  TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
+>(props: TransitionChildProps<TTag>, ref: MutableRefObject<HTMLElement>) {
   let hasTransitionContext = useContext(TransitionContext) !== null
   let hasOpenClosedContext = useOpenClosed() !== null
 
   return (
     <>
       {!hasTransitionContext && hasOpenClosedContext ? (
-        <TransitionRoot {...props} />
+        <TransitionRoot ref={ref} {...props} />
       ) : (
-        <TransitionChild {...props} />
+        <TransitionChild ref={ref} {...props} />
       )}
     </>
   )
-}
+})
 
 export let Transition = Object.assign(TransitionRoot, { Child, Root: TransitionRoot })
