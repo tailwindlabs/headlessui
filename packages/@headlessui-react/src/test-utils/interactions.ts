@@ -241,17 +241,19 @@ export async function click(
       // Cancel in pointerDown cancels mouseDown, mouseUp
       let cancelled = !fireEvent.pointerDown(element, options)
       if (!cancelled) {
-        fireEvent.mouseDown(element, options)
+        cancelled = !fireEvent.mouseDown(element, options)
       }
 
       // Ensure to trigger a `focus` event if the element is focusable, or within a focusable element
-      let next: HTMLElement | null = element as HTMLElement | null
-      while (next !== null) {
-        if (next.matches(focusableSelector)) {
-          next.focus()
-          break
+      if (!cancelled) {
+        let next: HTMLElement | null = element as HTMLElement | null
+        while (next !== null) {
+          if (next.matches(focusableSelector)) {
+            next.focus()
+            break
+          }
+          next = next.parentElement
         }
-        next = next.parentElement
       }
 
       fireEvent.pointerUp(element, options)

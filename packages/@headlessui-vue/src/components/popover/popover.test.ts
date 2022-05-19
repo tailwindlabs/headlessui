@@ -1610,6 +1610,7 @@ describe('Keyboard interactions', () => {
 
         // Open the second popover
         await click(getByText('Trigger 2'))
+        getByText('Trigger 2')?.focus()
 
         // Ensure the second popover is open
         assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
@@ -2297,6 +2298,7 @@ describe('Mouse interactions', () => {
 
       // Open popover
       await click(getPopoverButton())
+      getPopoverButton()?.focus()
 
       // Verify it is open
       assertPopoverButton({ state: PopoverState.Visible })
@@ -2423,6 +2425,64 @@ describe('Mouse interactions', () => {
 
       // Verify it is still open
       assertPopoverButton({ state: PopoverState.InvisibleHidden })
+    })
+  )
+
+  it(
+    'should be possible to close the Popover by clicking on the Popover.Button outside the Popover.Panel',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Toggle</PopoverButton>
+          <PopoverPanel>
+            <button>Contents</button>
+          </PopoverPanel>
+        </Popover>
+      `)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Close the popover
+      await click(getPopoverButton())
+
+      // Verify it is closed
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+      // Verify the button is focused
+      assertActiveElement(getPopoverButton())
+    })
+  )
+
+  it(
+    'should be possible to close the Popover by clicking on the Popover.Button outside the Popover.Panel (when using the `focus` prop)',
+    suppressConsoleLogs(async () => {
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Toggle</PopoverButton>
+          <PopoverPanel focus>
+            <button>Contents</button>
+          </PopoverPanel>
+        </Popover>
+      `)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Close the popover
+      await click(getPopoverButton())
+
+      // Verify it is closed
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+      // Verify the button is focused
+      assertActiveElement(getPopoverButton())
     })
   )
 })
