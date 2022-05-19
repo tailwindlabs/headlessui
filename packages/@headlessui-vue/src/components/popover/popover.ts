@@ -331,9 +331,14 @@ export let PopoverButton = defineComponent({
         event.preventDefault()
         event.stopPropagation()
         if (api.popoverState.value === PopoverStates.Closed) closeOthers?.(api.buttonId)
-        dom(api.button)?.focus()
         api.togglePopover()
+        dom(api.button)?.focus()
       }
+    }
+
+    function handleMouseDown(event: MouseEvent) {
+      event.preventDefault()
+      event.stopPropagation()
     }
 
     return () => {
@@ -358,6 +363,7 @@ export let PopoverButton = defineComponent({
             onKeydown: handleKeyDown,
             onKeyup: handleKeyUp,
             onClick: handleClick,
+            onMousedown: handleMouseDown,
           }
 
       let direction = useTabDirection()
@@ -485,31 +491,6 @@ export let PopoverPanel = defineComponent({
       focusIn(dom(api.panel)!, Focus.First)
     })
 
-    // Handle focus out when we are in special "focus" mode
-    useEventListener(
-      ownerDocument.value?.defaultView,
-      'focus',
-      () => {
-        if (!focus) return
-        if (api.popoverState.value !== PopoverStates.Open) return
-        if (!dom(api.panel)) return
-
-        let activeElement = ownerDocument?.value?.activeElement as HTMLElement
-
-        if (
-          activeElement &&
-          (dom(api.panel)?.contains(activeElement) ||
-            dom(api.beforePanelSentinel)?.contains?.(activeElement) ||
-            dom(api.afterPanelSentinel)?.contains?.(activeElement))
-        ) {
-          return
-        }
-
-        api.closePopover()
-      },
-      true
-    )
-
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
@@ -524,13 +505,30 @@ export let PopoverPanel = defineComponent({
         case Keys.Escape:
           if (api.popoverState.value !== PopoverStates.Open) return
           if (!dom(api.panel)) return
-          if (ownerDocument.value && !dom(api.panel)?.contains(ownerDocument.value.activeElement))
+          if (ownerDocument.value && !dom(api.panel)?.contains(ownerDocument.value.activeElement)) {
             return
+          }
           event.preventDefault()
           event.stopPropagation()
           api.closePopover()
           dom(api.button)?.focus()
           break
+      }
+    }
+
+    function handleBlur(event: MouseEvent) {
+      let el = event.relatedTarget as HTMLElement
+      if (!el) return
+      if (!dom(api.panel)) return
+      if (dom(api.panel)?.contains(el)) return
+
+      api.closePopover()
+
+      if (
+        dom(api.beforePanelSentinel)?.contains?.(el) ||
+        dom(api.afterPanelSentinel)?.contains?.(el)
+      ) {
+        el.focus({ preventScroll: true })
       }
     }
 
@@ -614,6 +612,7 @@ export let PopoverPanel = defineComponent({
         ref: api.panel,
         id: api.panelId,
         onKeydown: handleKeyDown,
+        onFocusout: focus && api.popoverState.value === PopoverStates.Open ? handleBlur : undefined,
         tabIndex: -1,
       }
 
