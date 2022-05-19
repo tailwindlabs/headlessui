@@ -237,6 +237,31 @@ describe('Rendering', () => {
         expect(getComboboxInput()).toHaveValue('B')
       })
     )
+
+    it(
+      'should be possible to override the `type` on the input',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState(undefined)
+
+          return (
+            <Combobox value={value} onChange={setValue}>
+              <Combobox.Input type="search" onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        expect(getComboboxInput()).toHaveAttribute('type', 'search')
+      })
+    )
   })
 
   describe('Combobox.Label', () => {

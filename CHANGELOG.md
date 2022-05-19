@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/vue]
 
-- Nothing yet!
+### Fixed
+
+- Allow to override the `type` on the `ComboboxInput` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
 
 ## [Unreleased - @headlessui/react]
 
-- Nothing yet!
+### Fixed
+
+- Allow to override the `type` on the `Combobox.Input` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
 
 ## [@headlessui/vue@v1.6.2] - 2022-05-19
 

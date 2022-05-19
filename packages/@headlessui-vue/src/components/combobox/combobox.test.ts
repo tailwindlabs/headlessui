@@ -288,6 +288,30 @@ describe('Rendering', () => {
         expect(getComboboxInput()).toHaveValue('B')
       })
     )
+
+    it(
+      'should be possible to override the `type` on the input',
+      suppressConsoleLogs(async () => {
+        let Example = defineComponent({
+          template: html`
+            <Combobox v-model="value">
+              <ComboboxInput type="search" />
+              <ComboboxButton>Trigger</ComboboxButton>
+              <ComboboxOptions>
+                <ComboboxOption value="a">Option A</ComboboxOption>
+                <ComboboxOption value="b">Option B</ComboboxOption>
+                <ComboboxOption value="c">Option C</ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        renderTemplate(Example)
+
+        expect(getComboboxInput()).toHaveAttribute('type', 'search')
+      })
+    )
   })
 
   describe('ComboboxLabel', () => {

@@ -602,7 +602,6 @@ interface InputRenderPropArg {
 type InputPropsWeControl =
   | 'id'
   | 'role'
-  | 'type'
   | 'aria-labelledby'
   | 'aria-expanded'
   | 'aria-activedescendant'
@@ -622,7 +621,7 @@ let Input = forwardRefWithAs(function Input<
   },
   ref: Ref<HTMLInputElement>
 ) {
-  let { value, onChange, displayValue, ...theirProps } = props
+  let { value, onChange, displayValue, type = 'text', ...theirProps } = props
   let [state] = useComboboxContext('Combobox.Input')
   let data = useComboboxData()
   let actions = useComboboxActions()
@@ -771,7 +770,7 @@ let Input = forwardRefWithAs(function Input<
     ref: inputRef,
     id,
     role: 'combobox',
-    type: 'text',
+    type,
     'aria-controls': state.optionsRef.current?.id,
     'aria-expanded': state.disabled ? undefined : state.comboboxState === ComboboxStates.Open,
     'aria-activedescendant':

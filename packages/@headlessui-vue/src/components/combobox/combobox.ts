@@ -746,7 +746,7 @@ export let ComboboxInput = defineComponent({
         onChange: handleChange,
         onInput: handleInput,
         role: 'combobox',
-        type: 'text',
+        type: attrs.type ?? 'text',
         tabIndex: 0,
         ref: api.inputRef,
       }
