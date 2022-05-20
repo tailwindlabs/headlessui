@@ -1,16 +1,15 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useMemo,
   useReducer,
   useRef,
 
   // Types
-  ElementType,
-  MutableRefObject,
-  KeyboardEvent as ReactKeyboardEvent,
   ContextType,
+  ElementType,
+  KeyboardEvent as ReactKeyboardEvent,
+  MutableRefObject,
   Ref,
 } from 'react'
 

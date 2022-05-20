@@ -12,9 +12,9 @@ import React, {
   ContextType,
   Dispatch,
   ElementType,
+  FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
-  FocusEvent as ReactFocusEvent,
   MutableRefObject,
   Ref,
 } from 'react'

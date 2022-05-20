@@ -4,6 +4,7 @@ import React, {
   createRef,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -15,7 +16,6 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
-  useEffect,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'

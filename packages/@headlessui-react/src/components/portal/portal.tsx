@@ -3,13 +3,13 @@ import React, {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 
   // Types
   ElementType,
   MutableRefObject,
   Ref,
-  useRef,
 } from 'react'
 import { createPortal } from 'react-dom'
 

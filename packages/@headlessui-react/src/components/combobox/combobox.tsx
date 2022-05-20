@@ -9,13 +9,13 @@ import React, {
   useRef,
 
   // Types
+  ContextType,
   Dispatch,
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
-  ContextType,
 } from 'react'
 
 import { useDisposables } from '../../hooks/use-disposables'

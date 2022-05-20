@@ -10,13 +10,13 @@ import React, {
   useRef,
 
   // Types
+  ContextType,
   Dispatch,
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
-  Ref,
   MutableRefObject,
-  ContextType,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
