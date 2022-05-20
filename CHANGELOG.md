@@ -12,12 +12,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow to override the `type` on the `ComboboxInput` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
 - Ensure the the `<PopoverPanel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
 
+### Added
+
+- Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
+
 ## [Unreleased - @headlessui/react]
 
 ### Fixed
 
 - Allow to override the `type` on the `Combobox.Input` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
 - Ensure the the `<Popover.Panel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
+
+### Added
+
+- Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
 
 ## [@headlessui/vue@v1.6.2] - 2022-05-19
 

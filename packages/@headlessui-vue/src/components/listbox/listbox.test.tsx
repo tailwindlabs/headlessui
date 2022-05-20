@@ -198,6 +198,113 @@ describe('Rendering', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
       })
     )
+
+    describe('Equality', () => {
+      let options = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
+      ]
+
+      it(
+        'should use object equality by default',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value">
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    v-slot="data"
+                    >{{ JSON.stringify(data) }}</ListboxOption
+                  >
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref(options[1])
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+
+          let bob = getListboxOptions()[1]
+          expect(bob).toHaveTextContent(
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a field',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" by="id">
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    v-slot="data"
+                    >{{ JSON.stringify(data) }}</ListboxOption
+                  >
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+
+          let bob = getListboxOptions()[1]
+          expect(bob).toHaveTextContent(
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a comparator function',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" :by="compare">
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    v-slot="data"
+                    >{{ JSON.stringify(data) }}</ListboxOption
+                  >
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value, compare: (a: any, z: any) => a.id === z.id }
+            },
+          })
+
+          await click(getListboxButton())
+
+          let bob = getListboxOptions()[1]
+          expect(bob).toHaveTextContent(
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+    })
   })
 
   describe('ListboxLabel', () => {

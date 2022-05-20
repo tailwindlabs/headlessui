@@ -37,6 +37,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
+import { useEvent } from '../../hooks/use-event'
 
 enum ListboxStates {
   Open,
@@ -65,7 +66,12 @@ interface StateDefinition {
 
   orientation: 'horizontal' | 'vertical'
 
-  propsRef: MutableRefObject<{ value: unknown; onChange(value: unknown): void; mode: ValueMode }>
+  propsRef: MutableRefObject<{
+    value: unknown
+    onChange(value: unknown): void
+    mode: ValueMode
+    compare(a: unknown, z: unknown): boolean
+  }>
   labelRef: MutableRefObject<HTMLLabelElement | null>
   buttonRef: MutableRefObject<HTMLButtonElement | null>
   optionsRef: MutableRefObject<HTMLUListElement | null>
@@ -154,12 +160,13 @@ let reducers: {
 
     // Check if we have a selected value that we can make active
     let activeOptionIndex = state.activeOptionIndex
-    let { value, mode } = state.propsRef.current
+    let { value, mode, compare } = state.propsRef.current
     let optionIdx = state.options.findIndex((option) => {
       let optionValue = option.dataRef.current.value
       let selected = match(mode, {
-        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
-        [ValueMode.Single]: () => value === optionValue,
+        [ValueMode.Multi]: () =>
+          (value as unknown[]).some((option) => compare(option, optionValue)),
+        [ValueMode.Single]: () => compare(value, optionValue),
       })
 
       return selected
@@ -243,11 +250,12 @@ let reducers: {
 
     // Check if we need to make the newly registered option active.
     if (state.activeOptionIndex === null) {
-      let { value, mode } = state.propsRef.current
+      let { value, mode, compare } = state.propsRef.current
       let optionValue = action.dataRef.current.value
       let selected = match(mode, {
-        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
-        [ValueMode.Single]: () => value === optionValue,
+        [ValueMode.Multi]: () =>
+          (value as unknown[]).some((option) => compare(option, optionValue)),
+        [ValueMode.Single]: () => compare(value, optionValue),
       })
       if (selected) {
         adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
@@ -304,10 +312,11 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   props: Props<
     TTag,
     ListboxRenderPropArg,
-    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name' | 'multiple'
+    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name' | 'multiple' | 'by'
   > & {
     value: TType
     onChange(value: TType): void
+    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
     disabled?: boolean
     horizontal?: boolean
     name?: string
@@ -319,6 +328,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     value,
     name,
     onChange,
+    by = (a, z) => a === z,
     disabled = false,
     horizontal = false,
     multiple = false,
@@ -330,7 +340,19 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
     propsRef: {
-      current: { value, onChange, mode: multiple ? ValueMode.Multi : ValueMode.Single },
+      current: {
+        value,
+        onChange,
+        mode: multiple ? ValueMode.Multi : ValueMode.Single,
+        compare: useEvent(
+          typeof by === 'string'
+            ? (a: TType, z: TType) => {
+                let property = by as unknown as keyof TType
+                return a[property] === z[property]
+              }
+            : by
+        ),
+      },
     },
     labelRef: createRef(),
     buttonRef: createRef(),
@@ -770,9 +792,12 @@ let Option = forwardRefWithAs(function Option<
   let id = `headlessui-listbox-option-${useId()}`
   let active =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex].id === id : false
+
+  let { value: optionValue, compare } = state.propsRef.current
+
   let selected = match(state.propsRef.current.mode, {
-    [ValueMode.Multi]: () => (state.propsRef.current.value as TType[]).includes(value),
-    [ValueMode.Single]: () => state.propsRef.current.value === value,
+    [ValueMode.Multi]: () => (optionValue as TType[]).some((option) => compare(option, value)),
+    [ValueMode.Single]: () => compare(optionValue, value),
   })
 
   let internalOptionRef = useRef<HTMLLIElement | null>(null)

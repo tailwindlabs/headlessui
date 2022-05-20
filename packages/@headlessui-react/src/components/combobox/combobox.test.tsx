@@ -170,6 +170,108 @@ describe('Rendering', () => {
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
+
+    describe('Equality', () => {
+      let options = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
+      ]
+
+      it(
+        'should use object equality by default',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={options[1]} onChange={console.log}>
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                {options.map((option) => (
+                  <Combobox.Option
+                    key={option.id}
+                    value={option}
+                    className={(info) => JSON.stringify(info)}
+                  >
+                    {option.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          await click(getComboboxButton())
+
+          let bob = getComboboxOptions()[1]
+          expect(bob).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a field',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={{ id: 2, name: 'Bob' }} onChange={console.log} by="id">
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                {options.map((option) => (
+                  <Combobox.Option
+                    key={option.id}
+                    value={option}
+                    className={(info) => JSON.stringify(info)}
+                  >
+                    {option.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          await click(getComboboxButton())
+
+          let bob = getComboboxOptions()[1]
+          expect(bob).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a comparator function',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox
+              value={{ id: 2, name: 'Bob' }}
+              onChange={console.log}
+              by={(a, z) => a.id === z.id}
+            >
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                {options.map((option) => (
+                  <Combobox.Option
+                    key={option.id}
+                    value={option}
+                    className={(info) => JSON.stringify(info)}
+                  >
+                    {option.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          await click(getComboboxButton())
+
+          let bob = getComboboxOptions()[1]
+          expect(bob).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+    })
   })
 
   describe('Combobox.Input', () => {

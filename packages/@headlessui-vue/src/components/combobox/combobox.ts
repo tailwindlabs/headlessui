@@ -35,6 +35,10 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 
+function defaultComparator<T>(a: T, z: T): boolean {
+  return a === z
+}
+
 enum ComboboxStates {
   Open,
   Closed,
@@ -62,6 +66,8 @@ type StateDefinition = {
 
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
+
+  compare: (a: unknown, z: unknown) => boolean
 
   inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
   optionsPropsRef: Ref<{ static: boolean; hold: boolean }>
@@ -110,6 +116,7 @@ export let Combobox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
+    by: { type: [String, Function], default: () => defaultComparator },
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String },
     nullable: { type: Boolean, default: false },
@@ -172,6 +179,13 @@ export let Combobox = defineComponent({
       comboboxState,
       value,
       mode,
+      compare(a: any, z: any) {
+        if (typeof props.by === 'string') {
+          let property = props.by as unknown as any
+          return a[property] === z[property]
+        }
+        return props.by(a, z)
+      },
       nullable,
       inputRef,
       labelRef,
@@ -217,9 +231,11 @@ export let Combobox = defineComponent({
         let optionIdx = options.value.findIndex((option) => {
           let optionValue = toRaw(option.dataRef.value)
           let selected = match(mode.value, {
-            [ValueMode.Single]: () => toRaw(api.value.value) === toRaw(optionValue),
+            [ValueMode.Single]: () => api.compare(toRaw(api.value.value), toRaw(optionValue)),
             [ValueMode.Multi]: () =>
-              (toRaw(api.value.value) as unknown[]).includes(toRaw(optionValue)),
+              (toRaw(api.value.value) as unknown[]).some((value) =>
+                api.compare(toRaw(value), toRaw(optionValue))
+              ),
           })
 
           return selected
@@ -350,9 +366,11 @@ export let Combobox = defineComponent({
         if (activeOptionIndex.value === null) {
           let optionValue = (dataRef.value as any).value
           let selected = match(mode.value, {
-            [ValueMode.Single]: () => toRaw(api.value.value) === toRaw(optionValue),
+            [ValueMode.Single]: () => api.compare(toRaw(api.value.value), toRaw(optionValue)),
             [ValueMode.Multi]: () =>
-              (toRaw(api.value.value) as unknown[]).includes(toRaw(optionValue)),
+              (toRaw(api.value.value) as unknown[]).some((value) =>
+                api.compare(toRaw(value), toRaw(optionValue))
+              ),
           })
 
           if (selected) {
@@ -449,7 +467,7 @@ export let Combobox = defineComponent({
         render({
           props: {
             ...attrs,
-            ...omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue']),
+            ...omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue', 'by']),
           },
           slot,
           slots,
@@ -859,8 +877,11 @@ export let ComboboxOption = defineComponent({
 
     let selected = computed(() =>
       match(api.mode.value, {
-        [ValueMode.Single]: () => toRaw(api.value.value) === toRaw(props.value),
-        [ValueMode.Multi]: () => (toRaw(api.value.value) as unknown[]).includes(toRaw(props.value)),
+        [ValueMode.Single]: () => api.compare(toRaw(api.value.value), toRaw(props.value)),
+        [ValueMode.Multi]: () =>
+          (toRaw(api.value.value) as unknown[]).some((value) =>
+            api.compare(toRaw(value), toRaw(props.value))
+          ),
       })
     )
 

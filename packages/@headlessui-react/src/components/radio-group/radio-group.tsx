@@ -29,6 +29,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
+import { useEvent } from '../../hooks/use-event'
 
 interface Option {
   id: string
@@ -82,6 +83,7 @@ let RadioGroupContext = createContext<{
   firstOption?: Option
   containsCheckedOption: boolean
   disabled: boolean
+  compare(a: unknown, z: unknown): boolean
 } | null>(null)
 RadioGroupContext.displayName = 'RadioGroupContext'
 
@@ -112,16 +114,25 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   props: Props<
     TTag,
     RadioGroupRenderPropArg,
-    RadioGroupPropsWeControl | 'value' | 'onChange' | 'disabled' | 'name'
+    RadioGroupPropsWeControl | 'value' | 'onChange' | 'disabled' | 'name' | 'by'
   > & {
     value: TType
     onChange(value: TType): void
+    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
     disabled?: boolean
     name?: string
   },
   ref: Ref<HTMLElement>
 ) {
-  let { value, name, onChange, disabled = false, ...theirProps } = props
+  let { value, name, onChange, by = (a, z) => a === z, disabled = false, ...theirProps } = props
+  let compare = useEvent(
+    typeof by === 'string'
+      ? (a: TType, z: TType) => {
+          let property = by as unknown as keyof TType
+          return a[property] === z[property]
+        }
+      : by
+  )
   let [{ options }, dispatch] = useReducer(stateReducer, {
     options: [],
   } as StateDefinition)
@@ -140,16 +151,17 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     [options]
   )
   let containsCheckedOption = useMemo(
-    () => options.some((option) => option.propsRef.current.value === value),
+    () => options.some((option) => compare(option.propsRef.current.value as TType, value)),
     [options, value]
   )
 
   let triggerChange = useCallback(
     (nextValue) => {
       if (disabled) return false
-      if (nextValue === value) return false
-      let nextOption = options.find((option) => option.propsRef.current.value === nextValue)
-        ?.propsRef.current
+      if (compare(nextValue, value)) return false
+      let nextOption = options.find((option) =>
+        compare(option.propsRef.current.value as TType, nextValue)
+      )?.propsRef.current
       if (nextOption?.disabled) return false
 
       onChange(nextValue)
@@ -251,8 +263,9 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
       change: triggerChange,
       disabled,
       value,
+      compare,
     }),
-    [registerOption, firstOption, containsCheckedOption, triggerChange, disabled, value]
+    [registerOption, firstOption, containsCheckedOption, triggerChange, disabled, value, compare]
   )
 
   let ourProps = {
@@ -357,6 +370,7 @@ let Option = forwardRefWithAs(function Option<
     firstOption,
     containsCheckedOption,
     value: radioGroupValue,
+    compare,
   } = useRadioGroupContext('RadioGroup.Option')
 
   useIsoMorphicEffect(
@@ -377,7 +391,7 @@ let Option = forwardRefWithAs(function Option<
   let isFirstOption = firstOption?.id === id
   let isDisabled = radioGroupDisabled || disabled
 
-  let checked = radioGroupValue === value
+  let checked = compare(radioGroupValue as TType, value)
   let ourProps = {
     ref: optionRef,
     id,

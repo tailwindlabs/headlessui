@@ -27,6 +27,10 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
+function defaultComparator<T>(a: T, z: T): boolean {
+  return a === z
+}
+
 interface Option {
   id: string
   element: Ref<HTMLElement | null>
@@ -40,6 +44,8 @@ interface StateDefinition {
   disabled: Ref<boolean>
   firstOption: Ref<Option | undefined>
   containsCheckedOption: Ref<boolean>
+
+  compare(a: unknown, z: unknown): boolean
 
   // State mutators
   change(nextValue: unknown): boolean
@@ -69,6 +75,7 @@ export let RadioGroup = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
     disabled: { type: [Boolean], default: false },
+    by: { type: [String, Function], default: () => defaultComparator },
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String, optional: true },
   },
@@ -94,13 +101,22 @@ export let RadioGroup = defineComponent({
         })
       ),
       containsCheckedOption: computed(() =>
-        options.value.some((option) => toRaw(option.propsRef.value) === toRaw(props.modelValue))
+        options.value.some((option) =>
+          api.compare(toRaw(option.propsRef.value), toRaw(props.modelValue))
+        )
       ),
+      compare(a: any, z: any) {
+        if (typeof props.by === 'string') {
+          let property = props.by as unknown as any
+          return a[property] === z[property]
+        }
+        return props.by(a, z)
+      },
       change(nextValue: unknown) {
         if (props.disabled) return false
-        if (value.value === nextValue) return false
-        let nextOption = options.value.find(
-          (option) => toRaw(option.propsRef.value) === toRaw(nextValue)
+        if (api.compare(toRaw(value.value), toRaw(nextValue))) return false
+        let nextOption = options.value.find((option) =>
+          api.compare(toRaw(option.propsRef.value), toRaw(nextValue))
         )?.propsRef
         if (nextOption?.disabled) return false
         emit('update:modelValue', nextValue)
@@ -267,7 +283,7 @@ export let RadioGroupOption = defineComponent({
 
     let isFirstOption = computed(() => api.firstOption.value?.id === id)
     let disabled = computed(() => api.disabled.value || props.disabled)
-    let checked = computed(() => toRaw(api.value.value) === toRaw(props.value))
+    let checked = computed(() => api.compare(toRaw(api.value.value), toRaw(props.value)))
     let tabIndex = computed(() => {
       if (disabled.value) return -1
       if (checked.value) return 0

@@ -321,6 +321,93 @@ describe('Rendering', () => {
       assertActiveElement(getByText('Option 3'))
     })
   )
+
+  describe('Equality', () => {
+    let options = [
+      { id: 1, name: 'Alice' },
+      { id: 2, name: 'Bob' },
+      { id: 3, name: 'Charlie' },
+    ]
+
+    it(
+      'should use object equality by default',
+      suppressConsoleLogs(async () => {
+        render(
+          <RadioGroup value={options[1]} onChange={console.log}>
+            {options.map((option) => (
+              <RadioGroup.Option
+                key={option.id}
+                value={option}
+                className={(info) => JSON.stringify(info)}
+              >
+                {option.name}
+              </RadioGroup.Option>
+            ))}
+          </RadioGroup>
+        )
+
+        let bob = getRadioGroupOptions()[1]
+        expect(bob).toHaveAttribute(
+          'class',
+          JSON.stringify({ checked: true, disabled: false, active: false })
+        )
+      })
+    )
+
+    it(
+      'should be possible to compare objects by a field',
+      suppressConsoleLogs(async () => {
+        render(
+          <RadioGroup value={{ id: 2, name: 'Bob' }} onChange={console.log} by="id">
+            {options.map((option) => (
+              <RadioGroup.Option
+                key={option.id}
+                value={option}
+                className={(info) => JSON.stringify(info)}
+              >
+                {option.name}
+              </RadioGroup.Option>
+            ))}
+          </RadioGroup>
+        )
+
+        let bob = getRadioGroupOptions()[1]
+        expect(bob).toHaveAttribute(
+          'class',
+          JSON.stringify({ checked: true, disabled: false, active: false })
+        )
+      })
+    )
+
+    it(
+      'should be possible to compare objects by a comparator function',
+      suppressConsoleLogs(async () => {
+        render(
+          <RadioGroup
+            value={{ id: 2, name: 'Bob' }}
+            onChange={console.log}
+            by={(a, z) => a.id === z.id}
+          >
+            {options.map((option) => (
+              <RadioGroup.Option
+                key={option.id}
+                value={option}
+                className={(info) => JSON.stringify(info)}
+              >
+                {option.name}
+              </RadioGroup.Option>
+            ))}
+          </RadioGroup>
+        )
+
+        let bob = getRadioGroupOptions()[1]
+        expect(bob).toHaveAttribute(
+          'class',
+          JSON.stringify({ checked: true, disabled: false, active: false })
+        )
+      })
+    )
+  })
 })
 
 describe('Keyboard interactions', () => {

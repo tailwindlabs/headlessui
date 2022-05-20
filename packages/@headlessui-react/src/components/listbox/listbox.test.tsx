@@ -162,6 +162,108 @@ describe('Rendering', () => {
         assertListbox({ state: ListboxState.InvisibleUnmounted })
       })
     )
+
+    describe('Equality', () => {
+      let options = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
+      ]
+
+      it(
+        'should use object equality by default',
+        suppressConsoleLogs(async () => {
+          render(
+            <Listbox value={options[1]} onChange={console.log}>
+              <Listbox.Button>Trigger</Listbox.Button>
+              <Listbox.Options>
+                {options.map((option) => (
+                  <Listbox.Option
+                    key={option.id}
+                    value={option}
+                    className={(info) => JSON.stringify(info)}
+                  >
+                    {option.name}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Listbox>
+          )
+
+          await click(getListboxButton())
+
+          let bob = getListboxOptions()[1]
+          expect(bob).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a field',
+        suppressConsoleLogs(async () => {
+          render(
+            <Listbox value={{ id: 2, name: 'Bob' }} onChange={console.log} by="id">
+              <Listbox.Button>Trigger</Listbox.Button>
+              <Listbox.Options>
+                {options.map((option) => (
+                  <Listbox.Option
+                    key={option.id}
+                    value={option}
+                    className={(info) => JSON.stringify(info)}
+                  >
+                    {option.name}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Listbox>
+          )
+
+          await click(getListboxButton())
+
+          let bob = getListboxOptions()[1]
+          expect(bob).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a comparator function',
+        suppressConsoleLogs(async () => {
+          render(
+            <Listbox
+              value={{ id: 2, name: 'Bob' }}
+              onChange={console.log}
+              by={(a, z) => a.id === z.id}
+            >
+              <Listbox.Button>Trigger</Listbox.Button>
+              <Listbox.Options>
+                {options.map((option) => (
+                  <Listbox.Option
+                    key={option.id}
+                    value={option}
+                    className={(info) => JSON.stringify(info)}
+                  >
+                    {option.name}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Listbox>
+          )
+
+          await click(getListboxButton())
+
+          let bob = getListboxOptions()[1]
+          expect(bob).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+    })
   })
 
   describe('Listbox.Label', () => {
