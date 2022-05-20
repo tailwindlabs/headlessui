@@ -1,7 +1,6 @@
 import React, {
   Fragment,
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -29,6 +28,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { FocusSentinel } from '../../internal/focus-sentinel'
+import { useEvent } from '../../hooks/use-event'
 
 interface StateDefinition {
   selectedIndex: number
@@ -341,65 +341,62 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   if (myIndex === -1) myIndex = mySSRIndex
   let selected = myIndex === selectedIndex
 
-  let handleKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLElement>) => {
-      let list = tabs.map((tab) => tab.current).filter(Boolean) as HTMLElement[]
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
+    let list = tabs.map((tab) => tab.current).filter(Boolean) as HTMLElement[]
 
-      if (event.key === Keys.Space || event.key === Keys.Enter) {
+    if (event.key === Keys.Space || event.key === Keys.Enter) {
+      event.preventDefault()
+      event.stopPropagation()
+
+      change(myIndex)
+      return
+    }
+
+    switch (event.key) {
+      case Keys.Home:
+      case Keys.PageUp:
         event.preventDefault()
         event.stopPropagation()
 
-        change(myIndex)
+        return focusIn(list, Focus.First)
+
+      case Keys.End:
+      case Keys.PageDown:
+        event.preventDefault()
+        event.stopPropagation()
+
+        return focusIn(list, Focus.Last)
+    }
+
+    return match(orientation, {
+      vertical() {
+        if (event.key === Keys.ArrowUp) return focusIn(list, Focus.Previous | Focus.WrapAround)
+        if (event.key === Keys.ArrowDown) return focusIn(list, Focus.Next | Focus.WrapAround)
         return
-      }
+      },
+      horizontal() {
+        if (event.key === Keys.ArrowLeft) return focusIn(list, Focus.Previous | Focus.WrapAround)
+        if (event.key === Keys.ArrowRight) return focusIn(list, Focus.Next | Focus.WrapAround)
+        return
+      },
+    })
+  })
 
-      switch (event.key) {
-        case Keys.Home:
-        case Keys.PageUp:
-          event.preventDefault()
-          event.stopPropagation()
-
-          return focusIn(list, Focus.First)
-
-        case Keys.End:
-        case Keys.PageDown:
-          event.preventDefault()
-          event.stopPropagation()
-
-          return focusIn(list, Focus.Last)
-      }
-
-      return match(orientation, {
-        vertical() {
-          if (event.key === Keys.ArrowUp) return focusIn(list, Focus.Previous | Focus.WrapAround)
-          if (event.key === Keys.ArrowDown) return focusIn(list, Focus.Next | Focus.WrapAround)
-          return
-        },
-        horizontal() {
-          if (event.key === Keys.ArrowLeft) return focusIn(list, Focus.Previous | Focus.WrapAround)
-          if (event.key === Keys.ArrowRight) return focusIn(list, Focus.Next | Focus.WrapAround)
-          return
-        },
-      })
-    },
-    [tabs, orientation, myIndex, change]
-  )
-
-  let handleFocus = useCallback(() => {
+  let handleFocus = useEvent(() => {
     internalTabRef.current?.focus()
-  }, [internalTabRef])
+  })
 
-  let handleSelection = useCallback(() => {
+  let handleSelection = useEvent(() => {
     internalTabRef.current?.focus()
     change(myIndex)
-  }, [change, myIndex, internalTabRef])
+  })
 
   // This is important because we want to only focus the tab when it gets focus
   // OR it finished the click event (mouseup). However, if you perform a `click`,
   // then you will first get the `focus` and then get the `click` event.
-  let handleMouseDown = useCallback((event: ReactMouseEvent<HTMLElement>) => {
+  let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLElement>) => {
     event.preventDefault()
-  }, [])
+  })
 
   let slot = useMemo(() => ({ selected }), [selected])
 

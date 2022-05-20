@@ -504,19 +504,16 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     }
   }, [value, inputRef, inputPropsRef])
 
-  let selectOption = useCallback(
-    (id: string) => {
-      let option = options.find((item) => item.id === id)
-      if (!option) return
+  let selectOption = useEvent((id: string) => {
+    let option = options.find((item) => item.id === id)
+    if (!option) return
 
-      let { dataRef } = option
-      comboboxPropsRef.current.onChange(dataRef.current.value)
-      syncInputValue()
-    },
-    [options, comboboxPropsRef, inputRef]
-  )
+    let { dataRef } = option
+    comboboxPropsRef.current.onChange(dataRef.current.value)
+    syncInputValue()
+  })
 
-  let selectActiveOption = useCallback(() => {
+  let selectActiveOption = useEvent(() => {
     if (activeOptionIndex !== null) {
       let { dataRef, id } = options[activeOptionIndex]
       comboboxPropsRef.current.onChange(dataRef.current.value)
@@ -526,7 +523,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       // but we are getting the fallback active option back instead.
       dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
     }
-  }, [activeOptionIndex, options, comboboxPropsRef, inputRef])
+  })
 
   let actionsBag = useMemo<ContextType<typeof ComboboxActions>>(
     () => ({
@@ -652,121 +649,115 @@ let Input = forwardRefWithAs(function Input<
     inputPropsRef.current.displayValue = displayValue
   }, [displayValue, inputPropsRef])
 
-  let handleKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLInputElement>) => {
-      switch (event.key) {
-        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
+    switch (event.key) {
+      // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        case Keys.Backspace:
-        case Keys.Delete:
-          if (data.mode !== ValueMode.Single) return
-          if (!state.comboboxPropsRef.current.nullable) return
+      case Keys.Backspace:
+      case Keys.Delete:
+        if (data.mode !== ValueMode.Single) return
+        if (!state.comboboxPropsRef.current.nullable) return
 
-          let input = event.currentTarget
-          d.requestAnimationFrame(() => {
-            if (input.value === '') {
-              state.comboboxPropsRef.current.onChange(null)
-              if (state.optionsRef.current) {
-                state.optionsRef.current.scrollTop = 0
-              }
-              actions.goToOption(Focus.Nothing)
+        let input = event.currentTarget
+        d.requestAnimationFrame(() => {
+          if (input.value === '') {
+            state.comboboxPropsRef.current.onChange(null)
+            if (state.optionsRef.current) {
+              state.optionsRef.current.scrollTop = 0
             }
-          })
-          break
-
-        case Keys.Enter:
-          if (state.comboboxState !== ComboboxStates.Open) return
-
-          event.preventDefault()
-          event.stopPropagation()
-
-          if (data.activeOptionIndex === null) {
-            actions.closeCombobox()
-            return
+            actions.goToOption(Focus.Nothing)
           }
+        })
+        break
 
-          actions.selectActiveOption()
-          if (data.mode === ValueMode.Single) {
-            actions.closeCombobox()
-          }
-          break
+      case Keys.Enter:
+        if (state.comboboxState !== ComboboxStates.Open) return
 
-        case Keys.ArrowDown:
-          event.preventDefault()
-          event.stopPropagation()
-          return match(state.comboboxState, {
-            [ComboboxStates.Open]: () => {
-              actions.goToOption(Focus.Next)
-            },
-            [ComboboxStates.Closed]: () => {
-              actions.openCombobox()
-              // TODO: We can't do this outside next frame because the options aren't rendered yet
-              // But doing this in next frame results in a flicker because the dom mutations are async here
-              // Basically:
-              // Sync -> no option list yet
-              // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
+        event.preventDefault()
+        event.stopPropagation()
 
-              // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
-              d.nextFrame(() => {
-                if (!data.value) {
-                  actions.goToOption(Focus.Next)
-                }
-              })
-            },
-          })
-
-        case Keys.ArrowUp:
-          event.preventDefault()
-          event.stopPropagation()
-          return match(state.comboboxState, {
-            [ComboboxStates.Open]: () => {
-              actions.goToOption(Focus.Previous)
-            },
-            [ComboboxStates.Closed]: () => {
-              actions.openCombobox()
-              d.nextFrame(() => {
-                if (!data.value) {
-                  actions.goToOption(Focus.Last)
-                }
-              })
-            },
-          })
-
-        case Keys.Home:
-        case Keys.PageUp:
-          event.preventDefault()
-          event.stopPropagation()
-          return actions.goToOption(Focus.First)
-
-        case Keys.End:
-        case Keys.PageDown:
-          event.preventDefault()
-          event.stopPropagation()
-          return actions.goToOption(Focus.Last)
-
-        case Keys.Escape:
-          event.preventDefault()
-          if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
-            event.stopPropagation()
-          }
-          return actions.closeCombobox()
-
-        case Keys.Tab:
-          actions.selectActiveOption()
+        if (data.activeOptionIndex === null) {
           actions.closeCombobox()
-          break
-      }
-    },
-    [d, state, actions, data]
-  )
+          return
+        }
 
-  let handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      actions.openCombobox()
-      onChangeRef.current?.(event)
-    },
-    [actions, onChangeRef]
-  )
+        actions.selectActiveOption()
+        if (data.mode === ValueMode.Single) {
+          actions.closeCombobox()
+        }
+        break
+
+      case Keys.ArrowDown:
+        event.preventDefault()
+        event.stopPropagation()
+        return match(state.comboboxState, {
+          [ComboboxStates.Open]: () => {
+            actions.goToOption(Focus.Next)
+          },
+          [ComboboxStates.Closed]: () => {
+            actions.openCombobox()
+            // TODO: We can't do this outside next frame because the options aren't rendered yet
+            // But doing this in next frame results in a flicker because the dom mutations are async here
+            // Basically:
+            // Sync -> no option list yet
+            // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
+
+            // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
+            d.nextFrame(() => {
+              if (!data.value) {
+                actions.goToOption(Focus.Next)
+              }
+            })
+          },
+        })
+
+      case Keys.ArrowUp:
+        event.preventDefault()
+        event.stopPropagation()
+        return match(state.comboboxState, {
+          [ComboboxStates.Open]: () => {
+            actions.goToOption(Focus.Previous)
+          },
+          [ComboboxStates.Closed]: () => {
+            actions.openCombobox()
+            d.nextFrame(() => {
+              if (!data.value) {
+                actions.goToOption(Focus.Last)
+              }
+            })
+          },
+        })
+
+      case Keys.Home:
+      case Keys.PageUp:
+        event.preventDefault()
+        event.stopPropagation()
+        return actions.goToOption(Focus.First)
+
+      case Keys.End:
+      case Keys.PageDown:
+        event.preventDefault()
+        event.stopPropagation()
+        return actions.goToOption(Focus.Last)
+
+      case Keys.Escape:
+        event.preventDefault()
+        if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
+          event.stopPropagation()
+        }
+        return actions.closeCombobox()
+
+      case Keys.Tab:
+        actions.selectActiveOption()
+        actions.closeCombobox()
+        break
+    }
+  })
+
+  let handleChange = useEvent((event: React.ChangeEvent<HTMLInputElement>) => {
+    actions.openCombobox()
+    onChangeRef.current?.(event)
+  })
 
   // TODO: Verify this. The spec says that, for the input/combobox, the lebel is the labelling element when present
   // Otherwise it's the ID of the non-label element
@@ -836,73 +827,67 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let id = `headlessui-combobox-button-${useId()}`
   let d = useDisposables()
 
-  let handleKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLUListElement>) => {
-      switch (event.key) {
-        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
+    switch (event.key) {
+      // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
-        case Keys.ArrowDown:
-          event.preventDefault()
-          event.stopPropagation()
-          if (state.comboboxState === ComboboxStates.Closed) {
-            actions.openCombobox()
-            // TODO: We can't do this outside next frame because the options aren't rendered yet
-            // But doing this in next frame results in a flicker because the dom mutations are async here
-            // Basically:
-            // Sync -> no option list yet
-            // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
-
-            // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
-            d.nextFrame(() => {
-              if (!data.value) {
-                actions.goToOption(Focus.First)
-              }
-            })
-          }
-          return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
-
-        case Keys.ArrowUp:
-          event.preventDefault()
-          event.stopPropagation()
-          if (state.comboboxState === ComboboxStates.Closed) {
-            actions.openCombobox()
-            d.nextFrame(() => {
-              if (!data.value) {
-                actions.goToOption(Focus.Last)
-              }
-            })
-          }
-          return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
-
-        case Keys.Escape:
-          event.preventDefault()
-          if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
-            event.stopPropagation()
-          }
-          actions.closeCombobox()
-          return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
-
-        default:
-          return
-      }
-    },
-    [d, state, actions, data]
-  )
-
-  let handleClick = useCallback(
-    (event: ReactMouseEvent) => {
-      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-      if (state.comboboxState === ComboboxStates.Open) {
-        actions.closeCombobox()
-      } else {
+      case Keys.ArrowDown:
         event.preventDefault()
-        actions.openCombobox()
-      }
+        event.stopPropagation()
+        if (state.comboboxState === ComboboxStates.Closed) {
+          actions.openCombobox()
+          // TODO: We can't do this outside next frame because the options aren't rendered yet
+          // But doing this in next frame results in a flicker because the dom mutations are async here
+          // Basically:
+          // Sync -> no option list yet
+          // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
 
-      d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
-    },
-    [actions, d, state]
-  )
+          // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
+          d.nextFrame(() => {
+            if (!data.value) {
+              actions.goToOption(Focus.First)
+            }
+          })
+        }
+        return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+
+      case Keys.ArrowUp:
+        event.preventDefault()
+        event.stopPropagation()
+        if (state.comboboxState === ComboboxStates.Closed) {
+          actions.openCombobox()
+          d.nextFrame(() => {
+            if (!data.value) {
+              actions.goToOption(Focus.Last)
+            }
+          })
+        }
+        return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+
+      case Keys.Escape:
+        event.preventDefault()
+        if (state.optionsRef.current && !state.optionsPropsRef.current.static) {
+          event.stopPropagation()
+        }
+        actions.closeCombobox()
+        return d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+
+      default:
+        return
+    }
+  })
+
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    if (state.comboboxState === ComboboxStates.Open) {
+      actions.closeCombobox()
+    } else {
+      event.preventDefault()
+      actions.openCombobox()
+    }
+
+    d.nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+  })
 
   let labelledby = useComputed(() => {
     if (!state.labelRef.current) return undefined
@@ -954,10 +939,7 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
   let id = `headlessui-combobox-label-${useId()}`
   let labelRef = useSyncRefs(state.labelRef, ref)
 
-  let handleClick = useCallback(
-    () => state.inputRef.current?.focus({ preventScroll: true }),
-    [state.inputRef]
-  )
+  let handleClick = useEvent(() => state.inputRef.current?.focus({ preventScroll: true }))
 
   let slot = useMemo<LabelRenderPropArg>(
     () => ({ open: state.comboboxState === ComboboxStates.Open, disabled: state.disabled }),
@@ -1129,7 +1111,7 @@ let Option = forwardRefWithAs(function Option<
     bag.current.textValue = internalOptionRef.current?.textContent?.toLowerCase()
   }, [bag, internalOptionRef])
 
-  let select = useCallback(() => actions.selectOption(id), [actions, id])
+  let select = useEvent(() => actions.selectOption(id))
   useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
 
   let enableScrollIntoView = useRef(state.comboboxPropsRef.current.__demoMode ? false : true)
@@ -1154,35 +1136,32 @@ let Option = forwardRefWithAs(function Option<
     return d.dispose
   }, [internalOptionRef, active, state.comboboxState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex])
 
-  let handleClick = useCallback(
-    (event: { preventDefault: Function }) => {
-      if (disabled) return event.preventDefault()
-      select()
-      if (data.mode === ValueMode.Single) {
-        actions.closeCombobox()
-        disposables().nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
-      }
-    },
-    [actions, state.inputRef, disabled, select]
-  )
+  let handleClick = useEvent((event: { preventDefault: Function }) => {
+    if (disabled) return event.preventDefault()
+    select()
+    if (data.mode === ValueMode.Single) {
+      actions.closeCombobox()
+      disposables().nextFrame(() => state.inputRef.current?.focus({ preventScroll: true }))
+    }
+  })
 
-  let handleFocus = useCallback(() => {
+  let handleFocus = useEvent(() => {
     if (disabled) return actions.goToOption(Focus.Nothing)
     actions.goToOption(Focus.Specific, id)
-  }, [disabled, id, actions])
+  })
 
-  let handleMove = useCallback(() => {
+  let handleMove = useEvent(() => {
     if (disabled) return
     if (active) return
     actions.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
-  }, [disabled, active, id, actions])
+  })
 
-  let handleLeave = useCallback(() => {
+  let handleLeave = useEvent(() => {
     if (disabled) return
     if (!active) return
     if (state.optionsPropsRef.current.hold) return
     actions.goToOption(Focus.Nothing)
-  }, [disabled, active, actions, state.comboboxState, state.comboboxPropsRef])
+  })
 
   let slot = useMemo<OptionRenderPropArg>(
     () => ({ active, selected, disabled }),

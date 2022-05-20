@@ -1,12 +1,13 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
+import { useEvent } from './use-event'
 
 export function useFlags(initialFlags = 0) {
   let [flags, setFlags] = useState(initialFlags)
 
-  let addFlag = useCallback((flag: number) => setFlags((flags) => flags | flag), [setFlags])
-  let hasFlag = useCallback((flag: number) => Boolean(flags & flag), [flags])
-  let removeFlag = useCallback((flag: number) => setFlags((flags) => flags & ~flag), [setFlags])
-  let toggleFlag = useCallback((flag: number) => setFlags((flags) => flags ^ flag), [setFlags])
+  let addFlag = useEvent((flag: number) => setFlags((flags) => flags | flag))
+  let hasFlag = useEvent((flag: number) => Boolean(flags & flag))
+  let removeFlag = useEvent((flag: number) => setFlags((flags) => flags & ~flag))
+  let toggleFlag = useEvent((flag: number) => setFlags((flags) => flags ^ flag))
 
   return { addFlag, hasFlag, removeFlag, toggleFlag }
 }

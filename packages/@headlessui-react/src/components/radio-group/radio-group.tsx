@@ -154,20 +154,17 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     [options, value]
   )
 
-  let triggerChange = useCallback(
-    (nextValue) => {
-      if (disabled) return false
-      if (compare(nextValue, value)) return false
-      let nextOption = options.find((option) =>
-        compare(option.propsRef.current.value as TType, nextValue)
-      )?.propsRef.current
-      if (nextOption?.disabled) return false
+  let triggerChange = useEvent((nextValue: TType) => {
+    if (disabled) return false
+    if (compare(nextValue, value)) return false
+    let nextOption = options.find((option) =>
+      compare(option.propsRef.current.value as TType, nextValue)
+    )?.propsRef.current
+    if (nextOption?.disabled) return false
 
-      onChange(nextValue)
-      return true
-    },
-    [onChange, value, disabled, options]
-  )
+    onChange(nextValue)
+    return true
+  })
 
   useTreeWalker({
     container: internalRadioGroupRef.current,
@@ -181,78 +178,72 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     },
   })
 
-  let handleKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-      let container = internalRadioGroupRef.current
-      if (!container) return
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    let container = internalRadioGroupRef.current
+    if (!container) return
 
-      let ownerDocument = getOwnerDocument(container)
+    let ownerDocument = getOwnerDocument(container)
 
-      let all = options
-        .filter((option) => option.propsRef.current.disabled === false)
-        .map((radio) => radio.element.current) as HTMLElement[]
+    let all = options
+      .filter((option) => option.propsRef.current.disabled === false)
+      .map((radio) => radio.element.current) as HTMLElement[]
 
-      switch (event.key) {
-        case Keys.Enter:
-          attemptSubmit(event.currentTarget)
-          break
-        case Keys.ArrowLeft:
-        case Keys.ArrowUp:
-          {
-            event.preventDefault()
-            event.stopPropagation()
+    switch (event.key) {
+      case Keys.Enter:
+        attemptSubmit(event.currentTarget)
+        break
+      case Keys.ArrowLeft:
+      case Keys.ArrowUp:
+        {
+          event.preventDefault()
+          event.stopPropagation()
 
-            let result = focusIn(all, Focus.Previous | Focus.WrapAround)
+          let result = focusIn(all, Focus.Previous | Focus.WrapAround)
 
-            if (result === FocusResult.Success) {
-              let activeOption = options.find(
-                (option) => option.element.current === ownerDocument?.activeElement
-              )
-              if (activeOption) triggerChange(activeOption.propsRef.current.value)
-            }
-          }
-          break
-
-        case Keys.ArrowRight:
-        case Keys.ArrowDown:
-          {
-            event.preventDefault()
-            event.stopPropagation()
-
-            let result = focusIn(all, Focus.Next | Focus.WrapAround)
-
-            if (result === FocusResult.Success) {
-              let activeOption = options.find(
-                (option) => option.element.current === ownerDocument?.activeElement
-              )
-              if (activeOption) triggerChange(activeOption.propsRef.current.value)
-            }
-          }
-          break
-
-        case Keys.Space:
-          {
-            event.preventDefault()
-            event.stopPropagation()
-
+          if (result === FocusResult.Success) {
             let activeOption = options.find(
               (option) => option.element.current === ownerDocument?.activeElement
             )
             if (activeOption) triggerChange(activeOption.propsRef.current.value)
           }
-          break
-      }
-    },
-    [internalRadioGroupRef, options, triggerChange]
-  )
+        }
+        break
 
-  let registerOption = useCallback(
-    (option: Option) => {
-      dispatch({ type: ActionTypes.RegisterOption, ...option })
-      return () => dispatch({ type: ActionTypes.UnregisterOption, id: option.id })
-    },
-    [dispatch]
-  )
+      case Keys.ArrowRight:
+      case Keys.ArrowDown:
+        {
+          event.preventDefault()
+          event.stopPropagation()
+
+          let result = focusIn(all, Focus.Next | Focus.WrapAround)
+
+          if (result === FocusResult.Success) {
+            let activeOption = options.find(
+              (option) => option.element.current === ownerDocument?.activeElement
+            )
+            if (activeOption) triggerChange(activeOption.propsRef.current.value)
+          }
+        }
+        break
+
+      case Keys.Space:
+        {
+          event.preventDefault()
+          event.stopPropagation()
+
+          let activeOption = options.find(
+            (option) => option.element.current === ownerDocument?.activeElement
+          )
+          if (activeOption) triggerChange(activeOption.propsRef.current.value)
+        }
+        break
+    }
+  })
+
+  let registerOption = useEvent((option: Option) => {
+    dispatch({ type: ActionTypes.RegisterOption, ...option })
+    return () => dispatch({ type: ActionTypes.UnregisterOption, id: option.id })
+  })
 
   let api = useMemo<ContextType<typeof RadioGroupContext>>(
     () => ({
@@ -377,15 +368,15 @@ let Option = forwardRefWithAs(function Option<
     [id, registerOption, internalOptionRef, props]
   )
 
-  let handleClick = useCallback(() => {
+  let handleClick = useEvent(() => {
     if (!change(value)) return
 
     addFlag(OptionState.Active)
     internalOptionRef.current?.focus()
-  }, [addFlag, change, value])
+  })
 
-  let handleFocus = useCallback(() => addFlag(OptionState.Active), [addFlag])
-  let handleBlur = useCallback(() => removeFlag(OptionState.Active), [removeFlag])
+  let handleFocus = useEvent(() => addFlag(OptionState.Active))
+  let handleBlur = useEvent(() => removeFlag(OptionState.Active))
 
   let isFirstOption = firstOption?.id === id
   let isDisabled = radioGroupDisabled || disabled
