@@ -504,6 +504,101 @@ describe('Rendering', () => {
     // Verify that the third radio group option is active
     assertActiveElement(getByText('Option 3'))
   })
+
+  describe('Equality', () => {
+    let options = [
+      { id: 1, name: 'Alice' },
+      { id: 2, name: 'Bob' },
+      { id: 3, name: 'Charlie' },
+    ]
+
+    it(
+      'should use object equality by default',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <RadioGroup v-model="value">
+              <RadioGroupButton>Trigger</RadioGroupButton>
+              <RadioGroupOption
+                v-for="option in options"
+                :key="option.id"
+                :value="option"
+                v-slot="data"
+                >{{ JSON.stringify(data) }}</RadioGroupOption
+              >
+            </RadioGroup>
+          `,
+          setup: () => {
+            let value = ref(options[1])
+            return { options, value }
+          },
+        })
+
+        let bob = getRadioGroupOptions()[1]
+        expect(bob).toHaveTextContent(
+          JSON.stringify({ checked: true, disabled: false, active: false })
+        )
+      })
+    )
+
+    it(
+      'should be possible to compare objects by a field',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <RadioGroup v-model="value" by="id">
+              <RadioGroupButton>Trigger</RadioGroupButton>
+              <RadioGroupOption
+                v-for="option in options"
+                :key="option.id"
+                :value="option"
+                v-slot="data"
+                >{{ JSON.stringify(data) }}</RadioGroupOption
+              >
+            </RadioGroup>
+          `,
+          setup: () => {
+            let value = ref({ id: 2, name: 'Bob' })
+            return { options, value }
+          },
+        })
+
+        let bob = getRadioGroupOptions()[1]
+        expect(bob).toHaveTextContent(
+          JSON.stringify({ checked: true, disabled: false, active: false })
+        )
+      })
+    )
+
+    it(
+      'should be possible to compare objects by a comparator function',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <RadioGroup v-model="value" :by="compare">
+              <RadioGroupButton>Trigger</RadioGroupButton>
+              <RadioGroupOption
+                v-for="option in options"
+                :key="option.id"
+                :value="option"
+                v-slot="data"
+                >{{ JSON.stringify(data) }}</RadioGroupOption
+              >
+            </RadioGroup>
+          `,
+          setup: () => {
+            let value = ref({ id: 2, name: 'Bob' })
+            return { options, value, compare: (a: any, z: any) => a.id === z.id }
+          },
+        })
+
+        let bob = getRadioGroupOptions()[1]
+        expect(bob).toHaveTextContent(
+          JSON.stringify({ checked: true, disabled: false, active: false })
+        )
+      })
+    )
+  })
 })
 
 describe('Keyboard interactions', () => {

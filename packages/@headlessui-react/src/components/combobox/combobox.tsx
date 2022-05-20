@@ -38,6 +38,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { sortByDomNode } from '../../utils/focus-management'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
+import { useEvent } from '../../hooks/use-event'
 
 enum ComboboxStates {
   Open,
@@ -69,6 +70,7 @@ interface StateDefinition {
     mode: ValueMode
     onChange(value: unknown): void
     nullable: boolean
+    compare(a: unknown, z: unknown): boolean
     __demoMode: boolean
   }>
   inputPropsRef: MutableRefObject<{
@@ -160,12 +162,13 @@ let reducers: {
 
     // Check if we have a selected value that we can make active
     let activeOptionIndex = state.activeOptionIndex
-    let { value, mode } = state.comboboxPropsRef.current
+    let { value, mode, compare } = state.comboboxPropsRef.current
     let optionIdx = state.options.findIndex((option) => {
       let optionValue = option.dataRef.current.value
       let selected = match(mode, {
-        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
-        [ValueMode.Single]: () => value === optionValue,
+        [ValueMode.Multi]: () =>
+          (value as unknown[]).some((option) => compare(option, optionValue)),
+        [ValueMode.Single]: () => compare(value, optionValue),
       })
 
       return selected
@@ -226,11 +229,12 @@ let reducers: {
 
     // Check if we need to make the newly registered option active.
     if (state.activeOptionIndex === null) {
-      let { value, mode } = state.comboboxPropsRef.current
+      let { value, mode, compare } = state.comboboxPropsRef.current
       let optionValue = action.dataRef.current.value
       let selected = match(mode, {
-        [ValueMode.Multi]: () => (value as unknown[]).includes(optionValue),
-        [ValueMode.Single]: () => value === optionValue,
+        [ValueMode.Multi]: () =>
+          (value as unknown[]).some((option) => compare(option, optionValue)),
+        [ValueMode.Single]: () => compare(value, optionValue),
       })
       if (selected) {
         adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
@@ -340,10 +344,11 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   props: Props<
     TTag,
     ComboboxRenderPropArg<TType>,
-    'value' | 'onChange' | 'disabled' | 'name' | 'nullable' | 'multiple'
+    'value' | 'onChange' | 'disabled' | 'name' | 'nullable' | 'multiple' | 'by'
   > & {
     value: TType
     onChange(value: TType): void
+    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
     disabled?: boolean
     __demoMode?: boolean
     name?: string
@@ -356,6 +361,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     name,
     value,
     onChange,
+    by = (a, z) => a === z,
     disabled = false,
     __demoMode = false,
     nullable = false,
@@ -367,6 +373,14 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let comboboxPropsRef = useRef<StateDefinition['comboboxPropsRef']['current']>({
     value,
     mode: multiple ? ValueMode.Multi : ValueMode.Single,
+    compare: useEvent(
+      typeof by === 'string'
+        ? (a: TType, z: TType) => {
+            let property = by as unknown as keyof TType
+            return a[property] === z[property]
+          }
+        : by
+    ),
     onChange,
     nullable,
     __demoMode,
@@ -1093,9 +1107,13 @@ let Option = forwardRefWithAs(function Option<
   let id = `headlessui-combobox-option-${useId()}`
   let active =
     data.activeOptionIndex !== null ? state.options[data.activeOptionIndex].id === id : false
+
   let selected = match(data.mode, {
-    [ValueMode.Multi]: () => (data.value as TType[]).includes(value),
-    [ValueMode.Single]: () => data.value === value,
+    [ValueMode.Multi]: () =>
+      (data.value as TType[]).some((option) =>
+        state.comboboxPropsRef.current.compare(option, value)
+      ),
+    [ValueMode.Single]: () => state.comboboxPropsRef.current.compare(data.value, value),
   })
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let bag = useRef<ComboboxOptionDataRef['current']>({ disabled, value, domRef: internalOptionRef })

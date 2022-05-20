@@ -225,6 +225,113 @@ describe('Rendering', () => {
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
+
+    describe('Equality', () => {
+      let options = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
+      ]
+
+      it(
+        'should use object equality by default',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value">
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    v-slot="data"
+                    >{{ JSON.stringify(data) }}</ComboboxOption
+                  >
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => {
+              let value = ref(options[1])
+              return { options, value }
+            },
+          })
+
+          await click(getComboboxButton())
+
+          let bob = getComboboxOptions()[1]
+          expect(bob).toHaveTextContent(
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a field',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value" by="id">
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    v-slot="data"
+                    >{{ JSON.stringify(data) }}</ComboboxOption
+                  >
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => {
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value }
+            },
+          })
+
+          await click(getComboboxButton())
+
+          let bob = getComboboxOptions()[1]
+          expect(bob).toHaveTextContent(
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+
+      it(
+        'should be possible to compare objects by a comparator function',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value" :by="compare">
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    v-slot="data"
+                    >{{ JSON.stringify(data) }}</ComboboxOption
+                  >
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => {
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value, compare: (a: any, z: any) => a.id === z.id }
+            },
+          })
+
+          await click(getComboboxButton())
+
+          let bob = getComboboxOptions()[1]
+          expect(bob).toHaveTextContent(
+            JSON.stringify({ active: true, selected: true, disabled: false })
+          )
+        })
+      )
+    })
   })
 
   describe('Combobox.Input', () => {
