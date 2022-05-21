@@ -30,14 +30,14 @@ import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
 
-interface Option {
+interface Option<T = unknown> {
   id: string
   element: MutableRefObject<HTMLElement | null>
-  propsRef: MutableRefObject<{ value: unknown; disabled: boolean }>
+  propsRef: MutableRefObject<{ value: T; disabled: boolean }>
 }
 
-interface StateDefinition {
-  options: Option[]
+interface StateDefinition<T = unknown> {
+  options: Option<T>[]
 }
 
 enum ActionTypes {
@@ -96,7 +96,7 @@ function useRadioGroupContext(component: string) {
   return context
 }
 
-function stateReducer(state: StateDefinition, action: Actions) {
+function stateReducer<T>(state: StateDefinition<T>, action: Actions) {
   return match(action.type, reducers, state, action)
 }
 
@@ -132,9 +132,8 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
         }
       : by
   )
-  let [{ options }, dispatch] = useReducer(stateReducer, {
-    options: [],
-  } as StateDefinition)
+  let [state, dispatch] = useReducer(stateReducer, { options: [] } as StateDefinition<TType>)
+  let options = state.options as unknown as Option<TType>[]
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
   let id = `headlessui-radiogroup-${useId()}`
