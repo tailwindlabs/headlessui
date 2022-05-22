@@ -6,7 +6,9 @@
     "example": "examples"
   },
   "scripts": {
-    "prebuild": "yarn workspace @headlessui/vue build",
+    "prebuild": "yarn workspace @headlessui/vue build && yarn workspace @headlessui/tailwindcss build",
+    "predev": "yarn workspace @headlessui/vue build && yarn workspace @headlessui/tailwindcss build",
+    "dev:tailwindcss": "yarn workspace @headlessui/tailwindcss watch",
     "dev:headlessui": "yarn workspace @headlessui/vue watch",
     "dev:next": "vite serve",
     "dev": "npm-run-all -p dev:*",
