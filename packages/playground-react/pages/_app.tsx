@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 
+import 'tailwindcss/tailwind.css'
+
 function disposables() {
   let disposables: Function[] = []
 

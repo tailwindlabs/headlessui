@@ -13,11 +13,17 @@
   },
   "dependencies": {
     "@headlessui/react": "*",
+    "@headlessui/tailwindcss": "*",
     "@popperjs/core": "^2.6.0",
+    "@tailwindcss/forms": "^0.5.2",
+    "@tailwindcss/typography": "^0.5.2",
+    "autoprefixer": "^10.4.7",
     "framer-motion": "^6.0.0",
     "next": "^12.1.4",
+    "postcss": "^8.4.14",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-flatpickr": "^3.10.9"
+    "react-flatpickr": "^3.10.9",
+    "tailwindcss": "^0.0.0-insiders.128030f"
   }
 }
