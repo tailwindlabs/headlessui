@@ -64,7 +64,7 @@ type ComboboxOptionDataRef<T> = MutableRefObject<{
 }>
 
 interface StateDefinition<T> {
-  dataRef: MutableRefObject<Data>
+  dataRef: MutableRefObject<_Data>
 
   comboboxState: ComboboxState
 
@@ -73,7 +73,7 @@ interface StateDefinition<T> {
   activationTrigger: ActivationTrigger
 }
 
-enum Command {
+enum ActionTypes {
   OpenCombobox,
   CloseCombobox,
 
@@ -112,26 +112,30 @@ function adjustOrderedState<T>(
   }
 }
 
-type Commands<T> =
-  | { type: Command.CloseCombobox }
-  | { type: Command.OpenCombobox }
-  | { type: Command.GoToOption; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
-  | { type: Command.GoToOption; focus: Exclude<Focus, Focus.Specific>; trigger?: ActivationTrigger }
-  | { type: Command.RegisterOption; id: string; dataRef: ComboboxOptionDataRef<T> }
-  | { type: Command.UnregisterOption; id: string }
+type Actions<T> =
+  | { type: ActionTypes.CloseCombobox }
+  | { type: ActionTypes.OpenCombobox }
+  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
+  | {
+      type: ActionTypes.GoToOption
+      focus: Exclude<Focus, Focus.Specific>
+      trigger?: ActivationTrigger
+    }
+  | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef<T> }
+  | { type: ActionTypes.UnregisterOption; id: string }
 
 let reducers: {
-  [P in Command]: <T>(
+  [P in ActionTypes]: <T>(
     state: StateDefinition<T>,
-    command: Extract<Commands<T>, { type: P }>
+    action: Extract<Actions<T>, { type: P }>
   ) => StateDefinition<T>
 } = {
-  [Command.CloseCombobox](state) {
+  [ActionTypes.CloseCombobox](state) {
     if (state.dataRef.current.disabled) return state
     if (state.comboboxState === ComboboxState.Closed) return state
     return { ...state, activeOptionIndex: null, comboboxState: ComboboxState.Closed }
   },
-  [Command.OpenCombobox](state) {
+  [ActionTypes.OpenCombobox](state) {
     if (state.dataRef.current.disabled) return state
     if (state.comboboxState === ComboboxState.Open) return state
 
@@ -146,7 +150,7 @@ let reducers: {
 
     return { ...state, comboboxState: ComboboxState.Open, activeOptionIndex }
   },
-  [Command.GoToOption](state, action) {
+  [ActionTypes.GoToOption](state, action) {
     if (state.dataRef.current.disabled) return state
     if (
       state.dataRef.current.optionsRef.current &&
@@ -185,7 +189,7 @@ let reducers: {
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
     }
   },
-  [Command.RegisterOption]: (state, action) => {
+  [ActionTypes.RegisterOption]: (state, action) => {
     let option = { id: action.id, dataRef: action.dataRef }
     let adjustedState = adjustOrderedState(state, (options) => [...options, option])
 
@@ -208,7 +212,7 @@ let reducers: {
 
     return nextState
   },
-  [Command.UnregisterOption]: (state, action) => {
+  [ActionTypes.UnregisterOption]: (state, action) => {
     let adjustedState = adjustOrderedState(state, (options) => {
       let idx = options.findIndex((a) => a.id === action.id)
       if (idx !== -1) options.splice(idx, 1)
@@ -244,7 +248,7 @@ function useActions(component: string) {
   }
   return context
 }
-type Actions = ReturnType<typeof useActions>
+type _Actions = ReturnType<typeof useActions>
 
 let ComboboxDataContext = createContext<
   | ({
@@ -283,9 +287,9 @@ function useData(component: string) {
   }
   return context
 }
-type Data = ReturnType<typeof useData>
+type _Data = ReturnType<typeof useData>
 
-function stateReducer<T>(state: StateDefinition<T>, action: Commands<T>) {
+function stateReducer<T>(state: StateDefinition<T>, action: Actions<T>) {
   return match(action.type, reducers, state, action)
 }
 
@@ -342,13 +346,13 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   let defaultToFirstOption = useRef(false)
 
-  let optionsPropsRef = useRef<Data['optionsPropsRef']['current']>({ static: false, hold: false })
-  let inputPropsRef = useRef<Data['inputPropsRef']['current']>({ displayValue: undefined })
+  let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
+  let inputPropsRef = useRef<_Data['inputPropsRef']['current']>({ displayValue: undefined })
 
-  let labelRef = useRef<Data['labelRef']['current']>(null)
-  let inputRef = useRef<Data['inputRef']['current']>(null)
-  let buttonRef = useRef<Data['buttonRef']['current']>(null)
-  let optionsRef = useRef<Data['optionsRef']['current']>(null)
+  let labelRef = useRef<_Data['labelRef']['current']>(null)
+  let inputRef = useRef<_Data['inputRef']['current']>(null)
+  let buttonRef = useRef<_Data['buttonRef']['current']>(null)
+  let optionsRef = useRef<_Data['optionsRef']['current']>(null)
 
   let compare = useEvent(
     typeof by === 'string'
@@ -369,7 +373,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     [value]
   )
 
-  let data = useMemo<Data>(
+  let data = useMemo<_Data>(
     () => ({
       ...state,
       optionsPropsRef,
@@ -414,7 +418,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   useOutsideClick([data.buttonRef, data.inputRef, data.optionsRef], () => {
     if (data.comboboxState !== ComboboxState.Open) return
 
-    dispatch({ type: Command.CloseCombobox })
+    dispatch({ type: ActionTypes.CloseCombobox })
   })
 
   let slot = useMemo<ComboboxRenderPropArg<TType>>(
@@ -459,17 +463,17 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
       // It could happen that the `activeOptionIndex` stored in state is actually null,
       // but we are getting the fallback active option back instead.
-      dispatch({ type: Command.GoToOption, focus: Focus.Specific, id })
+      dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
     }
   })
 
   let openCombobox = useEvent(() => {
-    dispatch({ type: Command.OpenCombobox })
+    dispatch({ type: ActionTypes.OpenCombobox })
     defaultToFirstOption.current = true
   })
 
   let closeCombobox = useEvent(() => {
-    dispatch({ type: Command.CloseCombobox })
+    dispatch({ type: ActionTypes.CloseCombobox })
     defaultToFirstOption.current = false
   })
 
@@ -477,15 +481,15 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     defaultToFirstOption.current = false
 
     if (focus === Focus.Specific) {
-      return dispatch({ type: Command.GoToOption, focus: Focus.Specific, id: id!, trigger })
+      return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id: id!, trigger })
     }
 
-    return dispatch({ type: Command.GoToOption, focus, trigger })
+    return dispatch({ type: ActionTypes.GoToOption, focus, trigger })
   })
 
   let registerOption = useEvent((id, dataRef) => {
-    dispatch({ type: Command.RegisterOption, id, dataRef })
-    return () => dispatch({ type: Command.UnregisterOption, id })
+    dispatch({ type: ActionTypes.RegisterOption, id, dataRef })
+    return () => dispatch({ type: ActionTypes.UnregisterOption, id })
   })
 
   let onChange = useEvent((value: unknown) => {
@@ -508,7 +512,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     })
   })
 
-  let actions = useMemo<Actions>(
+  let actions = useMemo<_Actions>(
     () => ({
       onChange,
       registerOption,
