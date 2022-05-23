@@ -139,19 +139,20 @@ export let TabGroup = defineComponent({
       let slot = { selectedIndex: selectedIndex.value }
 
       return h(Fragment, [
-        h(FocusSentinel, {
-          onFocus: () => {
-            for (let tab of tabs.value) {
-              let el = dom(tab)
-              if (el?.tabIndex === 0) {
-                el.focus()
-                return true
+        tabs.value.length <= 0 &&
+          h(FocusSentinel, {
+            onFocus: () => {
+              for (let tab of tabs.value) {
+                let el = dom(tab)
+                if (el?.tabIndex === 0) {
+                  el.focus()
+                  return true
+                }
               }
-            }
 
-            return false
-          },
-        }),
+              return false
+            },
+          }),
         render({
           props: {
             ...attrs,

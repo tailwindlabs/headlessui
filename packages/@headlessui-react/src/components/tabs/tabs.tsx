@@ -144,6 +144,7 @@ function useData(component: string) {
   }
   return context
 }
+type _Data = ReturnType<typeof useData>
 
 let TabsActionsContext = createContext<{
   registerTab(tab: MutableRefObject<HTMLElement | null>): () => void
@@ -162,6 +163,7 @@ function useActions(component: string) {
   }
   return context
 }
+type _Actions = ReturnType<typeof useActions>
 
 function stateReducer(state: StateDefinition, action: Actions) {
   return match(action.type, reducers, state, action)
@@ -205,13 +207,13 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   let onChangeRef = useLatestValue(onChange || (() => {}))
   let stableTabsRef = useLatestValue(state.tabs)
 
-  let tabsData = useMemo<ContextType<typeof TabsDataContext>>(
+  let tabsData = useMemo<_Data>(
     () => ({ orientation, activation, ...state }),
     [orientation, activation, state]
   )
 
   let lastChangedIndex = useLatestValue(state.selectedIndex)
-  let tabsActions: ContextType<typeof TabsActionsContext> = useMemo(
+  let tabsActions: _Actions = useMemo(
     () => ({
       registerTab(tab) {
         dispatch({ type: ActionTypes.RegisterTab, tab })
@@ -245,18 +247,20 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     <TabsSSRContext.Provider value={SSRCounter}>
       <TabsActionsContext.Provider value={tabsActions}>
         <TabsDataContext.Provider value={tabsData}>
-          <FocusSentinel
-            onFocus={() => {
-              for (let tab of stableTabsRef.current) {
-                if (tab.current?.tabIndex === 0) {
-                  tab.current?.focus()
-                  return true
+          {tabsData.tabs.length <= 0 && (
+            <FocusSentinel
+              onFocus={() => {
+                for (let tab of stableTabsRef.current) {
+                  if (tab.current?.tabIndex === 0) {
+                    tab.current?.focus()
+                    return true
+                  }
                 }
-              }
 
-              return false
-            }}
-          />
+                return false
+              }}
+            />
+          )}
           {render({
             ourProps,
             theirProps,
