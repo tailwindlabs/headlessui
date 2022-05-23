@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow to override the `type` on the `ComboboxInput` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
 - Ensure the the `<PopoverPanel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
+- Only render the `FocusSentinel` if required in the `Tabs` component ([#1493](https://github.com/tailwindlabs/headlessui/pull/1493))
 
 ### Added
 
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow to override the `type` on the `Combobox.Input` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
 - Ensure the the `<Popover.Panel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
+- Only render the `FocusSentinel` if required in the `Tabs` component ([#1493](https://github.com/tailwindlabs/headlessui/pull/1493))
 
 ### Added
 
