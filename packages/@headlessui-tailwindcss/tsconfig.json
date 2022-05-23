@@ -1,8 +1,8 @@
 {
   "include": ["src"],
   "compilerOptions": {
-    "module": "esnext",
-    "lib": ["esnext"],
+    "module": "ESNext",
+    "lib": [],
     "importHelpers": true,
     "declaration": true,
     "sourceMap": true,
@@ -25,7 +25,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": false
   },
   "exclude": ["node_modules", "**/*.test.tsx?"]
 }

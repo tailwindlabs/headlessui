@@ -3,15 +3,14 @@
   "version": "0.0.0",
   "description": "A complementary Tailwind CSS plugin",
   "main": "dist/index.cjs",
-  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "files": [
     "README.md",
     "dist"
   ],
   "exports": {
-    "require": "./dist/index.cjs",
-    "types": "./dist/index.d.ts"
+    "require": "./dist/index.cjs"
   },
   "sideEffects": false,
   "engines": {
@@ -27,7 +26,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "../../scripts/build.sh --external:tailwindcss",
+    "build": "../../scripts/build.sh --external:tailwindcss && node ./scripts/fix-types.js",
     "watch": "../../scripts/watch.sh --external:tailwindcss",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
