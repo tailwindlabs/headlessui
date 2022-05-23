@@ -2,7 +2,6 @@
 import React, {
   Fragment,
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -10,13 +9,13 @@ import React, {
   useRef,
 
   // Types
+  ContextType,
   Dispatch,
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
-  Ref,
   MutableRefObject,
-  ContextType,
+  Ref,
 } from 'react'
 
 import { Props } from '../../types'
@@ -29,6 +28,7 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { getOwnerDocument } from '../../utils/owner'
+import { useEvent } from '../../hooks/use-event'
 
 enum DisclosureStates {
   Open,
@@ -188,24 +188,21 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
   useEffect(() => dispatch({ type: ActionTypes.SetButtonId, buttonId }), [buttonId, dispatch])
   useEffect(() => dispatch({ type: ActionTypes.SetPanelId, panelId }), [panelId, dispatch])
 
-  let close = useCallback(
-    (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
-      dispatch({ type: ActionTypes.CloseDisclosure })
-      let ownerDocument = getOwnerDocument(internalDisclosureRef)
-      if (!ownerDocument) return
+  let close = useEvent((focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
+    dispatch({ type: ActionTypes.CloseDisclosure })
+    let ownerDocument = getOwnerDocument(internalDisclosureRef)
+    if (!ownerDocument) return
 
-      let restoreElement = (() => {
-        if (!focusableElement) return ownerDocument.getElementById(buttonId)
-        if (focusableElement instanceof HTMLElement) return focusableElement
-        if (focusableElement.current instanceof HTMLElement) return focusableElement.current
+    let restoreElement = (() => {
+      if (!focusableElement) return ownerDocument.getElementById(buttonId)
+      if (focusableElement instanceof HTMLElement) return focusableElement
+      if (focusableElement.current instanceof HTMLElement) return focusableElement.current
 
-        return ownerDocument.getElementById(buttonId)
-      })()
+      return ownerDocument.getElementById(buttonId)
+    })()
 
-      restoreElement?.focus()
-    },
-    [dispatch, buttonId]
-  )
+    restoreElement?.focus()
+  })
 
   let api = useMemo<ContextType<typeof DisclosureAPIContext>>(() => ({ close }), [close])
 
@@ -265,35 +262,32 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
   let buttonRef = useSyncRefs(internalButtonRef, ref, !isWithinPanel ? state.buttonRef : null)
 
-  let handleKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-      if (isWithinPanel) {
-        if (state.disclosureState === DisclosureStates.Closed) return
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (isWithinPanel) {
+      if (state.disclosureState === DisclosureStates.Closed) return
 
-        switch (event.key) {
-          case Keys.Space:
-          case Keys.Enter:
-            event.preventDefault()
-            event.stopPropagation()
-            dispatch({ type: ActionTypes.ToggleDisclosure })
-            state.buttonRef.current?.focus()
-            break
-        }
-      } else {
-        switch (event.key) {
-          case Keys.Space:
-          case Keys.Enter:
-            event.preventDefault()
-            event.stopPropagation()
-            dispatch({ type: ActionTypes.ToggleDisclosure })
-            break
-        }
+      switch (event.key) {
+        case Keys.Space:
+        case Keys.Enter:
+          event.preventDefault()
+          event.stopPropagation()
+          dispatch({ type: ActionTypes.ToggleDisclosure })
+          state.buttonRef.current?.focus()
+          break
       }
-    },
-    [dispatch, isWithinPanel, state.disclosureState, state.buttonRef]
-  )
+    } else {
+      switch (event.key) {
+        case Keys.Space:
+        case Keys.Enter:
+          event.preventDefault()
+          event.stopPropagation()
+          dispatch({ type: ActionTypes.ToggleDisclosure })
+          break
+      }
+    }
+  })
 
-  let handleKeyUp = useCallback((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+  let handleKeyUp = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
       case Keys.Space:
         // Required for firefox, event.preventDefault() in handleKeyDown for
@@ -302,22 +296,19 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         event.preventDefault()
         break
     }
-  }, [])
+  })
 
-  let handleClick = useCallback(
-    (event: ReactMouseEvent) => {
-      if (isDisabledReactIssue7711(event.currentTarget)) return
-      if (props.disabled) return
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    if (isDisabledReactIssue7711(event.currentTarget)) return
+    if (props.disabled) return
 
-      if (isWithinPanel) {
-        dispatch({ type: ActionTypes.ToggleDisclosure })
-        state.buttonRef.current?.focus()
-      } else {
-        dispatch({ type: ActionTypes.ToggleDisclosure })
-      }
-    },
-    [dispatch, props.disabled, state.buttonRef, isWithinPanel]
-  )
+    if (isWithinPanel) {
+      dispatch({ type: ActionTypes.ToggleDisclosure })
+      state.buttonRef.current?.focus()
+    } else {
+      dispatch({ type: ActionTypes.ToggleDisclosure })
+    }
+  })
 
   let slot = useMemo<ButtonRenderPropArg>(
     () => ({ open: state.disclosureState === DisclosureStates.Open }),

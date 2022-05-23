@@ -1,11 +1,10 @@
 import React, {
   Fragment,
   createContext,
-  useCallback,
   useContext,
   useMemo,
-  useState,
   useRef,
+  useState,
 
   // Types
   ElementType,
@@ -25,6 +24,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit } from '../../utils/form'
+import { useEvent } from '../../hooks/use-event'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null
@@ -121,32 +121,23 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     groupContext === null ? null : groupContext.setSwitch
   )
 
-  let toggle = useCallback(() => onChange(!checked), [onChange, checked])
-  let handleClick = useCallback(
-    (event: ReactMouseEvent) => {
-      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+  let toggle = useEvent(() => onChange(!checked))
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    event.preventDefault()
+    toggle()
+  })
+  let handleKeyUp = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === Keys.Space) {
       event.preventDefault()
       toggle()
-    },
-    [toggle]
-  )
-  let handleKeyUp = useCallback(
-    (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-      if (event.key === Keys.Space) {
-        event.preventDefault()
-        toggle()
-      } else if (event.key === Keys.Enter) {
-        attemptSubmit(event.currentTarget)
-      }
-    },
-    [toggle]
-  )
+    } else if (event.key === Keys.Enter) {
+      attemptSubmit(event.currentTarget)
+    }
+  })
 
   // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
-  let handleKeyPress = useCallback(
-    (event: ReactKeyboardEvent<HTMLElement>) => event.preventDefault(),
-    []
-  )
+  let handleKeyPress = useEvent((event: ReactKeyboardEvent<HTMLElement>) => event.preventDefault())
 
   let slot = useMemo<SwitchRenderPropArg>(() => ({ checked }), [checked])
   let ourProps = {

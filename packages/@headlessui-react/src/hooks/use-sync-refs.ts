@@ -1,4 +1,5 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect } from 'react'
+import { useEvent } from './use-event'
 
 let Optional = Symbol()
 
@@ -15,16 +16,13 @@ export function useSyncRefs<TType>(
     cache.current = refs
   }, [refs])
 
-  let syncRefs = useCallback(
-    (value: TType) => {
-      for (let ref of cache.current) {
-        if (ref == null) continue
-        if (typeof ref === 'function') ref(value)
-        else ref.current = value
-      }
-    },
-    [cache]
-  )
+  let syncRefs = useEvent((value: TType) => {
+    for (let ref of cache.current) {
+      if (ref == null) continue
+      if (typeof ref === 'function') ref(value)
+      else ref.current = value
+    }
+  })
 
   return refs.every(
     (ref) =>

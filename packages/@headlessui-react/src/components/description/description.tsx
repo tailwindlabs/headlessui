@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useMemo,
   useState,
@@ -16,6 +15,7 @@ import { useId } from '../../hooks/use-id'
 import { forwardRefWithAs, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useEvent } from '../../hooks/use-event'
 
 // ---
 
@@ -58,7 +58,7 @@ export function useDescriptions(): [
     // The provider component
     useMemo(() => {
       return function DescriptionProvider(props: DescriptionProviderProps) {
-        let register = useCallback((value: string) => {
+        let register = useEvent((value: string) => {
           setDescriptionIds((existing) => [...existing, value])
 
           return () =>
@@ -68,7 +68,7 @@ export function useDescriptions(): [
               if (idx !== -1) clone.splice(idx, 1)
               return clone
             })
-        }, [])
+        })
 
         let contextBag = useMemo(
           () => ({ register, slot: props.slot, name: props.name, props: props.props }),

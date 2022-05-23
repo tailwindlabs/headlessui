@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useMemo,
   useState,
@@ -16,6 +15,7 @@ import { useId } from '../../hooks/use-id'
 import { forwardRefWithAs, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useEvent } from '../../hooks/use-event'
 
 // ---
 
@@ -53,7 +53,7 @@ export function useLabels(): [string | undefined, (props: LabelProviderProps) =>
     // The provider component
     useMemo(() => {
       return function LabelProvider(props: LabelProviderProps) {
-        let register = useCallback((value: string) => {
+        let register = useEvent((value: string) => {
           setLabelIds((existing) => [...existing, value])
 
           return () =>
@@ -63,7 +63,7 @@ export function useLabels(): [string | undefined, (props: LabelProviderProps) =>
               if (idx !== -1) clone.splice(idx, 1)
               return clone
             })
-        }, [])
+        })
 
         let contextBag = useMemo(
           () => ({ register, slot: props.slot, name: props.name, props: props.props }),

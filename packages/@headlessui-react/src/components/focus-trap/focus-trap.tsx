@@ -1,6 +1,6 @@
 import React, {
-  useRef,
   useEffect,
+  useRef,
 
   // Types
   ElementType,

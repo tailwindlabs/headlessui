@@ -1,7 +1,7 @@
 // WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#dialog_modal
 import React, {
   createContext,
-  useCallback,
+  createRef,
   useContext,
   useEffect,
   useMemo,
@@ -15,7 +15,6 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
-  createRef,
 } from 'react'
 
 import { Props } from '../../types'
@@ -38,6 +37,7 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
+import { useEvent } from '../../hooks/use-event'
 
 enum DialogStates {
   Open,
@@ -184,12 +184,9 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     panelRef: createRef(),
   } as StateDefinition)
 
-  let close = useCallback(() => onClose(false), [onClose])
+  let close = useEvent(() => onClose(false))
 
-  let setTitleId = useCallback(
-    (id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }),
-    [dispatch]
-  )
+  let setTitleId = useEvent((id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }))
 
   let ready = useServerHandoffComplete()
   let enabled = ready ? (__demoMode ? false : dialogState === DialogStates.Open) : false
@@ -323,7 +320,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     <StackProvider
       type="Dialog"
       element={internalDialogRef}
-      onUpdate={useCallback((message, type, element) => {
+      onUpdate={useEvent((message, type, element) => {
         if (type !== 'Dialog') return
 
         match(message, {
@@ -336,7 +333,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
             setNestedDialogCount((count) => count - 1)
           },
         })
-      }, [])}
+      })}
     >
       <ForcePortalRoot force={true}>
         <Portal>
@@ -393,16 +390,13 @@ let Overlay = forwardRefWithAs(function Overlay<
 
   let id = `headlessui-dialog-overlay-${useId()}`
 
-  let handleClick = useCallback(
-    (event: ReactMouseEvent) => {
-      if (event.target !== event.currentTarget) return
-      if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-      event.preventDefault()
-      event.stopPropagation()
-      close()
-    },
-    [close]
-  )
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    if (event.target !== event.currentTarget) return
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    event.preventDefault()
+    event.stopPropagation()
+    close()
+  })
 
   let slot = useMemo<OverlayRenderPropArg>(
     () => ({ open: dialogState === DialogStates.Open }),

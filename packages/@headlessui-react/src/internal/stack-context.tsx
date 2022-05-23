@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
 
   // Types
@@ -8,6 +7,7 @@ import React, {
   ReactNode,
 } from 'react'
 import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect'
+import { useEvent } from '../hooks/use-event'
 
 type OnUpdate = (
   message: StackMessage,
@@ -40,16 +40,13 @@ export function StackProvider({
 }) {
   let parentUpdate = useStackContext()
 
-  let notify = useCallback(
-    (...args: Parameters<OnUpdate>) => {
-      // Notify our layer
-      onUpdate?.(...args)
+  let notify = useEvent((...args: Parameters<OnUpdate>) => {
+    // Notify our layer
+    onUpdate?.(...args)
 
-      // Notify the parent
-      parentUpdate(...args)
-    },
-    [parentUpdate, onUpdate]
-  )
+    // Notify the parent
+    parentUpdate(...args)
+  })
 
   useIsoMorphicEffect(() => {
     notify(StackMessage.Add, type, element)
