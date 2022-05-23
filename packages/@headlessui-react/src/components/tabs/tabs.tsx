@@ -7,7 +7,6 @@ import React, {
   useRef,
 
   // Types
-  ContextType,
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
