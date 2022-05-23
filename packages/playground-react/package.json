@@ -26,6 +26,6 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-flatpickr": "^3.10.9",
-    "tailwindcss": "^0.0.0-insiders.128030f"
+    "tailwindcss": "^0.0.0-insiders.83b4811"
   }
 }

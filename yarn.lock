@@ -5097,37 +5097,10 @@ symbol-tree@^3.2.4:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-tailwindcss@^0.0.0-insiders.128030f:
-  version "0.0.0-insiders.128030f"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-0.0.0-insiders.128030f.tgz#75e8cbcd1327ba3b6ead70f6cfba319cf019467f"
-  integrity sha512-zfoLVSbgO3jOr3ikQn+PuSHOsmE6L10ceQ9FIBuIMpQElDHAE+FEg1Nvr5s3CrrMZpfeAfa75fCTYjXnFsyCfg==
-  dependencies:
-    arg "^5.0.1"
-    chokidar "^3.5.3"
-    color-name "^1.1.4"
-    detective "^5.2.0"
-    didyoumean "^1.2.2"
-    dlv "^1.1.3"
-    fast-glob "^3.2.11"
-    glob-parent "^6.0.2"
-    is-glob "^4.0.3"
-    lilconfig "^2.0.5"
-    normalize-path "^3.0.0"
-    object-hash "^3.0.0"
-    picocolors "^1.0.0"
-    postcss "^8.4.13"
-    postcss-js "^4.0.0"
-    postcss-load-config "^3.1.4"
-    postcss-nested "5.0.6"
-    postcss-selector-parser "^6.0.10"
-    postcss-value-parser "^4.2.0"
-    quick-lru "^5.1.1"
-    resolve "^1.22.0"
-
-tailwindcss@^0.0.0-insiders.8164185:
-  version "0.0.0-insiders.8164185"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-0.0.0-insiders.8164185.tgz#f9ce379faa328bb8b5845ad23e60e694f8adddeb"
-  integrity sha512-WhZJUMOYNmaotYHslT34yF7LIvbXPKQ0s3gCFtNeTPODtl8Q5CRpIg+vGtSlDB+tADfAfDOtu9RTPJPWgljY/w==
+tailwindcss@^0.0.0-insiders.83b4811:
+  version "0.0.0-insiders.83b4811"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-0.0.0-insiders.83b4811.tgz#5038d6f68cbd9e7c47334fb550dc8ad8a5f1c89b"
+  integrity sha512-GVVdUCgd+VYRJyd6Of2IAXO9fNG4/VPHYAdjw/aEzBKrXKzmde3UyWaZj/ipbvcoNlrUlHm3mBMgQUpaUYf7DA==
   dependencies:
     arg "^5.0.1"
     chokidar "^3.5.3"
