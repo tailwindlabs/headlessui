@@ -15,6 +15,13 @@ interface Options {
 export default plugin.withOptions<Options>(({ prefix = 'ui' } = {}) => {
   return ({ addVariant }) => {
     for (let state of ['open', 'checked', 'selected', 'active', 'disabled']) {
+      // TODO: Once `:has()` is properly supported, then we can switch to this version:
+      // addVariant(`${prefix}-${state}`, [
+      //   `&[data-headlessui-state~="${state}"]`,
+      //   `:where([data-headlessui-state~="${state}"]):not(:has([data-headlessui-state])) &`,
+      // ])
+
+      // But for now, this will do:
       addVariant(`${prefix}-${state}`, [
         `&[data-headlessui-state~="${state}"]`,
         `:where([data-headlessui-state~="${state}"]) &`,
