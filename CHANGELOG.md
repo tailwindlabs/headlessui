@@ -520,8 +520,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.2...HEAD
 [unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...HEAD
-[@headlessui/vue@v1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...@headlessui/vue@v1.6.2
+[unreleased - @headlessui/tailwindcss]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/tailwindcss@v0.1.0...HEAD
 [@headlessui/react@v1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.1...@headlessui/react@v1.6.2
+[@headlessui/vue@v1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...@headlessui/vue@v1.6.2
 [@headlessui/react@v1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...@headlessui/react@v1.6.1
 [@headlessui/vue@v1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.0...@headlessui/vue@v1.6.1
 [@headlessui/react@v1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.5.0...@headlessui/react@v1.6.0
