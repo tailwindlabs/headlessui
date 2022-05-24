@@ -1,0 +1,44 @@
+{
+  "name": "@headlessui/tailwindcss",
+  "version": "0.0.0",
+  "description": "A complementary Tailwind CSS plugin",
+  "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "exports": {
+    "require": "./dist/index.cjs"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tailwindlabs/headlessui.git",
+    "directory": "packages/@headlessui-tailwindcss"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "../../scripts/build.sh --external:tailwindcss && node ./scripts/fix-types.js",
+    "watch": "../../scripts/watch.sh --external:tailwindcss",
+    "test": "../../scripts/test.sh",
+    "lint": "../../scripts/lint.sh",
+    "clean": "rimraf ./dist"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.11.18"
+  },
+  "dependencies": {
+    "tailwindcss": "^0.0.0-insiders.83b4811"
+  }
+}

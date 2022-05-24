@@ -41,24 +41,17 @@
                   :value="person"
                   as="template"
                   :disabled="person.disabled"
-                  v-slot="{ active, selected }"
                 >
-                  <li :class="resolveListboxOptionClassName({ active, selected })">
+                  <li
+                    class="ui-active:text-white ui-active:bg-indigo-600 ui-not-active:text-gray-900 ui-disabled:bg-gray-50 ui-disabled:text-gray-300 relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none"
+                  >
                     <span
-                      :class="
-                        classNames('block truncate', selected ? 'font-semibold' : 'font-normal')
-                      "
+                      class="ui-selected:font-semibold ui-not-selected:font-normal block truncate"
                     >
                       {{ person.name }}
                     </span>
                     <span
-                      v-if="selected"
-                      :class="
-                        classNames(
-                          'absolute inset-y-0 right-0 flex items-center pr-4',
-                          active ? 'text-white' : 'text-indigo-600'
-                        )
-                      "
+                      class="ui-selected:flex ui-not-selected:hidden ui-active:text-white ui-not-active:text-indigo-600 absolute inset-y-0 right-0 items-center pr-4"
                     >
                       <svg class="h-5 w-5" viewbox="0 0 20 20" fill="currentColor">
                         <path
@@ -89,10 +82,6 @@ import {
   ListboxOption,
 } from '@headlessui/vue'
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export default {
   components: { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption },
   setup(props, context) {
@@ -114,14 +103,6 @@ export default {
     return {
       people,
       active,
-      classNames,
-      resolveListboxOptionClassName({ active, disabled }) {
-        return classNames(
-          'relative py-2 pl-3 cursor-default select-none pr-9 focus:outline-none',
-          active ? 'text-white bg-indigo-600' : 'text-gray-900',
-          disabled && 'bg-gray-50 text-gray-300'
-        )
-      },
     }
   },
 }

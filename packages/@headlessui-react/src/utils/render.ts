@@ -125,6 +125,22 @@ function _render<TTag extends ElementType, TSlot>(
     ;(rest as any).className = rest.className(slot)
   }
 
+  let dataAttributes: Record<string, string> = {}
+  if (slot) {
+    let exposeState = false
+    let states = []
+    for (let [k, v] of Object.entries(slot)) {
+      if (typeof v === 'boolean') {
+        exposeState = true
+      }
+      if (v === true) {
+        states.push(k)
+      }
+    }
+
+    if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
+  }
+
   if (Component === Fragment) {
     if (Object.keys(compact(rest)).length > 0) {
       if (
@@ -158,6 +174,7 @@ function _render<TTag extends ElementType, TSlot>(
           {},
           // Filter out undefined values so that they don't override the existing values
           mergeProps(resolvedChildren.props, compact(omit(rest, ['ref']))),
+          dataAttributes,
           refRelatedProps
         )
       )
@@ -166,7 +183,12 @@ function _render<TTag extends ElementType, TSlot>(
 
   return createElement(
     Component,
-    Object.assign({}, omit(rest, ['ref']), Component !== Fragment && refRelatedProps),
+    Object.assign(
+      {},
+      omit(rest, ['ref']),
+      Component !== Fragment && refRelatedProps,
+      Component !== Fragment && dataAttributes
+    ),
     resolvedChildren
   )
 }

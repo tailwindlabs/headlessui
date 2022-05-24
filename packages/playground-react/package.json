@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "prebuild": "yarn workspace @headlessui/react build",
+    "prebuild": "yarn workspace @headlessui/react build && yarn workspace @headlessui/tailwindcss build",
+    "predev": "yarn workspace @headlessui/react build && yarn workspace @headlessui/tailwindcss build",
+    "dev:tailwindcss": "yarn workspace @headlessui/tailwindcss watch",
     "dev:headlessui": "yarn workspace @headlessui/react watch",
     "dev:next": "next dev",
     "dev": "npm-run-all -p dev:*",
@@ -13,11 +15,17 @@
   },
   "dependencies": {
     "@headlessui/react": "*",
+    "@headlessui/tailwindcss": "*",
     "@popperjs/core": "^2.6.0",
+    "@tailwindcss/forms": "^0.5.2",
+    "@tailwindcss/typography": "^0.5.2",
+    "autoprefixer": "^10.4.7",
     "framer-motion": "^6.0.0",
     "next": "^12.1.4",
+    "postcss": "^8.4.14",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-flatpickr": "^3.10.9"
+    "react-flatpickr": "^3.10.9",
+    "tailwindcss": "^0.0.0-insiders.83b4811"
   }
 }

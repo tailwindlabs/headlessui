@@ -85,6 +85,22 @@ function _render({
 
   let children = slots.default?.(slot)
 
+  let dataAttributes: Record<string, string> = {}
+  if (slot) {
+    let exposeState = false
+    let states = []
+    for (let [k, v] of Object.entries(slot)) {
+      if (typeof v === 'boolean') {
+        exposeState = true
+      }
+      if (v === true) {
+        states.push(k)
+      }
+    }
+
+    if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
+  }
+
   if (as === 'template') {
     if (Object.keys(incomingProps).length > 0 || Object.keys(attrs).length > 0) {
       let [firstChild, ...other] = children ?? []
@@ -112,7 +128,10 @@ function _render({
         )
       }
 
-      return cloneVNode(firstChild, incomingProps as Record<string, any>)
+      return cloneVNode(
+        firstChild,
+        Object.assign({}, incomingProps as Record<string, any>, dataAttributes)
+      )
     }
 
     if (Array.isArray(children) && children.length === 1) {
@@ -122,7 +141,7 @@ function _render({
     return children
   }
 
-  return h(as, incomingProps, children)
+  return h(as, Object.assign({}, incomingProps, dataAttributes), children)
 }
 
 export function compact<T extends Record<any, any>>(object: T) {

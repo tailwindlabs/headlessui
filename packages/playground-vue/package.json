@@ -6,7 +6,9 @@
     "example": "examples"
   },
   "scripts": {
-    "prebuild": "yarn workspace @headlessui/vue build",
+    "prebuild": "yarn workspace @headlessui/vue build && yarn workspace @headlessui/tailwindcss build",
+    "predev": "yarn workspace @headlessui/vue build && yarn workspace @headlessui/tailwindcss build",
+    "dev:tailwindcss": "yarn workspace @headlessui/tailwindcss watch",
     "dev:headlessui": "yarn workspace @headlessui/vue watch",
     "dev:next": "vite serve",
     "dev": "npm-run-all -p dev:*",
@@ -16,6 +18,11 @@
   "dependencies": {
     "@headlessui/vue": "*",
     "@heroicons/vue": "^1.0.6",
+    "@tailwindcss/forms": "^0.5.2",
+    "@tailwindcss/typography": "^0.5.2",
+    "autoprefixer": "^10.4.7",
+    "postcss": "^8.4.14",
+    "tailwindcss": "^0.0.0-insiders.83b4811",
     "vue": "^3.2.27",
     "vue-flatpickr-component": "^9.0.5",
     "vue-router": "^4.0.0"
