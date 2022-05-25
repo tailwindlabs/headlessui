@@ -5,18 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased - @headlessui/tailwindcss]
-
-- Nothing yet!
-
 ## [Unreleased - @headlessui/react]
-
-### Fixed
-
-- Allow to override the `type` on the `Combobox.Input` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
-- Ensure the the `<Popover.Panel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
-- Only render the `FocusSentinel` if required in the `Tabs` component ([#1493](https://github.com/tailwindlabs/headlessui/pull/1493))
-- Ensure the Transition stops once DOM Nodes are hidden ([#1500](https://github.com/tailwindlabs/headlessui/pull/1500))
 
 ### Added
 
@@ -25,16 +14,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased - @headlessui/vue]
 
+### Added
+
+- Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
+- Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
+
+## [Unreleased - @headlessui/tailwindcss]
+
+- Nothing yet!
+
+## [@headlessui/react@v1.6.3] - 2022-05-25
+
+### Fixed
+
+- Allow to override the `type` on the `Combobox.Input` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
+- Ensure the the `<Popover.Panel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
+- Only render the `FocusSentinel` if required in the `Tabs` component ([#1493](https://github.com/tailwindlabs/headlessui/pull/1493))
+- Ensure the Transition stops once DOM Nodes are hidden ([#1500](https://github.com/tailwindlabs/headlessui/pull/1500))
+
+## [@headlessui/vue@v1.6.3] - 2022-05-25
+
 ### Fixed
 
 - Allow to override the `type` on the `ComboboxInput` ([#1476](https://github.com/tailwindlabs/headlessui/pull/1476))
 - Ensure the the `<PopoverPanel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
 - Only render the `FocusSentinel` if required in the `Tabs` component ([#1493](https://github.com/tailwindlabs/headlessui/pull/1493))
-
-### Added
-
-- Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
-- Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
 
 ## [@headlessui/tailwindcss@v0.1.0] - 2022-05-24
 
@@ -523,9 +527,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.2...HEAD
-[unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...HEAD
+[unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.3...HEAD
+[unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.3...HEAD
 [unreleased - @headlessui/tailwindcss]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/tailwindcss@v0.1.0...HEAD
+[@headlessui/react@v1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.2...@headlessui/react@v1.6.3
+[@headlessui/vue@v1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...@headlessui/vue@v1.6.3
 [@headlessui/tailwindcss@v0.1.0]: https://github.com/tailwindlabs/headlessui/releases/tag/@headlessui/tailwindcss@v0.1.0
 [@headlessui/react@v1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.1...@headlessui/react@v1.6.2
 [@headlessui/vue@v1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...@headlessui/vue@v1.6.2
