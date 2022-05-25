@@ -218,17 +218,6 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   let id = useId()
 
-  let transitionInFlight = useRef(false)
-
-  let nesting = useNesting(() => {
-    // When all children have been unmounted we can only hide ourselves if and only if we are not
-    // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
-    if (!transitionInFlight.current) {
-      setState(TreeStates.Hidden)
-      unregister(id)
-    }
-  })
-
   useEffect(() => {
     if (!id) return
     return register(id)
@@ -280,13 +269,28 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     return show ? 'enter' : 'leave'
   })() as 'enter' | 'leave' | 'idle'
 
+  let transitioning = useRef(false)
+
+  let nesting = useNesting(() => {
+    if (transitioning.current) return
+
+    // When all children have been unmounted we can only hide ourselves if and only if we are not
+    // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
+    setState(TreeStates.Hidden)
+    unregister(id)
+  })
+
   useTransition({
     container,
     classes,
     events,
     direction: transitionDirection,
-    onStart: useLatestValue(() => {}),
+    onStart: useLatestValue(() => {
+      transitioning.current = true
+    }),
     onStop: useLatestValue((direction) => {
+      transitioning.current = false
+
       if (direction === 'leave' && !hasChildren(nesting)) {
         // When we don't have children anymore we can safely unregister from the parent and hide
         // ourselves.

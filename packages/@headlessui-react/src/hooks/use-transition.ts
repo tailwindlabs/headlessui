@@ -72,6 +72,17 @@ export function useTransition({
     if (latestDirection.current === 'idle') return // We don't need to transition
     if (!mounted.current) return
 
+    dd.add(() => {
+      if (!node) return
+
+      let rect = node.getBoundingClientRect()
+
+      if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
+        // The node is completely hidden
+        onStop.current(latestDirection.current)
+      }
+    })
+
     dd.dispose()
 
     beforeEvent()
