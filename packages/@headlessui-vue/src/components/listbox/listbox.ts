@@ -33,6 +33,10 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 
+function defaultComparator<T>(a: T, z: T): boolean {
+  return a === z
+}
+
 enum ListboxStates {
   Open,
   Closed,
@@ -112,6 +116,7 @@ export let Listbox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
+    by: { type: [String, Function], default: () => defaultComparator },
     horizontal: { type: [Boolean], default: false },
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String, optional: true },
@@ -167,7 +172,11 @@ export let Listbox = defineComponent({
       value,
       mode,
       compare(a: any, z: any) {
-        return a === z
+        if (typeof props.by === 'string') {
+          let property = props.by as unknown as any
+          return a[property] === z[property]
+        }
+        return props.by(a, z)
       },
       orientation: computed(() => (props.horizontal ? 'horizontal' : 'vertical')),
       labelRef,
@@ -337,7 +346,7 @@ export let Listbox = defineComponent({
         render({
           props: {
             ...attrs,
-            ...omit(incomingProps, ['onUpdate:modelValue', 'horizontal', 'multiple']),
+            ...omit(incomingProps, ['onUpdate:modelValue', 'horizontal', 'multiple', 'by']),
           },
           slot,
           slots,
