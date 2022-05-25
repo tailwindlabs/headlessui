@@ -28,4 +28,11 @@ expect.extend({
       pass,
     }
   },
+
+  toBePresent(el: HTMLElement | null) {
+    return {
+      message: () => (this.isNot ? `Element should not exist` : `Element should exist`),
+      pass: el !== null,
+    }
+  },
 })

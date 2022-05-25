@@ -1,5 +1,7 @@
 import { isFocusableElement, FocusableMode } from '../utils/focus-management'
 
+let expect = globalThis.expect ?? require('../../../browser-tests/tests/util/plugin').expect
+
 function assertNever(x: never): never {
   throw new Error('Unexpected object: ' + x)
 }
@@ -48,7 +50,7 @@ export async function assertMenuButton(
   button = getMenuButton()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
+    await expect(button).toBePresent()
 
     // Ensure menu button have these properties
     await expect(button).toHaveAttribute('id')
@@ -98,8 +100,8 @@ export async function assertMenuButton(
 
 export async function assertMenuButtonLinkedWithMenu(button = getMenuButton(), menu = getMenu()) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
-    if (menu === null) return await expect(menu).not.toBe(null)
+    await expect(button).toBePresent()
+    await expect(menu).toBePresent()
 
     // Ensure link between button & menu is correct
     await expect(button).toHaveAttribute('aria-controls', menu.getAttribute('id'))
@@ -112,8 +114,8 @@ export async function assertMenuButtonLinkedWithMenu(button = getMenuButton(), m
 
 export async function assertMenuLinkedWithMenuItem(item: HTMLElement | null, menu = getMenu()) {
   try {
-    if (menu === null) return await expect(menu).not.toBe(null)
-    if (item === null) return await expect(item).not.toBe(null)
+    await expect(menu).toBePresent()
+    await expect(item).toBePresent()
 
     // Ensure link between menu & menu item is correct
     await expect(menu).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
@@ -125,7 +127,7 @@ export async function assertMenuLinkedWithMenuItem(item: HTMLElement | null, men
 
 export async function assertNoActiveMenuItem(menu = getMenu()) {
   try {
-    if (menu === null) return await expect(menu).not.toBe(null)
+    await expect(menu).toBePresent()
 
     // Ensure we don't have an active menu
     await expect(menu).not.toHaveAttribute('aria-activedescendant')
@@ -146,7 +148,7 @@ export async function assertMenu(
   try {
     switch (options.state) {
       case MenuState.InvisibleHidden:
-        if (menu === null) return await expect(menu).not.toBe(null)
+        await expect(menu).toBePresent()
 
         await assertHidden(menu)
 
@@ -161,7 +163,7 @@ export async function assertMenu(
         break
 
       case MenuState.Visible:
-        if (menu === null) return await expect(menu).not.toBe(null)
+        await expect(menu).toBePresent()
 
         await assertVisible(menu)
 
@@ -176,7 +178,7 @@ export async function assertMenu(
         break
 
       case MenuState.InvisibleUnmounted:
-        await expect(menu).toBe(null)
+        await expect(menu).not.toBePresent()
         break
 
       default:
@@ -193,7 +195,7 @@ export async function assertMenuItem(
   options?: { tag?: string; attributes?: Record<string, string | null> }
 ) {
   try {
-    if (item === null) return await expect(item).not.toBe(null)
+    await expect(item).toBePresent()
 
     // Check that some attributes exists, doesn't really matter what the values are at this point in
     // time, we just require them.
@@ -286,7 +288,7 @@ export async function assertCombobox(
   try {
     switch (options.state) {
       case ComboboxState.InvisibleHidden:
-        if (combobox === null) return await expect(combobox).not.toBe(null)
+        await expect(combobox).toBePresent()
 
         await assertHidden(combobox)
 
@@ -300,7 +302,7 @@ export async function assertCombobox(
         break
 
       case ComboboxState.Visible:
-        if (combobox === null) return await expect(combobox).not.toBe(null)
+        await expect(combobox).toBePresent()
 
         await assertVisible(combobox)
 
@@ -318,7 +320,7 @@ export async function assertCombobox(
         break
 
       case ComboboxState.InvisibleUnmounted:
-        await expect(combobox).toBe(null)
+        await expect(combobox).not.toBePresent()
         break
 
       default:
@@ -392,7 +394,7 @@ export async function assertComboboxList(
   try {
     switch (options.state) {
       case ComboboxState.InvisibleHidden:
-        if (listbox === null) return await expect(listbox).not.toBe(null)
+        await expect(listbox).toBePresent()
 
         await assertHidden(listbox)
 
@@ -407,7 +409,7 @@ export async function assertComboboxList(
         break
 
       case ComboboxState.Visible:
-        if (listbox === null) return await expect(listbox).not.toBe(null)
+        await expect(listbox).toBePresent()
 
         await assertVisible(listbox)
 
@@ -422,7 +424,7 @@ export async function assertComboboxList(
         break
 
       case ComboboxState.InvisibleUnmounted:
-        await expect(listbox).toBe(null)
+        await expect(listbox).not.toBePresent()
         break
 
       default:
@@ -443,7 +445,7 @@ export async function assertComboboxButton(
   button = getComboboxButton()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
+    await expect(button).toBePresent()
 
     // Ensure menu button have these properties
     await expect(button).toHaveAttribute('id')
@@ -500,7 +502,7 @@ export async function assertComboboxLabel(
   label = getComboboxLabel()
 ) {
   try {
-    if (label === null) return await expect(label).not.toBe(null)
+    await expect(label).toBePresent()
 
     // Ensure menu button have these properties
     await expect(label).toHaveAttribute('id')
@@ -528,8 +530,8 @@ export async function assertComboboxButtonLinkedWithCombobox(
   combobox = getCombobox()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
-    if (combobox === null) return await expect(combobox).not.toBe(null)
+    await expect(button).toBePresent()
+    await expect(combobox).toBePresent()
 
     // Ensure link between button & combobox is correct
     await expect(button).toHaveAttribute('aria-controls', combobox.getAttribute('id'))
@@ -545,8 +547,8 @@ export async function assertComboboxLabelLinkedWithCombobox(
   combobox = getComboboxInput()
 ) {
   try {
-    if (label === null) return await expect(label).not.toBe(null)
-    if (combobox === null) return await expect(combobox).not.toBe(null)
+    await expect(label).toBePresent()
+    await expect(combobox).toBePresent()
 
     await expect(combobox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
   } catch (err) {
@@ -560,8 +562,8 @@ export async function assertComboboxButtonLinkedWithComboboxLabel(
   label = getComboboxLabel()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
-    if (label === null) return await expect(label).not.toBe(null)
+    await expect(button).toBePresent()
+    await expect(label).toBePresent()
 
     // Ensure link between button & label is correct
     await expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
@@ -577,8 +579,8 @@ export async function assertActiveComboboxOption(
   combobox = getComboboxInput()
 ) {
   try {
-    if (combobox === null) return await expect(combobox).not.toBe(null)
-    if (item === null) return await expect(item).not.toBe(null)
+    await expect(combobox).toBePresent()
+    await expect(item).toBePresent()
 
     // Ensure link between combobox & combobox item is correct
     await expect(combobox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
@@ -593,8 +595,8 @@ export async function assertNotActiveComboboxOption(
   combobox = getComboboxInput()
 ) {
   try {
-    if (combobox === null) return await expect(combobox).not.toBe(null)
-    if (item === null) return await expect(item).not.toBe(null)
+    await expect(combobox).toBePresent()
+    await expect(item).toBePresent()
 
     // Ensure link between combobox & combobox item does not exist
     await expect(combobox).not.toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
@@ -606,7 +608,7 @@ export async function assertNotActiveComboboxOption(
 
 export async function assertNoActiveComboboxOption(combobox = getComboboxInput()) {
   try {
-    if (combobox === null) return await expect(combobox).not.toBe(null)
+    await expect(combobox).toBePresent()
 
     // Ensure we don't have an active combobox
     await expect(combobox).not.toHaveAttribute('aria-activedescendant')
@@ -634,7 +636,7 @@ export async function assertComboboxOption(
   }
 ) {
   try {
-    if (item === null) return await expect(item).not.toBe(null)
+    await expect(item).toBePresent()
 
     // Check that some attributes exists, doesn't really matter what the values are at this point in
     // time, we just require them.
@@ -735,7 +737,7 @@ export async function assertListbox(
   try {
     switch (options.state) {
       case ListboxState.InvisibleHidden:
-        if (listbox === null) return await expect(listbox).not.toBe(null)
+        await expect(listbox).toBePresent()
 
         await assertHidden(listbox)
 
@@ -751,7 +753,7 @@ export async function assertListbox(
         break
 
       case ListboxState.Visible:
-        if (listbox === null) return await expect(listbox).not.toBe(null)
+        await expect(listbox).toBePresent()
 
         await assertVisible(listbox)
 
@@ -771,7 +773,7 @@ export async function assertListbox(
         break
 
       case ListboxState.InvisibleUnmounted:
-        await expect(listbox).toBe(null)
+        await expect(listbox).not.toBePresent()
         break
 
       default:
@@ -792,7 +794,7 @@ export async function assertListboxButton(
   button = getListboxButton()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
+    await expect(button).toBePresent()
 
     // Ensure menu button have these properties
     await expect(button).toHaveAttribute('id')
@@ -849,7 +851,7 @@ export async function assertListboxLabel(
   label = getListboxLabel()
 ) {
   try {
-    if (label === null) return await expect(label).not.toBe(null)
+    await expect(label).toBePresent()
 
     // Ensure menu button have these properties
     await expect(label).toHaveAttribute('id')
@@ -877,8 +879,8 @@ export async function assertListboxButtonLinkedWithListbox(
   listbox = getListbox()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
-    if (listbox === null) return await expect(listbox).not.toBe(null)
+    await expect(button).toBePresent()
+    await expect(listbox).toBePresent()
 
     // Ensure link between button & listbox is correct
     await expect(button).toHaveAttribute('aria-controls', listbox.getAttribute('id'))
@@ -894,8 +896,8 @@ export async function assertListboxLabelLinkedWithListbox(
   listbox = getListbox()
 ) {
   try {
-    if (label === null) return await expect(label).not.toBe(null)
-    if (listbox === null) return await expect(listbox).not.toBe(null)
+    await expect(label).toBePresent()
+    await expect(listbox).toBePresent()
 
     await expect(listbox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
   } catch (err) {
@@ -909,8 +911,8 @@ export async function assertListboxButtonLinkedWithListboxLabel(
   label = getListboxLabel()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
-    if (label === null) return await expect(label).not.toBe(null)
+    await expect(button).toBePresent()
+    await expect(label).toBePresent()
 
     // Ensure link between button & label is correct
     await expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
@@ -923,8 +925,8 @@ export async function assertListboxButtonLinkedWithListboxLabel(
 
 export async function assertActiveListboxOption(item: HTMLElement | null, listbox = getListbox()) {
   try {
-    if (listbox === null) return await expect(listbox).not.toBe(null)
-    if (item === null) return await expect(item).not.toBe(null)
+    await expect(listbox).toBePresent()
+    await expect(item).toBePresent()
 
     // Ensure link between listbox & listbox item is correct
     await expect(listbox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
@@ -936,7 +938,7 @@ export async function assertActiveListboxOption(item: HTMLElement | null, listbo
 
 export async function assertNoActiveListboxOption(listbox = getListbox()) {
   try {
-    if (listbox === null) return await expect(listbox).not.toBe(null)
+    await expect(listbox).toBePresent()
 
     // Ensure we don't have an active listbox
     await expect(listbox).not.toHaveAttribute('aria-activedescendant')
@@ -964,7 +966,7 @@ export async function assertListboxOption(
   }
 ) {
   try {
-    if (item === null) return await expect(item).not.toBe(null)
+    await expect(item).toBePresent()
 
     // Check that some attributes exists, doesn't really matter what the values are at this point in
     // time, we just require them.
@@ -1031,7 +1033,7 @@ export async function assertSwitch(
   switchElement = getSwitch()
 ) {
   try {
-    if (switchElement === null) return await expect(switchElement).not.toBe(null)
+    await expect(switchElement).toBePresent()
 
     await expect(switchElement).toHaveAttribute('role', 'switch')
     await expect(switchElement).toHaveAttribute('tabindex', '0')
@@ -1104,7 +1106,7 @@ export async function assertDisclosureButton(
   button = getDisclosureButton()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
+    await expect(button).toBePresent()
 
     // Ensure disclosure button have these properties
     await expect(button).toHaveAttribute('id')
@@ -1162,7 +1164,7 @@ export async function assertDisclosurePanel(
   try {
     switch (options.state) {
       case DisclosureState.InvisibleHidden:
-        if (panel === null) return await expect(panel).not.toBe(null)
+        await expect(panel).toBePresent()
 
         await assertHidden(panel)
 
@@ -1174,7 +1176,7 @@ export async function assertDisclosurePanel(
         break
 
       case DisclosureState.Visible:
-        if (panel === null) return await expect(panel).not.toBe(null)
+        await expect(panel).toBePresent()
 
         await assertVisible(panel)
 
@@ -1186,7 +1188,7 @@ export async function assertDisclosurePanel(
         break
 
       case DisclosureState.InvisibleUnmounted:
-        await expect(panel).toBe(null)
+        await expect(panel).not.toBePresent()
         break
 
       default:
@@ -1236,7 +1238,7 @@ export async function assertPopoverButton(
   button = getPopoverButton()
 ) {
   try {
-    if (button === null) return await expect(button).not.toBe(null)
+    await expect(button).toBePresent()
 
     // Ensure popover button have these properties
     await expect(button).toHaveAttribute('id')
@@ -1294,7 +1296,7 @@ export async function assertPopoverPanel(
   try {
     switch (options.state) {
       case PopoverState.InvisibleHidden:
-        if (panel === null) return await expect(panel).not.toBe(null)
+        await expect(panel).toBePresent()
 
         await assertHidden(panel)
 
@@ -1306,7 +1308,7 @@ export async function assertPopoverPanel(
         break
 
       case PopoverState.Visible:
-        if (panel === null) return await expect(panel).not.toBe(null)
+        await expect(panel).toBePresent()
 
         await assertVisible(panel)
 
@@ -1318,7 +1320,7 @@ export async function assertPopoverPanel(
         break
 
       case PopoverState.InvisibleUnmounted:
-        await expect(panel).toBe(null)
+        await expect(panel).not.toBePresent()
         break
 
       default:
@@ -1332,8 +1334,11 @@ export async function assertPopoverPanel(
 
 // ---
 
-export async function assertLabelValue(element: HTMLElement | null, value: string) {
-  if (element === null) return await expect(element).not.toBe(null)
+export async function assertLabelValue(
+  element: HTMLElement | null | Promise<HTMLElement | null>,
+  value: string
+) {
+  await expect(await element).toBePresent()
 
   if (await element.hasAttribute('aria-labelledby')) {
     let ids = element.getAttribute('aria-labelledby')!.split(' ')
@@ -1342,7 +1347,7 @@ export async function assertLabelValue(element: HTMLElement | null, value: strin
   }
 
   if (await element.hasAttribute('aria-label')) {
-    await expect(element).toHaveAttribute('aria-label', value)
+    await expect(await element).toHaveAttribute('aria-label', value)
     return
   }
 
@@ -1354,13 +1359,16 @@ export async function assertLabelValue(element: HTMLElement | null, value: strin
     return
   }
 
-  await expect(element).toHaveTextContent(value)
+  await expect(await element).toHaveTextContent(value)
 }
 
 // ---
 
-export async function assertDescriptionValue(element: HTMLElement | null, value: string) {
-  if (element === null) return await expect(element).not.toBe(null)
+export async function assertDescriptionValue(
+  element: HTMLElement | null | Promise<HTMLElement | null>,
+  value: string
+) {
+  await expect(await element).toBePresent()
 
   let id = element.getAttribute('aria-describedby')!
   await expect(document.getElementById(id)?.textContent).toEqual(value)
@@ -1422,7 +1430,7 @@ export async function assertDialog(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (dialog === null) return await expect(dialog).not.toBe(null)
+        await expect(dialog).toBePresent()
 
         await assertHidden(dialog)
 
@@ -1437,7 +1445,7 @@ export async function assertDialog(
         break
 
       case DialogState.Visible:
-        if (dialog === null) return await expect(dialog).not.toBe(null)
+        await expect(dialog).toBePresent()
 
         await assertVisible(dialog)
 
@@ -1452,7 +1460,7 @@ export async function assertDialog(
         break
 
       case DialogState.InvisibleUnmounted:
-        await expect(dialog).toBe(null)
+        await expect(dialog).not.toBePresent()
         break
 
       default:
@@ -1476,8 +1484,8 @@ export async function assertDialogTitle(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (title === null) return await expect(title).not.toBe(null)
-        if (dialog === null) return await expect(dialog).not.toBe(null)
+        await expect(title).toBePresent()
+        await expect(dialog).toBePresent()
 
         await assertHidden(title)
 
@@ -1492,8 +1500,8 @@ export async function assertDialogTitle(
         break
 
       case DialogState.Visible:
-        if (title === null) return await expect(title).not.toBe(null)
-        if (dialog === null) return await expect(dialog).not.toBe(null)
+        await expect(title).toBePresent()
+        await expect(dialog).toBePresent()
 
         await assertVisible(title)
 
@@ -1508,7 +1516,7 @@ export async function assertDialogTitle(
         break
 
       case DialogState.InvisibleUnmounted:
-        await expect(title).toBe(null)
+        await expect(title).not.toBePresent()
         break
 
       default:
@@ -1532,8 +1540,8 @@ export async function assertDialogDescription(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (description === null) return await expect(description).not.toBe(null)
-        if (dialog === null) return await expect(dialog).not.toBe(null)
+        await expect(description).toBePresent()
+        await expect(dialog).toBePresent()
 
         await assertHidden(description)
 
@@ -1551,8 +1559,8 @@ export async function assertDialogDescription(
         break
 
       case DialogState.Visible:
-        if (description === null) return await expect(description).not.toBe(null)
-        if (dialog === null) return await expect(dialog).not.toBe(null)
+        await expect(description).toBePresent()
+        await expect(dialog).toBePresent()
 
         await assertVisible(description)
 
@@ -1570,7 +1578,7 @@ export async function assertDialogDescription(
         break
 
       case DialogState.InvisibleUnmounted:
-        await expect(description).toBe(null)
+        await expect(description).not.toBePresent()
         break
 
       default:
@@ -1593,7 +1601,7 @@ export async function assertDialogOverlay(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (overlay === null) return await expect(overlay).not.toBe(null)
+        await expect(overlay).toBePresent()
 
         await assertHidden(overlay)
 
@@ -1605,7 +1613,7 @@ export async function assertDialogOverlay(
         break
 
       case DialogState.Visible:
-        if (overlay === null) return await expect(overlay).not.toBe(null)
+        await expect(overlay).toBePresent()
 
         await assertVisible(overlay)
 
@@ -1617,7 +1625,7 @@ export async function assertDialogOverlay(
         break
 
       case DialogState.InvisibleUnmounted:
-        await expect(overlay).toBe(null)
+        await expect(overlay).not.toBePresent()
         break
 
       default:
@@ -1654,8 +1662,8 @@ export async function assertRadioGroupLabel(
   radioGroup = getRadioGroup()
 ) {
   try {
-    if (label === null) return await expect(label).not.toBe(null)
-    if (radioGroup === null) return await expect(radioGroup).not.toBe(null)
+    await expect(label).toBePresent()
+    await expect(radioGroup).toBePresent()
 
     await expect(label).toHaveAttribute('id')
     await expect(radioGroup).toHaveAttribute('aria-labelledby', label.id)
@@ -1700,7 +1708,7 @@ export async function assertTabs(
   panels = getPanels()
 ) {
   try {
-    if (list === null) return await expect(list).not.toBe(null)
+    await expect(list).toBePresent()
 
     await expect(list).toHaveAttribute('role', 'tablist')
     await expect(list).toHaveAttribute('aria-orientation', orientation)
@@ -1725,7 +1733,7 @@ export async function assertTabs(
         let controlsId = tab.getAttribute('aria-controls')!
         let panel = document.getElementById(controlsId)
 
-        await expect(panel).not.toBe(null)
+        await expect(panel).toBePresent()
         await expect(panels).toContain(panel)
         await expect(panel).toHaveAttribute('aria-labelledby', tab.id)
       }
@@ -1755,9 +1763,11 @@ export async function assertTabs(
 
 // ---
 
-export async function assertActiveElement(element: HTMLElement | null) {
+export async function assertActiveElement(
+  element: HTMLElement | null | Promise<HTMLElement | null>
+) {
   try {
-    if (element === null) return await expect(element).not.toBe(null)
+    await expect(await element).toBePresent()
     try {
       // Jest has a weird bug:
       //   "Cannot assign to read only property 'Symbol(impl)' of object '[object DOMImplementation]'"
@@ -1773,9 +1783,11 @@ export async function assertActiveElement(element: HTMLElement | null) {
   }
 }
 
-export async function assertContainsActiveElement(element: HTMLElement | null) {
+export async function assertContainsActiveElement(
+  element: HTMLElement | null | Promise<HTMLElement | null>
+) {
   try {
-    if (element === null) return await expect(element).not.toBe(null)
+    await expect(await element).toBePresent()
     await expect(element.contains(document.activeElement)).toBe(true)
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertContainsActiveElement)
@@ -1785,24 +1797,23 @@ export async function assertContainsActiveElement(element: HTMLElement | null) {
 
 // ---
 
-export async function assertHidden(element: HTMLElement | null) {
+export async function assertHidden(element: HTMLElement | null | Promise<HTMLElement | null>) {
   try {
-    if (element === null) return await expect(element).not.toBe(null)
+    await expect(await element).toBePresent()
 
-    await expect(element).toHaveAttribute('hidden')
-    await expect(element).toHaveStyle({ display: 'none' })
+    await expect(await element).toHaveAttribute('hidden')
+    await expect(await element).toHaveStyle({ display: 'none' }, { timeout: 0 })
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertHidden)
     throw err
   }
 }
 
-export async function assertVisible(element: HTMLElement | null) {
+export async function assertVisible(element: HTMLElement | null | Promise<HTMLElement | null>) {
   try {
-    if (element === null) return await expect(element).not.toBe(null)
-
-    await expect(element).not.toHaveAttribute('hidden')
-    await expect(element).not.toHaveStyle({ display: 'none' })
+    await expect(await element).toBePresent()
+    await expect(await element).not.toHaveAttribute('hidden')
+    await expect(await element).not.toHaveStyle({ display: 'none' })
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertVisible)
     throw err
@@ -1811,9 +1822,9 @@ export async function assertVisible(element: HTMLElement | null) {
 
 // ---
 
-export async function assertFocusable(element: HTMLElement | null) {
+export async function assertFocusable(element: HTMLElement | null | Promise<HTMLElement | null>) {
   try {
-    if (element === null) return await expect(element).not.toBe(null)
+    await expect(await element).toBePresent()
 
     await expect(isFocusableElement(element, FocusableMode.Strict)).toBe(true)
   } catch (err) {
@@ -1822,9 +1833,11 @@ export async function assertFocusable(element: HTMLElement | null) {
   }
 }
 
-export async function assertNotFocusable(element: HTMLElement | null) {
+export async function assertNotFocusable(
+  element: HTMLElement | null | Promise<HTMLElement | null>
+) {
   try {
-    if (element === null) return await expect(element).not.toBe(null)
+    await expect(await element).toBePresent()
 
     await expect(isFocusableElement(element, FocusableMode.Strict)).toBe(false)
   } catch (err) {
