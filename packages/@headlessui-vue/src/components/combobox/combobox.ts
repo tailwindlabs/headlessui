@@ -35,10 +35,6 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 
-function defaultComparator<T>(a: T, z: T): boolean {
-  return a === z
-}
-
 enum ComboboxStates {
   Open,
   Closed,
@@ -116,7 +112,6 @@ export let Combobox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
-    by: { type: [String, Function], default: () => defaultComparator },
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String },
     nullable: { type: Boolean, default: false },
@@ -180,11 +175,7 @@ export let Combobox = defineComponent({
       value,
       mode,
       compare(a: any, z: any) {
-        if (typeof props.by === 'string') {
-          let property = props.by as unknown as any
-          return a[property] === z[property]
-        }
-        return props.by(a, z)
+        return a === z
       },
       nullable,
       inputRef,
@@ -467,7 +458,7 @@ export let Combobox = defineComponent({
         render({
           props: {
             ...attrs,
-            ...omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue', 'by']),
+            ...omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue']),
           },
           slot,
           slots,

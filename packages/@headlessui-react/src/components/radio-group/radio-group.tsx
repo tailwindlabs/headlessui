@@ -113,25 +113,17 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   props: Props<
     TTag,
     RadioGroupRenderPropArg,
-    RadioGroupPropsWeControl | 'value' | 'onChange' | 'disabled' | 'name' | 'by'
+    RadioGroupPropsWeControl | 'value' | 'onChange' | 'disabled' | 'name'
   > & {
     value: TType
     onChange(value: TType): void
-    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
     disabled?: boolean
     name?: string
   },
   ref: Ref<HTMLElement>
 ) {
-  let { value, name, onChange, by = (a, z) => a === z, disabled = false, ...theirProps } = props
-  let compare = useEvent(
-    typeof by === 'string'
-      ? (a: TType, z: TType) => {
-          let property = by as unknown as keyof TType
-          return a[property] === z[property]
-        }
-      : by
-  )
+  let { value, name, onChange, disabled = false, ...theirProps } = props
+  let compare = useEvent((a, z) => a === z)
   let [state, dispatch] = useReducer(stateReducer, { options: [] } as StateDefinition<TType>)
   let options = state.options as unknown as Option<TType>[]
   let [labelledby, LabelProvider] = useLabels()
