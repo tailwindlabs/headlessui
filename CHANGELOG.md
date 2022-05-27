@@ -12,12 +12,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
 - Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
 
+### Fixed
+
+- Ensure `Escape` propagates correctly in `Combobox` component ([#1511](https://github.com/tailwindlabs/headlessui/pull/1511))
+
 ## [Unreleased - @headlessui/vue]
 
 ### Added
 
 - Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
 - Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
+
+### Fixed
+
+- Ensure `Escape` propagates correctly in `Combobox` component ([#1511](https://github.com/tailwindlabs/headlessui/pull/1511))
 
 ## [Unreleased - @headlessui/tailwindcss]
 
