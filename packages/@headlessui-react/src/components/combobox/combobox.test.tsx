@@ -1499,6 +1499,64 @@ describe('Keyboard interactions', () => {
           assertActiveElement(getComboboxInput())
         })
       )
+
+      it(
+        'should not propagate the Escape event when the combobox is open',
+        suppressConsoleLogs(async () => {
+          let handleKeyDown = jest.fn()
+          render(
+            <div onKeyDown={handleKeyDown}>
+              <Combobox value="test" onChange={console.log}>
+                <Combobox.Input onChange={NOOP} />
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="a">Option A</Combobox.Option>
+                  <Combobox.Option value="b">Option B</Combobox.Option>
+                  <Combobox.Option value="c">Option C</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            </div>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // We should never see the Escape event
+          expect(handleKeyDown).toHaveBeenCalledTimes(0)
+        })
+      )
+
+      it(
+        'should propagate the Escape event when the combobox is closed',
+        suppressConsoleLogs(async () => {
+          let handleKeyDown = jest.fn()
+          render(
+            <div onKeyDown={handleKeyDown}>
+              <Combobox value="test" onChange={console.log}>
+                <Combobox.Input onChange={NOOP} />
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="a">Option A</Combobox.Option>
+                  <Combobox.Option value="b">Option B</Combobox.Option>
+                  <Combobox.Option value="c">Option C</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            </div>
+          )
+
+          // Focus the input field
+          await focus(getComboboxInput())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // We should never see the Escape event
+          expect(handleKeyDown).toHaveBeenCalledTimes(1)
+        })
+      )
     })
 
     describe('`ArrowDown` key', () => {

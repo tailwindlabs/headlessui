@@ -621,6 +621,7 @@ let Input = forwardRefWithAs(function Input<
 
       case Keys.Backspace:
       case Keys.Delete:
+        if (data.comboboxState !== ComboboxState.Open) return
         if (data.mode !== ValueMode.Single) return
         if (!data.nullable) return
 
@@ -707,6 +708,7 @@ let Input = forwardRefWithAs(function Input<
         return actions.goToOption(Focus.Last)
 
       case Keys.Escape:
+        if (data.comboboxState !== ComboboxState.Open) return
         event.preventDefault()
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
           event.stopPropagation()
@@ -714,6 +716,7 @@ let Input = forwardRefWithAs(function Input<
         return actions.closeCombobox()
 
       case Keys.Tab:
+        if (data.comboboxState !== ComboboxState.Open) return
         actions.selectActiveOption()
         actions.closeCombobox()
         break
@@ -830,6 +833,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         return d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
 
       case Keys.Escape:
+        if (data.comboboxState !== ComboboxState.Open) return
         event.preventDefault()
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
           event.stopPropagation()

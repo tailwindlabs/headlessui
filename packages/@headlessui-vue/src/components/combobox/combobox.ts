@@ -576,6 +576,7 @@ export let ComboboxButton = defineComponent({
           return
 
         case Keys.Escape:
+          if (api.comboboxState.value !== ComboboxStates.Open) return
           event.preventDefault()
           if (api.optionsRef.value && !api.optionsPropsRef.value.static) {
             event.stopPropagation()
@@ -649,6 +650,7 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Backspace:
         case Keys.Delete:
+          if (api.comboboxState.value !== ComboboxStates.Open) return
           if (api.mode.value !== ValueMode.Single) return
           if (!api.nullable.value) return
 
@@ -725,6 +727,7 @@ export let ComboboxInput = defineComponent({
           return api.goToOption(Focus.Last)
 
         case Keys.Escape:
+          if (api.comboboxState.value !== ComboboxStates.Open) return
           event.preventDefault()
           if (api.optionsRef.value && !api.optionsPropsRef.value.static) {
             event.stopPropagation()
@@ -733,6 +736,7 @@ export let ComboboxInput = defineComponent({
           break
 
         case Keys.Tab:
+          if (api.comboboxState.value !== ComboboxStates.Open) return
           api.selectActiveOption()
           api.closeCombobox()
           break
