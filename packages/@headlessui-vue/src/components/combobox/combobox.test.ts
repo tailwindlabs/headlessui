@@ -1644,6 +1644,74 @@ describe('Keyboard interactions', () => {
           assertActiveElement(getComboboxInput())
         })
       )
+
+      it(
+        'should not propagate the Escape event when the combobox is open',
+        suppressConsoleLogs(async () => {
+          let handleKeyDown = jest.fn()
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value">
+                <ComboboxInput />
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption value="a">Option A</ComboboxOption>
+                  <ComboboxOption value="b">Option B</ComboboxOption>
+                  <ComboboxOption value="c">Option C</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => ({ value: ref(null) }),
+          })
+
+          window.addEventListener('keydown', handleKeyDown)
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // We should never see the Escape event
+          expect(handleKeyDown).toHaveBeenCalledTimes(0)
+
+          window.removeEventListener('keydown', handleKeyDown)
+        })
+      )
+
+      it(
+        'should propagate the Escape event when the combobox is closed',
+        suppressConsoleLogs(async () => {
+          let handleKeyDown = jest.fn()
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value">
+                <ComboboxInput />
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption value="a">Option A</ComboboxOption>
+                  <ComboboxOption value="b">Option B</ComboboxOption>
+                  <ComboboxOption value="c">Option C</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => ({ value: ref(null) }),
+          })
+
+          window.addEventListener('keydown', handleKeyDown)
+
+          // Focus the input field
+          await focus(getComboboxInput())
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // We should never see the Escape event
+          expect(handleKeyDown).toHaveBeenCalledTimes(1)
+
+          window.removeEventListener('keydown', handleKeyDown)
+        })
+      )
     })
 
     describe('`ArrowDown` key', () => {
