@@ -339,7 +339,8 @@ let TransitionRoot = forwardRefWithAs(function Transition<
 >(props: TransitionChildProps<TTag> & { show?: boolean; appear?: boolean }, ref: Ref<HTMLElement>) {
   // @ts-expect-error
   let { show, appear = false, unmount, ...theirProps } = props as typeof props
-  let transitionRef = useSyncRefs(ref)
+  let internalTransitionRef = useRef<HTMLElement | null>(null)
+  let transitionRef = useSyncRefs(internalTransitionRef, ref)
 
   // The TransitionChild will also call this hook, and we have to make sure that we are ready.
   useServerHandoffComplete()
@@ -390,6 +391,15 @@ let TransitionRoot = forwardRefWithAs(function Transition<
       setState(TreeStates.Visible)
     } else if (!hasChildren(nestingBag)) {
       setState(TreeStates.Hidden)
+    } else {
+      let node = internalTransitionRef.current
+      if (!node) return
+      let rect = node.getBoundingClientRect()
+
+      if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
+        // The node is completely hidden, let's hide it
+        setState(TreeStates.Hidden)
+      }
     }
   }, [show, nestingBag])
 
