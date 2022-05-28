@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased - @headlessui/vue]
+## [Unreleased]
 
 ### Added
 
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `Escape` propagates correctly in `Combobox` component ([#1511](https://github.com/tailwindlabs/headlessui/pull/1511))
 - Remove leftover code in Combobox component ([#1514](https://github.com/tailwindlabs/headlessui/pull/1514))
 
-## [@headlessui/vue@v1.6.3] - 2022-05-25
+## [1.6.3] - 2022-05-25
 
 ### Fixed
 
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure the the `<PopoverPanel focus>` closes correctly ([#1477](https://github.com/tailwindlabs/headlessui/pull/1477))
 - Only render the `FocusSentinel` if required in the `Tabs` component ([#1493](https://github.com/tailwindlabs/headlessui/pull/1493))
 
-## [@headlessui/vue@v1.6.2] - 2022-05-19
+## [1.6.2] - 2022-05-19
 
 ### Fixed
 
@@ -35,16 +35,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplify `Popover` Tab logic by using sentinel nodes instead of keydown event interception ([#1440](https://github.com/tailwindlabs/headlessui/pull/1440))
 - Ensure the `PopoverPanel` is clickable without closing the `Popover` ([#1443](https://github.com/tailwindlabs/headlessui/pull/1443))
 - Improve "Scroll lock" scrollbar width for `Dialog` component ([#1457](https://github.com/tailwindlabs/headlessui/pull/1457))
-- Don‚Äôt throw when SSR rendering internal portals in Vue ([#1459](https://github.com/tailwindlabs/headlessui/pull/1459))
+- Don't throw when SSR rendering internal portals in Vue ([#1459](https://github.com/tailwindlabs/headlessui/pull/1459))
 
-## [@headlessui/vue@v1.6.1] - 2022-05-03
+## [1.6.1] - 2022-05-03
 
 ### Fixed
 
 - Manually passthrough `attrs` for `Combobox`, `Listbox` and `TabsGroup` component ([#1372](https://github.com/tailwindlabs/headlessui/pull/1372))
 - Fix enter transitions in Vue ([#1395](https://github.com/tailwindlabs/headlessui/pull/1395))
 
-## [@headlessui/vue@v1.6.0] - 2022-04-25
+## [1.6.0] - 2022-04-25
 
 ### Fixed
 
@@ -85,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for clearing the value of a `Combobox` ([#1295](https://github.com/tailwindlabs/headlessui/pull/1295))
 - Add `DialogBackdrop` and `DialogPanel` components ([#1333](https://github.com/tailwindlabs/headlessui/pull/1333))
 
-## [@headlessui/vue@v1.5.0] - 2022-02-17
+## [1.5.0] - 2022-02-17
 
 ### Fixed
 
@@ -99,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `Combobox` component ([#1047](https://github.com/tailwindlabs/headlessui/pull/1047), [#1099](https://github.com/tailwindlabs/headlessui/pull/1099), [#1101](https://github.com/tailwindlabs/headlessui/pull/1101), [#1104](https://github.com/tailwindlabs/headlessui/pull/1104), [#1106](https://github.com/tailwindlabs/headlessui/pull/1106), [#1109](https://github.com/tailwindlabs/headlessui/pull/1109))
 
-## [@headlessui/vue@v1.4.3] - 2022-01-14
+## [1.4.3] - 2022-01-14
 
 ### Fixes
 
@@ -111,7 +111,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow for `TabGroup` to be controllable ([#909](https://github.com/tailwindlabs/headlessui/pull/909), [#970](https://github.com/tailwindlabs/headlessui/pull/970))
 
-## [@headlessui/vue@v1.4.2] - 2021-11-08
+## [1.4.2] - 2021-11-08
 
 ### Fixes
 
@@ -121,7 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve tree shaking ([#859](https://github.com/tailwindlabs/headlessui/pull/859))
 - Add `type="button"` to `Tabs` component ([#912](https://github.com/tailwindlabs/headlessui/pull/912))
 
-## [@headlessui/vue@v1.4.1] - 2021-08-30
+## [1.4.1] - 2021-08-30
 
 ### Fixes
 
@@ -130,7 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `escape` bug not closing Dialog after clicking in Dialog ([#754](https://github.com/tailwindlabs/headlessui/pull/754))
 - Use `console.warn` instead of throwing an error when there are no focusable elements ([#775](https://github.com/tailwindlabs/headlessui/pull/775))
 
-## [@headlessui/vue@v1.4.0] - 2021-07-29
+## [1.4.0] - 2021-07-29
 
 ### Added
 
@@ -139,7 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `aria-orientation` to `Listbox`, which swaps Up/Down with Left/Right keys ([#683](https://github.com/tailwindlabs/headlessui/pull/683))
 - Expose `close` function from the scoped slot for `Disclosure`, `DisclosurePanel`, `Popover` and `PopoverPanel` ([#697](https://github.com/tailwindlabs/headlessui/pull/697))
 
-## [@headlessui/vue@v1.3.0] - 2021-06-21
+## [1.3.0] - 2021-06-21
 
 ### Added
 
@@ -153,20 +153,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve reactivity when destructuring from props ([#512](https://github.com/tailwindlabs/headlessui/pull/512))
 - Improve `aria-expanded` logic ([#592](https://github.com/tailwindlabs/headlessui/pull/592))
 
-## [@headlessui/vue@v1.2.0] - 2021-05-10
+## [1.2.0] - 2021-05-10
 
 ### Added
 
 - Introduce Open/Closed state, to simplify component communication ([#466](https://github.com/tailwindlabs/headlessui/pull/466))
 
-## [@headlessui/vue@v1.1.1] - 2021-04-28
+## [1.1.1] - 2021-04-28
 
 ### Fixes
 
 - Fix form submission within Dialog ([#460](https://github.com/tailwindlabs/headlessui/pull/460))
 - Fix TypeScript types for `Listbox` and `Switch` ([#459](https://github.com/tailwindlabs/headlessui/pull/459), [#461](https://github.com/tailwindlabs/headlessui/pull/461))
 
-## [@headlessui/vue@v1.1.0] - 2021-04-26
+### Added
+
+- Add `disabled` prop to `RadioGroup` and `RadioGroup.Option` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
+- Add `defaultOpen` prop to the `Disclosure` component ([#447](https://github.com/tailwindlabs/headlessui/pull/447))
+
+## [1.1.0] - 2021-04-26
 
 ### Fixes
 
@@ -180,7 +185,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `disabled` prop to `RadioGroup` and `RadioGroupOption` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
 - Add `defaultOpen` prop to the `Disclosure` component ([#447](https://github.com/tailwindlabs/headlessui/pull/447))
 
-## [@headlessui/vue@v1.0.0] - 2021-04-14
+## [1.0.0] - 2021-04-14
 
 ### Fixes
 
@@ -198,13 +203,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `RadioGroup`, `RadioGroupOption`, `RadioGroupLabel` and `RadioGroupDescription` components ([#282](https://github.com/tailwindlabs/headlessui/pull/282))
 - Add `TransitionRoot` and `TransitionChild` components ([#326](https://github.com/tailwindlabs/headlessui/pull/326))
 
-## [@headlessui/vue@v0.3.1] - 2021-04-02
+## [0.3.1] - 2021-04-02
 
 ### Fixes
 
 - Fix broken behaviour since Vue 3.0.5 ([#279](https://github.com/tailwindlabs/headlessui/pull/279))
 
-## [@headlessui/vue@v0.3.0] - 2021-02-06
+## [0.3.0] - 2021-02-06
 
 ### Fixes
 
@@ -223,14 +228,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add render features + render strategy (`static` and `unmount={true | false}`) ([#106](https://github.com/tailwindlabs/headlessui/pull/106))
 - Add `disabled` prop to `Listbox` itself, instead of the `ListboxButton` ([#229](https://github.com/tailwindlabs/headlessui/pull/229))
 
-## [@headlessui/vue@v0.2.0] - 2020-10-06
+## [0.2.0] - 2020-10-06
 
 ### Added
 
 - Add `Listbox` component
 - Add `Switch` component
 
-## [@headlessui/vue@v0.1.3] - 2020-09-29
+## [0.1.3] - 2020-09-29
 
 ### Fixes
 
@@ -238,37 +243,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix outside click behaviour. If you had multiple menu's, when menu 1 is open, menu 2 is closed and you click on menu button 2 it will open both menu's. This is now fixed.
 - Ensure when using keyboard navigation we prevent the default behaviour.
 
-## [@headlessui/vue@v0.1.2] - 2020-09-25
+## [0.1.2] - 2020-09-25
 
 ### Fixes
 
 - Fix issue where button `MenuItem` instances didn't properly fire click events
 - Don't pass `disabled` prop through to children, only add `aria-disabled`
 
-## [@headlessui/vue@v0.1.1] - 2020-09-24
+## [0.1.1] - 2020-09-24
 
 ### Added
 
 - Everything!
 
-[unreleased - @headlessui/vue]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.3...HEAD
-[@headlessui/vue@v1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...@headlessui/vue@v1.6.3
-[@headlessui/vue@v1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...@headlessui/vue@v1.6.2
-[@headlessui/vue@v1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.0...@headlessui/vue@v1.6.1
-[@headlessui/vue@v1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.5.0...@headlessui/vue@v1.6.0
-[@headlessui/vue@v1.5.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.3...@headlessui/vue@v1.5.0
-[@headlessui/vue@v1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.2...@headlessui/vue@v1.4.3
-[@headlessui/vue@v1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.1...@headlessui/vue@v1.4.2
-[@headlessui/vue@v1.4.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.0...@headlessui/vue@v1.4.1
-[@headlessui/vue@v1.4.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.3.0...@headlessui/vue@v1.4.0
-[@headlessui/vue@v1.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.2.0...@headlessui/vue@v1.3.0
-[@headlessui/vue@v1.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.1.1...@headlessui/vue@v1.2.0
-[@headlessui/vue@v1.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.1.0...@headlessui/vue@v1.1.1
-[@headlessui/vue@v1.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.0.0...@headlessui/vue@v1.1.0
-[@headlessui/vue@v1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.1...@headlessui/vue@v1.0.0
-[@headlessui/vue@v0.3.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.0...@headlessui/vue@v0.3.1
-[@headlessui/vue@v0.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.2.0...@headlessui/vue@v0.3.0
-[@headlessui/vue@v0.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.1.3...@headlessui/vue@v0.2.0
-[@headlessui/vue@v0.1.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.1.2...@headlessui/vue@v0.1.3
-[@headlessui/vue@v0.1.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.1.1...@headlessui/vue@v0.1.2
-[@headlessui/vue@v0.1.1]: https://github.com/tailwindlabs/headlessui/releases/tag/@headlessui/vue@v0.1.1
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.3...HEAD
+[1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...@headlessui/vue@v1.6.3
+[1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...@headlessui/vue@v1.6.2
+[1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.0...@headlessui/vue@v1.6.1
+[1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.5.0...@headlessui/vue@v1.6.0
+[1.5.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.3...@headlessui/vue@v1.5.0
+[1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.2...@headlessui/vue@v1.4.3
+[1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.1...@headlessui/vue@v1.4.2
+[1.4.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.4.0...@headlessui/vue@v1.4.1
+[1.4.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.3.0...@headlessui/vue@v1.4.0
+[1.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.2.0...@headlessui/vue@v1.3.0
+[1.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.1.1...@headlessui/vue@v1.2.0
+[1.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.1.0...@headlessui/vue@v1.1.1
+[1.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.0.0...@headlessui/vue@v1.1.0
+[1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.1...@headlessui/vue@v1.0.0
+[0.3.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.3.0...@headlessui/vue@v0.3.1
+[0.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.2.0...@headlessui/vue@v0.3.0
+[0.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.1.3...@headlessui/vue@v0.2.0
+[0.1.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.1.2...@headlessui/vue@v0.1.3
+[0.1.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v0.1.1...@headlessui/vue@v0.1.2
+[0.1.1]: https://github.com/tailwindlabs/headlessui/releases/tag/@headlessui/vue@v0.1.1

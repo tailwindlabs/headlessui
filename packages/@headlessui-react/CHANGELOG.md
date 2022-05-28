@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased - @headlessui/react]
+## [Unreleased]
 
 ### Added
 
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove leftover code in Combobox component ([#1514](https://github.com/tailwindlabs/headlessui/pull/1514))
 - Fix event handlers with arity > 1 ([#1515](https://github.com/tailwindlabs/headlessui/pull/1515))
 
-## [@headlessui/react@v1.6.3] - 2022-05-25
+## [1.6.3] - 2022-05-25
 
 ### Fixed
 
@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only render the `FocusSentinel` if required in the `Tabs` component ([#1493](https://github.com/tailwindlabs/headlessui/pull/1493))
 - Ensure the Transition stops once DOM Nodes are hidden ([#1500](https://github.com/tailwindlabs/headlessui/pull/1500))
 
-## [@headlessui/react@v1.6.2] - 2022-05-19
+## [1.6.2] - 2022-05-19
 
 ### Fixed
 
@@ -40,13 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make the `ref` optional in the `Popover` component ([#1465](https://github.com/tailwindlabs/headlessui/pull/1465))
 - Ensure the `ref` is forwarded on the `Transition.Child` component ([#1473](https://github.com/tailwindlabs/headlessui/pull/1473))
 
-## [@headlessui/react@v1.6.1] - 2022-05-03
+## [1.6.1] - 2022-05-03
 
 ### Fixed
 
 - Fix hydration issue with `Tab` component ([#1393](https://github.com/tailwindlabs/headlessui/pull/1393))
 
-## [@headlessui/react@v1.6.0] - 2022-04-25
+## [1.6.0] - 2022-04-25
 
 ### Fixed
 
@@ -86,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for clearing the value of a `Combobox` ([#1295](https://github.com/tailwindlabs/headlessui/pull/1295))
 - Add `Dialog.Backdrop` and `Dialog.Panel` components ([#1333](https://github.com/tailwindlabs/headlessui/pull/1333))
 
-## [@headlessui/react@v1.5.0] - 2022-02-17
+## [1.5.0] - 2022-02-17
 
 ### Fixed
 
@@ -103,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add `Combobox` component ([#1047](https://github.com/tailwindlabs/headlessui/pull/1047), [#1099](https://github.com/tailwindlabs/headlessui/pull/1099), [#1101](https://github.com/tailwindlabs/headlessui/pull/1101), [#1104](https://github.com/tailwindlabs/headlessui/pull/1104), [#1109](https://github.com/tailwindlabs/headlessui/pull/1109))
 
-## [@headlessui/react@v1.4.3] - 2022-01-14
+## [1.4.3] - 2022-01-14
 
 ### Fixes
 
@@ -114,7 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Allow for `Tab.Group` to be controllable ([#909](https://github.com/tailwindlabs/headlessui/pull/909), [#970](https://github.com/tailwindlabs/headlessui/pull/970))
 
-## [@headlessui/react@v1.4.2] - 2021-11-08
+## [1.4.2] - 2021-11-08
 
 ### Fixes
 
@@ -123,7 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure interactability with `Popover.Panel` contents when using the `static` prop ([#857](https://github.com/tailwindlabs/headlessui/pull/857))
 - Fix initial transition in `Transition` component ([#882](https://github.com/tailwindlabs/headlessui/pull/882))
 
-## [@headlessui/react@v1.4.1] - 2021-08-30
+## [1.4.1] - 2021-08-30
 
 ### Fixes
 
@@ -131,7 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `escape` bug not closing Dialog after clicking in Dialog ([#754](https://github.com/tailwindlabs/headlessui/pull/754))
 - Use `console.warn` instead of throwing an error when there are no focusable elements ([#775](https://github.com/tailwindlabs/headlessui/pull/775))
 
-## [@headlessui/react@v1.4.0] - 2021-07-29
+## [1.4.0] - 2021-07-29
 
 ### Added
 
@@ -140,7 +140,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `aria-orientation` to `Listbox`, which swaps Up/Down with Left/Right keys ([#683](https://github.com/tailwindlabs/headlessui/pull/683))
 - Expose `close` function from the render prop for `Disclosure`, `Disclosure.Panel`, `Popover` and `Popover.Panel` ([#697](https://github.com/tailwindlabs/headlessui/pull/697))
 
-## [@headlessui/react@v1.3.0] - 2021-06-21
+## [1.3.0] - 2021-06-21
 
 ### Added
 
@@ -160,7 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve tree shaking ([#602](https://github.com/tailwindlabs/headlessui/pull/602))
 - Improve peer dependencies for `react-dom`, and for the future version `18` ([#622](https://github.com/tailwindlabs/headlessui/pull/622))
 
-## [@headlessui/react@v1.2.0] - 2021-05-10
+## [1.2.0] - 2021-05-10
 
 ### Added
 
@@ -172,13 +172,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Delay focus trap initialization ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
 - Improve incorrect behaviour for nesting `Dialog` components ([#560](https://github.com/tailwindlabs/headlessui/pull/560))
 
-## [@headlessui/react@v1.1.1] - 2021-04-28
+## [1.1.1] - 2021-04-28
 
 ### Fixes
 
 - Fix form submission within Dialog ([#460](https://github.com/tailwindlabs/headlessui/pull/460))
 
-## [@headlessui/react@v1.1.0] - 2021-04-26
+## [1.1.0] - 2021-04-26
 
 ### Fixes
 
@@ -191,7 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `disabled` prop to `RadioGroup` and `RadioGroup.Option` ([#401](https://github.com/tailwindlabs/headlessui/pull/401))
 - Add `defaultOpen` prop to the `Disclosure` component ([#447](https://github.com/tailwindlabs/headlessui/pull/447))
 
-## [@headlessui/react@v1.0.0] - 2021-04-14
+## [1.0.0] - 2021-04-14
 
 ### Fixes
 
@@ -211,20 +211,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All components that accept a `className`, can now also receive a function with the renderProp argument ([#257](https://github.com/tailwindlabs/headlessui/pull/257))
 - Add `RadioGroup`, `RadioGroup.Option`, `RadioGroup.Label` and `RadioGroup.Description` components ([#274](https://github.com/tailwindlabs/headlessui/pull/274))
 
-## [@headlessui/react@v0.3.2] - 2021-04-02
+## [0.3.2] - 2021-04-02
 
 ### Fixes
 
 - Fix incorrect type error `unique symbol` ([#248](https://github.com/tailwindlabs/headlessui/pull/248), [#240](https://github.com/tailwindlabs/headlessui/issues/240))
 
-## [@headlessui/react@v0.3.1] - 2021-02-11
+## [0.3.1] - 2021-02-11
 
 ### Fixes
 
 - Fix incorrect `types` path ([d557d50](https://github.com/tailwindlabs/headlessui/commit/d557d5013968f7bb9877f190b682318704043905))
 - Fix TypeScript render related types ([bb68793](https://github.com/tailwindlabs/headlessui/commit/bb68793f08a57833095a38519b639a744076dc69))
 
-## [@headlessui/react@v0.3.0] - 2021-02-06
+## [0.3.0] - 2021-02-06
 
 ### Fixes
 
@@ -252,21 +252,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The render function prop doesn't expose a `ref` anymore.
   - Adds `unmount` prop to the `Transition` and `Transition.Child` components.
 
-## [@headlessui/react@v0.2.0] - 2020-10-06
+## [0.2.0] - 2020-10-06
 
 ### Added
 
 - Add `Listbox` component
 - Add `Switch` component
 
-## [@headlessui/react@v0.1.3] - 2020-09-29
+## [0.1.3] - 2020-09-29
 
 ### Fixes
 
 - Fix outside click behaviour. If you had multiple menu's, when menu 1 is open, menu 2 is closed and you click on menu button 2 it will open both menu's. This is now fixed.
 - Ensure when using keyboard navigation we prevent the default behaviour.
 
-## [@headlessui/react@v0.1.2] - 2020-09-25
+## [0.1.2] - 2020-09-25
 
 ### Added
 
@@ -276,31 +276,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Don't pass `disabled` prop through to children, only add `aria-disabled`
 
-## [@headlessui/react@v0.1.1] - 2020-09-24
+## [0.1.1] - 2020-09-24
 
 ### Added
 
 - Everything!
 
-[unreleased - @headlessui/react]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.3...HEAD
-[@headlessui/react@v1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.2...@headlessui/react@v1.6.3
-[@headlessui/react@v1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.1...@headlessui/react@v1.6.2
-[@headlessui/react@v1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...@headlessui/react@v1.6.1
-[@headlessui/react@v1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.5.0...@headlessui/react@v1.6.0
-[@headlessui/react@v1.5.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.3...@headlessui/react@v1.5.0
-[@headlessui/react@v1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...@headlessui/react@v1.4.3
-[@headlessui/react@v1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.1...@headlessui/react@v1.4.2
-[@headlessui/react@v1.4.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.0...@headlessui/react@v1.4.1
-[@headlessui/react@v1.4.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.3.0...@headlessui/react@v1.4.0
-[@headlessui/react@v1.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.2.0...@headlessui/react@v1.3.0
-[@headlessui/react@v1.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.1.1...@headlessui/react@v1.2.0
-[@headlessui/react@v1.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.1.0...@headlessui/react@v1.1.1
-[@headlessui/react@v1.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.0.0...@headlessui/react@v1.1.0
-[@headlessui/react@v1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.2...@headlessui/react@v1.0.0
-[@headlessui/react@v0.3.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.1...@headlessui/react@v0.3.2
-[@headlessui/react@v0.3.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.0...@headlessui/react@v0.3.1
-[@headlessui/react@v0.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.2.0...@headlessui/react@v0.3.0
-[@headlessui/react@v0.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.1.3...@headlessui/react@v0.2.0
-[@headlessui/react@v0.1.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.1.2...@headlessui/react@v0.1.3
-[@headlessui/react@v0.1.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.1.1...@headlessui/react@v0.1.2
-[@headlessui/react@v0.1.1]: https://github.com/tailwindlabs/headlessui/releases/tag/@headlessui/react@v0.1.1
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.3...HEAD
+[1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.2...@headlessui/react@v1.6.3
+[1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.1...@headlessui/react@v1.6.2
+[1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...@headlessui/react@v1.6.1
+[1.6.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.5.0...@headlessui/react@v1.6.0
+[1.5.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.3...@headlessui/react@v1.5.0
+[1.4.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.2...@headlessui/react@v1.4.3
+[1.4.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.1...@headlessui/react@v1.4.2
+[1.4.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.4.0...@headlessui/react@v1.4.1
+[1.4.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.3.0...@headlessui/react@v1.4.0
+[1.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.2.0...@headlessui/react@v1.3.0
+[1.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.1.1...@headlessui/react@v1.2.0
+[1.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.1.0...@headlessui/react@v1.1.1
+[1.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.0.0...@headlessui/react@v1.1.0
+[1.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.2...@headlessui/react@v1.0.0
+[0.3.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.1...@headlessui/react@v0.3.2
+[0.3.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.3.0...@headlessui/react@v0.3.1
+[0.3.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.2.0...@headlessui/react@v0.3.0
+[0.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.1.3...@headlessui/react@v0.2.0
+[0.1.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.1.2...@headlessui/react@v0.1.3
+[0.1.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v0.1.1...@headlessui/react@v0.1.2
+[0.1.1]: https://github.com/tailwindlabs/headlessui/releases/tag/@headlessui/react@v0.1.1
