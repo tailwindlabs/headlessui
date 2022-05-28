@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `Escape` propagates correctly in `Combobox` component ([#1511](https://github.com/tailwindlabs/headlessui/pull/1511))
 - Remove leftover code in Combobox component ([#1514](https://github.com/tailwindlabs/headlessui/pull/1514))
 - Fix event handlers with arity > 1 ([#1515](https://github.com/tailwindlabs/headlessui/pull/1515))
+- Fix transition `enter` bug ([#1519](https://github.com/tailwindlabs/headlessui/pull/1519))
 
 ## [1.6.3] - 2022-05-25
 
