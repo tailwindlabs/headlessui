@@ -201,7 +201,7 @@ function mergeProps(...listOfProps: Props<any, any>[]) {
 
   let eventHandlers: Record<
     string,
-    ((event: { defaultPrevented: boolean }) => void | undefined)[]
+    ((event: { defaultPrevented: boolean }, ...args: any[]) => void | undefined)[]
   > = {}
 
   for (let props of listOfProps) {
@@ -232,13 +232,13 @@ function mergeProps(...listOfProps: Props<any, any>[]) {
   // Merge event handlers
   for (let eventName in eventHandlers) {
     Object.assign(target, {
-      [eventName](event: { defaultPrevented: boolean }) {
+      [eventName](event: { defaultPrevented: boolean }, ...args: any[]) {
         let handlers = eventHandlers[eventName]
 
         for (let handler of handlers) {
           if (event.defaultPrevented) return
 
-          handler(event)
+          handler(event, ...args)
         }
       },
     })
