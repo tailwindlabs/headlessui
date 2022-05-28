@@ -545,18 +545,6 @@ export let ComboboxButton = defineComponent({
           event.stopPropagation()
           if (api.comboboxState.value === ComboboxStates.Closed) {
             api.openCombobox()
-            // TODO: We can't do this outside next frame because the options aren't rendered yet
-            // But doing this in next frame results in a flicker because the dom mutations are async here
-            // Basically:
-            // Sync -> no option list yet
-            // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
-
-            // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
-            nextTick(() => {
-              if (!api.value.value) {
-                api.goToOption(Focus.First)
-              }
-            })
           }
           nextTick(() => api.inputRef.value?.focus({ preventScroll: true }))
           return
@@ -689,14 +677,7 @@ export let ComboboxInput = defineComponent({
           event.stopPropagation()
           return match(api.comboboxState.value, {
             [ComboboxStates.Open]: () => api.goToOption(Focus.Next),
-            [ComboboxStates.Closed]: () => {
-              api.openCombobox()
-              nextTick(() => {
-                if (!api.value.value) {
-                  api.goToOption(Focus.First)
-                }
-              })
-            },
+            [ComboboxStates.Closed]: () => api.openCombobox(),
           })
 
         case Keys.ArrowUp:

@@ -663,18 +663,6 @@ let Input = forwardRefWithAs(function Input<
           },
           [ComboboxState.Closed]: () => {
             actions.openCombobox()
-            // TODO: We can't do this outside next frame because the options aren't rendered yet
-            // But doing this in next frame results in a flicker because the dom mutations are async here
-            // Basically:
-            // Sync -> no option list yet
-            // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
-
-            // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
-            d.nextFrame(() => {
-              if (!data.value) {
-                actions.goToOption(Focus.Next)
-              }
-            })
           },
         })
 
@@ -804,18 +792,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
           actions.openCombobox()
-          // TODO: We can't do this outside next frame because the options aren't rendered yet
-          // But doing this in next frame results in a flicker because the dom mutations are async here
-          // Basically:
-          // Sync -> no option list yet
-          // Next frame -> option list already rendered with selection -> dispatch -> next frame -> now we have the focus on the right element
-
-          // TODO: The spec here is underspecified. There's mention of skipping to the next item when autocomplete has suggested something but nothing regarding a non-autocomplete selection/value
-          d.nextFrame(() => {
-            if (!data.value) {
-              actions.goToOption(Focus.First)
-            }
-          })
         }
         return d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
 
