@@ -126,20 +126,20 @@ function _render<TTag extends ElementType, TSlot>(
   }
 
   let dataAttributes: Record<string, string> = {}
-  if (slot) {
-    let exposeState = false
-    let states = []
-    for (let [k, v] of Object.entries(slot)) {
-      if (typeof v === 'boolean') {
-        exposeState = true
-      }
-      if (v === true) {
-        states.push(k)
-      }
-    }
-
-    if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
-  }
+  // if (slot) {
+  //   let exposeState = false
+  //   let states = []
+  //   for (let [k, v] of Object.entries(slot)) {
+  //     if (typeof v === 'boolean') {
+  //       exposeState = true
+  //     }
+  //     if (v === true) {
+  //       states.push(k)
+  //     }
+  //   }
+  //
+  //   if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
+  // }
 
   if (Component === Fragment) {
     if (Object.keys(compact(rest)).length > 0) {

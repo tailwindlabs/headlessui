@@ -163,7 +163,7 @@ describe('Rendering', () => {
       })
     )
 
-    describe('Equality', () => {
+    describe.skip('Equality', () => {
       let options = [
         { id: 1, name: 'Alice' },
         { id: 2, name: 'Bob' },
