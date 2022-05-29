@@ -322,6 +322,56 @@ describe('Rendering', () => {
     })
   )
 
+  it(
+    'should expose internal data as a render prop',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [value, setValue] = useState(null)
+
+        return (
+          <RadioGroup value={value} onChange={setValue}>
+            <RadioGroup.Option value="a">Option 1</RadioGroup.Option>
+            <RadioGroup.Option value="b">Option 2</RadioGroup.Option>
+            <RadioGroup.Option value="c">Option 3</RadioGroup.Option>
+          </RadioGroup>
+        )
+      }
+
+      render(<Example />)
+
+      let options = getRadioGroupOptions()
+
+      // Nothing is active yet
+      expect(options[0]).toHaveAttribute('data-headlessui-state', '')
+      expect(options[1]).toHaveAttribute('data-headlessui-state', '')
+      expect(options[2]).toHaveAttribute('data-headlessui-state', '')
+
+      // Focus the RadioGroup
+      await press(Keys.Tab)
+
+      // The first one should be active, but not checked yet
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'active')
+      expect(options[1]).toHaveAttribute('data-headlessui-state', '')
+      expect(options[2]).toHaveAttribute('data-headlessui-state', '')
+
+      // Select the first one
+      await press(Keys.Space)
+
+      // The first one should be active and checked
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'checked active')
+      expect(options[1]).toHaveAttribute('data-headlessui-state', '')
+      expect(options[2]).toHaveAttribute('data-headlessui-state', '')
+
+      // Go to the next option
+      await press(Keys.ArrowDown)
+
+      // The second one should be active and checked
+      expect(options[0]).toHaveAttribute('data-headlessui-state', '')
+      expect(options[1]).toHaveAttribute('data-headlessui-state', 'checked active')
+      expect(options[2]).toHaveAttribute('data-headlessui-state', '')
+    })
+  )
+
   describe('Equality', () => {
     let options = [
       { id: 1, name: 'Alice' },
