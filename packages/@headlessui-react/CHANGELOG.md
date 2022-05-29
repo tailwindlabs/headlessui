@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove leftover code in Combobox component ([#1514](https://github.com/tailwindlabs/headlessui/pull/1514))
 - Fix event handlers with arity > 1 ([#1515](https://github.com/tailwindlabs/headlessui/pull/1515))
 - Fix transition `enter` bug ([#1519](https://github.com/tailwindlabs/headlessui/pull/1519))
+- Fix render prop data in `RadioGroup` component ([#1522](https://github.com/tailwindlabs/headlessui/pull/1522))
 
 ## [1.6.3] - 2022-05-25
 
