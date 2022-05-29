@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
 - Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
 
+## [1.6.4] - 2022-05-29
+
 ### Fixed
 
 - Ensure `Escape` propagates correctly in `Combobox` component ([#1511](https://github.com/tailwindlabs/headlessui/pull/1511))
@@ -284,7 +286,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.3...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.4...HEAD
+[1.6.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.3...v1.6.4
 [1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.2...@headlessui/react@v1.6.3
 [1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.1...@headlessui/react@v1.6.2
 [1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...@headlessui/react@v1.6.1
