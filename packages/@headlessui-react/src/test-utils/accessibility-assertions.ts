@@ -1119,7 +1119,7 @@ export async function assertDisclosureButton(
 
       case DisclosureState.InvisibleHidden:
         await expect(button).toHaveAttribute('aria-controls')
-        if (await button.hasAttribute('disabled')) {
+        if (await button?.hasAttribute('disabled')) {
           await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
           await expect(button).toHaveAttribute('aria-expanded', 'false')
@@ -1128,7 +1128,7 @@ export async function assertDisclosureButton(
 
       case DisclosureState.InvisibleUnmounted:
         await expect(button).not.toHaveAttribute('aria-controls')
-        if (await button.hasAttribute('disabled')) {
+        if (await button?.hasAttribute('disabled')) {
           await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
           await expect(button).toHaveAttribute('aria-expanded', 'false')

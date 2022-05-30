@@ -26,6 +26,10 @@ export async function click(element: Locator | null, button = MouseButton.Left) 
       [MouseButton.Middle]: 'middle',
       [MouseButton.Right]: 'right',
     }),
+
+    // TODO: In some tests we click disabled buttons which are disabled by default in Playwright (because you can't actually click them)
+    // Does that mean we should remove this and rewrite the test? Or is this the appropriate behavior?
+    force: true,
   })
 }
 
@@ -53,6 +57,7 @@ export async function press(event: Partial<KeyboardEvent>) {
   return await activeComponent().press(event.key)
 }
 
-export async function focus(locator: Locator) {
+// TODO: Fix types. DOM types should be removed
+export async function focus(locator: Locator | HTMLElement) {
   return await locator.focus()
 }

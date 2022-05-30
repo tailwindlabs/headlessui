@@ -1,4 +1,4 @@
-import { createTest, pick } from '../util/plugin'
+import { createTest, pick, expect } from '../util/plugin'
 
 // import ExampleVue from './Example.vue'
 import ExampleReact from './Example.tsx'
@@ -7,11 +7,10 @@ import {
   assertDisclosureButton,
   getDisclosureButton,
   getDisclosurePanel,
-  assertActiveElement,
-  getByText,
   DisclosureState,
 } from '../../../@headlessui-react/src/test-utils/accessibility-assertions'
 import { click, press, focus, Keys, MouseButton } from '../util/interactions'
+import { getByText, assertActiveElement } from '../util/accessibility'
 import { debug } from 'console'
 
 const test = createTest((props?: any) => {
@@ -56,7 +55,7 @@ test.describe('Keyboard interactions', () => {
       await assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
     })
 
-    test.only('should not be possible to open the disclosure with Enter when the button is disabled', async ({
+    test('should not be possible to open the disclosure with Enter when the button is disabled', async ({
       render,
     }) => {
       await render({ buttonDisabled: true })
@@ -282,14 +281,7 @@ test.describe('Mouse interactions', () => {
   test('should be possible to close the Disclosure by clicking on a Disclosure.Button inside a Disclosure.Panel', async ({
     render,
   }) => {
-    // await render(
-    //   <Disclosure>
-    //     <Disclosure.Button>Open</Disclosure.Button>
-    //     <Disclosure.Panel>
-    //       <Disclosure.Button>Close</Disclosure.Button>
-    //     </Disclosure.Panel>
-    //   </Disclosure>
-    // )
+    await render({ buttonInside: true })
 
     // Open the disclosure
     await click(getDisclosureButton())

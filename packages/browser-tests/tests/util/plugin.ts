@@ -37,7 +37,7 @@ function wrapLocator(locator: pt.Locator, helpers: Partial<Helpers> = {}): Locat
     locator,
     {
       rerender: () => Promise.resolve(),
-      hasAttribute: async (name: string) => (await locator.getAttribute(name)) === name,
+      hasAttribute: async (name: string) => (await locator.getAttribute(name)) !== null,
       locator: (selector: string, options?: Parameters<pt.Locator['locator']>[1]) => {
         return wrapLocator(ogLocator(selector, options))
       },
@@ -79,4 +79,8 @@ export function createTest<PropsType>(createComponent: (props?: PropsType) => vo
       })
     },
   })
+}
+
+export function currentComponent(): Locator {
+  return globalThis.component
 }
