@@ -2,8 +2,6 @@ import type * as vue from '@playwright/experimental-ct-vue'
 import type * as react from '@playwright/experimental-ct-react'
 import type * as pt from '@playwright/test'
 import { pick } from './helpers'
-import jsdom from 'jsdom'
-import { prettyDOM } from '@testing-library/dom'
 import { prettyPrint } from './printing'
 
 const plugin: typeof vue & typeof react = pick({
@@ -83,4 +81,8 @@ export function createTest<PropsType>(createComponent: (props?: PropsType) => vo
 
 export function currentComponent(): Locator {
   return globalThis.component
+}
+
+export function currentPage(): pt.Page {
+  return currentComponent().page()
 }
