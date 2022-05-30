@@ -1,7 +1,7 @@
 import { createTest, pick, expect } from '../util/plugin'
 
-// import ExampleVue from './Example.vue'
-import ExampleReact from './Example.tsx'
+import ExampleVue from './ExampleVue'
+import ExampleReact from './ExampleReact'
 import {
   assertDisclosurePanel,
   assertDisclosureButton,
@@ -15,7 +15,7 @@ import { debug } from 'console'
 
 const test = createTest((props?: any) => {
   return pick({
-    // vue: () => <ExampleVue {...props} />,
+    vue: () => <ExampleVue {...props} />,
     react: () => <ExampleReact {...props} />,
   })
 })
