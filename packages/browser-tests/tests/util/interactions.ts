@@ -57,7 +57,6 @@ export async function press(event: Partial<KeyboardEvent>) {
   return await activeComponent().press(event.key)
 }
 
-// TODO: Fix types. DOM types should be removed
-export async function focus(locator: Locator | HTMLElement) {
+export async function focus(locator: Locator) {
   return await locator.focus()
 }

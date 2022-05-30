@@ -6,7 +6,6 @@ import {
   assertDisclosurePanel,
   assertDisclosureButton,
   getDisclosureButton,
-  getDisclosurePanel,
   DisclosureState,
 } from '../../../@headlessui-react/src/test-utils/accessibility-assertions'
 import { click, press, focus, Keys, MouseButton } from '../util/interactions'
