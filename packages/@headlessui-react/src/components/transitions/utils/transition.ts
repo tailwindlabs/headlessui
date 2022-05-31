@@ -52,37 +52,28 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
       )
     } else {
       listeners.push(
-        d.addEventListener(
-          node,
-          'transitionrun',
-          () => {
-            // Cleanup "old" listeners
-            listeners.splice(0).forEach((dispose) => dispose())
+        d.addEventListener(node, 'transitionrun', (event) => {
+          if (event.target !== event.currentTarget) return
 
-            // Register new listeners
-            listeners.push(
-              d.addEventListener(
-                node,
-                'transitionend',
-                () => {
-                  done(Reason.Ended)
-                  listeners.splice(0).forEach((dispose) => dispose())
-                },
-                { once: true }
-              ),
-              d.addEventListener(
-                node,
-                'transitioncancel',
-                () => {
-                  done(Reason.Cancelled)
-                  listeners.splice(0).forEach((dispose) => dispose())
-                },
-                { once: true }
-              )
-            )
-          },
-          { once: true }
-        )
+          // Cleanup "old" listeners
+          listeners.splice(0).forEach((dispose) => dispose())
+
+          // Register new listeners
+          listeners.push(
+            d.addEventListener(node, 'transitionend', (event) => {
+              if (event.target !== event.currentTarget) return
+
+              done(Reason.Ended)
+              listeners.splice(0).forEach((dispose) => dispose())
+            }),
+            d.addEventListener(node, 'transitioncancel', (event) => {
+              if (event.target !== event.currentTarget) return
+
+              done(Reason.Cancelled)
+              listeners.splice(0).forEach((dispose) => dispose())
+            })
+          )
+        })
       )
     }
   } else {
