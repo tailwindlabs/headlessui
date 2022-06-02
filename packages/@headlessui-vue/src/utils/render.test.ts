@@ -79,4 +79,44 @@ describe('Validation', () => {
 
     expect(document.getElementById('result')).toHaveClass('abc')
   })
+
+  it('should allow use of <slot> as children', () => {
+    renderTemplate({
+      template: html`
+        <ExampleOuter>
+          <div id="result">Some Content</div>
+        </ExampleOuter>
+      `,
+
+      components: {
+        ExampleOuter: defineComponent({
+          template: html`
+            <ExampleInner>
+              <slot />
+            </ExampleInner>
+          `,
+
+          components: {
+            ExampleInner: defineComponent({
+              components: { Dummy },
+
+              template: html`
+                <Dummy as="template" class="foo" data-test="123">
+                  <Dummy as="template" class="bar" data-test="345">
+                    <slot />
+                  </Dummy>
+                </Dummy>
+              `,
+            }),
+          },
+        }),
+      },
+    })
+
+    expect(document.getElementById('result')).toHaveClass('foo')
+    expect(document.getElementById('result')).toHaveClass('bar')
+
+    // TODO: Is this the expected behavior? Should it actually be `345`?
+    expect(document.getElementById('result')).toHaveAttribute('data-test', '123')
+  })
 })

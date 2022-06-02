@@ -1,4 +1,4 @@
-import { h, cloneVNode, Slots } from 'vue'
+import { h, cloneVNode, Slots, Fragment, VNode } from 'vue'
 import { match } from './match'
 
 export enum Features {
@@ -102,6 +102,8 @@ function _render({
   }
 
   if (as === 'template') {
+    children = flattenFragments(children as VNode[])
+
     if (Object.keys(incomingProps).length > 0 || Object.keys(attrs).length > 0) {
       let [firstChild, ...other] = children ?? []
 
@@ -142,6 +144,33 @@ function _render({
   }
 
   return h(as, Object.assign({}, incomingProps, dataAttributes), children)
+}
+
+/**
+ * When passed a structure like this:
+ * <Example><span>something</span></Example>
+ *
+ * And Example is defined as:
+ * <SomeComponent><slot /></SomeComponent>
+ *
+ * We need to turn the fragment that <slot> represents into the slot.
+ * Luckily by this point it's already rendered into an array of VNodes
+ * for us so we can just flatten it directly.
+ *
+ * We have to do this recursively because there could be multiple
+ * levels of Component nesting all with <slot> elements interspersed
+ *
+ * @param children
+ * @returns
+ */
+function flattenFragments(children: VNode[]): VNode[] {
+  return children.flatMap((child) => {
+    if (child.type === Fragment) {
+      return flattenFragments(child.children as VNode[])
+    }
+
+    return [child]
+  })
 }
 
 export function compact<T extends Record<any, any>>(object: T) {
