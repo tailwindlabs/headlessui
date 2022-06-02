@@ -29,7 +29,7 @@ import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
 import { dom } from '../../utils/dom'
 import { useOpenClosed, State } from '../../internal/open-closed'
-import { useOutsideClick, Features as OutsideClickFeatures } from '../../hooks/use-outside-click'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
@@ -196,8 +196,7 @@ export let Dialog = defineComponent({
 
         api.close()
         nextTick(() => target?.focus())
-      },
-      OutsideClickFeatures.IgnoreScrollbars
+      }
     )
 
     // Handle `Escape` to close
@@ -264,10 +263,6 @@ export let Dialog = defineComponent({
       onInvalidate(() => observer.disconnect())
     })
 
-    function handleClick(event: MouseEvent) {
-      event.stopPropagation()
-    }
-
     return () => {
       let ourProps = {
         // Manually passthrough the attributes, because Vue can't automatically pass
@@ -279,7 +274,6 @@ export let Dialog = defineComponent({
         'aria-modal': dialogState.value === DialogStates.Open ? true : undefined,
         'aria-labelledby': titleId.value,
         'aria-describedby': describedby.value,
-        onClick: handleClick,
       }
       let { open: _, initialFocus, ...incomingProps } = props
 
@@ -417,10 +411,15 @@ export let DialogPanel = defineComponent({
 
     expose({ el: api.panelRef, $el: api.panelRef })
 
+    function handleClick(event: MouseEvent) {
+      event.stopPropagation()
+    }
+
     return () => {
       let ourProps = {
         id,
         ref: api.panelRef,
+        onClick: handleClick,
       }
       let incomingProps = props
 

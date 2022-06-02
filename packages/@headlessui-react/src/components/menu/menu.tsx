@@ -344,7 +344,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
     } else {
       event.preventDefault()
-      event.stopPropagation()
       dispatch({ type: ActionTypes.OpenMenu })
     }
   })

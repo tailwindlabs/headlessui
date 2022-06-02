@@ -289,7 +289,6 @@ export let MenuButton = defineComponent({
         nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
       } else {
         event.preventDefault()
-        event.stopPropagation()
         api.openMenu()
         nextFrame(() => dom(api.itemsRef)?.focus({ preventScroll: true }))
       }
