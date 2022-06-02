@@ -8,8 +8,8 @@ export default function App() {
     <>
       <button onClick={() => setOpen(true)}>Open dialog</button>
       <Dialog open={open} onClose={setOpen} className="fixed inset-0 grid place-content-center">
-        <Dialog.Overlay className="fixed inset-0 bg-gray-500/70" />
-        <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+        <div className="fixed inset-0 bg-gray-500/70" />
+        <Dialog.Panel className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <Tab.Group>
               <Tab.List>
@@ -24,7 +24,7 @@ export default function App() {
               </Tab.Panels>
             </Tab.Group>
           </div>
-        </div>
+        </Dialog.Panel>
       </Dialog>
     </>
   )
