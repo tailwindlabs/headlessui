@@ -1,5 +1,5 @@
 import { defineComponent, ComponentOptionsWithoutProps } from 'vue'
-import { render as testRender } from '../test-utils/vue-testing-library'
+import { createRenderTemplate, render as testRender } from '../test-utils/vue-testing-library'
 
 import { render } from './render'
 import { html } from '../test-utils/html'
@@ -13,21 +13,7 @@ let Dummy = defineComponent({
   },
 })
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { Dummy }
-
-  if (typeof input === 'string') {
-    return testRender(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return testRender(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({ Dummy })
 
 describe('Validation', () => {
   it('should error when using an as="template" with additional props', () => {

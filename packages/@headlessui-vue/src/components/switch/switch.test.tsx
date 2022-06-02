@@ -1,5 +1,5 @@
 import { defineComponent, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { Switch, SwitchLabel, SwitchDescription, SwitchGroup } from './switch'
 import {
@@ -16,21 +16,7 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { Switch, SwitchLabel, SwitchDescription, SwitchGroup }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({ Switch, SwitchLabel, SwitchDescription, SwitchGroup })
 
 describe('Safe guards', () => {
   it('should be possible to render a Switch without crashing', () => {

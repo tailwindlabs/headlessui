@@ -1,5 +1,5 @@
 import { defineComponent, nextTick, ref, watch, reactive, ComponentOptionsWithoutProps } from 'vue'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { RadioGroup, RadioGroupOption, RadioGroupLabel, RadioGroupDescription } from './radio-group'
 
@@ -34,21 +34,12 @@ function nextFrame() {
   })
 }
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { RadioGroup, RadioGroupOption, RadioGroupLabel, RadioGroupDescription }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({
+  RadioGroup,
+  RadioGroupOption,
+  RadioGroupLabel,
+  RadioGroupDescription,
+})
 
 describe('Safe guards', () => {
   it.each([['RadioGroupOption', RadioGroupOption]])(

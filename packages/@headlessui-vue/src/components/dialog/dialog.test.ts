@@ -7,7 +7,7 @@ import {
   ConcreteComponent,
   onMounted,
 } from 'vue'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import {
   Dialog,
@@ -58,29 +58,15 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = {
-    Dialog,
-    DialogOverlay,
-    DialogBackdrop,
-    DialogPanel,
-    DialogTitle,
-    DialogDescription,
-    TabSentinel,
-  }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({
+  Dialog,
+  DialogOverlay,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+  DialogDescription,
+  TabSentinel,
+})
 
 describe('Safe guards', () => {
   it.each([
