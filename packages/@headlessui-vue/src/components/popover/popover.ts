@@ -211,16 +211,18 @@ export let Popover = defineComponent({
     )
 
     // Handle outside click
-    useOutsideClick([button, panel], (event, target) => {
-      if (popoverState.value !== PopoverStates.Open) return
+    useOutsideClick(
+      [button, panel],
+      (event, target) => {
+        api.closePopover()
 
-      api.closePopover()
-
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        dom(button)?.focus()
-      }
-    })
+        if (!isFocusableElement(target, FocusableMode.Loose)) {
+          event.preventDefault()
+          dom(button)?.focus()
+        }
+      },
+      computed(() => popoverState.value === PopoverStates.Open)
+    )
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }

@@ -32,7 +32,7 @@ import { Description, useDescriptions } from '../description/description'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
-import { useOutsideClick, Features as OutsideClickFeatures } from '../../hooks/use-outside-click'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 import { getOwnerDocument } from '../../utils/owner'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
@@ -100,13 +100,7 @@ let DEFAULT_DIALOG_TAG = 'div' as const
 interface DialogRenderPropArg {
   open: boolean
 }
-type DialogPropsWeControl =
-  | 'id'
-  | 'role'
-  | 'aria-modal'
-  | 'aria-describedby'
-  | 'aria-labelledby'
-  | 'onClick'
+type DialogPropsWeControl = 'id' | 'role' | 'aria-modal' | 'aria-describedby' | 'aria-labelledby'
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -204,27 +198,22 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   useOutsideClick(
     () => {
       // Third party roots
-      let rootContainers = Array.from(ownerDocument?.querySelectorAll('body > *') ?? []).filter(
-        (container) => {
-          if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-          if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
-          if (state.panelRef.current && container.contains(state.panelRef.current)) return false
-          return true // Keep
-        }
-      )
+      let rootContainers = Array.from(
+        ownerDocument?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
+      ).filter((container) => {
+        if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
+        if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
+        if (state.panelRef.current && container.contains(state.panelRef.current)) return false
+        return true // Keep
+      })
 
       return [
         ...rootContainers,
         state.panelRef.current ?? internalDialogRef.current,
       ] as HTMLElement[]
     },
-    () => {
-      if (dialogState !== DialogStates.Open) return
-      if (hasNestedDialogs) return
-
-      close()
-    },
-    OutsideClickFeatures.IgnoreScrollbars
+    close,
+    enabled && !hasNestedDialogs
   )
 
   // Handle `Escape` to close
@@ -311,9 +300,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     'aria-modal': dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,
-    onClick(event: ReactMouseEvent) {
-      event.stopPropagation()
-    },
   }
 
   return (
@@ -492,10 +478,17 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     [dialogState]
   )
 
+  // Prevent the click events inside the Dialog.Panel from bubbling through the React Tree which
+  // could submit wrapping <form> elements even if we portalled the Dialog.
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    event.stopPropagation()
+  })
+
   let theirProps = props
   let ourProps = {
     ref: panelRef,
     id,
+    onClick: handleClick,
   }
 
   return render({

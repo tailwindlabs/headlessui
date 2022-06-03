@@ -258,16 +258,18 @@ let PopoverRoot = forwardRefWithAs(function Popover<
   )
 
   // Handle outside click
-  useOutsideClick([button, panel], (event, target) => {
-    if (popoverState !== PopoverStates.Open) return
+  useOutsideClick(
+    [button, panel],
+    (event, target) => {
+      dispatch({ type: ActionTypes.ClosePopover })
 
-    dispatch({ type: ActionTypes.ClosePopover })
-
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      button?.focus()
-    }
-  })
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        button?.focus()
+      }
+    },
+    popoverState === PopoverStates.Open
+  )
 
   let close = useEvent((focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
     dispatch({ type: ActionTypes.ClosePopover })

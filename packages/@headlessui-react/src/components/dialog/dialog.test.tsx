@@ -889,9 +889,11 @@ describe('Mouse interactions', () => {
         return (
           <div onClick={wrapperFn}>
             <Dialog open={isOpen} onClose={setIsOpen}>
-              Contents
-              <button onClick={() => setIsOpen(false)}>Inside</button>
-              <TabSentinel />
+              <Dialog.Panel>
+                Contents
+                <button onClick={() => setIsOpen(false)}>Inside</button>
+                <TabSentinel />
+              </Dialog.Panel>
             </Dialog>
           </div>
         )

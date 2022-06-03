@@ -1,82 +1,93 @@
-import { MutableRefObject, useRef } from 'react'
-import { microTask } from '../utils/micro-task'
-import { useEvent } from './use-event'
+import { MutableRefObject, useEffect, useRef } from 'react'
+import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { useWindowEvent } from './use-window-event'
 
 type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
 type ContainerInput = Container | ContainerCollection
 
-export enum Features {
-  None = 1 << 0,
-  IgnoreScrollbars = 1 << 1,
-}
-
 export function useOutsideClick(
   containers: ContainerInput | (() => ContainerInput),
   cb: (event: MouseEvent | PointerEvent, target: HTMLElement) => void,
-  features: Features = Features.None
+  enabled: boolean = true
 ) {
-  let called = useRef(false)
-  let handler = useEvent((event: MouseEvent | PointerEvent) => {
-    if (called.current) return
-    called.current = true
-    microTask(() => {
-      called.current = false
-    })
+  // TODO: remove this once the React bug has been fixed: https://github.com/facebook/react/issues/24657
+  let enabledRef = useRef(false)
+  useEffect(
+    process.env.NODE_ENV === 'test'
+      ? () => {
+          enabledRef.current = enabled
+        }
+      : () => {
+          requestAnimationFrame(() => {
+            enabledRef.current = enabled
+          })
+        },
+    [enabled]
+  )
 
-    let _containers = (function resolve(containers): ContainerCollection {
-      if (typeof containers === 'function') {
-        return resolve(containers())
+  useWindowEvent(
+    'click',
+    (event) => {
+      if (!enabledRef.current) return
+
+      // Check whether the event got prevented already. This can happen if you use the
+      // useOutsideClick hook in both a Dialog and a Menu and the inner Menu "cancels" the default
+      // behaviour so that only the Menu closes and not the Dialog (yet)
+      if (event.defaultPrevented) return
+
+      let _containers = (function resolve(containers): ContainerCollection {
+        if (typeof containers === 'function') {
+          return resolve(containers())
+        }
+
+        if (Array.isArray(containers)) {
+          return containers
+        }
+
+        if (containers instanceof Set) {
+          return containers
+        }
+
+        return [containers]
+      })(containers)
+
+      let target = event.target as HTMLElement
+
+      // Ignore if the target doesn't exist in the DOM anymore
+      if (!target.ownerDocument.documentElement.contains(target)) return
+
+      // Ignore if the target exists in one of the containers
+      for (let container of _containers) {
+        if (container === null) continue
+        let domNode = container instanceof HTMLElement ? container : container.current
+        if (domNode?.contains(target)) {
+          return
+        }
       }
 
-      if (Array.isArray(containers)) {
-        return containers
+      // This allows us to check whether the event was defaultPrevented when you are nesting this
+      // inside a `<Dialog />` for example.
+      if (
+        // This check alllows us to know whether or not we clicked on a "focusable" element like a
+        // button or an input. This is a backwards compatibility check so that you can open a <Menu
+        // /> and click on another <Menu /> which should close Menu A and open Menu B. We might
+        // revisit that so that you will require 2 clicks instead.
+        !isFocusableElement(target, FocusableMode.Loose) &&
+        // This could be improved, but the `Combobox.Button` adds tabIndex={-1} to make it
+        // unfocusable via the keyboard so that tabbing to the next item from the input doesn't
+        // first go to the button.
+        target.tabIndex !== -1
+      ) {
+        event.preventDefault()
       }
 
-      if (containers instanceof Set) {
-        return containers
-      }
-
-      return [containers]
-    })(containers)
-
-    let target = event.target as HTMLElement
-
-    // Ignore if the target doesn't exist in the DOM anymore
-    if (!target.ownerDocument.documentElement.contains(target)) return
-
-    // Ignore scrollbars:
-    // This is a bit hacky, and is only necessary because we are checking for `pointerdown` and
-    // `mousedown` events. They _are_ being called if you click on a scrollbar. The `click` event
-    // is not called when clicking on a scrollbar, but we can't use that otherwise it won't work
-    // on mobile devices where only pointer events are being used.
-    if ((features & Features.IgnoreScrollbars) === Features.IgnoreScrollbars) {
-      // TODO: We can calculate this dynamically~is. On macOS if you have the "Automatically based
-      // on mouse or trackpad" setting enabled, then the scrollbar will float on top and therefore
-      // you can't calculate its with by checking the clientWidth and scrollWidth of the element.
-      // Therefore we are currently hardcoding this to be 20px.
-      let scrollbarWidth = 20
-
-      let viewport = target.ownerDocument.documentElement
-      if (event.clientX > viewport.clientWidth - scrollbarWidth) return
-      if (event.clientX < scrollbarWidth) return
-      if (event.clientY > viewport.clientHeight - scrollbarWidth) return
-      if (event.clientY < scrollbarWidth) return
-    }
-
-    // Ignore if the target exists in one of the containers
-    for (let container of _containers) {
-      if (container === null) continue
-      let domNode = container instanceof HTMLElement ? container : container.current
-      if (domNode?.contains(target)) {
-        return
-      }
-    }
-
-    return cb(event, target)
-  })
-
-  useWindowEvent('pointerdown', handler)
-  useWindowEvent('mousedown', handler)
+      return cb(event, target)
+    },
+    // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
+    // don't "cancel" this outside click check. E.g.: A `Menu` inside a `DialogPanel` if the `Menu`
+    // is open, and you click outside of it in the `DialogPanel` the `Menu` should close. However,
+    // the `DialogPanel` has a `onClick(e) { e.stopPropagation() }` which would cancel this.
+    true
+  )
 }

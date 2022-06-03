@@ -85,7 +85,12 @@ export default function Home() {
         beforeLeave={() => console.log('[Transition] Before leave')}
         afterLeave={() => console.log('[Transition] After leave')}
       >
-        <Dialog onClose={setIsOpen}>
+        <Dialog
+          onClose={() => {
+            console.log('close')
+            setIsOpen(false)
+          }}
+        >
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
               <Transition.Child
@@ -102,7 +107,7 @@ export default function Home() {
                 beforeLeave={() => console.log('[Transition.Child] [Overlay] Before leave')}
                 afterLeave={() => console.log('[Transition.Child] [Overlay] After leave')}
               >
-                <Dialog.Overlay className="fixed inset-0 bg-gray-500 transition-opacity" />
+                <div className="fixed inset-0 bg-gray-500 transition-opacity" />
               </Transition.Child>
 
               <Transition.Child
@@ -124,7 +129,7 @@ export default function Home() {
                 >
                   &#8203;
                 </span>
-                <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
+                <Dialog.Panel className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
                   <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -254,7 +259,7 @@ export default function Home() {
                       Cancel
                     </button>
                   </div>
-                </div>
+                </Dialog.Panel>
               </Transition.Child>
             </div>
           </div>

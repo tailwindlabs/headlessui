@@ -147,7 +147,10 @@ function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, 
   useWatch(() => {
     if (enabled) return
 
-    focusElement(restoreElement.current)
+    if (ownerDocument?.activeElement === ownerDocument?.body) {
+      focusElement(restoreElement.current)
+    }
+
     restoreElement.current = null
   }, [enabled])
 

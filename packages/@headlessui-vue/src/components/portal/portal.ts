@@ -79,6 +79,7 @@ export let Portal = defineComponent({
 
       let ourProps = {
         ref: element,
+        'data-headlessui-portal': '',
       }
 
       return h(
