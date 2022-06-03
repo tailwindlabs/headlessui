@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Support `<slot>` children when using `as="template"` ([#1548](https://github.com/tailwindlabs/headlessui/pull/1548))
+- Improve outside click of `Dialog` component ([#1546](https://github.com/tailwindlabs/headlessui/pull/1546))
 
 ## [1.6.4] - 2022-05-29
 
