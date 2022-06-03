@@ -3092,6 +3092,39 @@ describe('Mouse interactions', () => {
     })
   )
 
+  // TODO: This test doesn't work — and it would be more suited for browser testing anyway
+  it.skip(
+    'should be possible to click outside of the menu into an iframe and which should close the menu',
+    suppressConsoleLogs(async () => {
+      renderTemplate(`
+        <div>
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <MenuItems>
+              <menuitem as="a">alice</menuitem>
+              <menuitem as="a">bob</menuitem>
+              <menuitem as="a">charlie</menuitem>
+            </MenuItems>
+          </Menu>
+          <iframe :srcdoc="'<button>Trigger</button>'" frameborder="0" width="300" height="300"></iframe>
+        </div>
+      `)
+
+      // Open menu
+      await click(getMenuButton())
+      assertMenu({ state: MenuState.Visible })
+
+      // Click the input element in the iframe
+      await click(document.querySelector('iframe')?.contentDocument!.querySelector('button')!)
+
+      // Should be closed now
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Verify the button is focused again
+      assertActiveElement(getMenuButton())
+    })
+  )
+
   it('should be possible to hover an item and make it active', async () => {
     renderTemplate(jsx`
       <Menu>
