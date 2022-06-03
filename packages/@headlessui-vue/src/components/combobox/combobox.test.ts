@@ -9,7 +9,7 @@ import {
   computed,
   PropType,
 } from 'vue'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import {
   Combobox,
   ComboboxInput,
@@ -89,21 +89,7 @@ function getDefaultComponents() {
   }
 }
 
-function renderTemplate(input: string | Partial<DefineComponent>) {
-  let defaultComponents = getDefaultComponents()
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate(getDefaultComponents())
 
 describe('safeguards', () => {
   it.each([

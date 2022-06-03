@@ -1,5 +1,5 @@
 import { defineComponent, ref, onMounted, ComponentOptionsWithoutProps } from 'vue'
-import { render, fireEvent } from '../../test-utils/vue-testing-library'
+import { render, fireEvent, createRenderTemplate } from '../../test-utils/vue-testing-library'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { TransitionRoot, TransitionChild } from './transition'
@@ -11,21 +11,7 @@ jest.mock('../../hooks/use-id')
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { TransitionRoot, TransitionChild }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({ TransitionRoot, TransitionChild })
 
 function getByTestId(id: string) {
   return document.querySelector(`[data-testid="${id}"]`)! as HTMLElement

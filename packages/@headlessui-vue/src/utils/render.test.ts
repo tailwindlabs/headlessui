@@ -1,5 +1,5 @@
 import { defineComponent, ComponentOptionsWithoutProps } from 'vue'
-import { render as testRender } from '../test-utils/vue-testing-library'
+import { createRenderTemplate, render as testRender } from '../test-utils/vue-testing-library'
 
 import { render } from './render'
 import { html } from '../test-utils/html'
@@ -13,21 +13,7 @@ let Dummy = defineComponent({
   },
 })
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { Dummy }
-
-  if (typeof input === 'string') {
-    return testRender(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return testRender(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({ Dummy })
 
 describe('Validation', () => {
   it('should error when using an as="template" with additional props', () => {
@@ -92,5 +78,45 @@ describe('Validation', () => {
     })
 
     expect(document.getElementById('result')).toHaveClass('abc')
+  })
+
+  it('should allow use of <slot> as children', () => {
+    renderTemplate({
+      template: html`
+        <ExampleOuter>
+          <div id="result">Some Content</div>
+        </ExampleOuter>
+      `,
+
+      components: {
+        ExampleOuter: defineComponent({
+          template: html`
+            <ExampleInner>
+              <slot />
+            </ExampleInner>
+          `,
+
+          components: {
+            ExampleInner: defineComponent({
+              components: { Dummy },
+
+              template: html`
+                <Dummy as="template" class="foo" data-test="123">
+                  <Dummy as="template" class="bar" data-test="345">
+                    <slot />
+                  </Dummy>
+                </Dummy>
+              `,
+            }),
+          },
+        }),
+      },
+    })
+
+    expect(document.getElementById('result')).toHaveClass('foo')
+    expect(document.getElementById('result')).toHaveClass('bar')
+
+    // TODO: Is this the expected behavior? Should it actually be `345`?
+    expect(document.getElementById('result')).toHaveAttribute('data-test', '123')
   })
 })

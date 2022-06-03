@@ -1,5 +1,5 @@
 import { defineComponent, nextTick, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
 import { Portal } from '../portal/portal'
@@ -28,8 +28,8 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = {
+function getDefaultComponents() {
+  return {
     Popover,
     PopoverGroup,
     PopoverButton,
@@ -37,19 +37,9 @@ function renderTemplate(input: string | ComponentOptionsWithoutProps) {
     PopoverOverlay,
     Portal,
   }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
 }
+
+const renderTemplate = createRenderTemplate(getDefaultComponents())
 
 describe('Safe guards', () => {
   it.each([

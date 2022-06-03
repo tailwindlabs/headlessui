@@ -1,5 +1,5 @@
 import { ComponentOptionsWithoutProps, defineComponent, nextTick, ref } from 'vue'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
@@ -20,21 +20,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { TabGroup, TabList, Tab, TabPanels, TabPanel }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({ TabGroup, TabList, Tab, TabPanels, TabPanel })
 
 describe('safeguards', () => {
   it.each([

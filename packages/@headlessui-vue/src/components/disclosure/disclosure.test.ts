@@ -1,5 +1,5 @@
 import { defineComponent, nextTick, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
@@ -19,21 +19,11 @@ jest.mock('../../hooks/use-id')
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { Disclosure, DisclosureButton, DisclosurePanel }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+})
 
 describe('Safe guards', () => {
   it.each([

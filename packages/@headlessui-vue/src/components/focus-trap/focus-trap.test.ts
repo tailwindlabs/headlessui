@@ -3,7 +3,7 @@ import { defineComponent, ref, nextTick, onMounted, ComponentOptionsWithoutProps
 import { FocusTrap } from './focus-trap'
 import { assertActiveElement, getByText } from '../../test-utils/accessibility-assertions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { click, press, shift, Keys } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
 
@@ -16,21 +16,9 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function renderTemplate(input: string | ComponentOptionsWithoutProps) {
-  let defaultComponents = { FocusTrap }
-
-  if (typeof input === 'string') {
-    return render(defineComponent({ template: input, components: defaultComponents }))
-  }
-
-  return render(
-    defineComponent(
-      Object.assign({}, input, {
-        components: { ...defaultComponents, ...input.components },
-      }) as Parameters<typeof defineComponent>[0]
-    )
-  )
-}
+const renderTemplate = createRenderTemplate({
+  FocusTrap,
+})
 
 it('should focus the first focusable element inside the FocusTrap', async () => {
   renderTemplate(
