@@ -298,16 +298,18 @@ export let Listbox = defineComponent({
     }
 
     // Handle outside click
-    useOutsideClick([buttonRef, optionsRef], (event, target) => {
-      if (listboxState.value !== ListboxStates.Open) return
+    useOutsideClick(
+      [buttonRef, optionsRef],
+      (event, target) => {
+        api.closeListbox()
 
-      api.closeListbox()
-
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        dom(buttonRef)?.focus()
-      }
-    })
+        if (!isFocusableElement(target, FocusableMode.Loose)) {
+          event.preventDefault()
+          dom(buttonRef)?.focus()
+        }
+      },
+      computed(() => listboxState.value === ListboxStates.Open)
+    )
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ListboxContext, api)

@@ -201,16 +201,18 @@ export let Menu = defineComponent({
     }
 
     // Handle outside click
-    useOutsideClick([buttonRef, itemsRef], (event, target) => {
-      if (menuState.value !== MenuStates.Open) return
+    useOutsideClick(
+      [buttonRef, itemsRef],
+      (event, target) => {
+        api.closeMenu()
 
-      api.closeMenu()
-
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        dom(buttonRef)?.focus()
-      }
-    })
+        if (!isFocusableElement(target, FocusableMode.Loose)) {
+          event.preventDefault()
+          dom(buttonRef)?.focus()
+        }
+      },
+      computed(() => menuState.value === MenuStates.Open)
+    )
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(MenuContext, api)

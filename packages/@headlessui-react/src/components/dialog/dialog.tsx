@@ -212,13 +212,8 @@ let DialogRoot = forwardRefWithAs(function Dialog<
         state.panelRef.current ?? internalDialogRef.current,
       ] as HTMLElement[]
     },
-    () => {
-      if (dialogState !== DialogStates.Open) return
-      if (hasNestedDialogs) return
-
-      close()
-    },
-    enabled
+    close,
+    enabled && !hasNestedDialogs
   )
 
   // Handle `Escape` to close

@@ -396,10 +396,11 @@ export let Combobox = defineComponent({
     }
 
     // Handle outside click
-    useOutsideClick([inputRef, buttonRef, optionsRef], () => {
-      if (comboboxState.value !== ComboboxStates.Open) return
-      api.closeCombobox()
-    })
+    useOutsideClick(
+      [inputRef, buttonRef, optionsRef],
+      () => api.closeCombobox(),
+      computed(() => comboboxState.value === ComboboxStates.Open)
+    )
 
     watch([api.value, api.inputRef], () => api.syncInputValue(), {
       immediate: true,

@@ -191,12 +191,10 @@ export let Dialog = defineComponent({
       },
 
       (_event, target) => {
-        if (dialogState.value !== DialogStates.Open) return
-        if (hasNestedDialogs.value) return
-
         api.close()
         nextTick(() => target?.focus())
-      }
+      },
+      computed(() => dialogState.value === DialogStates.Open && !hasNestedDialogs.value)
     )
 
     // Handle `Escape` to close
