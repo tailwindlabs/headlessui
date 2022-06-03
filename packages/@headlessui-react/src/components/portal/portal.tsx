@@ -95,6 +95,7 @@ let PortalRoot = forwardRefWithAs(function Portal<
     // Element already exists in target, always calling target.appendChild(element) will cause a
     // brief unmount/remount.
     if (!target.contains(element)) {
+      element.setAttribute('data-headlessui-portal', '')
       target.appendChild(element)
     }
 

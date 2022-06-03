@@ -179,7 +179,7 @@ export let Dialog = defineComponent({
       () => {
         // Third party roots
         let rootContainers = Array.from(
-          ownerDocument.value?.querySelectorAll('body > *') ?? []
+          ownerDocument.value?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
         ).filter((container) => {
           if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
           if (container.contains(dom(mainTreeNode))) return false // Skip if it is the main app

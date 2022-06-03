@@ -198,14 +198,14 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   useOutsideClick(
     () => {
       // Third party roots
-      let rootContainers = Array.from(ownerDocument?.querySelectorAll('body > *') ?? []).filter(
-        (container) => {
-          if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-          if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
-          if (state.panelRef.current && container.contains(state.panelRef.current)) return false
-          return true // Keep
-        }
-      )
+      let rootContainers = Array.from(
+        ownerDocument?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
+      ).filter((container) => {
+        if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
+        if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
+        if (state.panelRef.current && container.contains(state.panelRef.current)) return false
+        return true // Keep
+      })
 
       return [
         ...rootContainers,

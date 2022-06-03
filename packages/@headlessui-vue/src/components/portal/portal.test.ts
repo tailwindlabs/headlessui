@@ -389,6 +389,6 @@ it('should be possible to force the Portal into a specific element using PortalG
   await new Promise<void>(nextTick)
 
   expect(document.body.innerHTML).toMatchInlineSnapshot(
-    `"<div><div><div data-v-app=\\"\\"><main><aside id=\\"group-1\\">A<div>Next to A</div></aside><section id=\\"group-2\\"><span>B</span></section><!--teleport start--><!--teleport end--></main></div></div></div>"`
+    `"<div><div><div data-v-app=\\"\\"><main><aside id=\\"group-1\\">A<div data-headlessui-portal=\\"\\">Next to A</div></aside><section id=\\"group-2\\"><span>B</span></section><!--teleport start--><!--teleport end--></main></div></div></div>"`
   )
 })
