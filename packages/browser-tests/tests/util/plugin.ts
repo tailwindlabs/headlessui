@@ -3,6 +3,7 @@ import type * as react from '@playwright/experimental-ct-react'
 import type * as pt from '@playwright/test'
 import { pick } from './helpers'
 import { prettyPrint } from './printing'
+import { Animations } from './animations/animations'
 
 const plugin: typeof vue & typeof react = pick({
   vue: () => require('@playwright/experimental-ct-vue'),
@@ -26,6 +27,7 @@ export type Locator = import('@playwright/test').Locator & Helpers
 type Fixtures<PropsType> = {
   render: (props?: PropsType) => Promise<Locator>
   debug: () => Promise<void>
+  animations: Animations
 }
 
 function wrapLocator(locator: pt.Locator, helpers: Partial<Helpers> = {}): Locator {
@@ -75,6 +77,10 @@ export function createTest<PropsType>(createComponent: (props?: PropsType) => vo
       await use(async () => {
         await prettyPrint(page.locator('html'))
       })
+    },
+
+    async animations({ page }, use) {
+      await use(new Animations(page))
     },
   })
 
