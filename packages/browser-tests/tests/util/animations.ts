@@ -1,9 +1,26 @@
 import { type Page, type ElementHandle, type JSHandle } from '@playwright/test'
 
+type AnimationState = 'created' | 'started' | 'ended' | 'cancelled'
+
 export interface Animation {
+  state: AnimationState
+  target: string | null
+  properties: string[]
+  elapsedTime: number
+
+  events: AnimationEvent[]
+}
+
+export interface AnimationEvent {
+  time: bigint
+  state: AnimationState
+  target: string | null
+}
+
+export interface AnimationRecord {
   id: number
-  state: 'created' | 'started' | 'ended' | 'cancelled'
-  target: ElementHandle
+  state: AnimationState
+  target: string | null
   properties: string[]
   elapsedTime: number
 }
@@ -13,33 +30,43 @@ export interface WaitOptions {
 }
 
 export class Animations extends Array<Animation> {
-  constructor(private page: Page) {
+  page: Page
+  events: AnimationEvent[]
+
+  constructor(page: Page) {
     super()
+
+    this.events = []
+
+    // Just so it doesn't show in console.log
+    Object.defineProperty(this, 'page', { value: page, enumerable: false })
   }
 
   async startRecording() {
-    await this.page.exposeBinding(
-      '__update__',
-      async (_, handle: JSHandle<Animation>) => {
-        let payload = await handle.jsonValue()
-        payload.target = (await handle.getProperty('target')).asElement()
-        await handle.dispose()
+    await this.page.exposeBinding('__update__', (_, record: AnimationRecord) => {
+      let animation = (this[record.id] ??= {
+        state: 'created',
+        target: null,
+        properties: [],
+        elapsedTime: 0,
 
-        let animation = (this[payload.id] ??= {
-          id: payload.id,
-          state: 'created',
-          target: null,
-          properties: [],
-          elapsedTime: 0,
-        })
+        events: [],
+      })
 
-        animation.state = payload.state
-        animation.target = payload.target
-        animation.elapsedTime = payload.elapsedTime
-        animation.properties = payload.properties
-      },
-      { handle: true }
-    )
+      const event: AnimationEvent = {
+        time: process.hrtime.bigint(),
+        state: record.state,
+        target: record.target,
+      }
+
+      this.events.push(event)
+      animation.events.push(event)
+
+      animation.state = record.state
+      animation.target = animation.target ?? record.target
+      animation.properties = record.properties
+      animation.elapsedTime = record.elapsedTime
+    })
 
     await this.page.evaluate(() => {
       const map = new WeakMap<EventTarget, Record<string, number>>()
@@ -71,7 +98,7 @@ export class Animations extends Array<Animation> {
         window.__update__({
           id: getAnimationId(event),
           state,
-          target: event.target as any,
+          target: (event.target as HTMLElement)?.dataset.testId ?? null,
           properties: [event.propertyName],
           elapsedTime: event.elapsedTime * 1000,
         })
@@ -128,6 +155,6 @@ export class Animations extends Array<Animation> {
 
 declare global {
   interface Window {
-    __update__: (payload: Partial<Animation>) => void
+    __update__: (payload: AnimationRecord) => void
   }
 }
