@@ -1,6 +1,5 @@
-import { type Page, type ElementHandle, type JSHandle } from '@playwright/test'
-
-type AnimationState = 'created' | 'started' | 'ended' | 'cancelled'
+import { type Page } from '@playwright/test'
+import { recordAnimations, AnimationState, AnimationRecord } from './scripts/recordAnimations'
 
 export interface Animation {
   state: AnimationState
@@ -15,14 +14,6 @@ export interface AnimationEvent {
   time: bigint
   state: AnimationState
   target: string | null
-}
-
-export interface AnimationRecord {
-  id: number
-  state: AnimationState
-  target: string | null
-  properties: string[]
-  elapsedTime: number
 }
 
 export interface WaitOptions {
@@ -68,49 +59,7 @@ export class Animations extends Array<Animation> {
       animation.elapsedTime = record.elapsedTime
     })
 
-    await this.page.evaluate(() => {
-      const map = new WeakMap<EventTarget, Record<string, number>>()
-      const endedIds = new Set<number>()
-
-      let latestAnimationId = 0
-
-      let allocate = () => latestAnimationId++
-
-      function getAnimationId(event: TransitionEvent) {
-        let records = map.get(event.target) ?? {}
-        map.set(event.target, records)
-
-        let key = `${event.propertyName}::${event.pseudoElement}`
-        records[key] ??= allocate()
-
-        let hasEnded = event.type === 'transitionend' || event.type === 'transitioncancel'
-
-        if (endedIds.has(records[key])) {
-          records[key] = allocate()
-        } else if (hasEnded) {
-          endedIds.add(records[key])
-        }
-
-        return records[key]
-      }
-
-      function update(event: TransitionEvent, state: Animation['state']) {
-        window.__update__({
-          id: getAnimationId(event),
-          state,
-          target: (event.target as HTMLElement)?.dataset.testId ?? null,
-          properties: [event.propertyName],
-          elapsedTime: event.elapsedTime * 1000,
-        })
-      }
-
-      document.addEventListener('transitionrun', (e) => update(e, 'created'), { capture: true })
-      document.addEventListener('transitionstart', (e) => update(e, 'started'), { capture: true })
-      document.addEventListener('transitioncancel', (e) => update(e, 'cancelled'), {
-        capture: true,
-      })
-      document.addEventListener('transitionend', (e) => update(e, 'ended'), { capture: true })
-    })
+    await this.page.evaluate(recordAnimations)
   }
 
   public async wait({ delayInMs = 10 }: WaitOptions = {}): Promise<void> {
@@ -150,11 +99,5 @@ export class Animations extends Array<Animation> {
 
   get anyRunning() {
     return this.runningAnimations.length > 0
-  }
-}
-
-declare global {
-  interface Window {
-    __update__: (payload: AnimationRecord) => void
   }
 }
