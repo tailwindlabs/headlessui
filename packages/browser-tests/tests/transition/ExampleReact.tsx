@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Transition } from '@headlessui/react'
 
-export default function Example({ enterDuration = 0, leaveDuration = 0 }) {
+export default function Example({ enterDuration = 0, leaveDuration = 0, withChildren = false }) {
   let [show, setShow] = useState(false)
 
   return (
@@ -33,8 +33,39 @@ export default function Example({ enterDuration = 0, leaveDuration = 0 }) {
         leave="leave"
         leaveFrom="visible"
         leaveTo="invisible"
+        data-test-id="root"
       >
-        <span>Hello!</span>
+        <div>
+          <span>Hello 0</span>
+
+          {withChildren && (
+            <>
+              <Transition.Child
+                enter="enter"
+                enterFrom="invisible"
+                enterTo="visible"
+                leave="leave"
+                leaveFrom="visible"
+                leaveTo="invisible"
+                data-test-id="child-1"
+              >
+                <span>Hello 1</span>
+              </Transition.Child>
+
+              <Transition.Child
+                enter="enter"
+                enterFrom="invisible"
+                enterTo="visible"
+                leave="leave"
+                leaveFrom="visible"
+                leaveTo="invisible"
+                data-test-id="child-2"
+              >
+                <span>Hello 2</span>
+              </Transition.Child>
+            </>
+          )}
+        </div>
       </Transition>
     </div>
   )
