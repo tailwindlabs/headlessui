@@ -19,12 +19,6 @@ const test = createTest((props?: any) => {
   })
 })
 
-test.afterEach(async ({ debug }, info) => {
-  if (info.status === 'failed') {
-    await debug()
-  }
-})
-
 test.describe('Keyboard interactions', () => {
   test.describe('`Enter` key', () => {
     test('should be possible to open the Disclosure with Enter', async ({ render, debug }) => {

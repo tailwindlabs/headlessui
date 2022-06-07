@@ -7,53 +7,10 @@ import {
   printText,
 } from 'pretty-format/build/plugins/lib/markup'
 import prettyFormat from 'pretty-format'
-import { ElementHandle, Locator } from '@playwright/test'
+import { Locator } from '@playwright/test'
 import type { Config, NewPlugin, Refs } from 'pretty-format'
 import type { Printer } from 'pretty-format/build/types'
-
-interface TreeNode {
-  type: any
-  tag: string | undefined
-  attributes: Record<string, string>
-  children: TreeNode[]
-  value: string | null
-}
-
-type Element = ElementHandle | ElementHandle[] | Locator
-
-async function toHandles(el: Element): Promise<ElementHandle[]> {
-  if ('elementHandles' in el) {
-    return await el.elementHandles()
-  }
-
-  return Array.isArray(el) ? el : [el]
-}
-
-async function toTree(root: Element): Promise<TreeNode[]> {
-  const handles = await toHandles(root)
-
-  return Promise.all(
-    handles.map((handle) => {
-      return handle.evaluate((el) => {
-        function toNode(node: Node): TreeNode {
-          let el = node.nodeType === Node.ELEMENT_NODE ? (node as unknown as HTMLElement) : null
-
-          return {
-            type: node.nodeType,
-            tag: el?.localName,
-            attributes: el
-              ? Object.fromEntries(Array.from(el.attributes).map((attr) => [attr.name, attr.value]))
-              : {},
-            children: Array.from(node.childNodes).map((child) => toNode(child)),
-            value: node.nodeValue?.replace(/^\s+|\s$/g, ' '),
-          }
-        }
-
-        return toNode(el)
-      })
-    })
-  )
-}
+import { Element, Snapshot, takeSnapshot, TreeNode } from './snapshots'
 
 function* dropWhile<T>(arr: Iterable<T>, shouldDrop: (val: T) => boolean): Iterable<T> {
   let predicateHasFailed = false
@@ -120,12 +77,12 @@ export class PlaywrightPlugin implements NewPlugin {
   }
 }
 
-export async function prettyPrint(el: Element) {
-  const trees = await toTree(el)
+export async function prettyPrint(el: Element | Snapshot) {
+  const tree = 'roots' in el ? el : await takeSnapshot(el)
 
-  for (const tree of trees) {
+  for (const root of tree.roots) {
     console.log(
-      prettyFormat(tree, {
+      prettyFormat(root, {
         plugins: [new PlaywrightPlugin()],
         highlight: true,
       })

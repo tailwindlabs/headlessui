@@ -45,7 +45,7 @@ function wrapLocator(locator: pt.Locator, helpers: Partial<Helpers> = {}): Locat
 }
 
 export function createTest<PropsType>(createComponent: (props?: PropsType) => void) {
-  return plugin.test.extend<Fixtures<PropsType>>({
+  const test = plugin.test.extend<Fixtures<PropsType>>({
     async render({ mount, page }, use) {
       await use(async (props) => {
         const rerender = (props) => mount(createComponent(props))
@@ -77,6 +77,14 @@ export function createTest<PropsType>(createComponent: (props?: PropsType) => vo
       })
     },
   })
+
+  test.afterEach(async ({ debug }, info) => {
+    if (info.status === 'failed') {
+      await debug()
+    }
+  })
+
+  return test
 }
 
 export function currentComponent(): Locator {
