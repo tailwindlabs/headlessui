@@ -1,4 +1,4 @@
-import { PlaywrightTestConfig, devices, expect } from './tests/util/plugin'
+import { PlaywrightTestConfig, devices, expect, vitePlugins } from './tests/util/plugin'
 import * as matchers from './matchers'
 
 expect.extend(matchers)
@@ -29,6 +29,10 @@ const config: PlaywrightTestConfig = {
 
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
+
+    ctViteConfig: {
+      plugins: vitePlugins,
+    },
   },
 
   /* Configure projects for major browsers */

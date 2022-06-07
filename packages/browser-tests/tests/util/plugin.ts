@@ -5,14 +5,37 @@ import { pick } from './helpers'
 import { prettyPrint } from './printing'
 import { Animations } from './animations'
 
-const plugin: typeof vue & typeof react = pick({
-  vue: () => require('@playwright/experimental-ct-vue'),
-  react: () => require('@playwright/experimental-ct-react'),
+type RawPlugin = typeof vue & typeof react
+type Plugin = RawPlugin & { vitePlugins: any[] }
+
+const plugin: Plugin = pick({
+  vue: () =>
+    Object.assign(require('@playwright/experimental-ct-vue'), {
+      vitePlugins: [
+        require('@vitejs/plugin-vue')({
+          //
+        }),
+
+        require('@vitejs/plugin-vue-jsx')({
+          //
+        }),
+      ],
+    }),
+
+  react: () =>
+    Object.assign(require('@playwright/experimental-ct-react'), {
+      vitePlugins: [
+        require('@vitejs/plugin-react')({
+          //
+        }),
+      ],
+    }),
 })
 
 export let test = plugin.test
 export let expect = plugin.expect
 export let devices = plugin.devices
+export let vitePlugins = plugin.vitePlugins
 export type PlaywrightTestConfig = vue.PlaywrightTestConfig & react.PlaywrightTestConfig
 export * from './helpers'
 

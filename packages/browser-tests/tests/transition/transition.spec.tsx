@@ -1,12 +1,12 @@
 import { createTest, pick, expect } from '../util/plugin'
 
-// import ExampleVue from './ExampleVue'
+import ExampleVue from './ExampleVue'
 import ExampleReact from './ExampleReact'
 
 const test = createTest(
   (props?: { enterDuration?: number; leaveDuration?: number; withChildren?: boolean }) => {
     return pick({
-      // vue: () => <ExampleVue {...props} />,
+      vue: () => <ExampleVue {...props} />,
       react: () => <ExampleReact {...props} />,
     })
   }
