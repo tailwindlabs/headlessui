@@ -1,4 +1,3 @@
-import { playTimeline } from '../util/animations/animation'
 import { createTest, pick, expect } from '../util/plugin'
 
 // import ExampleVue from './ExampleVue'

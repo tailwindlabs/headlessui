@@ -3,7 +3,7 @@ import type * as react from '@playwright/experimental-ct-react'
 import type * as pt from '@playwright/test'
 import { pick } from './helpers'
 import { prettyPrint } from './printing'
-import { Animations } from './animations/animations'
+import { Animations } from './animations'
 
 const plugin: typeof vue & typeof react = pick({
   vue: () => require('@playwright/experimental-ct-vue'),
