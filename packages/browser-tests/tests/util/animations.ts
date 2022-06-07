@@ -1,7 +1,7 @@
 import { type Page, type ElementHandle, type JSHandle } from '@playwright/test'
 
 export interface Animation {
-  id: string
+  id: number
   state: 'created' | 'started' | 'ended' | 'cancelled'
   target: ElementHandle
   properties: string[]
@@ -12,56 +12,54 @@ export interface WaitOptions {
   delayInMs?: number
 }
 
-export class Animations {
-  private animations = new Map<string, Animation>()
-
-  constructor(private page: Page) {}
+export class Animations extends Array<Animation> {
+  constructor(private page: Page) {
+    super()
+  }
 
   async startRecording() {
     await this.page.exposeBinding(
       '__update__',
-      async (_, handle: JSHandle<Partial<Animation>>) => {
+      async (_, handle: JSHandle<Animation>) => {
         let payload = await handle.jsonValue()
         payload.target = (await handle.getProperty('target')).asElement()
         await handle.dispose()
 
-        let id = payload.id
-
-        let animation = this.animations.get(id) ?? {
-          id,
+        let animation = (this[payload.id] ??= {
+          id: payload.id,
           state: 'created',
           target: null,
           properties: [],
           elapsedTime: 0,
-        }
+        })
 
-        this.animations.set(id, animation)
-
-        animation.state = payload.state ?? animation.state
-        animation.target = payload.target ?? animation.target
-        animation.properties = payload.properties ?? animation.properties
-        animation.elapsedTime = payload.elapsedTime ?? animation.elapsedTime
+        animation.state = payload.state
+        animation.target = payload.target
+        animation.elapsedTime = payload.elapsedTime
+        animation.properties = payload.properties
       },
       { handle: true }
     )
 
     await this.page.evaluate(() => {
-      const map = new WeakMap<EventTarget, Record<string, string>>()
-      const endedIds = new Set<string>()
+      const map = new WeakMap<EventTarget, Record<string, number>>()
+      const endedIds = new Set<number>()
 
       let latestAnimationId = 0
+
+      let allocate = () => latestAnimationId++
 
       function getAnimationId(event: TransitionEvent) {
         let records = map.get(event.target) ?? {}
         map.set(event.target, records)
 
+        let key = `${event.propertyName}::${event.pseudoElement}`
+        records[key] ??= allocate()
+
         let hasEnded = event.type === 'transitionend' || event.type === 'transitioncancel'
 
-        let key = `${event.propertyName}::${event.pseudoElement}`
-        records[key] ??= `${++latestAnimationId}`
-
         if (endedIds.has(records[key])) {
-          records[key] = `${++latestAnimationId}`
+          records[key] = allocate()
         } else if (hasEnded) {
           endedIds.add(records[key])
         }
@@ -75,7 +73,7 @@ export class Animations {
           state,
           target: event.target as any,
           properties: [event.propertyName],
-          elapsedTime: event.elapsedTime,
+          elapsedTime: event.elapsedTime * 1000,
         })
       }
 
@@ -111,14 +109,6 @@ export class Animations {
     }
   }
 
-  [Symbol.iterator]() {
-    return this.animations.values()
-  }
-
-  public at(index: number) {
-    return Array.from(this.animations.values())[index]
-  }
-
   private areRunning(animations: Animation[]) {
     return animations.some((animation) => this.isRunning(animation))
   }
@@ -128,15 +118,11 @@ export class Animations {
   }
 
   get runningAnimations() {
-    return Array.from(this.animations.values()).filter((animation) => this.isRunning(animation))
+    return this.filter((animation) => this.isRunning(animation))
   }
 
   get anyRunning() {
     return this.runningAnimations.length > 0
-  }
-
-  get length() {
-    return Array.from(this.animations.values()).length
   }
 }
 

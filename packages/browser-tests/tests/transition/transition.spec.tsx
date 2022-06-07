@@ -33,11 +33,11 @@ test('should transition in completely (duration defined in milliseconds)', async
   await animations.wait()
 
   expect(animations.length).toEqual(2)
-  expect(animations.at(0).state).toEqual('ended')
-  expect(animations.at(0).elapsedTime).toEqual(0.1)
-  expect(animations.at(0).properties).toEqual(['opacity'])
+  expect(animations[0].state).toEqual('ended')
+  expect(animations[0].elapsedTime).toEqual(100)
+  expect(animations[0].properties).toEqual(['opacity'])
 
-  expect(animations.at(1).state).toEqual('ended')
-  expect(animations.at(1).elapsedTime).toEqual(0.1)
-  expect(animations.at(1).properties).toEqual(['opacity'])
+  expect(animations[1].state).toEqual('ended')
+  expect(animations[1].elapsedTime).toEqual(200)
+  expect(animations[1].properties).toEqual(['opacity'])
 })
