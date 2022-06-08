@@ -37,6 +37,8 @@ export function __record_animations__() {
     }
 
     // We must wait one frame to be able to see the updated DOM
+    // This is done here instead of on the playwright side to
+    // avoid any potential issues with slowness since it'll be a mostly sync operation
     requestAnimationFrame(() =>
       window.__record_animation_record__(
         Object.assign(record, {

@@ -39,43 +39,47 @@ export class Animations extends Array<Animation> {
   }
 
   async startRecording() {
-    this.lastSnapshot = await Snapshot.take(this.page.locator('html'), 'mutation')
-
-    await this.page.exposeBinding(
-      '__record_animation_record__',
-      async ({ page }, record: AnimationRecord) => {
-        let animation = (this[record.id] ??= {
-          state: 'created',
-          target: null,
-          properties: [],
-          elapsedTime: 0,
-
-          events: [],
-        })
-
-        const snapshot = Snapshot.fromTree(record.tree, 'animation')
-
-        const event: AnimationEvent = {
-          time: process.hrtime.bigint(),
-          state: record.state,
-          target: record.target,
-          snapshot: snapshot,
-          snapshotDiff: snapshot.diffWithPrevious(this.lastSnapshot),
-        }
-
-        this.lastSnapshot = snapshot
-
-        this.events.push(event)
-        animation.events.push(event)
-
-        animation.state = record.state
-        animation.target = animation.target ?? record.target
-        animation.properties = record.properties
-        animation.elapsedTime = record.elapsedTime
-      }
+    // Setup handler that takes in animation "records" and creates / updates animations and events
+    await this.page.exposeBinding('__record_animation_record__', (_, record: AnimationRecord) =>
+      this.handleRecord(record)
     )
 
+    // Take an initial snapshot to compare against
+    this.lastSnapshot = await Snapshot.take(this.page.locator('html'), 'mutation')
+
+    // Start recording animations
     await this.page.evaluate(() => window.__record_animations__())
+  }
+
+  private handleRecord(record: AnimationRecord) {
+    let animation = (this[record.id] ??= {
+      state: 'created',
+      target: null,
+      properties: [],
+      elapsedTime: 0,
+
+      events: [],
+    })
+
+    const snapshot = Snapshot.fromTree(record.tree, 'animation')
+
+    const event: AnimationEvent = {
+      time: process.hrtime.bigint(),
+      state: record.state,
+      target: record.target,
+      snapshot: snapshot,
+      snapshotDiff: snapshot.diffWithPrevious(this.lastSnapshot),
+    }
+
+    this.lastSnapshot = snapshot
+
+    this.events.push(event)
+    animation.events.push(event)
+
+    animation.state = record.state
+    animation.target = animation.target ?? record.target
+    animation.properties = record.properties
+    animation.elapsedTime = record.elapsedTime
   }
 
   public async wait({ delayInMs = 10 }: WaitOptions = {}): Promise<void> {
