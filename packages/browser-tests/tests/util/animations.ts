@@ -1,4 +1,5 @@
 import { type Page } from '@playwright/test'
+import { renderTimeline } from './animation-timeline'
 import { AnimationState, AnimationRecord } from './scripts/recordAnimations'
 import { Snapshot } from './snapshots'
 
@@ -106,24 +107,7 @@ export class Animations extends Array<Animation> {
   }
 
   get timeline(): string {
-    return this.events
-      .filter((event) => event.snapshotDiff !== '')
-      .map((event, idx, events) => this.renderTimelineEvent(event, events[idx - 1], idx))
-      .join('\n\n')
-  }
-
-  private renderTimelineEvent(
-    event: AnimationEvent,
-    prevEvent: AnimationEvent | undefined,
-    idx: number
-  ): string {
-    let elapsed = prevEvent && prevEvent.state !== 'ended' ? event.time - prevEvent.time : 0n
-    let elapsedMs = Number(elapsed / BigInt(1e6))
-    let elapsedStr = elapsedMs === 0 ? '' : `+${elapsedMs}ms`
-
-    return `Event ${idx + 1} (${event.target} / ${event.state}): ${elapsedStr}\n${
-      event.snapshotDiff
-    }`
+    return renderTimeline(this.events)
   }
 
   private areRunning(animations: Animation[]) {
