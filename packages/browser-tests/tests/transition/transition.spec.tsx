@@ -12,7 +12,7 @@ const test = createTest(
   }
 )
 
-test('root: should transition in and out completely', async ({ render, page, animations }) => {
+test.only('root: should transition in and out completely', async ({ render, page, animations }) => {
   const showButton = page.locator('#show')
   const hideButton = page.locator('#hide')
 
@@ -30,6 +30,8 @@ test('root: should transition in and out completely', async ({ render, page, ani
   await animations.wait()
 
   expect(animations.length).toEqual(2)
+
+  console.log(animations.timeline)
 
   expect(animations[0].target).toEqual('root')
   expect(animations[0].state).toEqual('ended')
@@ -142,6 +144,14 @@ test('children: should cancel transitions', async ({ render, page, animations })
   await animations.wait()
 
   expect(animations.length).toEqual(6)
+
+  // child-1 [opacity]: created (1) -> started (4) -> ended (7)
+  // child-2 [opacity]: created (2) -> started (5) -> ended (8)
+  //    root [opacity]: created (3) -> started (6) -> ended (9)
+
+  // created [opacity]: child-1, child-2, root
+  // started [opacity]: child-1, child-2, root
+  //   ended [opacity]: child-1, child-2, root
 
   expect(animations[0].target).toEqual('child-1')
   expect(animations[0].state).toEqual('cancelled')

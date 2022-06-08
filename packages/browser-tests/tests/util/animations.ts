@@ -1,5 +1,6 @@
 import { type Page } from '@playwright/test'
-import { recordAnimations, AnimationState, AnimationRecord } from './scripts/recordAnimations'
+import { AnimationState, AnimationRecord } from './scripts/recordAnimations'
+import { Snapshot } from './snapshots'
 
 export interface Animation {
   state: AnimationState
@@ -14,6 +15,8 @@ export interface AnimationEvent {
   time: bigint
   state: AnimationState
   target: string | null
+  snapshot: Snapshot
+  snapshotDiff: string
 }
 
 export interface WaitOptions {
@@ -23,43 +26,56 @@ export interface WaitOptions {
 export class Animations extends Array<Animation> {
   page: Page
   events: AnimationEvent[]
+  lastSnapshot: Snapshot | undefined
 
   constructor(page: Page) {
     super()
 
     this.events = []
 
-    // Just so it doesn't show in console.log
+    // Just so these don't show in console.log
     Object.defineProperty(this, 'page', { value: page, enumerable: false })
+    Object.defineProperty(this, 'lastSnapshot', { value: undefined, enumerable: false })
   }
 
   async startRecording() {
-    await this.page.exposeBinding('__update__', (_, record: AnimationRecord) => {
-      let animation = (this[record.id] ??= {
-        state: 'created',
-        target: null,
-        properties: [],
-        elapsedTime: 0,
+    this.lastSnapshot = await Snapshot.take(this.page.locator('html'), 'mutation')
 
-        events: [],
-      })
+    await this.page.exposeBinding(
+      '__record_animation_record__',
+      async ({ page }, record: AnimationRecord) => {
+        let animation = (this[record.id] ??= {
+          state: 'created',
+          target: null,
+          properties: [],
+          elapsedTime: 0,
 
-      const event: AnimationEvent = {
-        time: process.hrtime.bigint(),
-        state: record.state,
-        target: record.target,
+          events: [],
+        })
+
+        const snapshot = Snapshot.fromTree(record.tree, 'animation')
+
+        const event: AnimationEvent = {
+          time: process.hrtime.bigint(),
+          state: record.state,
+          target: record.target,
+          snapshot: snapshot,
+          snapshotDiff: snapshot.diffWithPrevious(this.lastSnapshot),
+        }
+
+        this.lastSnapshot = snapshot
+
+        this.events.push(event)
+        animation.events.push(event)
+
+        animation.state = record.state
+        animation.target = animation.target ?? record.target
+        animation.properties = record.properties
+        animation.elapsedTime = record.elapsedTime
       }
+    )
 
-      this.events.push(event)
-      animation.events.push(event)
-
-      animation.state = record.state
-      animation.target = animation.target ?? record.target
-      animation.properties = record.properties
-      animation.elapsedTime = record.elapsedTime
-    })
-
-    await this.page.evaluate(recordAnimations)
+    await this.page.evaluate(() => window.__record_animations__())
   }
 
   public async wait({ delayInMs = 10 }: WaitOptions = {}): Promise<void> {
@@ -83,6 +99,27 @@ export class Animations extends Array<Animation> {
     while (areRunning()) {
       await new Promise((resolve) => setTimeout(resolve, delayInMs))
     }
+  }
+
+  get timeline(): string {
+    return this.events
+      .filter((event) => event.snapshotDiff !== '')
+      .map((event, idx, events) => this.renderTimelineEvent(event, events[idx - 1], idx))
+      .join('\n\n')
+  }
+
+  private renderTimelineEvent(
+    event: AnimationEvent,
+    prevEvent: AnimationEvent | undefined,
+    idx: number
+  ): string {
+    let elapsed = prevEvent && prevEvent.state !== 'ended' ? event.time - prevEvent.time : 0n
+    let elapsedMs = Number(elapsed / BigInt(1e6))
+    let elapsedStr = elapsedMs === 0 ? '' : `+${elapsedMs}ms`
+
+    return `Event ${idx + 1} (${event.target} / ${event.state}): ${elapsedStr}\n${
+      event.snapshotDiff
+    }`
   }
 
   private areRunning(animations: Animation[]) {

@@ -2,8 +2,9 @@ import type * as vue from '@playwright/experimental-ct-vue'
 import type * as react from '@playwright/experimental-ct-react'
 import type * as pt from '@playwright/test'
 import { pick } from './helpers'
-import { prettyPrint } from './printing'
+import { Snapshot } from './snapshots'
 import { Animations } from './animations'
+import { addGlobalScripts } from './scripts'
 
 type RawPlugin = typeof vue & typeof react
 type Plugin = RawPlugin & { vitePlugins: any[] }
@@ -98,13 +99,17 @@ export function createTest<PropsType>(createComponent: (props?: PropsType) => vo
 
     async debug({ page }, use) {
       await use(async () => {
-        await prettyPrint(page.locator('html'))
+        await Snapshot.log(page.locator('html'))
       })
     },
 
     async animations({ page }, use) {
       await use(new Animations(page))
     },
+  })
+
+  test.beforeEach(async ({ page }) => {
+    await addGlobalScripts(page)
   })
 
   test.afterEach(async ({ debug }, info) => {

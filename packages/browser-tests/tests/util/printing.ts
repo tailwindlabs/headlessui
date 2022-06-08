@@ -6,11 +6,10 @@ import {
   printProps,
   printText,
 } from 'pretty-format/build/plugins/lib/markup'
-import prettyFormat from 'pretty-format'
 import { Locator } from '@playwright/test'
 import type { Config, NewPlugin, Refs } from 'pretty-format'
 import type { Printer } from 'pretty-format/build/types'
-import { Element, Snapshot, takeSnapshot, TreeNode } from './snapshots'
+import { TreeNode } from './snapshots'
 
 function* dropWhile<T>(arr: Iterable<T>, shouldDrop: (val: T) => boolean): Iterable<T> {
   let predicateHasFailed = false
@@ -74,18 +73,5 @@ export class PlaywrightPlugin implements NewPlugin {
 
   test(val: any): val is Locator {
     return typeof val === 'object' && 'tag' in val
-  }
-}
-
-export async function prettyPrint(el: Element | Snapshot) {
-  const tree = 'roots' in el ? el : await takeSnapshot(el)
-
-  for (const root of tree.roots) {
-    console.log(
-      prettyFormat(root, {
-        plugins: [new PlaywrightPlugin()],
-        highlight: true,
-      })
-    )
   }
 }
