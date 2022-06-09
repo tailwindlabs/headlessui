@@ -78,6 +78,11 @@ export let Dialog = defineComponent({
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots, expose }) {
+    let ready = ref(false)
+    onMounted(() => {
+      ready.value = true
+    })
+
     let nestedDialogCount = ref(0)
 
     let usesOpenClosedState = useOpenClosed()
@@ -117,7 +122,9 @@ export let Dialog = defineComponent({
       )
     }
 
-    let dialogState = computed(() => (open.value ? DialogStates.Open : DialogStates.Closed))
+    let dialogState = computed(() =>
+      !ready.value ? DialogStates.Closed : open.value ? DialogStates.Open : DialogStates.Closed
+    )
     let enabled = computed(() => dialogState.value === DialogStates.Open)
 
     let hasNestedDialogs = computed(() => nestedDialogCount.value > 1) // 1 is the current dialog
