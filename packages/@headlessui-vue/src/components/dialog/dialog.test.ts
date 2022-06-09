@@ -1,12 +1,4 @@
-import {
-  defineComponent,
-  ref,
-  nextTick,
-  h,
-  ComponentOptionsWithoutProps,
-  ConcreteComponent,
-  onMounted,
-} from 'vue'
+import { defineComponent, ref, nextTick, h, ConcreteComponent, onMounted } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import {
@@ -109,6 +101,7 @@ describe('Safe guards', () => {
 
 describe('refs', () => {
   it('should be possible to access the ref on the DialogBackdrop', async () => {
+    expect.assertions(2)
     renderTemplate({
       template: `
         <Dialog :open="true">
@@ -121,8 +114,10 @@ describe('refs', () => {
       setup() {
         let backdrop = ref<{ el: Element; $el: Element } | null>(null)
         onMounted(() => {
-          expect(backdrop.value?.el).toBeInstanceOf(HTMLDivElement)
-          expect(backdrop.value?.$el).toBeInstanceOf(HTMLDivElement)
+          nextTick(() => {
+            expect(backdrop.value?.el).toBeInstanceOf(HTMLDivElement)
+            expect(backdrop.value?.$el).toBeInstanceOf(HTMLDivElement)
+          })
         })
         return { backdrop }
       },
@@ -130,6 +125,7 @@ describe('refs', () => {
   })
 
   it('should be possible to access the ref on the DialogPanel', async () => {
+    expect.assertions(2)
     renderTemplate({
       template: `
         <Dialog :open="true">
@@ -141,8 +137,10 @@ describe('refs', () => {
       setup() {
         let panel = ref<{ el: Element; $el: Element } | null>(null)
         onMounted(() => {
-          expect(panel.value?.el).toBeInstanceOf(HTMLDivElement)
-          expect(panel.value?.$el).toBeInstanceOf(HTMLDivElement)
+          nextTick(() => {
+            expect(panel.value?.el).toBeInstanceOf(HTMLDivElement)
+            expect(panel.value?.$el).toBeInstanceOf(HTMLDivElement)
+          })
         })
         return { panel }
       },
@@ -1153,6 +1151,8 @@ describe('Mouse interactions', () => {
         },
       })
 
+      await new Promise<void>(nextTick)
+
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
 
@@ -1196,6 +1196,8 @@ describe('Mouse interactions', () => {
         },
       })
 
+      await new Promise<void>(nextTick)
+
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
 
@@ -1232,6 +1234,8 @@ describe('Mouse interactions', () => {
           }
         },
       })
+
+      await new Promise<void>(nextTick)
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1276,6 +1280,8 @@ describe('Mouse interactions', () => {
           }
         },
       })
+
+      await new Promise<void>(nextTick)
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1326,6 +1332,8 @@ describe('Mouse interactions', () => {
           }
         },
       })
+
+      await new Promise<void>(nextTick)
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
