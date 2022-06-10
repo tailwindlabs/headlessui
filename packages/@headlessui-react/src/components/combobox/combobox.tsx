@@ -1064,7 +1064,7 @@ let Option = forwardRefWithAs(function Option<
     select()
     if (data.mode === ValueMode.Single) {
       actions.closeCombobox()
-      disposables().nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+      data.inputRef.current?.focus({ preventScroll: true })
     }
   })
 
