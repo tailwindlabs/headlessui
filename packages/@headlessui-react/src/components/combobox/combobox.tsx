@@ -1,19 +1,17 @@
 import React, {
-  Fragment,
   createContext,
   createRef,
+  ElementType,
+  Fragment,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  MutableRefObject,
+  Ref,
   useCallback,
   useContext,
   useMemo,
   useReducer,
   useRef,
-
-  // Types
-  ElementType,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
 } from 'react'
 import { Props } from '../../types'
 
@@ -30,16 +28,17 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
-import { forwardRefWithAs, render, compact, PropsForFeatures, Features } from '../../utils/render'
+import { compact, Features, forwardRefWithAs, PropsForFeatures, render } from '../../utils/render'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
 import { objectToFormEntries } from '../../utils/form'
-import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
+import { sortByDomNode } from '../../utils/focus-management'
 
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
 import { Keys } from '../keyboard'
+import { microTask } from 'utils/micro-task'
 
 enum ComboboxState {
   Open,
@@ -1064,7 +1063,7 @@ let Option = forwardRefWithAs(function Option<
     select()
     if (data.mode === ValueMode.Single) {
       actions.closeCombobox()
-      disposables().nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+      microTask(() => data.inputRef.current?.focus({ preventScroll: true }))
     }
   })
 
