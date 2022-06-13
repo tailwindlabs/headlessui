@@ -31,6 +31,15 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
+import { defer } from '../../utils/defer'
+
+type TransitionDirection = 'enter' | 'leave' | 'idle'
+let fakeDefer = () => defer<TransitionDirection>() // One day we will be able to do ReturnType<typeof genericFunction<T>>
+type TransitionEventTree = {
+  [key in TransitionDirection]: ReturnType<typeof fakeDefer>
+}
+
+/// ---
 
 type ID = ReturnType<typeof useId>
 
@@ -98,8 +107,8 @@ function useParentNesting() {
 }
 
 interface NestingContextValues {
-  children: MutableRefObject<{ id: ID; state: TreeStates }[]>
-  register: (id: ID) => () => void
+  children: MutableRefObject<{ id: ID; state: TreeStates; eventTree: TransitionEventTree }[]>
+  register: (id: ID, eventTree: TransitionEventTree) => () => void
   unregister: (id: ID, strategy?: RenderStrategy) => void
 }
 
@@ -138,11 +147,16 @@ function useNesting(done?: () => void) {
     })
   })
 
-  let register = useEvent((childId: ID) => {
+  let register = useEvent((childId: ID, eventTree: TransitionEventTree) => {
     let child = transitionableChildren.current.find(({ id }) => id === childId)
     if (!child) {
-      transitionableChildren.current.push({ id: childId, state: TreeStates.Visible })
+      transitionableChildren.current.push({
+        id: childId,
+        state: TreeStates.Visible,
+        eventTree,
+      })
     } else if (child.state !== TreeStates.Visible) {
+      child.eventTree = eventTree
       child.state = TreeStates.Visible
     }
 
@@ -154,6 +168,11 @@ function useNesting(done?: () => void) {
       children: transitionableChildren,
       register,
       unregister,
+      waitFor(direction: TransitionDirection) {
+        return Promise.all(
+          transitionableChildren.current.map((child) => child.eventTree[direction].promise)
+        )
+      },
     }),
     [register, unregister, transitionableChildren]
   )
@@ -213,15 +232,22 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
+
   let { register, unregister } = useParentNesting()
   let prevShow = useRef<boolean | null>(null)
 
   let id = useId()
 
+  let [eventTree] = useState<TransitionEventTree>(() => ({
+    enter: defer(),
+    leave: defer(),
+    idle: defer(),
+  }))
+
   useEffect(() => {
     if (!id) return
-    return register(id)
-  }, [register, id])
+    return register(id, eventTree)
+  }, [register, id, eventTree])
 
   useEffect(() => {
     // If we are in another mode than the Hidden mode then ignore
@@ -236,9 +262,9 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
     match(state, {
       [TreeStates.Hidden]: () => unregister(id),
-      [TreeStates.Visible]: () => register(id),
+      [TreeStates.Visible]: () => register(id, eventTree),
     })
-  }, [state, id, register, unregister, show, strategy])
+  }, [state, id, register, unregister, show, strategy, eventTree])
 
   let classes = useLatestValue({
     enter: splitClasses(enter),
@@ -267,7 +293,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     if (skip) return 'idle'
     if (prevShow.current === show) return 'idle'
     return show ? 'enter' : 'leave'
-  })() as 'enter' | 'leave' | 'idle'
+  })() as TransitionDirection
 
   let transitioning = useRef(false)
 
@@ -280,23 +306,54 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     unregister(id)
   })
 
+  let beforeEvent = useEvent((direction: TransitionDirection) => {
+    return match(direction, {
+      enter: () => events.current.beforeEnter(),
+      leave: () => events.current.beforeLeave(),
+      idle: () => {},
+    })
+  })
+
+  let afterEvent = useEvent((direction: TransitionDirection) => {
+    return match(direction, {
+      enter: () => events.current.afterEnter(),
+      leave: () => events.current.afterLeave(),
+      idle: () => {},
+    })
+  })
+
   useTransition({
     container,
     classes,
-    events,
     direction: transitionDirection,
-    onStart: useLatestValue(() => {
+    onStart: useLatestValue((direction) => {
       transitioning.current = true
+
+      Promise.resolve()
+        .then(() => eventTree[direction].reset())
+        .then(() => beforeEvent(direction))
+        .then(() =>
+          Promise.all([
+            // Waiting for our own event
+            eventTree[direction].promise,
+
+            // Waiting for all our children
+            nesting.waitFor(direction),
+          ])
+        )
+        .then(() => afterEvent(direction))
     }),
     onStop: useLatestValue((direction) => {
       transitioning.current = false
-
-      if (direction === 'leave' && !hasChildren(nesting)) {
-        // When we don't have children anymore we can safely unregister from the parent and hide
-        // ourselves.
-        setState(TreeStates.Hidden)
-        unregister(id)
-      }
+      nesting
+        .waitFor(direction)
+        .then(() => eventTree[direction].resolve(direction))
+        .then(() => {
+          if (direction === 'leave') {
+            setState(TreeStates.Hidden)
+            unregister(id)
+          }
+        })
     }),
   })
 
