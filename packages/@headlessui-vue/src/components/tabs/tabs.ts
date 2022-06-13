@@ -247,18 +247,23 @@ export let Tab = defineComponent({
           return focusIn(list, Focus.Last)
       }
 
-      return match(api.orientation.value, {
-        vertical() {
-          if (event.key === Keys.ArrowUp) return focusIn(list, Focus.Previous | Focus.WrapAround)
-          if (event.key === Keys.ArrowDown) return focusIn(list, Focus.Next | Focus.WrapAround)
-          return
-        },
-        horizontal() {
-          if (event.key === Keys.ArrowLeft) return focusIn(list, Focus.Previous | Focus.WrapAround)
-          if (event.key === Keys.ArrowRight) return focusIn(list, Focus.Next | Focus.WrapAround)
-          return
-        },
-      })
+      if (
+        match(api.orientation.value, {
+          vertical() {
+            if (event.key === Keys.ArrowUp) return focusIn(list, Focus.Previous | Focus.WrapAround)
+            if (event.key === Keys.ArrowDown) return focusIn(list, Focus.Next | Focus.WrapAround)
+            return
+          },
+          horizontal() {
+            if (event.key === Keys.ArrowLeft)
+              return focusIn(list, Focus.Previous | Focus.WrapAround)
+            if (event.key === Keys.ArrowRight) return focusIn(list, Focus.Next | Focus.WrapAround)
+            return
+          },
+        })
+      ) {
+        return event.preventDefault()
+      }
     }
 
     function handleFocus() {
