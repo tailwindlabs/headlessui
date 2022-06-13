@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve outside click of `Dialog` component ([#1546](https://github.com/tailwindlabs/headlessui/pull/1546))
 - Detect outside clicks from within `<iframe>` elements ([#1552](https://github.com/tailwindlabs/headlessui/pull/1552))
 - Improve Combobox input cursor position ([#1574](https://github.com/tailwindlabs/headlessui/pull/1574))
+- Fix scrolling issue in `Tab` component when using arrow keys ([#1584](https://github.com/tailwindlabs/headlessui/pull/1584))
 
 ## [1.6.4] - 2022-05-29
 
