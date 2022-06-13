@@ -156,7 +156,7 @@ function useNesting() {
       children: transitionableChildren,
       register,
       unregister,
-      waitFor() {
+      wait() {
         return Promise.all(transitionableChildren.current.map((child) => child.eventChain.promise))
       },
     }),
@@ -307,11 +307,11 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
       Promise.resolve()
         .then(() => eventChain.reset())
         .then(() => beforeEvent(direction))
-        .then(() => eventChain.promise)
+        .then(() => Promise.all([eventChain.promise, nesting.wait()]))
         .then(() => afterEvent(direction))
     }),
     onStop: useLatestValue((direction) => {
-      nesting.waitFor().then(() => eventChain.resolve(direction))
+      eventChain.resolve(direction)
     }),
   })
 
