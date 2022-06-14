@@ -1,16 +1,35 @@
 import { createTest, pick, expect } from '../util/plugin'
 
 import ExampleVue from './ExampleVue'
-import ExampleReact from './ExampleReact'
+import ExampleReact from './ExampleReactWeird'
 
 const test = createTest(
   (props?: { enterDuration?: number; leaveDuration?: number; withChildren?: boolean }) => {
     return pick({
       vue: () => <ExampleVue {...props} />,
-      react: () => <ExampleReact {...props} />,
+      // react: () => <ExampleReact {...props} />,
+      react: () => <ExampleReact />,
     })
   }
 )
+
+test.only('test: weird', async ({ render, page, animations }) => {
+  const toggle = page.locator('#toggle')
+
+  await render({
+    enterDuration: 50,
+    leaveDuration: 50,
+  })
+
+  await new Promise((resolve) => setTimeout(resolve, 10_000))
+
+  await animations.startRecording()
+
+  await toggle.click()
+  await animations.wait()
+
+  console.log(animations.timeline)
+})
 
 test('root: should transition in and out completely', async ({ render, page, animations }) => {
   const showButton = page.locator('#show')
@@ -28,6 +47,8 @@ test('root: should transition in and out completely', async ({ render, page, ani
 
   await hideButton.click()
   await animations.wait()
+
+  console.log(animations.timeline)
 
   expect(animations.length).toEqual(2)
 
@@ -72,11 +93,7 @@ test('root: should cancel transitions', async ({ render, page, animations }) => 
   expect(animations[1].properties).toEqual(['opacity'])
 })
 
-test.only('children: should transition in and out completely', async ({
-  render,
-  page,
-  animations,
-}) => {
+test('children: should transition in and out completely', async ({ render, page, animations }) => {
   const showButton = page.locator('#show')
   const hideButton = page.locator('#hide')
 

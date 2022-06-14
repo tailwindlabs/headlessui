@@ -8,10 +8,18 @@ export default function Example({ enterDuration = 0, leaveDuration = 0, withChil
     <div>
       {/* Test Styles */}
       <style>{`
+        .block {
+          transition: transform;
+          will-change: transform;
+          position: absolute;
+          inset: 0;
+          background: tomato;
+          height: 200px;
+        }
         .enter { transition-duration: ${enterDuration}ms; }
         .leave { transition-duration: ${leaveDuration}ms; }
-        .invisible { opacity: 0%; }
-        .visible { opacity: 100%; }
+        .invisible { transform: translateY(-100%); }
+        .visible { transform: translateY(0); }
       `}</style>
 
       {/* Test Controls */}
@@ -25,14 +33,30 @@ export default function Example({ enterDuration = 0, leaveDuration = 0, withChil
         Toggle
       </button>
 
+      <div className="flex">
+        <div className="grow">
+          <div className="flex">
+            <button className="bg-[orange] p-2">Toggle</button>
+            <div className="relative grow">
+              <div className="absolute inset-0 h-[200px] bg-[tomato] transition will-change-transform">
+                menu
+              </div>
+            </div>
+          </div>
+          broken
+        </div>
+      </div>
+
       <Transition
         show={show}
+        unmount={false}
         enter="enter"
         enterFrom="invisible"
         enterTo="visible"
         leave="leave"
         leaveFrom="visible"
         leaveTo="invisible"
+        className="block"
         data-test-id="root"
       >
         <div>

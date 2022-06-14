@@ -1,9 +1,10 @@
 import { type Page } from '@playwright/test'
-import { renderTimeline } from './animation-timeline'
+import { Timeline } from './animation-timeline'
 import { AnimationState, AnimationRecord } from './scripts/recordAnimations'
 import { Snapshot } from './snapshots'
 
 export interface Animation {
+  id: number
   state: AnimationState
   target: string | null
   properties: string[]
@@ -13,10 +14,14 @@ export interface Animation {
 }
 
 export interface AnimationEvent {
+  id: number
   time: bigint
   state: AnimationState
+  animation: Animation
   target: string | null
   snapshot: Snapshot
+  properties: string[]
+  elapsedTime: number
   snapshotDiff: string
 }
 
@@ -54,6 +59,7 @@ export class Animations extends Array<Animation> {
 
   private handleRecord(record: AnimationRecord) {
     let animation = (this[record.id] ??= {
+      id: record.id,
       state: 'created',
       target: null,
       properties: [],
@@ -65,10 +71,14 @@ export class Animations extends Array<Animation> {
     const snapshot = Snapshot.fromTree(record.tree, 'animation')
 
     const event: AnimationEvent = {
+      id: this.events.length,
       time: process.hrtime.bigint(),
       state: record.state,
       target: record.target,
+      animation,
       snapshot: snapshot,
+      properties: record.properties,
+      elapsedTime: record.elapsedTime,
       snapshotDiff: snapshot.diffWithPrevious(this.lastSnapshot),
     }
 
@@ -107,7 +117,7 @@ export class Animations extends Array<Animation> {
   }
 
   get timeline(): string {
-    return renderTimeline(this.events)
+    return new Timeline(this).toString()
   }
 
   private areRunning(animations: Animation[]) {
