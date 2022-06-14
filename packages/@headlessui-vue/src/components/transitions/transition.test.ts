@@ -1,5 +1,5 @@
-import { defineComponent, ref, onMounted, ComponentOptionsWithoutProps } from 'vue'
-import { render, fireEvent, createRenderTemplate } from '../../test-utils/vue-testing-library'
+import { defineComponent, ref, onMounted } from 'vue'
+import { fireEvent, createRenderTemplate } from '../../test-utils/vue-testing-library'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { TransitionRoot, TransitionChild } from './transition'

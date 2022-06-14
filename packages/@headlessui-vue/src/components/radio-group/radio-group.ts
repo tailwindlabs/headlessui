@@ -90,7 +90,8 @@ export let RadioGroup = defineComponent({
 
     let value = computed(() => props.modelValue)
 
-    let api = {
+    // TODO: Fix type
+    let api: any = {
       options,
       value,
       disabled: computed(() => props.disabled),
@@ -133,7 +134,6 @@ export let RadioGroup = defineComponent({
       },
     }
 
-    // @ts-expect-error ...
     provide(RadioGroupContext, api)
 
     useTreeWalker({

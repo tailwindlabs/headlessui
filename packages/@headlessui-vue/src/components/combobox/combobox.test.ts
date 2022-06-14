@@ -1,14 +1,4 @@
-import {
-  DefineComponent,
-  defineComponent,
-  nextTick,
-  ref,
-  watch,
-  h,
-  reactive,
-  computed,
-  PropType,
-} from 'vue'
+import { defineComponent, nextTick, ref, watch, h, reactive, computed, PropType } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import {
   Combobox,

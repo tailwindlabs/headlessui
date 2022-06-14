@@ -416,7 +416,15 @@ export let TransitionRoot = defineComponent({
     provide(TransitionContext, transitionBag)
 
     return () => {
-      let incomingProps = omit(props, ['show', 'appear', 'unmount'])
+      let incomingProps = omit(props, [
+        'show',
+        'appear',
+        'unmount',
+        'onBeforeEnter',
+        'onBeforeLeave',
+        'onAfterEnter',
+        'onAfterLeave',
+      ])
       let sharedProps = { unmount: props.unmount }
 
       return render({

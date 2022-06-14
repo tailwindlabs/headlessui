@@ -1,9 +1,9 @@
-import { defineComponent, ref, nextTick, onMounted, ComponentOptionsWithoutProps } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 
 import { FocusTrap } from './focus-trap'
 import { assertActiveElement, getByText } from '../../test-utils/accessibility-assertions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 import { click, press, shift, Keys } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
 

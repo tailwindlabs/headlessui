@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, reactive, ComponentOptionsWithoutProps } from 'vue'
+import { nextTick, ref, watch, reactive } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { RadioGroup, RadioGroupOption, RadioGroupLabel, RadioGroupDescription } from './radio-group'

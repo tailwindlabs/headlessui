@@ -34,7 +34,7 @@ import { forwardRefWithAs, render, compact, PropsForFeatures, Features } from '.
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
 import { objectToFormEntries } from '../../utils/form'
-import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
+import { sortByDomNode } from '../../utils/focus-management'
 
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'

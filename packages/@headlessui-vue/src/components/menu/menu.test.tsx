@@ -1,12 +1,4 @@
-import {
-  ComponentOptionsWithoutProps,
-  defineComponent,
-  h,
-  nextTick,
-  reactive,
-  ref,
-  watch,
-} from 'vue'
+import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { TransitionChild } from '../transitions/transition'

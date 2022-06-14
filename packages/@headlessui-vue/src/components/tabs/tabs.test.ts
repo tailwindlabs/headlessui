@@ -1,4 +1,4 @@
-import { ComponentOptionsWithoutProps, defineComponent, nextTick, ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
