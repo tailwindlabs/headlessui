@@ -1,6 +1,6 @@
 import { h, defineComponent, ref, nextTick, ComponentOptionsWithoutProps, createSSRApp } from 'vue'
 
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 import { renderToString } from 'vue/server-renderer'
 import { Portal, PortalGroup } from './portal'
 import { click } from '../../test-utils/interactions'

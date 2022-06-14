@@ -1,5 +1,5 @@
-import { defineComponent, ComponentOptionsWithoutProps } from 'vue'
-import { createRenderTemplate, render as testRender } from '../test-utils/vue-testing-library'
+import { defineComponent } from 'vue'
+import { createRenderTemplate } from '../test-utils/vue-testing-library'
 
 import { render } from './render'
 import { html } from '../test-utils/html'

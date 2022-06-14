@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
+import { defineComponent, nextTick, ref, watch, h } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'

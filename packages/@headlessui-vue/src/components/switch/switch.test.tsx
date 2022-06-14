@@ -1,5 +1,5 @@
-import { defineComponent, ref, watch, h, ComponentOptionsWithoutProps } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { defineComponent, ref, watch, h } from 'vue'
+import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 
 import { Switch, SwitchLabel, SwitchDescription, SwitchGroup } from './switch'
 import {
