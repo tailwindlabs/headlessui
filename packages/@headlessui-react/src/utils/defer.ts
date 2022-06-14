@@ -1,13 +1,15 @@
-export function defer<T>() {
+export function defer<T>(resolved: boolean = false) {
   let actions: { resolve: (value: T | PromiseLike<T>) => void; reject: (reason?: any) => void } = {
     resolve: () => {},
     reject: () => {},
   }
 
   let state = {
-    promise: new Promise<T>((resolve, reject) => {
-      Object.assign(actions, { resolve, reject })
-    }),
+    promise: resolved
+      ? Promise.resolve()
+      : new Promise<T>((resolve, reject) => {
+          Object.assign(actions, { resolve, reject })
+        }),
   }
 
   return {
@@ -21,9 +23,11 @@ export function defer<T>() {
       return actions.reject(reason)
     },
     reset() {
-      state.promise = new Promise<T>((resolve, reject) => {
-        Object.assign(actions, { resolve, reject })
-      })
+      state.promise = resolved
+        ? Promise.resolve()
+        : new Promise<T>((resolve, reject) => {
+            Object.assign(actions, { resolve, reject })
+          })
     },
   }
 }

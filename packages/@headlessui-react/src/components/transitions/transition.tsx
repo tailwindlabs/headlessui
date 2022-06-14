@@ -32,10 +32,8 @@ import { useEvent } from '../../hooks/use-event'
 import { defer } from '../../utils/defer'
 
 type TransitionDirection = 'enter' | 'leave' | 'idle'
-let fakeDefer = () => defer<TransitionDirection>() // One day we will be able to do ReturnType<typeof genericFunction<T>>
-type TransitionEventChain = ReturnType<typeof fakeDefer>
 
-/// ---
+// ---
 
 type ID = ReturnType<typeof useId>
 
@@ -103,12 +101,18 @@ function useParentNesting() {
 }
 
 interface NestingContextValues {
-  children: MutableRefObject<{ id: ID; state: TreeStates; eventChain: TransitionEventChain }[]>
-  register: (id: ID, eventChain: TransitionEventChain) => () => void
+  children: MutableRefObject<
+    { id: ID; state: TreeStates; nesting: MutableRefObject<NestingContextValues> }[]
+  >
+  register: (id: ID, nesting: MutableRefObject<NestingContextValues>) => () => void
   unregister: (id: ID, strategy?: RenderStrategy) => void
+  waitForParent: Promise<void>
+  start(direction: TransitionDirection): Promise<void>
+  finish(direction: TransitionDirection): void
+  wait(): Promise<void>
 }
 
-let NestingContext = createContext<NestingContextValues | null>(null)
+let NestingContext = createContext<MutableRefObject<NestingContextValues> | null>(null)
 NestingContext.displayName = 'NestingContext'
 
 function hasChildren(
@@ -118,8 +122,18 @@ function hasChildren(
   return bag.current.filter(({ state }) => state === TreeStates.Visible).length > 0
 }
 
-function useNesting() {
+function useNesting(
+  root = false,
+  parent?: MutableRefObject<NestingContextValues>
+): MutableRefObject<NestingContextValues> {
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
+
+  // The promise for the current transition
+  let [transition] = useState(() => defer<TransitionDirection>())
+
+  // The promise whether the parent is ready to start the transition, which should guarantee the
+  // order.
+  let [ready] = useState(() => defer<void>(root))
 
   let unregister = useEvent((childId: ID, strategy = RenderStrategy.Hidden) => {
     let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
@@ -135,33 +149,51 @@ function useNesting() {
     })
   })
 
-  let register = useEvent((childId: ID, eventChain: TransitionEventChain) => {
+  let register = useEvent((childId: ID, nesting: MutableRefObject<NestingContextValues>) => {
     let child = transitionableChildren.current.find(({ id }) => id === childId)
     if (!child) {
       transitionableChildren.current.push({
         id: childId,
         state: TreeStates.Visible,
-        eventChain,
+        nesting,
       })
     } else if (child.state !== TreeStates.Visible) {
-      child.eventChain = eventChain
+      child.nesting = nesting
       child.state = TreeStates.Visible
     }
 
     return () => unregister(childId, RenderStrategy.Unmount)
   })
 
-  return useMemo(
-    () => ({
-      children: transitionableChildren,
-      register,
-      unregister,
-      wait() {
-        return Promise.all(transitionableChildren.current.map((child) => child.eventChain.promise))
-      },
-    }),
-    [register, unregister, transitionableChildren]
-  )
+  let start = useEvent(async (direction: TransitionDirection) => {
+    transition.reset()
+    ready.reset()
+
+    if (direction === 'enter') {
+      await parent?.current.waitForParent
+      ready.resolve()
+    }
+  })
+
+  let wait = useEvent(async () => {
+    await Promise.all([
+      // Wait for our own transition to finish
+      transition.promise,
+
+      // Wait for all child transitions to finish
+      ...transitionableChildren.current.map((child) => child.nesting.current.wait()),
+    ])
+  })
+
+  return useLatestValue({
+    children: transitionableChildren,
+    register,
+    unregister,
+    waitForParent: ready.promise,
+    start,
+    finish: transition.resolve,
+    wait,
+  })
 }
 
 function noop() {}
@@ -219,17 +251,16 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   let { show, appear, initial } = useTransitionContext()
 
-  let { register, unregister } = useParentNesting()
+  let parentNesting = useParentNesting()
+  let nesting = useNesting(false, parentNesting)
   let prevShow = useRef<boolean | null>(null)
 
   let id = useId()
 
-  let [eventChain] = useState(() => defer<TransitionDirection>())
-
-  useEffect(() => {
+  useIsoMorphicEffect(() => {
     if (!id) return
-    return register(id, eventChain)
-  }, [register, id, eventChain])
+    return parentNesting.current.register(id, nesting)
+  }, [parentNesting, id, nesting])
 
   useEffect(() => {
     // If we are in another mode than the Hidden mode then ignore
@@ -243,10 +274,10 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     }
 
     match(state, {
-      [TreeStates.Hidden]: () => unregister(id),
-      [TreeStates.Visible]: () => register(id, eventChain),
+      [TreeStates.Hidden]: () => parentNesting.current.unregister(id),
+      [TreeStates.Visible]: () => parentNesting.current.register(id, nesting),
     })
-  }, [state, id, register, unregister, show, strategy, eventChain])
+  }, [state, id, parentNesting, show, strategy, nesting])
 
   let classes = useLatestValue({
     enter: splitClasses(enter),
@@ -277,8 +308,6 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     return show ? 'enter' : 'leave'
   })() as TransitionDirection
 
-  let nesting = useNesting()
-
   let beforeEvent = useEvent((direction: TransitionDirection) => {
     return match(direction, {
       enter: () => events.current.beforeEnter(),
@@ -292,7 +321,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
       enter: () => events.current.afterEnter(),
       leave: () => {
         setState(TreeStates.Hidden)
-        unregister(id)
+        parentNesting.current.unregister(id)
         return events.current.afterLeave()
       },
       idle: () => {},
@@ -305,13 +334,13 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     direction: transitionDirection,
     onStart: useLatestValue((direction) => {
       Promise.resolve()
-        .then(() => eventChain.reset())
+        .then(() => nesting.current.start(direction))
         .then(() => beforeEvent(direction))
-        .then(() => Promise.all([eventChain.promise, nesting.wait()]))
+        .then(() => nesting.current.wait())
         .then(() => afterEvent(direction))
     }),
     onStop: useLatestValue((direction) => {
-      eventChain.resolve(direction)
+      nesting.current.finish(direction)
     }),
   })
 
@@ -375,7 +404,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
 
   let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
-  let nestingBag = useNesting()
+  let nestingBag = useNesting(true)
 
   let [initial, setInitial] = useState(true)
 
@@ -402,7 +431,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
   useEffect(() => {
     if (show) {
       setState(TreeStates.Visible)
-    } else if (!hasChildren(nestingBag)) {
+    } else if (!hasChildren(nestingBag.current)) {
       setState(TreeStates.Hidden)
     } else {
       let node = internalTransitionRef.current
