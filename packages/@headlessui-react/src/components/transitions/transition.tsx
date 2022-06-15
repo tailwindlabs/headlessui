@@ -167,12 +167,16 @@ function useNesting(
 
   let start = useEvent(async (direction: TransitionDirection) => {
     transition.reset()
-    ready.reset()
+    await Promise.resolve().then(() => ready.reset())
 
     if (direction === 'enter') {
       await parent?.current.waitForParent
       ready.resolve()
     }
+  })
+
+  let finish = useEvent((direction: TransitionDirection) => {
+    transition.resolve(direction)
   })
 
   let wait = useEvent(async () => {
@@ -189,9 +193,11 @@ function useNesting(
     children: transitionableChildren,
     register,
     unregister,
-    waitForParent: ready.promise,
+    get waitForParent() {
+      return ready.promise
+    },
     start,
-    finish: transition.resolve,
+    finish,
     wait,
   })
 }
