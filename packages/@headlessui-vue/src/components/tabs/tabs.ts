@@ -227,6 +227,8 @@ export let Tab = defineComponent({
         event.preventDefault()
         event.stopPropagation()
 
+        if (props.disabled) return
+
         api.setSelectedIndex(myIndex.value)
         return
       }
