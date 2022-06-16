@@ -29,7 +29,7 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
-import { defer } from '../../utils/defer'
+import { defer, DeferredNode } from '../../utils/defer'
 
 type TransitionDirection = 'enter' | 'leave' | 'idle'
 
@@ -106,10 +106,10 @@ interface NestingContextValues {
   >
   register: (id: ID, nesting: MutableRefObject<NestingContextValues>) => () => void
   unregister: (id: ID, strategy?: RenderStrategy) => void
-  waitForParent: Promise<void>
-  start(direction: TransitionDirection): Promise<void>
-  finish(direction: TransitionDirection): void
-  wait(): Promise<void>
+  ready: DeferredNode<any>
+  transition: DeferredNode<any>
+  start(cb: (direction: TransitionDirection) => void): void
+  finish(cb: (direction: TransitionDirection) => void): void
 }
 
 let NestingContext = createContext<MutableRefObject<NestingContextValues> | null>(null)
@@ -124,16 +124,47 @@ function hasChildren(
 
 function useNesting(
   root = false,
-  parent?: MutableRefObject<NestingContextValues>
+  parent?: MutableRefObject<NestingContextValues>,
+  id?: string
 ): MutableRefObject<NestingContextValues> {
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
 
   // The promise for the current transition
-  let [transition] = useState(() => defer<TransitionDirection>())
+  let [transition] = useState(() =>
+    DeferredNode.create<Function>((cb) => cb(), `Transition: ${id}`)
+  )
 
   // The promise whether the parent is ready to start the transition, which should guarantee the
   // order.
-  let [ready] = useState(() => defer<void>(root))
+  let [ready] = useState(() => DeferredNode.create<Function>((cb) => cb(), `Ready: ${id}`))
+
+  useEffect(() => {
+    if (root) {
+      ready.resolve(() => {})
+    }
+  }, [])
+
+  useIsoMorphicEffect(() => {
+    parent?.current.transition.add(transition)
+
+    return () => parent?.current.transition.remove(transition)
+  }, [transition, parent?.current])
+
+  useIsoMorphicEffect(() => {
+    parent?.current.ready.add(ready)
+
+    return () => parent?.current.ready.remove(ready)
+  }, [ready, parent?.current])
+
+  useIsoMorphicEffect(() => {
+    let currentParent = parent?.current
+
+    currentParent && transition.add(currentParent.ready)
+
+    return () => {
+      currentParent && transition.remove(currentParent.ready)
+    }
+  }, [ready, transition])
 
   let unregister = useEvent((childId: ID, strategy = RenderStrategy.Hidden) => {
     let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
@@ -165,40 +196,24 @@ function useNesting(
     return () => unregister(childId, RenderStrategy.Unmount)
   })
 
-  let start = useEvent(async (direction: TransitionDirection) => {
+  let start = useEvent((cb: (direction: TransitionDirection) => void) => {
+    ready.resolve(cb)
     transition.reset()
-    await Promise.resolve().then(() => ready.reset())
-
-    if (direction === 'enter') {
-      await parent?.current.waitForParent
-      ready.resolve()
-    }
   })
 
-  let finish = useEvent((direction: TransitionDirection) => {
-    transition.resolve(direction)
-  })
-
-  let wait = useEvent(async () => {
-    await Promise.all([
-      // Wait for our own transition to finish
-      transition.promise,
-
-      // Wait for all child transitions to finish
-      ...transitionableChildren.current.map((child) => child.nesting.current.wait()),
-    ])
+  let finish = useEvent((cb: (direction: TransitionDirection) => void) => {
+    transition.resolve(cb)
+    // ready.reset()
   })
 
   return useLatestValue({
     children: transitionableChildren,
     register,
     unregister,
-    get waitForParent() {
-      return ready.promise
-    },
+    ready,
+    transition,
     start,
     finish,
-    wait,
   })
 }
 
@@ -258,7 +273,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   let { show, appear, initial } = useTransitionContext()
 
   let parentNesting = useParentNesting()
-  let nesting = useNesting(false, parentNesting)
+  let nesting = useNesting(false, parentNesting, props['data-debug'])
   let prevShow = useRef<boolean | null>(null)
 
   let id = useId()
@@ -339,14 +354,10 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     classes,
     direction: transitionDirection,
     onStart: useLatestValue((direction) => {
-      Promise.resolve()
-        .then(() => nesting.current.start(direction))
-        .then(() => beforeEvent(direction))
-        .then(() => nesting.current.wait())
-        .then(() => afterEvent(direction))
+      nesting.current.start(() => beforeEvent(direction))
     }),
     onStop: useLatestValue((direction) => {
-      nesting.current.finish(direction)
+      nesting.current.finish(() => afterEvent(direction))
     }),
   })
 
@@ -410,7 +421,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
 
   let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
-  let nestingBag = useNesting(true)
+  let nestingBag = useNesting(true, undefined, props['data-debug'])
 
   let [initial, setInitial] = useState(true)
 
@@ -491,3 +502,4 @@ let Child = forwardRefWithAs(function Child<
 })
 
 export let Transition = Object.assign(TransitionRoot, { Child, Root: TransitionRoot })
+export { DeferredNode }

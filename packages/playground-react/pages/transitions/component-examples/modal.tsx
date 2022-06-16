@@ -1,5 +1,5 @@
-import React, { Fragment, useRef, useState } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { Dialog, Transition, DeferredNode } from '@headlessui/react'
 import { CheckIcon } from '@heroicons/react/outline'
 
 export default function Home() {
@@ -9,6 +9,7 @@ export default function Home() {
   }
 
   let [events, setEvents] = useState<string[]>([])
+  let [tree, setTree] = useState<string>('')
 
   let raf = useRef(null)
   function addEvent(name: string, event: string) {
@@ -28,8 +29,20 @@ export default function Home() {
     })
   }
 
+  useEffect(() => {
+    requestAnimationFrame(function tick() {
+      setTree(DeferredNode.debugAll(' '))
+
+      requestAnimationFrame(tick)
+    })
+  }, [])
+
   return (
     <div>
+      <div className="fixed top-16 bottom-4 right-4 z-30 overflow-auto rounded-lg bg-black/75 p-4 text-gray-300">
+        <pre>{tree}</pre>
+      </div>
+
       <div className="flex space-x-4 p-12">
         <div className="inline-block p-12">
           <span className="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">
@@ -105,7 +118,6 @@ export default function Home() {
                         Payment successful
                       </Dialog.Title>
                       <div className="mt-2">
-                        {/*
                         <Transition.Child
                           data-debug="child 1"
                           beforeEnter={() => addEvent('Child 1', 'Before enter')}
@@ -144,7 +156,6 @@ export default function Home() {
                             amet labore.
                           </p>
                         </Transition.Child>
-                        */}
                       </div>
                     </div>
                   </div>
