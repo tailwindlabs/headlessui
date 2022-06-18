@@ -77,6 +77,7 @@ function MultiPeopleList() {
                     ))}
                     <Combobox.Input
                       onChange={(event) => setQuery(event.target.value)}
+                      onFocus={() => query != '' && setQuery('')}
                       className="border-none p-0 focus:ring-0"
                       placeholder="Search..."
                     />

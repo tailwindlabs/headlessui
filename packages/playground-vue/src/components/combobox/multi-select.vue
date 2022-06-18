@@ -39,6 +39,7 @@
                     </span>
                     <ComboboxInput
                       @change="query = $event.target.value"
+                      @focus="query = ''"
                       class="border-none p-0 focus:ring-0"
                       placeholder="Search..."
                     />
