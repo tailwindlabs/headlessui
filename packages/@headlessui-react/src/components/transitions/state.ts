@@ -216,8 +216,25 @@ class TransitionMachineImpl implements TransitionMachine {
     }
 
     match(this.direction, {
-      entering: () => this.toDone(),
-      leaving: () => this.toRunning(),
+      entering: () =>
+        match(this.state, {
+          idle: () => {},
+          pending: () => {},
+          running: () => {},
+          waiting_for_children: () => this.toDone(),
+          done: () => {},
+          cancelled: () => {},
+        }),
+
+      leaving: () =>
+        match(this.state, {
+          idle: () => {},
+          pending: () => {},
+          running: () => {},
+          waiting_for_children: () => this.toRunning(),
+          done: () => {},
+          cancelled: () => {},
+        }),
       idle: () => {},
     })
   }
