@@ -30,6 +30,8 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
 import { defer, DeferredNode } from '../../utils/defer'
+import { TransitionMachine } from './state'
+import { useTransitionMachine } from './use-transition-machine'
 
 type TransitionDirection = 'enter' | 'leave' | 'idle'
 
@@ -106,10 +108,15 @@ interface NestingContextValues {
   >
   register: (id: ID, nesting: MutableRefObject<NestingContextValues>) => () => void
   unregister: (id: ID, strategy?: RenderStrategy) => void
-  ready: DeferredNode<any>
-  transition: DeferredNode<any>
-  start(cb: (direction: TransitionDirection) => void): void
-  finish(cb: (direction: TransitionDirection) => void): void
+
+  machine: TransitionMachine
+
+  prepare(
+    before: (direction: TransitionDirection) => void,
+    after: (direction: TransitionDirection) => void
+  ): void
+  start(direction: TransitionDirection): void
+  finish(direction: TransitionDirection): void
 }
 
 let NestingContext = createContext<MutableRefObject<NestingContextValues> | null>(null)
@@ -127,44 +134,44 @@ function useNesting(
   parent?: MutableRefObject<NestingContextValues>,
   id?: string
 ): MutableRefObject<NestingContextValues> {
+  type TransitionAction = (direction: TransitionDirection) => void
+
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
 
-  // The promise for the current transition
-  let [transition] = useState(() =>
-    DeferredNode.create<Function>((cb) => cb(), `Transition: ${id}`)
+  let onStartCallback = useRef<TransitionAction>()
+  let onStopCallback = useRef<TransitionAction>()
+  let toDirection = (direction: any): TransitionDirection =>
+    match(direction, {
+      entering: () => 'enter',
+      leaving: () => 'leave',
+      idle: () => 'idle',
+    })
+
+  // The state machine for the current transition
+  let machine = useTransitionMachine(
+    () => ({
+      onStart: (direction) => onStartCallback.current?.(toDirection(direction)),
+      onStop: (direction) => onStopCallback.current?.(toDirection(direction)),
+      onEvent: (event) => {
+        console.log('[%s] Transition event', machine.id, event)
+      },
+      onChange(prev, current) {
+        console.log('[%s] Transition state change', machine.id, { prev, current })
+      },
+    }),
+    id
   )
 
-  // The promise whether the parent is ready to start the transition, which should guarantee the
-  // order.
-  let [ready] = useState(() => DeferredNode.create<Function>((cb) => cb(), `Ready: ${id}`))
-
-  useEffect(() => {
-    if (root) {
-      ready.resolve(() => {})
-    }
-  }, [])
-
+  // Link the current transition to its parent
   useIsoMorphicEffect(() => {
-    parent?.current.transition.add(transition)
-
-    return () => parent?.current.transition.remove(transition)
-  }, [transition, parent?.current])
-
-  useIsoMorphicEffect(() => {
-    parent?.current.ready.add(ready)
-
-    return () => parent?.current.ready.remove(ready)
-  }, [ready, parent?.current])
-
-  useIsoMorphicEffect(() => {
-    let currentParent = parent?.current
-
-    currentParent && transition.add(currentParent.ready)
+    console.log('Add child')
+    parent?.current?.machine?.add(machine)
 
     return () => {
-      currentParent && transition.remove(currentParent.ready)
+      console.log('Remove child')
+      parent?.current?.machine?.remove(machine)
     }
-  }, [ready, transition])
+  }, [parent])
 
   let unregister = useEvent((childId: ID, strategy = RenderStrategy.Hidden) => {
     let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
@@ -196,22 +203,34 @@ function useNesting(
     return () => unregister(childId, RenderStrategy.Unmount)
   })
 
-  let start = useEvent((cb: (direction: TransitionDirection) => void) => {
-    ready.resolve(cb)
-    transition.reset()
+  let prepare = useEvent((before: TransitionAction, after: TransitionAction) => {
+    onStartCallback.current = before
+    onStopCallback.current = after
   })
 
-  let finish = useEvent((cb: (direction: TransitionDirection) => void) => {
-    transition.resolve(cb)
-    // ready.reset()
+  let start = useEvent((direction: TransitionDirection) => {
+    machine.reset()
+
+    match(direction, {
+      enter: () => machine.send('enter'),
+      leave: () => machine.send('leave'),
+      idle: () => {},
+    })
+
+    machine.send('start')
+  })
+
+  let finish = useEvent((_: TransitionDirection) => {
+    machine.send('stop')
+    console.log(machine)
   })
 
   return useLatestValue({
     children: transitionableChildren,
     register,
     unregister,
-    ready,
-    transition,
+    machine,
+    prepare,
     start,
     finish,
   })
@@ -354,10 +373,12 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     classes,
     direction: transitionDirection,
     onStart: useLatestValue((direction) => {
-      nesting.current.start(() => beforeEvent(direction))
+      nesting.current.prepare(beforeEvent, afterEvent)
+
+      nesting.current.start(direction)
     }),
     onStop: useLatestValue((direction) => {
-      nesting.current.finish(() => afterEvent(direction))
+      nesting.current.finish(direction)
     }),
   })
 
