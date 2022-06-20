@@ -25,9 +25,17 @@ interface TransitionArgs {
   direction: 'enter' | 'leave' | 'idle'
   onStart: MutableRefObject<(direction: TransitionArgs['direction']) => void>
   onStop: MutableRefObject<(direction: TransitionArgs['direction']) => void>
+  onCancel: MutableRefObject<(direction: TransitionArgs['direction']) => void>
 }
 
-export function useTransition({ container, direction, classes, onStart, onStop }: TransitionArgs) {
+export function useTransition({
+  container,
+  direction,
+  classes,
+  onStart,
+  onStop,
+  onCancel,
+}: TransitionArgs) {
   let mounted = useIsMounted()
   let d = useDisposables()
 
@@ -52,7 +60,7 @@ export function useTransition({ container, direction, classes, onStart, onStop }
 
         match(reason, {
           [Reason.Ended]: () => void onStop.current(latestDirection.current),
-          [Reason.Cancelled]: () => void {},
+          [Reason.Cancelled]: () => void onCancel.current(latestDirection.current),
         })
       })
     )

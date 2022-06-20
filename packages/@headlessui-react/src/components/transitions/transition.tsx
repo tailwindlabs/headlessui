@@ -111,12 +111,11 @@ interface NestingContextValues {
 
   machine: TransitionMachine
 
-  prepare(
-    before: (direction: TransitionDirection) => void,
-    after: (direction: TransitionDirection) => void
-  ): void
+  prepare(before: () => void, after: () => void): void
+  reset(): void
   start(direction: TransitionDirection): void
-  finish(direction: TransitionDirection): void
+  stop(direction: TransitionDirection): void
+  cancel(direction: TransitionDirection): void
 }
 
 let NestingContext = createContext<MutableRefObject<NestingContextValues> | null>(null)
@@ -134,41 +133,43 @@ function useNesting(
   parent?: MutableRefObject<NestingContextValues>,
   id?: string
 ): MutableRefObject<NestingContextValues> {
-  type TransitionAction = (direction: TransitionDirection) => void
+  type TransitionAction = () => void
 
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
 
   let onStartCallback = useRef<TransitionAction>()
   let onStopCallback = useRef<TransitionAction>()
-  let toDirection = (direction: any): TransitionDirection =>
-    match(direction, {
-      entering: () => 'enter',
-      leaving: () => 'leave',
-      idle: () => 'idle',
-    })
 
   // The state machine for the current transition
-  let machine = useTransitionMachine(
-    () => ({
-      onStart: (direction) => onStartCallback.current?.(toDirection(direction)),
-      onStop: (direction) => onStopCallback.current?.(toDirection(direction)),
-      onEvent: (event) => {
-        console.log('[%s] Transition event', machine.id, event)
-      },
-      onChange(prev, current) {
-        console.log('[%s] Transition state change', machine.id, { prev, current })
-      },
-    }),
-    id
-  )
+  let machine = useTransitionMachine(id ?? 'unnamed', () => ({
+    onStart: () => {
+      onStartCallback.current?.()
+    },
+
+    onStop: () => {
+      onStopCallback.current?.()
+    },
+
+    onChildStop: () => {
+      if (root) {
+        machine.send('reset')
+      }
+    },
+
+    onEvent: (event) => {
+      console.log('[%s] Transition event', machine.id, event)
+    },
+
+    onChange(prev, current) {
+      console.log('[%s] Transition state change', machine.id, { prev, current })
+    },
+  }))
 
   // Link the current transition to its parent
   useIsoMorphicEffect(() => {
-    console.log('Add child')
     parent?.current?.machine?.add(machine)
 
     return () => {
-      console.log('Remove child')
       parent?.current?.machine?.remove(machine)
     }
   }, [parent])
@@ -203,14 +204,14 @@ function useNesting(
     return () => unregister(childId, RenderStrategy.Unmount)
   })
 
+  let reset = useEvent(() => machine.send('reset'))
+
   let prepare = useEvent((before: TransitionAction, after: TransitionAction) => {
     onStartCallback.current = before
     onStopCallback.current = after
   })
 
   let start = useEvent((direction: TransitionDirection) => {
-    machine.reset()
-
     match(direction, {
       enter: () => machine.send('enter'),
       leave: () => machine.send('leave'),
@@ -220,9 +221,12 @@ function useNesting(
     machine.send('start')
   })
 
-  let finish = useEvent((_: TransitionDirection) => {
+  let stop = useEvent((_: TransitionDirection) => {
     machine.send('stop')
-    console.log(machine)
+  })
+
+  let cancel = useEvent((_: TransitionDirection) => {
+    machine.send('cancel')
   })
 
   return useLatestValue({
@@ -230,9 +234,11 @@ function useNesting(
     register,
     unregister,
     machine,
+    reset,
     prepare,
     start,
-    finish,
+    stop,
+    cancel,
   })
 }
 
@@ -373,12 +379,17 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     classes,
     direction: transitionDirection,
     onStart: useLatestValue((direction) => {
-      nesting.current.prepare(beforeEvent, afterEvent)
-
+      nesting.current.prepare(
+        () => beforeEvent(direction),
+        () => afterEvent(direction)
+      )
       nesting.current.start(direction)
     }),
     onStop: useLatestValue((direction) => {
-      nesting.current.finish(direction)
+      nesting.current.stop(direction)
+    }),
+    onCancel: useLatestValue((direction) => {
+      nesting.current.cancel(direction)
     }),
   })
 

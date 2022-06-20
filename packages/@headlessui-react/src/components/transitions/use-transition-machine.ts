@@ -3,10 +3,10 @@ import { createTransitionMachine, TransitionActions, TransitionMachine } from '.
 import { useMachine } from './use-machine'
 
 export function useTransitionMachine(
-  actions?: () => TransitionActions,
-  id?: string
+  id: string,
+  actions?: () => TransitionActions
 ): TransitionMachine {
-  const machine = useMachine(() => createTransitionMachine(actions?.(), id))
+  const machine = useMachine(() => createTransitionMachine(id, actions?.()))
 
   useEffect(() => {
     return () => machine.send('cancel')

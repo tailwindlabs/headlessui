@@ -170,20 +170,25 @@ beforeEach(() => {
 })
 
 function createTestMachine(id: string) {
-  let machine = createTransitionMachine({
-    onStart: (direction) => logs.push(`onStart ${id}: ${direction}`),
-    onStop: (direction) => logs.push(`onStop ${id}: ${direction}`),
-    onEvent: (event, payload) =>
-      logs.push(`onEvent ${id}: ${event} ${payload?.id ?? payload ?? ''}`),
-    onCancel: (direction) => logs.push(`onCancel ${id}: ${direction}`),
+  let machine = createTransitionMachine(id, {
+    onStart: () => logs.push(`onStart ${id}`),
+    onStop: () => logs.push(`onStop ${id}`),
+    onCancel: () => logs.push(`onCancel ${id}`),
+
     onChange: (previous, current) =>
       logs.push(`onChange ${id}: ${previous.toString()} -> ${current.toString()}`),
+
+    onEvent: (event, payload) =>
+      logs.push(`onEvent ${id}: ${event} ${payload?.id ?? payload ?? ''}`),
   })
 
   Object.defineProperties(machine, {
     id: { get: () => id },
     logs: { get: () => [...logs] },
-    description: { get: () => `${machine.direction}: ${machine.state}` },
+    description: {
+      get: () =>
+        `(container: ${machine.state[0]}, self: ${machine.state[1]}, children: ${machine.state[2]})`,
+    },
   })
 
   interface TestMachine extends TransitionMachine {

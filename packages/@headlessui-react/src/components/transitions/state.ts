@@ -1,10 +1,20 @@
-type TransitionEvents =
+import { match } from 'utils/match'
+import { Machine } from './machine'
+
+type ContainerState = 'idle' | 'entering' | 'leaving' | 'cancelled' | 'done'
+type SelfState = 'idle' | 'running' | 'waiting_for_children'
+type ChildrenState = 'idle' | 'running' | 'waiting_for_self'
+
+type UserEvents =
+  // Overall
+  | { type: 'reset'; payload: undefined }
   | { type: 'enter'; payload: undefined }
   | { type: 'leave'; payload: undefined }
+  | { type: 'cancel'; payload: undefined }
+
+  // Transition Controls
   | { type: 'start'; payload: undefined }
   | { type: 'stop'; payload: undefined }
-  | { type: 'cancel'; payload: undefined }
-  | { type: 'reset'; payload: undefined }
 
 type InternalEvents =
   | { type: '#child.add'; payload: TransitionMachine }
@@ -13,64 +23,59 @@ type InternalEvents =
   | { type: '#child.resign'; payload: TransitionMachine }
   | { type: '#child.start'; payload: undefined }
   | { type: '#child.stop'; payload: undefined }
+  | { type: '#debug'; payload: undefined }
 
-type ChildrenState = 'none' | 'some_active' | 'all_idle'
+export type TransitionEvents = UserEvents | InternalEvents
+export type TransitionState = readonly [ContainerState, SelfState, ChildrenState]
+export type TransitionStateDescriptor = {
+  readonly container: ContainerState
+  readonly self: SelfState
+  readonly children: ChildrenState
+}
 
-type MachineEvent = TransitionEvents['type'] | InternalEvents['type']
-type MachineEventPayload<Event extends MachineEvent> = Extract<
-  TransitionEvents | InternalEvents,
-  { type: Event }
->['payload']
-
-export type TransitionDirection = 'idle' | 'entering' | 'leaving'
-export type TransitionState =
-  | 'idle'
-  | 'pending'
-  | 'running'
-  | 'waiting_for_children'
-  | 'done'
-  | 'cancelled'
+export type TransitionStateMatcher = {
+  readonly container: readonly ContainerState[]
+  readonly self: readonly SelfState[]
+  readonly children: readonly ChildrenState[]
+}
 
 export type TransitionActions = {
-  onStart?: (direction: TransitionDirection) => void
-  onStop?: (direction: TransitionDirection) => void
-  onCancel?: (direction: TransitionDirection) => void
-  onEvent?: (event: MachineEvent, payload?: any) => void
-  onChange?: (
-    prev: readonly [TransitionDirection, TransitionState],
-    current: readonly [TransitionDirection, TransitionState]
-  ) => void
+  onStart?: () => void
+  onStop?: () => void
+  onCancel?: () => void
+  onEvent?: (event: TransitionEvents['type'], payload?: any) => void
+  onChange?: (before: TransitionState, after: TransitionState) => void
+
+  // TODO: Can we get rid of this?
+  onChildStop?: () => void
 }
 
-export interface Machine<State = any> {
-  readonly id: string
-  readonly state: State
-
-  add(child: Machine): void
-  remove(child: Machine): void
-
-  send<EventType extends MachineEvent>(
-    event: EventType,
-    payload?: MachineEventPayload<EventType>
-  ): void
-}
-
-export interface TransitionMachine extends Machine<TransitionState> {
-  readonly direction: TransitionDirection
+export interface TransitionMachine extends Machine<TransitionState, TransitionEvents> {
+  readonly state: TransitionState
 
   add(child: TransitionMachine): void
   remove(child: TransitionMachine): void
-  send<EventType extends MachineEvent>(
+  send<EventType extends TransitionEvents['type']>(
     event: EventType,
-    payload?: MachineEventPayload<EventType>
+    payload?: Extract<TransitionEvents, { type: EventType }>['payload']
   ): void
 }
 
+let machines: TransitionMachine[] = []
+
 export function createTransitionMachine(
-  actions?: TransitionActions,
-  id?: string
+  id: string,
+  actions?: TransitionActions
 ): TransitionMachine {
-  return new TransitionMachineImpl(actions, id)
+  let machine = new TransitionMachineImpl(id, actions)
+  machines.push(machine)
+  return machine
+}
+
+if (typeof window !== 'undefined') {
+  window.debugMachines = () => {
+    machines.forEach((m) => m.send('#debug'))
+  }
 }
 
 let uid = 1
@@ -78,15 +83,14 @@ let uid = 1
 class TransitionMachineImpl implements TransitionMachine {
   public readonly id: string
 
-  public direction: TransitionDirection = 'idle'
-  public state: TransitionState = 'idle'
+  public state: TransitionState = ['idle', 'idle', 'idle']
+  private actions: TransitionActions
 
   private parent: TransitionMachine | undefined
-  private actions: TransitionActions
   private children = new Set<TransitionMachine>()
 
-  constructor(actions: TransitionActions = {}, id?: string) {
-    this.id = id ?? `${uid++}`
+  constructor(id: string, actions: TransitionActions = {}) {
+    this.id = `${id} [${uid++}]`
     this.actions = actions
   }
 
@@ -99,17 +103,19 @@ class TransitionMachineImpl implements TransitionMachine {
     this.send('#child.remove', child)
   }
 
-  public send(event: MachineEvent, payload?: any) {
+  public send(event: TransitionEvents['type'], payload?: any) {
     this.actions.onEvent?.(event, payload)
 
     match(event, {
-      // User initiated events
+      // User events - Overall
+      reset: () => this.reset(),
       enter: () => this.enter(),
       leave: () => this.leave(),
+      cancel: () => this.cancel(),
+
+      // User events - Self/Children Transition
       start: () => this.start(),
       stop: () => this.stop(),
-      cancel: () => this.cancel(),
-      reset: () => this.reset(),
 
       // Internal Events
       '#child.add': () => this.#childAdd(payload),
@@ -118,80 +124,60 @@ class TransitionMachineImpl implements TransitionMachine {
       '#child.resign': () => this.#childResign(payload),
       '#child.start': () => this.#childStart(),
       '#child.stop': () => this.#childStop(),
+      '#debug': () => this.#debug(),
     })
   }
 
-  // Events
-  reset() {
-    this.toIdle()
+  // User events - Overall
+  public reset() {
+    this.children.forEach((child) => child.send('reset'))
+    this.moveTo({ container: 'idle', self: 'idle', children: 'idle' })
   }
 
-  enter() {
-    this.when('idle', 'idle', () => this.toEntering())
+  public enter() {
+    this.moveTo({ container: 'entering', self: 'idle' })
   }
 
-  leave() {
-    this.when('idle', 'idle', () => this.toLeaving())
+  public leave() {
+    this.moveTo({ container: 'leaving', self: 'idle' })
   }
 
-  start() {
-    this.when('entering', 'pending', () => this.toRunning())
-    this.when('leaving', 'pending', () =>
-      match(this.childrenState, {
-        all_idle: () => this.toWaitingForChildren(),
-        none: () => this.toRunning(),
-
-        // Should not happen…
-        some_active: () => this.toWaitingForChildren(),
-      })
+  public cancel() {
+    this.when({ container: ['entering', 'leaving'] }, () =>
+      this.moveTo({ container: 'cancelled', self: 'idle', children: 'idle' })
     )
   }
 
-  stop() {
-    // When entering we run parent and child transitions concurrently
-    // This means that either stop or child.done can transition to done
-
-    this.when('entering', 'running', () =>
-      match(this.childrenState, {
-        all_idle: () => this.toWaitingForChildren(),
-        none: () => this.toDone(),
-
-        // Should not happen…
-        some_active: () => this.toWaitingForChildren(),
-      })
-    )
-    this.when('leaving', 'running', () => this.toDone())
+  // User events - Self/Children Transition
+  public start() {
+    this.when({ self: ['idle'] }, () => this.moveTo({ self: 'running' }))
   }
 
-  cancel() {
-    this.when('entering', 'pending', () => this.toCancelled())
-    this.when('entering', 'running', () => this.toCancelled())
-    this.when('entering', 'waiting_for_children', () => this.toCancelled())
+  public stop() {
+    this.when({ self: ['running'] }, () => {
+      if (this.hasRunningChildren()) {
+        this.moveTo({ self: 'waiting_for_children' })
+      } else {
+        this.moveTo({ container: 'done' })
+      }
+    })
 
-    this.when('leaving', 'pending', () => this.toCancelled())
-    this.when('leaving', 'running', () => this.toCancelled())
-    this.when('leaving', 'waiting_for_children', () => this.toCancelled())
-
-    this.parent?.send('#child.stop')
+    this.when({ children: ['waiting_for_self'] }, () => this.moveTo({ container: 'done' }))
   }
 
+  // Internal Events
   #childAdd(child: TransitionMachine) {
     this.children.add(child)
     child.send('#child.become', this)
   }
 
   #childRemove(child: TransitionMachine) {
-    child.send('cancel')
     this.children.delete(child)
     child.send('#child.resign', this)
   }
 
   #childBecome(parent: TransitionMachine) {
     this.parent = parent
-
-    if (parent.state === 'waiting_for_children') {
-      this.send('#child.start')
-    }
   }
 
   #childResign(_: TransitionMachine) {
@@ -199,141 +185,137 @@ class TransitionMachineImpl implements TransitionMachine {
   }
 
   #childStart() {
-    if (this.parent?.state !== 'waiting_for_children') {
-      return
-    }
-
-    match(this.parent!.direction, {
-      entering: () => this.enter(),
-      leaving: () => this.leave(),
-      idle: () => {},
-    })
+    this.when({ children: ['idle'] }, () => this.moveTo({ children: 'running' }))
   }
 
   #childStop() {
-    if (this.childrenState === 'some_active') {
-      return this.toWaitingForChildren()
-    }
-
-    match(this.direction, {
-      entering: () =>
-        match(this.state, {
-          idle: () => {},
-          pending: () => {},
-          running: () => {},
-          waiting_for_children: () => this.toDone(),
-          done: () => {},
-          cancelled: () => {},
-        }),
-
-      leaving: () =>
-        match(this.state, {
-          idle: () => {},
-          pending: () => {},
-          running: () => {},
-          waiting_for_children: () => this.toRunning(),
-          done: () => {},
-          cancelled: () => {},
-        }),
-      idle: () => {},
+    this.when({ self: ['idle', 'running'], children: ['running'] }, () => {
+      if (!this.hasRunningChildren()) {
+        this.moveTo({ children: 'waiting_for_self' })
+      }
     })
+
+    this.when({ self: ['waiting_for_children'], children: ['running'] }, () => {
+      if (!this.hasRunningChildren()) {
+        this.moveTo({ container: 'done' })
+      }
+    })
+
+    this.when({ self: ['waiting_for_children'], children: ['waiting_for_self'] }, () => {
+      if (!this.hasRunningChildren()) {
+        this.moveTo({ container: 'done', self: 'idle' })
+      }
+    })
+
+    this.actions.onChildStop?.()
   }
 
-  // Direction Transitions
-  toIdle() {
-    this.moveTo('idle', 'idle')
+  #debug() {
+    console.log(this.debugDescription())
   }
 
-  toEntering() {
-    this.moveTo('pending', 'entering')
-  }
+  // Internal Methods
+  private onStateChange(before: TransitionState, after: TransitionState) {
+    if (
+      this.matches(before, { container: ['idle'] }) &&
+      this.matches(after, { container: ['entering', 'leaving'] })
+    ) {
+      this.actions.onStart?.()
+    }
 
-  toLeaving() {
-    this.moveTo('pending', 'leaving')
-  }
+    if (
+      this.matches(before, { container: ['entering', 'leaving'] }) &&
+      this.matches(after, { container: ['done'] })
+    ) {
+      this.actions.onStop?.()
+    }
 
-  // State transitions — fires appropriate before/after events
-  toRunning() {
-    this.actions.onStart?.(this.direction)
-    this.moveTo('running')
+    if (this.matches(after, { container: ['cancelled'] })) {
+      this.actions.onCancel?.()
+    }
 
-    // Entering transitions are run concurrently
-    if (this.direction === 'entering') {
-      this.children.forEach((child) => child.send('#child.start'))
+    if (
+      this.matches(before, { container: ['idle'] }) &&
+      this.matches(after, { container: ['entering', 'leaving'] })
+    ) {
+      this.parent?.send('#child.start')
+    }
+
+    if (
+      !this.matches(before, { container: ['done'] }) &&
+      this.matches(after, { container: ['done'] })
+    ) {
+      this.parent?.send('#child.stop')
     }
   }
 
-  toWaitingForChildren() {
-    if (this.state === 'waiting_for_children') {
-      return
-    }
-
-    this.moveTo('waiting_for_children')
-    this.children.forEach((child) => child.send('#child.start'))
-  }
-
-  toDone() {
-    this.moveTo('done')
-    this.actions.onStop?.(this.direction)
-    this.parent?.send('#child.stop')
-  }
-
-  toCancelled() {
-    this.moveTo('cancelled')
-    this.actions.onCancel?.(this.direction)
-    this.parent?.send('#child.stop')
-  }
-
-  // Helpers
-  moveTo(state: TransitionState, direction?: TransitionDirection) {
-    let previous = [this.direction, this.state] as const
-
-    this.state = state
-    this.direction = direction !== undefined ? direction : this.direction
-
-    let current = [this.direction, this.state] as const
-
-    this.actions.onChange?.(previous, current)
-  }
-
-  when(direction: TransitionDirection, state: TransitionState, callback: () => void) {
-    if (this.direction === direction && this.state === state) {
-      callback()
-    }
-  }
-
-  protected get childrenState(): ChildrenState {
-    if (this.children.size === 0) {
-      return 'none'
-    }
-
+  private hasRunningChildren() {
     for (const child of this.children) {
-      if (child.direction !== 'idle' && child.state !== 'done') {
-        return 'some_active'
+      if (child.state[0] === 'entering' || child.state[0] === 'leaving') {
+        return true
       }
     }
 
-    return 'all_idle'
-  }
-}
-
-export function match<TValue extends string | number = string, TReturnValue = unknown>(
-  value: TValue,
-  lookup: Record<TValue, TReturnValue | ((...args: any[]) => TReturnValue)>,
-  ...args: any[]
-): TReturnValue {
-  if (value in lookup) {
-    let returnValue = lookup[value]
-    return typeof returnValue === 'function' ? returnValue(...args) : returnValue
+    return false
   }
 
-  let error = new Error(
-    `Tried to handle "${value}" but there is no handler defined. Only defined handlers are: ${Object.keys(
-      lookup
-    )
-      .map((key) => `"${key}"`)
-      .join(', ')}.`
-  )
-  // if (Error.captureStackTrace) Error.captureStackTrace(error, match)
-  throw error
+  private when(matcher: Partial<TransitionStateMatcher>, callback?: () => void) {
+    if (this.matches(this.state, matcher)) {
+      callback?.()
+    }
+  }
+
+  private matches(state: TransitionState, matcher: Partial<TransitionStateMatcher>): boolean {
+    let containerMatches = matcher.container?.includes(state[0]) ?? true
+    let selfMatches = matcher.self?.includes(state[1]) ?? true
+    let childrenMatches = matcher.children?.includes(state[2]) ?? true
+
+    return containerMatches && selfMatches && childrenMatches
+  }
+
+  private moveTo(descriptor: Partial<TransitionStateDescriptor>) {
+    const before: TransitionState = this.state
+    const after: TransitionState = [
+      descriptor.container ?? before[0],
+      descriptor.self ?? before[1],
+      descriptor.children ?? before[2],
+    ]
+
+    const isSame = before[0] === after[0] && before[1] === after[1] && before[2] === after[2]
+
+    if (isSame) {
+      return
+    }
+
+    this.state = after
+
+    this.onStateChange(before, after)
+    this.actions.onChange?.(before, after)
+  }
+
+  private debugDescription(indent: string = '\t') {
+    const str = []
+
+    for (const line of this.debugLines(this, indent)) {
+      str.push(line)
+    }
+
+    return str.join('\n')
+  }
+
+  private *debugLines(machine: Machine, indent: string, level: number = 0): Iterable<string> {
+    let prefix = indent.repeat(level)
+
+    let desc = `${prefix}<Machine ${machine.id}> [${machine.state.join(', ')}]`
+
+    yield desc
+
+    if (!(machine instanceof TransitionMachineImpl)) {
+      return
+    }
+
+    for (const child of machine.children) {
+      yield* this.debugLines(child, indent, level + 1)
+    }
+  }
 }
