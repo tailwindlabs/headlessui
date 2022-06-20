@@ -1,4 +1,4 @@
-import { match } from 'utils/match'
+import { match } from '../../utils/match'
 import { Machine } from './machine'
 
 type ContainerState = 'idle' | 'entering' | 'leaving' | 'cancelled' | 'done'
