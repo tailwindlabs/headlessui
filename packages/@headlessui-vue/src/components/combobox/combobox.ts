@@ -738,7 +738,9 @@ export let ComboboxInput = defineComponent({
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let ourProps = {
         'aria-controls': api.optionsRef.value?.id,
-        'aria-expanded': api.disabled ? undefined : api.comboboxState.value === ComboboxStates.Open,
+        'aria-expanded': api.disabled.value
+          ? undefined
+          : api.comboboxState.value === ComboboxStates.Open,
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined

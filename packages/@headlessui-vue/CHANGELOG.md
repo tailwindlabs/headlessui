@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only render the `Dialog` on the client ([#1566](https://github.com/tailwindlabs/headlessui/pull/1566))
 - Improve Combobox input cursor position ([#1574](https://github.com/tailwindlabs/headlessui/pull/1574))
 - Fix scrolling issue in `Tab` component when using arrow keys ([#1584](https://github.com/tailwindlabs/headlessui/pull/1584))
+- Fix missing `aria-expanded` for `ComboboxInput` component ([#1605](https://github.com/tailwindlabs/headlessui/pull/1605))
 
 ## [1.6.4] - 2022-05-29
 
