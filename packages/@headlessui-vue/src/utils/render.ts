@@ -116,6 +116,7 @@ function _render({
             `However we need to passthrough the following props:`,
             Object.keys(incomingProps)
               .concat(Object.keys(attrs))
+              .sort((a, z) => a.localeCompare(z))
               .map((line) => `  - ${line}`)
               .join('\n'),
             '',
