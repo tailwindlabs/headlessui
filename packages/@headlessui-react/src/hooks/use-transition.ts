@@ -59,8 +59,8 @@ export function useTransition({
         dd.dispose()
 
         match(reason, {
-          [Reason.Ended]: () => void onStop.current(latestDirection.current),
-          [Reason.Cancelled]: () => void onCancel.current(latestDirection.current),
+          [Reason.Ended]: () => onStop.current(latestDirection.current),
+          [Reason.Cancelled]: () => onCancel.current(latestDirection.current),
         })
       })
     )
