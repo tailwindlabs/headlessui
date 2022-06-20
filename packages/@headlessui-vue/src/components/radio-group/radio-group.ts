@@ -27,10 +27,6 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 
-function defaultComparator<T>(a: T, z: T): boolean {
-  return a === z
-}
-
 interface Option {
   id: string
   element: Ref<HTMLElement | null>
@@ -75,7 +71,6 @@ export let RadioGroup = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
     disabled: { type: [Boolean], default: false },
-    by: { type: [String, Function], default: () => defaultComparator },
     modelValue: { type: [Object, String, Number, Boolean] },
     name: { type: String, optional: true },
   },
@@ -107,11 +102,7 @@ export let RadioGroup = defineComponent({
         )
       ),
       compare(a: any, z: any) {
-        if (typeof props.by === 'string') {
-          let property = props.by as unknown as any
-          return a[property] === z[property]
-        }
-        return props.by(a, z)
+        return a === z
       },
       change(nextValue: unknown) {
         if (props.disabled) return false
