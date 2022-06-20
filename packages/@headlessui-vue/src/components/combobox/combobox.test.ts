@@ -45,6 +45,7 @@ import {
   assertCombobox,
   ComboboxMode,
   assertNotActiveComboboxOption,
+  assertComboboxInput,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
@@ -332,8 +333,11 @@ describe('Rendering', () => {
         // TODO: Rendering Example directly reveals a vue bug — I think it's been fixed for a while but I can't find the commit
         renderTemplate(Example)
 
+        assertComboboxInput({ state: ComboboxState.InvisibleUnmounted })
+
         await click(getComboboxButton())
 
+        assertComboboxInput({ state: ComboboxState.Visible })
         assertComboboxList({ state: ComboboxState.Visible })
 
         await click(getComboboxOptions()[1])

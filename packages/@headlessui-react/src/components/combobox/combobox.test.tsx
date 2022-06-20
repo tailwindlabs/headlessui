@@ -39,6 +39,7 @@ import {
   assertCombobox,
   ComboboxMode,
   assertNotActiveComboboxOption,
+  assertComboboxInput,
 } from '../../test-utils/accessibility-assertions'
 import { Transition } from '../transitions/transition'
 
@@ -296,8 +297,11 @@ describe('Rendering', () => {
 
         render(<Example />)
 
+        assertComboboxInput({ state: ComboboxState.InvisibleUnmounted })
+
         await click(getComboboxButton())
 
+        assertComboboxInput({ state: ComboboxState.Visible })
         assertComboboxList({ state: ComboboxState.Visible })
 
         await click(getComboboxOptions()[1])

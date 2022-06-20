@@ -330,6 +330,57 @@ export function assertCombobox(
   }
 }
 
+export function assertComboboxInput(
+  options: {
+    attributes?: Record<string, string | null>
+    state: ComboboxState
+  },
+  input = getComboboxInput()
+) {
+  try {
+    if (input === null) return expect(input).not.toBe(null)
+
+    // Ensure combobox input has these properties
+    expect(input).toHaveAttribute('id')
+
+    switch (options.state) {
+      case ComboboxState.Visible:
+        expect(input).toHaveAttribute('aria-controls')
+        expect(input).toHaveAttribute('aria-expanded', 'true')
+        break
+
+      case ComboboxState.InvisibleHidden:
+        expect(input).toHaveAttribute('aria-controls')
+        if (input.hasAttribute('disabled')) {
+          expect(input).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(input).toHaveAttribute('aria-expanded', 'false')
+        }
+        break
+
+      case ComboboxState.InvisibleUnmounted:
+        expect(input).not.toHaveAttribute('aria-controls')
+        if (input.hasAttribute('disabled')) {
+          expect(input).not.toHaveAttribute('aria-expanded')
+        } else {
+          expect(input).toHaveAttribute('aria-expanded', 'false')
+        }
+        break
+
+      default:
+        assertNever(options.state)
+    }
+
+    // Ensure combobox input has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(input).toHaveAttribute(attributeName, options.attributes[attributeName])
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertComboboxInput)
+    throw err
+  }
+}
+
 export function assertComboboxList(
   options: {
     attributes?: Record<string, string | null>
