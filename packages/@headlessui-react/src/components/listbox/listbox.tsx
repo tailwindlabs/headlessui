@@ -311,10 +311,11 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   props: Props<
     TTag,
     ListboxRenderPropArg,
-    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name' | 'multiple'
+    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name' | 'multiple' | 'by'
   > & {
     value: TType
     onChange(value: TType): void
+    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
     disabled?: boolean
     horizontal?: boolean
     name?: string
@@ -326,6 +327,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     value,
     name,
     onChange,
+    by = (a, z) => a === z,
     disabled = false,
     horizontal = false,
     multiple = false,
@@ -341,7 +343,14 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
         value,
         onChange,
         mode: multiple ? ValueMode.Multi : ValueMode.Single,
-        compare: useEvent((a, z) => a === z),
+        compare: useEvent(
+          typeof by === 'string'
+            ? (a: TType, z: TType) => {
+                let property = by as unknown as keyof TType
+                return a[property] === z[property]
+              }
+            : by
+        ),
       },
     },
     labelRef: createRef(),

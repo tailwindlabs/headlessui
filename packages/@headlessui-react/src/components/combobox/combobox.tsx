@@ -311,10 +311,11 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   props: Props<
     TTag,
     ComboboxRenderPropArg<TType>,
-    'value' | 'onChange' | 'disabled' | 'name' | 'nullable' | 'multiple'
+    'value' | 'onChange' | 'disabled' | 'name' | 'nullable' | 'multiple' | 'by'
   > & {
     value: TType
     onChange(value: TType): void
+    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
     disabled?: boolean
     __demoMode?: boolean
     name?: string
@@ -327,6 +328,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     name,
     value,
     onChange: theirOnChange,
+    by = (a, z) => a === z,
     disabled = false,
     __demoMode = false,
     nullable = false,
@@ -352,7 +354,14 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let buttonRef = useRef<_Data['buttonRef']['current']>(null)
   let optionsRef = useRef<_Data['optionsRef']['current']>(null)
 
-  let compare = useEvent((a, z) => a === z)
+  let compare = useEvent(
+    typeof by === 'string'
+      ? (a: TType, z: TType) => {
+          let property = by as unknown as keyof TType
+          return a[property] === z[property]
+        }
+      : by
+  )
 
   let isSelected: (value: TType) => boolean = useCallback(
     (compareValue) =>
