@@ -4,5 +4,5 @@ export function dom<T extends Element | ComponentPublicInstance>(ref?: Ref<T | n
   if (ref == null) return null
   if (ref.value == null) return null
 
-  return '$el' in ref.value ? (ref.value.$el as T | null) : ref.value
+  return (ref.value as { $el?: T }).$el ?? ref.value
 }
