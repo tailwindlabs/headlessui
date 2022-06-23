@@ -97,10 +97,11 @@ interface PopoverRegisterBag {
 
 export let Popover = defineComponent({
   name: 'Popover',
+  emits: { 'toggle': (_value: boolean) => true },
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  setup(props, { slots, attrs, expose }) {
+  setup(props, { slots, attrs, emit, expose }) {
     let buttonId = `headlessui-popover-button-${useId()}`
     let panelId = `headlessui-popover-panel-${useId()}`
 
@@ -141,6 +142,7 @@ export let Popover = defineComponent({
           [PopoverStates.Open]: PopoverStates.Closed,
           [PopoverStates.Closed]: PopoverStates.Open,
         })
+        emit('toggle', !!popoverState.value)
       },
       closePopover() {
         if (popoverState.value === PopoverStates.Closed) return
