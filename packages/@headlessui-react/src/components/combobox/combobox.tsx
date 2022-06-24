@@ -621,7 +621,6 @@ let Input = forwardRefWithAs(function Input<
 
       case Keys.Backspace:
       case Keys.Delete:
-        if (data.comboboxState !== ComboboxState.Open) return
         if (data.mode !== ValueMode.Single) return
         if (!data.nullable) return
 
