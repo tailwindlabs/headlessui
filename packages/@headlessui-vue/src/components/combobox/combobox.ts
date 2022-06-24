@@ -639,7 +639,6 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Backspace:
         case Keys.Delete:
-          if (api.comboboxState.value !== ComboboxStates.Open) return
           if (api.mode.value !== ValueMode.Single) return
           if (!api.nullable.value) return
 
