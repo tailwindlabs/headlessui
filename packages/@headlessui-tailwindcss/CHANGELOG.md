@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix bracket order of `not` variants ([#1621](https://github.com/tailwindlabs/headlessui/pull/1621))
 
 ## [0.1.0] - 2022-05-24
 
