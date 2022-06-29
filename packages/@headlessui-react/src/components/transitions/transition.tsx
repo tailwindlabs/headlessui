@@ -152,14 +152,6 @@ function useNesting(
         machine.send('reset')
       }
     },
-
-    onEvent: (event) => {
-      console.log('[%s] Transition event', machine.id, event)
-    },
-
-    onChange(prev, current) {
-      console.log('[%s] Transition state change', machine.id, { prev, current })
-    },
   }))
 
   // Link the current transition to its parent
@@ -376,6 +368,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     classes,
     direction: transitionDirection,
     onStart: useLatestValue((direction) => {
+      // TODO: Before & After events should be in a different order
       nesting.current.prepare(
         () => beforeEvent(direction),
         () => afterEvent(direction)
