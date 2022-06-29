@@ -44,9 +44,6 @@ export type TransitionActions = {
   onCancel?: () => void
   onEvent?: (event: TransitionEvents['type'], payload?: any) => void
   onChange?: (before: TransitionState, after: TransitionState) => void
-
-  // TODO: Can we get rid of this?
-  onChildStop?: () => void
 }
 
 export interface TransitionMachine extends Machine<TransitionState, TransitionEvents> {
@@ -160,11 +157,13 @@ class TransitionMachineImpl implements TransitionMachine {
       if (this.hasRunningChildren()) {
         this.moveTo({ self: 'waiting_for_children' })
       } else {
-        this.moveTo({ container: 'done' })
+        this.moveTo({ container: 'done', self: 'idle', children: 'idle' })
       }
     })
 
-    this.when({ children: ['waiting_for_self'] }, () => this.moveTo({ container: 'done' }))
+    this.when({ children: ['waiting_for_self'] }, () =>
+      this.moveTo({ container: 'done', self: 'idle', children: 'idle' })
+    )
   }
 
   // Internal Events
@@ -199,17 +198,19 @@ class TransitionMachineImpl implements TransitionMachine {
 
     this.when({ self: ['waiting_for_children'], children: ['running'] }, () => {
       if (!this.hasRunningChildren()) {
-        this.moveTo({ container: 'done' })
+        this.moveTo({ container: 'done', self: 'idle', children: 'idle' })
       }
     })
 
     this.when({ self: ['waiting_for_children'], children: ['waiting_for_self'] }, () => {
       if (!this.hasRunningChildren()) {
-        this.moveTo({ container: 'done', self: 'idle' })
+        this.moveTo({ container: 'done', self: 'idle', children: 'idle' })
       }
     })
 
-    this.actions.onChildStop?.()
+    if (!this.hasRunningChildren() && this.children.size === 1) {
+      this.actions.onStop?.()
+    }
   }
 
   // Internal Methods
@@ -245,6 +246,13 @@ class TransitionMachineImpl implements TransitionMachine {
     ) {
       this.parent?.send('#child.stop')
     }
+
+    if (
+      !this.matches(before, { container: ['cancelled'] }) &&
+      this.matches(after, { container: ['cancelled'] })
+    ) {
+      this.parent?.send('#child.stop')
+    }
   }
 
   private hasRunningChildren() {
@@ -272,7 +280,7 @@ class TransitionMachineImpl implements TransitionMachine {
   }
 
   private moveTo(descriptor: Partial<TransitionStateDescriptor>) {
-    const before: TransitionState = this.state
+    const before: TransitionState = [...this.state]
     const after: TransitionState = [
       descriptor.container ?? before[0],
       descriptor.self ?? before[1],

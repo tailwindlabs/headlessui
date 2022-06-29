@@ -147,9 +147,7 @@ function useNesting(
 
     onStop: () => {
       onStopCallback.current?.()
-    },
 
-    onChildStop: () => {
       if (root) {
         machine.send('reset')
       }
