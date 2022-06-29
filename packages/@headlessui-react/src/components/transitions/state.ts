@@ -57,25 +57,11 @@ export interface TransitionMachine extends Machine<TransitionState, TransitionEv
   ): void
 }
 
-let machines: TransitionMachine[] = []
-
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window, 'machines', {
-    get: () => {
-      return machines.filter((m) => {
-        return m.parent === undefined
-      })
-    },
-  })
-}
-
 export function createTransitionMachine(
   id: string,
   actions?: TransitionActions
 ): TransitionMachine {
-  let machine = new TransitionMachineImpl(id, actions)
-  machines.push(machine)
-  return machine
+  return new TransitionMachineImpl(id, actions)
 }
 
 let uid = 1

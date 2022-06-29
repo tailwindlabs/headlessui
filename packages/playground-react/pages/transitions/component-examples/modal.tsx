@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { Dialog, Transition, DeferredNode } from '@headlessui/react'
+import { Dialog, Transition } from '@headlessui/react'
 import { CheckIcon } from '@heroicons/react/outline'
 
 export default function Home() {
@@ -29,10 +29,20 @@ export default function Home() {
     })
   }
 
+  // @ts-ignore
+  const machines = typeof window !== 'undefined'
+    ? window.useActiveMachines()
+    : useRef([])
+
   useEffect(() => {
     requestAnimationFrame(function tick() {
-      setTree(DeferredNode.debugAll(' '))
+      let tmp = ''
 
+      for (const machine of machines.current ?? []) {
+        tmp += `${machine.debugDescription()}\n`
+      }
+
+      setTree(tmp)
       requestAnimationFrame(tick)
     })
   }, [])
