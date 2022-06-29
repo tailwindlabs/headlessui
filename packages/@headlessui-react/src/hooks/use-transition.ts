@@ -66,5 +66,5 @@ export function useTransition({
     )
 
     return dd.dispose
-  }, [direction])
+  }, [direction, container.current])
 }
