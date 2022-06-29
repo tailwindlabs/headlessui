@@ -29,7 +29,6 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
-import { defer, DeferredNode } from '../../utils/defer'
 import { TransitionMachine } from './state'
 import { useTransitionMachine } from './use-transition-machine'
 
@@ -534,4 +533,3 @@ let Child = forwardRefWithAs(function Child<
 })
 
 export let Transition = Object.assign(TransitionRoot, { Child, Root: TransitionRoot })
-export { DeferredNode }
