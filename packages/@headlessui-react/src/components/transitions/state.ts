@@ -23,7 +23,6 @@ type InternalEvents =
   | { type: '#child.resign'; payload: TransitionMachine }
   | { type: '#child.start'; payload: undefined }
   | { type: '#child.stop'; payload: undefined }
-  | { type: '#debug'; payload: undefined }
 
 export type TransitionEvents = UserEvents | InternalEvents
 export type TransitionState = readonly [ContainerState, SelfState, ChildrenState]
@@ -63,6 +62,16 @@ export interface TransitionMachine extends Machine<TransitionState, TransitionEv
 
 let machines: TransitionMachine[] = []
 
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'machines', {
+    get: () => {
+      return machines.filter((m) => {
+        return m.parent === undefined
+      })
+    },
+  })
+}
+
 export function createTransitionMachine(
   id: string,
   actions?: TransitionActions
@@ -70,12 +79,6 @@ export function createTransitionMachine(
   let machine = new TransitionMachineImpl(id, actions)
   machines.push(machine)
   return machine
-}
-
-if (typeof window !== 'undefined') {
-  window.debugMachines = () => {
-    machines.forEach((m) => m.send('#debug'))
-  }
 }
 
 let uid = 1
@@ -124,7 +127,6 @@ class TransitionMachineImpl implements TransitionMachine {
       '#child.resign': () => this.#childResign(payload),
       '#child.start': () => this.#childStart(),
       '#child.stop': () => this.#childStop(),
-      '#debug': () => this.#debug(),
     })
   }
 
@@ -210,10 +212,6 @@ class TransitionMachineImpl implements TransitionMachine {
     this.actions.onChildStop?.()
   }
 
-  #debug() {
-    console.log(this.debugDescription())
-  }
-
   // Internal Methods
   private onStateChange(before: TransitionState, after: TransitionState) {
     if (
@@ -293,7 +291,7 @@ class TransitionMachineImpl implements TransitionMachine {
     this.actions.onChange?.(before, after)
   }
 
-  private debugDescription(indent: string = '\t') {
+  public debugDescription(indent: string = '\t') {
     const str = []
 
     for (const line of this.debugLines(this, indent)) {
