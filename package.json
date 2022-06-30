@@ -17,6 +17,7 @@
     "vue": "yarn workspace @headlessui/vue",
     "playground-vue": "yarn workspace playground-vue dev",
     "vue-playground": "yarn workspace playground-vue dev",
+    "browser-tests": "yarn workspace browser-tests",
     "clean": "yarn workspaces run clean",
     "build": "npm-run-all -p 'core build' 'react build' 'vue build'",
     "test": "./scripts/test.sh",
