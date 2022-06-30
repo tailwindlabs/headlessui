@@ -3,63 +3,66 @@ import { createTransitionMachine, TransitionMachine } from './state'
 it('entering', () => {
   let root = createTestMachine('root')
 
-  expect(root.description).toEqual('idle: idle')
+  expect(root.description).toEqual('container:idle, self:idle, children:idle')
 
   root.send('enter')
 
-  expect(root.description).toEqual('entering: pending')
+  expect(root.description).toEqual('container:entering, self:idle, children:idle')
 
   root.send('start')
 
-  expect(root.description).toEqual('entering: running')
+  expect(root.description).toEqual('container:entering, self:running, children:idle')
 
   root.send('stop')
 
-  expect(root.description).toEqual('entering: done')
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
 })
 
 it('leaving', () => {
   let root = createTestMachine('root')
 
-  expect(root.description).toEqual('idle: idle')
+  expect(root.description).toEqual('container:idle, self:idle, children:idle')
 
   root.send('leave')
 
-  expect(root.description).toEqual('leaving: pending')
+  expect(root.description).toEqual('container:leaving, self:idle, children:idle')
 
   root.send('start')
 
-  expect(root.description).toEqual('leaving: running')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   root.send('stop')
 
-  expect(root.description).toEqual('leaving: done')
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
 })
 
-it('entering with children', () => {
+fit('entering with children', () => {
   let root = createTestMachine('root')
   let child1 = createTestMachine('child-1')
 
   root.add(child1)
 
-  expect(root.description).toEqual('idle: idle')
+  expect(root.description).toEqual('container:idle, self:idle, children:idle')
 
   root.send('enter')
 
-  expect(root.description).toEqual('entering: pending')
+  expect(root.description).toEqual('container:entering, self:idle, children:idle')
 
   root.send('start')
 
-  expect(root.description).toEqual('entering: running')
+  expect(root.description).toEqual('container:entering, self:running, children:idle')
 
   root.send('stop')
 
-  expect(root.description).toEqual('entering: waiting_for_children')
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
 
   child1.send('start')
+
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
+
   child1.send('stop')
 
-  expect(root.description).toEqual('entering: done')
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
 })
 
 it('leaving with children', () => {
@@ -68,24 +71,27 @@ it('leaving with children', () => {
 
   root.add(child1)
 
-  expect(root.description).toEqual('idle: idle')
+  expect(root.description).toEqual('container:idle, self:idle, children:idle')
 
   root.send('leave')
 
-  expect(root.description).toEqual('leaving: pending')
+  expect(root.description).toEqual('container:leaving, self:idle, children:idle')
 
   root.send('start')
 
-  expect(root.description).toEqual('leaving: waiting_for_children')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   child1.send('start')
+
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
+
   child1.send('stop')
 
-  expect(root.description).toEqual('leaving: running')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   root.send('stop')
 
-  expect(root.description).toEqual('leaving: done')
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
 })
 
 it('leaving with children added while waiting for other children', () => {
@@ -95,15 +101,15 @@ it('leaving with children added while waiting for other children', () => {
 
   root.add(child1)
 
-  expect(root.description).toEqual('idle: idle')
+  expect(root.description).toEqual('container:idle, self:idle, children:idle')
 
   root.send('leave')
 
-  expect(root.description).toEqual('leaving: pending')
+  expect(root.description).toEqual('container:leaving, self:idle, children:idle')
 
   root.send('start')
 
-  expect(root.description).toEqual('leaving: waiting_for_children')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   child1.send('start')
 
@@ -111,16 +117,16 @@ it('leaving with children added while waiting for other children', () => {
 
   child1.send('stop')
 
-  expect(root.description).toEqual('leaving: waiting_for_children')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   child2.send('start')
   child2.send('stop')
 
-  expect(root.description).toEqual('leaving: running')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   root.send('stop')
 
-  expect(root.description).toEqual('leaving: done')
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
 })
 
 it('waiting on nested children', () => {
@@ -131,32 +137,32 @@ it('waiting on nested children', () => {
   root.add(child1)
   child1.add(child11)
 
-  expect(root.description).toEqual('idle: idle')
+  expect(root.description).toEqual('container:idle, self:idle, children:idle')
 
   root.send('leave')
 
-  expect(root.description).toEqual('leaving: pending')
+  expect(root.description).toEqual('container:leaving, self:idle, children:idle')
 
   root.send('start')
 
-  expect(root.description).toEqual('leaving: waiting_for_children')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   child1.send('start')
 
-  expect(root.description).toEqual('leaving: waiting_for_children')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   child11.send('start')
   child11.send('stop')
 
-  expect(root.description).toEqual('leaving: waiting_for_children')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   child1.send('stop')
 
-  expect(root.description).toEqual('leaving: running')
+  expect(root.description).toEqual('container:leaving, self:running, children:idle')
 
   root.send('stop')
 
-  expect(root.description).toEqual('leaving: done')
+  expect(root.description).toEqual('container:done, self:idle, children:idle')
 })
 
 //
@@ -187,7 +193,7 @@ function createTestMachine(id: string) {
     logs: { get: () => [...logs] },
     description: {
       get: () =>
-        `(container: ${machine.state[0]}, self: ${machine.state[1]}, children: ${machine.state[2]})`,
+        `container:${machine.state[0]}, self:${machine.state[1]}, children:${machine.state[2]}`,
     },
   })
 
