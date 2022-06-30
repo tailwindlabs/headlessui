@@ -1,10 +1,10 @@
 import { Disclosure } from '@headlessui/react'
 
-export default function Example() {
+export default function Example({ buttonDisabled = false }) {
   return (
     <div>
       <Disclosure>
-        <Disclosure.Button>Trigger</Disclosure.Button>
+        <Disclosure.Button disabled={buttonDisabled}>Trigger</Disclosure.Button>
         <Disclosure.Panel>Contents</Disclosure.Panel>
       </Disclosure>
     </div>

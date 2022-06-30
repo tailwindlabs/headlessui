@@ -1,86 +1,58 @@
-import { expect, Locator } from './plugin'
+// import {
+//   click,
+//   press,
+//   focus,
+//   Keys,
+//   MouseButton,
+// } from '../../../@headlessui-react/src/test-utils/interactions'
 
-function assertNever(x: never): never {
-  throw new Error('Unexpected object: ' + x)
+import { match } from '../../../@headlessui-react/src/utils/match'
+import { Locator } from './plugin'
+
+export function activeComponent(): Locator {
+  return globalThis.component
 }
 
-// ---
-
-export enum DisclosureState {
-  /** The disclosure is visible to the user. */
-  Visible,
-
-  /** The disclosure is **not** visible to the user. It's still in the DOM, but it is hidden. */
-  InvisibleHidden,
-
-  /** The disclosure is **not** visible to the user. It's not in the DOM, it is unmounted. */
-  InvisibleUnmounted,
+export enum MouseButton {
+  Left = 0,
+  Middle = 1,
+  Right = 2,
 }
 
-// ---
-
-export function getDisclosureButton(): HTMLElement | null {
-  return document.querySelector('[id^="headlessui-disclosure-button-"]')
+export async function click(element: Locator | null, button = MouseButton.Left) {
+  await element.click({
+    button: match(button, {
+      [MouseButton.Left]: 'left',
+      [MouseButton.Middle]: 'middle',
+      [MouseButton.Right]: 'right',
+    }),
+  })
 }
 
-export function getDisclosurePanel(): HTMLElement | null {
-  return document.querySelector('[id^="headlessui-disclosure-panel-"]')
+export let Keys: Record<string, Partial<KeyboardEvent>> = {
+  Space: { key: ' ', keyCode: 32, charCode: 32 },
+  Enter: { key: 'Enter', keyCode: 13, charCode: 13 },
+  Escape: { key: 'Escape', keyCode: 27, charCode: 27 },
+  Backspace: { key: 'Backspace', keyCode: 8 },
+
+  ArrowLeft: { key: 'ArrowLeft', keyCode: 37 },
+  ArrowUp: { key: 'ArrowUp', keyCode: 38 },
+  ArrowRight: { key: 'ArrowRight', keyCode: 39 },
+  ArrowDown: { key: 'ArrowDown', keyCode: 40 },
+
+  Home: { key: 'Home', keyCode: 36 },
+  End: { key: 'End', keyCode: 35 },
+
+  PageUp: { key: 'PageUp', keyCode: 33 },
+  PageDown: { key: 'PageDown', keyCode: 34 },
+
+  Tab: { key: 'Tab', keyCode: 9, charCode: 9 },
 }
 
-// ---
+export async function press(event: Partial<KeyboardEvent>) {
+  return await activeComponent().press(event.key)
+}
 
-export async function assertDisclosureButton(
-  options: {
-    attributes?: Record<string, string | null>
-    textContent?: string
-    state: DisclosureState
-  },
-  button = getDisclosureButton()
-) {
-  try {
-    if (button === null) return expect(button).not.toBe(null)
-
-    // Ensure disclosure button have these properties
-    await expect(button).toHaveAttribute('id')
-
-    switch (options.state) {
-      case DisclosureState.Visible:
-        await expect(button).toHaveAttribute('aria-controls')
-        await expect(button).toHaveAttribute('aria-expanded', 'true')
-        break
-
-      case DisclosureState.InvisibleHidden:
-        await expect(button).toHaveAttribute('aria-controls')
-        if (await button.hasAttribute('disabled')) {
-          await expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          await expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
-        break
-
-      case DisclosureState.InvisibleUnmounted:
-        await expect(button).not.toHaveAttribute('aria-controls')
-        if (await button.hasAttribute('disabled')) {
-          await expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          await expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
-        break
-
-      default:
-        assertNever(options.state)
-    }
-
-    if (options.textContent) {
-      await expect(button).toHaveTextContent(options.textContent)
-    }
-
-    // Ensure disclosure button has the following attributes
-    for (let attributeName in options.attributes) {
-      await expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
-    }
-  } catch (err) {
-    if (err instanceof Error) Error.captureStackTrace(err, assertDisclosureButton)
-    throw err
-  }
+export async function focus(locator: Locator) {
+  return await locator.focus()
 }
