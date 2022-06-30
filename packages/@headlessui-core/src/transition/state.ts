@@ -3,7 +3,7 @@ import { Machine } from '../utils/machine'
 
 type ContainerState = 'idle' | 'entering' | 'leaving' | 'cancelled' | 'done'
 type SelfState = 'idle' | 'running' | 'waiting_for_children'
-type ChildrenState = 'idle' | 'running' | 'waiting_for_self'
+type ChildrenState = 'idle' | 'some_running' | 'all_running' | 'waiting_for_self'
 
 type UserEvents =
   // Overall
@@ -172,17 +172,29 @@ class TransitionMachineImpl implements TransitionMachine {
   }
 
   #childStart() {
-    this.when({ children: ['idle'] }, () => this.moveTo({ children: 'running' }))
+    this.when({ children: ['idle'] }, () => {
+      if (this.allChildrenHaveStarted()) {
+        this.moveTo({ children: 'all_running' })
+      } else {
+        this.moveTo({ children: 'some_running' })
+      }
+    })
+
+    this.when({ children: ['some_running'] }, () => {
+      if (this.allChildrenHaveStarted()) {
+        this.moveTo({ children: 'all_running' })
+      }
+    })
   }
 
   #childStop() {
-    this.when({ self: ['idle', 'running'], children: ['running'] }, () => {
+    this.when({ self: ['idle', 'running'], children: ['all_running'] }, () => {
       if (!this.hasRunningChildren()) {
         this.moveTo({ children: 'waiting_for_self' })
       }
     })
 
-    this.when({ self: ['waiting_for_children'], children: ['running'] }, () => {
+    this.when({ self: ['waiting_for_children'], children: ['all_running'] }, () => {
       if (!this.hasRunningChildren()) {
         this.moveTo({ container: 'done', self: 'idle', children: 'idle' })
       }
@@ -194,6 +206,7 @@ class TransitionMachineImpl implements TransitionMachine {
       }
     })
 
+    // TODO: Can this be simplified or removed?
     if (!this.hasRunningChildren() && this.children.size === 1) {
       this.actions.onStop?.()
     }
@@ -220,8 +233,8 @@ class TransitionMachineImpl implements TransitionMachine {
     }
 
     if (
-      this.matches(before, { container: ['idle'] }) &&
-      this.matches(after, { container: ['entering', 'leaving'] })
+      this.matches(before, { container: ['entering', 'leaving'], self: ['idle'] }) &&
+      this.matches(after, { container: ['entering', 'leaving'], self: ['running'] })
     ) {
       this.parent?.send('#child.start')
     }
@@ -249,6 +262,20 @@ class TransitionMachineImpl implements TransitionMachine {
     }
 
     return false
+  }
+
+  private allChildrenHaveStarted() {
+    for (const child of this.children) {
+      if (child.state[0] === 'idle') {
+        return false
+      }
+
+      if (child.state[0] !== 'done' && child.state[1] === 'idle') {
+        return false
+      }
+    }
+
+    return true
   }
 
   private when(matcher: Partial<TransitionStateMatcher>, callback?: () => void) {
