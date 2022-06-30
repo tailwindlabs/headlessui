@@ -1,37 +1,41 @@
 import { createTest, pick, expect } from '../util/plugin'
 
 import ExampleVue from './ExampleVue'
-import ExampleReact from './ExampleReactWeird'
+import ExampleReact from './ExampleReact'
 
 const test = createTest(
   (props?: { enterDuration?: number; leaveDuration?: number; withChildren?: boolean }) => {
     return pick({
       vue: () => <ExampleVue {...props} />,
-      // react: () => <ExampleReact {...props} />,
-      react: () => <ExampleReact />,
+      react: () => <ExampleReact {...props} />,
     })
   }
 )
 
-test.only('test: weird', async ({ render, page, animations }) => {
-  const toggle = page.locator('#toggle')
+// test.only('test: weird', async ({ render, page, animations }) => {
+//   const toggle = page.locator('#toggle')
 
-  await render({
-    enterDuration: 50,
-    leaveDuration: 50,
-  })
+//   await render({
+//     enterDuration: 50,
+//     leaveDuration: 50,
+//   })
 
-  await new Promise((resolve) => setTimeout(resolve, 10_000))
+//   await new Promise((resolve) => setTimeout(resolve, 10_000))
 
-  await animations.startRecording()
+//   await animations.startRecording()
 
-  await toggle.click()
-  await animations.wait()
+//   await toggle.click()
+//   await animations.wait()
 
-  console.log(animations.timeline)
-})
+//   console.log(animations.timeline)
+// })
 
-test('root: should transition in and out completely', async ({ render, page, animations }) => {
+test('root: should transition in and out completely', async ({
+  render,
+  page,
+  animations,
+  messages,
+}) => {
   const showButton = page.locator('#show')
   const hideButton = page.locator('#hide')
 
@@ -48,7 +52,12 @@ test('root: should transition in and out completely', async ({ render, page, ani
   await hideButton.click()
   await animations.wait()
 
-  console.log(animations.timeline)
+  expect(messages()).toEqual([
+    'root beforeEnter',
+    'root afterEnter',
+    'root beforeLeave',
+    'root afterLeave',
+  ])
 
   expect(animations.length).toEqual(2)
 
@@ -63,7 +72,7 @@ test('root: should transition in and out completely', async ({ render, page, ani
   expect(animations[1].properties).toEqual(['opacity'])
 })
 
-test('root: should cancel transitions', async ({ render, page, animations }) => {
+test('root: should cancel transitions', async ({ render, page, animations, messages }) => {
   const showButton = page.locator('#show')
   const hideButton = page.locator('#hide')
 
@@ -80,6 +89,8 @@ test('root: should cancel transitions', async ({ render, page, animations }) => 
 
   await animations.wait()
 
+  expect(messages()).toEqual(['root beforeEnter'])
+
   expect(animations.length).toEqual(2)
 
   expect(animations[0].target).toEqual('root')
@@ -93,7 +104,12 @@ test('root: should cancel transitions', async ({ render, page, animations }) => 
   expect(animations[1].properties).toEqual(['opacity'])
 })
 
-test('children: should transition in and out completely', async ({ render, page, animations }) => {
+test.only('children: should transition in and out completely', async ({
+  render,
+  page,
+  animations,
+  messages,
+}) => {
   const showButton = page.locator('#show')
   const hideButton = page.locator('#hide')
 
@@ -111,7 +127,21 @@ test('children: should transition in and out completely', async ({ render, page,
   await hideButton.click()
   await animations.wait()
 
-  console.log(animations.timeline)
+  expect(messages()).toEqual([
+    'child-1 beforeEnter',
+    'child-2 beforeEnter',
+    'root beforeEnter',
+    'child-1 afterEnter',
+    'child-2 afterEnter',
+    'root afterEnter',
+
+    'child-1 beforeLeave',
+    'child-2 beforeLeave',
+    'root beforeLeave',
+    'child-1 afterLeave',
+    'child-2 afterLeave',
+    'root afterLeave',
+  ])
 
   expect(animations.length).toEqual(6)
 
@@ -165,14 +195,6 @@ test('children: should cancel transitions', async ({ render, page, animations })
   await animations.wait()
 
   expect(animations.length).toEqual(6)
-
-  // child-1 [opacity]: created (1) -> started (4) -> ended (7)
-  // child-2 [opacity]: created (2) -> started (5) -> ended (8)
-  //    root [opacity]: created (3) -> started (6) -> ended (9)
-
-  // created [opacity]: child-1, child-2, root
-  // started [opacity]: child-1, child-2, root
-  //   ended [opacity]: child-1, child-2, root
 
   expect(animations[0].target).toEqual('child-1')
   expect(animations[0].state).toEqual('cancelled')

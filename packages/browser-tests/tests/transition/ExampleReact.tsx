@@ -8,19 +8,11 @@ export default function Example({ enterDuration = 0, leaveDuration = 0, withChil
     <div>
       {/* Test Styles */}
       <style>{`
-        .block {
-          transition: transform;
-          will-change: transform;
-          position: absolute;
-          inset: 0;
-          background: tomato;
-          height: 200px;
-        }
         .enter { transition-duration: ${enterDuration}ms; }
         .leave { transition-duration: ${leaveDuration}ms; }
-        .invisible { transform: translateY(-100%); }
-        .visible { transform: translateY(0); }
-      `}</style>
+        .invisible { opacity: 0%; }
+        .visible { opacity: 100%; }
+    `}</style>
 
       {/* Test Controls */}
       <button id="show" onClick={() => setShow(true)}>
@@ -33,20 +25,6 @@ export default function Example({ enterDuration = 0, leaveDuration = 0, withChil
         Toggle
       </button>
 
-      <div className="flex">
-        <div className="grow">
-          <div className="flex">
-            <button className="bg-[orange] p-2">Toggle</button>
-            <div className="relative grow">
-              <div className="absolute inset-0 h-[200px] bg-[tomato] transition will-change-transform">
-                menu
-              </div>
-            </div>
-          </div>
-          broken
-        </div>
-      </div>
-
       <Transition
         show={show}
         unmount={false}
@@ -56,8 +34,11 @@ export default function Example({ enterDuration = 0, leaveDuration = 0, withChil
         leave="leave"
         leaveFrom="visible"
         leaveTo="invisible"
-        className="block"
         data-test-id="root"
+        beforeEnter={() => console.log('root beforeEnter')}
+        afterEnter={() => console.log('root afterEnter')}
+        beforeLeave={() => console.log('root beforeLeave')}
+        afterLeave={() => console.log('root afterLeave')}
       >
         <div>
           <span>Hello 0</span>
@@ -72,6 +53,10 @@ export default function Example({ enterDuration = 0, leaveDuration = 0, withChil
                 leaveFrom="visible"
                 leaveTo="invisible"
                 data-test-id="child-1"
+                beforeEnter={() => console.log('child-1 beforeEnter')}
+                afterEnter={() => console.log('child-1 afterEnter')}
+                beforeLeave={() => console.log('child-1 beforeLeave')}
+                afterLeave={() => console.log('child-1 afterLeave')}
               >
                 <span>Hello 1</span>
               </Transition.Child>
@@ -84,6 +69,10 @@ export default function Example({ enterDuration = 0, leaveDuration = 0, withChil
                 leaveFrom="visible"
                 leaveTo="invisible"
                 data-test-id="child-2"
+                beforeEnter={() => console.log('child-2 beforeEnter')}
+                afterEnter={() => console.log('child-2 afterEnter')}
+                beforeLeave={() => console.log('child-2 beforeLeave')}
+                afterLeave={() => console.log('child-2 afterLeave')}
               >
                 <span>Hello 2</span>
               </Transition.Child>
