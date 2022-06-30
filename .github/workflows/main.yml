@@ -63,6 +63,22 @@ jobs:
         env:
           CI: true
 
+  browser_test:
+    runs-on: ubuntu-latest
+    needs: [install]
+
+    steps:
+      - name: Begin CI...
+        uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Test
+        run: yarn run browser test
+        env:
+          CI: true
+
   build:
     runs-on: ubuntu-latest
     needs: [install]

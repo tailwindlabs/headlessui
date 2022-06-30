@@ -6,8 +6,8 @@ export function getByText(text: string) {
 
 export async function assertActiveElement(locator: Locator) {
   const node = await currentPage().accessibility.snapshot({
-    root: await locator.elementHandle({ timeout: 0 }),
+    root: await locator.elementHandle({ timeout: 0 }) ?? undefined,
   })
 
-  expect(node.focused).toBe(true)
+  expect(node?.focused).toBe(true)
 }

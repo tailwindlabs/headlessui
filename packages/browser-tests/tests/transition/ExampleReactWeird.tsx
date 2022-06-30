@@ -19,9 +19,9 @@ export default function Example() {
 				}
 			`}</style>
       <button
+        id="toggle"
         style={{ zIndex: '1', position: 'relative' }}
         onClick={() => setIsShowing((isShowing) => !isShowing)}
-        data-test-id="toggle"
       >
         Toggle
       </button>
@@ -34,6 +34,7 @@ export default function Example() {
           leaveFrom="visible"
           leaveTo="invisible"
           className="block"
+          data-test-id="root"
         >
           {'menu'}
         </Transition>

@@ -14,7 +14,9 @@
   },
   "scripts": {
     "pretest": "rimraf playwright/.cache",
-    "test": "playwright test -c playwright.config.ts",
+    "test": "npm run test:vue && npm run test:react",
+    "test:vue": "SUITE=vue playwright test -c playwright.config.ts",
+    "test:react": "SUITE=react playwright test -c playwright.config.ts",
     "pretest:debug": "rimraf playwright/.cache",
     "test:debug": "playwright test -c playwright.config.ts --headed"
   },

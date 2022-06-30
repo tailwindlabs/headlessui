@@ -38,15 +38,15 @@ export class PlaywrightPlugin implements NewPlugin {
     printer: Printer
   ): string {
     if (isText(node)) {
-      return printText(node.value, config)
+      return printText(node.value ?? "<null>", config)
     }
 
     if (isComment(node)) {
-      return printComment(node.value, config)
+      return printComment(node.value ?? "<null>", config)
     }
 
     if (++depth > config.maxDepth) {
-      return printElementAsLeaf(node.tag, config)
+      return printElementAsLeaf(node.tag ?? "<null>", config)
     }
 
     // Remove leading/trailing empty text nodes
@@ -55,7 +55,7 @@ export class PlaywrightPlugin implements NewPlugin {
     children = Array.from(dropWhile(children.reverse(), isEmptyText)).reverse()
 
     return printElement(
-      node.tag,
+      node.tag ?? "<null>",
       printProps(
         Object.keys(node.attributes).sort(),
         node.attributes,

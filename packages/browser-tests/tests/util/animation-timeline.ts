@@ -28,7 +28,7 @@ export class Timeline {
   *eventRows(): Iterable<string[]> {
     const events = this.animations.events
 
-    const headers = Array.from(new Set(this.animations.map((a) => a.target)))
+    const headers = Array.from(new Set(this.animations.map((a) => a.target ?? "<null>")))
     const headerToCols = Object.fromEntries(Object.entries(headers).map((e) => e.reverse()))
     const maxColSize = Math.max(6, ...headers.map((h) => h.length))
 
@@ -58,7 +58,7 @@ export class Timeline {
 
     for (const [idx, event] of events.entries()) {
       const lastEvent = events[idx - 1]
-      const colIdx = parseInt(headerToCols[event.target]) + 1
+      const colIdx = parseInt(headerToCols[event.target ?? "<null>"]) + 1
       const sharedWithLastEvent = lastEvent && event.target === lastEvent.target
       const lastEventWasTerminating =
         lastEvent && (lastEvent.state === 'ended' || lastEvent.state === 'cancelled')

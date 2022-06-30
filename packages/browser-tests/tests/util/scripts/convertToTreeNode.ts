@@ -8,7 +8,7 @@ export function __to_tree_node__(node: Node): TreeNode {
       ? Object.fromEntries(Array.from(el.attributes).map((attr) => [attr.name, attr.value]))
       : {},
     children: Array.from(node.childNodes).map((child) => window.__to_tree_node__(child)),
-    value: node.nodeValue?.replace(/^\s+|\s$/g, ' '),
+    value: node.nodeValue?.replace(/^\s+|\s$/g, ' ') ?? null,
   }
 }
 

@@ -36,6 +36,11 @@ export class Snapshot {
 
   static async take(el: Element, trigger: string = 'none'): Promise<Snapshot> {
     const handle = 'elementHandle' in el ? await el.elementHandle() : el
+
+    if (! handle) {
+      throw new Error('Could not take snapshot of element')
+    }
+
     const root = await handle.evaluate((el) => window.__to_tree_node__(el))
 
     return new Snapshot(root, trigger)

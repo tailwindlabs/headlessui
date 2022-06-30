@@ -20,7 +20,7 @@ export enum MouseButton {
 }
 
 export async function click(element: Locator | null, button = MouseButton.Left) {
-  await element.click({
+  await element?.click({
     button: match(button, {
       [MouseButton.Left]: 'left',
       [MouseButton.Middle]: 'middle',
@@ -54,7 +54,7 @@ export let Keys: Record<string, Partial<KeyboardEvent>> = {
 }
 
 export async function press(event: Partial<KeyboardEvent>) {
-  return await activeComponent().press(event.key)
+  return await activeComponent().press(event.key!)
 }
 
 export async function focus(locator: Locator) {

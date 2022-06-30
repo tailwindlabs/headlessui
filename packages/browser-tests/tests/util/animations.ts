@@ -32,7 +32,7 @@ export interface WaitOptions {
 export class Animations extends Array<Animation> {
   page: Page
   events: AnimationEvent[]
-  lastSnapshot: Snapshot | undefined
+  lastSnapshot!: Snapshot
 
   constructor(page: Page) {
     super()

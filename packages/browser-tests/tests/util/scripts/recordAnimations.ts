@@ -9,6 +9,10 @@ export function __record_animations__() {
   let allocate = () => latestAnimationId++
 
   function getAnimationId(event: TransitionEvent) {
+    if (! event.target) {
+      throw new Error("getAnimationId: event has no target")
+    }
+
     let records = map.get(event.target) ?? {}
     map.set(event.target, records)
 
@@ -33,7 +37,7 @@ export function __record_animations__() {
       target: (event.target as HTMLElement)?.dataset.testId ?? null,
       properties: [event.propertyName],
       elapsedTime: event.elapsedTime * 1000,
-      tree: null,
+      tree: null as unknown as TreeNode,
     }
 
     // We must wait one frame to be able to see the updated DOM
