@@ -52,6 +52,7 @@ type Fixtures<PropsType> = {
   render: (props?: PropsType) => Promise<Locator>
   debug: () => Promise<void>
   animations: Animations
+  messages: () => string[]
 }
 
 function wrapLocator(locator: pt.Locator, helpers: Partial<Helpers> = {}): Locator {
@@ -71,6 +72,8 @@ function wrapLocator(locator: pt.Locator, helpers: Partial<Helpers> = {}): Locat
 }
 
 export function createTest<PropsType>(createComponent: (props?: PropsType) => void) {
+  const console: string[] = []
+
   const test = plugin.test.extend<Fixtures<PropsType>>({
     async render({ mount, page }, use) {
       await use(async (props) => {
@@ -106,9 +109,18 @@ export function createTest<PropsType>(createComponent: (props?: PropsType) => vo
     async animations({ page }, use) {
       await use(new Animations(page))
     },
+
+    async messages({}, use) {
+      await use(() => console)
+    },
   })
 
   test.beforeEach(async ({ page }) => {
+    await page.on('console', (message) => {
+      if (message.type() === 'log') {
+        console.push(message.text())
+      }
+    })
     await addGlobalScripts(page)
   })
 
