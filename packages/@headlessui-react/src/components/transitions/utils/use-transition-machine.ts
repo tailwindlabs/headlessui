@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { createTransitionMachine, TransitionActions, TransitionMachine } from './state'
-import { useMachine } from './use-machine'
+import { useMachine } from '../../../utils/use-machine'
 
 export function useTransitionMachine(
   id: string,
@@ -14,3 +14,5 @@ export function useTransitionMachine(
 
   return machine
 }
+
+export type { TransitionMachine }

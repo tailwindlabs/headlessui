@@ -29,8 +29,7 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
-import { TransitionMachine } from './state'
-import { useTransitionMachine } from './use-transition-machine'
+import { useTransitionMachine, TransitionMachine } from './use-transition-machine'
 
 type TransitionDirection = 'enter' | 'leave' | 'idle'
 
