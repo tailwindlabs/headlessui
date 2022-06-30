@@ -1,5 +1,5 @@
-import { match } from '../../../utils/match'
-import { Machine } from '../../../utils/machine'
+import { match } from '../utils/match'
+import { Machine } from '../utils/machine'
 
 type ContainerState = 'idle' | 'entering' | 'leaving' | 'cancelled' | 'done'
 type SelfState = 'idle' | 'running' | 'waiting_for_children'

@@ -1,5 +1,5 @@
 import { useRef, RefObject } from 'react'
-import { Machine } from './machine'
+import { Machine } from '@headlessui/core'
 
 // https://github.com/statelyai/xstate/blob/02f9beffcccccd470ec924368907094ef7bb432f/packages/xstate-react/src/useConstant.ts
 type ResultBox<T> = { v: T }

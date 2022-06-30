@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { createTransitionMachine, TransitionActions, TransitionMachine } from './state'
+import { createTransitionMachine, TransitionActions, TransitionMachine } from '@headlessui/core'
 import { useMachine } from '../../../utils/use-machine'
 
 export function useTransitionMachine(

@@ -37,6 +37,9 @@
     "playground": "yarn workspace playground-react dev",
     "clean": "rimraf ./dist"
   },
+  "dependencies": {
+    "@headlessui/core": "1.6.4"
+  },
   "peerDependencies": {
     "react": "^16 || ^17 || ^18",
     "react-dom": "^16 || ^17 || ^18"
