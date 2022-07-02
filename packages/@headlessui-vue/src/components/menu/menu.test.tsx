@@ -1656,7 +1656,7 @@ describe('Keyboard interactions', () => {
   })
 
   describe('`Tab` key', () => {
-    it('should focus trap when we use Tab', async () => {
+    it('should not focus trap when we use Tab', async () => {
       renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
@@ -1697,12 +1697,12 @@ describe('Keyboard interactions', () => {
       // Try to tab
       await press(Keys.Tab)
 
-      // Verify it is still open
-      assertMenuButton({ state: MenuState.Visible })
-      assertMenu({ state: MenuState.Visible })
+      // Verify it is closed
+      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
     })
 
-    it('should focus trap when we use Shift+Tab', async () => {
+    it('should not focus trap when we use Shift+Tab', async () => {
       renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
@@ -1743,9 +1743,9 @@ describe('Keyboard interactions', () => {
       // Try to Shift+Tab
       await press(shift(Keys.Tab))
 
-      // Verify it is still open
-      assertMenuButton({ state: MenuState.Visible })
-      assertMenu({ state: MenuState.Visible })
+      // Verify it is closed
+      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
     })
   })
 
