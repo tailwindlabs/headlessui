@@ -490,8 +490,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
         break
 
       case Keys.Tab:
-        event.preventDefault()
-        event.stopPropagation()
+        dispatch({ type: ActionTypes.CloseMenu })
         break
 
       default:

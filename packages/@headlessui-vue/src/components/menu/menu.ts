@@ -411,8 +411,7 @@ export let MenuItems = defineComponent({
           break
 
         case Keys.Tab:
-          event.preventDefault()
-          event.stopPropagation()
+          api.closeMenu()
           break
 
         default:

@@ -1359,7 +1359,7 @@ describe('Keyboard interactions', () => {
 
   describe('`Tab` key', () => {
     it(
-      'should focus trap when we use Tab',
+      'should close when we use Tab',
       suppressConsoleLogs(async () => {
         render(
           <Menu>
@@ -1401,9 +1401,9 @@ describe('Keyboard interactions', () => {
         // Try to tab
         await press(Keys.Tab)
 
-        // Verify it is still open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({ state: MenuState.Visible })
+        // Verify it is closed
+        assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
 
@@ -1450,9 +1450,9 @@ describe('Keyboard interactions', () => {
         // Try to Shift+Tab
         await press(shift(Keys.Tab))
 
-        // Verify it is still open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({ state: MenuState.Visible })
+        // Verify it is closed
+        assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
   })
