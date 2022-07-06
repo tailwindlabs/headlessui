@@ -439,7 +439,7 @@ export let Combobox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...incomingProps } = props
+      let { name, modelValue, disabled, ...theirProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
@@ -466,10 +466,11 @@ export let Combobox = defineComponent({
             )
           : []),
         render({
-          props: {
+          theirProps: {
             ...attrs,
-            ...omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue', 'by']),
+            ...omit(theirProps, ['nullable', 'multiple', 'onUpdate:modelValue', 'by']),
           },
+          ourProps: {},
           slot,
           slots,
           attrs,
@@ -500,9 +501,11 @@ export let ComboboxLabel = defineComponent({
       }
 
       let ourProps = { id, ref: api.labelRef, onClick: handleClick }
+      let theirProps = props
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -601,9 +604,11 @@ export let ComboboxButton = defineComponent({
         onKeydown: handleKeydown,
         onClick: handleClick,
       }
+      let theirProps = props
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -755,10 +760,11 @@ export let ComboboxInput = defineComponent({
         tabIndex: 0,
         ref: api.inputRef,
       }
-      let incomingProps = omit(props, ['displayValue'])
+      let theirProps = omit(props, ['displayValue'])
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -827,10 +833,11 @@ export let ComboboxOptions = defineComponent({
         ref: api.optionsRef,
         role: 'listbox',
       }
-      let incomingProps = omit(props, ['hold'])
+      let theirProps = omit(props, ['hold'])
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -937,8 +944,11 @@ export let ComboboxOption = defineComponent({
         onMouseleave: handleLeave,
       }
 
+      let theirProps = props
+
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,

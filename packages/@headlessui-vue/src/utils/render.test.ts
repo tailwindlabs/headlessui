@@ -9,7 +9,7 @@ let Dummy = defineComponent({
     as: { type: [Object, String], default: 'div' },
   },
   setup(props, { attrs, slots }) {
-    return () => render({ props, slots, attrs, slot: {}, name: 'Dummy' })
+    return () => render({ theirProps: props, ourProps: {}, slots, attrs, slot: {}, name: 'Dummy' })
   },
 })
 
@@ -60,7 +60,8 @@ describe('Validation', () => {
         PassThrough(props, context) {
           props.as = props.as ?? 'template'
           return render({
-            props,
+            theirProps: props,
+            ourProps: {},
             attrs: context.attrs,
             slots: context.slots,
             slot: {},

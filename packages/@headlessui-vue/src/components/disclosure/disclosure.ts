@@ -118,9 +118,16 @@ export let Disclosure = defineComponent({
     )
 
     return () => {
-      let { defaultOpen: _, ...incomingProps } = props
+      let { defaultOpen: _, ...theirProps } = props
       let slot = { open: disclosureState.value === DisclosureStates.Open, close: api.close }
-      return render({ props: incomingProps, slot, slots, attrs, name: 'Disclosure' })
+      return render({
+        theirProps,
+        ourProps: {},
+        slot,
+        slots,
+        attrs,
+        name: 'Disclosure',
+      })
     }
   },
 })
@@ -223,7 +230,8 @@ export let DisclosureButton = defineComponent({
           }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot,
         attrs,
         slots,
@@ -263,7 +271,8 @@ export let DisclosurePanel = defineComponent({
       let ourProps = { id: api.panelId, ref: api.panel }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot,
         attrs,
         slots,

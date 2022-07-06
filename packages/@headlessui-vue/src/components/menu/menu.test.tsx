@@ -1,5 +1,5 @@
 import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render, screen } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { TransitionChild } from '../transitions/transition'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -3444,7 +3444,7 @@ describe('Mouse interactions', () => {
     assertNoActiveMenuItem()
   })
 
-  it('should not be possible to activate a disabled item', async () => {
+  fit('should not be possible to activate a disabled item', async () => {
     let clickHandler = jest.fn()
 
     renderTemplate({
@@ -3452,8 +3452,8 @@ describe('Mouse interactions', () => {
         <Menu>
           <MenuButton>Trigger</MenuButton>
           <MenuItems>
-            <MenuItem as="a" @click="clickHandler">alice</MenuItem>
-            <MenuItem as="a" @click="clickHandler" disabled>
+            <MenuItem as="button" @click="clickHandler">alice</MenuItem>
+            <MenuItem as="button" @click="clickHandler" disabled>
               bob
             </MenuItem>
             <MenuItem>
@@ -3471,9 +3471,8 @@ describe('Mouse interactions', () => {
 
     let items = getMenuItems()
 
-    await focus(items[0])
-    await focus(items[1])
-    await press(Keys.Enter)
+    console.log(items[1].outerHTML)
+    await click(items[1])
     expect(clickHandler).not.toHaveBeenCalled()
 
     // Activate the last item

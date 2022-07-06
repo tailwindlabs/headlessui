@@ -154,10 +154,11 @@ export let TabGroup = defineComponent({
             },
           }),
         render({
-          props: {
+          theirProps: {
             ...attrs,
             ...omit(props, ['selectedIndex', 'defaultIndex', 'manual', 'vertical', 'onChange']),
           },
+          ourProps: {},
           slot,
           slots,
           attrs,
@@ -185,10 +186,11 @@ export let TabList = defineComponent({
         role: 'tablist',
         'aria-orientation': api.orientation.value,
       }
-      let incomingProps = props
+      let theirProps = props
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -307,7 +309,8 @@ export let Tab = defineComponent({
       }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot,
         attrs,
         slots,
@@ -331,7 +334,8 @@ export let TabPanels = defineComponent({
       let slot = { selectedIndex: api.selectedIndex.value }
 
       return render({
-        props,
+        theirProps: props,
+        ourProps: {},
         slot,
         attrs,
         slots,
@@ -373,7 +377,8 @@ export let TabPanel = defineComponent({
       }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot,
         attrs,
         slots,

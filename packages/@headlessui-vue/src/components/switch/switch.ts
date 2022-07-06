@@ -55,7 +55,8 @@ export let SwitchGroup = defineComponent({
 
     provide(GroupContext, api)
 
-    return () => render({ props, slot: {}, slots, attrs, name: 'SwitchGroup' })
+    return () =>
+      render({ theirProps: props, ourProps: {}, slot: {}, slots, attrs, name: 'SwitchGroup' })
   },
 })
 
@@ -108,7 +109,7 @@ export let Switch = defineComponent({
     }
 
     return () => {
-      let { name, value, modelValue, ...incomingProps } = props
+      let { name, value, modelValue, ...theirProps } = props
       let slot = { checked: modelValue }
       let ourProps = {
         id,
@@ -141,7 +142,8 @@ export let Switch = defineComponent({
             )
           : null,
         render({
-          props: { ...attrs, ...incomingProps, ...ourProps },
+          ourProps,
+          theirProps: { ...attrs, ...theirProps },
           slot,
           attrs,
           slots,

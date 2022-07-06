@@ -227,10 +227,8 @@ export let Popover = defineComponent({
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }
       return render({
-        props: {
-          ...props,
-          ref: internalPopoverRef,
-        },
+        theirProps: props,
+        ourProps: { ref: internalPopoverRef },
         slot,
         slots,
         attrs,
@@ -390,7 +388,8 @@ export let PopoverButton = defineComponent({
 
       return h(Fragment, [
         render({
-          props: { ...attrs, ...props, ...ourProps },
+          ourProps,
+          theirProps: { ...attrs, ...props },
           slot,
           attrs: attrs,
           slots: slots,
@@ -446,7 +445,8 @@ export let PopoverOverlay = defineComponent({
       }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot,
         attrs,
         slots,
@@ -630,7 +630,8 @@ export let PopoverPanel = defineComponent({
             onFocus: handleBeforeFocus,
           }),
         render({
-          props: { ...attrs, ...props, ...ourProps },
+          ourProps,
+          theirProps: { ...attrs, ...props },
           slot,
           attrs,
           slots,
@@ -712,7 +713,8 @@ export let PopoverGroup = defineComponent({
       let ourProps = { ref: groupRef }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot: {},
         attrs,
         slots,

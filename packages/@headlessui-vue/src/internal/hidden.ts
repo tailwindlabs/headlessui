@@ -39,7 +39,8 @@ export let Hidden = defineComponent({
       }
 
       return render({
-        props: { ...theirProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot: {},
         attrs,
         slots,
