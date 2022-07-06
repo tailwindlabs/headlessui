@@ -72,7 +72,7 @@ function wrapLocator(locator: pt.Locator, helpers: Partial<Helpers> = {}): Locat
 }
 
 export function createTest<PropsType>(createComponent: (props?: PropsType) => void) {
-  const console: string[] = []
+  const console = new WeakMap<pt.Page, string[]>
 
   const test = plugin.test.extend<Fixtures<PropsType>>({
     async render({ mount, page }, use) {
@@ -110,17 +110,20 @@ export function createTest<PropsType>(createComponent: (props?: PropsType) => vo
       await use(new Animations(page))
     },
 
-    async messages({}, use) {
-      await use(() => console)
+    async messages({ page }, use) {
+      await use(() => console.get(page)!)
     },
   })
 
   test.beforeEach(async ({ page }) => {
+    console.set(page, [])
+
     await page.on('console', (message) => {
       if (message.type() === 'log') {
-        console.push(message.text())
+        console.get(page)!.push(message.text())
       }
     })
+
     await addGlobalScripts(page)
   })
 

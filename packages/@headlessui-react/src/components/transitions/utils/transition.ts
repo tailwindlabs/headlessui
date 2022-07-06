@@ -43,7 +43,7 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   if (totalDuration !== 0) {
     let listeners: (() => void)[] = []
 
-    if (process.env.NODE_ENV === 'test') {
+    if (false && process.env.NODE_ENV === 'test') {
       listeners.push(
         d.setTimeout(() => {
           done(Reason.Ended)
@@ -55,6 +55,8 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
         d.addEventListener(node, 'transitionrun', (event) => {
           if (event.target !== event.currentTarget) return
 
+          console.log('transitionrun', event)
+
           // Cleanup "old" listeners
           listeners.splice(0).forEach((dispose) => dispose())
 
@@ -63,11 +65,15 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
             d.addEventListener(node, 'transitionend', (event) => {
               if (event.target !== event.currentTarget) return
 
+              console.log('transitionend', event)
+
               done(Reason.Ended)
               listeners.splice(0).forEach((dispose) => dispose())
             }),
             d.addEventListener(node, 'transitioncancel', (event) => {
               if (event.target !== event.currentTarget) return
+
+              console.log('transitioncancel', event)
 
               done(Reason.Cancelled)
               listeners.splice(0).forEach((dispose) => dispose())

@@ -94,25 +94,25 @@ export class Animations extends Array<Animation> {
   }
 
   public async wait({ delayInMs = 10 }: WaitOptions = {}): Promise<void> {
-    await this.waitForStart({ delayInMs })
-    await this.waitForFinish({ delayInMs })
-  }
-
-  public async waitForStart({ delayInMs = 10 }: WaitOptions = {}): Promise<void> {
     let previousCount = this.length
 
+    // Wait for animations to start
     while (this.length === previousCount) {
       await new Promise((resolve) => setTimeout(resolve, delayInMs))
     }
-  }
 
-  public async waitForFinish({ delayInMs = 10 }: WaitOptions = {}): Promise<void> {
-    let animations = this.runningAnimations
+    // Wait for animations to finish
+    while (true) {
+      while (this.anyRunning) {
+        await new Promise((resolve) => setTimeout(resolve, delayInMs))
+      }
 
-    let areRunning = () => this.areRunning(animations)
+      // Must be done for 100ms
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
-    while (areRunning()) {
-      await new Promise((resolve) => setTimeout(resolve, delayInMs))
+      if (!this.anyRunning) {
+        break
+      }
     }
   }
 
@@ -120,19 +120,11 @@ export class Animations extends Array<Animation> {
     return new Timeline(this).toString()
   }
 
-  private areRunning(animations: Animation[]) {
-    return animations.some((animation) => this.isRunning(animation))
-  }
-
   private isRunning(animation: Animation) {
     return animation.state === 'created' || animation.state === 'started'
   }
 
-  get runningAnimations() {
-    return this.filter((animation) => this.isRunning(animation))
-  }
-
   get anyRunning() {
-    return this.runningAnimations.length > 0
+    return this.some((animation) => this.isRunning(animation))
   }
 }

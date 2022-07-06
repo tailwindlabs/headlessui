@@ -92,6 +92,8 @@ class TransitionMachineImpl implements TransitionMachine {
   public send(event: TransitionEvents['type'], payload?: any) {
     this.actions.onEvent?.(event, payload)
 
+    console.log({ id: this.id, event })
+
     match(event, {
       // User events - Overall
       reset: () => this.reset(),
@@ -120,11 +122,11 @@ class TransitionMachineImpl implements TransitionMachine {
   }
 
   public enter() {
-    this.moveTo({ container: 'entering', self: 'idle' })
+    this.when({ container: ['idle'] }, () => this.moveTo({ container: 'entering', self: 'idle' }))
   }
 
   public leave() {
-    this.moveTo({ container: 'leaving', self: 'idle' })
+    this.when({ container: ['idle'] }, () => this.moveTo({ container: 'leaving', self: 'idle' }))
   }
 
   public cancel() {
@@ -214,6 +216,12 @@ class TransitionMachineImpl implements TransitionMachine {
 
   // Internal Methods
   private onStateChange(before: TransitionState, after: TransitionState) {
+    console.log('State Change:', {
+      id: this.id,
+      before: before.join(', '),
+      after: after.join(', '),
+    })
+
     if (
       this.matches(before, { container: ['idle'] }) &&
       this.matches(after, { container: ['entering', 'leaving'] })
@@ -293,12 +301,14 @@ class TransitionMachineImpl implements TransitionMachine {
   }
 
   private moveTo(descriptor: Partial<TransitionStateDescriptor>) {
+    console.log('Move to', { id: this.id, descriptor })
+
     const before: TransitionState = [...this.state]
-    const after: TransitionState = [
+    const after: TransitionState = Object.freeze([
       descriptor.container ?? before[0],
       descriptor.self ?? before[1],
       descriptor.children ?? before[2],
-    ]
+    ] as const)
 
     const isSame = before[0] === after[0] && before[1] === after[1] && before[2] === after[2]
 

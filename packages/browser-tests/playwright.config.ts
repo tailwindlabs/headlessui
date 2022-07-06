@@ -11,7 +11,8 @@ const config: PlaywrightTestConfig = {
   /* The base directory, relative to the config file, for snapshot files created with toMatchSnapshot and toHaveScreenshot. */
   snapshotDir: './__snapshots__',
   /* Maximum time one test can run for. */
-  timeout: 30 * 1000,
+  timeout: 2 ** 31 - 1,
+  // timeout: 60 * 1000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -41,6 +42,9 @@ const config: PlaywrightTestConfig = {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        launchOptions: {
+          devtools: true,
+        },
       },
     },
     {

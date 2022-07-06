@@ -16,7 +16,9 @@
     "pretest": "rimraf playwright/.cache",
     "test": "npm run test:vue && npm run test:react",
     "test:vue": "SUITE=vue playwright test -c playwright.config.ts",
+    "test:vue:debug": "SUITE=vue playwright test -c playwright.config.ts --headed",
     "test:react": "SUITE=react playwright test -c playwright.config.ts",
+    "test:react:debug": "SUITE=react playwright test -c playwright.config.ts --headed",
     "pretest:debug": "rimraf playwright/.cache",
     "test:debug": "playwright test -c playwright.config.ts --headed"
   },

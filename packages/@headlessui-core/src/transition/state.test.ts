@@ -18,14 +18,14 @@ it('entering', () => {
   expect(root.description).toEqual('container:done, self:idle, children:idle')
 
   expect(logs).toEqual([
-    "root event: enter",
-    "root action: start",
-    "root state: idle,idle,idle -> entering,idle,idle",
-    "root event: start",
-    "root state: entering,idle,idle -> entering,running,idle",
-    "root event: stop",
-    "root action: stop",
-    "root state: entering,running,idle -> done,idle,idle",
+    'root event: enter',
+    'root action: start',
+    'root state: idle,idle,idle -> entering,idle,idle',
+    'root event: start',
+    'root state: entering,idle,idle -> entering,running,idle',
+    'root event: stop',
+    'root action: stop',
+    'root state: entering,running,idle -> done,idle,idle',
   ])
 })
 
@@ -47,14 +47,14 @@ it('leaving', () => {
   expect(root.description).toEqual('container:done, self:idle, children:idle')
 
   expect(logs).toEqual([
-    "root event: leave",
-    "root action: start",
-    "root state: idle,idle,idle -> leaving,idle,idle",
-    "root event: start",
-    "root state: leaving,idle,idle -> leaving,running,idle",
-    "root event: stop",
-    "root action: stop",
-    "root state: leaving,running,idle -> done,idle,idle",
+    'root event: leave',
+    'root action: start',
+    'root state: idle,idle,idle -> leaving,idle,idle',
+    'root event: start',
+    'root state: leaving,idle,idle -> leaving,running,idle',
+    'root event: stop',
+    'root action: stop',
+    'root state: leaving,running,idle -> done,idle,idle',
   ])
 })
 
@@ -81,36 +81,38 @@ it('entering with children', () => {
 
   child1.send('start')
 
-  expect(root.description).toEqual('container:entering, self:waiting_for_children, children:all_running')
+  expect(root.description).toEqual(
+    'container:entering, self:waiting_for_children, children:all_running'
+  )
 
   child1.send('stop')
 
   expect(root.description).toEqual('container:done, self:idle, children:idle')
 
   expect(logs).toEqual([
-    "root event: #child.add child-1",
-    "child-1 event: #child.become root",
-    "root event: enter",
-    "root state: idle,idle,idle -> entering,idle,idle",
-    "child-1 event: enter",
-    "child-1 action: start",
-    "child-1 state: idle,idle,idle -> entering,idle,idle",
-    "root event: start",
-    "root state: entering,idle,idle -> entering,running,idle",
-    "root event: stop",
-    "root state: entering,running,idle -> entering,waiting_for_children,idle",
-    "child-1 event: start",
-    "root event: #child.start",
-    "root action: start",
-    "root state: entering,waiting_for_children,idle -> entering,waiting_for_children,all_running",
-    "child-1 state: entering,idle,idle -> entering,running,idle",
-    "child-1 event: stop",
-    "child-1 action: stop",
-    "root event: #child.stop",
-    "root action: stop",
-    "root state: entering,waiting_for_children,all_running -> done,idle,idle",
-    "root action: stop",
-    "child-1 state: entering,running,idle -> done,idle,idle",
+    'root event: #child.add child-1',
+    'child-1 event: #child.become root',
+    'root event: enter',
+    'root action: start',
+    'root state: idle,idle,idle -> entering,idle,idle',
+    'child-1 event: enter',
+    'child-1 action: start',
+    'child-1 state: idle,idle,idle -> entering,idle,idle',
+    'root event: start',
+    'root state: entering,idle,idle -> entering,running,idle',
+    'root event: stop',
+    'root state: entering,running,idle -> entering,waiting_for_children,idle',
+    'child-1 event: start',
+    'root event: #child.start',
+    'root state: entering,waiting_for_children,idle -> entering,waiting_for_children,all_running',
+    'child-1 state: entering,idle,idle -> entering,running,idle',
+    'child-1 event: stop',
+    'child-1 action: stop',
+    'root event: #child.stop',
+    'root action: stop',
+    'root state: entering,waiting_for_children,all_running -> done,idle,idle',
+    'root action: stop',
+    'child-1 state: entering,running,idle -> done,idle,idle',
   ])
 })
 
@@ -243,15 +245,37 @@ it('start events run in parent -> child order', () => {
   child2.send('start')
   child2.send('stop')
 
-  console.log(logs)
+  expect(actions).toEqual([
+    'child-1: start',
+    'child-2: start',
+    'root: start',
+    'child-1: stop',
+    'child-2: stop',
+    'root: stop',
+  ])
+})
+
+it('cancellation weirdness', () => {
+  let root = createTestMachine('root')
+  let child1 = createTestMachine('child-1')
+
+  root.add(child1)
+  child1.send('enter')
+  child1.send('start')
+  child1.send('leave')
+  child1.send('start')
+  child1.send('cancel')
+  root.send('reset')
+  child1.send('reset')
+  child1.send('stop')
 
   expect(actions).toEqual([
-    "child-1: start",
-    "child-2: start",
-    "root: start",
-    "child-1: stop",
-    "child-2: stop",
-    "root: stop",
+    'child-1: start',
+    'child-2: start',
+    'root: start',
+    'child-1: stop',
+    'child-2: stop',
+    'root: stop',
   ])
 })
 
@@ -284,8 +308,7 @@ function createTestMachine(id: string) {
     onChange: (previous, current) =>
       log(`state: ${previous.toString()} -> ${current.toString()}`.trim()),
 
-    onEvent: (event, payload) =>
-      log(`event: ${event} ${payload?.id ?? payload ?? ''}`.trim()),
+    onEvent: (event, payload) => log(`event: ${event} ${payload?.id ?? payload ?? ''}`.trim()),
   })
 
   Object.defineProperties(machine, {
