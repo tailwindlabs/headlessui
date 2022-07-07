@@ -1,0 +1,72 @@
+export function createDisposables() {
+  let disposables: Function[] = []
+  let queue: Function[] = []
+
+  let api = {
+    addEventListener<TEventName extends keyof WindowEventMap>(
+      element: HTMLElement,
+      name: TEventName,
+      listener: (event: WindowEventMap[TEventName]) => any,
+      options?: boolean | AddEventListenerOptions
+    ) {
+      element.addEventListener(name, listener as any, options)
+      return api.add(() => element.removeEventListener(name, listener as any, options))
+    },
+
+    requestAnimationFrame(...args: Parameters<typeof requestAnimationFrame>) {
+      let raf = requestAnimationFrame(...args)
+      return api.add(() => cancelAnimationFrame(raf))
+    },
+
+    nextFrame(...args: Parameters<typeof requestAnimationFrame>) {
+      return api.requestAnimationFrame(() => {
+        return api.requestAnimationFrame(...args)
+      })
+    },
+
+    setTimeout(...args: Parameters<typeof setTimeout>) {
+      let timer = setTimeout(...args)
+      return api.add(() => clearTimeout(timer))
+    },
+
+    add(cb: () => void) {
+      disposables.push(cb)
+      return () => {
+        let idx = disposables.indexOf(cb)
+        if (idx >= 0) {
+          let [dispose] = disposables.splice(idx, 1)
+          dispose()
+        }
+      }
+    },
+
+    dispose() {
+      disposables.splice(0).forEach((dispose) => dispose())
+    },
+
+    enqueue(fn: Function) {
+      queue.push(fn)
+    },
+
+    async workQueue() {
+      for (let handle of queue.splice(0)) {
+        await handle()
+      }
+    },
+
+    group() {
+      let d = createDisposables()
+
+      let remove = this.add(() => {
+        d.dispose()
+        remove()
+      })
+
+      return d
+    },
+  }
+
+  return api
+}
+
+export type Disposables = ReturnType<typeof createDisposables>

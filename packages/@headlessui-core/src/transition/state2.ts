@@ -19,6 +19,7 @@ type InternalEvents =
   | { type: '#descendant.start'; payload: undefined }
   | { type: '#descendant.stop'; payload: undefined }
   | { type: '#moveTo'; payload: Partial<TransitionStateDescriptor> }
+  | { type: '#cancel'; payload: undefined }
 
 export type TransitionEvents = UserEvents | ElementEvents | InternalEvents
 export type TransitionState = readonly [ContainerState, SelfState]
@@ -107,6 +108,7 @@ class TransitionMachineImpl implements TransitionMachine {
       '#descendant.start': () => this.#descendantStart(),
       '#descendant.stop': () => this.#descendantStop(),
       '#moveTo': () => this.moveTo(payload),
+      '#cancel': () => this.#cancel(),
     })
   }
 
@@ -127,7 +129,16 @@ class TransitionMachineImpl implements TransitionMachine {
   }
 
   public cancel() {
-    //
+    this.parent?.send('cancel')
+
+    if (this.isRoot) {
+      this.send('#cancel')
+    }
+  }
+
+  #cancel() {
+    this.moveTo({ container: 'cancelled', self: 'idle' })
+    this.children.forEach((child) => child.send('#cancel'))
   }
 
   // User events - Self/Children Transition
