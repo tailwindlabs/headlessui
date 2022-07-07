@@ -103,7 +103,7 @@ export let FocusTrap = Object.assign(
       return () => {
         let slot = {}
         let ourProps = { 'data-hi': 'container', ref: container }
-        let { features, initialFocus, containers: _containers, ...incomingProps } = props
+        let { features, initialFocus, containers: _containers, ...theirProps } = props
 
         return h(Fragment, [
           Boolean(features & Features.TabLock) &&
@@ -114,7 +114,8 @@ export let FocusTrap = Object.assign(
               features: HiddenFeatures.Focusable,
             }),
           render({
-            props: { ...attrs, ...incomingProps, ...ourProps },
+            ourProps,
+            theirProps: { ...attrs, ...theirProps },
             slot,
             attrs,
             slots,

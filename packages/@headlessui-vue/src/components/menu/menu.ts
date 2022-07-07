@@ -228,7 +228,7 @@ export let Menu = defineComponent({
 
     return () => {
       let slot = { open: menuState.value === MenuStates.Open }
-      return render({ props, slot, slots, attrs, name: 'Menu' })
+      return render({ ourProps: {}, theirProps: props, slot, slots, attrs, name: 'Menu' })
     }
   },
 })
@@ -314,9 +314,11 @@ export let MenuButton = defineComponent({
         onKeyup: handleKeyUp,
         onClick: handleClick,
       }
+      let theirProps = props
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -458,10 +460,11 @@ export let MenuItems = defineComponent({
         ref: api.itemsRef,
       }
 
-      let incomingProps = props
+      let theirProps = props
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -551,9 +554,11 @@ export let MenuItem = defineComponent({
         onPointerleave: handleLeave,
         onMouseleave: handleLeave,
       }
+      let theirProps = props
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,

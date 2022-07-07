@@ -4832,7 +4832,7 @@ describe('Mouse interactions', () => {
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>
-              <ComboboxOption disabled value="bob"> bob </ComboboxOption>
+              <ComboboxOption disabled value="bob">bob</ComboboxOption>
               <ComboboxOption value="charlie">charlie</ComboboxOption>
             </ComboboxOptions>
           </Combobox>
@@ -4849,7 +4849,7 @@ describe('Mouse interactions', () => {
 
       // We should not be able to focus the first option
       await focus(options[1])
-      assertNoActiveComboboxOption()
+      assertNotActiveComboboxOption(options[1])
     })
   )
 

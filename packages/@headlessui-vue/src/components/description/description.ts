@@ -78,7 +78,7 @@ export let Description = defineComponent({
 
     return () => {
       let { name = 'Description', slot = ref({}), props = {} } = context
-      let incomingProps = myProps
+      let theirProps = myProps
       let ourProps = {
         ...Object.entries(props).reduce(
           (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),
@@ -88,7 +88,8 @@ export let Description = defineComponent({
       }
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot: slot.value,
         attrs,
         slots,
