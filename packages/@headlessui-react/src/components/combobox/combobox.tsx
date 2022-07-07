@@ -682,13 +682,11 @@ let Input = forwardRefWithAs(function Input<
           },
         })
 
-      case Keys.Home:
       case Keys.PageUp:
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.First)
 
-      case Keys.End:
       case Keys.PageDown:
         event.preventDefault()
         event.stopPropagation()
