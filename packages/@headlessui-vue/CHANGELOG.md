@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix getting Vue dom elements ([#1610](https://github.com/tailwindlabs/headlessui/pull/1610))
 - Ensure `CMD`+`Backspace` works in nullable mode for `Combobox` component ([#1617](https://github.com/tailwindlabs/headlessui/pull/1617))
+- Properly merge incoming props with own props ([#1651](https://github.com/tailwindlabs/headlessui/pull/1651))
 
 ## [1.6.5] - 2022-06-20
 
