@@ -26,6 +26,14 @@ export function getMenuItems(): HTMLElement[] {
   return Array.from(document.querySelectorAll('[role="menuitem"]'))
 }
 
+export function getActiveMenuItem(): HTMLElement | null {
+  let menu = getMenu()
+  if (!menu) return null
+  let id = menu.getAttribute('aria-activedescendant')
+  if (!id) return null
+  return document.getElementById(id)
+}
+
 // ---
 
 export enum MenuState {

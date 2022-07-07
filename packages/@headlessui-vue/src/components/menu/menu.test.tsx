@@ -18,6 +18,7 @@ import {
   getMenuItems,
   getMenuButtons,
   getMenus,
+  getActiveMenuItem,
 } from '../../test-utils/accessibility-assertions'
 import {
   click,
@@ -1321,7 +1322,7 @@ describe('Keyboard interactions', () => {
     await mouseMove(items[1])
 
     // Close menu, and invoke the item
-    await press(Keys.Enter)
+    await press(Keys.Enter, getActiveMenuItem())
 
     // Verify it is closed
     assertMenuButton({ state: MenuState.InvisibleUnmounted })
@@ -1340,7 +1341,7 @@ describe('Keyboard interactions', () => {
     await mouseMove(getMenuItems()[2])
 
     // Close menu, and invoke the item
-    await press(Keys.Enter)
+    await press(Keys.Enter, getActiveMenuItem())
 
     // Verify the button got "clicked"
     expect(clickHandler).toHaveBeenCalledTimes(2)
@@ -3444,7 +3445,7 @@ describe('Mouse interactions', () => {
     assertNoActiveMenuItem()
   })
 
-  fit('should not be possible to activate a disabled item', async () => {
+  it('should not be possible to activate a disabled item', async () => {
     let clickHandler = jest.fn()
 
     renderTemplate({
@@ -3456,7 +3457,7 @@ describe('Mouse interactions', () => {
             <MenuItem as="button" @click="clickHandler" disabled>
               bob
             </MenuItem>
-            <MenuItem>
+            <MenuItem disabled>
               <button @click="clickHandler">charlie</button>
             </MenuItem>
           </MenuItems>
@@ -3471,13 +3472,12 @@ describe('Mouse interactions', () => {
 
     let items = getMenuItems()
 
-    console.log(items[1].outerHTML)
+    await focus(items[0])
     await click(items[1])
     expect(clickHandler).not.toHaveBeenCalled()
 
     // Activate the last item
-    await focus(items[2])
-    await press(Keys.Enter)
+    await click(getMenuItems()[2])
     expect(clickHandler).not.toHaveBeenCalled()
   })
 })
