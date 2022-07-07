@@ -542,7 +542,7 @@ export let PopoverPanel = defineComponent({
       function run() {
         match(direction.value, {
           [TabDirection.Forwards]: () => {
-            focusIn(el, Focus.First)
+            focusIn(el, Focus.Next)
           },
           [TabDirection.Backwards]: () => {
             // Coming from the Popover.Panel (which is portalled to somewhere else). Let's redirect
@@ -592,7 +592,7 @@ export let PopoverPanel = defineComponent({
 
             focusIn(combined, Focus.First, false)
           },
-          [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+          [TabDirection.Backwards]: () => focusIn(el, Focus.Previous),
         })
       }
 
@@ -618,38 +618,42 @@ export let PopoverPanel = defineComponent({
         tabIndex: -1,
       }
 
-      return h(Fragment, [
-        visible.value &&
-          api.isPortalled.value &&
-          h(Hidden, {
-            id: beforePanelSentinelId,
-            ref: api.beforePanelSentinel,
-            features: HiddenFeatures.Focusable,
-            as: 'button',
-            type: 'button',
-            onFocus: handleBeforeFocus,
-          }),
-        render({
-          ourProps,
-          theirProps: { ...attrs, ...props },
-          slot,
-          attrs,
-          slots,
-          features: Features.RenderStrategy | Features.Static,
-          visible: visible.value,
-          name: 'PopoverPanel',
-        }),
-        visible.value &&
-          api.isPortalled.value &&
-          h(Hidden, {
-            id: afterPanelSentinelId,
-            ref: api.afterPanelSentinel,
-            features: HiddenFeatures.Focusable,
-            as: 'button',
-            type: 'button',
-            onFocus: handleAfterFocus,
-          }),
-      ])
+      return render({
+        ourProps,
+        theirProps: { ...attrs, ...props },
+        attrs,
+        slots: {
+          ...slots,
+          default() {
+            return h(Fragment, [
+              visible.value &&
+                api.isPortalled.value &&
+                h(Hidden, {
+                  id: beforePanelSentinelId,
+                  ref: api.beforePanelSentinel,
+                  features: HiddenFeatures.Focusable,
+                  as: 'button',
+                  type: 'button',
+                  onFocus: handleBeforeFocus,
+                }),
+              slots.default?.(slot),
+              visible.value &&
+                api.isPortalled.value &&
+                h(Hidden, {
+                  id: afterPanelSentinelId,
+                  ref: api.afterPanelSentinel,
+                  features: HiddenFeatures.Focusable,
+                  as: 'button',
+                  type: 'button',
+                  onFocus: handleAfterFocus,
+                }),
+            ])
+          },
+        },
+        features: Features.RenderStrategy | Features.Static,
+        visible: visible.value,
+        name: 'PopoverPanel',
+      })
     }
   },
 })
