@@ -1,5 +1,5 @@
 import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
-import { createRenderTemplate, render, screen } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
 import { TransitionChild } from '../transitions/transition'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -18,7 +18,6 @@ import {
   getMenuItems,
   getMenuButtons,
   getMenus,
-  getActiveMenuItem,
 } from '../../test-utils/accessibility-assertions'
 import {
   click,
@@ -1322,7 +1321,7 @@ describe('Keyboard interactions', () => {
     await mouseMove(items[1])
 
     // Close menu, and invoke the item
-    await press(Keys.Enter, getActiveMenuItem())
+    await press(Keys.Enter)
 
     // Verify it is closed
     assertMenuButton({ state: MenuState.InvisibleUnmounted })
@@ -1341,7 +1340,7 @@ describe('Keyboard interactions', () => {
     await mouseMove(getMenuItems()[2])
 
     // Close menu, and invoke the item
-    await press(Keys.Enter, getActiveMenuItem())
+    await press(Keys.Enter)
 
     // Verify the button got "clicked"
     expect(clickHandler).toHaveBeenCalledTimes(2)
