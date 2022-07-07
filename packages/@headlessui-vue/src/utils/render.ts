@@ -137,14 +137,7 @@ function _render({
         )
       }
 
-      return cloneVNode(
-        firstChild,
-        Object.assign(
-          {},
-          mergeProps(firstChild.props, incomingProps as Record<string, any>),
-          dataAttributes
-        )
-      )
+      return cloneVNode(firstChild, Object.assign({}, incomingProps, dataAttributes))
     }
 
     if (Array.isArray(children) && children.length === 1) {
