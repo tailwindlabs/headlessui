@@ -622,10 +622,11 @@ export let PopoverPanel = defineComponent({
         ourProps,
         theirProps: { ...attrs, ...props },
         attrs,
+        slot,
         slots: {
           ...slots,
-          default() {
-            return h(Fragment, [
+          default: (...args) => [
+            h(Fragment, [
               visible.value &&
                 api.isPortalled.value &&
                 h(Hidden, {
@@ -636,7 +637,7 @@ export let PopoverPanel = defineComponent({
                   type: 'button',
                   onFocus: handleBeforeFocus,
                 }),
-              slots.default?.(slot),
+              slots.default?.(...args),
               visible.value &&
                 api.isPortalled.value &&
                 h(Hidden, {
@@ -647,8 +648,8 @@ export let PopoverPanel = defineComponent({
                   type: 'button',
                   onFocus: handleAfterFocus,
                 }),
-            ])
-          },
+            ]),
+          ],
         },
         features: Features.RenderStrategy | Features.Static,
         visible: visible.value,
