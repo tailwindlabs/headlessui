@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
 - Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
 
+## [1.6.6] - 2022-07-07
+
 ### Fixed
 
 - Fix getting Vue dom elements ([#1610](https://github.com/tailwindlabs/headlessui/pull/1610))
@@ -277,7 +279,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.5...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.6...HEAD
+[1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.5...v1.6.6
 [1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.4...v1.6.5
 [1.6.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.3...v1.6.4
 [1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...@headlessui/vue@v1.6.3
