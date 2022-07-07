@@ -33,7 +33,7 @@ export let FocusSentinel = defineComponent({
 
             // Try to move focus to the correct element. This depends on the implementation
             // of `onFocus` of course since it would be different for each place we use it in.
-            if (props.onFocus()) {
+            if (props.onFocus?.()) {
               enabled.value = false
               cancelAnimationFrame(frame)
               return
