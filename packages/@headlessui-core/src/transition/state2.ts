@@ -16,7 +16,6 @@ type ElementEvents =
 
 type InternalEvents =
   | { type: '#descendant.pending'; payload: undefined }
-  | { type: '#descendant.ready'; payload: undefined }
   | { type: '#descendant.start'; payload: undefined }
   | { type: '#descendant.stop'; payload: undefined }
   | { type: '#moveTo'; payload: Partial<TransitionStateDescriptor> }
@@ -73,8 +72,6 @@ class TransitionMachineImpl implements TransitionMachine {
   public parent: TransitionMachine | undefined
   public children = new Set<TransitionMachine>()
 
-  private queue: Function[] = []
-
   constructor(id: string, actions: TransitionActions = {}) {
     this.id = `${id} [${uid++}]`
     this.actions = actions
@@ -107,7 +104,6 @@ class TransitionMachineImpl implements TransitionMachine {
 
       // Internal Events
       '#descendant.pending': () => this.#descendantPending(),
-      '#descendant.ready': () => this.moveToReady(),
       '#descendant.start': () => this.#descendantStart(),
       '#descendant.stop': () => this.#descendantStop(),
       '#moveTo': () => this.moveTo(payload),
@@ -189,16 +185,16 @@ class TransitionMachineImpl implements TransitionMachine {
 
   // Internal Methods
   private onStateChange(before: TransitionState, after: TransitionState) {
+    this.actions.onChange?.(before, after)
+
     if (this.matches(before, { self: ['idle'] }) && this.matches(after, { self: ['pending'] })) {
       this.parent?.send('#descendant.pending')
-      this.queue.push(() => this.moveToReadyIfNeeded())
+      this.moveToReadyIfNeeded()
     }
 
     if (this.matches(before, { self: ['pending'] }) && this.matches(after, { self: ['ready'] })) {
-      this.queue.push(() => {
-        this.actions.onStart?.()
-        this.children.forEach((child) => child.send('#moveTo', { self: 'ready' }))
-      })
+      this.actions.onStart?.()
+      this.children.forEach((child) => child.send('#moveTo', { self: 'ready' }))
     }
 
     if (this.matches(before, { self: ['ready'] }) && this.matches(after, { self: ['running'] })) {
@@ -210,7 +206,7 @@ class TransitionMachineImpl implements TransitionMachine {
       this.matches(after, { self: ['finished'] })
     ) {
       this.parent?.send('#descendant.stop')
-      this.queue.push(() => this.moveToDoneIfNeeded())
+      this.moveToDoneIfNeeded()
     }
 
     if (
@@ -218,7 +214,7 @@ class TransitionMachineImpl implements TransitionMachine {
       this.matches(after, { container: ['done'] })
     ) {
       this.children.forEach((child) => child.send('#moveTo', { container: 'done', self: 'idle' }))
-      this.queue.push(() => this.actions.onStop?.())
+      this.actions.onStop?.()
     }
   }
 
@@ -287,8 +283,6 @@ class TransitionMachineImpl implements TransitionMachine {
     this.state = after
 
     this.onStateChange(before, after)
-    this.actions.onChange?.(before, after)
-    this.queue.splice(0).forEach((fn) => fn())
   }
 
   public debugDescription(indent: string = '\t') {
