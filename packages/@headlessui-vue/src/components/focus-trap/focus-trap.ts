@@ -20,6 +20,7 @@ import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { microTask } from '../../utils/micro-task'
+// import { disposables } from '../../utils/disposables'
 
 enum Features {
   /** No features enabled for the focus trap. */
@@ -102,7 +103,7 @@ export let FocusTrap = Object.assign(
 
       return () => {
         let slot = {}
-        let ourProps = { 'data-hi': 'container', ref: container }
+        let ourProps = { ref: container }
         let { features, initialFocus, containers: _containers, ...theirProps } = props
 
         return h(Fragment, [
@@ -206,30 +207,32 @@ function useInitialFocus(
         let containerElement = dom(container)
         if (!containerElement) return
 
-        let initialFocusElement = dom(initialFocus)
+        requestAnimationFrame(() => {
+          let initialFocusElement = dom(initialFocus)
 
-        let activeElement = ownerDocument.value?.activeElement as HTMLElement
+          let activeElement = ownerDocument.value?.activeElement as HTMLElement
 
-        if (initialFocusElement) {
-          if (initialFocusElement === activeElement) {
+          if (initialFocusElement) {
+            if (initialFocusElement === activeElement) {
+              previousActiveElement.value = activeElement
+              return // Initial focus ref is already the active element
+            }
+          } else if (containerElement!.contains(activeElement)) {
             previousActiveElement.value = activeElement
-            return // Initial focus ref is already the active element
+            return // Already focused within Dialog
           }
-        } else if (containerElement.contains(activeElement)) {
-          previousActiveElement.value = activeElement
-          return // Already focused within Dialog
-        }
 
-        // Try to focus the initialFocus ref
-        if (initialFocusElement) {
-          focusElement(initialFocusElement)
-        } else {
-          if (focusIn(containerElement, Focus.First) === FocusResult.Error) {
-            console.warn('There are no focusable elements inside the <FocusTrap />')
+          // Try to focus the initialFocus ref
+          if (initialFocusElement) {
+            focusElement(initialFocusElement)
+          } else {
+            if (focusIn(containerElement!, Focus.First | Focus.NoScroll) === FocusResult.Error) {
+              console.warn('There are no focusable elements inside the <FocusTrap />')
+            }
           }
-        }
 
-        previousActiveElement.value = ownerDocument.value?.activeElement as HTMLElement
+          previousActiveElement.value = ownerDocument.value?.activeElement as HTMLElement
+        })
       },
       { immediate: true, flush: 'post' }
     )

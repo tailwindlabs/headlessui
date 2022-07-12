@@ -36,6 +36,16 @@ global.IntersectionObserver = class FakeIntersectionObserver {
 
 afterAll(() => jest.restoreAllMocks())
 
+function nextFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
+
 let TabSentinel = defineComponent({
   name: 'TabSentinel',
   template: html`<div :tabindex="0"></div>`,
@@ -243,6 +253,8 @@ describe('Rendering', () => {
 
       await click(document.getElementById('trigger'))
 
+      await new Promise<void>(nextTick)
+
       assertDialog({ state: DialogState.Visible, attributes: { class: 'relative bg-blue-500' } })
     })
 
@@ -263,7 +275,7 @@ describe('Rendering', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       // Let's verify that the Dialog is already there
       expect(getDialog()).not.toBe(null)
