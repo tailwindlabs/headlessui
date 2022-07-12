@@ -92,20 +92,20 @@ function _render({
   let children = slots.default?.(slot)
 
   let dataAttributes: Record<string, string> = {}
-  // if (slot) {
-  //   let exposeState = false
-  //   let states = []
-  //   for (let [k, v] of Object.entries(slot)) {
-  //     if (typeof v === 'boolean') {
-  //       exposeState = true
-  //     }
-  //     if (v === true) {
-  //       states.push(k)
-  //     }
-  //   }
-  //
-  //   if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
-  // }
+  if (slot) {
+    let exposeState = false
+    let states = []
+    for (let [k, v] of Object.entries(slot)) {
+      if (typeof v === 'boolean') {
+        exposeState = true
+      }
+      if (v === true) {
+        states.push(k)
+      }
+    }
+
+    if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
+  }
 
   if (as === 'template') {
     children = flattenFragments(children as VNode[])

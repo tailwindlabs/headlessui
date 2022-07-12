@@ -322,7 +322,7 @@ describe('Rendering', () => {
     })
   )
 
-  it.skip(
+  it(
     'should expose internal data as a render prop',
     suppressConsoleLogs(async () => {
       function Example() {
@@ -372,7 +372,7 @@ describe('Rendering', () => {
     })
   )
 
-  describe.skip('Equality', () => {
+  describe('Equality', () => {
     let options = [
       { id: 1, name: 'Alice' },
       { id: 2, name: 'Bob' },
