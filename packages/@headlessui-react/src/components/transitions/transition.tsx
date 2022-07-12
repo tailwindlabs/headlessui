@@ -317,6 +317,8 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     }
   }, [container, state, ready])
 
+  props['data-debug'] === 'child 1' && console.log("Rerender", container.current?.classList.toString())
+
   useTransition({
     container,
     classes,

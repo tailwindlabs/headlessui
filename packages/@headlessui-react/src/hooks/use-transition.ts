@@ -40,12 +40,16 @@ export function useTransition({
     if (!node) return // We don't have a DOM node (yet)
     if (!mounted.current) return // We've not been mounted yet so we can't transition
 
-    d.add(transition(node, classes.current, machine.state[0] === 'entering', (reason) => {
+    node.getAttribute('data-debug') === 'child 1' && console.log("Start transition")
+
+    let dispose = transition(node, classes.current, machine.state[0] === 'entering', (reason) => {
       match(reason, {
         [TransitionDoneReason.Ended]: () => machine.send('stop'),
         [TransitionDoneReason.Cancelled]: () => machine.send('cancel'),
       })
-    }))
+    })
+
+    d.add(dispose)
   }
 
   // Start/Cancel the transition process when the direction changes

@@ -1,4 +1,4 @@
-import { createDisposables, match, once } from '../utils/index'
+import { createClassList, createDisposables, match, once } from '../utils/index'
 
 interface TransitionClasses {
   enter: string[]
@@ -32,7 +32,7 @@ export function transition(
   node: HTMLElement,
   classes: TransitionClasses,
   show: boolean,
-  done?: (reason: TransitionDoneReason) => void
+  done?: (reason: TransitionDoneReason) => void,
 ) {
   let direction = show ? 'enter' : 'leave'
 
@@ -53,6 +53,8 @@ export function transition(
     leave: () => classes.leaveFrom,
   })
 
+  // let classList = createClassList(Array.from(node.classList))
+
   removeClasses(
     node,
     ...classes.enter,
@@ -65,18 +67,17 @@ export function transition(
   )
 
   addClasses(node, ...base, ...from)
-
-  console.log("transition.start", node.getAttribute('data-debug'), node.classList.toString())
+  node.getAttribute('data-debug') === 'child 1' && console.log("transition.start", node.classList.toString())
 
   d.nextFrame(() => {
     removeClasses(node, ...from)
     addClasses(node, ...to)
 
-    console.log("transition.nextFrame", node.getAttribute('data-debug'), node.classList.toString())
+    node.getAttribute('data-debug') === 'child 1' && console.log("transition.nextFrame", node.classList.toString())
 
     d.add(
       waitForTransition(node, (reason) => {
-        console.log("transition.wait.done", node.getAttribute('data-debug'), node.classList.toString())
+        node.getAttribute('data-debug') === 'child 1' && console.log("transition.wait.done", node.classList.toString())
 
         if (reason === TransitionDoneReason.Ended) {
           removeClasses(node, ...base)
