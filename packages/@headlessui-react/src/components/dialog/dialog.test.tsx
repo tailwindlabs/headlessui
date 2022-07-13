@@ -1066,6 +1066,39 @@ describe('Mouse interactions', () => {
       assertDialog({ state: DialogState.Visible })
     })
   )
+
+  it(
+    'should not close the dialog if opened during mouse up',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button id="trigger" onMouseUpCapture={() => setIsOpen((v) => !v)}>
+              Trigger
+            </button>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog.Backdrop />
+              <Dialog.Panel>
+                <button id="inside">Inside</button>
+                <TabSentinel />
+              </Dialog.Panel>
+            </Dialog>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('inside'))
+
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
 })
 
 describe('Nesting', () => {

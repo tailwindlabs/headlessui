@@ -1444,6 +1444,48 @@ describe('Mouse interactions', () => {
       assertDialog({ state: DialogState.Visible })
     })
   )
+
+  it(
+    'should not close the dialog if opened during mouse up',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <div>
+            <button id="trigger" @mouseup.capture="toggleOpen">
+              Trigger
+            </button>
+            <Dialog :open="isOpen" @close="setIsOpen">
+              <DialogBackdrop />
+              <DialogPanel>
+                <button id="inside">Inside</button>
+                <TabSentinel />
+              </DialogPanel>
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(false)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+            toggleOpen() {
+              isOpen.value = !isOpen.value
+            },
+          }
+        },
+      })
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('inside'))
+
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
 })
 
 describe('Nesting', () => {
