@@ -1543,7 +1543,7 @@ describe('Nesting', () => {
   let Nested: ConcreteComponent = defineComponent({
     components: { Dialog, DialogOverlay },
     emits: ['close'],
-    props: ['level'],
+    props: ['open', 'level', 'renderWhen'],
     setup(props, { emit }) {
       let showChild = ref(false)
       function onClose() {
@@ -1552,7 +1552,7 @@ describe('Nesting', () => {
 
       return () => {
         let level = props.level ?? 1
-        return h(Dialog, { open: true, onClose }, () => [
+        return h(Dialog, { open: props.open ?? true, onClose }, () => [
           h(DialogOverlay),
           h('div', [
             h('p', `Level: ${level}`),
@@ -1560,29 +1560,40 @@ describe('Nesting', () => {
             h('button', { onClick: () => (showChild.value = true) }, `Open ${level + 1} b`),
             h('button', { onClick: () => (showChild.value = true) }, `Open ${level + 1} c`),
           ]),
-          showChild.value &&
-            h(Nested, {
-              onClose: () => (showChild.value = false),
-              level: level + 1,
-            }),
+          props.renderWhen === 'always'
+            ? h(Nested, {
+                open: showChild.value,
+                onClose: () => (showChild.value = false),
+                level: level + 1,
+                renderWhen: props.renderWhen,
+              })
+            : showChild.value &&
+              h(Nested, {
+                open: true,
+                onClose: () => (showChild.value = false),
+                level: level + 1,
+                renderWhen: props.renderWhen,
+              }),
         ])
       }
     },
   })
 
   it.each`
-    strategy                            | action
-    ${'with `Escape`'}                  | ${() => press(Keys.Escape)}
-    ${'with `Outside Click`'}           | ${() => click(document.body)}
-    ${'with `Click on Dialog.Overlay`'} | ${() => click(getDialogOverlays().pop()!)}
+    strategy                            | when         | action
+    ${'with `Escape`'}                  | ${'mounted'} | ${() => press(Keys.Escape)}
+    ${'with `Outside Click`'}           | ${'mounted'} | ${() => click(document.body)}
+    ${'with `Click on Dialog.Overlay`'} | ${'mounted'} | ${() => click(getDialogOverlays().pop()!)}
+    ${'with `Escape`'}                  | ${'always'}  | ${() => press(Keys.Escape)}
+    ${'with `Outside Click`'}           | ${'always'}  | ${() => click(document.body)}
   `(
     'should be possible to open nested Dialog components and close them $strategy',
-    async ({ action }) => {
+    async ({ when, action }) => {
       renderTemplate({
         components: { Nested },
         template: `
           <button @click="isOpen = true">Open 1</button>
-          <Nested v-if="isOpen" @close="isOpen = false" />
+          <Nested v-if="isOpen" @close="isOpen = false" renderWhen="${when}" />
         `,
         setup() {
           let isOpen = ref(false)

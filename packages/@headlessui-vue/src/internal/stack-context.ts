@@ -7,6 +7,9 @@ import {
   // Types
   InjectionKey,
   Ref,
+  watch,
+  ref,
+  onBeforeUnmount,
 } from 'vue'
 
 type OnUpdate = (message: StackMessage, type: string, element: Ref<HTMLElement | null>) => void
@@ -24,10 +27,12 @@ export function useStackContext() {
 
 export function useStackProvider({
   type,
+  enabled,
   element,
   onUpdate,
 }: {
   type: string
+  enabled: Ref<boolean | undefined>
   element: Ref<HTMLElement | null>
   onUpdate?: OnUpdate
 }) {
@@ -42,11 +47,23 @@ export function useStackProvider({
   }
 
   onMounted(() => {
-    notify(StackMessage.Add, type, element)
+    watch(
+      enabled,
+      (isEnabled, oldIsEnabled) => {
+        if (isEnabled) {
+          notify(StackMessage.Add, type, element)
+        } else if (oldIsEnabled === true) {
+          notify(StackMessage.Remove, type, element)
+        }
+      },
+      { immediate: true, flush: 'sync' }
+    )
+  })
 
-    onUnmounted(() => {
+  onUnmounted(() => {
+    if (enabled.value) {
       notify(StackMessage.Remove, type, element)
-    })
+    }
   })
 
   provide(StackContext, notify)

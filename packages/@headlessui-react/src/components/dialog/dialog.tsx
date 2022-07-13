@@ -305,6 +305,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   return (
     <StackProvider
       type="Dialog"
+      enabled={dialogState === DialogStates.Open}
       element={internalDialogRef}
       onUpdate={useEvent((message, type, element) => {
         if (type !== 'Dialog') return
