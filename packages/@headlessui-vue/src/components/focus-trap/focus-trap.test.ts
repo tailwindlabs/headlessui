@@ -1,4 +1,4 @@
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 import { FocusTrap } from './focus-trap'
 import { assertActiveElement, getByText } from '../../test-utils/accessibility-assertions'
