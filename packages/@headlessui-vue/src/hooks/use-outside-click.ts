@@ -95,8 +95,8 @@ export function useOutsideClick(
         return
       }
 
-      handleOutsideClick(event, (event) => {
-        return event.target as HTMLElement
+      handleOutsideClick(event, () => {
+        return initialClickTarget.value as HTMLElement
       })
 
       initialClickTarget.value = null

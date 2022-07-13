@@ -25,7 +25,7 @@ import {
   getDialogs,
   getDialogOverlays,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, Keys } from '../../test-utils/interactions'
+import { click, mouseDrag, press, Keys } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
 
 // @ts-expect-error
@@ -1484,6 +1484,57 @@ describe('Mouse interactions', () => {
       await click(document.getElementById('inside'))
 
       assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
+    'should not close the dialog if click starts inside the dialog but ends outside',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <div>
+            <button id="trigger" @click="toggleOpen">
+              Trigger
+            </button>
+            <div id="imoutside">this thing</div>
+            <Dialog :open="isOpen" @close="setIsOpen">
+              <DialogBackdrop />
+              <DialogPanel>
+                <button id="inside">Inside</button>
+                <TabSentinel />
+              </DialogPanel>
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(false)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+            toggleOpen() {
+              isOpen.value = !isOpen.value
+            },
+          }
+        },
+      })
+
+      // Open the dialog
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      // Start a click inside the dialog and end it outside
+      await mouseDrag(document.getElementById('inside'), document.getElementById('imoutside'))
+
+      // It should not have hidden
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('imoutside'))
+
+      // It's gone
+      assertDialog({ state: DialogState.InvisibleUnmounted })
     })
   )
 })
