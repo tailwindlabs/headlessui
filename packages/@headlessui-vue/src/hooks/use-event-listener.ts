@@ -6,7 +6,7 @@ export function useEventListener<TType extends keyof WindowEventMap>(
   listener: (event: WindowEventMap[TType]) => any,
   options?: boolean | AddEventListenerOptions
 ) {
-  if (typeof window === 'undefined') return
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
 
   watchEffect((onInvalidate) => {
     element = element ?? window

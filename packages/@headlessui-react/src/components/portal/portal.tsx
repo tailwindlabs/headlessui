@@ -33,7 +33,7 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
     if (!forceInRoot && groupTarget !== null) return null
 
     // No group context is used, let's create a default portal root
-    if (typeof window === 'undefined') return null
+    if (typeof window === 'undefined' || typeof document === 'undefined') return null
     let existingRoot = ownerDocument?.getElementById('headlessui-portal-root')
     if (existingRoot) return existingRoot
 
@@ -81,7 +81,7 @@ let PortalRoot = forwardRefWithAs(function Portal<
   let ownerDocument = useOwnerDocument(internalPortalRootRef)
   let target = usePortalTarget(internalPortalRootRef)
   let [element] = useState<HTMLDivElement | null>(() =>
-    typeof window === 'undefined' ? null : ownerDocument?.createElement('div') ?? null
+    typeof window === 'undefined' || typeof document === 'undefined' ? null : ownerDocument?.createElement('div') ?? null
   )
 
   let ready = useServerHandoffComplete()
