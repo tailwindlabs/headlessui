@@ -20,7 +20,9 @@ let people = [
 let locations = ['New York', 'London', 'Paris', 'Berlin']
 
 export default function App() {
-  let [result, setResult] = useState(() => (typeof window === 'undefined' ? [] : new FormData()))
+  let [result, setResult] = useState(() =>
+    typeof window === 'undefined' || typeof document === 'undefined' ? [] : new FormData()
+  )
   let [notifications, setNotifications] = useState(false)
   let [apple, setApple] = useState(false)
   let [banana, setBanana] = useState(false)

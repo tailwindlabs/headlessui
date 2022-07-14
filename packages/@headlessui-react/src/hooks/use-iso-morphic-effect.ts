@@ -1,3 +1,4 @@
 import { useLayoutEffect, useEffect } from 'react'
+import { isServer } from '../utils/ssr'
 
-export let useIsoMorphicEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+export let useIsoMorphicEffect = isServer ? useEffect : useLayoutEffect
