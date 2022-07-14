@@ -122,7 +122,16 @@ export function sortByDomNode<T>(
   })
 }
 
-export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus, sorted = true) {
+export function focusFrom(current: HTMLElement | null, focus: Focus) {
+  return focusIn(getFocusableElements(), focus, true, current)
+}
+
+export function focusIn(
+  container: HTMLElement | HTMLElement[],
+  focus: Focus,
+  sorted = true,
+  active: HTMLElement | null = null
+) {
   let ownerDocument =
     (Array.isArray(container)
       ? container.length > 0
@@ -135,7 +144,7 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus, so
       ? sortByDomNode(container)
       : container
     : getFocusableElements(container)
-  let active = ownerDocument.activeElement as HTMLElement
+  active = active ?? (ownerDocument.activeElement as HTMLElement)
 
   let direction = (() => {
     if (focus & (Focus.First | Focus.Next)) return Direction.Next
@@ -180,15 +189,6 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus, so
     offset += direction
   } while (next !== ownerDocument.activeElement)
 
-  // This is a little weird, but let me try and explain: There are a few scenario's
-  // in chrome for example where a focused `<a>` tag does not get the default focus
-  // styles and sometimes they do. This highly depends on whether you started by
-  // clicking or by using your keyboard. When you programmatically add focus `anchor.focus()`
-  // then the active element (document.activeElement) is this anchor, which is expected.
-  // However in that case the default focus styles are not applied *unless* you
-  // also add this tabindex.
-  if (!next.hasAttribute('tabindex')) next.setAttribute('tabindex', '0')
-
   // By default if you <Tab> to a text input or a textarea, the browser will
   // select all the text once the focus is inside these DOM Nodes. However,
   // since we are manually moving focus this behaviour is not happening. This
@@ -200,6 +200,15 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus, so
   if (focus & (Focus.Next | Focus.Previous) && isSelectableElement(next)) {
     next.select()
   }
+
+  // This is a little weird, but let me try and explain: There are a few scenario's
+  // in chrome for example where a focused `<a>` tag does not get the default focus
+  // styles and sometimes they do. This highly depends on whether you started by
+  // clicking or by using your keyboard. When you programmatically add focus `anchor.focus()`
+  // then the active element (document.activeElement) is this anchor, which is expected.
+  // However in that case the default focus styles are not applied *unless* you
+  // also add this tabindex.
+  if (!next.hasAttribute('tabindex')) next.setAttribute('tabindex', '0')
 
   return FocusResult.Success
 }
