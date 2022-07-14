@@ -22,7 +22,13 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
+import {
+  FocusableMode,
+  isFocusableElement,
+  sortByDomNode,
+  Focus as FocusManagementFocus,
+  focusFrom,
+} from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 
 enum MenuStates {
@@ -411,7 +417,15 @@ export let MenuItems = defineComponent({
           break
 
         case Keys.Tab:
+          event.preventDefault()
+          event.stopPropagation()
           api.closeMenu()
+          nextTick(() =>
+            focusFrom(
+              dom(api.buttonRef),
+              event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
+            )
+          )
           break
 
         default:
