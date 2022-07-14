@@ -344,6 +344,74 @@ export async function mouseLeave(element: Document | Element | Window | null) {
   }
 }
 
+export async function mouseDrag(
+  startingElement: Document | Element | Window | Node | null,
+  endingElement: Document | Element | Window | Node | null
+) {
+  let button = MouseButton.Left
+
+  try {
+    if (startingElement === null) return expect(startingElement).not.toBe(null)
+    if (endingElement === null) return expect(endingElement).not.toBe(null)
+    if (startingElement instanceof HTMLButtonElement && startingElement.disabled) return
+
+    let options = { button }
+
+    // Cancel in pointerDown cancels mouseDown, mouseUp
+    let cancelled = !fireEvent.pointerDown(startingElement, options)
+
+    if (!cancelled) {
+      cancelled = !fireEvent.mouseDown(startingElement, options)
+    }
+
+    // Ensure to trigger a `focus` event if the element is focusable, or within a focusable element
+    if (!cancelled) {
+      let next: HTMLElement | null = startingElement as HTMLElement | null
+      while (next !== null) {
+        if (next.matches(focusableSelector)) {
+          next.focus()
+          break
+        }
+        next = next.parentElement
+      }
+    }
+
+    fireEvent.pointerMove(startingElement, options)
+    if (!cancelled) {
+      fireEvent.mouseMove(startingElement, options)
+    }
+
+    fireEvent.pointerOut(startingElement, options)
+    if (!cancelled) {
+      fireEvent.mouseOut(startingElement, options)
+    }
+
+    // crosses over to the ending element
+
+    fireEvent.pointerOver(endingElement, options)
+    if (!cancelled) {
+      fireEvent.mouseOver(endingElement, options)
+    }
+
+    fireEvent.pointerMove(endingElement, options)
+    if (!cancelled) {
+      fireEvent.mouseMove(endingElement, options)
+    }
+
+    fireEvent.pointerUp(endingElement, options)
+    if (!cancelled) {
+      fireEvent.mouseUp(endingElement, options)
+    }
+
+    fireEvent.click(endingElement, options)
+
+    await new Promise(nextFrame)
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, click)
+    throw err
+  }
+}
+
 // ---
 
 function focusNext(event: Partial<KeyboardEvent>) {

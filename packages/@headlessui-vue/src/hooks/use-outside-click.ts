@@ -1,5 +1,5 @@
 import { useWindowEvent } from './use-window-event'
-import { computed, Ref, ComputedRef } from 'vue'
+import { computed, Ref, ComputedRef, ref } from 'vue'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { dom } from '../utils/dom'
 
@@ -76,9 +76,31 @@ export function useOutsideClick(
     return cb(event, target)
   }
 
+  let initialClickTarget = ref<EventTarget | null>(null)
+
+  useWindowEvent(
+    'mousedown',
+    (event) => {
+      if (enabled.value) {
+        initialClickTarget.value = event.target
+      }
+    },
+    true
+  )
+
   useWindowEvent(
     'click',
-    (event) => handleOutsideClick(event, (event) => event.target as HTMLElement),
+    (event) => {
+      if (!initialClickTarget.value) {
+        return
+      }
+
+      handleOutsideClick(event, () => {
+        return initialClickTarget.value as HTMLElement
+      })
+
+      initialClickTarget.value = null
+    },
 
     // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
     // don't "cancel" this outside click check. E.g.: A `Menu` inside a `DialogPanel` if the `Menu`

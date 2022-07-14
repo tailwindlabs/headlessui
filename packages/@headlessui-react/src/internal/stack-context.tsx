@@ -32,11 +32,13 @@ export function StackProvider({
   onUpdate,
   type,
   element,
+  enabled,
 }: {
   children: ReactNode
   onUpdate?: OnUpdate
   type: string
   element: MutableRefObject<HTMLElement | null>
+  enabled?: boolean
 }) {
   let parentUpdate = useStackContext()
 
@@ -49,9 +51,14 @@ export function StackProvider({
   })
 
   useIsoMorphicEffect(() => {
-    notify(StackMessage.Add, type, element)
-    return () => notify(StackMessage.Remove, type, element)
-  }, [notify, type, element])
+    let shouldNotify = enabled === undefined || enabled === true
+
+    shouldNotify && notify(StackMessage.Add, type, element)
+
+    return () => {
+      shouldNotify && notify(StackMessage.Remove, type, element)
+    }
+  }, [notify, type, element, enabled])
 
   return <StackContext.Provider value={notify}>{children}</StackContext.Provider>
 }

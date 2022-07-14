@@ -10,6 +10,7 @@ import {
   PropType,
   Fragment,
   Ref,
+  onUnmounted,
 } from 'vue'
 import { render } from '../../utils/render'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
@@ -142,44 +143,38 @@ function useRestoreFocus(
 ) {
   let restoreElement = ref<HTMLElement | null>(null)
 
-  // Deliberately not using a ref, we don't want to trigger re-renders.
-  let mounted = { value: false }
+  function captureFocus() {
+    if (restoreElement.value) return
+    restoreElement.value = ownerDocument.value?.activeElement as HTMLElement
+  }
+
+  // Restore the focus to the previous element
+  function restoreFocusIfNeeded() {
+    if (!restoreElement.value) return
+    focusElement(restoreElement.value)
+    restoreElement.value = null
+  }
 
   onMounted(() => {
-    // Capture the currently focused element, before we try to move the focus inside the FocusTrap.
     watch(
       enabled,
       (newValue, prevValue) => {
         if (newValue === prevValue) return
-        if (!enabled.value) return
 
-        mounted.value = true
-
-        if (!restoreElement.value) {
-          restoreElement.value = ownerDocument.value?.activeElement as HTMLElement
+        if (newValue) {
+          // The FocusTrap has become enabled which means we're going to move the focus into the trap
+          // We need to capture the current focus before we do that so we can restore it when done
+          captureFocus()
+        } else {
+          restoreFocusIfNeeded()
         }
       },
       { immediate: true }
     )
-
-    // Restore the focus when we unmount the component.
-    watch(
-      enabled,
-      (newValue, prevValue, onInvalidate) => {
-        if (newValue === prevValue) return
-        if (!enabled.value) return
-
-        onInvalidate(() => {
-          if (mounted.value === false) return
-          mounted.value = false
-
-          focusElement(restoreElement.value)
-          restoreElement.value = null
-        })
-      },
-      { immediate: true }
-    )
   })
+
+  // Restore the focus when we unmount the component
+  onUnmounted(restoreFocusIfNeeded)
 }
 
 function useInitialFocus(

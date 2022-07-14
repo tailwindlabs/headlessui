@@ -90,9 +90,31 @@ export function useOutsideClick(
     return cb(event, target)
   }
 
+  let initialClickTarget = useRef<EventTarget | null>(null)
+
+  useWindowEvent(
+    'mousedown',
+    (event) => {
+      if (enabledRef.current) {
+        initialClickTarget.current = event.target
+      }
+    },
+    true
+  )
+
   useWindowEvent(
     'click',
-    (event) => handleOutsideClick(event, (event) => event.target as HTMLElement),
+    (event) => {
+      if (!initialClickTarget.current) {
+        return
+      }
+
+      handleOutsideClick(event, () => {
+        return initialClickTarget.current as HTMLElement
+      })
+
+      initialClickTarget.current = null
+    },
 
     // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
     // don't "cancel" this outside click check. E.g.: A `Menu` inside a `DialogPanel` if the `Menu`

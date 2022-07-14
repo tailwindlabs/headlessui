@@ -140,6 +140,7 @@ export let Dialog = defineComponent({
     )
     useStackProvider({
       type: 'Dialog',
+      enabled: computed(() => dialogState.value === DialogStates.Open),
       element: internalDialogRef,
       onUpdate: (message, type, element) => {
         if (type !== 'Dialog') return
