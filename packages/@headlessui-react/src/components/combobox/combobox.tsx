@@ -302,6 +302,7 @@ interface ComboboxRenderPropArg<T> {
   disabled: boolean
   activeIndex: number | null
   activeOption: T | null
+  value: T
 }
 
 let ComboboxRoot = forwardRefWithAs(function Combobox<
