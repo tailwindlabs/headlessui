@@ -402,8 +402,9 @@ export let Combobox = defineComponent({
       computed(() => comboboxState.value === ComboboxStates.Open)
     )
 
-    watch([api.value, api.inputRef], () => api.syncInputValue(), {
+    watch([api.value, api.inputRef, api.inputPropsRef], () => api.syncInputValue(), {
       immediate: true,
+      deep: true,
     })
 
     // Only sync the input value on close as typing into the input will trigger it to open
@@ -634,7 +635,10 @@ export let ComboboxInput = defineComponent({
   setup(props, { emit, attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
-    api.inputPropsRef = computed(() => props)
+
+    watchEffect(() => {
+      api.inputPropsRef.value = props
+    })
 
     expose({ el: api.inputRef, $el: api.inputRef })
 

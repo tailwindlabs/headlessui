@@ -445,7 +445,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     } else {
       data.inputRef.current.value = ''
     }
-  }, [value, data.inputRef, inputPropsRef])
+  }, [value, data.inputRef, inputPropsRef.current?.displayValue])
 
   let selectOption = useEvent((id: string) => {
     let option = data.options.find((item) => item.id === id)

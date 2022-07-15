@@ -345,6 +345,70 @@ describe('Rendering', () => {
     )
 
     it(
+      'conditionally rendering the input should allow changing the display value',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState(null)
+
+          return (
+            <>
+              <Combobox value={value} onChange={setValue} nullable>
+                {({ open }) => {
+                  if (!open) {
+                    return (
+                      <>
+                        <Combobox.Input
+                          onChange={NOOP}
+                          displayValue={(str?: string) => `${str?.toUpperCase() ?? ''} closed`}
+                        />
+                        <Combobox.Button>Trigger</Combobox.Button>
+                      </>
+                    )
+                  }
+
+                  return (
+                    <>
+                      <Combobox.Input
+                        onChange={NOOP}
+                        displayValue={(str?: string) => `${str?.toUpperCase() ?? ''} open`}
+                      />
+                      <Combobox.Button>Trigger</Combobox.Button>
+                      <Combobox.Options>
+                        <Combobox.Option value="a">Option A</Combobox.Option>
+                        <Combobox.Option value="b">Option B</Combobox.Option>
+                        <Combobox.Option value="c">Option C</Combobox.Option>
+                      </Combobox.Options>
+                    </>
+                  )
+                }}
+              </Combobox>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        expect(getComboboxInput()).toHaveValue(' closed')
+
+        await click(getComboboxButton())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        expect(getComboboxInput()).toHaveValue(' open')
+
+        await click(getComboboxOptions()[1])
+
+        expect(getComboboxInput()).toHaveValue('B closed')
+
+        await click(getComboboxButton())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        expect(getComboboxInput()).toHaveValue('B open')
+      })
+    )
+
+    it(
       'should be possible to override the `type` on the input',
       suppressConsoleLogs(async () => {
         function Example() {

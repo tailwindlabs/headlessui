@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don’t close dialog when drag ends outside dialog ([#1667](https://github.com/tailwindlabs/headlessui/pull/1667))
 - Fix outside clicks to close dialog when nested, unopened dialogs are present ([#1667](https://github.com/tailwindlabs/headlessui/pull/1667))
 - Close `Menu` component when using `tab` key ([#1673](https://github.com/tailwindlabs/headlessui/pull/1673))
+- Resync input when display value changes ([#1679](https://github.com/tailwindlabs/headlessui/pull/1679))
 
 ## [1.6.6] - 2022-07-07
 
