@@ -1,4 +1,4 @@
-import React, { createElement, useRef, useState } from 'react'
+import React, { createElement, useRef, useState, Fragment } from 'react'
 import { render } from '@testing-library/react'
 
 import { Dialog } from './dialog'
@@ -252,6 +252,44 @@ describe('Rendering', () => {
                 <input id="b" type="text" />
                 <input id="c" type="text" />
               </Dialog>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        // No overflow yet
+        expect(document.documentElement.style.overflow).toBe('')
+
+        let btn = document.getElementById('trigger')
+
+        // Open the dialog
+        await click(btn)
+
+        // Expect overflow
+        expect(document.documentElement.style.overflow).toBe('hidden')
+      })
+    )
+
+    it(
+      'should wait to add a scroll lock to the html tag when unmount is false in a Transition',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+
+              <Transition as={Fragment} show={isOpen} unmount={false}>
+                <Dialog onClose={() => setIsOpen(false)} unmount={false}>
+                  <input id="a" type="text" />
+                  <input id="b" type="text" />
+                  <input id="c" type="text" />
+                </Dialog>
+              </Transition>
             </>
           )
         }
