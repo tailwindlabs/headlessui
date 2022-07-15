@@ -391,6 +391,57 @@ describe('Rendering', () => {
         expect(document.documentElement.style.overflow).toBe('hidden')
       })
     )
+
+    it(
+      'should wait to add a scroll lock to the html tag when unmount is false in a Transition',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          components: {
+            Dialog,
+            TransitionRoot,
+          },
+
+          template: `
+            <div>
+              <button id="trigger" @click="toggleOpen">
+                Trigger
+              </button>
+
+              <TransitionRoot :show="isOpen" :unmount="false">
+                <Dialog @close="setIsOpen" :unmount="false">
+                  <input id="a" type="text" />
+                  <input id="b" type="text" />
+                  <input id="c" type="text" />
+                </Dialog>
+              </TransitionRoot>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+              toggleOpen() {
+                isOpen.value = !isOpen.value
+              },
+            }
+          },
+        })
+
+        // No overflow yet
+        expect(document.documentElement.style.overflow).toBe('')
+
+        let btn = document.getElementById('trigger')
+
+        // Open the dialog
+        await click(btn)
+
+        // Expect overflow
+        expect(document.documentElement.style.overflow).toBe('hidden')
+      })
+    )
   })
 
   describe('DialogOverlay', () => {

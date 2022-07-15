@@ -209,10 +209,12 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
   let transitionRef = useSyncRefs(container, ref)
-  let [state, setState] = useState(TreeStates.Visible)
   let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
+
+  let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
+
   let { register, unregister } = useParentNesting()
   let prevShow = useRef<boolean | null>(null)
 
