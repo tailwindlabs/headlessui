@@ -37,6 +37,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
+import { useControllable } from '../../hooks/use-controllable'
 
 enum ListboxStates {
   Open,
@@ -311,10 +312,11 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   props: Props<
     TTag,
     ListboxRenderPropArg,
-    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name' | 'multiple' | 'by'
+    'value' | 'defaultValue' | 'onChange' | 'by' | 'disabled' | 'horizontal' | 'name' | 'multiple'
   > & {
-    value: TType
-    onChange(value: TType): void
+    value?: TType
+    defaultValue?: TType
+    onChange?(value: TType): void
     by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
     disabled?: boolean
     horizontal?: boolean
@@ -324,9 +326,10 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   ref: Ref<TTag>
 ) {
   let {
-    value,
+    value: controlledValue,
+    defaultValue,
     name,
-    onChange,
+    onChange: controlledOnChange,
     by = (a, z) => a === z,
     disabled = false,
     horizontal = false,
@@ -335,6 +338,8 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
+
+  let [value, onChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
 
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
@@ -413,8 +418,8 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   )
 
   let slot = useMemo<ListboxRenderPropArg>(
-    () => ({ open: listboxState === ListboxStates.Open, disabled }),
-    [listboxState, disabled]
+    () => ({ open: listboxState === ListboxStates.Open, disabled, value }),
+    [listboxState, disabled, value]
   )
 
   let ourProps = { ref: listboxRef }

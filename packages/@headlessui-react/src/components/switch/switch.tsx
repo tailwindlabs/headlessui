@@ -25,6 +25,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit } from '../../utils/form'
 import { useEvent } from '../../hooks/use-event'
+import { useControllable } from '../../hooks/use-controllable'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null
@@ -101,16 +102,24 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   props: Props<
     TTag,
     SwitchRenderPropArg,
-    SwitchPropsWeControl | 'checked' | 'onChange' | 'name' | 'value'
+    SwitchPropsWeControl | 'checked' | 'defaultChecked' | 'onChange' | 'name' | 'value'
   > & {
-    checked: boolean
-    onChange(checked: boolean): void
+    checked?: boolean
+    defaultChecked?: boolean
+    onChange?(checked: boolean): void
     name?: string
     value?: string
   },
   ref: Ref<HTMLElement>
 ) {
-  let { checked, onChange, name, value, ...theirProps } = props
+  let {
+    checked: controlledChecked,
+    defaultChecked = false,
+    onChange: controlledOnChange,
+    name,
+    value,
+    ...theirProps
+  } = props
   let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
@@ -121,7 +130,9 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     groupContext === null ? null : groupContext.setSwitch
   )
 
-  let toggle = useEvent(() => onChange(!checked))
+  let [checked, onChange] = useControllable(controlledChecked, controlledOnChange, defaultChecked)
+
+  let toggle = useEvent(() => onChange?.(!checked))
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     event.preventDefault()
