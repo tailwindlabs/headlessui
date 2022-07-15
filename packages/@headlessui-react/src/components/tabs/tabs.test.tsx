@@ -544,6 +544,64 @@ describe('Rendering', () => {
 
   describe('`selectedIndex`', () => {
     it(
+      'should not change the tab in a controlled component if you do not respond to the onChange',
+      suppressConsoleLogs(async () => {
+        let handleChange = jest.fn()
+
+        function ControlledTabs() {
+          let [selectedIndex, setSelectedIndex] = useState(0)
+
+          return (
+            <>
+              <Tab.Group
+                selectedIndex={selectedIndex}
+                onChange={(value) => {
+                  handleChange(value)
+                }}
+              >
+                <Tab.List>
+                  <Tab>Tab 1</Tab>
+                  <Tab>Tab 2</Tab>
+                  <Tab>Tab 3</Tab>
+                </Tab.List>
+
+                <Tab.Panels>
+                  <Tab.Panel>Content 1</Tab.Panel>
+                  <Tab.Panel>Content 2</Tab.Panel>
+                  <Tab.Panel>Content 3</Tab.Panel>
+                </Tab.Panels>
+              </Tab.Group>
+
+              <button>after</button>
+              <button onClick={() => setSelectedIndex((prev) => prev + 1)}>setSelectedIndex</button>
+            </>
+          )
+        }
+
+        render(<ControlledTabs />)
+
+        assertActiveElement(document.body)
+
+        // test controlled behaviour
+        await click(getByText('setSelectedIndex'))
+        assertTabs({ active: 1 })
+        await click(getByText('setSelectedIndex'))
+        assertTabs({ active: 2 })
+
+        // test uncontrolled behaviour again
+        await click(getByText('Tab 1'))
+        assertTabs({ active: 2 }) // Should still be Tab 3 because `selectedIndex` didn't update
+        await click(getByText('Tab 2'))
+        assertTabs({ active: 2 }) // Should still be Tab 3 because `selectedIndex` didn't update
+        await click(getByText('Tab 3'))
+        assertTabs({ active: 2 }) // Should still be Tab 3 because `selectedIndex` didn't update
+        await click(getByText('Tab 1'))
+        expect(handleChange).toHaveBeenCalledTimes(3) // We did see the 'onChange' calls, but only 3 because clicking Tab 3 is already the active one which means that this doesn't trigger the onChange
+        assertTabs({ active: 2 }) // Should still be Tab 3 because `selectedIndex` didn't update
+      })
+    )
+
+    it(
       'should be possible to change active tab controlled and uncontrolled',
       suppressConsoleLogs(async () => {
         let handleChange = jest.fn()

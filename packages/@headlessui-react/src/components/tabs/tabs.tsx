@@ -26,6 +26,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { useEvent } from '../../hooks/use-event'
+import { microTask } from '../../utils/micro-task'
 
 interface StateDefinition {
   selectedIndex: number
@@ -196,6 +197,8 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   const orientation = vertical ? 'vertical' : 'horizontal'
   const activation = manual ? 'manual' : 'auto'
 
+  let isControlled = selectedIndex !== null
+
   let tabsRef = useSyncRefs(ref)
   let [state, dispatch] = useReducer(stateReducer, {
     selectedIndex: selectedIndex ?? defaultIndex,
@@ -211,7 +214,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     [orientation, activation, state]
   )
 
-  let lastChangedIndex = useLatestValue(state.selectedIndex)
+  let realSelectedIndex = useLatestValue(isControlled ? props.selectedIndex : state.selectedIndex)
   let tabsActions: _Actions = useMemo(
     () => ({
       registerTab(tab) {
@@ -226,13 +229,16 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
         dispatch({ type: ActionTypes.ForceRerender })
       },
       change(index: number) {
-        if (lastChangedIndex.current !== index) onChangeRef.current(index)
-        lastChangedIndex.current = index
+        if (realSelectedIndex.current !== index) {
+          onChangeRef.current(index)
+        }
 
-        dispatch({ type: ActionTypes.SetSelectedIndex, index })
+        if (!isControlled) {
+          dispatch({ type: ActionTypes.SetSelectedIndex, index })
+        }
       },
     }),
-    [dispatch]
+    [dispatch, isControlled]
   )
 
   useIsoMorphicEffect(() => {
@@ -388,9 +394,17 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
     internalTabRef.current?.focus()
   })
 
+  let ready = useRef(false)
   let handleSelection = useEvent(() => {
+    if (ready.current) return
+    ready.current = true
+
     internalTabRef.current?.focus()
     actions.change(myIndex)
+
+    microTask(() => {
+      ready.current = false
+    })
   })
 
   // This is important because we want to only focus the tab when it gets focus

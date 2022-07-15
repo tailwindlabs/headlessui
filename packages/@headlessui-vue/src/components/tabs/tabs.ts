@@ -23,6 +23,7 @@ import { match } from '../../utils/match'
 import { focusIn, Focus } from '../../utils/focus-management'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusSentinel } from '../../internal/focus-sentinel'
+import { microTask } from '../../utils/micro-task'
 
 type StateDefinition = {
   // State
@@ -75,6 +76,11 @@ export let TabGroup = defineComponent({
     let tabs = ref<StateDefinition['tabs']['value']>([])
     let panels = ref<StateDefinition['panels']['value']>([])
 
+    let isControlled = computed(() => props.selectedIndex !== null)
+    let realSelectedIndex = computed(() =>
+      isControlled.value ? props.selectedIndex : selectedIndex.value
+    )
+
     let api = {
       selectedIndex,
       orientation: computed(() => (props.vertical ? 'vertical' : 'horizontal')),
@@ -82,9 +88,13 @@ export let TabGroup = defineComponent({
       tabs,
       panels,
       setSelectedIndex(index: number) {
-        if (selectedIndex.value === index) return
-        selectedIndex.value = index
-        emit('change', index)
+        if (realSelectedIndex.value !== index) {
+          emit('change', index)
+        }
+
+        if (!isControlled.value) {
+          selectedIndex.value = index
+        }
       },
       registerTab(tab: typeof tabs['value'][number]) {
         if (!tabs.value.includes(tab)) tabs.value.push(tab)
@@ -272,11 +282,19 @@ export let Tab = defineComponent({
       dom(internalTabRef)?.focus()
     }
 
+    let ready = ref(false)
     function handleSelection() {
+      if (ready.value) return
+      ready.value = true
+
       if (props.disabled) return
 
       dom(internalTabRef)?.focus()
       api.setSelectedIndex(myIndex.value)
+
+      microTask(() => {
+        ready.value = false
+      })
     }
 
     // This is important because we want to only focus the tab when it gets focus
