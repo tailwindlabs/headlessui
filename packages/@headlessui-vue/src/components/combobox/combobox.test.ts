@@ -377,6 +377,54 @@ describe('Rendering', () => {
     )
 
     it(
+      'conditionally rendering the input should allow changing the display value',
+      suppressConsoleLogs(async () => {
+        let Example = defineComponent({
+          template: html`
+            <Combobox v-model="value" v-slot="{ open }" nullable>
+              <template v-if="!open">
+                <ComboboxInput :displayValue="(str) => (str?.toUpperCase() ?? '') + ' closed'" />
+                <ComboboxButton>Trigger</ComboboxButton>
+              </template>
+              <template v-else>
+                <ComboboxInput :displayValue="(str) => (str?.toUpperCase() ?? '') + ' open'" />
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption value="a">Option A</ComboboxOption>
+                  <ComboboxOption value="b">Option B</ComboboxOption>
+                  <ComboboxOption value="c">Option C</ComboboxOption>
+                </ComboboxOptions>
+              </template>
+            </Combobox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        renderTemplate(Example)
+
+        await nextFrame()
+
+        expect(getComboboxInput()).toHaveValue(' closed')
+
+        await click(getComboboxButton())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        expect(getComboboxInput()).toHaveValue(' open')
+
+        await click(getComboboxOptions()[1])
+
+        expect(getComboboxInput()).toHaveValue('B closed')
+
+        await click(getComboboxButton())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        expect(getComboboxInput()).toHaveValue('B open')
+      })
+    )
+
+    it(
       'should be possible to override the `type` on the input',
       suppressConsoleLogs(async () => {
         let Example = defineComponent({
