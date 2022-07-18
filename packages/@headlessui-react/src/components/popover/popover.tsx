@@ -17,6 +17,7 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  MouseEventHandler,
 } from 'react'
 
 import { Props } from '../../types'
@@ -128,7 +129,12 @@ function usePopoverContext(component: string) {
 }
 
 let PopoverAPIContext = createContext<{
-  close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
+  close(
+    focusableElement?:
+      | HTMLElement
+      | MutableRefObject<HTMLElement | null>
+      | MouseEventHandler<HTMLElement>
+  ): void
   isPortalled: boolean
 } | null>(null)
 PopoverAPIContext.displayName = 'PopoverAPIContext'
