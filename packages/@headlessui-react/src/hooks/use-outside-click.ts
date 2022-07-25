@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect, useRef } from 'react'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
-import { useWindowEvent } from './use-window-event'
+import { useDocumentEvent } from './use-document-event'
 
 type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
@@ -92,7 +92,7 @@ export function useOutsideClick(
 
   let initialClickTarget = useRef<EventTarget | null>(null)
 
-  useWindowEvent(
+  useDocumentEvent(
     'mousedown',
     (event) => {
       if (enabledRef.current) {
@@ -102,7 +102,7 @@ export function useOutsideClick(
     true
   )
 
-  useWindowEvent(
+  useDocumentEvent(
     'click',
     (event) => {
       if (!initialClickTarget.current) {
@@ -130,7 +130,7 @@ export function useOutsideClick(
   // In this case we care only about the first case so we check to see if the active element is the iframe
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
-  useWindowEvent(
+  useDocumentEvent(
     'blur',
     (event) =>
       handleOutsideClick(event, () =>

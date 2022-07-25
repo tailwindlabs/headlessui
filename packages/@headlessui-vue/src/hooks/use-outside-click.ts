@@ -1,7 +1,7 @@
-import { useWindowEvent } from './use-window-event'
 import { computed, Ref, ComputedRef, ref } from 'vue'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { dom } from '../utils/dom'
+import { useDocumentEvent } from './use-document-event'
 
 type Container = Ref<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
@@ -78,7 +78,7 @@ export function useOutsideClick(
 
   let initialClickTarget = ref<EventTarget | null>(null)
 
-  useWindowEvent(
+  useDocumentEvent(
     'mousedown',
     (event) => {
       if (enabled.value) {
@@ -88,7 +88,7 @@ export function useOutsideClick(
     true
   )
 
-  useWindowEvent(
+  useDocumentEvent(
     'click',
     (event) => {
       if (!initialClickTarget.value) {
@@ -116,7 +116,7 @@ export function useOutsideClick(
   // In this case we care only about the first case so we check to see if the active element is the iframe
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
-  useWindowEvent(
+  useDocumentEvent(
     'blur',
     (event) =>
       handleOutsideClick(event, () =>
