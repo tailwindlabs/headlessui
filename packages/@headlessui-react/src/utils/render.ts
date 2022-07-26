@@ -232,11 +232,16 @@ function mergeProps(...listOfProps: Props<any, any>[]) {
   // Merge event handlers
   for (let eventName in eventHandlers) {
     Object.assign(target, {
-      [eventName](event: { defaultPrevented: boolean }, ...args: any[]) {
+      [eventName](event: { nativeEvent?: Event; defaultPrevented: boolean }, ...args: any[]) {
         let handlers = eventHandlers[eventName]
 
         for (let handler of handlers) {
-          if (event.defaultPrevented) return
+          if (
+            (event instanceof Event || event?.nativeEvent instanceof Event) &&
+            event.defaultPrevented
+          ) {
+            return
+          }
 
           handler(event, ...args)
         }
