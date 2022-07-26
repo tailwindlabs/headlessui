@@ -185,34 +185,52 @@ function useInitialFocus(
 ) {
   let previousActiveElement = useRef<HTMLElement | null>(null)
 
+  let mounted = useIsMounted()
+
   // Handle initial focus
   useWatch(() => {
     if (!enabled) return
     let containerElement = container.current
     if (!containerElement) return
 
-    let activeElement = ownerDocument?.activeElement as HTMLElement
+    // Delaying the focus to the next microtask ensures that a few conditions are true:
+    // - The container is rendered
+    // - Transitions could be started
+    // If we don't do this, then focusing an element will immediately cancel any transitions. This
+    // is not ideal because transitions will look broken.
+    // There is an additional issue with doing this immediately. The FocusTrap is used inside a
+    // Dialog, the Dialog is rendered inside of a Portal and the Portal is rendered at the end of
+    // the `document.body`. This means that the moment we call focus, the browser immediately
+    // tries to focus the element, which will still be at the bodem resulting in the page to
+    // scroll down. Delaying this will prevent the page to scroll down entirely.
+    microTask(() => {
+      if (!mounted.current) {
+        return
+      }
 
-    if (initialFocus?.current) {
-      if (initialFocus?.current === activeElement) {
+      let activeElement = ownerDocument?.activeElement as HTMLElement
+
+      if (initialFocus?.current) {
+        if (initialFocus?.current === activeElement) {
+          previousActiveElement.current = activeElement
+          return // Initial focus ref is already the active element
+        }
+      } else if (containerElement!.contains(activeElement)) {
         previousActiveElement.current = activeElement
-        return // Initial focus ref is already the active element
+        return // Already focused within Dialog
       }
-    } else if (containerElement.contains(activeElement)) {
-      previousActiveElement.current = activeElement
-      return // Already focused within Dialog
-    }
 
-    // Try to focus the initialFocus ref
-    if (initialFocus?.current) {
-      focusElement(initialFocus.current)
-    } else {
-      if (focusIn(containerElement, Focus.First) === FocusResult.Error) {
-        console.warn('There are no focusable elements inside the <FocusTrap />')
+      // Try to focus the initialFocus ref
+      if (initialFocus?.current) {
+        focusElement(initialFocus.current)
+      } else {
+        if (focusIn(containerElement!, Focus.First) === FocusResult.Error) {
+          console.warn('There are no focusable elements inside the <FocusTrap />')
+        }
       }
-    }
 
-    previousActiveElement.current = ownerDocument?.activeElement as HTMLElement
+      previousActiveElement.current = ownerDocument?.activeElement as HTMLElement
+    })
   }, [enabled])
 
   return previousActiveElement

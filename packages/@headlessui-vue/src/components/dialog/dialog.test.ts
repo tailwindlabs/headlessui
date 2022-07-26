@@ -48,7 +48,7 @@ function nextFrame() {
 
 let TabSentinel = defineComponent({
   name: 'TabSentinel',
-  template: html`<div :tabindex="0"></div>`,
+  template: html`<button></button>`,
 })
 
 jest.mock('../../hooks/use-id')
@@ -253,7 +253,7 @@ describe('Rendering', () => {
 
       await click(document.getElementById('trigger'))
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       assertDialog({ state: DialogState.Visible, attributes: { class: 'relative bg-blue-500' } })
     })
@@ -299,7 +299,7 @@ describe('Rendering', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       // Let's verify that the Dialog is already there
       expect(getDialog()).not.toBe(null)
@@ -329,7 +329,7 @@ describe('Rendering', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       assertDialog({ state: DialogState.InvisibleHidden })
       expect(focusCounter).toHaveBeenCalledTimes(0)
@@ -637,7 +637,7 @@ describe('Rendering', () => {
           `
         )
 
-        await new Promise<void>(nextTick)
+        await nextFrame()
 
         assertDialog({
           state: DialogState.Visible,
@@ -664,7 +664,7 @@ describe('Rendering', () => {
           `
         )
 
-        await new Promise<void>(nextTick)
+        await nextFrame()
 
         assertDialog({
           state: DialogState.Visible,
@@ -695,7 +695,7 @@ describe('Composition', () => {
         `,
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       assertDialog({ state: DialogState.Visible })
       assertDialogDescription({
@@ -719,6 +719,8 @@ describe('Composition', () => {
           </Transition>
         `,
       })
+
+      await nextFrame()
 
       assertDialog({ state: DialogState.InvisibleUnmounted })
     })
@@ -1214,7 +1216,7 @@ describe('Mouse interactions', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1259,7 +1261,7 @@ describe('Mouse interactions', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1298,7 +1300,7 @@ describe('Mouse interactions', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1344,7 +1346,7 @@ describe('Mouse interactions', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1396,7 +1398,7 @@ describe('Mouse interactions', () => {
         },
       })
 
-      await new Promise<void>(nextTick)
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })

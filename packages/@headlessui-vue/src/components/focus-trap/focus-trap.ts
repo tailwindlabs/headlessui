@@ -3,6 +3,7 @@ import {
   defineComponent,
   h,
   onMounted,
+  onUnmounted,
   ref,
   watch,
 
@@ -10,7 +11,6 @@ import {
   PropType,
   Fragment,
   Ref,
-  onUnmounted,
 } from 'vue'
 import { render } from '../../utils/render'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
@@ -21,7 +21,6 @@ import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { microTask } from '../../utils/micro-task'
-// import { disposables } from '../../utils/disposables'
 
 enum Features {
   /** No features enabled for the focus trap. */
@@ -191,6 +190,10 @@ function useInitialFocus(
 ) {
   let previousActiveElement = ref<HTMLElement | null>(null)
 
+  let mounted = ref(false)
+  onMounted(() => (mounted.value = true))
+  onUnmounted(() => (mounted.value = false))
+
   onMounted(() => {
     watch(
       // Handle initial focus
@@ -202,7 +205,21 @@ function useInitialFocus(
         let containerElement = dom(container)
         if (!containerElement) return
 
-        requestAnimationFrame(() => {
+        // Delaying the focus to the next microtask ensures that a few conditions are true:
+        // - The container is rendered
+        // - Transitions could be started
+        // If we don't do this, then focusing an element will immediately cancel any transitions. This
+        // is not ideal because transitions will look broken.
+        // There is an additional issue with doing this immediately. The FocusTrap is used inside a
+        // Dialog, the Dialog is rendered inside of a Portal and the Portal is rendered at the end of
+        // the `document.body`. This means that the moment we call focus, the browser immediately
+        // tries to focus the element, which will still be at the bodem resulting in the page to
+        // scroll down. Delaying this will prevent the page to scroll down entirely.
+        microTask(() => {
+          if (!mounted.value) {
+            return
+          }
+
           let initialFocusElement = dom(initialFocus)
 
           let activeElement = ownerDocument.value?.activeElement as HTMLElement
