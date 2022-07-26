@@ -32,8 +32,18 @@ global.IntersectionObserver = class FakeIntersectionObserver {
 
 afterAll(() => jest.restoreAllMocks())
 
-function TabSentinel(props: PropsOf<'div'>) {
-  return <div tabIndex={0} {...props} />
+function nextFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
+
+function TabSentinel(props: PropsOf<'button'>) {
+  return <button {...props} />
 }
 
 describe('Safe guards', () => {
@@ -167,7 +177,7 @@ describe('Rendering', () => {
       })
     )
 
-    it('should be possible to always render the Dialog if we provide it a `static` prop (and enable focus trapping based on `open`)', () => {
+    it('should be possible to always render the Dialog if we provide it a `static` prop (and enable focus trapping based on `open`)', async () => {
       let focusCounter = jest.fn()
       render(
         <>
@@ -178,6 +188,8 @@ describe('Rendering', () => {
           </Dialog>
         </>
       )
+
+      await nextFrame()
 
       // Let's verify that the Dialog is already there
       expect(getDialog()).not.toBe(null)
@@ -217,7 +229,10 @@ describe('Rendering', () => {
           </>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       assertDialog({ state: DialogState.InvisibleHidden })
       expect(focusCounter).toHaveBeenCalledTimes(0)
@@ -463,6 +478,8 @@ describe('Rendering', () => {
           </Dialog>
         )
 
+        await nextFrame()
+
         assertDialog({
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
@@ -485,6 +502,8 @@ describe('Rendering', () => {
             <TabSentinel />
           </Dialog>
         )
+
+        await nextFrame()
 
         assertDialog({
           state: DialogState.Visible,
@@ -512,6 +531,8 @@ describe('Composition', () => {
         </Transition>
       )
 
+      await nextFrame()
+
       assertDialog({ state: DialogState.Visible })
       assertDialogDescription({
         state: DialogState.Visible,
@@ -531,6 +552,8 @@ describe('Composition', () => {
           </Dialog>
         </Transition>
       )
+
+      await nextFrame()
 
       assertDialog({ state: DialogState.InvisibleUnmounted })
     })
@@ -870,7 +893,10 @@ describe('Mouse interactions', () => {
           </div>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -905,7 +931,10 @@ describe('Mouse interactions', () => {
           </Dialog>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -936,7 +965,10 @@ describe('Mouse interactions', () => {
           </div>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -979,7 +1011,10 @@ describe('Mouse interactions', () => {
           </Dialog>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1023,7 +1058,10 @@ describe('Mouse interactions', () => {
           </div>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
