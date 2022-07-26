@@ -220,7 +220,9 @@ function mergeProps(...listOfProps: Record<any, any>[]) {
         let handlers = eventHandlers[eventName]
 
         for (let handler of handlers) {
-          if (event?.defaultPrevented) return
+          if (event instanceof Event && event.defaultPrevented) {
+            return
+          }
 
           handler(event, ...args)
         }

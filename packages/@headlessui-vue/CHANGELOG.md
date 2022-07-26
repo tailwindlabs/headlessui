@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resync input when display value changes ([#1679](https://github.com/tailwindlabs/headlessui/pull/1679))
 - Ensure controlled `Tabs` don't change automagically ([#1680](https://github.com/tailwindlabs/headlessui/pull/1680))
 - Improve outside click on Safari iOS ([#1712](https://github.com/tailwindlabs/headlessui/pull/1712))
+- Improve event handler merging ([#1715](https://github.com/tailwindlabs/headlessui/pull/1715))
 
 ## [1.6.7] - 2022-07-12
 
