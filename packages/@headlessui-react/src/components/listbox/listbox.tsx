@@ -377,7 +377,8 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
         [ValueMode.Multi]() {
           let copy = (propsRef.current.value as TActualType[]).slice()
 
-          let idx = copy.indexOf(value as TActualType)
+          let { compare } = propsRef.current
+          let idx = copy.findIndex((item) => compare(item as unknown as TType, value as TType))
           if (idx === -1) {
             copy.push(value as TActualType)
           } else {

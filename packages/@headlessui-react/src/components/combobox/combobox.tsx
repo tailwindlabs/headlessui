@@ -500,7 +500,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       [ValueMode.Multi]() {
         let copy = (data.value as TActualType[]).slice()
 
-        let idx = copy.indexOf(value as TActualType)
+        let idx = copy.findIndex((item) => compare(item as unknown as TType, value as TType))
         if (idx === -1) {
           copy.push(value as TActualType)
         } else {
