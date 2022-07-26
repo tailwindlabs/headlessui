@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 
 import 'tailwindcss/tailwind.css'
+import { useRouter } from 'next/router'
 
 function disposables() {
   let disposables: Function[] = []
@@ -138,6 +139,11 @@ function KeyCaster() {
 }
 
 function MyApp({ Component, pageProps }) {
+  let router = useRouter()
+  if (router.query.raw !== undefined) {
+    return <Component {...pageProps} />
+  }
+
   return (
     <>
       <div className="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased">
