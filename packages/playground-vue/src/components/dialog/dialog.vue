@@ -26,7 +26,7 @@
             leaveTo="opacity-0"
             entered="opacity-75"
           >
-            <DialogOverlay className="fixed inset-0 bg-gray-500 transition-opacity" />
+            <div className="fixed inset-0 bg-gray-500 transition-opacity" />
           </TransitionChild>
 
           <TransitionChild
@@ -41,7 +41,7 @@
             <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">
               &#8203;
             </span>
-            <div
+            <DialogPanel
               class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
             >
               <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -172,7 +172,7 @@
                   Cancel
                 </button>
               </div>
-            </div>
+            </DialogPanel>
           </TransitionChild>
         </div>
       </div>
@@ -186,6 +186,7 @@ import {
   Dialog,
   DialogTitle,
   DialogOverlay,
+  DialogPanel,
   Menu,
   MenuButton,
   MenuItems,
@@ -268,6 +269,7 @@ export default {
     Dialog,
     DialogTitle,
     DialogOverlay,
+    DialogPanel,
     Menu,
     MenuButton,
     MenuItems,
