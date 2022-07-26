@@ -2,16 +2,20 @@ import React, { createElement, useRef, useState, Fragment } from 'react'
 import { render } from '@testing-library/react'
 
 import { Dialog } from './dialog'
+import { Popover } from '../popover/popover'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   DialogState,
+  PopoverState,
   assertDialog,
   assertDialogDescription,
   assertDialogOverlay,
   assertDialogTitle,
+  assertPopoverPanel,
   getDialog,
   getDialogOverlay,
   getDialogBackdrop,
+  getPopoverButton,
   getByText,
   assertActiveElement,
   getDialogs,
@@ -519,6 +523,69 @@ describe('Rendering', () => {
 })
 
 describe('Composition', () => {
+  it(
+    'should be possible to open a dialog from inside a Popover (and then close it)',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isDialogOpen, setIsDialogOpen] = useState(false)
+
+        return (
+          <div>
+            <Popover>
+              <Popover.Button>Open Popover</Popover.Button>
+              <Popover.Panel>
+                <div id="openDialog" onClick={() => setIsDialogOpen(true)}>
+                  Open dialog
+                </div>
+              </Popover.Panel>
+            </Popover>
+
+            <Dialog open={isDialogOpen} onClose={console.log}>
+              <Dialog.Panel>
+                <button id="closeDialog" onClick={() => setIsDialogOpen(false)}>
+                  Close Dialog
+                </button>
+              </Dialog.Panel>
+            </Dialog>
+          </div>
+        )
+      }
+
+      render(<Example />)
+
+      await nextFrame()
+
+      // Nothing is open initially
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+      assertActiveElement(document.body)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The popover should be open but the dialog should not
+      assertPopoverPanel({ state: PopoverState.Visible })
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+      assertActiveElement(getPopoverButton())
+
+      // Open the dialog from inside the popover
+      await click(document.getElementById('openDialog'))
+
+      // The dialog should be open but the popover should not
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      assertDialog({ state: DialogState.Visible })
+      assertActiveElement(document.getElementById('closeDialog'))
+
+      // Close the dialog from inside itself
+      await click(document.getElementById('closeDialog'))
+
+      // Nothing should be open
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+      assertActiveElement(getPopoverButton())
+    })
+  )
+
   it(
     'should be possible to open the Dialog via a Transition component',
     suppressConsoleLogs(async () => {

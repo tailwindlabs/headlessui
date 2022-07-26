@@ -14,7 +14,7 @@ import {
 } from 'vue'
 
 import { match } from '../../utils/match'
-import { render, Features } from '../../utils/render'
+import { render, omit, Features } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import {
@@ -620,7 +620,7 @@ export let PopoverPanel = defineComponent({
 
       return render({
         ourProps,
-        theirProps: { ...attrs, ...props },
+        theirProps: { ...attrs, ...omit(props, ['focus']) },
         attrs,
         slot,
         slots: {
