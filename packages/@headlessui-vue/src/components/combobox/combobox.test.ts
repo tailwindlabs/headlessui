@@ -308,6 +308,84 @@ describe('Rendering', () => {
           )
         })
       )
+
+      it(
+        'should be possible to use completely new objects while rendering (single mode)',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value" by="id">
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption :value="{ id: 1, name: 'alice' }">alice</ComboboxOption>
+                  <ComboboxOption :value="{ id: 2, name: 'bob' }">bob</ComboboxOption>
+                  <ComboboxOption :value="{ id: 3, name: 'charlie' }">charlie</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => {
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value }
+            },
+          })
+
+          await click(getComboboxButton())
+          let [alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+
+          await click(getComboboxOptions()[2])
+          await click(getComboboxButton())
+          ;[alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).not.toHaveAttribute('aria-selected')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getComboboxOptions()[1])
+          await click(getComboboxButton())
+          ;[alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
+
+      it(
+        'should be possible to use completely new objects while rendering (multiple mode)',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value" by="id" multiple>
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption :value="{ id: 1, name: 'alice' }">alice</ComboboxOption>
+                  <ComboboxOption :value="{ id: 2, name: 'bob' }">bob</ComboboxOption>
+                  <ComboboxOption :value="{ id: 3, name: 'charlie' }">charlie</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => {
+              let value = ref([{ id: 2, name: 'Bob' }])
+              return { options, value }
+            },
+          })
+
+          await click(getComboboxButton())
+
+          await click(getComboboxOptions()[2])
+          let [alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getComboboxOptions()[2])
+          ;[alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
     })
   })
 

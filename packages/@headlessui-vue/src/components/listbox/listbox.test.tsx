@@ -288,6 +288,84 @@ describe('Rendering', () => {
           )
         })
       )
+
+      it(
+        'should be possible to use completely new objects while rendering (single mode)',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" by="id">
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption :value="{ id: 1, name: 'alice' }">alice</ListboxOption>
+                  <ListboxOption :value="{ id: 2, name: 'bob' }">bob</ListboxOption>
+                  <ListboxOption :value="{ id: 3, name: 'charlie' }">charlie</ListboxOption>
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+          let [alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+
+          await click(getListboxOptions()[2])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).not.toHaveAttribute('aria-selected')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[1])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
+
+      it(
+        'should be possible to use completely new objects while rendering (multiple mode)',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" by="id" multiple>
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption :value="{ id: 1, name: 'alice' }">alice</ListboxOption>
+                  <ListboxOption :value="{ id: 2, name: 'bob' }">bob</ListboxOption>
+                  <ListboxOption :value="{ id: 3, name: 'charlie' }">charlie</ListboxOption>
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref([{ id: 2, name: 'Bob' }])
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+
+          await click(getListboxOptions()[2])
+          let [alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[2])
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
     })
   })
 
