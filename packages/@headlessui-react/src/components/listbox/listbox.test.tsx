@@ -263,6 +263,84 @@ describe('Rendering', () => {
           )
         })
       )
+
+      it(
+        'should be possible to use completely new objects while rendering (single mode)',
+        suppressConsoleLogs(async () => {
+          function Example() {
+            let [value, setValue] = useState({ id: 2, name: 'Bob' })
+
+            return (
+              <Listbox value={value} onChange={setValue} by="id">
+                <Listbox.Button>Trigger</Listbox.Button>
+                <Listbox.Options>
+                  <Listbox.Option value={{ id: 1, name: 'alice' }}>alice</Listbox.Option>
+                  <Listbox.Option value={{ id: 2, name: 'bob' }}>bob</Listbox.Option>
+                  <Listbox.Option value={{ id: 3, name: 'charlie' }}>charlie</Listbox.Option>
+                </Listbox.Options>
+              </Listbox>
+            )
+          }
+
+          render(<Example />)
+
+          await click(getListboxButton())
+          let [alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+
+          await click(getListboxOptions()[2])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).not.toHaveAttribute('aria-selected')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[1])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
+
+      it(
+        'should be possible to use completely new objects while rendering (multiple mode)',
+        suppressConsoleLogs(async () => {
+          function Example() {
+            let [value, setValue] = useState([{ id: 2, name: 'Bob' }])
+
+            return (
+              <Listbox value={value} onChange={setValue} by="id" multiple>
+                <Listbox.Button>Trigger</Listbox.Button>
+                <Listbox.Options>
+                  <Listbox.Option value={{ id: 1, name: 'alice' }}>alice</Listbox.Option>
+                  <Listbox.Option value={{ id: 2, name: 'bob' }}>bob</Listbox.Option>
+                  <Listbox.Option value={{ id: 3, name: 'charlie' }}>charlie</Listbox.Option>
+                </Listbox.Options>
+              </Listbox>
+            )
+          }
+
+          render(<Example />)
+
+          await click(getListboxButton())
+
+          await click(getListboxOptions()[2])
+          let [alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[2])
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
     })
   })
 

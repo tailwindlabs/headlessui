@@ -315,7 +315,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   > & {
     value: TType
     onChange(value: TType): void
-    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
+    by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
     disabled?: boolean
     __demoMode?: boolean
     name?: string
@@ -356,19 +356,19 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   let compare = useEvent(
     typeof by === 'string'
-      ? (a: TType, z: TType) => {
-          let property = by as unknown as keyof TType
+      ? (a: TActualType, z: TActualType) => {
+          let property = by as unknown as keyof TActualType
           return a[property] === z[property]
         }
       : by
   )
 
-  let isSelected: (value: TType) => boolean = useCallback(
+  let isSelected: (value: TActualType) => boolean = useCallback(
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () =>
-          (value as unknown as TType[]).some((option) => compare(option, compareValue)),
-        [ValueMode.Single]: () => compare(value, compareValue),
+          (value as unknown as TActualType[]).some((option) => compare(option, compareValue)),
+        [ValueMode.Single]: () => compare(value as unknown as TActualType, compareValue),
       }),
     [value]
   )
@@ -500,7 +500,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       [ValueMode.Multi]() {
         let copy = (data.value as TActualType[]).slice()
 
-        let idx = copy.indexOf(value as TActualType)
+        let idx = copy.findIndex((item) => compare(item, value as TActualType))
         if (idx === -1) {
           copy.push(value as TActualType)
         } else {

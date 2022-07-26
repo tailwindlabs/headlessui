@@ -316,7 +316,7 @@ export let Combobox = defineComponent({
               let copy = toRaw(api.value.value as unknown[]).slice()
               let raw = toRaw(dataRef.value)
 
-              let idx = copy.indexOf(raw)
+              let idx = copy.findIndex((value) => api.compare(raw, toRaw(value)))
               if (idx === -1) {
                 copy.push(raw)
               } else {
@@ -341,7 +341,7 @@ export let Combobox = defineComponent({
               let copy = toRaw(api.value.value as unknown[]).slice()
               let raw = toRaw(dataRef.value)
 
-              let idx = copy.indexOf(raw)
+              let idx = copy.findIndex((value) => api.compare(raw, toRaw(value)))
               if (idx === -1) {
                 copy.push(raw)
               } else {
