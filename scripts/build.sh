@@ -46,6 +46,7 @@ wait
 
 # Rewrite ESM imports 😤
 $rewriteImports "$DST" '/**/*.js'
+$rewriteImports "$DST" '/**/*.d.ts'
 
 # Remove test related files
 rm -rf `$resolver "$DST" '/**/*.{test,__mocks__,}.*'`
