@@ -719,6 +719,131 @@ describe('Rendering', () => {
     // Verify that the third menu item is active
     assertActiveListboxOption(options[2])
   })
+
+  describe('Uncontrolled', () => {
+    it('should be possible to use in an uncontrolled way', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Listbox name="assignee">
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">Alice</Listbox.Option>
+              <Listbox.Option value="bob">Bob</Listbox.Option>
+              <Listbox.Option value="charlie">Charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose charlie
+      await click(getListboxOptions()[2])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Charlie should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
+    })
+
+    it('should be possible to provide a default value', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Listbox name="assignee" defaultValue="bob">
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">Alice</Listbox.Option>
+              <Listbox.Option value="bob">Bob</Listbox.Option>
+              <Listbox.Option value="charlie">Charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+    })
+
+    it('should still call the onChange listeners when choosing new values', async () => {
+      let handleChange = jest.fn()
+
+      render(
+        <Listbox name="assignee" onChange={handleChange}>
+          <Listbox.Button>Trigger</Listbox.Button>
+          <Listbox.Options>
+            <Listbox.Option value="alice">Alice</Listbox.Option>
+            <Listbox.Option value="bob">Bob</Listbox.Option>
+            <Listbox.Option value="charlie">Charlie</Listbox.Option>
+          </Listbox.Options>
+        </Listbox>
+      )
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose bob
+      await click(getListboxOptions()[1])
+
+      // Change handler should have been called twice
+      expect(handleChange).toHaveBeenNthCalledWith(1, 'alice')
+      expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
+    })
+  })
 })
 
 describe('Rendering composition', () => {
