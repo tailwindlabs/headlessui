@@ -23,9 +23,7 @@ export function disposables() {
     },
 
     nextFrame(...args: Parameters<typeof requestAnimationFrame>) {
-      return api.requestAnimationFrame(() => {
-        return api.requestAnimationFrame(...args)
-      })
+       return api.requestAnimationFrame(...args)
     },
 
     setTimeout(...args: Parameters<typeof setTimeout>) {
