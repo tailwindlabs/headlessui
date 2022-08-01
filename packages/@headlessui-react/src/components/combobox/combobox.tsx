@@ -1069,7 +1069,6 @@ let Option = forwardRefWithAs(function Option<
     select()
     if (data.mode === ValueMode.Single) {
       actions.closeCombobox()
-      data.inputRef.current?.focus({ preventScroll: true })
     }
   })
 

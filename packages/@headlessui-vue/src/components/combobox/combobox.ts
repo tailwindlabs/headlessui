@@ -915,7 +915,6 @@ export let ComboboxOption = defineComponent({
       api.selectOption(id)
       if (api.mode.value === ValueMode.Single) {
         api.closeCombobox()
-        dom(api.inputRef)?.focus({ preventScroll: true })
       }
     }
 
