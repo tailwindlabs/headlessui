@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve event handler merging ([#1715](https://github.com/tailwindlabs/headlessui/pull/1715))
 - Fix incorrect scrolling to the bottom when opening a `Dialog` ([#1716](https://github.com/tailwindlabs/headlessui/pull/1716))
 - Don't overwrite `element.focus()` on `<PopoverPanel>` ([#1719](https://github.com/tailwindlabs/headlessui/pull/1719))
+- Make form components uncontrollable ([#1683](https://github.com/tailwindlabs/headlessui/pull/1683))
 
 ## [1.6.7] - 2022-07-12
 
