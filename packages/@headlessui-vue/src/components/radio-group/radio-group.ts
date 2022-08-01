@@ -26,6 +26,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
+import { useControllable } from '../../hooks/use-controllable'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -76,7 +77,8 @@ export let RadioGroup = defineComponent({
     as: { type: [Object, String], default: 'div' },
     disabled: { type: [Boolean], default: false },
     by: { type: [String, Function], default: () => defaultComparator },
-    modelValue: { type: [Object, String, Number, Boolean] },
+    modelValue: { type: [Object, String, Number, Boolean], default: undefined },
+    defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
     name: { type: String, optional: true },
   },
   inheritAttrs: false,
@@ -88,7 +90,11 @@ export let RadioGroup = defineComponent({
 
     expose({ el: radioGroupRef, $el: radioGroupRef })
 
-    let value = computed(() => props.modelValue)
+    let [value, theirOnChange] = useControllable(
+      computed(() => props.modelValue),
+      (value: unknown) => emit('update:modelValue', value),
+      computed(() => props.defaultValue)
+    )
 
     // TODO: Fix type
     let api: any = {
@@ -120,7 +126,7 @@ export let RadioGroup = defineComponent({
           api.compare(toRaw(option.propsRef.value), toRaw(nextValue))
         )?.propsRef
         if (nextOption?.disabled) return false
-        emit('update:modelValue', nextValue)
+        theirOnChange(nextValue)
         return true
       },
       registerOption(action: UnwrapRef<Option>) {
@@ -211,7 +217,7 @@ export let RadioGroup = defineComponent({
     let id = `headlessui-radiogroup-${useId()}`
 
     return () => {
-      let { modelValue, disabled, name, ...theirProps } = props
+      let { disabled, name, ...theirProps } = props
 
       let ourProps = {
         ref: radioGroupRef,
@@ -223,8 +229,8 @@ export let RadioGroup = defineComponent({
       }
 
       return h(Fragment, [
-        ...(name != null && modelValue != null
-          ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+        ...(name != null && value.value != null
+          ? objectToFormEntries({ [name]: value.value }).map(([name, value]) =>
               h(
                 Hidden,
                 compact({
@@ -242,7 +248,7 @@ export let RadioGroup = defineComponent({
           : []),
         render({
           ourProps,
-          theirProps: { ...attrs, ...theirProps },
+          theirProps: { ...attrs, ...omit(theirProps, ['modelValue', 'defaultValue']) },
           slot: {},
           attrs,
           slots,
