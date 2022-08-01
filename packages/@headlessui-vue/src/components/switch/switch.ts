@@ -12,7 +12,7 @@ import {
   Ref,
 } from 'vue'
 
-import { render, compact } from '../../utils/render'
+import { render, compact, omit } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { Label, useLabels } from '../label/label'
@@ -20,6 +20,7 @@ import { Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit } from '../../utils/form'
+import { useControllable } from '../../hooks/use-controllable'
 
 type StateDefinition = {
   // State
@@ -67,7 +68,8 @@ export let Switch = defineComponent({
   emits: { 'update:modelValue': (_value: boolean) => true },
   props: {
     as: { type: [Object, String], default: 'button' },
-    modelValue: { type: Boolean, default: false },
+    modelValue: { type: Boolean, default: undefined },
+    defaultChecked: { type: Boolean, default: false },
     name: { type: String, optional: true },
     value: { type: String, optional: true },
   },
@@ -76,8 +78,14 @@ export let Switch = defineComponent({
     let api = inject(GroupContext, null)
     let id = `headlessui-switch-${useId()}`
 
+    let [checked, theirOnChange] = useControllable(
+      computed(() => props.modelValue),
+      (value: boolean) => emit('update:modelValue', value),
+      computed(() => props.defaultChecked)
+    )
+
     function toggle() {
-      emit('update:modelValue', !props.modelValue)
+      theirOnChange(!checked.value)
     }
 
     let internalSwitchRef = ref(null)
@@ -109,15 +117,15 @@ export let Switch = defineComponent({
     }
 
     return () => {
-      let { name, value, modelValue, ...theirProps } = props
-      let slot = { checked: modelValue }
+      let { name, value, ...theirProps } = props
+      let slot = { checked: checked.value }
       let ourProps = {
         id,
         ref: switchRef,
         role: 'switch',
         type: type.value,
         tabIndex: 0,
-        'aria-checked': modelValue,
+        'aria-checked': checked.value,
         'aria-labelledby': api?.labelledby.value,
         'aria-describedby': api?.describedby.value,
         onClick: handleClick,
@@ -126,7 +134,7 @@ export let Switch = defineComponent({
       }
 
       return h(Fragment, [
-        name != null && modelValue != null
+        name != null && checked.value != null
           ? h(
               Hidden,
               compact({
@@ -135,7 +143,7 @@ export let Switch = defineComponent({
                 type: 'checkbox',
                 hidden: true,
                 readOnly: true,
-                checked: modelValue,
+                checked: checked.value,
                 name,
                 value,
               })
@@ -143,7 +151,7 @@ export let Switch = defineComponent({
           : null,
         render({
           ourProps,
-          theirProps: { ...attrs, ...theirProps },
+          theirProps: { ...attrs, ...omit(theirProps, ['modelValue', 'defaultChecked']) },
           slot,
           attrs,
           slots,

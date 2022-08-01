@@ -119,6 +119,136 @@ describe('Rendering', () => {
       expect(getSwitch()).not.toHaveAttribute('type')
     })
   })
+
+  describe('Uncontrolled', () => {
+    it('should be possible to use in an uncontrolled way', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Switch name="notifications" />
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Toggle
+      await click(getSwitch())
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Notifications should be on
+      expect(handleSubmission).toHaveBeenLastCalledWith({ notifications: 'on' })
+
+      // Toggle
+      await click(getSwitch())
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Notifications should be off (or in this case, non-existant)
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+    })
+
+    it('should be possible to use in an uncontrolled way with a value', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Switch name="notifications" value="enabled" />
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Toggle
+      await click(getSwitch())
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Notifications should be on
+      expect(handleSubmission).toHaveBeenLastCalledWith({ notifications: 'enabled' })
+
+      // Toggle
+      await click(getSwitch())
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Notifications should be off (or in this case, non-existant)
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+    })
+
+    it('should be possible to provide a default value', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Switch name="notifications" defaultChecked />
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Notifications should be on by default
+      expect(handleSubmission).toHaveBeenLastCalledWith({ notifications: 'on' })
+
+      // Toggle
+      await click(getSwitch())
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Notifications should be off (or in this case non-existant)
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+    })
+
+    it('should still call the onChange listeners when choosing new values', async () => {
+      let handleChange = jest.fn()
+
+      render(<Switch name="notifications" onChange={handleChange} />)
+
+      // Toggle
+      await click(getSwitch())
+
+      // Toggle
+      await click(getSwitch())
+
+      // Toggle
+      await click(getSwitch())
+
+      // Change handler should have been called 3 times
+      expect(handleChange).toHaveBeenNthCalledWith(1, true)
+      expect(handleChange).toHaveBeenNthCalledWith(2, false)
+      expect(handleChange).toHaveBeenNthCalledWith(3, true)
+    })
+  })
 })
 
 describe('Render composition', () => {

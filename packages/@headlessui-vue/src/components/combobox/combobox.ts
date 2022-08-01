@@ -34,6 +34,7 @@ import { sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
+import { useControllable } from '../../hooks/use-controllable'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -117,7 +118,8 @@ export let Combobox = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
     by: { type: [String, Function], default: () => defaultComparator },
-    modelValue: { type: [Object, String, Number, Boolean] },
+    modelValue: { type: [Object, String, Number, Boolean], default: undefined },
+    defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
     name: { type: String },
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
@@ -171,9 +173,13 @@ export let Combobox = defineComponent({
       }
     }
 
-    let value = computed(() => props.modelValue)
     let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
     let nullable = computed(() => props.nullable)
+    let [value, theirOnChange] = useControllable(
+      computed(() => props.modelValue),
+      (value: unknown) => emit('update:modelValue', value),
+      computed(() => props.defaultValue)
+    )
 
     let api = {
       comboboxState,
@@ -194,7 +200,7 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       change(value: unknown) {
-        emit('update:modelValue', value)
+        theirOnChange(value as typeof props.modelValue)
       },
       activeOptionIndex: computed(() => {
         if (
@@ -308,8 +314,7 @@ export let Combobox = defineComponent({
         if (!option) return
 
         let { dataRef } = option
-        emit(
-          'update:modelValue',
+        theirOnChange(
           match(mode.value, {
             [ValueMode.Single]: () => dataRef.value,
             [ValueMode.Multi]: () => {
@@ -333,8 +338,7 @@ export let Combobox = defineComponent({
         if (api.activeOptionIndex.value === null) return
 
         let { dataRef, id } = options.value[api.activeOptionIndex.value]
-        emit(
-          'update:modelValue',
+        theirOnChange(
           match(mode.value, {
             [ValueMode.Single]: () => dataRef.value,
             [ValueMode.Multi]: () => {
@@ -440,7 +444,7 @@ export let Combobox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...theirProps } = props
+      let { name, disabled, ...theirProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
@@ -449,9 +453,9 @@ export let Combobox = defineComponent({
       }
 
       return h(Fragment, [
-        ...(name != null && modelValue != null
-          ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
-              h(
+        ...(name != null && value.value != null
+          ? objectToFormEntries({ [name]: value.value }).map(([name, value]) => {
+              return h(
                 Hidden,
                 compact({
                   features: HiddenFeatures.Hidden,
@@ -464,12 +468,19 @@ export let Combobox = defineComponent({
                   value,
                 })
               )
-            )
+            })
           : []),
         render({
           theirProps: {
             ...attrs,
-            ...omit(theirProps, ['nullable', 'multiple', 'onUpdate:modelValue', 'by']),
+            ...omit(theirProps, [
+              'modelValue',
+              'defaultValue',
+              'nullable',
+              'multiple',
+              'onUpdate:modelValue',
+              'by',
+            ]),
           },
           ourProps: {},
           slot,

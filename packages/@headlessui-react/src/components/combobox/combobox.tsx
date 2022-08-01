@@ -40,6 +40,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
 
 import { Keys } from '../keyboard'
+import { useControllable } from '../../hooks/use-controllable'
 
 enum ComboboxState {
   Open,
@@ -301,6 +302,7 @@ interface ComboboxRenderPropArg<T> {
   disabled: boolean
   activeIndex: number | null
   activeOption: T | null
+  value: T
 }
 
 let ComboboxRoot = forwardRefWithAs(function Combobox<
@@ -311,10 +313,11 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   props: Props<
     TTag,
     ComboboxRenderPropArg<TType>,
-    'value' | 'onChange' | 'disabled' | 'name' | 'nullable' | 'multiple' | 'by'
+    'value' | 'defaultValue' | 'onChange' | 'by' | 'disabled' | 'name' | 'nullable' | 'multiple'
   > & {
-    value: TType
-    onChange(value: TType): void
+    value?: TType
+    defaultValue?: TType
+    onChange?(value: TType): void
     by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
     disabled?: boolean
     __demoMode?: boolean
@@ -325,9 +328,10 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   ref: Ref<TTag>
 ) {
   let {
+    value: controlledValue,
+    defaultValue,
+    onChange: controlledOnChange,
     name,
-    value,
-    onChange: theirOnChange,
     by = (a, z) => a === z,
     disabled = false,
     __demoMode = false,
@@ -335,6 +339,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     multiple = false,
     ...theirProps
   } = props
+  let [value, theirOnChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
 
   let [state, dispatch] = useReducer(stateReducer, {
     dataRef: createRef(),
@@ -430,8 +435,9 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
         data.activeOptionIndex === null
           ? null
           : (data.options[data.activeOptionIndex].dataRef.current.value as TType),
+      value,
     }),
-    [data, disabled]
+    [data, disabled, value]
   )
 
   let syncInputValue = useCallback(() => {
@@ -495,7 +501,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let onChange = useEvent((value: unknown) => {
     return match(data.mode, {
       [ValueMode.Single]() {
-        return theirOnChange(value as TType)
+        return theirOnChange?.(value as TType)
       },
       [ValueMode.Multi]() {
         let copy = (data.value as TActualType[]).slice()
@@ -507,7 +513,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
           copy.splice(idx, 1)
         }
 
-        return theirOnChange(copy as unknown as TType)
+        return theirOnChange?.(copy as unknown as TType)
       },
     })
   })

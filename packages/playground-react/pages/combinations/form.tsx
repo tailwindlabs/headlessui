@@ -23,12 +23,6 @@ export default function App() {
   let [result, setResult] = useState(() =>
     typeof window === 'undefined' || typeof document === 'undefined' ? [] : new FormData()
   )
-  let [notifications, setNotifications] = useState(false)
-  let [apple, setApple] = useState(false)
-  let [banana, setBanana] = useState(false)
-  let [size, setSize] = useState(sizes[0])
-  let [person, setPerson] = useState(people[0])
-  let [activeLocation, setActiveLocation] = useState(locations[0])
   let [query, setQuery] = useState('')
 
   return (
@@ -47,8 +41,7 @@ export default function App() {
                 <Switch.Label>Enable notifications</Switch.Label>
 
                 <Switch
-                  checked={notifications}
-                  onChange={setNotifications}
+                  defaultChecked={true}
                   name="notifications"
                   className={({ checked }) =>
                     classNames(
@@ -74,8 +67,6 @@ export default function App() {
                 <Switch.Label>Apple</Switch.Label>
 
                 <Switch
-                  checked={apple}
-                  onChange={setApple}
                   name="fruit[]"
                   value="apple"
                   className={({ checked }) =>
@@ -99,8 +90,6 @@ export default function App() {
               <Switch.Group as="div" className="flex items-center justify-between space-x-4">
                 <Switch.Label>Banana</Switch.Label>
                 <Switch
-                  checked={banana}
-                  onChange={setBanana}
                   name="fruit[]"
                   value="banana"
                   className={({ checked }) =>
@@ -123,7 +112,7 @@ export default function App() {
             </Section>
           </Section>
           <Section title="Radio Group">
-            <RadioGroup value={size} onChange={setSize} name="size">
+            <RadioGroup defaultValue="sm" name="size">
               <div className="flex -space-x-px rounded-md bg-white">
                 {sizes.map((size) => {
                   return (
@@ -177,75 +166,83 @@ export default function App() {
           </Section>
           <Section title="Listbox">
             <div className="w-full space-y-1">
-              <Listbox value={person} onChange={setPerson} name="person">
-                <div className="relative">
-                  <span className="inline-block w-full rounded-md shadow-sm">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
-                      <span className="block truncate">{person.name.first}</span>
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                        <svg
-                          className="h-5 w-5 text-gray-400"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          stroke="currentColor"
-                        >
-                          <path
-                            d="M7 7l3-3 3 3m0 6l-3 3-3-3"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+              <Listbox name="person" defaultValue={people[1]}>
+                {({ value }) => (
+                  <>
+                    <div className="relative">
+                      <span className="inline-block w-full rounded-md shadow-sm">
+                        <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
+                          <span className="block truncate">{value?.name?.first}</span>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                            <svg
+                              className="h-5 w-5 text-gray-400"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <path
+                                d="M7 7l3-3 3 3m0 6l-3 3-3-3"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        </Listbox.Button>
                       </span>
-                    </Listbox.Button>
-                  </span>
 
-                  <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
-                    <Listbox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
-                      {people.map((person) => (
-                        <Listbox.Option
-                          key={person.id}
-                          value={person}
-                          className={({ active }) => {
-                            return classNames(
-                              'relative cursor-default select-none py-2 pl-3 pr-9 ',
-                              active ? 'bg-blue-600 text-white' : 'text-gray-900'
-                            )
-                          }}
-                        >
-                          {({ active, selected }) => (
-                            <>
-                              <span
-                                className={classNames(
-                                  'block truncate',
-                                  selected ? 'font-semibold' : 'font-normal'
-                                )}
-                              >
-                                {person.name.first}
-                              </span>
-                              {selected && (
-                                <span
-                                  className={classNames(
-                                    'absolute inset-y-0 right-0 flex items-center pr-4',
-                                    active ? 'text-white' : 'text-blue-600'
+                      <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
+                        <Listbox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
+                          {people.map((person) => (
+                            <Listbox.Option
+                              key={person.id}
+                              value={person}
+                              className={({ active }) => {
+                                return classNames(
+                                  'relative cursor-default select-none py-2 pl-3 pr-9 ',
+                                  active ? 'bg-blue-600 text-white' : 'text-gray-900'
+                                )
+                              }}
+                            >
+                              {({ active, selected }) => (
+                                <>
+                                  <span
+                                    className={classNames(
+                                      'block truncate',
+                                      selected ? 'font-semibold' : 'font-normal'
+                                    )}
+                                  >
+                                    {person.name.first}
+                                  </span>
+                                  {selected && (
+                                    <span
+                                      className={classNames(
+                                        'absolute inset-y-0 right-0 flex items-center pr-4',
+                                        active ? 'text-white' : 'text-blue-600'
+                                      )}
+                                    >
+                                      <svg
+                                        className="h-5 w-5"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    </span>
                                   )}
-                                >
-                                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </span>
+                                </>
                               )}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </div>
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </div>
+                    </div>
+                  </>
+                )}
               </Listbox>
             </div>
           </Section>
@@ -253,13 +250,12 @@ export default function App() {
             <div className="w-full space-y-1">
               <Combobox
                 name="location"
-                value={activeLocation}
+                defaultValue={'New York'}
                 onChange={(location) => {
-                  setActiveLocation(location)
                   setQuery('')
                 }}
               >
-                {({ open }) => {
+                {({ open, value }) => {
                   return (
                     <div className="relative">
                       <div className="flex w-full flex-col">
@@ -271,7 +267,7 @@ export default function App() {
                         <div
                           className={classNames(
                             'flex border-t',
-                            activeLocation && !open ? 'border-transparent' : 'border-gray-200'
+                            value && !open ? 'border-transparent' : 'border-gray-200'
                           )}
                         >
                           <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
