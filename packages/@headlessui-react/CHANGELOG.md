@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure controlled `Tabs` don't change automagically ([#1680](https://github.com/tailwindlabs/headlessui/pull/1680))
 - Don't scroll lock when a Transition + Dialog is mounted but hidden ([#1681](https://github.com/tailwindlabs/headlessui/pull/1681))
 
+## Changed
+
+- Allow `Popover` `close` to be passed directly to `onClick` handlers ([#1696](https://github.com/tailwindlabs/headlessui/pull/1696))
+
 ## [1.6.6] - 2022-07-07
 
 ### Fixed
