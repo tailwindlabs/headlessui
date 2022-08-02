@@ -27,7 +27,7 @@
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
-                        @click="removePerson(person)"
+                        @click.stop.prevent="removePerson(person)"
                       >
                         <path
                           stroke-linecap="round"
@@ -39,6 +39,7 @@
                     </span>
                     <ComboboxInput
                       @change="query = $event.target.value"
+                      @focus="query = ''"
                       class="border-none p-0 focus:ring-0"
                       placeholder="Search..."
                     />
@@ -151,9 +152,7 @@ function onSubmit(e) {
   console.log([...new FormData(e.currentTarget).entries()])
 }
 
-function removePerson() {
-  e.stopPropagation()
-  e.preventDefault()
+function removePerson(person) {
   activePersons.value = activePersons.value.filter((p) => p !== person)
 }
 </script>
