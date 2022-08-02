@@ -260,6 +260,50 @@ describe('Rendering', () => {
       })
     )
 
+    it(
+      'should expose a close function that closes the popover and takes an event',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let elementRef = useRef(null)
+          return (
+            <>
+              <button ref={elementRef}>restoreable</button>
+              <Popover>
+                {({ close }) => (
+                  <>
+                    <Popover.Button>Trigger</Popover.Button>
+                    <Popover.Panel>
+                      <button onClick={close}>Close me</button>
+                    </Popover.Panel>
+                  </>
+                )}
+              </Popover>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        // Focus the button
+        await focus(getPopoverButton())
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        // Ensure the restoreable button got the restored focus
+        assertActiveElement(getByText('restoreable'))
+      })
+    )
+
     describe('refs', () => {
       it(
         'should be possible to get a ref to the Popover',

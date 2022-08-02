@@ -45,6 +45,8 @@ import { useEvent } from '../../hooks/use-event'
 import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
 import { microTask } from '../../utils/micro-task'
 
+type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
+
 enum PopoverStates {
   Open,
   Closed,
@@ -130,10 +132,7 @@ function usePopoverContext(component: string) {
 
 let PopoverAPIContext = createContext<{
   close(
-    focusableElement?:
-      | HTMLElement
-      | MutableRefObject<HTMLElement | null>
-      | MouseEventHandler<HTMLElement>
+    focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null> | MouseEvent<HTMLElement>
   ): void
   isPortalled: boolean
 } | null>(null)
@@ -182,7 +181,9 @@ function stateReducer(state: StateDefinition, action: Actions) {
 let DEFAULT_POPOVER_TAG = 'div' as const
 interface PopoverRenderPropArg {
   open: boolean
-  close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
+  close(
+    focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null> | MouseEvent<HTMLElement>
+  ): void
 }
 
 let PopoverRoot = forwardRefWithAs(function Popover<
@@ -277,19 +278,27 @@ let PopoverRoot = forwardRefWithAs(function Popover<
     popoverState === PopoverStates.Open
   )
 
-  let close = useEvent((focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
-    dispatch({ type: ActionTypes.ClosePopover })
+  let close = useEvent(
+    (
+      focusableElement?:
+        | HTMLElement
+        | MutableRefObject<HTMLElement | null>
+        | MouseEvent<HTMLElement>
+    ) => {
+      dispatch({ type: ActionTypes.ClosePopover })
 
-    let restoreElement = (() => {
-      if (!focusableElement) return button
-      if (focusableElement instanceof HTMLElement) return focusableElement
-      if (focusableElement.current instanceof HTMLElement) return focusableElement.current
+      let restoreElement = (() => {
+        if (!focusableElement) return button
+        if (focusableElement instanceof HTMLElement) return focusableElement
+        if ('current' in focusableElement && focusableElement.current instanceof HTMLElement)
+          return focusableElement.current
 
-      return button
-    })()
+        return button
+      })()
 
-    restoreElement?.focus()
-  })
+      restoreElement?.focus()
+    }
+  )
 
   let api = useMemo<ContextType<typeof PopoverAPIContext>>(
     () => ({ close, isPortalled }),
