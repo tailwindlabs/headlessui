@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make form components uncontrollable ([#1683](https://github.com/tailwindlabs/headlessui/pull/1683))
 - Improve `Combobox` re-opening keyboard issue on mobile ([#1732](https://github.com/tailwindlabs/headlessui/pull/1732))
 
+## Changed
+
+- Allow `Popover` `close` to be passed directly to `onClick` handlers ([#1696](https://github.com/tailwindlabs/headlessui/pull/1696))
+
 ## [1.6.6] - 2022-07-07
 
 ### Fixed
