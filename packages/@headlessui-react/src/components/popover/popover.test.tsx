@@ -264,10 +264,8 @@ describe('Rendering', () => {
       'should expose a close function that closes the popover and takes an event',
       suppressConsoleLogs(async () => {
         function Example() {
-          let elementRef = useRef(null)
           return (
             <>
-              <button ref={elementRef}>restoreable</button>
               <Popover>
                 {({ close }) => (
                   <>
@@ -299,8 +297,8 @@ describe('Rendering', () => {
         // Ensure the popover is closed
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the Popover.Button got the restored focus
+        assertActiveElement(getByText('Trigger'))
       })
     )
 
