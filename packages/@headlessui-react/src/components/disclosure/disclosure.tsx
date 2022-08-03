@@ -168,7 +168,7 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
       },
       props.as === undefined ||
         // @ts-expect-error The `as` prop _can_ be a Fragment
-        props.as === React.Fragment
+        props.as === Fragment
     )
   )
 
