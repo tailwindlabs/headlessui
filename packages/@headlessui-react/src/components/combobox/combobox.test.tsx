@@ -510,6 +510,58 @@ describe('Rendering', () => {
         expect(getComboboxInput()).toHaveAttribute('type', 'search')
       })
     )
+
+    it(
+      'should reflect the value in the input when the value changes and when you are typing',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState('bob')
+          let [_query, setQuery] = useState('')
+
+          return (
+            <Combobox value={value} onChange={setValue}>
+              {({ open }) => (
+                <>
+                  <Combobox.Input
+                    onChange={(event) => setQuery(event.target.value)}
+                    displayValue={(person) => `${person ?? ''} - ${open ? 'open' : 'closed'}`}
+                  />
+
+                  <Combobox.Button />
+
+                  <Combobox.Options>
+                    <Combobox.Option value="alice">alice</Combobox.Option>
+                    <Combobox.Option value="bob">bob</Combobox.Option>
+                    <Combobox.Option value="charlie">charlie</Combobox.Option>
+                  </Combobox.Options>
+                </>
+              )}
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        // Check for proper state sync
+        expect(getComboboxInput()).toHaveValue('bob - closed')
+        await click(getComboboxButton())
+        expect(getComboboxInput()).toHaveValue('bob - open')
+        await click(getComboboxButton())
+        expect(getComboboxInput()).toHaveValue('bob - closed')
+
+        // Check if we can still edit the input
+        for (let _ of Array(' - closed'.length)) {
+          await press(Keys.Backspace, getComboboxInput())
+        }
+        getComboboxInput()?.select()
+        await type(word('alice'), getComboboxInput())
+        expect(getComboboxInput()).toHaveValue('alice')
+
+        // Open the combobox and choose an option
+        await click(getComboboxOptions()[2])
+        expect(getComboboxInput()).toHaveValue('charlie - closed')
+      })
+    )
   })
 
   describe('Combobox.Label', () => {
