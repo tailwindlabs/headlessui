@@ -532,8 +532,14 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     []
   )
 
+  useIsoMorphicEffect(() => {
+    if (data.comboboxState !== ComboboxState.Closed) return
+    syncInputValue()
+  }, [syncInputValue, data.comboboxState])
+
   // Ensure that we update the inputRef if the value changes
-  useIsoMorphicEffect(syncInputValue, [syncInputValue, data.comboboxState])
+  useIsoMorphicEffect(syncInputValue, [syncInputValue])
+
   let ourProps = ref === null ? {} : { ref }
 
   return (

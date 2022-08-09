@@ -468,7 +468,7 @@ describe('Rendering', () => {
 
         await click(getComboboxButton())
 
-        expect(getComboboxInput()).toHaveValue('B with suffix')
+        expect(getComboboxInput()).toHaveValue('B no suffix')
 
         await click(getComboboxOptions()[0])
 
