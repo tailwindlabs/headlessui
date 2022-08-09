@@ -406,7 +406,7 @@ export let Combobox = defineComponent({
       computed(() => comboboxState.value === ComboboxStates.Open)
     )
 
-    watch([api.value, api.inputRef, api.inputPropsRef], () => api.syncInputValue())
+    watch([api.value, api.inputRef, api.inputPropsRef, api.comboboxState], () => api.syncInputValue())
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
@@ -630,7 +630,6 @@ export let ComboboxInput = defineComponent({
     let id = `headlessui-combobox-input-${useId()}`
 
     watchEffect(() => {
-      console.log('Updating time!', { ...props })
       api.inputPropsRef.value = props
     })
 
