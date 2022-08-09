@@ -37,6 +37,11 @@
         "name": "Combobox multi select",
         "path": "/combobox/multi-select",
         "component": "./components/combobox/multi-select.vue"
+      },
+      {
+        "name": "Combo repro",
+        "path": "/combobox/repro",
+        "component": "./components/combobox/repro.vue"
       }
     ]
   },

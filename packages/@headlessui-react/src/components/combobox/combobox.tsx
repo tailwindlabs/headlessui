@@ -440,18 +440,19 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     [data, disabled, value]
   )
 
+  let displayValue = useLatestValue(inputPropsRef.current.displayValue)
+
   let syncInputValue = useCallback(() => {
     if (!data.inputRef.current) return
-    let displayValue = inputPropsRef.current.displayValue
 
-    if (typeof displayValue === 'function') {
-      data.inputRef.current.value = displayValue(value) ?? ''
+    if (typeof displayValue.current === 'function') {
+      data.inputRef.current.value = displayValue.current(value) ?? ''
     } else if (typeof value === 'string') {
       data.inputRef.current.value = value
     } else {
       data.inputRef.current.value = ''
     }
-  }, [value, data.inputRef, inputPropsRef])
+  }, [value, data.inputRef])
 
   let selectOption = useEvent((id: string) => {
     let option = data.options.find((item) => item.id === id)

@@ -406,25 +406,7 @@ export let Combobox = defineComponent({
       computed(() => comboboxState.value === ComboboxStates.Open)
     )
 
-    watch([api.value, api.inputRef, api.inputPropsRef], () => api.syncInputValue(), {
-      immediate: true,
-      deep: true,
-    })
-
-    // Only sync the input value on close as typing into the input will trigger it to open
-    // causing a resync of the input value with the currently stored, stale value that is
-    // one character behind since the input's value has just been updated by the browser
-    watch(
-      api.comboboxState,
-      (state) => {
-        if (state === ComboboxStates.Closed) {
-          api.syncInputValue()
-        }
-      },
-      {
-        immediate: true,
-      }
-    )
+    watch([api.value, api.inputRef, api.inputPropsRef], () => api.syncInputValue())
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
@@ -648,6 +630,7 @@ export let ComboboxInput = defineComponent({
     let id = `headlessui-combobox-input-${useId()}`
 
     watchEffect(() => {
+      console.log('Updating time!', { ...props })
       api.inputPropsRef.value = props
     })
 
