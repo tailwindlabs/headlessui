@@ -738,7 +738,7 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Tab:
           if (api.comboboxState.value !== ComboboxStates.Open) return
-          api.selectActiveOption()
+          if (api.mode.value === ValueMode.Single) api.selectActiveOption()
           api.closeCombobox()
           break
       }

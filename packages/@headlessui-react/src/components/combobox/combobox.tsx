@@ -710,7 +710,7 @@ let Input = forwardRefWithAs(function Input<
 
       case Keys.Tab:
         if (data.comboboxState !== ComboboxState.Open) return
-        actions.selectActiveOption()
+        if (data.mode === ValueMode.Single) actions.selectActiveOption()
         actions.closeCombobox()
         break
     }
