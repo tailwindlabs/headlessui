@@ -360,9 +360,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
 
-  let panelRef = useSyncRefs(ref, state.panelRef, () => {
-    if (state.linkedPanel) return
-    dispatch({ type: ActionTypes.LinkPanel })
+  let panelRef = useSyncRefs(ref, state.panelRef, (el) => {
+    dispatch({ type: el ? ActionTypes.LinkPanel : ActionTypes.UnlinkPanel })
   })
 
   let usesOpenClosedState = useOpenClosed()
@@ -373,16 +372,6 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
     return state.disclosureState === DisclosureStates.Open
   })()
-
-  // Unlink on "unmount" myself
-  useEffect(() => () => dispatch({ type: ActionTypes.UnlinkPanel }), [dispatch])
-
-  // Unlink on "unmount" children
-  useEffect(() => {
-    if (state.disclosureState === DisclosureStates.Closed && (props.unmount ?? true)) {
-      dispatch({ type: ActionTypes.UnlinkPanel })
-    }
-  }, [state.disclosureState, props.unmount, dispatch])
 
   let slot = useMemo<PanelRenderPropArg>(
     () => ({ open: state.disclosureState === DisclosureStates.Open, close }),
