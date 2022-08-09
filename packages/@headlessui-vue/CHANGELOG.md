@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don't overwrite `element.focus()` on `<PopoverPanel>` ([#1719](https://github.com/tailwindlabs/headlessui/pull/1719))
 - Make form components uncontrollable ([#1683](https://github.com/tailwindlabs/headlessui/pull/1683))
 - Improve `Combobox` re-opening keyboard issue on mobile ([#1732](https://github.com/tailwindlabs/headlessui/pull/1732))
+- Only select the active option when using "singular" mode when pressing `<tab>` in the `Combobox` component ([#1750](https://github.com/tailwindlabs/headlessui/pull/1750))
 
 ## [1.6.7] - 2022-07-12
 
