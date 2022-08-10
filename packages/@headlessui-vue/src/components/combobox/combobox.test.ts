@@ -1,15 +1,5 @@
-import {
-  defineComponent,
-  nextTick,
-  ref,
-  watch,
-  h,
-  reactive,
-  computed,
-  PropType,
-  watchEffect,
-} from 'vue'
-import { createRenderTemplate, render, screen } from '../../test-utils/vue-testing-library'
+import { defineComponent, nextTick, ref, watch, h, reactive, computed, PropType } from 'vue'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import {
   Combobox,
   ComboboxInput,

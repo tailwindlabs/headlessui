@@ -8,8 +8,6 @@ import {
   InjectionKey,
   Ref,
   watch,
-  ref,
-  onBeforeUnmount,
 } from 'vue'
 
 type OnUpdate = (message: StackMessage, type: string, element: Ref<HTMLElement | null>) => void
