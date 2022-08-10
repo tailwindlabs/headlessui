@@ -71,7 +71,6 @@ type StateDefinition = {
 
   compare: (a: unknown, z: unknown) => boolean
 
-  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
   optionsPropsRef: Ref<{ static: boolean; hold: boolean }>
 
   labelRef: Ref<HTMLLabelElement | null>
@@ -218,7 +217,6 @@ export let Combobox = defineComponent({
         return activeOptionIndex.value
       }),
       activationTrigger,
-      inputPropsRef: ref<StateDefinition['inputPropsRef']['value']>({ displayValue: undefined }),
       optionsPropsRef,
       closeCombobox() {
         defaultToFirstOption.value = false
@@ -612,10 +610,6 @@ export let ComboboxInput = defineComponent({
   setup(props, { emit, attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
-
-    watchEffect(() => {
-      api.inputPropsRef.value = props
-    })
 
     expose({ el: api.inputRef, $el: api.inputRef })
 

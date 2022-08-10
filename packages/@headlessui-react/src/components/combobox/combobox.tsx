@@ -263,9 +263,6 @@ let ComboboxDataContext = createContext<
       isSelected(value: unknown): boolean
       __demoMode: boolean
 
-      inputPropsRef: MutableRefObject<{
-        displayValue?(item: unknown): string
-      }>
       optionsPropsRef: MutableRefObject<{
         static: boolean
         hold: boolean
@@ -353,7 +350,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let defaultToFirstOption = useRef(false)
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
-  let inputPropsRef = useRef<_Data['inputPropsRef']['current']>({ displayValue: undefined })
 
   let labelRef = useRef<_Data['labelRef']['current']>(null)
   let inputRef = useRef<_Data['inputRef']['current']>(null)
@@ -383,7 +379,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     () => ({
       ...state,
       optionsPropsRef,
-      inputPropsRef,
       labelRef,
       inputRef,
       buttonRef,
