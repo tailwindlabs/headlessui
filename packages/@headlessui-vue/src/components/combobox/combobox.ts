@@ -70,7 +70,6 @@ type StateDefinition = {
 
   compare: (a: unknown, z: unknown) => boolean
 
-  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
   optionsPropsRef: Ref<{ static: boolean; hold: boolean }>
 
   labelRef: Ref<HTMLLabelElement | null>
@@ -217,7 +216,6 @@ export let Combobox = defineComponent({
         return activeOptionIndex.value
       }),
       activationTrigger,
-      inputPropsRef: ref<StateDefinition['inputPropsRef']['value']>({ displayValue: undefined }),
       optionsPropsRef,
       closeCombobox() {
         defaultToFirstOption.value = false
@@ -296,19 +294,6 @@ export let Combobox = defineComponent({
         activationTrigger.value = trigger ?? ActivationTrigger.Other
         options.value = adjustedState.options
       },
-      syncInputValue() {
-        let value = api.value.value
-        if (!dom(api.inputRef)) return
-        let displayValue = api.inputPropsRef.value.displayValue
-
-        if (typeof displayValue === 'function') {
-          api.inputRef!.value!.value = displayValue(value) ?? ''
-        } else if (typeof value === 'string') {
-          api.inputRef!.value!.value = value
-        } else {
-          api.inputRef!.value!.value = ''
-        }
-      },
       selectOption(id: string) {
         let option = options.value.find((item) => item.id === id)
         if (!option) return
@@ -332,7 +317,6 @@ export let Combobox = defineComponent({
             },
           })
         )
-        api.syncInputValue()
       },
       selectActiveOption() {
         if (api.activeOptionIndex.value === null) return
@@ -356,7 +340,6 @@ export let Combobox = defineComponent({
             },
           })
         )
-        api.syncInputValue()
 
         // It could happen that the `activeOptionIndex` stored in state is actually null,
         // but we are getting the fallback active option back instead.
@@ -404,26 +387,6 @@ export let Combobox = defineComponent({
       [inputRef, buttonRef, optionsRef],
       () => api.closeCombobox(),
       computed(() => comboboxState.value === ComboboxStates.Open)
-    )
-
-    watch([api.value, api.inputRef, api.inputPropsRef], () => api.syncInputValue(), {
-      immediate: true,
-      deep: true,
-    })
-
-    // Only sync the input value on close as typing into the input will trigger it to open
-    // causing a resync of the input value with the currently stored, stale value that is
-    // one character behind since the input's value has just been updated by the browser
-    watch(
-      api.comboboxState,
-      (state) => {
-        if (state === ComboboxStates.Closed) {
-          api.syncInputValue()
-        }
-      },
-      {
-        immediate: true,
-      }
     )
 
     // @ts-expect-error Types of property 'dataRef' are incompatible.
@@ -647,11 +610,43 @@ export let ComboboxInput = defineComponent({
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
 
-    watchEffect(() => {
-      api.inputPropsRef.value = props
-    })
-
     expose({ el: api.inputRef, $el: api.inputRef })
+
+    let currentValue = ref(api.value.value as unknown as string)
+
+    let getCurrentValue = () => {
+      let value = api.value.value
+      if (!dom(api.inputRef)) return ''
+
+      if (typeof props.displayValue !== 'undefined') {
+        return props.displayValue(value as unknown) ?? ''
+      } else if (typeof value === 'string') {
+        return value
+      } else {
+        return ''
+      }
+    }
+
+    onMounted(() => {
+      watch([api.value], () => (currentValue.value = getCurrentValue()), {
+        flush: 'sync',
+        immediate: true,
+      })
+
+      watch(
+        [currentValue, api.comboboxState],
+        ([currentValue, state], [oldCurrentValue, oldState]) => {
+          let input = dom(api.inputRef)
+          if (!input) return
+          if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
+            input.value = currentValue
+          } else if (currentValue !== oldCurrentValue) {
+            input.value = currentValue
+          }
+        },
+        { immediate: true }
+      )
+    })
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {

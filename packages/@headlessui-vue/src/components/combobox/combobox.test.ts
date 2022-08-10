@@ -389,7 +389,7 @@ describe('Rendering', () => {
     })
   })
 
-  describe('Combobox.Input', () => {
+  describe('ComboboxInput', () => {
     it(
       'selecting an option puts the value into Combobox.Input when displayValue is not provided',
       suppressConsoleLogs(async () => {
@@ -454,53 +454,51 @@ describe('Rendering', () => {
       })
     )
 
-    it(
-      'conditionally rendering the input should allow changing the display value',
-      suppressConsoleLogs(async () => {
-        let Example = defineComponent({
-          template: html`
-            <Combobox v-model="value" v-slot="{ open }" nullable>
-              <template v-if="!open">
-                <ComboboxInput :displayValue="(str) => (str?.toUpperCase() ?? '') + ' closed'" />
-                <ComboboxButton>Trigger</ComboboxButton>
-              </template>
-              <template v-else>
-                <ComboboxInput :displayValue="(str) => (str?.toUpperCase() ?? '') + ' open'" />
-                <ComboboxButton>Trigger</ComboboxButton>
-                <ComboboxOptions>
-                  <ComboboxOption value="a">Option A</ComboboxOption>
-                  <ComboboxOption value="b">Option B</ComboboxOption>
-                  <ComboboxOption value="c">Option C</ComboboxOption>
-                </ComboboxOptions>
-              </template>
-            </Combobox>
-          `,
-          setup: () => ({ value: ref(null) }),
-        })
-
-        renderTemplate(Example)
-
-        await nextFrame()
-
-        expect(getComboboxInput()).toHaveValue(' closed')
-
-        await click(getComboboxButton())
-
-        assertComboboxList({ state: ComboboxState.Visible })
-
-        expect(getComboboxInput()).toHaveValue(' open')
-
-        await click(getComboboxOptions()[1])
-
-        expect(getComboboxInput()).toHaveValue('B closed')
-
-        await click(getComboboxButton())
-
-        assertComboboxList({ state: ComboboxState.Visible })
-
-        expect(getComboboxInput()).toHaveValue('B open')
+    it('conditionally rendering the input should allow changing the display value', async () => {
+      let Example = defineComponent({
+        template: html`
+          <Combobox v-model="value" v-slot="{ open }" nullable>
+            <ComboboxInput
+              :displayValue="(str) => (str?.toUpperCase() ?? '') + (suffix ? ' with suffix' : ' no suffix')"
+            />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+            <button @click="suffix = !suffix">Toggle suffix</button>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(null), suffix: ref(false) }),
       })
-    )
+
+      renderTemplate(Example)
+
+      await nextFrame()
+
+      expect(getComboboxInput()).toHaveValue(' no suffix')
+
+      await click(getComboboxButton())
+
+      expect(getComboboxInput()).toHaveValue(' no suffix')
+
+      await click(getComboboxOptions()[1])
+
+      expect(getComboboxInput()).toHaveValue('B no suffix')
+
+      await click(getByText('Toggle suffix'))
+
+      expect(getComboboxInput()).toHaveValue('B no suffix') // No re-sync yet
+
+      await click(getComboboxButton())
+
+      expect(getComboboxInput()).toHaveValue('B no suffix') // No re-sync yet
+
+      await click(getComboboxOptions()[0])
+
+      expect(getComboboxInput()).toHaveValue('A with suffix')
+    })
 
     it(
       'should be possible to override the `type` on the input',
@@ -523,6 +521,54 @@ describe('Rendering', () => {
         renderTemplate(Example)
 
         expect(getComboboxInput()).toHaveAttribute('type', 'search')
+      })
+    )
+
+    xit(
+      'should reflect the value in the input when the value changes and when you are typing',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Combobox v-model="value" v-slot="{ open }">
+              <ComboboxInput :displayValue="person => displayValue(person, open)" />
+
+              <ComboboxButton />
+
+              <ComboboxOptions>
+                <ComboboxOption value="alice">alice</ComboboxOption>
+                <ComboboxOption value="bob">bob</ComboboxOption>
+                <ComboboxOption value="charlie">charlie</ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => ({
+            value: ref('bob'),
+            displayValue(person: string, open: boolean) {
+              return `${person ?? ''} - ${open ? 'open' : 'closed'}`
+            },
+          }),
+        })
+
+        await nextFrame()
+
+        // Check for proper state sync
+        expect(getComboboxInput()).toHaveValue('bob - closed')
+        await click(getComboboxButton())
+        expect(getComboboxInput()).toHaveValue('bob - open')
+        await click(getComboboxButton())
+        expect(getComboboxInput()).toHaveValue('bob - closed')
+
+        // Check if we can still edit the input
+        for (let _ of Array(' - closed'.length)) {
+          await press(Keys.Backspace, getComboboxInput())
+        }
+        getComboboxInput()?.select()
+        await type(word('alice'), getComboboxInput())
+        expect(getComboboxInput()).toHaveValue('alice')
+
+        // Open the combobox and choose an option
+        await click(getComboboxOptions()[2])
+        expect(getComboboxInput()).toHaveValue('charlie - closed')
       })
     )
   })
