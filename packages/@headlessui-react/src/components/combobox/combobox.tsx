@@ -41,6 +41,7 @@ import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-cl
 
 import { Keys } from '../keyboard'
 import { useControllable } from '../../hooks/use-controllable'
+import { useWatch } from '../../hooks/use-watch'
 
 enum ComboboxState {
   Open,
@@ -440,33 +441,17 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     [data, disabled, value]
   )
 
-  let displayValue = useLatestValue(inputPropsRef.current.displayValue)
-
-  let syncInputValue = useCallback(() => {
-    if (!data.inputRef.current) return
-
-    if (typeof displayValue.current === 'function') {
-      data.inputRef.current.value = displayValue.current(value) ?? ''
-    } else if (typeof value === 'string') {
-      data.inputRef.current.value = value
-    } else {
-      data.inputRef.current.value = ''
-    }
-  }, [value, data.inputRef])
-
   let selectOption = useEvent((id: string) => {
     let option = data.options.find((item) => item.id === id)
     if (!option) return
 
     onChange(option.dataRef.current.value)
-    syncInputValue()
   })
 
   let selectActiveOption = useEvent(() => {
     if (data.activeOptionIndex !== null) {
       let { dataRef, id } = data.options[data.activeOptionIndex]
       onChange(dataRef.current.value)
-      syncInputValue()
 
       // It could happen that the `activeOptionIndex` stored in state is actually null,
       // but we are getting the fallback active option back instead.
@@ -531,14 +516,6 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     }),
     []
   )
-
-  useIsoMorphicEffect(() => {
-    if (data.comboboxState !== ComboboxState.Closed) return
-    syncInputValue()
-  }, [syncInputValue, data.comboboxState])
-
-  // Ensure that we update the inputRef if the value changes
-  useIsoMorphicEffect(syncInputValue, [syncInputValue])
 
   let ourProps = ref === null ? {} : { ref }
 
@@ -614,14 +591,33 @@ let Input = forwardRefWithAs(function Input<
   let actions = useActions('Combobox.Input')
 
   let inputRef = useSyncRefs(data.inputRef, ref)
-  let inputPropsRef = data.inputPropsRef
 
   let id = `headlessui-combobox-input-${useId()}`
   let d = useDisposables()
 
-  useIsoMorphicEffect(() => {
-    inputPropsRef.current.displayValue = displayValue
-  }, [displayValue, inputPropsRef])
+  let currentValue = useMemo(() => {
+    if (typeof displayValue === 'function') {
+      return displayValue(data.value as unknown as TType) ?? ''
+    } else if (typeof data.value === 'string') {
+      return data.value
+    } else {
+      return ''
+    }
+
+    // displayValue is intentionally left out
+  }, [data.value])
+
+  useWatch(
+    ([currentValue, state], [oldCurrentValue, oldState]) => {
+      if (!data.inputRef.current) return
+      if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
+        data.inputRef.current.value = currentValue
+      } else if (currentValue !== oldCurrentValue) {
+        data.inputRef.current.value = currentValue
+      }
+    },
+    [currentValue, data.comboboxState]
+  )
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
     switch (event.key) {

@@ -452,7 +452,7 @@ describe('Rendering', () => {
 
         render(<Example />)
 
-        expect(getComboboxInput()).toHaveValue('')
+        expect(getComboboxInput()).toHaveValue(' no suffix')
 
         await click(getComboboxButton())
 
@@ -468,7 +468,7 @@ describe('Rendering', () => {
 
         await click(getComboboxButton())
 
-        expect(getComboboxInput()).toHaveValue('B no suffix')
+        expect(getComboboxInput()).toHaveValue('B no suffix') // No re-sync yet
 
         await click(getComboboxOptions()[0])
 
