@@ -39,7 +39,12 @@ function MultiPeopleList() {
             console.log([...new FormData(e.currentTarget).entries()])
           }}
         >
-          <Combobox value={activePersons} onChange={setActivePersons} name="people" multiple>
+          <Combobox
+            value={activePersons}
+            onChange={(people) => setActivePersons(people)}
+            name="people"
+            multiple
+          >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
               Assigned to
             </Combobox.Label>
