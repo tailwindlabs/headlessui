@@ -12,7 +12,7 @@ import React, {
   MutableRefObject,
   Ref,
 } from 'react'
-import { Props } from '../../types'
+import { Props, ReactTag } from '../../types'
 import {
   Features,
   forwardRefWithAs,
@@ -68,7 +68,7 @@ export interface TransitionEvents {
   afterLeave?: () => void
 }
 
-type TransitionChildProps<TTag> = Props<TTag, TransitionChildRenderPropArg> &
+type TransitionChildProps<TTag extends ReactTag> = Props<TTag, TransitionChildRenderPropArg> &
   PropsForFeatures<typeof TransitionChildRenderFeatures> &
   TransitionClasses &
   TransitionEvents & { appear?: boolean }

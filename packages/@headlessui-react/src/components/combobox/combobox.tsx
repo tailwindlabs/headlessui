@@ -15,7 +15,7 @@ import React, {
   MutableRefObject,
   Ref,
 } from 'react'
-import { Props } from '../../types'
+import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
 import { useComputed } from '../../hooks/use-computed'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -303,26 +303,79 @@ interface ComboboxRenderPropArg<T> {
   value: T
 }
 
-let ComboboxRoot = forwardRefWithAs(function Combobox<
-  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
-  TType = string,
-  TActualType = TType extends (infer U)[] ? U : TType
->(
-  props: Props<
-    TTag,
-    ComboboxRenderPropArg<TType>,
-    'value' | 'defaultValue' | 'onChange' | 'by' | 'disabled' | 'name' | 'nullable' | 'multiple'
-  > & {
-    value?: TType
-    defaultValue?: TType
-    onChange?(value: TType): void
-    by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
-    disabled?: boolean
-    __demoMode?: boolean
-    name?: string
-    nullable?: boolean
-    multiple?: boolean
-  },
+type O = 'value' | 'defaultValue' | 'nullable' | 'multiple' | 'onChange' | 'by'
+
+type ComboboxValueProps<
+  TValue,
+  TNullable extends boolean | undefined,
+  TMultiple extends boolean | undefined,
+  TTag extends ElementType
+> = Extract<
+  | ({
+      value?: EnsureArray<TValue>
+      defaultValue?: EnsureArray<TValue>
+      nullable: true // We ignore `nullable` in multiple mode
+      multiple: true
+      onChange?(value: EnsureArray<TValue>): void
+      by?: ByComparator<TValue>
+    } & Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>>, O>)
+  | ({
+      value?: TValue | null
+      defaultValue?: TValue | null
+      nullable: true
+      multiple?: false
+      onChange?(value: TValue | null): void
+      by?: ByComparator<TValue | null>
+    } & Expand<Props<TTag, ComboboxRenderPropArg<TValue | null>, O>>)
+  | ({
+      value?: EnsureArray<TValue>
+      defaultValue?: EnsureArray<TValue>
+      nullable?: false
+      multiple: true
+      onChange?(value: EnsureArray<TValue>): void
+      by?: ByComparator<TValue extends Array<infer U> ? U : TValue>
+    } & Expand<Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>>, O>>)
+  | ({
+      value?: TValue
+      nullable?: false
+      multiple?: false
+      defaultValue?: TValue
+      onChange?(value: TValue): void
+      by?: ByComparator<TValue>
+    } & Props<TTag, ComboboxRenderPropArg<TValue>, O>),
+  { nullable?: TNullable; multiple?: TMultiple }
+>
+
+type ComboboxProps<
+  TValue,
+  TNullable extends boolean | undefined,
+  TMultiple extends boolean | undefined,
+  TTag extends ElementType
+> = ComboboxValueProps<TValue, TNullable, TMultiple, TTag> & {
+  disabled?: boolean
+  __demoMode?: boolean
+  name?: string
+}
+
+function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
+  props: ComboboxProps<TValue, true, true, TTag>,
+  ref: Ref<TTag>
+): JSX.Element
+function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
+  props: ComboboxProps<TValue, true, false, TTag>,
+  ref: Ref<TTag>
+): JSX.Element
+function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
+  props: ComboboxProps<TValue, false, false, TTag>,
+  ref: Ref<TTag>
+): JSX.Element
+function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
+  props: ComboboxProps<TValue, false, true, TTag>,
+  ref: Ref<TTag>
+): JSX.Element
+
+function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
+  props: ComboboxProps<TValue, boolean | undefined, boolean | undefined, TTag>,
   ref: Ref<TTag>
 ) {
   let {
@@ -330,14 +383,18 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     defaultValue,
     onChange: controlledOnChange,
     name,
-    by = (a, z) => a === z,
+    by = (a: any, z: any) => a === z,
     disabled = false,
     __demoMode = false,
     nullable = false,
     multiple = false,
     ...theirProps
   } = props
-  let [value, theirOnChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
+  let [value, theirOnChange] = useControllable<any>(
+    controlledValue,
+    controlledOnChange,
+    defaultValue
+  )
 
   let [state, dispatch] = useReducer(stateReducer, {
     dataRef: createRef(),
@@ -345,7 +402,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     options: [],
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
-  } as StateDefinition<TType>)
+  } as StateDefinition<TValue>)
 
   let defaultToFirstOption = useRef(false)
 
@@ -358,19 +415,19 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
 
   let compare = useEvent(
     typeof by === 'string'
-      ? (a: TActualType, z: TActualType) => {
-          let property = by as unknown as keyof TActualType
+      ? (a, z) => {
+          let property = by as unknown as keyof TValue
           return a[property] === z[property]
         }
       : by
   )
 
-  let isSelected: (value: TActualType) => boolean = useCallback(
+  let isSelected: (value: unknown) => boolean = useCallback(
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () =>
-          (value as unknown as TActualType[]).some((option) => compare(option, compareValue)),
-        [ValueMode.Single]: () => compare(value as unknown as TActualType, compareValue),
+          (value as EnsureArray<TValue>).some((option) => compare(option, compareValue)),
+        [ValueMode.Single]: () => compare(value as TValue, compareValue),
       }),
     [value]
   )
@@ -422,7 +479,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
     data.comboboxState === ComboboxState.Open
   )
 
-  let slot = useMemo<ComboboxRenderPropArg<TType>>(
+  let slot = useMemo<ComboboxRenderPropArg<unknown>>(
     () => ({
       open: data.comboboxState === ComboboxState.Open,
       disabled,
@@ -430,7 +487,7 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       activeOption:
         data.activeOptionIndex === null
           ? null
-          : (data.options[data.activeOptionIndex].dataRef.current.value as TType),
+          : (data.options[data.activeOptionIndex].dataRef.current.value as TValue),
       value,
     }),
     [data, disabled, value]
@@ -482,19 +539,19 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
   let onChange = useEvent((value: unknown) => {
     return match(data.mode, {
       [ValueMode.Single]() {
-        return theirOnChange?.(value as TType)
+        return theirOnChange?.(value as TValue)
       },
       [ValueMode.Multi]() {
-        let copy = (data.value as TActualType[]).slice()
+        let copy = (data.value as TValue[]).slice()
 
-        let idx = copy.findIndex((item) => compare(item, value as TActualType))
+        let idx = copy.findIndex((item) => compare(item, value as TValue))
         if (idx === -1) {
-          copy.push(value as TActualType)
+          copy.push(value as TValue)
         } else {
           copy.splice(idx, 1)
         }
 
-        return theirOnChange?.(copy as unknown as TType)
+        return theirOnChange?.(copy as unknown as TValue[])
       },
     })
   })
@@ -550,7 +607,8 @@ let ComboboxRoot = forwardRefWithAs(function Combobox<
       </ComboboxDataContext.Provider>
     </ComboboxActionsContext.Provider>
   )
-})
+}
+let ComboboxRoot = forwardRefWithAs(ComboboxFn)
 
 // ---
 
