@@ -10,7 +10,12 @@ function buildRoutes() {
   }
 
   // 1. Get all the components in the src/components directory
-  let files = Object.entries(import.meta.globEager('./components/**/*.vue'))
+  let files = Object.entries(
+    import.meta.glob('./components/**/*.vue', {
+      eager: true,
+      import: 'default',
+    })
+  )
 
   // 2.a. Swap the file names for route urls
   // 2.b. Resolve the default import for each component
@@ -20,7 +25,7 @@ function buildRoutes() {
       .replace(/\.vue$/, '')
       .toLocaleLowerCase()
       .replace(/^\/home$/g, '/'),
-    component.default,
+    component,
   ])
 
   let alreadyAdded = new Set()
