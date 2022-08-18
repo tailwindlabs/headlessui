@@ -1,5 +1,7 @@
 import { createWebHistory, createRouter, RouterView } from 'vue-router'
 
+type Component = import('vue').Component
+
 function buildRoutes() {
   function titleCase(str) {
     return str
@@ -15,7 +17,7 @@ function buildRoutes() {
       eager: true,
       import: 'default',
     })
-  )
+  ) as [string, Component][]
 
   // 2.a. Swap the file names for route urls
   // 2.b. Resolve the default import for each component
@@ -34,7 +36,7 @@ function buildRoutes() {
   files = files.flatMap((entry) => {
     let dirs = entry[0].split('/').slice(1, -1)
 
-    let paths = []
+    let paths: [string, Component][] = []
 
     for (const [idx] of dirs.entries()) {
       let path = `/` + dirs.slice(0, idx + 1).join('/')
