@@ -80,6 +80,10 @@ class TransitionMachineImpl implements TransitionMachine {
     this.actions = actions
   }
 
+  subscribe(_: () => void): () => void {
+    return () => {}
+  }
+
   // Machine interaction
   public add(child: TransitionMachine) {
     this.send('#child.add', child)

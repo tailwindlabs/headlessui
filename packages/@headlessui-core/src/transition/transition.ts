@@ -1,4 +1,4 @@
-import { createDisposables, match, once } from '../utils'
+import { createDisposables, match, once } from '../utils/index'
 
 interface TransitionClasses {
   enter: string[]
@@ -7,10 +7,12 @@ interface TransitionClasses {
   leave: string[]
   leaveFrom: string[]
   leaveTo: string[]
+
+  // TODO: Remove in v2.0: exists for legacy backwards compatibility
   entered: string[]
 }
 
-enum Reason {
+export enum TransitionDoneReason {
   // Transition successfully ended
   Ended = 'ended',
 
@@ -30,7 +32,7 @@ export function transition(
   node: HTMLElement,
   classes: TransitionClasses,
   show: boolean,
-  done?: (reason: Reason) => void
+  done?: (reason: TransitionDoneReason) => void
 ) {
   let direction = show ? 'enter' : 'leave'
 
@@ -64,13 +66,19 @@ export function transition(
 
   addClasses(node, ...base, ...from)
 
+  console.log("transition.start", node.getAttribute('data-debug'), node.classList.toString())
+
   d.nextFrame(() => {
     removeClasses(node, ...from)
     addClasses(node, ...to)
 
+    console.log("transition.nextFrame", node.getAttribute('data-debug'), node.classList.toString())
+
     d.add(
       waitForTransition(node, (reason) => {
-        if (reason === Reason.Ended) {
+        console.log("transition.wait.done", node.getAttribute('data-debug'), node.classList.toString())
+
+        if (reason === TransitionDoneReason.Ended) {
           removeClasses(node, ...base)
           addClasses(node, ...classes.entered)
         }
@@ -83,7 +91,7 @@ export function transition(
   return d.dispose
 }
 
-function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
+function waitForTransition(node: HTMLElement, done: (reason: TransitionDoneReason) => void) {
   let d = createDisposables()
 
   if (!node) {
@@ -95,7 +103,7 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   if (totalDuration === 0) {
     // No transition is happening, so we should cleanup already.
     // Otherwise we have to wait until we get disposed.
-    done(Reason.Ended)
+    done(TransitionDoneReason.Ended)
 
     return d.dispose
   }
@@ -103,7 +111,7 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   done = once(done)
 
   // If we get disposed before the transition finishes, we should cleanup anyway.
-  d.add(() => done(Reason.Cancelled))
+  d.add(() => done(TransitionDoneReason.Cancelled))
 
   let group = d.group()
 
@@ -117,14 +125,14 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
     group.addEventListener(node, 'transitionend', (event) => {
       if (event.target !== event.currentTarget) return
 
-      done(Reason.Ended)
+      done(TransitionDoneReason.Ended)
       group.dispose()
     })
 
     group.addEventListener(node, 'transitioncancel', (event) => {
       if (event.target !== event.currentTarget) return
 
-      done(Reason.Cancelled)
+      done(TransitionDoneReason.Cancelled)
       group.dispose()
     })
   })

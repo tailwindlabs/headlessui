@@ -1,7 +1,6 @@
+import { TransitionMachine, transition, TransitionDoneReason } from '@headlessui/core'
 import { MutableRefObject } from 'react'
 
-import { Reason, transition } from '../components/transitions/utils/transition'
-import { disposables } from '../utils/disposables'
 import { match } from '../utils/match'
 
 import { useDisposables } from './use-disposables'
@@ -23,48 +22,83 @@ interface TransitionArgs {
     entered: string[]
   }>
   direction: 'enter' | 'leave' | 'idle'
-  onStart: MutableRefObject<(direction: TransitionArgs['direction']) => void>
-  onStop: MutableRefObject<(direction: TransitionArgs['direction']) => void>
-  onCancel: MutableRefObject<(direction: TransitionArgs['direction']) => void>
+  machine: TransitionMachine
 }
 
 export function useTransition({
   container,
-  direction,
+  machine,
   classes,
-  onStart,
-  onStop,
-  onCancel,
+  direction,
 }: TransitionArgs) {
   let mounted = useIsMounted()
   let d = useDisposables()
-
   let latestDirection = useLatestValue(direction)
 
-  useIsoMorphicEffect(() => {
-    let dd = disposables()
-    d.add(dd.dispose)
-
+  function startTransition() {
     let node = container.current
     if (!node) return // We don't have a DOM node (yet)
-    if (latestDirection.current === 'idle') return // We don't need to transition
-    if (!mounted.current) return
+    if (!mounted.current) return // We've not been mounted yet so we can't transition
 
-    dd.dispose()
-
-    onStart.current(latestDirection.current)
-
-    dd.add(
-      transition(node, classes.current, latestDirection.current === 'enter', (reason) => {
-        dd.dispose()
-
-        match(reason, {
-          [Reason.Ended]: () => onStop.current(latestDirection.current),
-          [Reason.Cancelled]: () => onCancel.current(latestDirection.current),
-        })
+    d.add(transition(node, classes.current, machine.state[0] === 'entering', (reason) => {
+      match(reason, {
+        [TransitionDoneReason.Ended]: () => machine.send('stop'),
+        [TransitionDoneReason.Cancelled]: () => machine.send('cancel'),
       })
-    )
+    }))
+  }
 
-    return dd.dispose
-  }, [direction, container.current])
+  // Start/Cancel the transition process when the direction changes
+  useIsoMorphicEffect(() => {
+    let node = container.current
+    if (!node) return // We don't have a DOM node (yet)
+    if (!mounted.current) return // We've not been mounted yet so we can't transition
+    if (machine.state[0] !== 'idle') return // We're already transitioning
+
+    d.dispose()
+
+    match(latestDirection.current, {
+      idle: () => {
+        machine.send('reset')
+      },
+
+      enter: () => {
+        // d.add(() => machine.send('cancel'))
+        machine.send('enter')
+      },
+
+      leave: () => {
+        // d.add(() => machine.send('cancel'))
+        machine.send('leave')
+      },
+    })
+
+    return d.dispose
+  }, [latestDirection.current, container.current, mounted.current, machine.state])
+
+  // Start the transition itself when the entire tree is ready
+  useIsoMorphicEffect(() => {
+    match(machine.state[0], {
+      idle: () => {},
+
+      entering: () => match(machine.state[1], {
+        idle: () => {},
+        pending: () => {},
+        ready: () => machine.send('start'),
+        running: () => startTransition(),
+        finished: () => {},
+      }),
+
+      leaving: () => match(machine.state[1], {
+        idle: () => {},
+        pending: () => {},
+        ready: () => machine.send('start'),
+        running: () => startTransition(),
+        finished: () => {},
+      }),
+
+      done: () => {},
+      cancelled: () => {},
+    })
+  }, [machine.state])
 }

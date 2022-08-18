@@ -72,10 +72,17 @@ class TransitionMachineImpl implements TransitionMachine {
 
   public parent: TransitionMachine | undefined
   public children = new Set<TransitionMachine>()
+  private listeners = new Set<() => void>()
 
   constructor(id: string, actions: TransitionActions = {}) {
     this.id = `${id} [${uid++}]`
     this.actions = actions
+  }
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener)
+
+    return () => this.listeners.delete(listener)
   }
 
   // Machine interaction
@@ -196,6 +203,7 @@ class TransitionMachineImpl implements TransitionMachine {
 
   // Internal Methods
   private onStateChange(before: TransitionState, after: TransitionState) {
+    this.listeners.forEach((listener) => listener())
     this.actions.onChange?.(before, after)
 
     if (this.matches(before, { self: ['idle'] }) && this.matches(after, { self: ['pending'] })) {

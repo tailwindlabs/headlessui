@@ -106,14 +106,7 @@ interface NestingContextValues {
   >
   register: (id: ID, nesting: MutableRefObject<NestingContextValues>) => () => void
   unregister: (id: ID, strategy?: RenderStrategy) => void
-
-  machine: TransitionMachine
-
-  prepare(before: () => void, after: () => void): void
-  reset(): void
-  start(direction: TransitionDirection): void
-  stop(direction: TransitionDirection): void
-  cancel(direction: TransitionDirection): void
+  machine: TransitionMachine | undefined
 }
 
 let NestingContext = createContext<MutableRefObject<NestingContextValues> | null>(null)
@@ -127,39 +120,21 @@ function hasChildren(
 }
 
 function useNesting(
-  root = false,
   parent?: MutableRefObject<NestingContextValues>,
-  id?: string
+  machine?: TransitionMachine,
 ): MutableRefObject<NestingContextValues> {
-  type TransitionAction = () => void
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
-
-  let onStartCallback = useRef<TransitionAction>()
-  let onStopCallback = useRef<TransitionAction>()
-
-  // The state machine for the current transition
-  let machine = useTransitionMachine(id ?? 'unnamed', () => ({
-    onStart: () => {
-      onStartCallback.current?.()
-    },
-
-    onStop: () => {
-      onStopCallback.current?.()
-
-      if (root) {
-        machine.send('reset')
-      }
-    },
-  }))
 
   // Link the current transition to its parent
   useIsoMorphicEffect(() => {
+    if (!machine) return
+
     parent?.current?.machine?.add(machine)
 
     return () => {
       parent?.current?.machine?.remove(machine)
     }
-  }, [parent])
+  }, [parent, machine])
 
   let unregister = useEvent((childId: ID, strategy = RenderStrategy.Hidden) => {
     let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
@@ -191,41 +166,11 @@ function useNesting(
     return () => unregister(childId, RenderStrategy.Unmount)
   })
 
-  let reset = useEvent(() => machine.send('reset'))
-
-  let prepare = useEvent((before: TransitionAction, after: TransitionAction) => {
-    onStartCallback.current = before
-    onStopCallback.current = after
-  })
-
-  let start = useEvent((direction: TransitionDirection) => {
-    match(direction, {
-      enter: () => machine.send('enter'),
-      leave: () => machine.send('leave'),
-      idle: () => {},
-    })
-
-    machine.send('start')
-  })
-
-  let stop = useEvent((_: TransitionDirection) => {
-    machine.send('stop')
-  })
-
-  let cancel = useEvent((_: TransitionDirection) => {
-    machine.send('cancel')
-  })
-
   return useLatestValue({
     children: transitionableChildren,
     register,
     unregister,
     machine,
-    reset,
-    prepare,
-    start,
-    stop,
-    cancel,
   })
 }
 
@@ -286,8 +231,49 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
   let parentNesting = useParentNesting()
-  let nesting = useNesting(false, parentNesting, props['data-debug'])
   let prevShow = useRef<boolean | null>(null)
+  let events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
+  let ready = useServerHandoffComplete()
+
+  // Skipping initial transition
+  let skip = initial && !appear
+
+  let transitionDirection = (() => {
+    if (!ready) return 'idle'
+    if (skip) return 'idle'
+    if (prevShow.current === show) return 'idle'
+    return show ? 'enter' : 'leave'
+  })() as TransitionDirection
+
+  let latestDirection = useLatestValue(transitionDirection)
+
+  let beforeEvent = useEvent((direction: TransitionDirection) => {
+    return match(direction, {
+      enter: () => events.current.beforeEnter(),
+      leave: () => events.current.beforeLeave(),
+      idle: () => {},
+    })
+  })
+
+  let afterEvent = useEvent((direction: TransitionDirection) => {
+    return match(direction, {
+      enter: () => events.current.afterEnter(),
+      leave: () => {
+        setState(TreeStates.Hidden)
+        parentNesting.current.unregister(id)
+        return events.current.afterLeave()
+      },
+      idle: () => {},
+    })
+  })
+
+  // The state machine for the current transition
+  let machine = useTransitionMachine(props['data-debug'] ?? 'unnamed', () => ({
+    onStart: () => beforeEvent(latestDirection.current),
+    onStop: () => afterEvent(latestDirection.current),
+  }))
+
+  let nesting = useNesting(parentNesting, machine)
 
   let id = useId()
 
@@ -322,7 +308,6 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     leaveFrom: splitClasses(leaveFrom),
     leaveTo: splitClasses(leaveTo),
   })
-  let events = useEvents({ beforeEnter, afterEnter, beforeLeave, afterLeave })
 
   let ready = useServerHandoffComplete()
 
@@ -332,56 +317,11 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     }
   }, [container, state, ready])
 
-  // Skipping initial transition
-  let skip = initial && !appear
-
-  let transitionDirection = (() => {
-    if (!ready) return 'idle'
-    if (skip) return 'idle'
-    if (prevShow.current === show) return 'idle'
-    return show ? 'enter' : 'leave'
-  })() as TransitionDirection
-
-  let transitioning = useRef(false)
-
-  let beforeEvent = useEvent((direction: TransitionDirection) => {
-    return match(direction, {
-      enter: () => events.current.beforeEnter(),
-      leave: () => events.current.beforeLeave(),
-      idle: () => {},
-    })
-  })
-
-  let afterEvent = useEvent((direction: TransitionDirection) => {
-    return match(direction, {
-      enter: () => events.current.afterEnter(),
-      leave: () => {
-        setState(TreeStates.Hidden)
-        parentNesting.current.unregister(id)
-        return events.current.afterLeave()
-      },
-      idle: () => {},
-    })
-  })
-
   useTransition({
     container,
     classes,
+    machine,
     direction: transitionDirection,
-    onStart: useLatestValue((direction) => {
-      // TODO: Before & After events should be in a different order
-      nesting.current.prepare(
-        () => beforeEvent(direction),
-        () => afterEvent(direction)
-      )
-      nesting.current.start(direction)
-    }),
-    onStop: useLatestValue((direction) => {
-      nesting.current.stop(direction)
-    }),
-    onCancel: useLatestValue((direction) => {
-      nesting.current.cancel(direction)
-    }),
   })
 
   useEffect(() => {
@@ -444,7 +384,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
 
   let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
-  let nestingBag = useNesting(true, undefined, props['data-debug'])
+  let nestingBag = useNesting()
 
   let [initial, setInitial] = useState(true)
 
