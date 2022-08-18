@@ -52,7 +52,7 @@ describe('safeguards', () => {
         </Tab.Group>
       )
 
-      assertTabs({ active: 0 })
+      await assertTabs({ active: 0 })
     })
   )
 })
@@ -77,7 +77,7 @@ describe('Rendering', () => {
         </Tab.Group>
       )
 
-      assertTabs({ active: 0 })
+      await assertTabs({ active: 0 })
     })
   )
 
@@ -113,13 +113,13 @@ describe('Rendering', () => {
       await click(getByText('toggle')) // Re-add Tab 2
 
       await press(Keys.Tab)
-      assertTabs({ active: 0 })
+      await assertTabs({ active: 0 })
 
       await press(Keys.ArrowRight)
-      assertTabs({ active: 1 })
+      await assertTabs({ active: 1 })
 
       await press(Keys.ArrowRight)
-      assertTabs({ active: 2 })
+      await assertTabs({ active: 2 })
     })
   )
 
@@ -386,12 +386,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 0 })
-        assertActiveElement(getByText('Tab 1'))
+        await assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 1'))
       })
     )
 
@@ -418,12 +418,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 2 })
-        assertActiveElement(getByText('Tab 3'))
+        await assertTabs({ active: 2 })
+        await assertActiveElement(getByText('Tab 3'))
       })
     )
 
@@ -450,12 +450,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 1 })
-        assertActiveElement(getByText('Tab 2'))
+        await assertTabs({ active: 1 })
+        await assertActiveElement(getByText('Tab 2'))
       })
     )
 
@@ -482,12 +482,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 0 })
-        assertActiveElement(getByText('Tab 1'))
+        await assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 1'))
       })
     )
 
@@ -521,23 +521,23 @@ describe('Rendering', () => {
 
         render(<Example />)
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 1 })
-        assertActiveElement(getByText('Tab 2'))
+        await assertTabs({ active: 1 })
+        await assertActiveElement(getByText('Tab 2'))
 
         await click(getByText('Tab 3'))
 
-        assertTabs({ active: 2 })
-        assertActiveElement(getByText('Tab 3'))
+        await assertTabs({ active: 2 })
+        await assertActiveElement(getByText('Tab 3'))
 
         // Change default index
         await click(getByText('change'))
 
         // Nothing should change...
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
   })
@@ -639,23 +639,23 @@ describe('Rendering', () => {
 
         render(<ControlledTabs />)
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         // test uncontrolled behaviour
         await click(getByText('Tab 2'))
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenNthCalledWith(1, 1)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         // test controlled behaviour
         await click(getByText('setSelectedIndex'))
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         // test uncontrolled behaviour again
         await click(getByText('Tab 2'))
         expect(handleChange).toHaveBeenCalledTimes(2)
         expect(handleChange).toHaveBeenNthCalledWith(2, 1)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
       })
     )
 
@@ -682,12 +682,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 0 })
-        assertActiveElement(getByText('Tab 1'))
+        await assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 1'))
       })
     )
 
@@ -714,12 +714,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 2 })
-        assertActiveElement(getByText('Tab 3'))
+        await assertTabs({ active: 2 })
+        await assertActiveElement(getByText('Tab 3'))
       })
     )
 
@@ -746,12 +746,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 1 })
-        assertActiveElement(getByText('Tab 2'))
+        await assertTabs({ active: 1 })
+        await assertActiveElement(getByText('Tab 2'))
       })
     )
 
@@ -778,12 +778,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 0 })
-        assertActiveElement(getByText('Tab 1'))
+        await assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 1'))
       })
     )
 
@@ -810,12 +810,12 @@ describe('Rendering', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 0 })
-        assertActiveElement(getByText('Tab 1'))
+        await assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 1'))
       })
     )
   })
@@ -933,24 +933,24 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 0 })
-        assertActiveElement(getByText('Tab 1'))
+        await assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 1'))
 
         await press(Keys.Tab)
-        assertActiveElement(getByText('Content 1'))
+        await assertActiveElement(getByText('Content 1'))
 
         await press(Keys.Tab)
-        assertActiveElement(getByText('after'))
+        await assertActiveElement(getByText('after'))
 
         await press(shift(Keys.Tab))
-        assertActiveElement(getByText('Content 1'))
+        await assertActiveElement(getByText('Content 1'))
 
         await press(shift(Keys.Tab))
-        assertActiveElement(getByText('Tab 1'))
+        await assertActiveElement(getByText('Tab 1'))
       })
     )
 
@@ -977,24 +977,24 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
 
-        assertTabs({ active: 1 })
-        assertActiveElement(getByText('Tab 2'))
+        await assertTabs({ active: 1 })
+        await assertActiveElement(getByText('Tab 2'))
 
         await press(Keys.Tab)
-        assertActiveElement(getByText('Content 2'))
+        await assertActiveElement(getByText('Content 2'))
 
         await press(Keys.Tab)
-        assertActiveElement(getByText('after'))
+        await assertActiveElement(getByText('after'))
 
         await press(shift(Keys.Tab))
-        assertActiveElement(getByText('Content 2'))
+        await assertActiveElement(getByText('Content 2'))
 
         await press(shift(Keys.Tab))
-        assertActiveElement(getByText('Tab 2'))
+        await assertActiveElement(getByText('Tab 2'))
       })
     )
   })
@@ -1023,16 +1023,16 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
 
@@ -1059,20 +1059,20 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
         await press(Keys.Enter)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
 
@@ -1099,22 +1099,22 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
       })
     )
 
@@ -1141,30 +1141,30 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
         await press(Keys.Enter)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
         await press(Keys.Enter)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
         await press(Keys.Enter)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
       })
     )
 
@@ -1191,14 +1191,14 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowRight)
         // no-op
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
       })
     )
 
@@ -1225,16 +1225,16 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowRight)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
         await press(Keys.Enter)
         // no-op
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
       })
     )
   })
@@ -1263,16 +1263,16 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
 
@@ -1299,20 +1299,20 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
         await press(Keys.Enter)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
 
@@ -1339,22 +1339,22 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
       })
     )
 
@@ -1381,30 +1381,30 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
         await press(Keys.Enter)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
         await press(Keys.Enter)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
         await press(Keys.Enter)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
       })
     )
 
@@ -1431,14 +1431,14 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowLeft)
         // no-op
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
       })
     )
 
@@ -1465,17 +1465,17 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowLeft)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
         await press(Keys.Enter)
 
         // no-op
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
       })
     )
   })
@@ -1504,16 +1504,16 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
       })
     )
 
@@ -1540,20 +1540,20 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
       })
     )
 
@@ -1580,22 +1580,22 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
       })
     )
 
@@ -1622,30 +1622,30 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
       })
     )
 
@@ -1672,14 +1672,14 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowDown)
         // no-op
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
 
@@ -1706,17 +1706,17 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowDown)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
         await press(Keys.Enter)
 
         // no-op
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
   })
@@ -1745,16 +1745,16 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
       })
     )
 
@@ -1781,20 +1781,20 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
       })
     )
 
@@ -1821,22 +1821,22 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
       })
     )
 
@@ -1863,30 +1863,30 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 0, orientation: 'vertical' })
+        await assertTabs({ active: 0, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 2, orientation: 'vertical' })
+        await assertTabs({ active: 2, orientation: 'vertical' })
         await press(Keys.Enter)
-        assertTabs({ active: 1, orientation: 'vertical' })
+        await assertTabs({ active: 1, orientation: 'vertical' })
       })
     )
 
@@ -1913,14 +1913,14 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowUp)
         // no-op
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
 
@@ -1947,17 +1947,17 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
 
         await press(Keys.ArrowUp)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
         await press(Keys.Enter)
 
         // no-op
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
   })
@@ -1986,13 +1986,13 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.Home)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
 
@@ -2019,15 +2019,15 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.Home)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
   })
@@ -2056,13 +2056,13 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.PageUp)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
 
@@ -2089,15 +2089,15 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.PageUp)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 0 })
+        await assertTabs({ active: 0 })
       })
     )
   })
@@ -2126,13 +2126,13 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.End)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
 
@@ -2159,15 +2159,15 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.End)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
   })
@@ -2196,13 +2196,13 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.PageDown)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
 
@@ -2229,15 +2229,15 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         await press(Keys.Tab)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
 
         await press(Keys.PageDown)
-        assertTabs({ active: 1 })
+        await assertTabs({ active: 1 })
         await press(Keys.Enter)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
   })
@@ -2266,15 +2266,15 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         getByText('Tab 3')?.focus()
 
-        assertActiveElement(getByText('Tab 3'))
-        assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 3'))
+        await assertTabs({ active: 0 })
 
         await press(Keys.Enter)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
   })
@@ -2303,15 +2303,15 @@ describe('Keyboard interactions', () => {
           </>
         )
 
-        assertActiveElement(document.body)
+        await assertActiveElement(document.body)
 
         getByText('Tab 3')?.focus()
 
-        assertActiveElement(getByText('Tab 3'))
-        assertTabs({ active: 0 })
+        await assertActiveElement(getByText('Tab 3'))
+        await assertTabs({ active: 0 })
 
         await press(Keys.Space)
-        assertTabs({ active: 2 })
+        await assertTabs({ active: 2 })
       })
     )
   })
@@ -2341,18 +2341,18 @@ describe('Mouse interactions', () => {
         </>
       )
 
-      assertActiveElement(document.body)
+      await assertActiveElement(document.body)
       await press(Keys.Tab)
-      assertTabs({ active: 1 })
+      await assertTabs({ active: 1 })
 
       await click(getByText('Tab 1'))
-      assertTabs({ active: 0 })
+      await assertTabs({ active: 0 })
 
       await click(getByText('Tab 3'))
-      assertTabs({ active: 2 })
+      await assertTabs({ active: 2 })
 
       await click(getByText('Tab 2'))
-      assertTabs({ active: 1 })
+      await assertTabs({ active: 1 })
     })
   )
 
@@ -2379,13 +2379,13 @@ describe('Mouse interactions', () => {
         </>
       )
 
-      assertActiveElement(document.body)
+      await assertActiveElement(document.body)
       await press(Keys.Tab)
-      assertTabs({ active: 1 })
+      await assertTabs({ active: 1 })
 
       await click(getByText('Tab 1'))
       // No-op, Tab 2 is still active
-      assertTabs({ active: 1 })
+      await assertTabs({ active: 1 })
     })
   )
 })

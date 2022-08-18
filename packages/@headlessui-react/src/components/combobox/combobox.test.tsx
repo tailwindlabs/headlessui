@@ -85,11 +85,11 @@ describe('safeguards', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 })
@@ -117,19 +117,19 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({ state: ComboboxState.Visible })
+        await assertComboboxList({ state: ComboboxState.Visible })
       })
     )
 
@@ -148,27 +148,27 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await press(Keys.Enter, getComboboxButton())
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
 
@@ -380,7 +380,7 @@ describe('Rendering', () => {
         await click(getComboboxButton())
 
         assertComboboxInput({ state: ComboboxState.Visible })
-        assertComboboxList({ state: ComboboxState.Visible })
+        await assertComboboxList({ state: ComboboxState.Visible })
 
         await click(getComboboxOptions()[1])
 
@@ -414,7 +414,7 @@ describe('Rendering', () => {
 
         await click(getComboboxButton())
 
-        assertComboboxList({ state: ComboboxState.Visible })
+        await assertComboboxList({ state: ComboboxState.Visible })
 
         await click(getComboboxOptions()[1])
 
@@ -571,25 +571,25 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-3' },
         })
-        assertComboboxLabel({
+        await assertComboboxLabel({
           attributes: { id: 'headlessui-combobox-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxLabel({
+        await assertComboboxLabel({
           attributes: { id: 'headlessui-combobox-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
-        assertComboboxList({ state: ComboboxState.Visible })
-        assertComboboxLabelLinkedWithCombobox()
-        assertComboboxButtonLinkedWithComboboxLabel()
+        await assertComboboxList({ state: ComboboxState.Visible })
+        await assertComboboxLabelLinkedWithCombobox()
+        await assertComboboxButtonLinkedWithComboboxLabel()
       })
     )
 
@@ -609,20 +609,20 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxLabel({
+        await assertComboboxLabel({
           attributes: { id: 'headlessui-combobox-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
-        assertComboboxLabel({
+        await assertComboboxLabel({
           attributes: { id: 'headlessui-combobox-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
-        assertComboboxList({ state: ComboboxState.Visible })
+        await assertComboboxList({ state: ComboboxState.Visible })
       })
     )
   })
@@ -643,21 +643,21 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
-        assertComboboxList({ state: ComboboxState.Visible })
+        await assertComboboxList({ state: ComboboxState.Visible })
       })
     )
 
@@ -678,21 +678,21 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
-        assertComboboxList({ state: ComboboxState.Visible })
+        await assertComboboxList({ state: ComboboxState.Visible })
       })
     )
 
@@ -715,12 +715,12 @@ describe('Rendering', () => {
         // TODO: Needed to make it similar to vue test implementation?
         // await new Promise(requestAnimationFrame)
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-3' },
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-        assertComboboxButtonLinkedWithComboboxLabel()
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxButtonLinkedWithComboboxLabel()
       })
     )
 
@@ -808,23 +808,23 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({
+        await assertComboboxList({
           state: ComboboxState.Visible,
           textContent: JSON.stringify({ open: true }),
         })
-        assertActiveElement(getComboboxInput())
+        await assertActiveElement(getComboboxInput())
       })
     )
 
@@ -858,12 +858,12 @@ describe('Rendering', () => {
         </Combobox>
       )
 
-      assertComboboxList({ state: ComboboxState.InvisibleHidden })
+      await assertComboboxList({ state: ComboboxState.InvisibleHidden })
 
       // Let's open the Combobox, to see if it is not hidden anymore
       await click(getComboboxButton())
 
-      assertComboboxList({ state: ComboboxState.Visible })
+      await assertComboboxList({ state: ComboboxState.Visible })
     })
   })
 
@@ -881,19 +881,19 @@ describe('Rendering', () => {
           </Combobox>
         )
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
         await click(getComboboxButton())
 
-        assertComboboxButton({
+        await assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
         })
-        assertComboboxList({
+        await assertComboboxList({
           state: ComboboxState.Visible,
           textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
         })
@@ -926,22 +926,22 @@ describe('Rendering', () => {
     rerender(<Example hide={true} />) // Remove Combobox.Option 2
     rerender(<Example hide={false} />) // Re-add Combobox.Option 2
 
-    assertComboboxList({ state: ComboboxState.Visible })
+    await assertComboboxList({ state: ComboboxState.Visible })
 
     let options = getComboboxOptions()
 
     // Verify that the first combobox option is active
-    assertActiveComboboxOption(options[0])
+    await assertActiveComboboxOption(options[0])
 
     await press(Keys.ArrowDown)
 
     // Verify that the second combobox option is active
-    assertActiveComboboxOption(options[1])
+    await assertActiveComboboxOption(options[1])
 
     await press(Keys.ArrowDown)
 
     // Verify that the third combobox option is active
-    assertActiveComboboxOption(options[2])
+    await assertActiveComboboxOption(options[2])
   })
 
   describe('Uncontrolled', () => {
@@ -1095,11 +1095,11 @@ describe('Rendering composition', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open Combobox
       await click(getComboboxButton())
@@ -1107,7 +1107,7 @@ describe('Rendering composition', () => {
       let options = getComboboxOptions()
 
       // Verify that the first combobox option is active
-      assertActiveComboboxOption(options[0])
+      await assertActiveComboboxOption(options[0])
 
       // Verify correct classNames
       expect('' + options[0].classList).toEqual(
@@ -1131,7 +1131,7 @@ describe('Rendering composition', () => {
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
       // Double check that the last option is the active one
-      assertActiveComboboxOption(options[2])
+      await assertActiveComboboxOption(options[2])
     })
   )
 
@@ -1156,17 +1156,19 @@ describe('Rendering composition', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open Combobox
       await click(getComboboxButton())
 
       // Verify options are buttons now
-      getComboboxOptions().forEach((option) => assertComboboxOption(option, { tag: 'button' }))
+      await Promise.all(
+        getComboboxOptions().map((option) => assertComboboxOption(option, { tag: 'button' }))
+      )
     })
   )
 
@@ -1253,19 +1255,19 @@ describe('Composition', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       await click(getComboboxButton())
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.Visible,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({
+      await assertComboboxList({
         state: ComboboxState.Visible,
         textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
       })
@@ -1302,11 +1304,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1315,24 +1317,26 @@ describe('Keyboard interactions', () => {
           await press(Keys.Enter)
 
           // Verify we moved focus to the input field
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option, { selected: false }))
+          await Promise.all(
+            options.map((option) => assertComboboxOption(option, { selected: false }))
+          )
 
-          assertActiveComboboxOption(options[0])
-          assertNoSelectedComboboxOption()
+          await assertActiveComboboxOption(options[0])
+          await assertNoSelectedComboboxOption()
         })
       )
 
@@ -1351,11 +1355,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Try to focus the button
           await focus(getComboboxButton())
@@ -1364,11 +1368,11 @@ describe('Keyboard interactions', () => {
           await press(Keys.Enter)
 
           // Verify it is still closed
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         })
       )
 
@@ -1387,11 +1391,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1400,24 +1404,26 @@ describe('Keyboard interactions', () => {
           await press(Keys.Enter)
 
           // Verify we moved focus to the input field
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -1436,11 +1442,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleHidden,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleHidden })
+          await assertComboboxList({ state: ComboboxState.InvisibleHidden })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1449,16 +1455,16 @@ describe('Keyboard interactions', () => {
           await press(Keys.Enter)
 
           // Verify we moved focus to the input field
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           let options = getComboboxOptions()
 
@@ -1466,10 +1472,10 @@ describe('Keyboard interactions', () => {
           await mouseMove(options[0])
 
           // Verify that Option A is active
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // Verify that Option B is still selected
-          assertComboboxOption(options[1], { selected: true })
+          await assertComboboxOption(options[1], { selected: true })
 
           // Close/Hide the combobox
           await press(Keys.Escape)
@@ -1479,10 +1485,12 @@ describe('Keyboard interactions', () => {
 
           // Verify we have combobox options
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -1509,11 +1517,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1522,24 +1530,26 @@ describe('Keyboard interactions', () => {
           await press(Keys.Enter)
 
           // Verify we moved focus to the input field
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -1554,7 +1564,7 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1563,12 +1573,12 @@ describe('Keyboard interactions', () => {
           await press(Keys.Enter)
 
           // Verify we moved focus to the input field
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
-          assertComboboxList({ state: ComboboxState.Visible })
-          assertActiveElement(getComboboxInput())
+          await assertComboboxList({ state: ComboboxState.Visible })
+          await assertActiveElement(getComboboxInput())
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
     })
@@ -1589,11 +1599,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1602,22 +1612,22 @@ describe('Keyboard interactions', () => {
           await press(Keys.Space)
 
           // Verify we moved focus to the input field
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[0])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -1636,11 +1646,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1649,11 +1659,11 @@ describe('Keyboard interactions', () => {
           await press(Keys.Space)
 
           // Verify it is still closed
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         })
       )
 
@@ -1672,11 +1682,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({
+          await assertComboboxList({
             state: ComboboxState.InvisibleUnmounted,
           })
 
@@ -1687,21 +1697,23 @@ describe('Keyboard interactions', () => {
           await press(Keys.Space)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -1716,7 +1728,7 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxList({
+          await assertComboboxList({
             state: ComboboxState.InvisibleUnmounted,
           })
 
@@ -1725,10 +1737,10 @@ describe('Keyboard interactions', () => {
 
           // Open combobox
           await press(Keys.Space)
-          assertComboboxList({ state: ComboboxState.Visible })
-          assertActiveElement(getComboboxInput())
+          await assertComboboxList({ state: ComboboxState.Visible })
+          await assertActiveElement(getComboboxInput())
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
 
@@ -1753,11 +1765,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({
+          await assertComboboxList({
             state: ComboboxState.InvisibleUnmounted,
           })
 
@@ -1767,7 +1779,7 @@ describe('Keyboard interactions', () => {
           // Open combobox
           await press(Keys.Space)
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
     })
@@ -1792,27 +1804,27 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Re-focus the button
           await focus(getComboboxButton())
-          assertActiveElement(getComboboxButton())
+          await assertActiveElement(getComboboxButton())
 
           // Close combobox
           await press(Keys.Escape)
 
           // Verify it is closed
-          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Verify the input is focused again
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
         })
       )
 
@@ -1891,11 +1903,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1904,21 +1916,21 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowDown)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
 
           // Verify that the first combobox option is active
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -1937,11 +1949,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1950,11 +1962,11 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowDown)
 
           // Verify it is still closed
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         })
       )
 
@@ -1973,11 +1985,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -1986,21 +1998,23 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowDown)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -2015,17 +2029,17 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowDown)
-          assertComboboxList({ state: ComboboxState.Visible })
-          assertActiveElement(getComboboxInput())
+          await assertComboboxList({ state: ComboboxState.Visible })
+          await assertActiveElement(getComboboxInput())
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
     })
@@ -2046,11 +2060,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -2059,21 +2073,21 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowUp)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
 
           // ! ALERT: The LAST option should now be active
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -2092,11 +2106,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -2105,11 +2119,11 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowUp)
 
           // Verify it is still closed
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         })
       )
 
@@ -2128,11 +2142,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -2141,21 +2155,23 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowUp)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -2170,17 +2186,17 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
 
           // Open combobox
           await press(Keys.ArrowUp)
-          assertComboboxList({ state: ComboboxState.Visible })
-          assertActiveElement(getComboboxInput())
+          await assertComboboxList({ state: ComboboxState.Visible })
+          await assertActiveElement(getComboboxInput())
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
 
@@ -2203,11 +2219,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the button
           await focus(getComboboxButton())
@@ -2218,8 +2234,8 @@ describe('Keyboard interactions', () => {
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[0])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[0])
         })
       )
     })
@@ -2264,27 +2280,27 @@ describe('Keyboard interactions', () => {
         // Bob should be active
         options = getComboboxOptions()
         expect(getComboboxInput()).toHaveValue('bob')
-        assertActiveComboboxOption(options[1])
+        await assertActiveComboboxOption(options[1])
 
-        assertActiveElement(getComboboxInput())
+        await assertActiveElement(getComboboxInput())
 
         // Delete a character
         await press(Keys.Backspace)
         expect(getComboboxInput()?.value).toBe('bo')
-        assertActiveComboboxOption(options[1])
+        await assertActiveComboboxOption(options[1])
 
         // Delete a character
         await press(Keys.Backspace)
         expect(getComboboxInput()?.value).toBe('b')
-        assertActiveComboboxOption(options[1])
+        await assertActiveComboboxOption(options[1])
 
         // Delete a character
         await press(Keys.Backspace)
         expect(getComboboxInput()?.value).toBe('')
 
         // Verify that we don't have an active option anymore since we are in `nullable` mode
-        assertNotActiveComboboxOption(options[1])
-        assertNoActiveComboboxOption()
+        await assertNotActiveComboboxOption(options[1])
+        await assertNoActiveComboboxOption()
 
         // Verify that we saw the `null` change coming in
         expect(handleChange).toHaveBeenCalledTimes(1)
@@ -2324,17 +2340,17 @@ describe('Keyboard interactions', () => {
 
           render(<Example />)
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxButton({ state: ComboboxState.Visible })
 
           // Activate the first combobox option
           let options = getComboboxOptions()
@@ -2344,21 +2360,21 @@ describe('Keyboard interactions', () => {
           await press(Keys.Enter)
 
           // Verify it is closed
-          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Verify we got the change event
           expect(handleChange).toHaveBeenCalledTimes(1)
           expect(handleChange).toHaveBeenCalledWith('a')
 
           // Verify the button is focused again
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Open combobox again
           await click(getComboboxButton())
 
           // Verify the active option is the previously selected one
-          assertActiveComboboxOption(getComboboxOptions()[0])
+          await assertActiveComboboxOption(getComboboxOptions()[0])
         })
       )
 
@@ -2401,7 +2417,7 @@ describe('Keyboard interactions', () => {
 
           // Focus the input field
           await focus(getComboboxInput())
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Press enter (which should submit the form)
           await press(Keys.Enter)
@@ -2439,11 +2455,11 @@ describe('Keyboard interactions', () => {
 
           render(<Example />)
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
@@ -2455,14 +2471,14 @@ describe('Keyboard interactions', () => {
           await press(Keys.Tab)
 
           // Verify it is closed
-          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // That the selected value was the highlighted one
           expect(getComboboxInput()?.value).toBe('b')
 
           // And focus has moved to the next element
-          assertActiveElement(document.querySelector('#after-combobox'))
+          await assertActiveElement(document.querySelector('#after-combobox'))
         })
       )
 
@@ -2491,11 +2507,11 @@ describe('Keyboard interactions', () => {
 
           render(<Example />)
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
@@ -2507,14 +2523,14 @@ describe('Keyboard interactions', () => {
           await press(shift(Keys.Tab))
 
           // Verify it is closed
-          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // That the selected value was the highlighted one
           expect(getComboboxInput()?.value).toBe('b')
 
           // And focus has moved to the next element
-          assertActiveElement(document.querySelector('#before-combobox'))
+          await assertActiveElement(document.querySelector('#before-combobox'))
         })
       )
     })
@@ -2539,23 +2555,23 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Close combobox
           await press(Keys.Escape)
 
           // Verify it is closed
-          assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Verify the button is focused again
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
         })
       )
 
@@ -2596,13 +2612,13 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // Verify the input is focused
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Close combobox
           await press(Keys.Escape)
 
           // Verify the input is still focused
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // The external event handler should've been called twice
           // Once in the capture phase and once in the bubble phase
@@ -2642,13 +2658,13 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // Verify the input is focused
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // Close combobox
           await press(Keys.Escape)
 
           // Verify the input is still focused
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
 
           // The external event handler should've been called twice
           // Once in the capture phase and once in the bubble phase
@@ -2706,11 +2722,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -2719,21 +2735,21 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowDown)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
 
           // Verify that the first combobox option is active
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -2752,11 +2768,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -2765,11 +2781,11 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowDown)
 
           // Verify it is still closed
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         })
       )
 
@@ -2788,11 +2804,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -2801,21 +2817,23 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowDown)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -2830,17 +2848,17 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowDown)
-          assertComboboxList({ state: ComboboxState.Visible })
-          assertActiveElement(getComboboxInput())
+          await assertComboboxList({ state: ComboboxState.Visible })
+          await assertActiveElement(getComboboxInput())
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
 
@@ -2859,11 +2877,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
@@ -2871,21 +2889,21 @@ describe('Keyboard interactions', () => {
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[0])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go down once
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
 
           // We should be able to go down again
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
 
           // We should NOT be able to go down again (because last option).
           // Current implementation won't go around.
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -2906,11 +2924,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
@@ -2918,12 +2936,12 @@ describe('Keyboard interactions', () => {
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[1])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[1])
 
           // We should be able to go down once
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -2946,11 +2964,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
@@ -2958,12 +2976,12 @@ describe('Keyboard interactions', () => {
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[2])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[2])
 
           // Open combobox
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -2982,11 +3000,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
@@ -2994,13 +3012,13 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // Verify that we are on the first option
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // Go down once
           await press(Keys.ArrowDown)
 
           // We should be on the next item
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
     })
@@ -3021,11 +3039,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -3034,21 +3052,21 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowUp)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
 
           // ! ALERT: The LAST option should now be active
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -3067,11 +3085,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -3080,11 +3098,11 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowUp)
 
           // Verify it is still closed
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
         })
       )
 
@@ -3103,11 +3121,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -3116,21 +3134,23 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowUp)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          await Promise.all(
+            options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+          )
 
           // Verify that the second combobox option is active (because it is already selected)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -3145,17 +3165,17 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
 
           // Open combobox
           await press(Keys.ArrowUp)
-          assertComboboxList({ state: ComboboxState.Visible })
-          assertActiveElement(getComboboxInput())
+          await assertComboboxList({ state: ComboboxState.Visible })
+          await assertActiveElement(getComboboxInput())
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
 
@@ -3178,11 +3198,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -3193,8 +3213,8 @@ describe('Keyboard interactions', () => {
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[0])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -3217,11 +3237,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Open combobox
           await click(getComboboxButton())
@@ -3229,19 +3249,19 @@ describe('Keyboard interactions', () => {
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[2])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[2])
 
           // Going up or down should select the single available option
           await press(Keys.ArrowUp)
 
           // We should not be able to go up (because those are disabled)
           await press(Keys.ArrowUp)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
 
           // We should not be able to go down (because this is the last option)
           await press(Keys.ArrowDown)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -3260,11 +3280,11 @@ describe('Keyboard interactions', () => {
             </Combobox>
           )
 
-          assertComboboxButton({
+          await assertComboboxButton({
             state: ComboboxState.InvisibleUnmounted,
             attributes: { id: 'headlessui-combobox-button-2' },
           })
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+          await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
           // Focus the input
           await focus(getComboboxInput())
@@ -3273,31 +3293,31 @@ describe('Keyboard interactions', () => {
           await press(Keys.ArrowUp)
 
           // Verify it is visible
-          assertComboboxButton({ state: ComboboxState.Visible })
-          assertComboboxList({
+          await assertComboboxButton({ state: ComboboxState.Visible })
+          await assertComboboxList({
             state: ComboboxState.Visible,
             attributes: { id: 'headlessui-combobox-options-3' },
           })
-          assertActiveElement(getComboboxInput())
-          assertComboboxButtonLinkedWithCombobox()
+          await assertActiveElement(getComboboxInput())
+          await assertComboboxButtonLinkedWithCombobox()
 
           // Verify we have combobox options
           let options = getComboboxOptions()
           expect(options).toHaveLength(3)
-          options.forEach((option) => assertComboboxOption(option))
-          assertActiveComboboxOption(options[2])
+          await Promise.all(options.map((option) => assertComboboxOption(option)))
+          await assertActiveComboboxOption(options[2])
 
           // We should be able to go down once
           await press(Keys.ArrowUp)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
 
           // We should be able to go down again
           await press(Keys.ArrowUp)
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should NOT be able to go up again (because first option). Current implementation won't go around.
           await press(Keys.ArrowUp)
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
     })
@@ -3324,11 +3344,11 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first non-disabled option
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await press(Keys.End)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -3358,11 +3378,11 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first non-disabled option
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last non-disabled option
           await press(Keys.End)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -3394,12 +3414,12 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first non-disabled option
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should not be able to go to the end (no-op)
           await press(Keys.End)
 
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -3431,12 +3451,12 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
 
           // We should not be able to go to the end
           await press(Keys.End)
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
     })
@@ -3463,11 +3483,11 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first option
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await press(Keys.PageDown)
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -3500,11 +3520,11 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first non-disabled option
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last non-disabled option
           await press(Keys.PageDown)
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
 
@@ -3536,12 +3556,12 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first non-disabled option
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should not be able to go to the end
           await press(Keys.PageDown)
 
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -3573,12 +3593,12 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
 
           // We should not be able to go to the end
           await press(Keys.PageDown)
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
     })
@@ -3608,11 +3628,11 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the last option
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
 
           // We should be able to go to the first option
           await press(Keys.Home)
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -3642,13 +3662,13 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the first non-disabled option
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
 
           // We should not be able to go to the end
           await press(Keys.Home)
 
           // We should be on the first non-disabled option
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -3680,12 +3700,12 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the last option
-          assertActiveComboboxOption(options[3])
+          await assertActiveComboboxOption(options[3])
 
           // We should not be able to go to the end
           await press(Keys.Home)
 
-          assertActiveComboboxOption(options[3])
+          await assertActiveComboboxOption(options[3])
         })
       )
 
@@ -3717,12 +3737,12 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
 
           // We should not be able to go to the end
           await press(Keys.Home)
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
     })
@@ -3752,11 +3772,11 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We should be on the last option
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
 
           // We should be able to go to the first option
           await press(Keys.PageUp)
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -3786,12 +3806,12 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We opened via click, we default to the first non-disabled option
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
 
           // We should not be able to go to the end (no-op — already there)
           await press(Keys.PageUp)
 
-          assertActiveComboboxOption(options[2])
+          await assertActiveComboboxOption(options[2])
         })
       )
 
@@ -3823,12 +3843,12 @@ describe('Keyboard interactions', () => {
           let options = getComboboxOptions()
 
           // We opened via click, we default to the first non-disabled option
-          assertActiveComboboxOption(options[3])
+          await assertActiveComboboxOption(options[3])
 
           // We should not be able to go to the end (no-op — already there)
           await press(Keys.PageUp)
 
-          assertActiveComboboxOption(options[3])
+          await assertActiveComboboxOption(options[3])
         })
       )
 
@@ -3860,12 +3880,12 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // We opened via click, we don't have an active option
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
 
           // We should not be able to go to the end
           await press(Keys.PageUp)
 
-          assertNoActiveComboboxOption()
+          await assertNoActiveComboboxOption()
         })
       )
     })
@@ -3913,7 +3933,7 @@ describe('Keyboard interactions', () => {
           await click(getComboboxButton())
 
           // Verify we moved focus to the input field
-          assertActiveElement(getComboboxInput())
+          await assertActiveElement(getComboboxInput())
           let options: ReturnType<typeof getComboboxOptions>
 
           // We should be able to go to the second option
@@ -3923,7 +3943,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('bob')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the first option
           await type(word('alice'))
@@ -3932,7 +3952,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('alice')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await type(word('charlie'))
@@ -3941,7 +3961,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('charlie')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -3969,7 +3989,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('bob')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the first option
           await type(word('ali'))
@@ -3977,7 +3997,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('alice')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await type(word('char'))
@@ -3985,7 +4005,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('charlie')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -4013,7 +4033,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('bob the builder')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the first option
           await type(word('alice j'))
@@ -4021,7 +4041,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('alice jones')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // We should be able to go to the last option
           await type(word('charlie b'))
@@ -4029,7 +4049,7 @@ describe('Keyboard interactions', () => {
           options = getComboboxOptions()
           expect(options).toHaveLength(1)
           expect(options[0]).toHaveTextContent('charlie bit me')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
         })
       )
 
@@ -4053,8 +4073,8 @@ describe('Keyboard interactions', () => {
           await type(word('bo'))
           await press(Keys.Home)
 
-          assertNoActiveComboboxOption()
-          assertNoSelectedComboboxOption()
+          await assertNoActiveComboboxOption()
+          await assertNoSelectedComboboxOption()
         })
       )
 
@@ -4081,19 +4101,19 @@ describe('Keyboard interactions', () => {
           // Person B should be active
           options = getComboboxOptions()
           expect(options[1]).toHaveTextContent('person b')
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
 
           // Filter more, remove `person a`
           await type(word('person b'))
           options = getComboboxOptions()
           expect(options[0]).toHaveTextContent('person b')
-          assertActiveComboboxOption(options[0])
+          await assertActiveComboboxOption(options[0])
 
           // Filter less, insert `person a` before `person b`
           await type(word('person'))
           options = getComboboxOptions()
           expect(options[1]).toHaveTextContent('person b')
-          assertActiveComboboxOption(options[1])
+          await assertActiveComboboxOption(options[1])
         })
       )
     })
@@ -4118,13 +4138,13 @@ describe('Mouse interactions', () => {
       )
 
       // Ensure the button is not focused yet
-      assertActiveElement(document.body)
+      await assertActiveElement(document.body)
 
       // Focus the label
       await click(getComboboxLabel())
 
       // Ensure that the actual button is focused instead
-      assertActiveElement(getComboboxInput())
+      await assertActiveElement(getComboboxInput())
     })
   )
 
@@ -4145,13 +4165,13 @@ describe('Mouse interactions', () => {
       )
 
       // Ensure the button is not focused yet
-      assertActiveElement(document.body)
+      await assertActiveElement(document.body)
 
       // Focus the label
       await click(getComboboxLabel(), MouseButton.Right)
 
       // Ensure that the body is still active
-      assertActiveElement(document.body)
+      await assertActiveElement(document.body)
     })
   )
 
@@ -4170,28 +4190,28 @@ describe('Mouse interactions', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox
       await click(getComboboxButton())
 
       // Verify it is visible
-      assertComboboxButton({ state: ComboboxState.Visible })
-      assertComboboxList({
+      await assertComboboxButton({ state: ComboboxState.Visible })
+      await assertComboboxList({
         state: ComboboxState.Visible,
         attributes: { id: 'headlessui-combobox-options-3' },
       })
-      assertActiveElement(getComboboxInput())
-      assertComboboxButtonLinkedWithCombobox()
+      await assertActiveElement(getComboboxInput())
+      await assertComboboxButtonLinkedWithCombobox()
 
       // Verify we have combobox options
       let options = getComboboxOptions()
       expect(options).toHaveLength(3)
-      options.forEach((option) => assertComboboxOption(option))
+      await Promise.all(options.map((option) => assertComboboxOption(option)))
     })
   )
 
@@ -4210,17 +4230,17 @@ describe('Mouse interactions', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Try to open the combobox
       await click(getComboboxButton(), MouseButton.Right)
 
       // Verify it is still closed
-      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -4239,21 +4259,21 @@ describe('Mouse interactions', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Try to open the combobox
       await click(getComboboxButton())
 
       // Verify it is still closed
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -4272,31 +4292,33 @@ describe('Mouse interactions', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Open combobox
       await click(getComboboxButton())
 
       // Verify it is visible
-      assertComboboxButton({ state: ComboboxState.Visible })
-      assertComboboxList({
+      await assertComboboxButton({ state: ComboboxState.Visible })
+      await assertComboboxList({
         state: ComboboxState.Visible,
         attributes: { id: 'headlessui-combobox-options-3' },
       })
-      assertActiveElement(getComboboxInput())
-      assertComboboxButtonLinkedWithCombobox()
+      await assertActiveElement(getComboboxInput())
+      await assertComboboxButtonLinkedWithCombobox()
 
       // Verify we have combobox options
       let options = getComboboxOptions()
       expect(options).toHaveLength(3)
-      options.forEach((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+      await Promise.all(
+        options.map((option, i) => assertComboboxOption(option, { selected: i === 1 }))
+      )
 
       // Verify that the second combobox option is active (because it is already selected)
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
     })
   )
 
@@ -4319,14 +4341,14 @@ describe('Mouse interactions', () => {
       await click(getComboboxButton())
 
       // Verify it is visible
-      assertComboboxButton({ state: ComboboxState.Visible })
+      await assertComboboxButton({ state: ComboboxState.Visible })
 
       // Click to close
       await click(getComboboxButton())
 
       // Verify it is closed
-      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -4346,13 +4368,13 @@ describe('Mouse interactions', () => {
       )
 
       // Verify that the window is closed
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Click something that is not related to the combobox
       await click(document.body)
 
       // Should still be closed
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 
@@ -4380,17 +4402,17 @@ describe('Mouse interactions', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getComboboxInput())
+      await assertComboboxList({ state: ComboboxState.Visible })
+      await assertActiveElement(getComboboxInput())
 
       // Click something that is not related to the combobox
       await click(getByText('after'))
 
       // Should be closed now
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Verify the button is focused
-      assertActiveElement(getByText('after'))
+      await assertActiveElement(getByText('after'))
     })
   )
 
@@ -4428,7 +4450,7 @@ describe('Mouse interactions', () => {
       expect(getComboboxes()).toHaveLength(1) // Only 1 combobox should be visible
 
       // Verify that the first input is focused
-      assertActiveElement(getComboboxInputs()[0])
+      await assertActiveElement(getComboboxInputs()[0])
 
       // Click the second combobox button
       await click(button2)
@@ -4436,7 +4458,7 @@ describe('Mouse interactions', () => {
       expect(getComboboxes()).toHaveLength(1) // Only 1 combobox should be visible
 
       // Verify that the first input is focused
-      assertActiveElement(getComboboxInputs()[1])
+      await assertActiveElement(getComboboxInputs()[1])
     })
   )
 
@@ -4457,17 +4479,17 @@ describe('Mouse interactions', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getComboboxInput())
+      await assertComboboxList({ state: ComboboxState.Visible })
+      await assertActiveElement(getComboboxInput())
 
       // Click the combobox button again
       await click(getComboboxButton())
 
       // Should be closed now
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Verify the input is focused again
-      assertActiveElement(getComboboxInput())
+      await assertActiveElement(getComboboxInput())
     })
   )
 
@@ -4497,16 +4519,16 @@ describe('Mouse interactions', () => {
       await click(getComboboxButton())
 
       // Ensure the combobox is open
-      assertComboboxList({ state: ComboboxState.Visible })
+      await assertComboboxList({ state: ComboboxState.Visible })
 
       // Click the span inside the button
       await click(getByText('Next'))
 
       // Ensure the combobox is closed
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       // Ensure the outside button is focused
-      assertActiveElement(document.getElementById('btn'))
+      await assertActiveElement(document.getElementById('btn'))
 
       // Ensure that the focus button only got focus once (first click)
       expect(focusFn).toHaveBeenCalledTimes(1)
@@ -4534,15 +4556,15 @@ describe('Mouse interactions', () => {
       let options = getComboboxOptions()
       // We should be able to go to the second option
       await mouseMove(options[1])
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
 
       // We should be able to go to the first option
       await mouseMove(options[0])
-      assertActiveComboboxOption(options[0])
+      await assertActiveComboboxOption(options[0])
 
       // We should be able to go to the last option
       await mouseMove(options[2])
-      assertActiveComboboxOption(options[2])
+      await assertActiveComboboxOption(options[2])
     })
   )
 
@@ -4564,15 +4586,15 @@ describe('Mouse interactions', () => {
       let options = getComboboxOptions()
       // We should be able to go to the second option
       await mouseMove(options[1])
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
 
       // We should be able to go to the first option
       await mouseMove(options[0])
-      assertActiveComboboxOption(options[0])
+      await assertActiveComboboxOption(options[0])
 
       // We should be able to go to the last option
       await mouseMove(options[2])
-      assertActiveComboboxOption(options[2])
+      await assertActiveComboboxOption(options[2])
     })
   )
 
@@ -4597,7 +4619,7 @@ describe('Mouse interactions', () => {
       let options = getComboboxOptions()
       // We should be able to go to the second option
       await mouseMove(options[1])
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
     })
   )
 
@@ -4623,12 +4645,12 @@ describe('Mouse interactions', () => {
 
       // We should be able to go to the second option
       await mouseMove(options[1])
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
 
       await mouseMove(options[1])
 
       // Nothing should be changed
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
     })
   )
 
@@ -4655,7 +4677,7 @@ describe('Mouse interactions', () => {
       let options = getComboboxOptions()
 
       await mouseMove(options[1])
-      assertNotActiveComboboxOption(options[1])
+      await assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4685,7 +4707,7 @@ describe('Mouse interactions', () => {
       await mouseMove(options[1])
 
       // We should not have option 1 as the active option now
-      assertNotActiveComboboxOption(options[1])
+      await assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4711,24 +4733,24 @@ describe('Mouse interactions', () => {
 
       // We should be able to go to the second option
       await mouseMove(options[1])
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
 
       await mouseLeave(options[1])
-      assertNoActiveComboboxOption()
+      await assertNoActiveComboboxOption()
 
       // We should be able to go to the first option
       await mouseMove(options[0])
-      assertActiveComboboxOption(options[0])
+      await assertActiveComboboxOption(options[0])
 
       await mouseLeave(options[0])
-      assertNoActiveComboboxOption()
+      await assertNoActiveComboboxOption()
 
       // We should be able to go to the last option
       await mouseMove(options[2])
-      assertActiveComboboxOption(options[2])
+      await assertActiveComboboxOption(options[2])
 
       await mouseLeave(options[2])
-      assertNoActiveComboboxOption()
+      await assertNoActiveComboboxOption()
     })
   )
 
@@ -4756,10 +4778,10 @@ describe('Mouse interactions', () => {
 
       // Try to hover over option 1, which is disabled
       await mouseMove(options[1])
-      assertNotActiveComboboxOption(options[1])
+      await assertNotActiveComboboxOption(options[1])
 
       await mouseLeave(options[1])
-      assertNotActiveComboboxOption(options[1])
+      await assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4793,25 +4815,25 @@ describe('Mouse interactions', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getComboboxInput())
+      await assertComboboxList({ state: ComboboxState.Visible })
+      await assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
       // We should be able to click the first option
       await click(options[1])
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       expect(handleChange).toHaveBeenCalledTimes(1)
       expect(handleChange).toHaveBeenCalledWith('bob')
 
       // Verify the input is focused again
-      assertActiveElement(getComboboxInput())
+      await assertActiveElement(getComboboxInput())
 
       // Open combobox again
       await click(getComboboxButton())
 
       // Verify the active option is the previously selected one
-      assertActiveComboboxOption(getComboboxOptions()[1])
+      await assertActiveComboboxOption(getComboboxOptions()[1])
     })
   )
 
@@ -4847,16 +4869,16 @@ describe('Mouse interactions', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getComboboxInput())
+      await assertComboboxList({ state: ComboboxState.Visible })
+      await assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
       // We should not be able to click the disabled option
       await click(options[1])
-      assertComboboxList({ state: ComboboxState.Visible })
-      assertNotActiveComboboxOption(options[1])
-      assertActiveElement(getComboboxInput())
+      await assertComboboxList({ state: ComboboxState.Visible })
+      await assertNotActiveComboboxOption(options[1])
+      await assertActiveElement(getComboboxInput())
       expect(handleChange).toHaveBeenCalledTimes(0)
 
       // Close the combobox
@@ -4868,7 +4890,7 @@ describe('Mouse interactions', () => {
       options = getComboboxOptions()
 
       // Verify the active option is not the disabled one
-      assertNotActiveComboboxOption(options[1])
+      await assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4895,17 +4917,17 @@ describe('Mouse interactions', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getComboboxInput())
+      await assertComboboxList({ state: ComboboxState.Visible })
+      await assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
       // Verify that the first item is active
-      assertActiveComboboxOption(options[0])
+      await assertActiveComboboxOption(options[0])
 
       // We should be able to focus the second option
       await focus(options[1])
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
     })
   )
 
@@ -4928,14 +4950,14 @@ describe('Mouse interactions', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertComboboxList({ state: ComboboxState.Visible })
-      assertActiveElement(getComboboxInput())
+      await assertComboboxList({ state: ComboboxState.Visible })
+      await assertActiveElement(getComboboxInput())
 
       let options = getComboboxOptions()
 
       // We should not be able to focus the first option
       await focus(options[1])
-      assertNotActiveComboboxOption(options[1])
+      await assertNotActiveComboboxOption(options[1])
     })
   )
 
@@ -4954,19 +4976,19 @@ describe('Mouse interactions', () => {
         </Combobox>
       )
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      await assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
       await click(getComboboxButton())
 
-      assertComboboxButton({
+      await assertComboboxButton({
         state: ComboboxState.Visible,
         attributes: { id: 'headlessui-combobox-button-2' },
       })
-      assertComboboxList({ state: ComboboxState.Visible })
+      await assertComboboxList({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
 
@@ -4974,20 +4996,20 @@ describe('Mouse interactions', () => {
       await mouseMove(options[0])
 
       // Verify that the first combobox option is active
-      assertActiveComboboxOption(options[0])
+      await assertActiveComboboxOption(options[0])
 
       // Focus the second item
       await mouseMove(options[1])
 
       // Verify that the second combobox option is active
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
 
       // Move the mouse off of the second combobox option
       await mouseLeave(options[1])
       await mouseMove(document.body)
 
       // Verify that the second combobox option is still active
-      assertActiveComboboxOption(options[1])
+      await assertActiveComboboxOption(options[1])
     })
   )
 
@@ -5113,14 +5135,14 @@ describe('Multi-select', () => {
       await click(getComboboxButton())
 
       // Verify that we have an open combobox with multiple mode
-      assertCombobox({ state: ComboboxState.Visible, mode: ComboboxMode.Multiple })
+      await assertCombobox({ state: ComboboxState.Visible, mode: ComboboxMode.Multiple })
 
       // Verify that we have multiple selected combobox options
       let options = getComboboxOptions()
 
-      assertComboboxOption(options[0], { selected: false })
-      assertComboboxOption(options[1], { selected: true })
-      assertComboboxOption(options[2], { selected: true })
+      await assertComboboxOption(options[0], { selected: false })
+      await assertComboboxOption(options[1], { selected: true })
+      await assertComboboxOption(options[2], { selected: true })
     })
   )
 
@@ -5149,7 +5171,7 @@ describe('Multi-select', () => {
       await click(getComboboxButton())
 
       // Verify that bob is the active option
-      assertActiveComboboxOption(getComboboxOptions()[1])
+      await assertActiveComboboxOption(getComboboxOptions()[1])
     })
   )
 
@@ -5176,13 +5198,13 @@ describe('Multi-select', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertCombobox({ state: ComboboxState.Visible })
+      await assertCombobox({ state: ComboboxState.Visible })
 
       // Verify that bob is the active option
       await click(getComboboxOptions()[0])
 
       // Verify that the combobox is still open
-      assertCombobox({ state: ComboboxState.Visible })
+      await assertCombobox({ state: ComboboxState.Visible })
     })
   )
 
@@ -5209,27 +5231,27 @@ describe('Multi-select', () => {
 
       // Open combobox
       await click(getComboboxButton())
-      assertCombobox({ state: ComboboxState.Visible })
+      await assertCombobox({ state: ComboboxState.Visible })
 
       let options = getComboboxOptions()
 
-      assertComboboxOption(options[0], { selected: false })
-      assertComboboxOption(options[1], { selected: true })
-      assertComboboxOption(options[2], { selected: true })
+      await assertComboboxOption(options[0], { selected: false })
+      await assertComboboxOption(options[1], { selected: true })
+      await assertComboboxOption(options[2], { selected: true })
 
       // Click on bob
       await click(getComboboxOptions()[1])
 
-      assertComboboxOption(options[0], { selected: false })
-      assertComboboxOption(options[1], { selected: false })
-      assertComboboxOption(options[2], { selected: true })
+      await assertComboboxOption(options[0], { selected: false })
+      await assertComboboxOption(options[1], { selected: false })
+      await assertComboboxOption(options[2], { selected: true })
 
       // Click on bob again
       await click(getComboboxOptions()[1])
 
-      assertComboboxOption(options[0], { selected: false })
-      assertComboboxOption(options[1], { selected: true })
-      assertComboboxOption(options[2], { selected: true })
+      await assertComboboxOption(options[0], { selected: false })
+      await assertComboboxOption(options[1], { selected: true })
+      await assertComboboxOption(options[2], { selected: true })
     })
   )
 })

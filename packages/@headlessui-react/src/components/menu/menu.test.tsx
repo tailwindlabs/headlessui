@@ -70,11 +70,11 @@ describe('Safe guards', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
     })
   )
 })
@@ -101,19 +101,19 @@ describe('Rendering', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         await click(getMenuButton())
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.Visible })
+        await assertMenu({ state: MenuState.Visible })
       })
     )
   })
@@ -133,21 +133,21 @@ describe('Rendering', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: false }),
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         await click(getMenuButton())
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: true }),
         })
-        assertMenu({ state: MenuState.Visible })
+        await assertMenu({ state: MenuState.Visible })
       })
     )
 
@@ -167,21 +167,21 @@ describe('Rendering', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: false }),
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         await click(getMenuButton())
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-button-1' },
           textContent: JSON.stringify({ open: true }),
         })
-        assertMenu({ state: MenuState.Visible })
+        await assertMenu({ state: MenuState.Visible })
       })
     )
     describe('`type` attribute', () => {
@@ -262,19 +262,19 @@ describe('Rendering', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         await click(getMenuButton())
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({
+        await assertMenu({
           state: MenuState.Visible,
           textContent: JSON.stringify({ open: true }),
         })
@@ -309,12 +309,12 @@ describe('Rendering', () => {
         </Menu>
       )
 
-      assertMenu({ state: MenuState.InvisibleHidden })
+      await assertMenu({ state: MenuState.InvisibleHidden })
 
       // Let's open the Menu, to see if it is not hidden anymore
       await click(getMenuButton())
 
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
     })
   })
 
@@ -331,19 +331,19 @@ describe('Rendering', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         await click(getMenuButton())
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({
+        await assertMenu({
           state: MenuState.Visible,
           textContent: JSON.stringify({ active: false, disabled: false }),
         })
@@ -375,7 +375,7 @@ describe('Rendering', () => {
     rerender(<Example hide={true} />) // Remove Menu.Item 2
     rerender(<Example hide={false} />) // Re-add Menu.Item 2
 
-    assertMenu({ state: MenuState.Visible })
+    await assertMenu({ state: MenuState.Visible })
 
     let items = getMenuItems()
 
@@ -383,15 +383,15 @@ describe('Rendering', () => {
     await press(Keys.ArrowDown)
 
     // Verify that the first menu item is active
-    assertMenuLinkedWithMenuItem(items[0])
+    await assertMenuLinkedWithMenuItem(items[0])
 
     await press(Keys.ArrowDown)
     // Verify that the second menu item is active
-    assertMenuLinkedWithMenuItem(items[1])
+    await assertMenuLinkedWithMenuItem(items[1])
 
     await press(Keys.ArrowDown)
     // Verify that the third menu item is active
-    assertMenuLinkedWithMenuItem(items[2])
+    await assertMenuLinkedWithMenuItem(items[2])
   })
 })
 
@@ -416,11 +416,11 @@ describe('Rendering composition', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Open menu
       await click(getMenuButton())
@@ -433,7 +433,7 @@ describe('Rendering composition', () => {
       expect('' + items[2].classList).toEqual('no-special-treatment')
 
       // Double check that nothing is active
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
 
       // Make the first item active
       await press(Keys.ArrowDown)
@@ -444,7 +444,7 @@ describe('Rendering composition', () => {
       expect('' + items[2].classList).toEqual('no-special-treatment')
 
       // Double check that the first item is the active one
-      assertMenuLinkedWithMenuItem(items[0])
+      await assertMenuLinkedWithMenuItem(items[0])
 
       // Let's go down, this should go to the third item since the second item is disabled!
       await press(Keys.ArrowDown)
@@ -455,7 +455,7 @@ describe('Rendering composition', () => {
       expect('' + items[2].classList).toEqual('no-special-treatment')
 
       // Double check that the last item is the active one
-      assertMenuLinkedWithMenuItem(items[2])
+      await assertMenuLinkedWithMenuItem(items[2])
     })
   )
 
@@ -473,18 +473,18 @@ describe('Rendering composition', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Open menu
       await click(getMenuButton())
 
       // Verify items are buttons now
       let items = getMenuItems()
-      items.forEach((item) => assertMenuItem(item, { tag: 'button' }))
+      await Promise.all(items.map((item) => assertMenuItem(item, { tag: 'button' })))
     })
   )
 
@@ -569,19 +569,19 @@ describe('Composition', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({
+      await assertMenu({
         state: MenuState.Visible,
         textContent: JSON.stringify({ active: false, disabled: false }),
       })
@@ -623,19 +623,19 @@ describe('Composition', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       await click(getMenuButton())
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({
+      await assertMenu({
         state: MenuState.Visible,
         textContent: JSON.stringify({ active: false, disabled: false }),
       })
@@ -670,11 +670,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -683,20 +683,20 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
+        await Promise.all(items.map((item) => assertMenuItem(item)))
 
         // Verify that the first menu item is active
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -714,11 +714,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -727,11 +727,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is still closed
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
 
@@ -745,16 +745,16 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Enter)
-        assertMenu({ state: MenuState.Visible })
+        await assertMenu({ state: MenuState.Visible })
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
 
@@ -774,11 +774,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -789,7 +789,7 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
       })
     )
 
@@ -811,11 +811,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -826,7 +826,7 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -850,11 +850,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -862,7 +862,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Enter)
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
 
@@ -880,27 +880,27 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Open menu
         await click(getMenuButton())
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
+        await assertMenuButton({ state: MenuState.Visible })
 
         // Close menu
         await press(Keys.Enter)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.InvisibleUnmounted })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Verify the button is focused again
-        assertActiveElement(getMenuButton())
+        await assertActiveElement(getMenuButton())
       })
     )
 
@@ -921,17 +921,17 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Open menu
         await click(getMenuButton())
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
+        await assertMenuButton({ state: MenuState.Visible })
 
         // Activate the first menu item
         let items = getMenuItems()
@@ -941,11 +941,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.InvisibleUnmounted })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Verify the button is focused again
-        assertActiveElement(getMenuButton())
+        await assertActiveElement(getMenuButton())
 
         // Verify the "click" went through on the `a` tag
         expect(clickHandler).toHaveBeenCalled()
@@ -973,17 +973,17 @@ describe('Keyboard interactions', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Open menu
       await click(getMenuButton())
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Visible })
+      await assertMenuButton({ state: MenuState.Visible })
 
       // Activate the second menu item
       let items = getMenuItems()
@@ -993,14 +993,14 @@ describe('Keyboard interactions', () => {
       await press(Keys.Enter)
 
       // Verify it is closed
-      assertMenuButton({ state: MenuState.InvisibleUnmounted })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the button got "clicked"
       expect(clickHandler).toHaveBeenCalledTimes(1)
 
       // Verify the button is focused again
-      assertActiveElement(getMenuButton())
+      await assertActiveElement(getMenuButton())
 
       // Click the menu button again
       await click(getMenuButton())
@@ -1015,7 +1015,7 @@ describe('Keyboard interactions', () => {
       expect(clickHandler).toHaveBeenCalledTimes(2)
 
       // Verify the button is focused again
-      assertActiveElement(getMenuButton())
+      await assertActiveElement(getMenuButton())
     })
   )
 
@@ -1034,11 +1034,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1047,18 +1047,18 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[0])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -1076,11 +1076,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1089,11 +1089,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is still closed
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
 
@@ -1107,16 +1107,16 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
 
         // Open menu
         await press(Keys.Space)
-        assertMenu({ state: MenuState.Visible })
+        await assertMenu({ state: MenuState.Visible })
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
 
@@ -1136,11 +1136,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1151,7 +1151,7 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
       })
     )
 
@@ -1173,11 +1173,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1188,7 +1188,7 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // Verify that the first non-disabled menu item is active
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -1212,11 +1212,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1224,7 +1224,7 @@ describe('Keyboard interactions', () => {
         // Open menu
         await press(Keys.Space)
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
 
@@ -1242,27 +1242,27 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Open menu
         await click(getMenuButton())
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
+        await assertMenuButton({ state: MenuState.Visible })
 
         // Close menu
         await press(Keys.Space)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.InvisibleUnmounted })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Verify the button is focused again
-        assertActiveElement(getMenuButton())
+        await assertActiveElement(getMenuButton())
       })
     )
 
@@ -1283,17 +1283,17 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Open menu
         await click(getMenuButton())
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
+        await assertMenuButton({ state: MenuState.Visible })
 
         // Activate the first menu item
         let items = getMenuItems()
@@ -1303,14 +1303,14 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.InvisibleUnmounted })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Verify the "click" went through on the `a` tag
         expect(clickHandler).toHaveBeenCalled()
 
         // Verify the button is focused again
-        assertActiveElement(getMenuButton())
+        await assertActiveElement(getMenuButton())
       })
     )
   })
@@ -1337,22 +1337,22 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Close menu
         await press(Keys.Escape)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.InvisibleUnmounted })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Verify the button is focused again
-        assertActiveElement(getMenuButton())
+        await assertActiveElement(getMenuButton())
       })
     )
   })
@@ -1372,11 +1372,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1385,25 +1385,25 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[0])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // Try to tab
         await press(Keys.Tab)
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.InvisibleUnmounted })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
 
@@ -1421,11 +1421,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1434,25 +1434,25 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[0])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // Try to Shift+Tab
         await press(shift(Keys.Tab))
 
         // Verify it is closed
-        assertMenuButton({ state: MenuState.InvisibleUnmounted })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
   })
@@ -1472,11 +1472,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1485,20 +1485,20 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowDown)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
+        await Promise.all(items.map((item) => assertMenuItem(item)))
 
         // Verify that the first menu item is active
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -1516,11 +1516,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1529,11 +1529,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowDown)
 
         // Verify it is still closed
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
 
@@ -1547,16 +1547,16 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowDown)
-        assertMenu({ state: MenuState.Visible })
+        await assertMenu({ state: MenuState.Visible })
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
 
@@ -1574,11 +1574,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1589,20 +1589,20 @@ describe('Keyboard interactions', () => {
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[0])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go down once
         await press(Keys.ArrowDown)
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // We should be able to go down again
         await press(Keys.ArrowDown)
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should NOT be able to go down again (because last item). Current implementation won't go around.
         await press(Keys.ArrowDown)
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -1622,11 +1622,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1637,12 +1637,12 @@ describe('Keyboard interactions', () => {
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[1])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // We should be able to go down once
         await press(Keys.ArrowDown)
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -1664,11 +1664,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1679,8 +1679,8 @@ describe('Keyboard interactions', () => {
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[2])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
   })
@@ -1700,11 +1700,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1713,20 +1713,20 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
+        await Promise.all(items.map((item) => assertMenuItem(item)))
 
         // ! ALERT: The LAST item should now be active
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -1744,11 +1744,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1757,11 +1757,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
 
         // Verify it is still closed
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
 
@@ -1775,16 +1775,16 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
 
         // Open menu
         await press(Keys.ArrowUp)
-        assertMenu({ state: MenuState.Visible })
+        await assertMenu({ state: MenuState.Visible })
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
 
@@ -1806,11 +1806,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1821,8 +1821,8 @@ describe('Keyboard interactions', () => {
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[0])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -1844,11 +1844,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1859,16 +1859,16 @@ describe('Keyboard interactions', () => {
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[2])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should not be able to go up (because those are disabled)
         await press(Keys.ArrowUp)
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should not be able to go down (because this is the last item)
         await press(Keys.ArrowDown)
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -1886,11 +1886,11 @@ describe('Keyboard interactions', () => {
           </Menu>
         )
 
-        assertMenuButton({
+        await assertMenuButton({
           state: MenuState.InvisibleUnmounted,
           attributes: { id: 'headlessui-menu-button-1' },
         })
-        assertMenu({ state: MenuState.InvisibleUnmounted })
+        await assertMenu({ state: MenuState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getMenuButton())
@@ -1899,30 +1899,30 @@ describe('Keyboard interactions', () => {
         await press(Keys.ArrowUp)
 
         // Verify it is open
-        assertMenuButton({ state: MenuState.Visible })
-        assertMenu({
+        await assertMenuButton({ state: MenuState.Visible })
+        await assertMenu({
           state: MenuState.Visible,
           attributes: { id: 'headlessui-menu-items-2' },
         })
-        assertMenuButtonLinkedWithMenu()
+        await assertMenuButtonLinkedWithMenu()
 
         // Verify we have menu items
         let items = getMenuItems()
         expect(items).toHaveLength(3)
-        items.forEach((item) => assertMenuItem(item))
-        assertMenuLinkedWithMenuItem(items[2])
+        await Promise.all(items.map((item) => assertMenuItem(item)))
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should be able to go down once
         await press(Keys.ArrowUp)
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // We should be able to go down again
         await press(Keys.ArrowUp)
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should NOT be able to go up again (because first item). Current implementation won't go around.
         await press(Keys.ArrowUp)
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
   })
@@ -1951,11 +1951,11 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the first item
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go to the last item
         await press(Keys.End)
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -1987,11 +1987,11 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the first item
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go to the last non-disabled item
         await press(Keys.End)
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
       })
     )
 
@@ -2020,13 +2020,13 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.End)
 
         let items = getMenuItems()
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -2057,12 +2057,12 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.End)
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
   })
@@ -2091,11 +2091,11 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the first item
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go to the last item
         await press(Keys.PageDown)
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -2127,11 +2127,11 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the first item
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go to the last non-disabled item
         await press(Keys.PageDown)
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
       })
     )
 
@@ -2160,13 +2160,13 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.PageDown)
 
         let items = getMenuItems()
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -2197,12 +2197,12 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.PageDown)
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
   })
@@ -2231,11 +2231,11 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the last item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should be able to go to the first item
         await press(Keys.Home)
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -2262,7 +2262,7 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.Home)
@@ -2270,7 +2270,7 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the first non-disabled item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -2299,13 +2299,13 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.Home)
 
         let items = getMenuItems()
-        assertMenuLinkedWithMenuItem(items[3])
+        await assertMenuLinkedWithMenuItem(items[3])
       })
     )
 
@@ -2336,12 +2336,12 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.Home)
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
   })
@@ -2370,11 +2370,11 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the last item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should be able to go to the first item
         await press(Keys.PageUp)
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
       })
     )
 
@@ -2401,7 +2401,7 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.PageUp)
@@ -2409,7 +2409,7 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the first non-disabled item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -2438,13 +2438,13 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.PageUp)
 
         let items = getMenuItems()
-        assertMenuLinkedWithMenuItem(items[3])
+        await assertMenuLinkedWithMenuItem(items[3])
       })
     )
 
@@ -2475,12 +2475,12 @@ describe('Keyboard interactions', () => {
         await click(getMenuButton())
 
         // We opened via click, we don't have an active item
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
 
         // We should not be able to go to the end
         await press(Keys.PageUp)
 
-        assertNoActiveMenuItem()
+        await assertNoActiveMenuItem()
       })
     )
   })
@@ -2507,15 +2507,15 @@ describe('Keyboard interactions', () => {
 
         // We should be able to go to the second item
         await type(word('bob'))
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // We should be able to go to the first item
         await type(word('alice'))
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go to the last item
         await type(word('charlie'))
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -2542,19 +2542,19 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the last item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should be able to go to the second item
         await type(word('bo'))
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // We should be able to go to the first item
         await type(word('ali'))
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go to the last item
         await type(word('char'))
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -2581,19 +2581,19 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the last item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should be able to go to the second item
         await type(word('value b'))
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // We should be able to go to the first item
         await type(word('value a'))
-        assertMenuLinkedWithMenuItem(items[0])
+        await assertMenuLinkedWithMenuItem(items[0])
 
         // We should be able to go to the last item
         await type(word('value c'))
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -2622,13 +2622,13 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the last item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // We should not be able to go to the disabled item
         await type(word('bo'))
 
         // We should still be on the last item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
       })
     )
 
@@ -2655,13 +2655,13 @@ describe('Keyboard interactions', () => {
         let items = getMenuItems()
 
         // We should be on the last item
-        assertMenuLinkedWithMenuItem(items[2])
+        await assertMenuLinkedWithMenuItem(items[2])
 
         // Search for bob in a different casing
         await type(word('BO'))
 
         // We should be on `bob`
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
       })
     )
 
@@ -2689,13 +2689,13 @@ describe('Keyboard interactions', () => {
         await type(word('b'))
 
         // We should be on the first `bob`
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // Search for bob again
         await type(word('b'))
 
         // We should be on the second `bob`
-        assertMenuLinkedWithMenuItem(items[3])
+        await assertMenuLinkedWithMenuItem(items[3])
       })
     )
 
@@ -2728,13 +2728,13 @@ describe('Keyboard interactions', () => {
         await type(word('b'))
 
         // We should be on the first `bob`
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // Search for "b" in "bob" again
         await type(word('b'))
 
         // We should be on the next `bob`
-        assertMenuLinkedWithMenuItem(items[3])
+        await assertMenuLinkedWithMenuItem(items[3])
 
         // ---
 
@@ -2745,13 +2745,13 @@ describe('Keyboard interactions', () => {
         await type(word('bo'))
 
         // We should be on the first `bob`
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // Search for "bo" in "bob" again
         await type(word('bo'))
 
         // We should be on the next `bob`
-        assertMenuLinkedWithMenuItem(items[3])
+        await assertMenuLinkedWithMenuItem(items[3])
 
         // ---
 
@@ -2762,13 +2762,13 @@ describe('Keyboard interactions', () => {
         await type(word('bob'))
 
         // We should be on the first `bob`
-        assertMenuLinkedWithMenuItem(items[1])
+        await assertMenuLinkedWithMenuItem(items[1])
 
         // Search for "bob" in "bob" again
         await type(word('bob'))
 
         // We should be on the next `bob`
-        assertMenuLinkedWithMenuItem(items[3])
+        await assertMenuLinkedWithMenuItem(items[3])
       })
     )
   })
@@ -2789,27 +2789,27 @@ describe('Mouse interactions', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Open menu
       await click(getMenuButton())
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Visible })
-      assertMenu({
+      await assertMenuButton({ state: MenuState.Visible })
+      await assertMenu({
         state: MenuState.Visible,
         attributes: { id: 'headlessui-menu-items-2' },
       })
-      assertMenuButtonLinkedWithMenu()
+      await assertMenuButtonLinkedWithMenu()
 
       // Verify we have menu items
       let items = getMenuItems()
       expect(items).toHaveLength(3)
-      items.forEach((item) => assertMenuItem(item))
+      await Promise.all(items.map((item) => assertMenuItem(item)))
     })
   )
 
@@ -2827,17 +2827,17 @@ describe('Mouse interactions', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Try to open the menu
       await click(getMenuButton(), MouseButton.Right)
 
       // Verify it is still closed
-      assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      await assertMenuButton({ state: MenuState.InvisibleUnmounted })
     })
   )
 
@@ -2855,21 +2855,21 @@ describe('Mouse interactions', () => {
         </Menu>
       )
 
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Try to open the menu
       await click(getMenuButton())
 
       // Verify it is still closed
-      assertMenuButton({
+      await assertMenuButton({
         state: MenuState.InvisibleUnmounted,
         attributes: { id: 'headlessui-menu-button-1' },
       })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
     })
   )
 
@@ -2891,14 +2891,14 @@ describe('Mouse interactions', () => {
       await click(getMenuButton())
 
       // Verify it is open
-      assertMenuButton({ state: MenuState.Visible })
+      await assertMenuButton({ state: MenuState.Visible })
 
       // Click to close
       await click(getMenuButton())
 
       // Verify it is closed
-      assertMenuButton({ state: MenuState.InvisibleUnmounted })
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenuButton({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
     })
   )
 
@@ -2917,13 +2917,13 @@ describe('Mouse interactions', () => {
       )
 
       // Verify that the window is closed
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Click something that is not related to the menu
       await click(document.body)
 
       // Should still be closed
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
     })
   )
 
@@ -2943,16 +2943,16 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       // Click something that is not related to the menu
       await click(document.body)
 
       // Should be closed now
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the button is focused again
-      assertActiveElement(getMenuButton())
+      await assertActiveElement(getMenuButton())
     })
   )
 
@@ -2972,16 +2972,16 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       // Click the menu button again
       await click(getMenuButton())
 
       // Should be closed now
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the button is focused again
-      assertActiveElement(getMenuButton())
+      await assertActiveElement(getMenuButton())
     })
   )
 
@@ -3017,7 +3017,7 @@ describe('Mouse interactions', () => {
       expect(getMenus()).toHaveLength(1) // Only 1 menu should be visible
 
       // Ensure the open menu is linked to the first button
-      assertMenuButtonLinkedWithMenu(button1, getMenu())
+      await assertMenuButtonLinkedWithMenu(button1, getMenu())
 
       // Click the second menu button
       await click(button2)
@@ -3025,7 +3025,7 @@ describe('Mouse interactions', () => {
       expect(getMenus()).toHaveLength(1) // Only 1 menu should be visible
 
       // Ensure the open menu is linked to the second button
-      assertMenuButtonLinkedWithMenu(button2, getMenu())
+      await assertMenuButtonLinkedWithMenu(button2, getMenu())
     })
   )
 
@@ -3054,16 +3054,16 @@ describe('Mouse interactions', () => {
       await click(getMenuButton())
 
       // Ensure the menu is open
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       // Click the span inside the button
       await click(getByText('Next'))
 
       // Ensure the menu is closed
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Ensure the outside button is focused
-      assertActiveElement(document.getElementById('btn'))
+      await assertActiveElement(document.getElementById('btn'))
 
       // Ensure that the focus button only got focus once (first click)
       expect(focusFn).toHaveBeenCalledTimes(1)
@@ -3128,15 +3128,15 @@ describe('Mouse interactions', () => {
       let items = getMenuItems()
       // We should be able to go to the second item
       await mouseMove(items[1])
-      assertMenuLinkedWithMenuItem(items[1])
+      await assertMenuLinkedWithMenuItem(items[1])
 
       // We should be able to go to the first item
       await mouseMove(items[0])
-      assertMenuLinkedWithMenuItem(items[0])
+      await assertMenuLinkedWithMenuItem(items[0])
 
       // We should be able to go to the last item
       await mouseMove(items[2])
-      assertMenuLinkedWithMenuItem(items[2])
+      await assertMenuLinkedWithMenuItem(items[2])
     })
   )
 
@@ -3160,7 +3160,7 @@ describe('Mouse interactions', () => {
       let items = getMenuItems()
       // We should be able to go to the second item
       await mouseMove(items[1])
-      assertMenuLinkedWithMenuItem(items[1])
+      await assertMenuLinkedWithMenuItem(items[1])
     })
   )
 
@@ -3185,12 +3185,12 @@ describe('Mouse interactions', () => {
 
       // We should be able to go to the second item
       await mouseMove(items[1])
-      assertMenuLinkedWithMenuItem(items[1])
+      await assertMenuLinkedWithMenuItem(items[1])
 
       await mouseMove(items[1])
 
       // Nothing should be changed
-      assertMenuLinkedWithMenuItem(items[1])
+      await assertMenuLinkedWithMenuItem(items[1])
     })
   )
 
@@ -3216,7 +3216,7 @@ describe('Mouse interactions', () => {
       let items = getMenuItems()
 
       await mouseMove(items[1])
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
     })
   )
 
@@ -3245,7 +3245,7 @@ describe('Mouse interactions', () => {
       await mouseMove(items[1])
 
       // We should not have an active item now
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
     })
   )
 
@@ -3270,24 +3270,24 @@ describe('Mouse interactions', () => {
 
       // We should be able to go to the second item
       await mouseMove(items[1])
-      assertMenuLinkedWithMenuItem(items[1])
+      await assertMenuLinkedWithMenuItem(items[1])
 
       await mouseLeave(items[1])
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
 
       // We should be able to go to the first item
       await mouseMove(items[0])
-      assertMenuLinkedWithMenuItem(items[0])
+      await assertMenuLinkedWithMenuItem(items[0])
 
       await mouseLeave(items[0])
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
 
       // We should be able to go to the last item
       await mouseMove(items[2])
-      assertMenuLinkedWithMenuItem(items[2])
+      await assertMenuLinkedWithMenuItem(items[2])
 
       await mouseLeave(items[2])
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
     })
   )
 
@@ -3314,10 +3314,10 @@ describe('Mouse interactions', () => {
 
       // Try to hover over item 1, which is disabled
       await mouseMove(items[1])
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
 
       await mouseLeave(items[1])
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
     })
   )
 
@@ -3340,14 +3340,14 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       let items = getMenuItems()
 
       // We should be able to click the first item
       await click(items[1])
 
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
       expect(clickHandler).toHaveBeenCalled()
     })
   )
@@ -3373,11 +3373,11 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       // We should be able to click the first item
       await click(getMenuItems()[1])
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the callback has been called
       expect(clickHandler).toHaveBeenCalledTimes(1)
@@ -3387,7 +3387,7 @@ describe('Mouse interactions', () => {
 
       // Click the last item, which should close and invoke the handler
       await click(getMenuItems()[2])
-      assertMenu({ state: MenuState.InvisibleUnmounted })
+      await assertMenu({ state: MenuState.InvisibleUnmounted })
 
       // Verify the callback has been called
       expect(clickHandler).toHaveBeenCalledTimes(2)
@@ -3412,13 +3412,13 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       let items = getMenuItems()
 
       // We should be able to click the first item
       await click(items[1])
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
     })
   )
 
@@ -3438,16 +3438,16 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       let items = getMenuItems()
 
       // Verify that nothing is active yet
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
 
       // We should be able to focus the first item
       await focus(items[1])
-      assertMenuLinkedWithMenuItem(items[1])
+      await assertMenuLinkedWithMenuItem(items[1])
     })
   )
 
@@ -3469,13 +3469,13 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       let items = getMenuItems()
 
       // We should not be able to focus the first item
       await focus(items[1])
-      assertNoActiveMenuItem()
+      await assertNoActiveMenuItem()
     })
   )
 
@@ -3503,7 +3503,7 @@ describe('Mouse interactions', () => {
 
       // Open menu
       await click(getMenuButton())
-      assertMenu({ state: MenuState.Visible })
+      await assertMenu({ state: MenuState.Visible })
 
       let items = getMenuItems()
 

@@ -25,7 +25,7 @@ it('should focus the first focusable element inside the FocusTrap', async () => 
 
   await nextFrame()
 
-  assertActiveElement(screen.getByText('Trigger'))
+  await assertActiveElement(screen.getByText('Trigger'))
 })
 
 it('should focus the autoFocus element inside the FocusTrap if that exists', async () => {
@@ -39,7 +39,7 @@ it('should focus the autoFocus element inside the FocusTrap if that exists', asy
 
   await nextFrame()
 
-  assertActiveElement(document.getElementById('b'))
+  await assertActiveElement(document.getElementById('b'))
 })
 
 it('should focus the initialFocus element inside the FocusTrap if that exists', async () => {
@@ -59,7 +59,7 @@ it('should focus the initialFocus element inside the FocusTrap if that exists', 
 
   await nextFrame()
 
-  assertActiveElement(document.getElementById('c'))
+  await assertActiveElement(document.getElementById('c'))
 })
 
 it('should focus the initialFocus element inside the FocusTrap even if another element has autoFocus', async () => {
@@ -79,7 +79,7 @@ it('should focus the initialFocus element inside the FocusTrap even if another e
 
   await nextFrame()
 
-  assertActiveElement(document.getElementById('c'))
+  await assertActiveElement(document.getElementById('c'))
 })
 
 it('should warn when there is no focusable element inside the FocusTrap', async () => {
@@ -125,43 +125,43 @@ it(
     let [a, b, c, d] = Array.from(document.querySelectorAll('input'))
 
     // Ensure that input-b is the active element
-    assertActiveElement(b)
+    await assertActiveElement(b)
 
     // Tab to the next item
     await press(Keys.Tab)
 
     // Ensure that input-c is the active element
-    assertActiveElement(c)
+    await assertActiveElement(c)
 
     // Try to move focus
     a?.focus()
 
     // Ensure that input-c is still the active element
-    assertActiveElement(c)
+    await assertActiveElement(c)
 
     // Click on an element within the FocusTrap
     await click(b)
 
     // Ensure that input-b is the active element
-    assertActiveElement(b)
+    await assertActiveElement(b)
 
     // Try to move focus again
     a?.focus()
 
     // Ensure that input-b is still the active element
-    assertActiveElement(b)
+    await assertActiveElement(b)
 
     // Focus on an element within the FocusTrap
     d?.focus()
 
     // Ensure that input-d is the active element
-    assertActiveElement(d)
+    await assertActiveElement(d)
 
     // Try to move focus again
     a?.focus()
 
     // Ensure that input-d is still the active element
-    assertActiveElement(d)
+    await assertActiveElement(d)
   })
 )
 
@@ -192,19 +192,19 @@ it('should restore the previously focused element, before entering the FocusTrap
   await nextFrame()
 
   // The input should have focus by default because of the autoFocus prop
-  assertActiveElement(document.getElementById('item-1'))
+  await assertActiveElement(document.getElementById('item-1'))
 
   // Open the modal
   await click(document.getElementById('item-2')) // This will also focus this button
 
   // Ensure that the first item inside the focus trap is focused
-  assertActiveElement(document.getElementById('item-3'))
+  await assertActiveElement(document.getElementById('item-3'))
 
   // Close the modal
   await click(document.getElementById('item-3'))
 
   // Ensure that we restored focus correctly
-  assertActiveElement(document.getElementById('item-2'))
+  await assertActiveElement(document.getElementById('item-2'))
 })
 
 it('should be possible tab to the next focusable element within the focus trap', async () => {
@@ -223,19 +223,19 @@ it('should be possible tab to the next focusable element within the focus trap',
   await nextFrame()
 
   // Item A should be focused because the FocusTrap will focus the first item
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 
   // Next
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-b'))
+  await assertActiveElement(document.getElementById('item-b'))
 
   // Next
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-c'))
+  await assertActiveElement(document.getElementById('item-c'))
 
   // Loop around!
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 })
 
 it('should be possible shift+tab to the previous focusable element within the focus trap', async () => {
@@ -254,19 +254,19 @@ it('should be possible shift+tab to the previous focusable element within the fo
   await nextFrame()
 
   // Item A should be focused because the FocusTrap will focus the first item
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 
   // Previous (loop around!)
   await press(shift(Keys.Tab))
-  assertActiveElement(document.getElementById('item-c'))
+  await assertActiveElement(document.getElementById('item-c'))
 
   // Previous
   await press(shift(Keys.Tab))
-  assertActiveElement(document.getElementById('item-b'))
+  await assertActiveElement(document.getElementById('item-b'))
 
   // Previous
   await press(shift(Keys.Tab))
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 })
 
 it('should skip the initial "hidden" elements within the focus trap', async () => {
@@ -290,7 +290,7 @@ it('should skip the initial "hidden" elements within the focus trap', async () =
   await nextFrame()
 
   // Item C should be focused because the FocusTrap had to skip the first 2
-  assertActiveElement(document.getElementById('item-c'))
+  await assertActiveElement(document.getElementById('item-c'))
 })
 
 it('should be possible skip "hidden" elements within the focus trap', async () => {
@@ -312,21 +312,21 @@ it('should be possible skip "hidden" elements within the focus trap', async () =
   await nextFrame()
 
   // Item A should be focused because the FocusTrap will focus the first item
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 
   // Next
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-b'))
+  await assertActiveElement(document.getElementById('item-b'))
 
   // Notice that we skipped item-c
 
   // Next
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-d'))
+  await assertActiveElement(document.getElementById('item-d'))
 
   // Loop around!
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 })
 
 it('should be possible skip disabled elements within the focus trap', async () => {
@@ -348,21 +348,21 @@ it('should be possible skip disabled elements within the focus trap', async () =
   await nextFrame()
 
   // Item A should be focused because the FocusTrap will focus the first item
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 
   // Next
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-b'))
+  await assertActiveElement(document.getElementById('item-b'))
 
   // Notice that we skipped item-c
 
   // Next
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-d'))
+  await assertActiveElement(document.getElementById('item-d'))
 
   // Loop around!
   await press(Keys.Tab)
-  assertActiveElement(document.getElementById('item-a'))
+  await assertActiveElement(document.getElementById('item-a'))
 })
 
 it('should try to focus all focusable items (and fail)', async () => {
@@ -434,7 +434,7 @@ it('should end up at the last focusable element', async () => {
   await nextFrame()
 
   expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c']])
-  assertActiveElement(screen.getByText('Item D'))
+  await assertActiveElement(screen.getByText('Item D'))
   expect(spy).not.toHaveBeenCalled()
   spy.mockReset()
 })

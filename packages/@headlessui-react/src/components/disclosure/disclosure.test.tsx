@@ -52,11 +52,11 @@ describe('Safe guards', () => {
         </Disclosure>
       )
 
-      assertDisclosureButton({
+      await assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
         attributes: { id: 'headlessui-disclosure-button-1' },
       })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
     })
   )
 })
@@ -77,19 +77,22 @@ describe('Rendering', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         await click(getDisclosureButton())
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
+        await assertDisclosurePanel({
+          state: DisclosureState.Visible,
+          textContent: 'Panel is: open',
+        })
       })
     )
 
@@ -105,15 +108,15 @@ describe('Rendering', () => {
         </Disclosure>
       )
 
-      assertDisclosureButton({
+      await assertDisclosureButton({
         state: DisclosureState.Visible,
         attributes: { id: 'headlessui-disclosure-button-1' },
       })
-      assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
+      await assertDisclosurePanel({ state: DisclosureState.Visible, textContent: 'Panel is: open' })
 
       await click(getDisclosureButton())
 
-      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
     })
 
     it(
@@ -136,7 +139,7 @@ describe('Rendering', () => {
         await focus(getDisclosureButton())
 
         // Ensure the button is focused
-        assertActiveElement(getDisclosureButton())
+        await assertActiveElement(getDisclosureButton())
 
         // Open the disclosure
         await click(getDisclosureButton())
@@ -145,10 +148,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the disclosure is closed
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Ensure the Disclosure.Button got the restored focus
-        assertActiveElement(getByText('Trigger'))
+        await assertActiveElement(getByText('Trigger'))
       })
     )
 
@@ -177,7 +180,7 @@ describe('Rendering', () => {
         await focus(getDisclosureButton())
 
         // Ensure the button is focused
-        assertActiveElement(getDisclosureButton())
+        await assertActiveElement(getDisclosureButton())
 
         // Open the disclosure
         await click(getDisclosureButton())
@@ -186,10 +189,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the disclosure is closed
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
 
@@ -221,7 +224,7 @@ describe('Rendering', () => {
         await focus(getDisclosureButton())
 
         // Ensure the button is focused
-        assertActiveElement(getDisclosureButton())
+        await assertActiveElement(getDisclosureButton())
 
         // Open the disclosure
         await click(getDisclosureButton())
@@ -230,10 +233,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the disclosure is closed
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
   })
@@ -249,21 +252,21 @@ describe('Rendering', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
           textContent: JSON.stringify({ open: false }),
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         await click(getDisclosureButton())
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-button-1' },
           textContent: JSON.stringify({ open: true }),
         })
-        assertDisclosurePanel({ state: DisclosureState.Visible })
+        await assertDisclosurePanel({ state: DisclosureState.Visible })
       })
     )
 
@@ -279,21 +282,21 @@ describe('Rendering', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
           textContent: JSON.stringify({ open: false }),
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         await click(getDisclosureButton())
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-button-1' },
           textContent: JSON.stringify({ open: true }),
         })
-        assertDisclosurePanel({ state: DisclosureState.Visible })
+        await assertDisclosurePanel({ state: DisclosureState.Visible })
       })
     )
 
@@ -369,19 +372,19 @@ describe('Rendering', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         await click(getDisclosureButton())
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({
+        await assertDisclosurePanel({
           state: DisclosureState.Visible,
           textContent: JSON.stringify({ open: true }),
         })
@@ -408,20 +411,20 @@ describe('Rendering', () => {
         </Disclosure>
       )
 
-      assertDisclosureButton({ state: DisclosureState.InvisibleHidden })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
+      await assertDisclosureButton({ state: DisclosureState.InvisibleHidden })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
 
       // Let's open the Disclosure, to see if it is not hidden anymore
       await click(getDisclosureButton())
 
-      assertDisclosureButton({ state: DisclosureState.Visible })
-      assertDisclosurePanel({ state: DisclosureState.Visible })
+      await assertDisclosureButton({ state: DisclosureState.Visible })
+      await assertDisclosurePanel({ state: DisclosureState.Visible })
 
       // Let's re-click the Disclosure, to see if it is hidden again
       await click(getDisclosureButton())
 
-      assertDisclosureButton({ state: DisclosureState.InvisibleHidden })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
+      await assertDisclosureButton({ state: DisclosureState.InvisibleHidden })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleHidden })
     })
 
     it(
@@ -440,7 +443,7 @@ describe('Rendering', () => {
         await focus(getDisclosureButton())
 
         // Ensure the button is focused
-        assertActiveElement(getDisclosureButton())
+        await assertActiveElement(getDisclosureButton())
 
         // Open the disclosure
         await click(getDisclosureButton())
@@ -449,10 +452,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the disclosure is closed
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Ensure the Disclosure.Button got the restored focus
-        assertActiveElement(getByText('Trigger'))
+        await assertActiveElement(getByText('Trigger'))
       })
     )
 
@@ -477,7 +480,7 @@ describe('Rendering', () => {
         await focus(getDisclosureButton())
 
         // Ensure the button is focused
-        assertActiveElement(getDisclosureButton())
+        await assertActiveElement(getDisclosureButton())
 
         // Open the disclosure
         await click(getDisclosureButton())
@@ -486,10 +489,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the disclosure is closed
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
 
@@ -517,7 +520,7 @@ describe('Rendering', () => {
         await focus(getDisclosureButton())
 
         // Ensure the button is focused
-        assertActiveElement(getDisclosureButton())
+        await assertActiveElement(getDisclosureButton())
 
         // Open the disclosure
         await click(getDisclosureButton())
@@ -526,10 +529,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the disclosure is closed
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
   })
@@ -566,13 +569,13 @@ describe('Composition', () => {
       )
 
       // Verify the Disclosure is hidden
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
       // Open the Disclosure component
       await click(getDisclosureButton())
 
       // Verify the Disclosure is visible
-      assertDisclosurePanel({ state: DisclosureState.Visible })
+      await assertDisclosurePanel({ state: DisclosureState.Visible })
 
       // Unmount the full tree
       await click(getDisclosureButton())
@@ -605,11 +608,11 @@ describe('Keyboard interactions', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getDisclosureButton())
@@ -618,15 +621,15 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertDisclosureButton({ state: DisclosureState.Visible })
-        assertDisclosurePanel({
+        await assertDisclosureButton({ state: DisclosureState.Visible })
+        await assertDisclosurePanel({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-panel-2' },
         })
 
         // Close disclosure
         await press(Keys.Enter)
-        assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
       })
     )
 
@@ -640,11 +643,11 @@ describe('Keyboard interactions', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getDisclosureButton())
@@ -653,11 +656,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is still closed
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
       })
     )
 
@@ -671,11 +674,11 @@ describe('Keyboard interactions', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getDisclosureButton())
@@ -684,8 +687,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertDisclosureButton({ state: DisclosureState.Visible })
-        assertDisclosurePanel({
+        await assertDisclosureButton({ state: DisclosureState.Visible })
+        await assertDisclosurePanel({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-panel-2' },
         })
@@ -694,8 +697,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is closed again
-        assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
       })
     )
   })
@@ -711,11 +714,11 @@ describe('Keyboard interactions', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getDisclosureButton())
@@ -724,8 +727,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertDisclosureButton({ state: DisclosureState.Visible })
-        assertDisclosurePanel({
+        await assertDisclosureButton({ state: DisclosureState.Visible })
+        await assertDisclosurePanel({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-panel-2' },
         })
@@ -742,11 +745,11 @@ describe('Keyboard interactions', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getDisclosureButton())
@@ -755,11 +758,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is still closed
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
       })
     )
 
@@ -773,11 +776,11 @@ describe('Keyboard interactions', () => {
           </Disclosure>
         )
 
-        assertDisclosureButton({
+        await assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
         })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getDisclosureButton())
@@ -786,8 +789,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertDisclosureButton({ state: DisclosureState.Visible })
-        assertDisclosurePanel({
+        await assertDisclosureButton({ state: DisclosureState.Visible })
+        await assertDisclosurePanel({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-panel-2' },
         })
@@ -796,8 +799,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is closed again
-        assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
-        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+        await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
       })
     )
   })
@@ -814,18 +817,18 @@ describe('Mouse interactions', () => {
         </Disclosure>
       )
 
-      assertDisclosureButton({
+      await assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
         attributes: { id: 'headlessui-disclosure-button-1' },
       })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
       // Open disclosure
       await click(getDisclosureButton())
 
       // Verify it is open
-      assertDisclosureButton({ state: DisclosureState.Visible })
-      assertDisclosurePanel({
+      await assertDisclosureButton({ state: DisclosureState.Visible })
+      await assertDisclosurePanel({
         state: DisclosureState.Visible,
         attributes: { id: 'headlessui-disclosure-panel-2' },
       })
@@ -842,21 +845,21 @@ describe('Mouse interactions', () => {
         </Disclosure>
       )
 
-      assertDisclosureButton({
+      await assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
         attributes: { id: 'headlessui-disclosure-button-1' },
       })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
       // Open disclosure
       await click(getDisclosureButton(), MouseButton.Right)
 
       // Verify it is still closed
-      assertDisclosureButton({
+      await assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
         attributes: { id: 'headlessui-disclosure-button-1' },
       })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
     })
   )
 
@@ -870,21 +873,21 @@ describe('Mouse interactions', () => {
         </Disclosure>
       )
 
-      assertDisclosureButton({
+      await assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
         attributes: { id: 'headlessui-disclosure-button-1' },
       })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
       // Try to open the disclosure
       await click(getDisclosureButton())
 
       // Verify it is still closed
-      assertDisclosureButton({
+      await assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
         attributes: { id: 'headlessui-disclosure-button-1' },
       })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
     })
   )
 
@@ -902,14 +905,14 @@ describe('Mouse interactions', () => {
       await click(getDisclosureButton())
 
       // Verify it is open
-      assertDisclosureButton({ state: DisclosureState.Visible })
+      await assertDisclosureButton({ state: DisclosureState.Visible })
 
       // Click to close
       await click(getDisclosureButton())
 
       // Verify it is closed
-      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
     })
   )
 
@@ -938,10 +941,10 @@ describe('Mouse interactions', () => {
       await click(closeBtn)
 
       // Verify it is closed
-      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      await assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
       // Verify we restored the Open button
-      assertActiveElement(getDisclosureButton())
+      await assertActiveElement(getDisclosureButton())
     })
   )
 })

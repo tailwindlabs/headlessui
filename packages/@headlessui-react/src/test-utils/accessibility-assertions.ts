@@ -39,7 +39,7 @@ export enum MenuState {
   InvisibleUnmounted,
 }
 
-export function assertMenuButton(
+export async function assertMenuButton(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -48,33 +48,33 @@ export function assertMenuButton(
   button = getMenuButton()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
 
     // Ensure menu button have these properties
-    expect(button).toHaveAttribute('id')
-    expect(button).toHaveAttribute('aria-haspopup')
+    await expect(button).toHaveAttribute('id')
+    await expect(button).toHaveAttribute('aria-haspopup')
 
     switch (options.state) {
       case MenuState.Visible:
-        expect(button).toHaveAttribute('aria-controls')
-        expect(button).toHaveAttribute('aria-expanded', 'true')
+        await expect(button).toHaveAttribute('aria-controls')
+        await expect(button).toHaveAttribute('aria-expanded', 'true')
         break
 
       case MenuState.InvisibleHidden:
-        expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
       case MenuState.InvisibleUnmounted:
-        expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).not.toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
@@ -83,12 +83,12 @@ export function assertMenuButton(
     }
 
     if (options.textContent) {
-      expect(button).toHaveTextContent(options.textContent)
+      await expect(button).toHaveTextContent(options.textContent)
     }
 
     // Ensure menu button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertMenuButton)
@@ -96,46 +96,46 @@ export function assertMenuButton(
   }
 }
 
-export function assertMenuButtonLinkedWithMenu(button = getMenuButton(), menu = getMenu()) {
+export async function assertMenuButtonLinkedWithMenu(button = getMenuButton(), menu = getMenu()) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
-    if (menu === null) return expect(menu).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
+    if (menu === null) return await expect(menu).not.toBe(null)
 
     // Ensure link between button & menu is correct
-    expect(button).toHaveAttribute('aria-controls', menu.getAttribute('id'))
-    expect(menu).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
+    await expect(button).toHaveAttribute('aria-controls', menu.getAttribute('id'))
+    await expect(menu).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertMenuButtonLinkedWithMenu)
     throw err
   }
 }
 
-export function assertMenuLinkedWithMenuItem(item: HTMLElement | null, menu = getMenu()) {
+export async function assertMenuLinkedWithMenuItem(item: HTMLElement | null, menu = getMenu()) {
   try {
-    if (menu === null) return expect(menu).not.toBe(null)
-    if (item === null) return expect(item).not.toBe(null)
+    if (menu === null) return await expect(menu).not.toBe(null)
+    if (item === null) return await expect(item).not.toBe(null)
 
     // Ensure link between menu & menu item is correct
-    expect(menu).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
+    await expect(menu).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertMenuLinkedWithMenuItem)
     throw err
   }
 }
 
-export function assertNoActiveMenuItem(menu = getMenu()) {
+export async function assertNoActiveMenuItem(menu = getMenu()) {
   try {
-    if (menu === null) return expect(menu).not.toBe(null)
+    if (menu === null) return await expect(menu).not.toBe(null)
 
     // Ensure we don't have an active menu
-    expect(menu).not.toHaveAttribute('aria-activedescendant')
+    await expect(menu).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNoActiveMenuItem)
     throw err
   }
 }
 
-export function assertMenu(
+export async function assertMenu(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -146,37 +146,37 @@ export function assertMenu(
   try {
     switch (options.state) {
       case MenuState.InvisibleHidden:
-        if (menu === null) return expect(menu).not.toBe(null)
+        if (menu === null) return await expect(menu).not.toBe(null)
 
-        assertHidden(menu)
+        await assertHidden(menu)
 
-        expect(menu).toHaveAttribute('aria-labelledby')
-        expect(menu).toHaveAttribute('role', 'menu')
+        await expect(menu).toHaveAttribute('aria-labelledby')
+        await expect(menu).toHaveAttribute('role', 'menu')
 
-        if (options.textContent) expect(menu).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(menu).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(menu).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(menu).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case MenuState.Visible:
-        if (menu === null) return expect(menu).not.toBe(null)
+        if (menu === null) return await expect(menu).not.toBe(null)
 
-        assertVisible(menu)
+        await assertVisible(menu)
 
-        expect(menu).toHaveAttribute('aria-labelledby')
-        expect(menu).toHaveAttribute('role', 'menu')
+        await expect(menu).toHaveAttribute('aria-labelledby')
+        await expect(menu).toHaveAttribute('role', 'menu')
 
-        if (options.textContent) expect(menu).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(menu).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(menu).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(menu).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case MenuState.InvisibleUnmounted:
-        expect(menu).toBe(null)
+        await expect(menu).toBe(null)
         break
 
       default:
@@ -188,29 +188,29 @@ export function assertMenu(
   }
 }
 
-export function assertMenuItem(
+export async function assertMenuItem(
   item: HTMLElement | null,
   options?: { tag?: string; attributes?: Record<string, string | null> }
 ) {
   try {
-    if (item === null) return expect(item).not.toBe(null)
+    if (item === null) return await expect(item).not.toBe(null)
 
     // Check that some attributes exists, doesn't really matter what the values are at this point in
     // time, we just require them.
-    expect(item).toHaveAttribute('id')
+    await expect(item).toHaveAttribute('id')
 
     // Check that we have the correct values for certain attributes
-    expect(item).toHaveAttribute('role', 'menuitem')
-    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
+    await expect(item).toHaveAttribute('role', 'menuitem')
+    if (!item.getAttribute('aria-disabled')) await expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure menu button has the following attributes
     if (options) {
       for (let attributeName in options.attributes) {
-        expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
+        await expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
       }
 
       if (options.tag) {
-        expect(item.tagName.toLowerCase()).toBe(options.tag)
+        await expect(item.tagName.toLowerCase()).toBe(options.tag)
       }
     }
   } catch (err) {
@@ -274,7 +274,7 @@ export enum ComboboxMode {
   Multiple,
 }
 
-export function assertCombobox(
+export async function assertCombobox(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -286,39 +286,39 @@ export function assertCombobox(
   try {
     switch (options.state) {
       case ComboboxState.InvisibleHidden:
-        if (combobox === null) return expect(combobox).not.toBe(null)
+        if (combobox === null) return await expect(combobox).not.toBe(null)
 
-        assertHidden(combobox)
+        await assertHidden(combobox)
 
-        expect(combobox).toHaveAttribute('role', 'combobox')
+        await expect(combobox).toHaveAttribute('role', 'combobox')
 
-        if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(combobox).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(combobox).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(combobox).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case ComboboxState.Visible:
-        if (combobox === null) return expect(combobox).not.toBe(null)
+        if (combobox === null) return await expect(combobox).not.toBe(null)
 
-        assertVisible(combobox)
+        await assertVisible(combobox)
 
-        expect(combobox).toHaveAttribute('role', 'combobox')
+        await expect(combobox).toHaveAttribute('role', 'combobox')
 
         if (options.mode && options.mode === ComboboxMode.Multiple) {
-          expect(combobox).toHaveAttribute('aria-multiselectable', 'true')
+          await expect(combobox).toHaveAttribute('aria-multiselectable', 'true')
         }
 
-        if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(combobox).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(combobox).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(combobox).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case ComboboxState.InvisibleUnmounted:
-        expect(combobox).toBe(null)
+        await expect(combobox).toBe(null)
         break
 
       default:
@@ -381,7 +381,7 @@ export function assertComboboxInput(
   }
 }
 
-export function assertComboboxList(
+export async function assertComboboxList(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -392,37 +392,37 @@ export function assertComboboxList(
   try {
     switch (options.state) {
       case ComboboxState.InvisibleHidden:
-        if (listbox === null) return expect(listbox).not.toBe(null)
+        if (listbox === null) return await expect(listbox).not.toBe(null)
 
-        assertHidden(listbox)
+        await assertHidden(listbox)
 
-        expect(listbox).toHaveAttribute('aria-labelledby')
-        expect(listbox).toHaveAttribute('role', 'listbox')
+        await expect(listbox).toHaveAttribute('aria-labelledby')
+        await expect(listbox).toHaveAttribute('role', 'listbox')
 
-        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(listbox).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case ComboboxState.Visible:
-        if (listbox === null) return expect(listbox).not.toBe(null)
+        if (listbox === null) return await expect(listbox).not.toBe(null)
 
-        assertVisible(listbox)
+        await assertVisible(listbox)
 
-        expect(listbox).toHaveAttribute('aria-labelledby')
-        expect(listbox).toHaveAttribute('role', 'listbox')
+        await expect(listbox).toHaveAttribute('aria-labelledby')
+        await expect(listbox).toHaveAttribute('role', 'listbox')
 
-        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(listbox).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case ComboboxState.InvisibleUnmounted:
-        expect(listbox).toBe(null)
+        await expect(listbox).toBe(null)
         break
 
       default:
@@ -434,7 +434,7 @@ export function assertComboboxList(
   }
 }
 
-export function assertComboboxButton(
+export async function assertComboboxButton(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -443,33 +443,33 @@ export function assertComboboxButton(
   button = getComboboxButton()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
 
     // Ensure menu button have these properties
-    expect(button).toHaveAttribute('id')
-    expect(button).toHaveAttribute('aria-haspopup')
+    await expect(button).toHaveAttribute('id')
+    await expect(button).toHaveAttribute('aria-haspopup')
 
     switch (options.state) {
       case ComboboxState.Visible:
-        expect(button).toHaveAttribute('aria-controls')
-        expect(button).toHaveAttribute('aria-expanded', 'true')
+        await expect(button).toHaveAttribute('aria-controls')
+        await expect(button).toHaveAttribute('aria-expanded', 'true')
         break
 
       case ComboboxState.InvisibleHidden:
-        expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
       case ComboboxState.InvisibleUnmounted:
-        expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).not.toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
@@ -478,12 +478,12 @@ export function assertComboboxButton(
     }
 
     if (options.textContent) {
-      expect(button).toHaveTextContent(options.textContent)
+      await expect(button).toHaveTextContent(options.textContent)
     }
 
     // Ensure menu button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertComboboxButton)
@@ -491,7 +491,7 @@ export function assertComboboxButton(
   }
 }
 
-export function assertComboboxLabel(
+export async function assertComboboxLabel(
   options: {
     attributes?: Record<string, string | null>
     tag?: string
@@ -500,22 +500,22 @@ export function assertComboboxLabel(
   label = getComboboxLabel()
 ) {
   try {
-    if (label === null) return expect(label).not.toBe(null)
+    if (label === null) return await expect(label).not.toBe(null)
 
     // Ensure menu button have these properties
-    expect(label).toHaveAttribute('id')
+    await expect(label).toHaveAttribute('id')
 
     if (options.textContent) {
-      expect(label).toHaveTextContent(options.textContent)
+      await expect(label).toHaveTextContent(options.textContent)
     }
 
     if (options.tag) {
-      expect(label.tagName.toLowerCase()).toBe(options.tag)
+      await expect(label.tagName.toLowerCase()).toBe(options.tag)
     }
 
     // Ensure menu button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertComboboxLabel)
@@ -523,48 +523,48 @@ export function assertComboboxLabel(
   }
 }
 
-export function assertComboboxButtonLinkedWithCombobox(
+export async function assertComboboxButtonLinkedWithCombobox(
   button = getComboboxButton(),
   combobox = getCombobox()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
-    if (combobox === null) return expect(combobox).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
+    if (combobox === null) return await expect(combobox).not.toBe(null)
 
     // Ensure link between button & combobox is correct
-    expect(button).toHaveAttribute('aria-controls', combobox.getAttribute('id'))
-    expect(combobox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
+    await expect(button).toHaveAttribute('aria-controls', combobox.getAttribute('id'))
+    await expect(combobox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertComboboxButtonLinkedWithCombobox)
     throw err
   }
 }
 
-export function assertComboboxLabelLinkedWithCombobox(
+export async function assertComboboxLabelLinkedWithCombobox(
   label = getComboboxLabel(),
   combobox = getComboboxInput()
 ) {
   try {
-    if (label === null) return expect(label).not.toBe(null)
-    if (combobox === null) return expect(combobox).not.toBe(null)
+    if (label === null) return await expect(label).not.toBe(null)
+    if (combobox === null) return await expect(combobox).not.toBe(null)
 
-    expect(combobox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
+    await expect(combobox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertComboboxLabelLinkedWithCombobox)
     throw err
   }
 }
 
-export function assertComboboxButtonLinkedWithComboboxLabel(
+export async function assertComboboxButtonLinkedWithComboboxLabel(
   button = getComboboxButton(),
   label = getComboboxLabel()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
-    if (label === null) return expect(label).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
+    if (label === null) return await expect(label).not.toBe(null)
 
     // Ensure link between button & label is correct
-    expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
+    await expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
   } catch (err) {
     if (err instanceof Error)
       Error.captureStackTrace(err, assertComboboxButtonLinkedWithComboboxLabel)
@@ -572,60 +572,60 @@ export function assertComboboxButtonLinkedWithComboboxLabel(
   }
 }
 
-export function assertActiveComboboxOption(
+export async function assertActiveComboboxOption(
   item: HTMLElement | null,
   combobox = getComboboxInput()
 ) {
   try {
-    if (combobox === null) return expect(combobox).not.toBe(null)
-    if (item === null) return expect(item).not.toBe(null)
+    if (combobox === null) return await expect(combobox).not.toBe(null)
+    if (item === null) return await expect(item).not.toBe(null)
 
     // Ensure link between combobox & combobox item is correct
-    expect(combobox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
+    await expect(combobox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertActiveComboboxOption)
     throw err
   }
 }
 
-export function assertNotActiveComboboxOption(
+export async function assertNotActiveComboboxOption(
   item: HTMLElement | null,
   combobox = getComboboxInput()
 ) {
   try {
-    if (combobox === null) return expect(combobox).not.toBe(null)
-    if (item === null) return expect(item).not.toBe(null)
+    if (combobox === null) return await expect(combobox).not.toBe(null)
+    if (item === null) return await expect(item).not.toBe(null)
 
     // Ensure link between combobox & combobox item does not exist
-    expect(combobox).not.toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
+    await expect(combobox).not.toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNotActiveComboboxOption)
     throw err
   }
 }
 
-export function assertNoActiveComboboxOption(combobox = getComboboxInput()) {
+export async function assertNoActiveComboboxOption(combobox = getComboboxInput()) {
   try {
-    if (combobox === null) return expect(combobox).not.toBe(null)
+    if (combobox === null) return await expect(combobox).not.toBe(null)
 
     // Ensure we don't have an active combobox
-    expect(combobox).not.toHaveAttribute('aria-activedescendant')
+    await expect(combobox).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNoActiveComboboxOption)
     throw err
   }
 }
 
-export function assertNoSelectedComboboxOption(items = getComboboxOptions()) {
+export async function assertNoSelectedComboboxOption(items = getComboboxOptions()) {
   try {
-    for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
+    for (let item of items) await expect(item).not.toHaveAttribute('aria-selected')
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNoSelectedComboboxOption)
     throw err
   }
 }
 
-export function assertComboboxOption(
+export async function assertComboboxOption(
   item: HTMLElement | null,
   options?: {
     tag?: string
@@ -634,34 +634,34 @@ export function assertComboboxOption(
   }
 ) {
   try {
-    if (item === null) return expect(item).not.toBe(null)
+    if (item === null) return await expect(item).not.toBe(null)
 
     // Check that some attributes exists, doesn't really matter what the values are at this point in
     // time, we just require them.
-    expect(item).toHaveAttribute('id')
+    await expect(item).toHaveAttribute('id')
 
     // Check that we have the correct values for certain attributes
-    expect(item).toHaveAttribute('role', 'option')
-    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
+    await expect(item).toHaveAttribute('role', 'option')
+    if (!item.getAttribute('aria-disabled')) await expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure combobox button has the following attributes
     if (!options) return
 
     for (let attributeName in options.attributes) {
-      expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
 
     if (options.tag) {
-      expect(item.tagName.toLowerCase()).toBe(options.tag)
+      await expect(item.tagName.toLowerCase()).toBe(options.tag)
     }
 
     if (options.selected != null) {
       switch (options.selected) {
         case true:
-          return expect(item).toHaveAttribute('aria-selected', 'true')
+          return await expect(item).toHaveAttribute('aria-selected', 'true')
 
         case false:
-          return expect(item).not.toHaveAttribute('aria-selected')
+          return await expect(item).not.toHaveAttribute('aria-selected')
 
         default:
           assertNever(options.selected)
@@ -720,7 +720,7 @@ export enum ListboxMode {
   Multiple,
 }
 
-export function assertListbox(
+export async function assertListbox(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -735,43 +735,43 @@ export function assertListbox(
   try {
     switch (options.state) {
       case ListboxState.InvisibleHidden:
-        if (listbox === null) return expect(listbox).not.toBe(null)
+        if (listbox === null) return await expect(listbox).not.toBe(null)
 
-        assertHidden(listbox)
+        await assertHidden(listbox)
 
-        expect(listbox).toHaveAttribute('aria-labelledby')
-        expect(listbox).toHaveAttribute('aria-orientation', orientation)
-        expect(listbox).toHaveAttribute('role', 'listbox')
+        await expect(listbox).toHaveAttribute('aria-labelledby')
+        await expect(listbox).toHaveAttribute('aria-orientation', orientation)
+        await expect(listbox).toHaveAttribute('role', 'listbox')
 
-        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(listbox).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case ListboxState.Visible:
-        if (listbox === null) return expect(listbox).not.toBe(null)
+        if (listbox === null) return await expect(listbox).not.toBe(null)
 
-        assertVisible(listbox)
+        await assertVisible(listbox)
 
-        expect(listbox).toHaveAttribute('aria-labelledby')
-        expect(listbox).toHaveAttribute('aria-orientation', orientation)
-        expect(listbox).toHaveAttribute('role', 'listbox')
+        await expect(listbox).toHaveAttribute('aria-labelledby')
+        await expect(listbox).toHaveAttribute('aria-orientation', orientation)
+        await expect(listbox).toHaveAttribute('role', 'listbox')
 
         if (options.mode && options.mode === ListboxMode.Multiple) {
-          expect(listbox).toHaveAttribute('aria-multiselectable', 'true')
+          await expect(listbox).toHaveAttribute('aria-multiselectable', 'true')
         }
 
-        if (options.textContent) expect(listbox).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(listbox).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(listbox).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case ListboxState.InvisibleUnmounted:
-        expect(listbox).toBe(null)
+        await expect(listbox).toBe(null)
         break
 
       default:
@@ -783,7 +783,7 @@ export function assertListbox(
   }
 }
 
-export function assertListboxButton(
+export async function assertListboxButton(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -792,33 +792,33 @@ export function assertListboxButton(
   button = getListboxButton()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
 
     // Ensure menu button have these properties
-    expect(button).toHaveAttribute('id')
-    expect(button).toHaveAttribute('aria-haspopup')
+    await expect(button).toHaveAttribute('id')
+    await expect(button).toHaveAttribute('aria-haspopup')
 
     switch (options.state) {
       case ListboxState.Visible:
-        expect(button).toHaveAttribute('aria-controls')
-        expect(button).toHaveAttribute('aria-expanded', 'true')
+        await expect(button).toHaveAttribute('aria-controls')
+        await expect(button).toHaveAttribute('aria-expanded', 'true')
         break
 
       case ListboxState.InvisibleHidden:
-        expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
       case ListboxState.InvisibleUnmounted:
-        expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).not.toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
@@ -827,12 +827,12 @@ export function assertListboxButton(
     }
 
     if (options.textContent) {
-      expect(button).toHaveTextContent(options.textContent)
+      await expect(button).toHaveTextContent(options.textContent)
     }
 
     // Ensure menu button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertListboxButton)
@@ -840,7 +840,7 @@ export function assertListboxButton(
   }
 }
 
-export function assertListboxLabel(
+export async function assertListboxLabel(
   options: {
     attributes?: Record<string, string | null>
     tag?: string
@@ -849,22 +849,22 @@ export function assertListboxLabel(
   label = getListboxLabel()
 ) {
   try {
-    if (label === null) return expect(label).not.toBe(null)
+    if (label === null) return await expect(label).not.toBe(null)
 
     // Ensure menu button have these properties
-    expect(label).toHaveAttribute('id')
+    await expect(label).toHaveAttribute('id')
 
     if (options.textContent) {
-      expect(label).toHaveTextContent(options.textContent)
+      await expect(label).toHaveTextContent(options.textContent)
     }
 
     if (options.tag) {
-      expect(label.tagName.toLowerCase()).toBe(options.tag)
+      await expect(label.tagName.toLowerCase()).toBe(options.tag)
     }
 
     // Ensure menu button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertListboxLabel)
@@ -872,48 +872,48 @@ export function assertListboxLabel(
   }
 }
 
-export function assertListboxButtonLinkedWithListbox(
+export async function assertListboxButtonLinkedWithListbox(
   button = getListboxButton(),
   listbox = getListbox()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
-    if (listbox === null) return expect(listbox).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
+    if (listbox === null) return await expect(listbox).not.toBe(null)
 
     // Ensure link between button & listbox is correct
-    expect(button).toHaveAttribute('aria-controls', listbox.getAttribute('id'))
-    expect(listbox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
+    await expect(button).toHaveAttribute('aria-controls', listbox.getAttribute('id'))
+    await expect(listbox).toHaveAttribute('aria-labelledby', button.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertListboxButtonLinkedWithListbox)
     throw err
   }
 }
 
-export function assertListboxLabelLinkedWithListbox(
+export async function assertListboxLabelLinkedWithListbox(
   label = getListboxLabel(),
   listbox = getListbox()
 ) {
   try {
-    if (label === null) return expect(label).not.toBe(null)
-    if (listbox === null) return expect(listbox).not.toBe(null)
+    if (label === null) return await expect(label).not.toBe(null)
+    if (listbox === null) return await expect(listbox).not.toBe(null)
 
-    expect(listbox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
+    await expect(listbox).toHaveAttribute('aria-labelledby', label.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertListboxLabelLinkedWithListbox)
     throw err
   }
 }
 
-export function assertListboxButtonLinkedWithListboxLabel(
+export async function assertListboxButtonLinkedWithListboxLabel(
   button = getListboxButton(),
   label = getListboxLabel()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
-    if (label === null) return expect(label).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
+    if (label === null) return await expect(label).not.toBe(null)
 
     // Ensure link between button & label is correct
-    expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
+    await expect(button).toHaveAttribute('aria-labelledby', `${label.id} ${button.id}`)
   } catch (err) {
     if (err instanceof Error)
       Error.captureStackTrace(err, assertListboxButtonLinkedWithListboxLabel)
@@ -921,41 +921,41 @@ export function assertListboxButtonLinkedWithListboxLabel(
   }
 }
 
-export function assertActiveListboxOption(item: HTMLElement | null, listbox = getListbox()) {
+export async function assertActiveListboxOption(item: HTMLElement | null, listbox = getListbox()) {
   try {
-    if (listbox === null) return expect(listbox).not.toBe(null)
-    if (item === null) return expect(item).not.toBe(null)
+    if (listbox === null) return await expect(listbox).not.toBe(null)
+    if (item === null) return await expect(item).not.toBe(null)
 
     // Ensure link between listbox & listbox item is correct
-    expect(listbox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
+    await expect(listbox).toHaveAttribute('aria-activedescendant', item.getAttribute('id'))
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertActiveListboxOption)
     throw err
   }
 }
 
-export function assertNoActiveListboxOption(listbox = getListbox()) {
+export async function assertNoActiveListboxOption(listbox = getListbox()) {
   try {
-    if (listbox === null) return expect(listbox).not.toBe(null)
+    if (listbox === null) return await expect(listbox).not.toBe(null)
 
     // Ensure we don't have an active listbox
-    expect(listbox).not.toHaveAttribute('aria-activedescendant')
+    await expect(listbox).not.toHaveAttribute('aria-activedescendant')
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNoActiveListboxOption)
     throw err
   }
 }
 
-export function assertNoSelectedListboxOption(items = getListboxOptions()) {
+export async function assertNoSelectedListboxOption(items = getListboxOptions()) {
   try {
-    for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
+    for (let item of items) await expect(item).not.toHaveAttribute('aria-selected')
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNoSelectedListboxOption)
     throw err
   }
 }
 
-export function assertListboxOption(
+export async function assertListboxOption(
   item: HTMLElement | null,
   options?: {
     tag?: string
@@ -964,34 +964,34 @@ export function assertListboxOption(
   }
 ) {
   try {
-    if (item === null) return expect(item).not.toBe(null)
+    if (item === null) return await expect(item).not.toBe(null)
 
     // Check that some attributes exists, doesn't really matter what the values are at this point in
     // time, we just require them.
-    expect(item).toHaveAttribute('id')
+    await expect(item).toHaveAttribute('id')
 
     // Check that we have the correct values for certain attributes
-    expect(item).toHaveAttribute('role', 'option')
-    if (!item.getAttribute('aria-disabled')) expect(item).toHaveAttribute('tabindex', '-1')
+    await expect(item).toHaveAttribute('role', 'option')
+    if (!item.getAttribute('aria-disabled')) await expect(item).toHaveAttribute('tabindex', '-1')
 
     // Ensure listbox button has the following attributes
     if (!options) return
 
     for (let attributeName in options.attributes) {
-      expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(item).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
 
     if (options.tag) {
-      expect(item.tagName.toLowerCase()).toBe(options.tag)
+      await expect(item.tagName.toLowerCase()).toBe(options.tag)
     }
 
     if (options.selected != null) {
       switch (options.selected) {
         case true:
-          return expect(item).toHaveAttribute('aria-selected', 'true')
+          return await expect(item).toHaveAttribute('aria-selected', 'true')
 
         case false:
-          return expect(item).not.toHaveAttribute('aria-selected')
+          return await expect(item).not.toHaveAttribute('aria-selected')
 
         default:
           assertNever(options.selected)
@@ -1020,7 +1020,7 @@ export enum SwitchState {
   Off,
 }
 
-export function assertSwitch(
+export async function assertSwitch(
   options: {
     state: SwitchState
     tag?: string
@@ -1031,34 +1031,34 @@ export function assertSwitch(
   switchElement = getSwitch()
 ) {
   try {
-    if (switchElement === null) return expect(switchElement).not.toBe(null)
+    if (switchElement === null) return await expect(switchElement).not.toBe(null)
 
-    expect(switchElement).toHaveAttribute('role', 'switch')
-    expect(switchElement).toHaveAttribute('tabindex', '0')
+    await expect(switchElement).toHaveAttribute('role', 'switch')
+    await expect(switchElement).toHaveAttribute('tabindex', '0')
 
     if (options.textContent) {
-      expect(switchElement).toHaveTextContent(options.textContent)
+      await expect(switchElement).toHaveTextContent(options.textContent)
     }
 
     if (options.tag) {
-      expect(switchElement.tagName.toLowerCase()).toBe(options.tag)
+      await expect(switchElement.tagName.toLowerCase()).toBe(options.tag)
     }
 
     if (options.label) {
-      assertLabelValue(switchElement, options.label)
+      await assertLabelValue(switchElement, options.label)
     }
 
     if (options.description) {
-      assertDescriptionValue(switchElement, options.description)
+      await assertDescriptionValue(switchElement, options.description)
     }
 
     switch (options.state) {
       case SwitchState.On:
-        expect(switchElement).toHaveAttribute('aria-checked', 'true')
+        await expect(switchElement).toHaveAttribute('aria-checked', 'true')
         break
 
       case SwitchState.Off:
-        expect(switchElement).toHaveAttribute('aria-checked', 'false')
+        await expect(switchElement).toHaveAttribute('aria-checked', 'false')
         break
 
       default:
@@ -1095,7 +1095,7 @@ export enum DisclosureState {
 
 // ---
 
-export function assertDisclosureButton(
+export async function assertDisclosureButton(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1104,32 +1104,32 @@ export function assertDisclosureButton(
   button = getDisclosureButton()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
 
     // Ensure disclosure button have these properties
-    expect(button).toHaveAttribute('id')
+    await expect(button).toHaveAttribute('id')
 
     switch (options.state) {
       case DisclosureState.Visible:
-        expect(button).toHaveAttribute('aria-controls')
-        expect(button).toHaveAttribute('aria-expanded', 'true')
+        await expect(button).toHaveAttribute('aria-controls')
+        await expect(button).toHaveAttribute('aria-expanded', 'true')
         break
 
       case DisclosureState.InvisibleHidden:
-        expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
       case DisclosureState.InvisibleUnmounted:
-        expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).not.toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
@@ -1138,12 +1138,12 @@ export function assertDisclosureButton(
     }
 
     if (options.textContent) {
-      expect(button).toHaveTextContent(options.textContent)
+      await expect(button).toHaveTextContent(options.textContent)
     }
 
     // Ensure disclosure button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertDisclosureButton)
@@ -1151,7 +1151,7 @@ export function assertDisclosureButton(
   }
 }
 
-export function assertDisclosurePanel(
+export async function assertDisclosurePanel(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1162,31 +1162,31 @@ export function assertDisclosurePanel(
   try {
     switch (options.state) {
       case DisclosureState.InvisibleHidden:
-        if (panel === null) return expect(panel).not.toBe(null)
+        if (panel === null) return await expect(panel).not.toBe(null)
 
-        assertHidden(panel)
+        await assertHidden(panel)
 
-        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(panel).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DisclosureState.Visible:
-        if (panel === null) return expect(panel).not.toBe(null)
+        if (panel === null) return await expect(panel).not.toBe(null)
 
-        assertVisible(panel)
+        await assertVisible(panel)
 
-        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(panel).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DisclosureState.InvisibleUnmounted:
-        expect(panel).toBe(null)
+        await expect(panel).toBe(null)
         break
 
       default:
@@ -1227,7 +1227,7 @@ export enum PopoverState {
 
 // ---
 
-export function assertPopoverButton(
+export async function assertPopoverButton(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1236,32 +1236,32 @@ export function assertPopoverButton(
   button = getPopoverButton()
 ) {
   try {
-    if (button === null) return expect(button).not.toBe(null)
+    if (button === null) return await expect(button).not.toBe(null)
 
     // Ensure popover button have these properties
-    expect(button).toHaveAttribute('id')
+    await expect(button).toHaveAttribute('id')
 
     switch (options.state) {
       case PopoverState.Visible:
-        expect(button).toHaveAttribute('aria-controls')
-        expect(button).toHaveAttribute('aria-expanded', 'true')
+        await expect(button).toHaveAttribute('aria-controls')
+        await expect(button).toHaveAttribute('aria-expanded', 'true')
         break
 
       case PopoverState.InvisibleHidden:
-        expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
       case PopoverState.InvisibleUnmounted:
-        expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
+        await expect(button).not.toHaveAttribute('aria-controls')
+        if (await button.hasAttribute('disabled')) {
+          await expect(button).not.toHaveAttribute('aria-expanded')
         } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
+          await expect(button).toHaveAttribute('aria-expanded', 'false')
         }
         break
 
@@ -1270,12 +1270,12 @@ export function assertPopoverButton(
     }
 
     if (options.textContent) {
-      expect(button).toHaveTextContent(options.textContent)
+      await expect(button).toHaveTextContent(options.textContent)
     }
 
     // Ensure popover button has the following attributes
     for (let attributeName in options.attributes) {
-      expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(button).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertPopoverButton)
@@ -1283,7 +1283,7 @@ export function assertPopoverButton(
   }
 }
 
-export function assertPopoverPanel(
+export async function assertPopoverPanel(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1294,31 +1294,31 @@ export function assertPopoverPanel(
   try {
     switch (options.state) {
       case PopoverState.InvisibleHidden:
-        if (panel === null) return expect(panel).not.toBe(null)
+        if (panel === null) return await expect(panel).not.toBe(null)
 
-        assertHidden(panel)
+        await assertHidden(panel)
 
-        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(panel).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case PopoverState.Visible:
-        if (panel === null) return expect(panel).not.toBe(null)
+        if (panel === null) return await expect(panel).not.toBe(null)
 
-        assertVisible(panel)
+        await assertVisible(panel)
 
-        if (options.textContent) expect(panel).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(panel).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(panel).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case PopoverState.InvisibleUnmounted:
-        expect(panel).toBe(null)
+        await expect(panel).toBe(null)
         break
 
       default:
@@ -1332,35 +1332,38 @@ export function assertPopoverPanel(
 
 // ---
 
-export function assertLabelValue(element: HTMLElement | null, value: string) {
-  if (element === null) return expect(element).not.toBe(null)
+export async function assertLabelValue(element: HTMLElement | null, value: string) {
+  if (element === null) return await expect(element).not.toBe(null)
 
-  if (element.hasAttribute('aria-labelledby')) {
+  if (await element.hasAttribute('aria-labelledby')) {
     let ids = element.getAttribute('aria-labelledby')!.split(' ')
-    expect(ids.map((id) => document.getElementById(id)?.textContent).join(' ')).toEqual(value)
+    await expect(ids.map((id) => document.getElementById(id)?.textContent).join(' ')).toEqual(value)
     return
   }
 
-  if (element.hasAttribute('aria-label')) {
-    expect(element).toHaveAttribute('aria-label', value)
+  if (await element.hasAttribute('aria-label')) {
+    await expect(element).toHaveAttribute('aria-label', value)
     return
   }
 
-  if (element.hasAttribute('id') && document.querySelectorAll(`[for="${element.id}"]`).length > 0) {
-    expect(document.querySelector(`[for="${element.id}"]`)).toHaveTextContent(value)
+  if (
+    (await element.hasAttribute('id')) &&
+    document.querySelectorAll(`[for="${element.id}"]`).length > 0
+  ) {
+    await expect(document.querySelector(`[for="${element.id}"]`)).toHaveTextContent(value)
     return
   }
 
-  expect(element).toHaveTextContent(value)
+  await expect(element).toHaveTextContent(value)
 }
 
 // ---
 
-export function assertDescriptionValue(element: HTMLElement | null, value: string) {
-  if (element === null) return expect(element).not.toBe(null)
+export async function assertDescriptionValue(element: HTMLElement | null, value: string) {
+  if (element === null) return await expect(element).not.toBe(null)
 
   let id = element.getAttribute('aria-describedby')!
-  expect(document.getElementById(id)?.textContent).toEqual(value)
+  await expect(document.getElementById(id)?.textContent).toEqual(value)
 }
 
 // ---
@@ -1408,7 +1411,7 @@ export enum DialogState {
 
 // ---
 
-export function assertDialog(
+export async function assertDialog(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1419,37 +1422,37 @@ export function assertDialog(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (dialog === null) return expect(dialog).not.toBe(null)
+        if (dialog === null) return await expect(dialog).not.toBe(null)
 
-        assertHidden(dialog)
+        await assertHidden(dialog)
 
-        expect(dialog).toHaveAttribute('role', 'dialog')
-        expect(dialog).not.toHaveAttribute('aria-modal', 'true')
+        await expect(dialog).toHaveAttribute('role', 'dialog')
+        await expect(dialog).not.toHaveAttribute('aria-modal', 'true')
 
-        if (options.textContent) expect(dialog).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(dialog).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(dialog).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(dialog).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DialogState.Visible:
-        if (dialog === null) return expect(dialog).not.toBe(null)
+        if (dialog === null) return await expect(dialog).not.toBe(null)
 
-        assertVisible(dialog)
+        await assertVisible(dialog)
 
-        expect(dialog).toHaveAttribute('role', 'dialog')
-        expect(dialog).toHaveAttribute('aria-modal', 'true')
+        await expect(dialog).toHaveAttribute('role', 'dialog')
+        await expect(dialog).toHaveAttribute('aria-modal', 'true')
 
-        if (options.textContent) expect(dialog).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(dialog).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(dialog).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(dialog).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DialogState.InvisibleUnmounted:
-        expect(dialog).toBe(null)
+        await expect(dialog).toBe(null)
         break
 
       default:
@@ -1461,7 +1464,7 @@ export function assertDialog(
   }
 }
 
-export function assertDialogTitle(
+export async function assertDialogTitle(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1473,39 +1476,39 @@ export function assertDialogTitle(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (title === null) return expect(title).not.toBe(null)
-        if (dialog === null) return expect(dialog).not.toBe(null)
+        if (title === null) return await expect(title).not.toBe(null)
+        if (dialog === null) return await expect(dialog).not.toBe(null)
 
-        assertHidden(title)
+        await assertHidden(title)
 
-        expect(title).toHaveAttribute('id')
-        expect(dialog).toHaveAttribute('aria-labelledby', title.id)
+        await expect(title).toHaveAttribute('id')
+        await expect(dialog).toHaveAttribute('aria-labelledby', title.id)
 
-        if (options.textContent) expect(title).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(title).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(title).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(title).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DialogState.Visible:
-        if (title === null) return expect(title).not.toBe(null)
-        if (dialog === null) return expect(dialog).not.toBe(null)
+        if (title === null) return await expect(title).not.toBe(null)
+        if (dialog === null) return await expect(dialog).not.toBe(null)
 
-        assertVisible(title)
+        await assertVisible(title)
 
-        expect(title).toHaveAttribute('id')
-        expect(dialog).toHaveAttribute('aria-labelledby', title.id)
+        await expect(title).toHaveAttribute('id')
+        await expect(dialog).toHaveAttribute('aria-labelledby', title.id)
 
-        if (options.textContent) expect(title).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(title).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(title).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(title).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DialogState.InvisibleUnmounted:
-        expect(title).toBe(null)
+        await expect(title).toBe(null)
         break
 
       default:
@@ -1517,7 +1520,7 @@ export function assertDialogTitle(
   }
 }
 
-export function assertDialogDescription(
+export async function assertDialogDescription(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1529,39 +1532,45 @@ export function assertDialogDescription(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (description === null) return expect(description).not.toBe(null)
-        if (dialog === null) return expect(dialog).not.toBe(null)
+        if (description === null) return await expect(description).not.toBe(null)
+        if (dialog === null) return await expect(dialog).not.toBe(null)
 
-        assertHidden(description)
+        await assertHidden(description)
 
-        expect(description).toHaveAttribute('id')
-        expect(dialog).toHaveAttribute('aria-describedby', description.id)
+        await expect(description).toHaveAttribute('id')
+        await expect(dialog).toHaveAttribute('aria-describedby', description.id)
 
-        if (options.textContent) expect(description).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(description).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(description).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(description).toHaveAttribute(
+            attributeName,
+            options.attributes[attributeName]
+          )
         }
         break
 
       case DialogState.Visible:
-        if (description === null) return expect(description).not.toBe(null)
-        if (dialog === null) return expect(dialog).not.toBe(null)
+        if (description === null) return await expect(description).not.toBe(null)
+        if (dialog === null) return await expect(dialog).not.toBe(null)
 
-        assertVisible(description)
+        await assertVisible(description)
 
-        expect(description).toHaveAttribute('id')
-        expect(dialog).toHaveAttribute('aria-describedby', description.id)
+        await expect(description).toHaveAttribute('id')
+        await expect(dialog).toHaveAttribute('aria-describedby', description.id)
 
-        if (options.textContent) expect(description).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(description).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(description).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(description).toHaveAttribute(
+            attributeName,
+            options.attributes[attributeName]
+          )
         }
         break
 
       case DialogState.InvisibleUnmounted:
-        expect(description).toBe(null)
+        await expect(description).toBe(null)
         break
 
       default:
@@ -1573,7 +1582,7 @@ export function assertDialogDescription(
   }
 }
 
-export function assertDialogOverlay(
+export async function assertDialogOverlay(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1584,31 +1593,31 @@ export function assertDialogOverlay(
   try {
     switch (options.state) {
       case DialogState.InvisibleHidden:
-        if (overlay === null) return expect(overlay).not.toBe(null)
+        if (overlay === null) return await expect(overlay).not.toBe(null)
 
-        assertHidden(overlay)
+        await assertHidden(overlay)
 
-        if (options.textContent) expect(overlay).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(overlay).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DialogState.Visible:
-        if (overlay === null) return expect(overlay).not.toBe(null)
+        if (overlay === null) return await expect(overlay).not.toBe(null)
 
-        assertVisible(overlay)
+        await assertVisible(overlay)
 
-        if (options.textContent) expect(overlay).toHaveTextContent(options.textContent)
+        if (options.textContent) await expect(overlay).toHaveTextContent(options.textContent)
 
         for (let attributeName in options.attributes) {
-          expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
+          await expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
         }
         break
 
       case DialogState.InvisibleUnmounted:
-        expect(overlay).toBe(null)
+        await expect(overlay).toBe(null)
         break
 
       default:
@@ -1636,7 +1645,7 @@ export function getRadioGroupOptions(): HTMLElement[] {
 
 // ---
 
-export function assertRadioGroupLabel(
+export async function assertRadioGroupLabel(
   options: {
     attributes?: Record<string, string | null>
     textContent?: string
@@ -1645,16 +1654,16 @@ export function assertRadioGroupLabel(
   radioGroup = getRadioGroup()
 ) {
   try {
-    if (label === null) return expect(label).not.toBe(null)
-    if (radioGroup === null) return expect(radioGroup).not.toBe(null)
+    if (label === null) return await expect(label).not.toBe(null)
+    if (radioGroup === null) return await expect(radioGroup).not.toBe(null)
 
-    expect(label).toHaveAttribute('id')
-    expect(radioGroup).toHaveAttribute('aria-labelledby', label.id)
+    await expect(label).toHaveAttribute('id')
+    await expect(radioGroup).toHaveAttribute('aria-labelledby', label.id)
 
-    if (options.textContent) expect(label).toHaveTextContent(options.textContent)
+    if (options.textContent) await expect(label).toHaveTextContent(options.textContent)
 
     for (let attributeName in options.attributes) {
-      expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
+      await expect(label).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertRadioGroupLabel)
@@ -1678,7 +1687,7 @@ export function getPanels(): HTMLElement[] {
 
 // ---
 
-export function assertTabs(
+export async function assertTabs(
   {
     active,
     orientation = 'horizontal',
@@ -1691,51 +1700,51 @@ export function assertTabs(
   panels = getPanels()
 ) {
   try {
-    if (list === null) return expect(list).not.toBe(null)
+    if (list === null) return await expect(list).not.toBe(null)
 
-    expect(list).toHaveAttribute('role', 'tablist')
-    expect(list).toHaveAttribute('aria-orientation', orientation)
+    await expect(list).toHaveAttribute('role', 'tablist')
+    await expect(list).toHaveAttribute('aria-orientation', orientation)
 
     let activeTab = Array.from(list.querySelectorAll('[id^="headlessui-tabs-tab-"]'))[active]
     let activePanel = panels.find((panel) => panel.id === activeTab.getAttribute('aria-controls'))
 
     for (let tab of tabs) {
-      expect(tab).toHaveAttribute('id')
-      expect(tab).toHaveAttribute('role', 'tab')
-      expect(tab).toHaveAttribute('type', 'button')
+      await expect(tab).toHaveAttribute('id')
+      await expect(tab).toHaveAttribute('role', 'tab')
+      await expect(tab).toHaveAttribute('type', 'button')
 
       if (tab === activeTab) {
-        expect(tab).toHaveAttribute('aria-selected', 'true')
-        expect(tab).toHaveAttribute('tabindex', '0')
+        await expect(tab).toHaveAttribute('aria-selected', 'true')
+        await expect(tab).toHaveAttribute('tabindex', '0')
       } else {
-        expect(tab).toHaveAttribute('aria-selected', 'false')
-        expect(tab).toHaveAttribute('tabindex', '-1')
+        await expect(tab).toHaveAttribute('aria-selected', 'false')
+        await expect(tab).toHaveAttribute('tabindex', '-1')
       }
 
-      if (tab.hasAttribute('aria-controls')) {
+      if (await tab.hasAttribute('aria-controls')) {
         let controlsId = tab.getAttribute('aria-controls')!
         let panel = document.getElementById(controlsId)
 
-        expect(panel).not.toBe(null)
-        expect(panels).toContain(panel)
-        expect(panel).toHaveAttribute('aria-labelledby', tab.id)
+        await expect(panel).not.toBe(null)
+        await expect(panels).toContain(panel)
+        await expect(panel).toHaveAttribute('aria-labelledby', tab.id)
       }
     }
 
     for (let panel of panels) {
-      expect(panel).toHaveAttribute('id')
-      expect(panel).toHaveAttribute('role', 'tabpanel')
+      await expect(panel).toHaveAttribute('id')
+      await expect(panel).toHaveAttribute('role', 'tabpanel')
 
       let controlledById = panel.getAttribute('aria-labelledby')!
       let tab = document.getElementById(controlledById)
 
-      expect(tabs).toContain(tab)
-      expect(tab).toHaveAttribute('aria-controls', panel.id)
+      await expect(tabs).toContain(tab)
+      await expect(tab).toHaveAttribute('aria-controls', panel.id)
 
       if (panel === activePanel) {
-        expect(panel).toHaveAttribute('tabindex', '0')
+        await expect(panel).toHaveAttribute('tabindex', '0')
       } else {
-        expect(panel).toHaveAttribute('tabindex', '-1')
+        await expect(panel).toHaveAttribute('tabindex', '-1')
       }
     }
   } catch (err) {
@@ -1746,17 +1755,17 @@ export function assertTabs(
 
 // ---
 
-export function assertActiveElement(element: HTMLElement | null) {
+export async function assertActiveElement(element: HTMLElement | null) {
   try {
-    if (element === null) return expect(element).not.toBe(null)
+    if (element === null) return await expect(element).not.toBe(null)
     try {
       // Jest has a weird bug:
       //   "Cannot assign to read only property 'Symbol(impl)' of object '[object DOMImplementation]'"
       // when this assertion fails.
       // Therefore we will catch it when something goes wrong, and just look at the outerHTML string.
-      expect(document.activeElement).toBe(element)
+      await expect(document.activeElement).toBe(element)
     } catch (err) {
-      expect(document.activeElement?.outerHTML).toBe(element.outerHTML)
+      await expect(document.activeElement?.outerHTML).toBe(element.outerHTML)
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertActiveElement)
@@ -1764,10 +1773,10 @@ export function assertActiveElement(element: HTMLElement | null) {
   }
 }
 
-export function assertContainsActiveElement(element: HTMLElement | null) {
+export async function assertContainsActiveElement(element: HTMLElement | null) {
   try {
-    if (element === null) return expect(element).not.toBe(null)
-    expect(element.contains(document.activeElement)).toBe(true)
+    if (element === null) return await expect(element).not.toBe(null)
+    await expect(element.contains(document.activeElement)).toBe(true)
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertContainsActiveElement)
     throw err
@@ -1776,24 +1785,24 @@ export function assertContainsActiveElement(element: HTMLElement | null) {
 
 // ---
 
-export function assertHidden(element: HTMLElement | null) {
+export async function assertHidden(element: HTMLElement | null) {
   try {
-    if (element === null) return expect(element).not.toBe(null)
+    if (element === null) return await expect(element).not.toBe(null)
 
-    expect(element).toHaveAttribute('hidden')
-    expect(element).toHaveStyle({ display: 'none' })
+    await expect(element).toHaveAttribute('hidden')
+    await expect(element).toHaveStyle({ display: 'none' })
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertHidden)
     throw err
   }
 }
 
-export function assertVisible(element: HTMLElement | null) {
+export async function assertVisible(element: HTMLElement | null) {
   try {
-    if (element === null) return expect(element).not.toBe(null)
+    if (element === null) return await expect(element).not.toBe(null)
 
-    expect(element).not.toHaveAttribute('hidden')
-    expect(element).not.toHaveStyle({ display: 'none' })
+    await expect(element).not.toHaveAttribute('hidden')
+    await expect(element).not.toHaveStyle({ display: 'none' })
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertVisible)
     throw err
@@ -1802,22 +1811,22 @@ export function assertVisible(element: HTMLElement | null) {
 
 // ---
 
-export function assertFocusable(element: HTMLElement | null) {
+export async function assertFocusable(element: HTMLElement | null) {
   try {
-    if (element === null) return expect(element).not.toBe(null)
+    if (element === null) return await expect(element).not.toBe(null)
 
-    expect(isFocusableElement(element, FocusableMode.Strict)).toBe(true)
+    await expect(isFocusableElement(element, FocusableMode.Strict)).toBe(true)
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertFocusable)
     throw err
   }
 }
 
-export function assertNotFocusable(element: HTMLElement | null) {
+export async function assertNotFocusable(element: HTMLElement | null) {
   try {
-    if (element === null) return expect(element).not.toBe(null)
+    if (element === null) return await expect(element).not.toBe(null)
 
-    expect(isFocusableElement(element, FocusableMode.Strict)).toBe(false)
+    await expect(isFocusableElement(element, FocusableMode.Strict)).toBe(false)
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNotFocusable)
     throw err

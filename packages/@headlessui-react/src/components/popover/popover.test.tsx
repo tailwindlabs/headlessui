@@ -56,11 +56,11 @@ describe('Safe guards', () => {
         </Popover>
       )
 
-      assertPopoverButton({
+      await assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
         attributes: { id: 'headlessui-popover-button-1' },
       })
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
     })
   )
 })
@@ -83,27 +83,39 @@ describe('Rendering', () => {
           </Popover.Group>
         )
 
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 1')
+        )
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 1'))
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
 
         await click(getByText('Trigger 1'))
 
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
-        assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
+        await assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 1'))
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
 
         await click(getByText('Trigger 2'))
 
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 1')
+        )
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
 
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 2'))
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 1'))
+        await assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 2'))
       })
     )
   })
@@ -123,19 +135,19 @@ describe('Rendering', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         await click(getPopoverButton())
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.Visible, textContent: 'Panel is: open' })
+        await assertPopoverPanel({ state: PopoverState.Visible, textContent: 'Panel is: open' })
       })
     )
 
@@ -159,7 +171,7 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
@@ -168,10 +180,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the popover is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Ensure the Popover.Button got the restored focus
-        assertActiveElement(getByText('Trigger'))
+        await assertActiveElement(getByText('Trigger'))
       })
     )
 
@@ -200,7 +212,7 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
@@ -209,10 +221,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the popover is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
 
@@ -244,7 +256,7 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
@@ -253,10 +265,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the popover is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
 
@@ -346,21 +358,21 @@ describe('Rendering', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({ open: false }),
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         await click(getPopoverButton())
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({ open: true }),
         })
-        assertPopoverPanel({ state: PopoverState.Visible })
+        await assertPopoverPanel({ state: PopoverState.Visible })
       })
     )
 
@@ -376,21 +388,21 @@ describe('Rendering', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({ open: false }),
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         await click(getPopoverButton())
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
           textContent: JSON.stringify({ open: true }),
         })
-        assertPopoverPanel({ state: PopoverState.Visible })
+        await assertPopoverPanel({ state: PopoverState.Visible })
       })
     )
 
@@ -466,19 +478,19 @@ describe('Rendering', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         await click(getPopoverButton())
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({
+        await assertPopoverPanel({
           state: PopoverState.Visible,
           textContent: JSON.stringify({ open: true }),
         })
@@ -507,20 +519,20 @@ describe('Rendering', () => {
 
       await focus(getPopoverButton())
 
-      assertPopoverButton({ state: PopoverState.InvisibleHidden })
-      assertPopoverPanel({ state: PopoverState.InvisibleHidden })
+      await assertPopoverButton({ state: PopoverState.InvisibleHidden })
+      await assertPopoverPanel({ state: PopoverState.InvisibleHidden })
 
       // Let's open the Popover, to see if it is not hidden anymore
       await click(getPopoverButton())
 
-      assertPopoverButton({ state: PopoverState.Visible })
-      assertPopoverPanel({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverPanel({ state: PopoverState.Visible })
 
       // Let's re-click the Popover, to see if it is hidden again
       await click(getPopoverButton())
 
-      assertPopoverButton({ state: PopoverState.InvisibleHidden })
-      assertPopoverPanel({ state: PopoverState.InvisibleHidden })
+      await assertPopoverButton({ state: PopoverState.InvisibleHidden })
+      await assertPopoverPanel({ state: PopoverState.InvisibleHidden })
     })
 
     it(
@@ -539,14 +551,14 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
 
         // Ensure the active element is within the Panel
-        assertContainsActiveElement(getPopoverPanel())
-        assertActiveElement(getByText('Link 1'))
+        await assertContainsActiveElement(getPopoverPanel())
+        await assertActiveElement(getByText('Link 1'))
       })
     )
 
@@ -566,20 +578,20 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
 
         // Ensure the active element is within the Panel
-        assertContainsActiveElement(getPopoverPanel())
-        assertActiveElement(getByText('Link 1'))
+        await assertContainsActiveElement(getPopoverPanel())
+        await assertActiveElement(getByText('Link 1'))
 
         // Focus the button again
         await focus(getPopoverButton())
 
         // Ensure the Popover is closed again
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -602,14 +614,14 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
 
         // Ensure the active element is within the Panel
-        assertContainsActiveElement(getPopoverPanel())
-        assertActiveElement(getByText('Link 2'))
+        await assertContainsActiveElement(getPopoverPanel())
+        await assertActiveElement(getByText('Link 2'))
       })
     )
 
@@ -629,14 +641,14 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
 
         // Ensure the active element is within the Panel
-        assertContainsActiveElement(getPopoverPanel())
-        assertActiveElement(getByText('Link 1'))
+        await assertContainsActiveElement(getPopoverPanel())
+        await assertActiveElement(getByText('Link 1'))
       })
     )
 
@@ -656,7 +668,7 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
@@ -665,10 +677,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the popover is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Ensure the Popover.Button got the restored focus
-        assertActiveElement(getByText('Trigger'))
+        await assertActiveElement(getByText('Trigger'))
       })
     )
 
@@ -693,7 +705,7 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
@@ -702,10 +714,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the popover is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
 
@@ -733,7 +745,7 @@ describe('Rendering', () => {
         await focus(getPopoverButton())
 
         // Ensure the button is focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Open the popover
         await click(getPopoverButton())
@@ -742,10 +754,10 @@ describe('Rendering', () => {
         await click(getByText('Close me'))
 
         // Ensure the popover is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        await assertActiveElement(getByText('restoreable'))
       })
     )
   })
@@ -815,11 +827,11 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getPopoverButton())
@@ -828,15 +840,15 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-panel-2' },
         })
 
         // Close popover
         await press(Keys.Enter)
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -850,11 +862,11 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getPopoverButton())
@@ -863,11 +875,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is still closed
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -881,11 +893,11 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getPopoverButton())
@@ -894,8 +906,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-panel-2' },
         })
@@ -904,8 +916,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter)
 
         // Verify it is closed again
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -929,22 +941,31 @@ describe('Keyboard interactions', () => {
         await click(getByText('Trigger 1'))
 
         // Verify the correct popovers are open
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
         // Focus trigger 2
         getByText('Trigger 2')?.focus()
 
         // Verify the correct popovers are open
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
         // Open the second popover
         await press(Keys.Enter)
 
         // Verify the correct popovers are open
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 1')
+        )
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
       })
     )
 
@@ -973,10 +994,10 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter, closeBtn)
 
         // Verify it is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Verify we restored the Open button
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
       })
     )
   })
@@ -996,22 +1017,22 @@ describe('Keyboard interactions', () => {
         await focus(getPopoverButton())
 
         // Verify popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
         // Open popover
         await click(getPopoverButton())
 
         // Verify popover is open
-        assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
 
         // Close popover
         await press(Keys.Escape)
 
         // Verify popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
         // Verify button is (still) focused
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
       })
     )
 
@@ -1031,28 +1052,28 @@ describe('Keyboard interactions', () => {
         await focus(getPopoverButton())
 
         // Verify popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
         // Open popover
         await click(getPopoverButton())
 
         // Verify popover is open
-        assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
 
         // Tab to next focusable item
         await press(Keys.Tab)
 
         // Verify the active element is inside the panel
-        assertContainsActiveElement(getPopoverPanel())
+        await assertContainsActiveElement(getPopoverPanel())
 
         // Close popover
         await press(Keys.Escape)
 
         // Verify popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
         // Verify button is focused again
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
       })
     )
 
@@ -1077,18 +1098,27 @@ describe('Keyboard interactions', () => {
         getByText('Trigger 1')?.focus()
 
         // Verify popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 1')
+        )
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
         // Open popover
         await click(getByText('Trigger 1'))
 
         // Verify popover is open
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
-        assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
+        await assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 1'))
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
 
         // Focus the button of the second popover menu
         getByText('Trigger 2')?.focus()
@@ -1097,11 +1127,17 @@ describe('Keyboard interactions', () => {
         await press(Keys.Escape)
 
         // Verify both popovers are closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 1')
+        )
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
         // Verify the button of the second popover is still focused
-        assertActiveElement(getByText('Trigger 2'))
+        await assertActiveElement(getByText('Trigger 2'))
       })
     )
   })
@@ -1135,21 +1171,21 @@ describe('Keyboard interactions', () => {
 
         // Verify we are focused on the first link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Verify we are focused on the second link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
 
         // Let's Tab again
         await press(Keys.Tab)
 
         // Verify that the first Popover is still open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({ state: PopoverState.Visible })
 
         // Verify that the second button is focused
-        assertActiveElement(getByText('Trigger 2'))
+        await assertActiveElement(getByText('Trigger 2'))
       })
     )
 
@@ -1183,21 +1219,21 @@ describe('Keyboard interactions', () => {
 
         // Verify we are focused on the first link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Verify we are focused on the second link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
 
         // Let's Tab to the in between link
         await press(Keys.Tab)
 
         // Verify that the first Popover is still open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({ state: PopoverState.Visible })
 
         // Verify that the in between link is focused
-        assertActiveElement(getByText('Link in between'))
+        await assertActiveElement(getByText('Link in between'))
       })
     )
 
@@ -1236,31 +1272,31 @@ describe('Keyboard interactions', () => {
 
         // Verify we are focused on the first link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Verify we are focused on the second link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
 
         // Let's Tab again
         await press(Keys.Tab)
 
         // Verify that the first Popover is still open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({ state: PopoverState.Visible })
 
         // Verify that the second button is focused
-        assertActiveElement(getByText('Trigger 2'))
+        await assertActiveElement(getByText('Trigger 2'))
 
         // Let's Tab out of the Popover.Group
         await press(Keys.Tab)
 
         // Verify the next link is now focused
-        assertActiveElement(getByText('Next'))
+        await assertActiveElement(getByText('Next'))
 
         // Verify the popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1289,21 +1325,21 @@ describe('Keyboard interactions', () => {
 
         // Verify we are focused on the first link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Verify we are focused on the second link
         await press(Keys.Tab)
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
 
         // Let's Tab out of the Popover
         await press(Keys.Tab)
 
         // Verify the next link is now focused
-        assertActiveElement(getByText('Next'))
+        await assertActiveElement(getByText('Next'))
 
         // Verify the popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1328,17 +1364,17 @@ describe('Keyboard interactions', () => {
         await click(getPopoverButton())
 
         // Focus should be within the panel
-        assertContainsActiveElement(getPopoverPanel())
+        await assertContainsActiveElement(getPopoverPanel())
 
         // Tab out of the component
         await press(Keys.Tab) // Tab to link 1
         await press(Keys.Tab) // Tab out
 
         // The popover should be closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // The active element should be the Next link outside of the popover
-        assertActiveElement(getByText('Next'))
+        await assertActiveElement(getByText('Next'))
       })
     )
 
@@ -1365,25 +1401,25 @@ describe('Keyboard interactions', () => {
         await click(getPopoverButton())
 
         // Focus should be within the panel
-        assertContainsActiveElement(getPopoverPanel())
+        await assertContainsActiveElement(getPopoverPanel())
 
         // The focus should be on the first link
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Tab to the next link
         await press(Keys.Tab)
 
         // The focus should be on the second link
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
 
         // Tab out of the component
         await press(Keys.Tab)
 
         // The popover should be closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // The active element should be the Next link outside of the popover
-        assertActiveElement(getByText('Next'))
+        await assertActiveElement(getByText('Next'))
       })
     )
 
@@ -1409,25 +1445,25 @@ describe('Keyboard interactions', () => {
         await click(getPopoverButton())
 
         // Focus should be within the panel
-        assertContainsActiveElement(getPopoverPanel())
+        await assertContainsActiveElement(getPopoverPanel())
 
         // The focus should be on the first link
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Tab to the next link
         await press(Keys.Tab)
 
         // The focus should be on the second link
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
 
         // Tab out of the component
         await press(Keys.Tab)
 
         // The popover should be closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // The active element should be the Previous link outside of the popover, this is the next one in line
-        assertActiveElement(getByText('Previous'))
+        await assertActiveElement(getByText('Previous'))
       })
     )
   })
@@ -1468,17 +1504,17 @@ describe('Keyboard interactions', () => {
 
         // Verify we can tab to Trigger 1
         await press(shift(Keys.Tab))
-        assertActiveElement(getByText('Trigger 1'))
+        await assertActiveElement(getByText('Trigger 1'))
 
         // Let's Tab out of the Popover.Group
         await press(shift(Keys.Tab))
 
         // Verify the previous link is now focused
-        assertActiveElement(getByText('Previous'))
+        await assertActiveElement(getByText('Previous'))
 
         // Verify the popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1509,11 +1545,11 @@ describe('Keyboard interactions', () => {
         await press(shift(Keys.Tab))
 
         // Verify the previous link is now focused
-        assertActiveElement(getByText('Previous'))
+        await assertActiveElement(getByText('Previous'))
 
         // Verify the popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1545,22 +1581,25 @@ describe('Keyboard interactions', () => {
         getByText('Trigger 2')?.focus()
 
         // Ensure the second popover is open
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
 
         // Close the popover
         await press(Keys.Escape)
 
         // Ensure the popover is now closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
         // Ensure the second Popover.Button is focused
-        assertActiveElement(getByText('Trigger 2'))
+        await assertActiveElement(getByText('Trigger 2'))
 
         // Tab backwards
         await press(shift(Keys.Tab))
 
         // Ensure the first Popover.Button is open
-        assertActiveElement(getByText('Trigger 1'))
+        await assertActiveElement(getByText('Trigger 1'))
       })
     )
 
@@ -1581,20 +1620,20 @@ describe('Keyboard interactions', () => {
         await click(getPopoverButton())
 
         // Ensure the popover is open
-        assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
 
         // Ensure the Link 1 is focused
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Tab out of the Panel
         await press(shift(Keys.Tab))
 
         // Ensure the Popover.Button is focused again
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Ensure the Popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1617,20 +1656,20 @@ describe('Keyboard interactions', () => {
         await click(getPopoverButton())
 
         // Ensure the popover is open
-        assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
 
         // Ensure the Link 1 is focused
-        assertActiveElement(getByText('Link 1'))
+        await assertActiveElement(getByText('Link 1'))
 
         // Tab out of the Panel
         await press(shift(Keys.Tab))
 
         // Ensure the Popover.Button is focused again
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Ensure the Popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1661,23 +1700,23 @@ describe('Keyboard interactions', () => {
         await click(getByText('Trigger 1'))
 
         // Ensure the popover is open
-        assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
 
         // Focus the second button
         getByText('Trigger 2')?.focus()
 
         // Verify the second button is focused
-        assertActiveElement(getByText('Trigger 2'))
+        await assertActiveElement(getByText('Trigger 2'))
 
         // Ensure the first Popover is still open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({ state: PopoverState.Visible })
 
         // Press shift+tab, to move focus to the last item in the Popover.Panel
         await press(shift(Keys.Tab), getByText('Trigger 2'))
 
         // Verify we are focusing the last link of the first Popover
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
       })
     )
 
@@ -1712,23 +1751,23 @@ describe('Keyboard interactions', () => {
         await click(getByText('Trigger 1'))
 
         // Ensure the popover is open
-        assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
 
         // Focus the second button
         getByText('Trigger 2')?.focus()
 
         // Verify the second button is focused
-        assertActiveElement(getByText('Trigger 2'))
+        await assertActiveElement(getByText('Trigger 2'))
 
         // Ensure the first Popover is still open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({ state: PopoverState.Visible })
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({ state: PopoverState.Visible })
 
         // Press shift+tab, to move focus to the last item in the Popover.Panel
         await press(shift(Keys.Tab), getByText('Trigger 2'))
 
         // Verify we are focusing the last link of the first Popover
-        assertActiveElement(getByText('Link 2'))
+        await assertActiveElement(getByText('Link 2'))
       })
     )
   })
@@ -1744,11 +1783,11 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getPopoverButton())
@@ -1757,8 +1796,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-panel-2' },
         })
@@ -1775,11 +1814,11 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getPopoverButton())
@@ -1788,11 +1827,11 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is still closed
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1806,11 +1845,11 @@ describe('Keyboard interactions', () => {
           </Popover>
         )
 
-        assertPopoverButton({
+        await assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
         })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Focus the button
         await focus(getPopoverButton())
@@ -1819,8 +1858,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is open
-        assertPopoverButton({ state: PopoverState.Visible })
-        assertPopoverPanel({
+        await assertPopoverButton({ state: PopoverState.Visible })
+        await assertPopoverPanel({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-panel-2' },
         })
@@ -1829,8 +1868,8 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space)
 
         // Verify it is closed again
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
       })
     )
 
@@ -1854,22 +1893,31 @@ describe('Keyboard interactions', () => {
         await click(getByText('Trigger 1'))
 
         // Verify the correct popovers are open
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
         // Focus trigger 2
         getByText('Trigger 2')?.focus()
 
         // Verify the correct popovers are open
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 2')
+        )
 
         // Open the second popover
         await press(Keys.Space)
 
         // Verify the correct popovers are open
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
+        await assertPopoverButton(
+          { state: PopoverState.InvisibleUnmounted },
+          getByText('Trigger 1')
+        )
+        await assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
       })
     )
 
@@ -1898,10 +1946,10 @@ describe('Keyboard interactions', () => {
         await press(Keys.Space, closeBtn)
 
         // Verify it is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Verify we restored the Open button
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
       })
     )
 
@@ -1932,10 +1980,10 @@ describe('Keyboard interactions', () => {
         await press(Keys.Enter, closeLink)
 
         // Verify it is closed
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+        await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
         // Verify we restored the Open button
-        assertActiveElement(getPopoverButton())
+        await assertActiveElement(getPopoverButton())
 
         // Verify that we got redirected to the href
         expect(document.location.hash).toEqual('#closed')
@@ -1955,18 +2003,18 @@ describe('Mouse interactions', () => {
         </Popover>
       )
 
-      assertPopoverButton({
+      await assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
         attributes: { id: 'headlessui-popover-button-1' },
       })
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Open popover
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.Visible })
-      assertPopoverPanel({
+      await assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverPanel({
         state: PopoverState.Visible,
         attributes: { id: 'headlessui-popover-panel-2' },
       })
@@ -1983,21 +2031,21 @@ describe('Mouse interactions', () => {
         </Popover>
       )
 
-      assertPopoverButton({
+      await assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
         attributes: { id: 'headlessui-popover-button-1' },
       })
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Open popover
       await click(getPopoverButton(), MouseButton.Right)
 
       // Verify it is still closed
-      assertPopoverButton({
+      await assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
         attributes: { id: 'headlessui-popover-button-1' },
       })
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
     })
   )
 
@@ -2011,21 +2059,21 @@ describe('Mouse interactions', () => {
         </Popover>
       )
 
-      assertPopoverButton({
+      await assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
         attributes: { id: 'headlessui-popover-button-1' },
       })
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Try to open the popover
       await click(getPopoverButton())
 
       // Verify it is still closed
-      assertPopoverButton({
+      await assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
         attributes: { id: 'headlessui-popover-button-1' },
       })
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
     })
   )
 
@@ -2045,14 +2093,14 @@ describe('Mouse interactions', () => {
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
 
       // Click to close
       await click(getPopoverButton())
 
       // Verify it is closed
-      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
     })
   )
 
@@ -2071,13 +2119,13 @@ describe('Mouse interactions', () => {
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
 
       // Click the overlay to close
       await click(getPopoverOverlay())
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
     })
   )
 
@@ -2095,16 +2143,16 @@ describe('Mouse interactions', () => {
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
 
       // Click the body to close
       await click(document.body)
 
       // Verify it is closed
-      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
       // Verify the button is focused
-      assertActiveElement(getPopoverButton())
+      await assertActiveElement(getPopoverButton())
     })
   )
 
@@ -2126,16 +2174,16 @@ describe('Mouse interactions', () => {
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
 
       // Click the span to close
       await click(getByText('I am just text'))
 
       // Verify it is closed
-      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
       // Verify the button is focused
-      assertActiveElement(getPopoverButton())
+      await assertActiveElement(getPopoverButton())
     })
   )
 
@@ -2157,16 +2205,16 @@ describe('Mouse interactions', () => {
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
 
       // Click the extra button to close
       await click(getByText('Different button'))
 
       // Verify it is closed
-      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
       // Verify the other button is focused
-      assertActiveElement(getByText('Different button'))
+      await assertActiveElement(getByText('Different button'))
     })
   )
 
@@ -2192,16 +2240,16 @@ describe('Mouse interactions', () => {
       getPopoverButton()?.focus()
 
       // Verify it is open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
 
       // Click the span inside the extra button to close
       await click(getByText('Different button'))
 
       // Verify it is closed
-      assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
 
       // Verify the other button is focused
-      assertActiveElement(document.getElementById('btn'))
+      await assertActiveElement(document.getElementById('btn'))
 
       // Ensure that the focus button only got focus once (first click)
       expect(focusFn).toHaveBeenCalledTimes(1)
@@ -2233,10 +2281,10 @@ describe('Mouse interactions', () => {
       await click(closeBtn)
 
       // Verify it is closed
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Verify we restored the Open button
-      assertActiveElement(getPopoverButton())
+      await assertActiveElement(getPopoverButton())
     })
   )
 
@@ -2261,7 +2309,7 @@ describe('Mouse interactions', () => {
       await click(getByText('btn'))
 
       // Verify it is still open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
 
       // Verify we actually clicked the button
       expect(clickFn).toHaveBeenCalledTimes(1)
@@ -2287,7 +2335,7 @@ describe('Mouse interactions', () => {
       await click(getByText('element'))
 
       // Verify it is still open
-      assertPopoverButton({ state: PopoverState.Visible })
+      await assertPopoverButton({ state: PopoverState.Visible })
     })
   )
 
@@ -2310,7 +2358,7 @@ describe('Mouse interactions', () => {
       await click(document.body)
 
       // Verify it is still open
-      assertPopoverButton({ state: PopoverState.InvisibleHidden })
+      await assertPopoverButton({ state: PopoverState.InvisibleHidden })
     })
   )
 
@@ -2330,16 +2378,16 @@ describe('Mouse interactions', () => {
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverPanel({ state: PopoverState.Visible })
+      await assertPopoverPanel({ state: PopoverState.Visible })
 
       // Close the popover
       await click(getPopoverButton())
 
       // Verify it is closed
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Verify the button is focused
-      assertActiveElement(getPopoverButton())
+      await assertActiveElement(getPopoverButton())
     })
   )
 
@@ -2359,16 +2407,16 @@ describe('Mouse interactions', () => {
       await click(getPopoverButton())
 
       // Verify it is open
-      assertPopoverPanel({ state: PopoverState.Visible })
+      await assertPopoverPanel({ state: PopoverState.Visible })
 
       // Close the popover
       await click(getPopoverButton())
 
       // Verify it is closed
-      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      await assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
       // Verify the button is focused
-      assertActiveElement(getPopoverButton())
+      await assertActiveElement(getPopoverButton())
     })
   )
 })
