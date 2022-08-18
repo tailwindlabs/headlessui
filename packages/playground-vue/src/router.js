@@ -1,23 +1,76 @@
 import { createWebHistory, createRouter, RouterView } from 'vue-router'
-import lookup from './.generated/preload.js'
-import routes from './routes.json'
 
-function buildRoutes(routes) {
-  return routes.map((route) => {
-    let definition = {
-      path: route.path,
-      component: route.component ? lookup[route.component] : RouterView,
+function buildRoutes() {
+  function titleCase(str) {
+    return str
+      .toLocaleLowerCase()
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+  }
+
+  // 1. Get all the components in the src/components directory
+  let files = Object.entries(import.meta.globEager('./components/**/*.vue'))
+
+  // 2.a. Swap the file names for route urls
+  // 2.b. Resolve the default import for each component
+  files = files.map(([file, component]) => [
+    file
+      .replace('./components/', '/')
+      .replace(/\.vue$/, '')
+      .toLocaleLowerCase()
+      .replace(/^\/home$/g, '/'),
+    component.default,
+  ])
+
+  let alreadyAdded = new Set()
+
+  // 3. Add a route for each directory (if not already added)
+  files = files.flatMap((entry) => {
+    let dirs = entry[0].split('/').slice(1, -1)
+
+    let paths = []
+
+    for (const [idx] of dirs.entries()) {
+      let path = `/` + dirs.slice(0, idx + 1).join('/')
+      if (alreadyAdded.has(path)) {
+        continue
+      }
+
+      paths.push([path, RouterView])
+      alreadyAdded.add(path)
     }
 
-    if (route.children) {
-      definition.children = buildRoutes(route.children)
-    }
-
-    return definition
+    return [...paths, entry]
   })
+
+  // 4. Sort the routes alphabetically and by length
+  files.sort((a, b) => a[0].localeCompare(b[0]))
+
+  // 5. Create the nested routes
+  let routes = []
+  let routesByPath = {}
+
+  for (let [path, component] of files) {
+    let prefix = path.split('/').slice(0, -1).join('/')
+    let parent = routesByPath[prefix]?.children ?? routes
+    let route = {
+      path,
+      component: component,
+      children: [],
+      meta: {
+        name: titleCase(path.match(/[^/]+$/)?.[0] ?? 'Home'),
+        isRoot: parent === routes,
+      },
+    }
+
+    parent.push((routesByPath[path] = route))
+  }
+
+  return routes
 }
 
 export default createRouter({
   history: createWebHistory(),
-  routes: buildRoutes(routes),
+  routes: buildRoutes(),
 })
