@@ -590,6 +590,125 @@ describe('Rendering', () => {
       })
     )
   })
+
+  describe('Uncontrolled', () => {
+    it(
+      'should be possible to use in an uncontrolled way',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <RadioGroup name="assignee">
+                <RadioGroupOption value="alice">Alice</RadioGroupOption>
+                <RadioGroupOption value="bob">Bob</RadioGroupOption>
+                <RadioGroupOption value="charlie">Charlie</RadioGroupOption>
+              </RadioGroup>
+              <button id="submit">submit</button>
+            </form>
+          `,
+          setup: () => ({
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+
+        await click(document.getElementById('submit'))
+
+        // No values
+        expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+        // Choose alice
+        await click(getRadioGroupOptions()[0])
+
+        // Submit
+        await click(document.getElementById('submit'))
+
+        // Alice should be submitted
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+        // Choose charlie
+        await click(getRadioGroupOptions()[2])
+
+        // Submit
+        await click(document.getElementById('submit'))
+
+        // Charlie should be submitted
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
+      })
+    )
+
+    it(
+      'should be possible to provide a default value',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <RadioGroup name="assignee" defaultValue="bob">
+                <RadioGroupOption value="alice">Alice</RadioGroupOption>
+                <RadioGroupOption value="bob">Bob</RadioGroupOption>
+                <RadioGroupOption value="charlie">Charlie</RadioGroupOption>
+              </RadioGroup>
+              <button id="submit">submit</button>
+            </form>
+          `,
+          setup: () => ({
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+
+        await click(document.getElementById('submit'))
+
+        // Bob is the defaultValue
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+        // Choose alice
+        await click(getRadioGroupOptions()[0])
+
+        // Submit
+        await click(document.getElementById('submit'))
+
+        // Alice should be submitted
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+      })
+    )
+
+    it(
+      'should still call the onChange listeners when choosing new values',
+      suppressConsoleLogs(async () => {
+        let handleChange = jest.fn()
+
+        renderTemplate({
+          template: html`
+            <RadioGroup name="assignee" @update:modelValue="handleChange">
+              <RadioGroupOption value="alice">Alice</RadioGroupOption>
+              <RadioGroupOption value="bob">Bob</RadioGroupOption>
+              <RadioGroupOption value="charlie">Charlie</RadioGroupOption>
+            </RadioGroup>
+          `,
+          setup: () => ({ handleChange }),
+        })
+
+        // Choose alice
+        await click(getRadioGroupOptions()[0])
+
+        // Choose bob
+        await click(getRadioGroupOptions()[1])
+
+        // Change handler should have been called twice
+        expect(handleChange).toHaveBeenNthCalledWith(1, 'alice')
+        expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
+      })
+    )
+  })
 })
 
 describe('Keyboard interactions', () => {

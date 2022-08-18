@@ -288,6 +288,84 @@ describe('Rendering', () => {
           )
         })
       )
+
+      it(
+        'should be possible to use completely new objects while rendering (single mode)',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" by="id">
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption :value="{ id: 1, name: 'alice' }">alice</ListboxOption>
+                  <ListboxOption :value="{ id: 2, name: 'bob' }">bob</ListboxOption>
+                  <ListboxOption :value="{ id: 3, name: 'charlie' }">charlie</ListboxOption>
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref({ id: 2, name: 'Bob' })
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+          let [alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+
+          await click(getListboxOptions()[2])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).not.toHaveAttribute('aria-selected')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[1])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
+
+      it(
+        'should be possible to use completely new objects while rendering (multiple mode)',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" by="id" multiple>
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption :value="{ id: 1, name: 'alice' }">alice</ListboxOption>
+                  <ListboxOption :value="{ id: 2, name: 'bob' }">bob</ListboxOption>
+                  <ListboxOption :value="{ id: 3, name: 'charlie' }">charlie</ListboxOption>
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref([{ id: 2, name: 'Bob' }])
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+
+          await click(getListboxOptions()[2])
+          let [alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[2])
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
     })
   })
 
@@ -727,6 +805,140 @@ describe('Rendering', () => {
 
     // Verify that the third listbox option is active
     assertActiveListboxOption(options[2])
+  })
+
+  describe('Uncontrolled', () => {
+    it('should be possible to use in an uncontrolled way', async () => {
+      let handleSubmission = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <form @submit="handleSubmit">
+            <Listbox name="assignee">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="alice">Alice</ListboxOption>
+                <ListboxOption value="bob">Bob</ListboxOption>
+                <ListboxOption value="charlie">Charlie</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+            <button id="submit">submit</button>
+          </form>
+        `,
+        setup: () => ({
+          handleSubmit(e: SubmitEvent) {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          },
+        }),
+      })
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose charlie
+      await click(getListboxOptions()[2])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Charlie should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
+    })
+
+    it('should be possible to provide a default value', async () => {
+      let handleSubmission = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <form @submit="handleSubmit">
+            <Listbox name="assignee" defaultValue="bob">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="alice">Alice</ListboxOption>
+                <ListboxOption value="bob">Bob</ListboxOption>
+                <ListboxOption value="charlie">Charlie</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+            <button id="submit">submit</button>
+          </form>
+        `,
+        setup: () => ({
+          handleSubmit(e: SubmitEvent) {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          },
+        }),
+      })
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+    })
+
+    it('should still call the onChange listeners when choosing new values', async () => {
+      let handleChange = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <Listbox name="assignee" @update:modelValue="handleChange">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="alice">Alice</ListboxOption>
+              <ListboxOption value="bob">Bob</ListboxOption>
+              <ListboxOption value="charlie">Charlie</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ handleChange }),
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose bob
+      await click(getListboxOptions()[1])
+
+      // Change handler should have been called twice
+      expect(handleChange).toHaveBeenNthCalledWith(1, 'alice')
+      expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
+    })
   })
 })
 

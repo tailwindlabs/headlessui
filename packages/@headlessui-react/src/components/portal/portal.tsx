@@ -21,6 +21,7 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { microTask } from '../../utils/micro-task'
+import { isServer } from '../../utils/ssr'
 
 function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
   let forceInRoot = usePortalRoot()
@@ -33,7 +34,7 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
     if (!forceInRoot && groupTarget !== null) return null
 
     // No group context is used, let's create a default portal root
-    if (typeof window === 'undefined') return null
+    if (isServer) return null
     let existingRoot = ownerDocument?.getElementById('headlessui-portal-root')
     if (existingRoot) return existingRoot
 
@@ -81,7 +82,7 @@ let PortalRoot = forwardRefWithAs(function Portal<
   let ownerDocument = useOwnerDocument(internalPortalRootRef)
   let target = usePortalTarget(internalPortalRootRef)
   let [element] = useState<HTMLDivElement | null>(() =>
-    typeof window === 'undefined' ? null : ownerDocument?.createElement('div') ?? null
+    isServer ? null : ownerDocument?.createElement('div') ?? null
   )
 
   let ready = useServerHandoffComplete()

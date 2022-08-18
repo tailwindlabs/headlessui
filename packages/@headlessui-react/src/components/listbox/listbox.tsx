@@ -37,6 +37,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
+import { useControllable } from '../../hooks/use-controllable'
 
 enum ListboxStates {
   Open,
@@ -298,9 +299,10 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 let DEFAULT_LISTBOX_TAG = Fragment
-interface ListboxRenderPropArg {
+interface ListboxRenderPropArg<TType> {
   open: boolean
   disabled: boolean
+  value: TType
 }
 
 let ListboxRoot = forwardRefWithAs(function Listbox<
@@ -310,12 +312,13 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
 >(
   props: Props<
     TTag,
-    ListboxRenderPropArg,
-    'value' | 'onChange' | 'disabled' | 'horizontal' | 'name' | 'multiple' | 'by'
+    ListboxRenderPropArg<TType>,
+    'value' | 'defaultValue' | 'onChange' | 'by' | 'disabled' | 'horizontal' | 'name' | 'multiple'
   > & {
-    value: TType
-    onChange(value: TType): void
-    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
+    value?: TType
+    defaultValue?: TType
+    onChange?(value: TType): void
+    by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
     disabled?: boolean
     horizontal?: boolean
     name?: string
@@ -324,9 +327,10 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   ref: Ref<TTag>
 ) {
   let {
-    value,
+    value: controlledValue,
+    defaultValue,
     name,
-    onChange,
+    onChange: controlledOnChange,
     by = (a, z) => a === z,
     disabled = false,
     horizontal = false,
@@ -335,6 +339,8 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
+
+  let [value, onChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
 
   let reducerBag = useReducer(stateReducer, {
     listboxState: ListboxStates.Closed,
@@ -345,8 +351,8 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
         mode: multiple ? ValueMode.Multi : ValueMode.Single,
         compare: useEvent(
           typeof by === 'string'
-            ? (a: TType, z: TType) => {
-                let property = by as unknown as keyof TType
+            ? (a: TActualType, z: TActualType) => {
+                let property = by as unknown as keyof TActualType
                 return a[property] === z[property]
               }
             : by
@@ -377,7 +383,10 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
         [ValueMode.Multi]() {
           let copy = (propsRef.current.value as TActualType[]).slice()
 
-          let idx = copy.indexOf(value as TActualType)
+          let { compare } = propsRef.current
+          let idx = copy.findIndex((item) =>
+            compare(item as unknown as TActualType, value as TActualType)
+          )
           if (idx === -1) {
             copy.push(value as TActualType)
           } else {
@@ -409,9 +418,9 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     listboxState === ListboxStates.Open
   )
 
-  let slot = useMemo<ListboxRenderPropArg>(
-    () => ({ open: listboxState === ListboxStates.Open, disabled }),
-    [listboxState, disabled]
+  let slot = useMemo<ListboxRenderPropArg<TType>>(
+    () => ({ open: listboxState === ListboxStates.Open, disabled, value }),
+    [listboxState, disabled, value]
   )
 
   let ourProps = { ref: listboxRef }

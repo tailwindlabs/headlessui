@@ -1,7 +1,7 @@
-import { useWindowEvent } from './use-window-event'
-import { computed, Ref, ComputedRef } from 'vue'
+import { computed, Ref, ComputedRef, ref } from 'vue'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { dom } from '../utils/dom'
+import { useDocumentEvent } from './use-document-event'
 
 type Container = Ref<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
@@ -76,9 +76,31 @@ export function useOutsideClick(
     return cb(event, target)
   }
 
-  useWindowEvent(
+  let initialClickTarget = ref<EventTarget | null>(null)
+
+  useDocumentEvent(
+    'mousedown',
+    (event) => {
+      if (enabled.value) {
+        initialClickTarget.value = event.target
+      }
+    },
+    true
+  )
+
+  useDocumentEvent(
     'click',
-    (event) => handleOutsideClick(event, (event) => event.target as HTMLElement),
+    (event) => {
+      if (!initialClickTarget.value) {
+        return
+      }
+
+      handleOutsideClick(event, () => {
+        return initialClickTarget.value as HTMLElement
+      })
+
+      initialClickTarget.value = null
+    },
 
     // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
     // don't "cancel" this outside click check. E.g.: A `Menu` inside a `DialogPanel` if the `Menu`
@@ -94,7 +116,7 @@ export function useOutsideClick(
   // In this case we care only about the first case so we check to see if the active element is the iframe
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
-  useWindowEvent(
+  useDocumentEvent(
     'blur',
     (event) =>
       handleOutsideClick(event, () =>

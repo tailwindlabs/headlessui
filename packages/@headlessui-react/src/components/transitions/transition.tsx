@@ -12,7 +12,7 @@ import React, {
   MutableRefObject,
   Ref,
 } from 'react'
-import { Props } from '../../types'
+import { Props, ReactTag } from '../../types'
 import {
   Features,
   forwardRefWithAs,
@@ -71,7 +71,7 @@ export interface TransitionEvents {
   afterLeave?: () => void
 }
 
-type TransitionChildProps<TTag> = Props<TTag, TransitionChildRenderPropArg> &
+type TransitionChildProps<TTag extends ReactTag> = Props<TTag, TransitionChildRenderPropArg> &
   PropsForFeatures<typeof TransitionChildRenderFeatures> &
   TransitionClasses &
   TransitionEvents & { appear?: boolean }
@@ -132,7 +132,6 @@ function useNesting(
   id?: string
 ): MutableRefObject<NestingContextValues> {
   type TransitionAction = () => void
-
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
 
   let onStartCallback = useRef<TransitionAction>()
@@ -280,10 +279,11 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
   let transitionRef = useSyncRefs(container, ref)
-  let [state, setState] = useState(TreeStates.Visible)
   let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
+
+  let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
   let parentNesting = useParentNesting()
   let nesting = useNesting(false, parentNesting, props['data-debug'])
@@ -341,6 +341,8 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     if (prevShow.current === show) return 'idle'
     return show ? 'enter' : 'leave'
   })() as TransitionDirection
+
+  let transitioning = useRef(false)
 
   let beforeEvent = useEvent((direction: TransitionDirection) => {
     return match(direction, {

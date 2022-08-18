@@ -3,6 +3,7 @@ import {
   defineComponent,
   h,
   onMounted,
+  onUnmounted,
   ref,
   watch,
 
@@ -102,8 +103,8 @@ export let FocusTrap = Object.assign(
 
       return () => {
         let slot = {}
-        let ourProps = { 'data-hi': 'container', ref: container }
-        let { features, initialFocus, containers: _containers, ...incomingProps } = props
+        let ourProps = { ref: container }
+        let { features, initialFocus, containers: _containers, ...theirProps } = props
 
         return h(Fragment, [
           Boolean(features & Features.TabLock) &&
@@ -114,7 +115,8 @@ export let FocusTrap = Object.assign(
               features: HiddenFeatures.Focusable,
             }),
           render({
-            props: { ...attrs, ...incomingProps, ...ourProps },
+            ourProps,
+            theirProps: { ...attrs, ...theirProps },
             slot,
             attrs,
             slots,
@@ -140,44 +142,38 @@ function useRestoreFocus(
 ) {
   let restoreElement = ref<HTMLElement | null>(null)
 
-  // Deliberately not using a ref, we don't want to trigger re-renders.
-  let mounted = { value: false }
+  function captureFocus() {
+    if (restoreElement.value) return
+    restoreElement.value = ownerDocument.value?.activeElement as HTMLElement
+  }
+
+  // Restore the focus to the previous element
+  function restoreFocusIfNeeded() {
+    if (!restoreElement.value) return
+    focusElement(restoreElement.value)
+    restoreElement.value = null
+  }
 
   onMounted(() => {
-    // Capture the currently focused element, before we try to move the focus inside the FocusTrap.
     watch(
       enabled,
       (newValue, prevValue) => {
         if (newValue === prevValue) return
-        if (!enabled.value) return
 
-        mounted.value = true
-
-        if (!restoreElement.value) {
-          restoreElement.value = ownerDocument.value?.activeElement as HTMLElement
+        if (newValue) {
+          // The FocusTrap has become enabled which means we're going to move the focus into the trap
+          // We need to capture the current focus before we do that so we can restore it when done
+          captureFocus()
+        } else {
+          restoreFocusIfNeeded()
         }
       },
       { immediate: true }
     )
-
-    // Restore the focus when we unmount the component.
-    watch(
-      enabled,
-      (newValue, prevValue, onInvalidate) => {
-        if (newValue === prevValue) return
-        if (!enabled.value) return
-
-        onInvalidate(() => {
-          if (mounted.value === false) return
-          mounted.value = false
-
-          focusElement(restoreElement.value)
-          restoreElement.value = null
-        })
-      },
-      { immediate: true }
-    )
   })
+
+  // Restore the focus when we unmount the component
+  onUnmounted(restoreFocusIfNeeded)
 }
 
 function useInitialFocus(
@@ -194,6 +190,10 @@ function useInitialFocus(
 ) {
   let previousActiveElement = ref<HTMLElement | null>(null)
 
+  let mounted = ref(false)
+  onMounted(() => (mounted.value = true))
+  onUnmounted(() => (mounted.value = false))
+
   onMounted(() => {
     watch(
       // Handle initial focus
@@ -205,30 +205,46 @@ function useInitialFocus(
         let containerElement = dom(container)
         if (!containerElement) return
 
-        let initialFocusElement = dom(initialFocus)
+        // Delaying the focus to the next microtask ensures that a few conditions are true:
+        // - The container is rendered
+        // - Transitions could be started
+        // If we don't do this, then focusing an element will immediately cancel any transitions. This
+        // is not ideal because transitions will look broken.
+        // There is an additional issue with doing this immediately. The FocusTrap is used inside a
+        // Dialog, the Dialog is rendered inside of a Portal and the Portal is rendered at the end of
+        // the `document.body`. This means that the moment we call focus, the browser immediately
+        // tries to focus the element, which will still be at the bodem resulting in the page to
+        // scroll down. Delaying this will prevent the page to scroll down entirely.
+        microTask(() => {
+          if (!mounted.value) {
+            return
+          }
 
-        let activeElement = ownerDocument.value?.activeElement as HTMLElement
+          let initialFocusElement = dom(initialFocus)
 
-        if (initialFocusElement) {
-          if (initialFocusElement === activeElement) {
+          let activeElement = ownerDocument.value?.activeElement as HTMLElement
+
+          if (initialFocusElement) {
+            if (initialFocusElement === activeElement) {
+              previousActiveElement.value = activeElement
+              return // Initial focus ref is already the active element
+            }
+          } else if (containerElement!.contains(activeElement)) {
             previousActiveElement.value = activeElement
-            return // Initial focus ref is already the active element
+            return // Already focused within Dialog
           }
-        } else if (containerElement.contains(activeElement)) {
-          previousActiveElement.value = activeElement
-          return // Already focused within Dialog
-        }
 
-        // Try to focus the initialFocus ref
-        if (initialFocusElement) {
-          focusElement(initialFocusElement)
-        } else {
-          if (focusIn(containerElement, Focus.First) === FocusResult.Error) {
-            console.warn('There are no focusable elements inside the <FocusTrap />')
+          // Try to focus the initialFocus ref
+          if (initialFocusElement) {
+            focusElement(initialFocusElement)
+          } else {
+            if (focusIn(containerElement!, Focus.First | Focus.NoScroll) === FocusResult.Error) {
+              console.warn('There are no focusable elements inside the <FocusTrap />')
+            }
           }
-        }
 
-        previousActiveElement.value = ownerDocument.value?.activeElement as HTMLElement
+          previousActiveElement.value = ownerDocument.value?.activeElement as HTMLElement
+        })
       },
       { immediate: true, flush: 'post' }
     )

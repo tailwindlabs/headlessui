@@ -88,7 +88,8 @@ export let Portal = defineComponent({
         Teleport,
         { to: myTarget.value },
         render({
-          props: { ...props, ...ourProps },
+          ourProps,
+          theirProps: props,
           slot: {},
           attrs,
           slots,
@@ -121,9 +122,16 @@ export let PortalGroup = defineComponent({
     provide(PortalGroupContext, api)
 
     return () => {
-      let { target: _, ...incomingProps } = props
+      let { target: _, ...theirProps } = props
 
-      return render({ props: incomingProps, slot: {}, attrs, slots, name: 'PortalGroup' })
+      return render({
+        theirProps,
+        ourProps: {},
+        slot: {},
+        attrs,
+        slots,
+        name: 'PortalGroup',
+      })
     }
   },
 })

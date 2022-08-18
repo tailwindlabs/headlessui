@@ -39,6 +39,7 @@ import {
   assertCombobox,
   ComboboxMode,
   assertNotActiveComboboxOption,
+  assertComboboxInput,
 } from '../../test-utils/accessibility-assertions'
 import { Transition } from '../transitions/transition'
 
@@ -271,6 +272,84 @@ describe('Rendering', () => {
           )
         })
       )
+
+      it(
+        'should be possible to use completely new objects while rendering (single mode)',
+        suppressConsoleLogs(async () => {
+          function Example() {
+            let [value, setValue] = useState({ id: 2, name: 'Bob' })
+
+            return (
+              <Combobox value={value} onChange={(value) => setValue(value)} by="id">
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value={{ id: 1, name: 'alice' }}>alice</Combobox.Option>
+                  <Combobox.Option value={{ id: 2, name: 'bob' }}>bob</Combobox.Option>
+                  <Combobox.Option value={{ id: 3, name: 'charlie' }}>charlie</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            )
+          }
+
+          render(<Example />)
+
+          await click(getComboboxButton())
+          let [alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+
+          await click(getComboboxOptions()[2])
+          await click(getComboboxButton())
+          ;[alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).not.toHaveAttribute('aria-selected')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getComboboxOptions()[1])
+          await click(getComboboxButton())
+          ;[alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
+
+      it(
+        'should be possible to use completely new objects while rendering (multiple mode)',
+        suppressConsoleLogs(async () => {
+          function Example() {
+            let [value, setValue] = useState([{ id: 2, name: 'Bob' }])
+
+            return (
+              <Combobox value={value} onChange={(value) => setValue(value)} by="id" multiple>
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value={{ id: 1, name: 'alice' }}>alice</Combobox.Option>
+                  <Combobox.Option value={{ id: 2, name: 'bob' }}>bob</Combobox.Option>
+                  <Combobox.Option value={{ id: 3, name: 'charlie' }}>charlie</Combobox.Option>
+                </Combobox.Options>
+              </Combobox>
+            )
+          }
+
+          render(<Example />)
+
+          await click(getComboboxButton())
+
+          await click(getComboboxOptions()[2])
+          let [alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getComboboxOptions()[2])
+          ;[alice, bob, charlie] = getComboboxOptions()
+          expect(alice).not.toHaveAttribute('aria-selected')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).not.toHaveAttribute('aria-selected')
+        })
+      )
     })
   })
 
@@ -296,8 +375,11 @@ describe('Rendering', () => {
 
         render(<Example />)
 
+        assertComboboxInput({ state: ComboboxState.InvisibleUnmounted })
+
         await click(getComboboxButton())
 
+        assertComboboxInput({ state: ComboboxState.Visible })
         assertComboboxList({ state: ComboboxState.Visible })
 
         await click(getComboboxOptions()[1])
@@ -341,6 +423,60 @@ describe('Rendering', () => {
     )
 
     it(
+      'conditionally rendering the input should allow changing the display value',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState(null)
+          let [suffix, setSuffix] = useState(false)
+
+          return (
+            <>
+              <Combobox value={value} onChange={setValue} nullable>
+                <Combobox.Input
+                  onChange={NOOP}
+                  displayValue={(str?: string) =>
+                    `${str?.toUpperCase() ?? ''} ${suffix ? 'with suffix' : 'no suffix'}`
+                  }
+                />
+                <Combobox.Button>Trigger</Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="a">Option A</Combobox.Option>
+                  <Combobox.Option value="b">Option B</Combobox.Option>
+                  <Combobox.Option value="c">Option C</Combobox.Option>
+                </Combobox.Options>
+                <button onClick={() => setSuffix((v) => !v)}>Toggle suffix</button>
+              </Combobox>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        expect(getComboboxInput()).toHaveValue(' no suffix')
+
+        await click(getComboboxButton())
+
+        expect(getComboboxInput()).toHaveValue(' no suffix')
+
+        await click(getComboboxOptions()[1])
+
+        expect(getComboboxInput()).toHaveValue('B no suffix')
+
+        await click(getByText('Toggle suffix'))
+
+        expect(getComboboxInput()).toHaveValue('B no suffix') // No re-sync yet
+
+        await click(getComboboxButton())
+
+        expect(getComboboxInput()).toHaveValue('B no suffix') // No re-sync yet
+
+        await click(getComboboxOptions()[0])
+
+        expect(getComboboxInput()).toHaveValue('A with suffix')
+      })
+    )
+
+    it(
       'should be possible to override the `type` on the input',
       suppressConsoleLogs(async () => {
         function Example() {
@@ -362,6 +498,58 @@ describe('Rendering', () => {
         render(<Example />)
 
         expect(getComboboxInput()).toHaveAttribute('type', 'search')
+      })
+    )
+
+    xit(
+      'should reflect the value in the input when the value changes and when you are typing',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState('bob')
+          let [_query, setQuery] = useState('')
+
+          return (
+            <Combobox value={value} onChange={setValue}>
+              {({ open }) => (
+                <>
+                  <Combobox.Input
+                    onChange={(event) => setQuery(event.target.value)}
+                    displayValue={(person) => `${person ?? ''} - ${open ? 'open' : 'closed'}`}
+                  />
+
+                  <Combobox.Button />
+
+                  <Combobox.Options>
+                    <Combobox.Option value="alice">alice</Combobox.Option>
+                    <Combobox.Option value="bob">bob</Combobox.Option>
+                    <Combobox.Option value="charlie">charlie</Combobox.Option>
+                  </Combobox.Options>
+                </>
+              )}
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        // Check for proper state sync
+        expect(getComboboxInput()).toHaveValue('bob - closed')
+        await click(getComboboxButton())
+        expect(getComboboxInput()).toHaveValue('bob - open')
+        await click(getComboboxButton())
+        expect(getComboboxInput()).toHaveValue('bob - closed')
+
+        // Check if we can still edit the input
+        for (let _ of Array(' - closed'.length)) {
+          await press(Keys.Backspace, getComboboxInput())
+        }
+        getComboboxInput()?.select()
+        await type(word('alice'), getComboboxInput())
+        expect(getComboboxInput()).toHaveValue('alice')
+
+        // Open the combobox and choose an option
+        await click(getComboboxOptions()[2])
+        expect(getComboboxInput()).toHaveValue('charlie - closed')
       })
     )
   })
@@ -754,6 +942,134 @@ describe('Rendering', () => {
 
     // Verify that the third combobox option is active
     assertActiveComboboxOption(options[2])
+  })
+
+  describe('Uncontrolled', () => {
+    it('should be possible to use in an uncontrolled way', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Combobox name="assignee">
+            <Combobox.Input onChange={NOOP} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value="alice">Alice</Combobox.Option>
+              <Combobox.Option value="bob">Bob</Combobox.Option>
+              <Combobox.Option value="charlie">Charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose alice
+      await click(getComboboxOptions()[0])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose charlie
+      await click(getComboboxOptions()[2])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Charlie should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
+    })
+
+    it('should be possible to provide a default value', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Combobox name="assignee" defaultValue="bob">
+            <Combobox.Input onChange={NOOP} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value="alice">Alice</Combobox.Option>
+              <Combobox.Option value="bob">Bob</Combobox.Option>
+              <Combobox.Option value="charlie">Charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose alice
+      await click(getComboboxOptions()[0])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+    })
+
+    it('should still call the onChange listeners when choosing new values', async () => {
+      let handleChange = jest.fn()
+
+      render(
+        <Combobox name="assignee" onChange={handleChange}>
+          <Combobox.Input onChange={NOOP} />
+          <Combobox.Button>Trigger</Combobox.Button>
+          <Combobox.Options>
+            <Combobox.Option value="alice">Alice</Combobox.Option>
+            <Combobox.Option value="bob">Bob</Combobox.Option>
+            <Combobox.Option value="charlie">Charlie</Combobox.Option>
+          </Combobox.Options>
+        </Combobox>
+      )
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose alice
+      await click(getComboboxOptions()[0])
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose bob
+      await click(getComboboxOptions()[1])
+
+      // Change handler should have been called twice
+      expect(handleChange).toHaveBeenNthCalledWith(1, 'alice')
+      expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
+    })
   })
 })
 
@@ -1915,7 +2231,7 @@ describe('Keyboard interactions', () => {
       suppressConsoleLogs(async () => {
         let handleChange = jest.fn()
         function Example() {
-          let [value, setValue] = useState<string>('bob')
+          let [value, setValue] = useState<string | null>('bob')
           let [, setQuery] = useState<string>('')
 
           return (
@@ -4779,7 +5095,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={setValue} multiple>
+          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -4815,7 +5131,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={setValue} multiple>
+          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -4844,7 +5160,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={setValue} multiple>
+          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -4877,7 +5193,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={setValue} multiple>
+          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>

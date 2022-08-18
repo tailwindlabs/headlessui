@@ -1,23 +1,27 @@
-import React, { createElement, useRef, useState } from 'react'
+import React, { createElement, useRef, useState, Fragment } from 'react'
 import { render } from '@testing-library/react'
 
 import { Dialog } from './dialog'
+import { Popover } from '../popover/popover'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   DialogState,
+  PopoverState,
   assertDialog,
   assertDialogDescription,
   assertDialogOverlay,
   assertDialogTitle,
+  assertPopoverPanel,
   getDialog,
   getDialogOverlay,
   getDialogBackdrop,
+  getPopoverButton,
   getByText,
   assertActiveElement,
   getDialogs,
   getDialogOverlays,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, Keys } from '../../test-utils/interactions'
+import { click, mouseDrag, press, Keys } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
 import { Transition } from '../transitions/transition'
 import { createPortal } from 'react-dom'
@@ -32,8 +36,18 @@ global.IntersectionObserver = class FakeIntersectionObserver {
 
 afterAll(() => jest.restoreAllMocks())
 
-function TabSentinel(props: PropsOf<'div'>) {
-  return <div tabIndex={0} {...props} />
+function nextFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
+
+function TabSentinel(props: PropsOf<'button'>) {
+  return <button {...props} />
 }
 
 describe('Safe guards', () => {
@@ -167,7 +181,7 @@ describe('Rendering', () => {
       })
     )
 
-    it('should be possible to always render the Dialog if we provide it a `static` prop (and enable focus trapping based on `open`)', () => {
+    it('should be possible to always render the Dialog if we provide it a `static` prop (and enable focus trapping based on `open`)', async () => {
       let focusCounter = jest.fn()
       render(
         <>
@@ -178,6 +192,8 @@ describe('Rendering', () => {
           </Dialog>
         </>
       )
+
+      await nextFrame()
 
       // Let's verify that the Dialog is already there
       expect(getDialog()).not.toBe(null)
@@ -217,7 +233,10 @@ describe('Rendering', () => {
           </>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       assertDialog({ state: DialogState.InvisibleHidden })
       expect(focusCounter).toHaveBeenCalledTimes(0)
@@ -252,6 +271,44 @@ describe('Rendering', () => {
                 <input id="b" type="text" />
                 <input id="c" type="text" />
               </Dialog>
+            </>
+          )
+        }
+
+        render(<Example />)
+
+        // No overflow yet
+        expect(document.documentElement.style.overflow).toBe('')
+
+        let btn = document.getElementById('trigger')
+
+        // Open the dialog
+        await click(btn)
+
+        // Expect overflow
+        expect(document.documentElement.style.overflow).toBe('hidden')
+      })
+    )
+
+    it(
+      'should wait to add a scroll lock to the html tag when unmount is false in a Transition',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+
+              <Transition as={Fragment} show={isOpen} unmount={false}>
+                <Dialog onClose={() => setIsOpen(false)} unmount={false}>
+                  <input id="a" type="text" />
+                  <input id="b" type="text" />
+                  <input id="c" type="text" />
+                </Dialog>
+              </Transition>
             </>
           )
         }
@@ -425,6 +482,8 @@ describe('Rendering', () => {
           </Dialog>
         )
 
+        await nextFrame()
+
         assertDialog({
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
@@ -448,6 +507,8 @@ describe('Rendering', () => {
           </Dialog>
         )
 
+        await nextFrame()
+
         assertDialog({
           state: DialogState.Visible,
           attributes: { id: 'headlessui-dialog-1' },
@@ -463,6 +524,69 @@ describe('Rendering', () => {
 
 describe('Composition', () => {
   it(
+    'should be possible to open a dialog from inside a Popover (and then close it)',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isDialogOpen, setIsDialogOpen] = useState(false)
+
+        return (
+          <div>
+            <Popover>
+              <Popover.Button>Open Popover</Popover.Button>
+              <Popover.Panel>
+                <div id="openDialog" onClick={() => setIsDialogOpen(true)}>
+                  Open dialog
+                </div>
+              </Popover.Panel>
+            </Popover>
+
+            <Dialog open={isDialogOpen} onClose={console.log}>
+              <Dialog.Panel>
+                <button id="closeDialog" onClick={() => setIsDialogOpen(false)}>
+                  Close Dialog
+                </button>
+              </Dialog.Panel>
+            </Dialog>
+          </div>
+        )
+      }
+
+      render(<Example />)
+
+      await nextFrame()
+
+      // Nothing is open initially
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+      assertActiveElement(document.body)
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // The popover should be open but the dialog should not
+      assertPopoverPanel({ state: PopoverState.Visible })
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+      assertActiveElement(getPopoverButton())
+
+      // Open the dialog from inside the popover
+      await click(document.getElementById('openDialog'))
+
+      // The dialog should be open but the popover should not
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      assertDialog({ state: DialogState.Visible })
+      assertActiveElement(document.getElementById('closeDialog'))
+
+      // Close the dialog from inside itself
+      await click(document.getElementById('closeDialog'))
+
+      // Nothing should be open
+      assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+      assertActiveElement(getPopoverButton())
+    })
+  )
+
+  it(
     'should be possible to open the Dialog via a Transition component',
     suppressConsoleLogs(async () => {
       render(
@@ -473,6 +597,8 @@ describe('Composition', () => {
           </Dialog>
         </Transition>
       )
+
+      await nextFrame()
 
       assertDialog({ state: DialogState.Visible })
       assertDialogDescription({
@@ -493,6 +619,8 @@ describe('Composition', () => {
           </Dialog>
         </Transition>
       )
+
+      await nextFrame()
 
       assertDialog({ state: DialogState.InvisibleUnmounted })
     })
@@ -832,7 +960,10 @@ describe('Mouse interactions', () => {
           </div>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -867,7 +998,10 @@ describe('Mouse interactions', () => {
           </Dialog>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -898,7 +1032,10 @@ describe('Mouse interactions', () => {
           </div>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -941,7 +1078,10 @@ describe('Mouse interactions', () => {
           </Dialog>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -985,7 +1125,10 @@ describe('Mouse interactions', () => {
           </div>
         )
       }
+
       render(<Example />)
+
+      await nextFrame()
 
       // Verify it is open
       assertDialog({ state: DialogState.Visible })
@@ -1066,14 +1209,101 @@ describe('Mouse interactions', () => {
       assertDialog({ state: DialogState.Visible })
     })
   )
+
+  it(
+    'should not close the dialog if opened during mouse up',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button id="trigger" onMouseUpCapture={() => setIsOpen((v) => !v)}>
+              Trigger
+            </button>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog.Backdrop />
+              <Dialog.Panel>
+                <button id="inside">Inside</button>
+                <TabSentinel />
+              </Dialog.Panel>
+            </Dialog>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('inside'))
+
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
+    'should not close the dialog if click starts inside the dialog but ends outside',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+              Trigger
+            </button>
+            <div id="imoutside">this thing</div>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog.Backdrop />
+              <Dialog.Panel>
+                <button id="inside">Inside</button>
+                <TabSentinel />
+              </Dialog.Panel>
+            </Dialog>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      // Open the dialog
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      // Start a click inside the dialog and end it outside
+      await mouseDrag(document.getElementById('inside'), document.getElementById('imoutside'))
+
+      // It should not have hidden
+      assertDialog({ state: DialogState.Visible })
+
+      await click(document.getElementById('imoutside'))
+
+      // It's gone
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
 })
 
 describe('Nesting', () => {
-  function Nested({ onClose, level = 1 }: { onClose: (value: boolean) => void; level?: number }) {
+  type RenderStrategy = 'mounted' | 'always'
+
+  function Nested({
+    onClose,
+    open = true,
+    level = 1,
+    renderWhen = 'mounted',
+  }: {
+    onClose: (value: boolean) => void
+    open?: boolean
+    level?: number
+    renderWhen?: RenderStrategy
+  }) {
     let [showChild, setShowChild] = useState(false)
 
     return (
-      <Dialog open={true} onClose={onClose}>
+      <Dialog open={open} onClose={onClose}>
         <Dialog.Overlay />
 
         <div>
@@ -1082,31 +1312,42 @@ describe('Nesting', () => {
           <button onClick={() => setShowChild(true)}>Open {level + 1} b</button>
           <button onClick={() => setShowChild(true)}>Open {level + 1} c</button>
         </div>
-        {showChild && <Nested onClose={setShowChild} level={level + 1} />}
+        {renderWhen === 'always' ? (
+          <Nested
+            open={showChild}
+            onClose={setShowChild}
+            level={level + 1}
+            renderWhen={renderWhen}
+          />
+        ) : (
+          showChild && <Nested open={true} onClose={setShowChild} level={level + 1} />
+        )}
       </Dialog>
     )
   }
 
-  function Example() {
+  function Example({ renderWhen = 'mounted' }: { renderWhen: RenderStrategy }) {
     let [open, setOpen] = useState(false)
 
     return (
       <>
         <button onClick={() => setOpen(true)}>Open 1</button>
-        {open && <Nested onClose={setOpen} />}
+        {open && <Nested open={true} onClose={setOpen} renderWhen={renderWhen} />}
       </>
     )
   }
 
   it.each`
-    strategy                            | action
-    ${'with `Escape`'}                  | ${() => press(Keys.Escape)}
-    ${'with `Outside Click`'}           | ${() => click(document.body)}
-    ${'with `Click on Dialog.Overlay`'} | ${() => click(getDialogOverlays().pop()!)}
+    strategy                            | when         | action
+    ${'with `Escape`'}                  | ${'mounted'} | ${() => press(Keys.Escape)}
+    ${'with `Outside Click`'}           | ${'mounted'} | ${() => click(document.body)}
+    ${'with `Click on Dialog.Overlay`'} | ${'mounted'} | ${() => click(getDialogOverlays().pop()!)}
+    ${'with `Escape`'}                  | ${'always'}  | ${() => press(Keys.Escape)}
+    ${'with `Outside Click`'}           | ${'always'}  | ${() => click(document.body)}
   `(
-    'should be possible to open nested Dialog components and close them $strategy',
-    async ({ action }) => {
-      render(<Example />)
+    'should be possible to open nested Dialog components (visible when $when) and close them $strategy',
+    async ({ when, action }) => {
+      render(<Example renderWhen={when} />)
 
       // Verify we have no open dialogs
       expect(getDialogs()).toHaveLength(0)

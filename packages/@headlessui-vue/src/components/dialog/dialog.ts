@@ -140,6 +140,7 @@ export let Dialog = defineComponent({
     )
     useStackProvider({
       type: 'Dialog',
+      enabled: computed(() => dialogState.value === DialogStates.Open),
       element: internalDialogRef,
       onUpdate: (message, type, element) => {
         if (type !== 'Dialog') return
@@ -280,7 +281,7 @@ export let Dialog = defineComponent({
         'aria-labelledby': titleId.value,
         'aria-describedby': describedby.value,
       }
-      let { open: _, initialFocus, ...incomingProps } = props
+      let { open: _, initialFocus, ...theirProps } = props
 
       let slot = { open: dialogState.value === DialogStates.Open }
 
@@ -302,7 +303,8 @@ export let Dialog = defineComponent({
                 },
                 () =>
                   render({
-                    props: { ...incomingProps, ...ourProps },
+                    ourProps,
+                    theirProps,
                     slot,
                     attrs,
                     slots,
@@ -344,10 +346,11 @@ export let DialogOverlay = defineComponent({
         'aria-hidden': true,
         onClick: handleClick,
       }
-      let incomingProps = props
+      let theirProps = props
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot: { open: api.dialogState.value === DialogStates.Open },
         attrs,
         slots,
@@ -381,7 +384,7 @@ export let DialogBackdrop = defineComponent({
     })
 
     return () => {
-      let incomingProps = props
+      let theirProps = props
       let ourProps = {
         id,
         ref: internalBackdropRef,
@@ -391,7 +394,8 @@ export let DialogBackdrop = defineComponent({
       return h(ForcePortalRoot, { force: true }, () =>
         h(Portal, () =>
           render({
-            props: { ...attrs, ...incomingProps, ...ourProps },
+            ourProps,
+            theirProps: { ...attrs, ...theirProps },
             slot: { open: api.dialogState.value === DialogStates.Open },
             attrs,
             slots,
@@ -426,10 +430,11 @@ export let DialogPanel = defineComponent({
         ref: api.panelRef,
         onClick: handleClick,
       }
-      let incomingProps = props
+      let theirProps = props
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot: { open: api.dialogState.value === DialogStates.Open },
         attrs,
         slots,
@@ -457,10 +462,11 @@ export let DialogTitle = defineComponent({
 
     return () => {
       let ourProps = { id }
-      let incomingProps = props
+      let theirProps = props
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot: { open: api.dialogState.value === DialogStates.Open },
         attrs,
         slots,

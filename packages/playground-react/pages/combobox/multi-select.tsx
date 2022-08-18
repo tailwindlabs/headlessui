@@ -39,7 +39,12 @@ function MultiPeopleList() {
             console.log([...new FormData(e.currentTarget).entries()])
           }}
         >
-          <Combobox value={activePersons} onChange={setActivePersons} name="people" multiple>
+          <Combobox
+            value={activePersons}
+            onChange={(people) => setActivePersons(people)}
+            name="people"
+            multiple
+          >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
               Assigned to
             </Combobox.Label>
@@ -77,6 +82,7 @@ function MultiPeopleList() {
                     ))}
                     <Combobox.Input
                       onChange={(event) => setQuery(event.target.value)}
+                      onFocus={() => query != '' && setQuery('')}
                       className="border-none p-0 focus:ring-0"
                       placeholder="Search..."
                     />

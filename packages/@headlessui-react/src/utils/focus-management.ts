@@ -129,7 +129,16 @@ export function sortByDomNode<T>(
   })
 }
 
-export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus, sorted = true) {
+export function focusFrom(current: HTMLElement | null, focus: Focus) {
+  return focusIn(getFocusableElements(), focus, true, current)
+}
+
+export function focusIn(
+  container: HTMLElement | HTMLElement[],
+  focus: Focus,
+  sorted = true,
+  active: HTMLElement | null = null
+) {
   let ownerDocument = Array.isArray(container)
     ? container.length > 0
       ? container[0].ownerDocument
@@ -141,7 +150,7 @@ export function focusIn(container: HTMLElement | HTMLElement[], focus: Focus, so
       ? sortByDomNode(container)
       : container
     : getFocusableElements(container)
-  let active = ownerDocument.activeElement as HTMLElement
+  active = active ?? (ownerDocument.activeElement as HTMLElement)
 
   let direction = (() => {
     if (focus & (Focus.First | Focus.Next)) return Direction.Next

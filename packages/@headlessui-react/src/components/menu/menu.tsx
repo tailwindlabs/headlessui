@@ -29,7 +29,13 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/focus-management'
+import {
+  isFocusableElement,
+  FocusableMode,
+  sortByDomNode,
+  Focus as FocusManagementFocus,
+  focusFrom,
+} from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
@@ -492,6 +498,13 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
       case Keys.Tab:
         event.preventDefault()
         event.stopPropagation()
+        dispatch({ type: ActionTypes.CloseMenu })
+        disposables().nextFrame(() => {
+          focusFrom(
+            state.buttonRef.current!,
+            event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
+          )
+        })
         break
 
       default:

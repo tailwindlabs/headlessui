@@ -32,6 +32,7 @@ import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/fo
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
+import { useControllable } from '../../hooks/use-controllable'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -118,7 +119,8 @@ export let Listbox = defineComponent({
     disabled: { type: [Boolean], default: false },
     by: { type: [String, Function], default: () => defaultComparator },
     horizontal: { type: [Boolean], default: false },
-    modelValue: { type: [Object, String, Number, Boolean] },
+    modelValue: { type: [Object, String, Number, Boolean], default: undefined },
+    defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
     name: { type: String, optional: true },
     multiple: { type: [Boolean], default: false },
   },
@@ -164,8 +166,12 @@ export let Listbox = defineComponent({
       }
     }
 
-    let value = computed(() => props.modelValue)
     let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
+    let [value, theirOnChange] = useControllable(
+      computed(() => props.modelValue),
+      (value: unknown) => emit('update:modelValue', value),
+      computed(() => props.defaultValue)
+    )
 
     let api = {
       listboxState,
@@ -275,8 +281,7 @@ export let Listbox = defineComponent({
       },
       select(value: unknown) {
         if (props.disabled) return
-        emit(
-          'update:modelValue',
+        theirOnChange(
           match(mode.value, {
             [ValueMode.Single]: () => value,
             [ValueMode.Multi]: () => {
@@ -323,13 +328,13 @@ export let Listbox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...incomingProps } = props
+      let { name, modelValue, disabled, ...theirProps } = props
 
       let slot = { open: listboxState.value === ListboxStates.Open, disabled }
 
       return h(Fragment, [
-        ...(name != null && modelValue != null
-          ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
+        ...(name != null && value.value != null
+          ? objectToFormEntries({ [name]: value.value }).map(([name, value]) =>
               h(
                 Hidden,
                 compact({
@@ -346,9 +351,16 @@ export let Listbox = defineComponent({
             )
           : []),
         render({
-          props: {
+          ourProps: {},
+          theirProps: {
             ...attrs,
-            ...omit(incomingProps, ['onUpdate:modelValue', 'horizontal', 'multiple', 'by']),
+            ...omit(theirProps, [
+              'defaultValue',
+              'onUpdate:modelValue',
+              'horizontal',
+              'multiple',
+              'by',
+            ]),
           },
           slot,
           slots,
@@ -381,7 +393,8 @@ export let ListboxLabel = defineComponent({
       let ourProps = { id, ref: api.labelRef, onClick: handleClick }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot,
         attrs,
         slots,
@@ -480,7 +493,8 @@ export let ListboxButton = defineComponent({
       }
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps: props,
         slot,
         attrs,
         slots,
@@ -604,10 +618,11 @@ export let ListboxOptions = defineComponent({
         tabIndex: 0,
         ref: api.optionsRef,
       }
-      let incomingProps = props
+      let theirProps = props
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -753,7 +768,8 @@ export let ListboxOption = defineComponent({
       }
 
       return render({
-        props: { ...omit(props, ['value', 'disabled']), ...ourProps },
+        ourProps,
+        theirProps: omit(props, ['value', 'disabled']),
         slot,
         attrs,
         slots,

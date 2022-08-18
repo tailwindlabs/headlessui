@@ -34,6 +34,7 @@ import { sortByDomNode } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
+import { useControllable } from '../../hooks/use-controllable'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -69,7 +70,6 @@ type StateDefinition = {
 
   compare: (a: unknown, z: unknown) => boolean
 
-  inputPropsRef: Ref<{ displayValue?: (item: unknown) => string }>
   optionsPropsRef: Ref<{ static: boolean; hold: boolean }>
 
   labelRef: Ref<HTMLLabelElement | null>
@@ -117,7 +117,8 @@ export let Combobox = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
     by: { type: [String, Function], default: () => defaultComparator },
-    modelValue: { type: [Object, String, Number, Boolean] },
+    modelValue: { type: [Object, String, Number, Boolean], default: undefined },
+    defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
     name: { type: String },
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
@@ -171,9 +172,13 @@ export let Combobox = defineComponent({
       }
     }
 
-    let value = computed(() => props.modelValue)
     let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
     let nullable = computed(() => props.nullable)
+    let [value, theirOnChange] = useControllable(
+      computed(() => props.modelValue),
+      (value: unknown) => emit('update:modelValue', value),
+      computed(() => props.defaultValue)
+    )
 
     let api = {
       comboboxState,
@@ -194,7 +199,7 @@ export let Combobox = defineComponent({
       disabled: computed(() => props.disabled),
       options,
       change(value: unknown) {
-        emit('update:modelValue', value)
+        theirOnChange(value as typeof props.modelValue)
       },
       activeOptionIndex: computed(() => {
         if (
@@ -211,7 +216,6 @@ export let Combobox = defineComponent({
         return activeOptionIndex.value
       }),
       activationTrigger,
-      inputPropsRef: ref<StateDefinition['inputPropsRef']['value']>({ displayValue: undefined }),
       optionsPropsRef,
       closeCombobox() {
         defaultToFirstOption.value = false
@@ -290,33 +294,19 @@ export let Combobox = defineComponent({
         activationTrigger.value = trigger ?? ActivationTrigger.Other
         options.value = adjustedState.options
       },
-      syncInputValue() {
-        let value = api.value.value
-        if (!dom(api.inputRef)) return
-        let displayValue = api.inputPropsRef.value.displayValue
-
-        if (typeof displayValue === 'function') {
-          api.inputRef!.value!.value = displayValue(value) ?? ''
-        } else if (typeof value === 'string') {
-          api.inputRef!.value!.value = value
-        } else {
-          api.inputRef!.value!.value = ''
-        }
-      },
       selectOption(id: string) {
         let option = options.value.find((item) => item.id === id)
         if (!option) return
 
         let { dataRef } = option
-        emit(
-          'update:modelValue',
+        theirOnChange(
           match(mode.value, {
             [ValueMode.Single]: () => dataRef.value,
             [ValueMode.Multi]: () => {
               let copy = toRaw(api.value.value as unknown[]).slice()
               let raw = toRaw(dataRef.value)
 
-              let idx = copy.indexOf(raw)
+              let idx = copy.findIndex((value) => api.compare(raw, toRaw(value)))
               if (idx === -1) {
                 copy.push(raw)
               } else {
@@ -327,21 +317,19 @@ export let Combobox = defineComponent({
             },
           })
         )
-        api.syncInputValue()
       },
       selectActiveOption() {
         if (api.activeOptionIndex.value === null) return
 
         let { dataRef, id } = options.value[api.activeOptionIndex.value]
-        emit(
-          'update:modelValue',
+        theirOnChange(
           match(mode.value, {
             [ValueMode.Single]: () => dataRef.value,
             [ValueMode.Multi]: () => {
               let copy = toRaw(api.value.value as unknown[]).slice()
               let raw = toRaw(dataRef.value)
 
-              let idx = copy.indexOf(raw)
+              let idx = copy.findIndex((value) => api.compare(raw, toRaw(value)))
               if (idx === -1) {
                 copy.push(raw)
               } else {
@@ -352,7 +340,6 @@ export let Combobox = defineComponent({
             },
           })
         )
-        api.syncInputValue()
 
         // It could happen that the `activeOptionIndex` stored in state is actually null,
         // but we are getting the fallback active option back instead.
@@ -402,25 +389,6 @@ export let Combobox = defineComponent({
       computed(() => comboboxState.value === ComboboxStates.Open)
     )
 
-    watch([api.value, api.inputRef], () => api.syncInputValue(), {
-      immediate: true,
-    })
-
-    // Only sync the input value on close as typing into the input will trigger it to open
-    // causing a resync of the input value with the currently stored, stale value that is
-    // one character behind since the input's value has just been updated by the browser
-    watch(
-      api.comboboxState,
-      (state) => {
-        if (state === ComboboxStates.Closed) {
-          api.syncInputValue()
-        }
-      },
-      {
-        immediate: true,
-      }
-    )
-
     // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
     useOpenClosedProvider(
@@ -439,7 +407,7 @@ export let Combobox = defineComponent({
     )
 
     return () => {
-      let { name, modelValue, disabled, ...incomingProps } = props
+      let { name, disabled, ...theirProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
@@ -448,9 +416,9 @@ export let Combobox = defineComponent({
       }
 
       return h(Fragment, [
-        ...(name != null && modelValue != null
-          ? objectToFormEntries({ [name]: modelValue }).map(([name, value]) =>
-              h(
+        ...(name != null && value.value != null
+          ? objectToFormEntries({ [name]: value.value }).map(([name, value]) => {
+              return h(
                 Hidden,
                 compact({
                   features: HiddenFeatures.Hidden,
@@ -463,13 +431,21 @@ export let Combobox = defineComponent({
                   value,
                 })
               )
-            )
+            })
           : []),
         render({
-          props: {
+          theirProps: {
             ...attrs,
-            ...omit(incomingProps, ['nullable', 'multiple', 'onUpdate:modelValue', 'by']),
+            ...omit(theirProps, [
+              'modelValue',
+              'defaultValue',
+              'nullable',
+              'multiple',
+              'onUpdate:modelValue',
+              'by',
+            ]),
           },
+          ourProps: {},
           slot,
           slots,
           attrs,
@@ -500,9 +476,11 @@ export let ComboboxLabel = defineComponent({
       }
 
       let ourProps = { id, ref: api.labelRef, onClick: handleClick }
+      let theirProps = props
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -601,9 +579,11 @@ export let ComboboxButton = defineComponent({
         onKeydown: handleKeydown,
         onClick: handleClick,
       }
+      let theirProps = props
 
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -629,9 +609,44 @@ export let ComboboxInput = defineComponent({
   setup(props, { emit, attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
-    api.inputPropsRef = computed(() => props)
 
     expose({ el: api.inputRef, $el: api.inputRef })
+
+    let currentValue = ref(api.value.value as unknown as string)
+
+    let getCurrentValue = () => {
+      let value = api.value.value
+      if (!dom(api.inputRef)) return ''
+
+      if (typeof props.displayValue !== 'undefined') {
+        return props.displayValue(value as unknown) ?? ''
+      } else if (typeof value === 'string') {
+        return value
+      } else {
+        return ''
+      }
+    }
+
+    onMounted(() => {
+      watch([api.value], () => (currentValue.value = getCurrentValue()), {
+        flush: 'sync',
+        immediate: true,
+      })
+
+      watch(
+        [currentValue, api.comboboxState],
+        ([currentValue, state], [oldCurrentValue, oldState]) => {
+          let input = dom(api.inputRef)
+          if (!input) return
+          if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
+            input.value = currentValue
+          } else if (currentValue !== oldCurrentValue) {
+            input.value = currentValue
+          }
+        },
+        { immediate: true }
+      )
+    })
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
@@ -639,7 +654,6 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Backspace:
         case Keys.Delete:
-          if (api.comboboxState.value !== ComboboxStates.Open) return
           if (api.mode.value !== ValueMode.Single) return
           if (!api.nullable.value) return
 
@@ -719,7 +733,7 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Tab:
           if (api.comboboxState.value !== ComboboxStates.Open) return
-          api.selectActiveOption()
+          if (api.mode.value === ValueMode.Single) api.selectActiveOption()
           api.closeCombobox()
           break
       }
@@ -738,7 +752,9 @@ export let ComboboxInput = defineComponent({
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let ourProps = {
         'aria-controls': api.optionsRef.value?.id,
-        'aria-expanded': api.disabled ? undefined : api.comboboxState.value === ComboboxStates.Open,
+        'aria-expanded': api.disabled.value
+          ? undefined
+          : api.comboboxState.value === ComboboxStates.Open,
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined
@@ -754,10 +770,11 @@ export let ComboboxInput = defineComponent({
         tabIndex: 0,
         ref: api.inputRef,
       }
-      let incomingProps = omit(props, ['displayValue'])
+      let theirProps = omit(props, ['displayValue'])
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -826,10 +843,11 @@ export let ComboboxOptions = defineComponent({
         ref: api.optionsRef,
         role: 'listbox',
       }
-      let incomingProps = omit(props, ['hold'])
+      let theirProps = omit(props, ['hold'])
 
       return render({
-        props: { ...incomingProps, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -892,7 +910,6 @@ export let ComboboxOption = defineComponent({
       api.selectOption(id)
       if (api.mode.value === ValueMode.Single) {
         api.closeCombobox()
-        dom(api.inputRef)?.focus({ preventScroll: true })
       }
     }
 
@@ -936,8 +953,11 @@ export let ComboboxOption = defineComponent({
         onMouseleave: handleLeave,
       }
 
+      let theirProps = props
+
       return render({
-        props: { ...props, ...ourProps },
+        ourProps,
+        theirProps,
         slot,
         attrs,
         slots,

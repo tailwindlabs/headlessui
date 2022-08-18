@@ -9,8 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482))
+- Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482), [#1717](https://github.com/tailwindlabs/headlessui/pull/1717))
 - Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
+
+### Fixed
+
+- Fixed SSR support on Deno ([#1671](https://github.com/tailwindlabs/headlessui/pull/1671))
+- Don’t close dialog when opened during mouse up event ([#1667](https://github.com/tailwindlabs/headlessui/pull/1667))
+- Don’t close dialog when drag ends outside dialog ([#1667](https://github.com/tailwindlabs/headlessui/pull/1667))
+- Fix outside clicks to close dialog when nested, unopened dialogs are present ([#1667](https://github.com/tailwindlabs/headlessui/pull/1667))
+- Close `Menu` component when using `tab` key ([#1673](https://github.com/tailwindlabs/headlessui/pull/1673))
+- Resync input when display value changes ([#1679](https://github.com/tailwindlabs/headlessui/pull/1679), [#1755](https://github.com/tailwindlabs/headlessui/pull/1755))
+- Ensure controlled `Tabs` don't change automagically ([#1680](https://github.com/tailwindlabs/headlessui/pull/1680))
+- Improve outside click on Safari iOS ([#1712](https://github.com/tailwindlabs/headlessui/pull/1712))
+- Improve event handler merging ([#1715](https://github.com/tailwindlabs/headlessui/pull/1715))
+- Fix incorrect scrolling to the bottom when opening a `Dialog` ([#1716](https://github.com/tailwindlabs/headlessui/pull/1716))
+- Don't overwrite `element.focus()` on `<PopoverPanel>` ([#1719](https://github.com/tailwindlabs/headlessui/pull/1719))
+- Make form components uncontrollable ([#1683](https://github.com/tailwindlabs/headlessui/pull/1683))
+- Improve `Combobox` re-opening keyboard issue on mobile ([#1732](https://github.com/tailwindlabs/headlessui/pull/1732))
+- Only select the active option when using "singular" mode when pressing `<tab>` in the `Combobox` component ([#1750](https://github.com/tailwindlabs/headlessui/pull/1750))
+
+## [1.6.7] - 2022-07-12
+
+### Fixed
+
+- Prevent cancelling transitions due to focus trap ([#1664](https://github.com/tailwindlabs/headlessui/pull/1664))
+
+## [1.6.6] - 2022-07-07
+
+### Fixed
+
+- Fix getting Vue dom elements ([#1610](https://github.com/tailwindlabs/headlessui/pull/1610))
+- Ensure `CMD`+`Backspace` works in nullable mode for `Combobox` component ([#1617](https://github.com/tailwindlabs/headlessui/pull/1617))
+- Properly merge incoming props with own props ([#1651](https://github.com/tailwindlabs/headlessui/pull/1651))
+- Ensure `PopoverPanel` can be used inside `<transition>` ([#1653](https://github.com/tailwindlabs/headlessui/pull/1653))
+
+## [1.6.5] - 2022-06-20
 
 ### Fixed
 
@@ -20,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only render the `Dialog` on the client ([#1566](https://github.com/tailwindlabs/headlessui/pull/1566))
 - Improve Combobox input cursor position ([#1574](https://github.com/tailwindlabs/headlessui/pull/1574))
 - Fix scrolling issue in `Tab` component when using arrow keys ([#1584](https://github.com/tailwindlabs/headlessui/pull/1584))
+- Fix missing `aria-expanded` for `ComboboxInput` component ([#1605](https://github.com/tailwindlabs/headlessui/pull/1605))
 
 ## [1.6.4] - 2022-05-29
 
@@ -267,7 +302,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.4...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.7...HEAD
+[1.6.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.6...v1.6.7
+[1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.5...v1.6.6
+[1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.4...v1.6.5
 [1.6.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.3...v1.6.4
 [1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...@headlessui/vue@v1.6.3
 [1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...@headlessui/vue@v1.6.2

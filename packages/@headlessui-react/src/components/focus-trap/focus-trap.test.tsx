@@ -6,17 +6,29 @@ import { assertActiveElement } from '../../test-utils/accessibility-assertions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { click, press, shift, Keys } from '../../test-utils/interactions'
 
-it('should focus the first focusable element inside the FocusTrap', () => {
+function nextFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
+
+it('should focus the first focusable element inside the FocusTrap', async () => {
   render(
     <FocusTrap>
       <button>Trigger</button>
     </FocusTrap>
   )
 
+  await nextFrame()
+
   assertActiveElement(screen.getByText('Trigger'))
 })
 
-it('should focus the autoFocus element inside the FocusTrap if that exists', () => {
+it('should focus the autoFocus element inside the FocusTrap if that exists', async () => {
   render(
     <FocusTrap>
       <input id="a" type="text" />
@@ -25,10 +37,12 @@ it('should focus the autoFocus element inside the FocusTrap if that exists', () 
     </FocusTrap>
   )
 
+  await nextFrame()
+
   assertActiveElement(document.getElementById('b'))
 })
 
-it('should focus the initialFocus element inside the FocusTrap if that exists', () => {
+it('should focus the initialFocus element inside the FocusTrap if that exists', async () => {
   function Example() {
     let initialFocusRef = useRef<HTMLInputElement | null>(null)
 
@@ -40,12 +54,15 @@ it('should focus the initialFocus element inside the FocusTrap if that exists', 
       </FocusTrap>
     )
   }
+
   render(<Example />)
+
+  await nextFrame()
 
   assertActiveElement(document.getElementById('c'))
 })
 
-it('should focus the initialFocus element inside the FocusTrap even if another element has autoFocus', () => {
+it('should focus the initialFocus element inside the FocusTrap even if another element has autoFocus', async () => {
   function Example() {
     let initialFocusRef = useRef<HTMLInputElement | null>(null)
 
@@ -57,12 +74,15 @@ it('should focus the initialFocus element inside the FocusTrap even if another e
       </FocusTrap>
     )
   }
+
   render(<Example />)
+
+  await nextFrame()
 
   assertActiveElement(document.getElementById('c'))
 })
 
-it('should warn when there is no focusable element inside the FocusTrap', () => {
+it('should warn when there is no focusable element inside the FocusTrap', async () => {
   let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
 
   function Example() {
@@ -72,7 +92,11 @@ it('should warn when there is no focusable element inside the FocusTrap', () => 
       </FocusTrap>
     )
   }
+
   render(<Example />)
+
+  await nextFrame()
+
   expect(spy.mock.calls[0][0]).toBe('There are no focusable elements inside the <FocusTrap />')
   spy.mockReset()
 })
@@ -95,6 +119,8 @@ it(
     }
 
     render(<Example />)
+
+    await nextFrame()
 
     let [a, b, c, d] = Array.from(document.querySelectorAll('input'))
 
@@ -163,6 +189,8 @@ it('should restore the previously focused element, before entering the FocusTrap
 
   render(<Example />)
 
+  await nextFrame()
+
   // The input should have focus by default because of the autoFocus prop
   assertActiveElement(document.getElementById('item-1'))
 
@@ -192,6 +220,8 @@ it('should be possible tab to the next focusable element within the focus trap',
     </>
   )
 
+  await nextFrame()
+
   // Item A should be focused because the FocusTrap will focus the first item
   assertActiveElement(document.getElementById('item-a'))
 
@@ -220,6 +250,8 @@ it('should be possible shift+tab to the previous focusable element within the fo
       <button>After</button>
     </>
   )
+
+  await nextFrame()
 
   // Item A should be focused because the FocusTrap will focus the first item
   assertActiveElement(document.getElementById('item-a'))
@@ -255,6 +287,8 @@ it('should skip the initial "hidden" elements within the focus trap', async () =
     </>
   )
 
+  await nextFrame()
+
   // Item C should be focused because the FocusTrap had to skip the first 2
   assertActiveElement(document.getElementById('item-c'))
 })
@@ -274,6 +308,8 @@ it('should be possible skip "hidden" elements within the focus trap', async () =
       <button>After</button>
     </>
   )
+
+  await nextFrame()
 
   // Item A should be focused because the FocusTrap will focus the first item
   assertActiveElement(document.getElementById('item-a'))
@@ -308,6 +344,8 @@ it('should be possible skip disabled elements within the focus trap', async () =
       <button>After</button>
     </>
   )
+
+  await nextFrame()
 
   // Item A should be focused because the FocusTrap will focus the first item
   assertActiveElement(document.getElementById('item-a'))
@@ -357,6 +395,8 @@ it('should try to focus all focusable items (and fail)', async () => {
     </>
   )
 
+  await nextFrame()
+
   expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c'], ['item-d']])
   expect(spy).toHaveBeenCalledWith('There are no focusable elements inside the <FocusTrap />')
   spy.mockReset()
@@ -390,6 +430,8 @@ it('should end up at the last focusable element', async () => {
       <button>After</button>
     </>
   )
+
+  await nextFrame()
 
   expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c']])
   assertActiveElement(screen.getByText('Item D'))
