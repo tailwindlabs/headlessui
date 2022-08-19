@@ -17,7 +17,7 @@ function generateId() {
  * Resets the id. Useful for snapshot testing.
  */
 export function resetId() {
-  id = 0; 
+  id = 0
 }
 
 export let useId =
