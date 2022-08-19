@@ -13,6 +13,13 @@ function generateId() {
   return ++id
 }
 
+/**
+ * Resets the id. Useful for snapshot testing.
+ */
+export function resetId() {
+  id = 0; 
+}
+
 export let useId =
   // Prefer React's `useId` if it's available.
   // @ts-expect-error - `useId` doesn't exist in React < 18.
