@@ -35,6 +35,7 @@ import {
   sortByDomNode,
   Focus as FocusManagementFocus,
   focusFrom,
+  restoreFocusIfNecessary,
 } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
@@ -463,7 +464,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
           let { dataRef } = state.items[state.activeItemIndex]
           dataRef.current?.domRef.current?.click()
         }
-        disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+        restoreFocusIfNecessary(state.buttonRef.current)
         break
 
       case Keys.ArrowDown:
@@ -615,7 +616,7 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   let handleClick = useEvent((event: MouseEvent) => {
     if (disabled) return event.preventDefault()
     dispatch({ type: ActionTypes.CloseMenu })
-    disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+    restoreFocusIfNecessary(state.buttonRef.current)
   })
 
   let handleFocus = useEvent(() => {
