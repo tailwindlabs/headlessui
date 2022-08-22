@@ -1,3 +1,4 @@
+import { disposables } from './disposables'
 import { match } from './match'
 import { getOwnerDocument } from './owner'
 
@@ -96,6 +97,18 @@ export function isFocusableElement(
 
       return false
     },
+  })
+}
+
+export function restoreFocusIfNecessary(element: HTMLElement | null) {
+  let ownerDocument = getOwnerDocument(element)
+  disposables().nextFrame(() => {
+    if (
+      ownerDocument &&
+      !isFocusableElement(ownerDocument.activeElement as HTMLElement, FocusableMode.Strict)
+    ) {
+      focusElement(element)
+    }
   })
 }
 

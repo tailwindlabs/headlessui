@@ -28,6 +28,7 @@ import {
   sortByDomNode,
   Focus as FocusManagementFocus,
   focusFrom,
+  restoreFocusIfNecessary,
 } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 
@@ -384,7 +385,7 @@ export let MenuItems = defineComponent({
             dom(_activeItem.dataRef.domRef)?.click()
           }
           api.closeMenu()
-          nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+          restoreFocusIfNecessary(dom(api.buttonRef))
           break
 
         case Keys.ArrowDown:
@@ -531,7 +532,7 @@ export let MenuItem = defineComponent({
     function handleClick(event: MouseEvent) {
       if (props.disabled) return event.preventDefault()
       api.closeMenu()
-      nextTick(() => dom(api.buttonRef)?.focus({ preventScroll: true }))
+      restoreFocusIfNecessary(dom(api.buttonRef))
     }
 
     function handleFocus() {
