@@ -24,6 +24,8 @@ export let Hidden = forwardRefWithAs(function VisuallyHidden<
     'aria-hidden': (features & Features.Focusable) === Features.Focusable ? true : undefined,
     style: {
       position: 'absolute',
+      top: 0,
+      left: 0,
       width: 1,
       height: 1,
       padding: 0,
