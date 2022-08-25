@@ -22,12 +22,14 @@
     "@tailwindcss/typography": "^0.5.2",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
+    "react": "17",
     "tailwindcss": "^0.0.0-insiders.83b4811",
     "vue": "^3.2.27",
     "vue-flatpickr-component": "^9.0.5",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^2.0.1",
     "@vitejs/plugin-vue": "^3.0.3",
     "vite": "^3.0.0"
   }
