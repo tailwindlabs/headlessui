@@ -24,9 +24,11 @@ export let Hidden = defineComponent({
       let ourProps = {
         'aria-hidden': (features & Features.Focusable) === Features.Focusable ? true : undefined,
         style: {
-          position: 'absolute',
+          position: 'fixed',
+          top: 1,
+          left: 1,
           width: 1,
-          height: 1,
+          height: 0,
           padding: 0,
           margin: -1,
           overflow: 'hidden',
