@@ -23,7 +23,6 @@ import {
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
-import { useId } from '../../hooks/use-id'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
@@ -32,7 +31,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
 
-type ID = ReturnType<typeof useId>
+type ContainerElement = MutableRefObject<HTMLElement | null>
 
 function splitClasses(classes: string = '') {
   return classes.split(' ').filter((className) => className.trim().length > 1)
@@ -98,9 +97,9 @@ function useParentNesting() {
 }
 
 interface NestingContextValues {
-  children: MutableRefObject<{ id: ID; state: TreeStates }[]>
-  register: (id: ID) => () => void
-  unregister: (id: ID, strategy?: RenderStrategy) => void
+  children: MutableRefObject<{ el: ContainerElement; state: TreeStates }[]>
+  register: (el: ContainerElement) => () => void
+  unregister: (el: ContainerElement, strategy?: RenderStrategy) => void
 }
 
 let NestingContext = createContext<NestingContextValues | null>(null)
@@ -110,7 +109,11 @@ function hasChildren(
   bag: NestingContextValues['children'] | { children: NestingContextValues['children'] }
 ): boolean {
   if ('children' in bag) return hasChildren(bag.children)
-  return bag.current.filter(({ state }) => state === TreeStates.Visible).length > 0
+  return (
+    bag.current
+      .filter(({ el }) => el.current !== null)
+      .filter(({ state }) => state === TreeStates.Visible).length > 0
+  )
 }
 
 function useNesting(done?: () => void) {
@@ -118,8 +121,8 @@ function useNesting(done?: () => void) {
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
   let mounted = useIsMounted()
 
-  let unregister = useEvent((childId: ID, strategy = RenderStrategy.Hidden) => {
-    let idx = transitionableChildren.current.findIndex(({ id }) => id === childId)
+  let unregister = useEvent((container: ContainerElement, strategy = RenderStrategy.Hidden) => {
+    let idx = transitionableChildren.current.findIndex(({ el }) => el === container)
     if (idx === -1) return
 
     match(strategy, {
@@ -138,15 +141,15 @@ function useNesting(done?: () => void) {
     })
   })
 
-  let register = useEvent((childId: ID) => {
-    let child = transitionableChildren.current.find(({ id }) => id === childId)
+  let register = useEvent((container: ContainerElement) => {
+    let child = transitionableChildren.current.find(({ el }) => el === container)
     if (!child) {
-      transitionableChildren.current.push({ id: childId, state: TreeStates.Visible })
+      transitionableChildren.current.push({ el: container, state: TreeStates.Visible })
     } else if (child.state !== TreeStates.Visible) {
       child.state = TreeStates.Visible
     }
 
-    return () => unregister(childId, RenderStrategy.Unmount)
+    return () => unregister(container, RenderStrategy.Unmount)
   })
 
   return useMemo(
@@ -218,17 +221,14 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   let { register, unregister } = useParentNesting()
   let prevShow = useRef<boolean | null>(null)
 
-  let id = useId()
-
   useEffect(() => {
-    if (!id) return
-    return register(id)
-  }, [register, id])
+    return register(container)
+  }, [register, container])
 
   useEffect(() => {
     // If we are in another mode than the Hidden mode then ignore
     if (strategy !== RenderStrategy.Hidden) return
-    if (!id) return
+    if (!container.current) return
 
     // Make sure that we are visible
     if (show && state !== TreeStates.Visible) {
@@ -237,10 +237,10 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     }
 
     match(state, {
-      [TreeStates.Hidden]: () => unregister(id),
-      [TreeStates.Visible]: () => register(id),
+      [TreeStates.Hidden]: () => unregister(container),
+      [TreeStates.Visible]: () => register(container),
     })
-  }, [state, id, register, unregister, show, strategy])
+  }, [state, container, register, unregister, show, strategy])
 
   let classes = useLatestValue({
     enter: splitClasses(enter),
@@ -271,15 +271,11 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     return show ? 'enter' : 'leave'
   })() as 'enter' | 'leave' | 'idle'
 
-  let transitioning = useRef(false)
-
   let nesting = useNesting(() => {
-    if (transitioning.current) return
-
     // When all children have been unmounted we can only hide ourselves if and only if we are not
     // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
     setState(TreeStates.Hidden)
-    unregister(id)
+    unregister(container)
   })
 
   useTransition({
@@ -287,17 +283,13 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     classes,
     events,
     direction: transitionDirection,
-    onStart: useLatestValue(() => {
-      transitioning.current = true
-    }),
+    onStart: useLatestValue(() => {}),
     onStop: useLatestValue((direction) => {
-      transitioning.current = false
-
       if (direction === 'leave' && !hasChildren(nesting)) {
         // When we don't have children anymore we can safely unregister from the parent and hide
         // ourselves.
         setState(TreeStates.Hidden)
-        unregister(id)
+        unregister(container)
       }
     }),
   })
@@ -393,7 +385,10 @@ let TransitionRoot = forwardRefWithAs(function Transition<
       setState(TreeStates.Visible)
     } else if (!hasChildren(nestingBag)) {
       setState(TreeStates.Hidden)
-    } else {
+    } else if (
+      process.env.NODE_ENV !==
+      'test' /* TODO: Remove this once we have real tests! JSDOM doesn't "render", therefore getBoundingClientRect() will always result in `0`. */
+    ) {
       let node = internalTransitionRef.current
       if (!node) return
       let rect = node.getBoundingClientRect()
