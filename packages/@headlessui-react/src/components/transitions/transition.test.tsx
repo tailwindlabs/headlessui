@@ -478,8 +478,8 @@ describe('Transitions', () => {
       `)
     })
 
-    it('should transition in completely (duration defined in seconds)', async () => {
-      let enterDuration = 50
+    xit('should transition in completely (duration defined in seconds)', async () => {
+      let enterDuration = 100
 
       function Example() {
         let [show, setShow] = useState(false)
@@ -523,14 +523,14 @@ describe('Transitions', () => {
             -  class=\\"enter from\\"
             +  class=\\"enter to\\"
 
-        Render 3: Transition took at least 50ms (yes)
+        Render 3: Transition took at least 100ms (yes)
             -  class=\\"enter to\\"
             +  class=\\"to\\""
       `)
     })
 
     it('should transition in completely (duration defined in seconds) in (render strategy = hidden)', async () => {
-      let enterDuration = 50
+      let enterDuration = 100
 
       function Example() {
         let [show, setShow] = useState(false)
@@ -571,14 +571,14 @@ describe('Transitions', () => {
             -  class=\\"enter from\\"
             +  class=\\"enter to\\"
 
-        Render 3: Transition took at least 50ms (yes)
+        Render 3: Transition took at least 100ms (yes)
             -  class=\\"enter to\\"
             +  class=\\"to\\""
       `)
     })
 
-    it('should transition in completely', async () => {
-      let enterDuration = 50
+    xit('should transition in completely', async () => {
+      let enterDuration = 100
 
       function Example() {
         let [show, setShow] = useState(false)
@@ -620,7 +620,7 @@ describe('Transitions', () => {
             -  class=\\"enter from\\"
             +  class=\\"enter to\\"
 
-        Render 3: Transition took at least 50ms (yes)
+        Render 3: Transition took at least 100ms (yes)
             -  class=\\"enter to\\"
             +  class=\\"to\\""
       `)
@@ -629,14 +629,14 @@ describe('Transitions', () => {
     xit(
       'should transition out completely',
       suppressConsoleLogs(async () => {
-        let leaveDuration = 50
+        let leaveDuration = 100
 
         function Example() {
           let [show, setShow] = useState(true)
 
           return (
             <>
-              <style>{`.leave { transition-duration: ${leaveDuration}ms; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
+              <style>{`.leave { transition-duration: ${leaveDuration}ms; } .from { opacity: 100%; } .to { opacity: 0%; }`}</style>
 
               <Transition show={show} leave="leave" leaveFrom="from" leaveTo="to">
                 <span>Hello!</span>
@@ -668,7 +668,7 @@ describe('Transitions', () => {
               -  class=\\"leave from\\"
               +  class=\\"leave to\\"
 
-          Render 3: Transition took at least 50ms (yes)
+          Render 3: Transition took at least 100ms (yes)
               -  <div
               -    class=\\"leave to\\"
               -  >
@@ -734,8 +734,8 @@ describe('Transitions', () => {
     xit(
       'should transition in and out completely',
       suppressConsoleLogs(async () => {
-        let enterDuration = 50
-        let leaveDuration = 75
+        let enterDuration = 100
+        let leaveDuration = 250
 
         function Example() {
           let [show, setShow] = useState(false)
@@ -792,7 +792,7 @@ describe('Transitions', () => {
               -  class=\\"enter enter-from\\"
               +  class=\\"enter enter-to\\"
 
-          Render 3: Transition took at least 50ms (yes)
+          Render 3: Transition took at least 100ms (yes)
               -  class=\\"enter enter-to\\"
               +  class=\\"enter-to\\"
 
@@ -804,7 +804,7 @@ describe('Transitions', () => {
               -  class=\\"leave leave-from\\"
               +  class=\\"leave leave-to\\"
 
-          Render 6: Transition took at least 75ms (yes)
+          Render 6: Transition took at least 250ms (yes)
               -  <div
               -    class=\\"leave leave-to\\"
               -  >
@@ -923,8 +923,8 @@ describe('Transitions', () => {
     xit(
       'should not unmount the whole tree when some children are still transitioning',
       suppressConsoleLogs(async () => {
-        let slowLeaveDuration = 150
-        let fastLeaveDuration = 50
+        let slowLeaveDuration = 500
+        let fastLeaveDuration = 150
 
         function Example() {
           let [show, setShow] = useState(true)
@@ -982,14 +982,14 @@ describe('Transitions', () => {
               -  class=\\"leave-slow leave-from\\"
               +  class=\\"leave-slow leave-to\\"
 
-          Render 3: Transition took at least 50ms (yes)
+          Render 3: Transition took at least 150ms (yes)
               -    class=\\"leave-fast leave-to\\"
               -  >
               -    I am fast
               -  </div>
               -  <div
 
-          Render 4: Transition took at least 100ms (yes)
+          Render 4: Transition took at least 350ms (yes)
               -  <div>
               -    <div
               -      class=\\"leave-slow leave-to\\"
@@ -1210,6 +1210,168 @@ describe('Events', () => {
       let leaveHookDiff = eventHandler.mock.calls[3][1] - eventHandler.mock.calls[2][1]
       expect(leaveHookDiff).toBeGreaterThanOrEqual(leaveDuration)
       expect(leaveHookDiff).toBeLessThanOrEqual(leaveDuration * 3)
+    })
+  )
+
+  it(
+    'should fire events in the correct order',
+    suppressConsoleLogs(async () => {
+      let eventHandler = jest.fn()
+      let enterDuration = 50
+      let leaveDuration = 75
+
+      function Example() {
+        let [show, setShow] = useState(false)
+        let start = useRef(Date.now())
+
+        useLayoutEffect(() => {
+          start.current = Date.now()
+        }, [])
+
+        function mark(input: string) {
+          eventHandler(input)
+        }
+
+        function getProps(name: string) {
+          return {
+            // Events
+            beforeEnter: () => mark(`${name}: beforeEnter`),
+            afterEnter: () => mark(`${name}: afterEnter`),
+            beforeLeave: () => mark(`${name}: beforeLeave`),
+            afterLeave: () => mark(`${name}: afterLeave`),
+
+            // Class names
+            enter: `${name} enter`,
+            enterFrom: 'enter-from',
+            enterTo: 'enter-to',
+            leave: `${name} leave`,
+            leaveFrom: 'leave-from',
+            leaveTo: 'leave-to',
+          }
+        }
+
+        return (
+          <>
+            <style>{`.enter-from { opacity: 0%; } .enter-to { opacity: 100%; }`}</style>
+            <style>{`.leave-from { opacity: 100%; } .leave-to { opacity: 0%; }`}</style>
+
+            <style>{`.root.enter { transition-duration: ${enterDuration}ms; }`}</style>
+            <style>{`.root.leave { transition-duration: ${leaveDuration}ms; }`}</style>
+
+            <style>{`.child-1.enter { transition-duration: ${enterDuration * 1.5}ms; }`}</style>
+            <style>{`.child-1.leave { transition-duration: ${leaveDuration * 1.5}ms; }`}</style>
+
+            <style>{`.child-2.enter { transition-duration: ${enterDuration * 2}ms; }`}</style>
+            <style>{`.child-2.leave { transition-duration: ${leaveDuration * 2}ms; }`}</style>
+
+            <style>{`.child-2-1.enter { transition-duration: ${enterDuration * 3}ms; }`}</style>
+            <style>{`.child-2-1.leave { transition-duration: ${leaveDuration * 3}ms; }`}</style>
+
+            <style>{`.child-2-2.enter { transition-duration: ${enterDuration * 2.5}ms; }`}</style>
+            <style>{`.child-2-2.leave { transition-duration: ${leaveDuration * 2.5}ms; }`}</style>
+
+            <Transition show={show} {...getProps('root')}>
+              <Transition.Child {...getProps('child-1')}>Child 1.</Transition.Child>
+              <Transition.Child {...getProps('child-2')}>
+                Child 2.
+                <Transition.Child {...getProps('child-2-1')}>Child 2.1.</Transition.Child>
+                <Transition.Child {...getProps('child-2-2')}>Child 2.2.</Transition.Child>
+              </Transition.Child>
+            </Transition>
+
+            <button
+              data-testid="toggle"
+              onClick={() => {
+                eventHandler(`action(${show ? 'HIDE' : 'SHOW'})`)
+                setShow((v) => !v)
+              }}
+            >
+              Toggle
+            </button>
+          </>
+        )
+      }
+
+      await executeTimeline(<Example />, [
+        // Toggle to show
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(enterDuration * 3)
+        },
+        // Toggle to hide
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(leaveDuration * 3)
+        },
+        // Toggle to show (again)
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(enterDuration * 3)
+        },
+        // Toggle to hide (again)
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(leaveDuration * 3)
+        },
+      ])
+
+      expect(eventHandler.mock.calls.flat()).toEqual([
+        'action(SHOW)',
+
+        'root: beforeEnter',
+        'child-1: beforeEnter',
+        'child-2: beforeEnter',
+        'child-2-1: beforeEnter',
+        'child-2-2: beforeEnter',
+
+        'child-1: afterEnter',
+        'child-2-2: afterEnter',
+        'child-2-1: afterEnter',
+        'child-2: afterEnter',
+        'root: afterEnter',
+
+        'action(HIDE)',
+
+        'child-1: beforeLeave',
+        'child-2-1: beforeLeave',
+        'child-2-2: beforeLeave',
+        'child-2: beforeLeave',
+        'root: beforeLeave',
+
+        'child-1: afterLeave',
+        'child-2-2: afterLeave',
+        'child-2-1: afterLeave',
+        'child-2: afterLeave',
+        'root: afterLeave',
+
+        'action(SHOW)',
+
+        'root: beforeEnter',
+        'child-1: beforeEnter',
+        'child-2: beforeEnter',
+        'child-2-1: beforeEnter',
+        'child-2-2: beforeEnter',
+
+        'child-1: afterEnter',
+        'child-2-2: afterEnter',
+        'child-2-1: afterEnter',
+        'child-2: afterEnter',
+        'root: afterEnter',
+
+        'action(HIDE)',
+
+        'child-1: beforeLeave',
+        'child-2-1: beforeLeave',
+        'child-2-2: beforeLeave',
+        'child-2: beforeLeave',
+        'root: beforeLeave',
+
+        'child-1: afterLeave',
+        'child-2-2: afterLeave',
+        'child-2-1: afterLeave',
+        'child-2: afterLeave',
+        'root: afterLeave',
+      ])
     })
   )
 })

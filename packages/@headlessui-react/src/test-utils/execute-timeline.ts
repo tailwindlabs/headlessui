@@ -98,6 +98,12 @@ export async function executeTimeline(
         i === 0 ? 0 : Number((snapshot.recordedAt - all[i - 1].recordedAt) / BigInt(1e6)),
     }))
 
+    // Only keep the snapshots that are not outliers.
+    .filter((snapshot, i, all) => {
+      if (i === 0) return true
+      return snapshot.relativeToPreviousSnapshot >= all[i - 1].relativeToPreviousSnapshot
+    })
+
   let diffed = uniqueSnapshots
     .map((call, i) => {
       // Skip initial render, because there is nothing to compare with
