@@ -102,9 +102,11 @@ interface NestingContextValues {
   children: MutableRefObject<{ el: ContainerElement; state: TreeStates }[]>
   register: (el: ContainerElement) => () => void
   unregister: (el: ContainerElement, strategy?: RenderStrategy) => void
-  onStart: (direction: TransitionDirection, cb: () => void) => void
-  onStop: (direction: TransitionDirection, cb: () => void) => void
-  chains: MutableRefObject<Record<TransitionDirection, Promise<void>[]>>
+  onStart: (el: ContainerElement, direction: TransitionDirection, cb: () => void) => void
+  onStop: (el: ContainerElement, direction: TransitionDirection, cb: () => void) => void
+  chains: MutableRefObject<
+    Record<TransitionDirection, [container: ContainerElement, promise: Promise<void>][]>
+  >
   wait: MutableRefObject<Promise<void>>
 }
 
@@ -161,27 +163,48 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
   let todos = useRef<(() => void)[]>([])
   let wait = useRef<Promise<void>>(Promise.resolve())
 
-  let chains = useRef<Record<TransitionDirection, Promise<void>[]>>({
+  let chains = useRef<
+    Record<TransitionDirection, [identifier: ContainerElement, promise: Promise<void>][]>
+  >({
     enter: [],
     leave: [],
     idle: [],
   })
 
   let onStart = useEvent(
-    (direction: TransitionDirection, cb: (direction: TransitionDirection) => void) => {
+    (
+      container: ContainerElement,
+      direction: TransitionDirection,
+      cb: (direction: TransitionDirection) => void
+    ) => {
+      // Clear out all existing todos
+      todos.current.splice(0)
+
+      // Remove all existing promises for the current container from the parent because we can
+      // ignore those and use only the new one.
+      if (parent) {
+        parent.chains.current[direction] = parent.chains.current[direction].filter(
+          ([containerInParent]) => containerInParent !== container
+        )
+      }
+
       // Wait until our own transition is done
-      parent?.chains.current[direction].push(
+      parent?.chains.current[direction].push([
+        container,
         new Promise<void>((resolve) => {
           todos.current.push(resolve)
-        })
-      )
+        }),
+      ])
 
       // Wait until our children are done
-      parent?.chains.current[direction].push(
+      parent?.chains.current[direction].push([
+        container,
         new Promise<void>((resolve) => {
-          Promise.all(chains.current[direction]).then(() => resolve())
-        })
-      )
+          Promise.all(chains.current[direction].map(([_container, promise]) => promise)).then(() =>
+            resolve()
+          )
+        }),
+      ])
 
       if (direction === 'enter') {
         wait.current = wait.current.then(() => parent?.wait.current).then(() => cb(direction))
@@ -192,8 +215,12 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
   )
 
   let onStop = useEvent(
-    (direction: TransitionDirection, cb: (direction: TransitionDirection) => void) => {
-      Promise.all(chains.current[direction]) // Wait for my children
+    (
+      _container: ContainerElement,
+      direction: TransitionDirection,
+      cb: (direction: TransitionDirection) => void
+    ) => {
+      Promise.all(chains.current[direction].splice(0).map(([_container, promise]) => promise)) // Wait for my children
         .then(() => {
           todos.current.shift()?.() // I'm ready
         })
@@ -288,7 +315,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
       return
     }
 
-    match(state, {
+    return match(state, {
       [TreeStates.Hidden]: () => unregister(container),
       [TreeStates.Visible]: () => register(container),
     })
@@ -357,10 +384,10 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     classes,
     direction: transitionDirection,
     onStart: useLatestValue((direction) => {
-      nesting.onStart(direction, beforeEvent)
+      nesting.onStart(container, direction, beforeEvent)
     }),
     onStop: useLatestValue((direction) => {
-      nesting.onStop(direction, afterEvent)
+      nesting.onStop(container, direction, afterEvent)
 
       if (direction === 'leave' && !hasChildren(nesting)) {
         // When we don't have children anymore we can safely unregister from the parent and hide
