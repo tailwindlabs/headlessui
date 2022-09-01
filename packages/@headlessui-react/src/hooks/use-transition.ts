@@ -5,7 +5,6 @@ import { disposables } from '../utils/disposables'
 import { match } from '../utils/match'
 
 import { useDisposables } from './use-disposables'
-import { useEvent } from './use-event'
 import { useIsMounted } from './use-is-mounted'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { useLatestValue } from './use-latest-value'
@@ -23,45 +22,16 @@ interface TransitionArgs {
 
     entered: string[]
   }>
-  events: MutableRefObject<{
-    beforeEnter: () => void
-    afterEnter: () => void
-    beforeLeave: () => void
-    afterLeave: () => void
-  }>
   direction: 'enter' | 'leave' | 'idle'
   onStart: MutableRefObject<(direction: TransitionArgs['direction']) => void>
   onStop: MutableRefObject<(direction: TransitionArgs['direction']) => void>
 }
 
-export function useTransition({
-  container,
-  direction,
-  classes,
-  events,
-  onStart,
-  onStop,
-}: TransitionArgs) {
+export function useTransition({ container, direction, classes, onStart, onStop }: TransitionArgs) {
   let mounted = useIsMounted()
   let d = useDisposables()
 
   let latestDirection = useLatestValue(direction)
-
-  let beforeEvent = useEvent(() => {
-    return match(latestDirection.current, {
-      enter: () => events.current.beforeEnter(),
-      leave: () => events.current.beforeLeave(),
-      idle: () => {},
-    })
-  })
-
-  let afterEvent = useEvent(() => {
-    return match(latestDirection.current, {
-      enter: () => events.current.afterEnter(),
-      leave: () => events.current.afterLeave(),
-      idle: () => {},
-    })
-  })
 
   useIsoMorphicEffect(() => {
     let dd = disposables()
@@ -74,8 +44,6 @@ export function useTransition({
 
     dd.dispose()
 
-    beforeEvent()
-
     onStart.current(latestDirection.current)
 
     dd.add(
@@ -84,7 +52,6 @@ export function useTransition({
 
         match(reason, {
           [Reason.Ended]() {
-            afterEvent()
             onStop.current(latestDirection.current)
           },
           [Reason.Cancelled]: () => {},
