@@ -1212,4 +1212,166 @@ describe('Events', () => {
       expect(leaveHookDiff).toBeLessThanOrEqual(leaveDuration * 3)
     })
   )
+
+  it(
+    'should fire events in the correct order',
+    suppressConsoleLogs(async () => {
+      let eventHandler = jest.fn()
+      let enterDuration = 50
+      let leaveDuration = 75
+
+      function Example() {
+        let [show, setShow] = useState(false)
+        let start = useRef(Date.now())
+
+        useLayoutEffect(() => {
+          start.current = Date.now()
+        }, [])
+
+        function mark(input: string) {
+          eventHandler(input)
+        }
+
+        function getProps(name: string) {
+          return {
+            // Events
+            beforeEnter: () => mark(`${name}: beforeEnter`),
+            afterEnter: () => mark(`${name}: afterEnter`),
+            beforeLeave: () => mark(`${name}: beforeLeave`),
+            afterLeave: () => mark(`${name}: afterLeave`),
+
+            // Class names
+            enter: `${name} enter`,
+            enterFrom: 'enter-from',
+            enterTo: 'enter-to',
+            leave: `${name} leave`,
+            leaveFrom: 'leave-from',
+            leaveTo: 'leave-to',
+          }
+        }
+
+        return (
+          <>
+            <style>{`.enter-from { opacity: 0%; } .enter-to { opacity: 100%; }`}</style>
+            <style>{`.leave-from { opacity: 100%; } .leave-to { opacity: 0%; }`}</style>
+
+            <style>{`.root.enter { transition-duration: ${enterDuration}ms; }`}</style>
+            <style>{`.root.leave { transition-duration: ${leaveDuration}ms; }`}</style>
+
+            <style>{`.child-1.enter { transition-duration: ${enterDuration * 1.5}ms; }`}</style>
+            <style>{`.child-1.leave { transition-duration: ${leaveDuration * 1.5}ms; }`}</style>
+
+            <style>{`.child-2.enter { transition-duration: ${enterDuration * 2}ms; }`}</style>
+            <style>{`.child-2.leave { transition-duration: ${leaveDuration * 2}ms; }`}</style>
+
+            <style>{`.child-2-1.enter { transition-duration: ${enterDuration * 3}ms; }`}</style>
+            <style>{`.child-2-1.leave { transition-duration: ${leaveDuration * 3}ms; }`}</style>
+
+            <style>{`.child-2-2.enter { transition-duration: ${enterDuration * 2.5}ms; }`}</style>
+            <style>{`.child-2-2.leave { transition-duration: ${leaveDuration * 2.5}ms; }`}</style>
+
+            <Transition show={show} {...getProps('root')}>
+              <Transition.Child {...getProps('child-1')}>Child 1.</Transition.Child>
+              <Transition.Child {...getProps('child-2')}>
+                Child 2.
+                <Transition.Child {...getProps('child-2-1')}>Child 2.1.</Transition.Child>
+                <Transition.Child {...getProps('child-2-2')}>Child 2.2.</Transition.Child>
+              </Transition.Child>
+            </Transition>
+
+            <button
+              data-testid="toggle"
+              onClick={() => {
+                eventHandler(`action(${show ? 'HIDE' : 'SHOW'})`)
+                setShow((v) => !v)
+              }}
+            >
+              Toggle
+            </button>
+          </>
+        )
+      }
+
+      await executeTimeline(<Example />, [
+        // Toggle to show
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(enterDuration * 3)
+        },
+        // Toggle to hide
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(leaveDuration * 3)
+        },
+        // Toggle to show (again)
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(enterDuration * 3)
+        },
+        // Toggle to hide (again)
+        ({ getByTestId }) => {
+          fireEvent.click(getByTestId('toggle'))
+          return executeTimeline.fullTransition(leaveDuration * 3)
+        },
+      ])
+
+      expect(eventHandler.mock.calls.flat()).toEqual([
+        'action(SHOW)',
+
+        'root: beforeEnter',
+        'child-1: beforeEnter',
+        'child-2: beforeEnter',
+        'child-2-1: beforeEnter',
+        'child-2-2: beforeEnter',
+
+        'child-1: afterEnter',
+        'child-2-2: afterEnter',
+        'child-2-1: afterEnter',
+        'child-2: afterEnter',
+        'root: afterEnter',
+
+        'action(HIDE)',
+
+        'child-1: beforeLeave',
+        'child-2-1: beforeLeave',
+        'child-2-2: beforeLeave',
+        'child-2: beforeLeave',
+        'root: beforeLeave',
+
+        'child-1: afterLeave',
+        'child-2-2: afterLeave',
+        'child-2-1: afterLeave',
+        'child-2: afterLeave',
+        'root: afterLeave',
+
+        'action(SHOW)',
+
+        'root: beforeEnter',
+        'child-1: beforeEnter',
+        'child-2: beforeEnter',
+        'child-2-1: beforeEnter',
+        'child-2-2: beforeEnter',
+
+        'child-1: afterEnter',
+        'child-2-2: afterEnter',
+        'child-2-1: afterEnter',
+        'child-2: afterEnter',
+        'root: afterEnter',
+
+        'action(HIDE)',
+
+        'child-1: beforeLeave',
+        'child-2-1: beforeLeave',
+        'child-2-2: beforeLeave',
+        'child-2: beforeLeave',
+        'root: beforeLeave',
+
+        'child-1: afterLeave',
+        'child-2-2: afterLeave',
+        'child-2-1: afterLeave',
+        'child-2: afterLeave',
+        'root: afterLeave',
+      ])
+    })
+  )
 })
