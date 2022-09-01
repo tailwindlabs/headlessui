@@ -636,7 +636,7 @@ describe('Transitions', () => {
 
           return (
             <>
-              <style>{`.leave { transition-duration: ${leaveDuration}ms; } .from { opacity: 0%; } .to { opacity: 100%; }`}</style>
+              <style>{`.leave { transition-duration: ${leaveDuration}ms; } .from { opacity: 100%; } .to { opacity: 0%; }`}</style>
 
               <Transition show={show} leave="leave" leaveFrom="from" leaveTo="to">
                 <span>Hello!</span>
