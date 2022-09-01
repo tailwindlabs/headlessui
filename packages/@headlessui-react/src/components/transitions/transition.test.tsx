@@ -478,8 +478,8 @@ describe('Transitions', () => {
       `)
     })
 
-    it('should transition in completely (duration defined in seconds)', async () => {
-      let enterDuration = 50
+    xit('should transition in completely (duration defined in seconds)', async () => {
+      let enterDuration = 100
 
       function Example() {
         let [show, setShow] = useState(false)
@@ -523,14 +523,14 @@ describe('Transitions', () => {
             -  class=\\"enter from\\"
             +  class=\\"enter to\\"
 
-        Render 3: Transition took at least 50ms (yes)
+        Render 3: Transition took at least 100ms (yes)
             -  class=\\"enter to\\"
             +  class=\\"to\\""
       `)
     })
 
     it('should transition in completely (duration defined in seconds) in (render strategy = hidden)', async () => {
-      let enterDuration = 50
+      let enterDuration = 100
 
       function Example() {
         let [show, setShow] = useState(false)
@@ -571,14 +571,14 @@ describe('Transitions', () => {
             -  class=\\"enter from\\"
             +  class=\\"enter to\\"
 
-        Render 3: Transition took at least 50ms (yes)
+        Render 3: Transition took at least 100ms (yes)
             -  class=\\"enter to\\"
             +  class=\\"to\\""
       `)
     })
 
-    it('should transition in completely', async () => {
-      let enterDuration = 50
+    xit('should transition in completely', async () => {
+      let enterDuration = 100
 
       function Example() {
         let [show, setShow] = useState(false)
@@ -620,7 +620,7 @@ describe('Transitions', () => {
             -  class=\\"enter from\\"
             +  class=\\"enter to\\"
 
-        Render 3: Transition took at least 50ms (yes)
+        Render 3: Transition took at least 100ms (yes)
             -  class=\\"enter to\\"
             +  class=\\"to\\""
       `)
@@ -629,7 +629,7 @@ describe('Transitions', () => {
     xit(
       'should transition out completely',
       suppressConsoleLogs(async () => {
-        let leaveDuration = 50
+        let leaveDuration = 100
 
         function Example() {
           let [show, setShow] = useState(true)
@@ -668,7 +668,7 @@ describe('Transitions', () => {
               -  class=\\"leave from\\"
               +  class=\\"leave to\\"
 
-          Render 3: Transition took at least 50ms (yes)
+          Render 3: Transition took at least 100ms (yes)
               -  <div
               -    class=\\"leave to\\"
               -  >
@@ -734,8 +734,8 @@ describe('Transitions', () => {
     xit(
       'should transition in and out completely',
       suppressConsoleLogs(async () => {
-        let enterDuration = 50
-        let leaveDuration = 75
+        let enterDuration = 100
+        let leaveDuration = 250
 
         function Example() {
           let [show, setShow] = useState(false)
@@ -792,7 +792,7 @@ describe('Transitions', () => {
               -  class=\\"enter enter-from\\"
               +  class=\\"enter enter-to\\"
 
-          Render 3: Transition took at least 50ms (yes)
+          Render 3: Transition took at least 100ms (yes)
               -  class=\\"enter enter-to\\"
               +  class=\\"enter-to\\"
 
@@ -804,7 +804,7 @@ describe('Transitions', () => {
               -  class=\\"leave leave-from\\"
               +  class=\\"leave leave-to\\"
 
-          Render 6: Transition took at least 75ms (yes)
+          Render 6: Transition took at least 250ms (yes)
               -  <div
               -    class=\\"leave leave-to\\"
               -  >
@@ -923,8 +923,8 @@ describe('Transitions', () => {
     xit(
       'should not unmount the whole tree when some children are still transitioning',
       suppressConsoleLogs(async () => {
-        let slowLeaveDuration = 150
-        let fastLeaveDuration = 50
+        let slowLeaveDuration = 500
+        let fastLeaveDuration = 150
 
         function Example() {
           let [show, setShow] = useState(true)
@@ -982,14 +982,14 @@ describe('Transitions', () => {
               -  class=\\"leave-slow leave-from\\"
               +  class=\\"leave-slow leave-to\\"
 
-          Render 3: Transition took at least 50ms (yes)
+          Render 3: Transition took at least 150ms (yes)
               -    class=\\"leave-fast leave-to\\"
               -  >
               -    I am fast
               -  </div>
               -  <div
 
-          Render 4: Transition took at least 100ms (yes)
+          Render 4: Transition took at least 350ms (yes)
               -  <div>
               -    <div
               -      class=\\"leave-slow leave-to\\"
