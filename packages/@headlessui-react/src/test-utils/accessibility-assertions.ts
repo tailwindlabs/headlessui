@@ -618,7 +618,7 @@ export function assertNoActiveComboboxOption(combobox = getComboboxInput()) {
 
 export function assertNoSelectedComboboxOption(items = getComboboxOptions()) {
   try {
-    for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
+    for (let item of items) expect(item).toHaveAttribute('aria-selected', 'false')
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNoSelectedComboboxOption)
     throw err
@@ -656,16 +656,7 @@ export function assertComboboxOption(
     }
 
     if (options.selected != null) {
-      switch (options.selected) {
-        case true:
-          return expect(item).toHaveAttribute('aria-selected', 'true')
-
-        case false:
-          return expect(item).not.toHaveAttribute('aria-selected')
-
-        default:
-          assertNever(options.selected)
-      }
+      return expect(item).toHaveAttribute('aria-selected', options.selected ? 'true' : 'false')
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertComboboxOption)
@@ -948,7 +939,7 @@ export function assertNoActiveListboxOption(listbox = getListbox()) {
 
 export function assertNoSelectedListboxOption(items = getListboxOptions()) {
   try {
-    for (let item of items) expect(item).not.toHaveAttribute('aria-selected')
+    for (let item of items) expect(item).toHaveAttribute('aria-selected', 'false')
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNoSelectedListboxOption)
     throw err
@@ -986,16 +977,7 @@ export function assertListboxOption(
     }
 
     if (options.selected != null) {
-      switch (options.selected) {
-        case true:
-          return expect(item).toHaveAttribute('aria-selected', 'true')
-
-        case false:
-          return expect(item).not.toHaveAttribute('aria-selected')
-
-        default:
-          assertNever(options.selected)
-      }
+      return expect(item).toHaveAttribute('aria-selected', options.selected ? 'true' : 'false')
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertListboxOption)
