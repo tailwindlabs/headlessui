@@ -533,6 +533,41 @@ describe('Rendering', () => {
     )
 
     it(
+      'should be possible to compare null values by a field',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <RadioGroup v-model="value" by="id">
+              <RadioGroupButton>Trigger</RadioGroupButton>
+              <RadioGroupOption
+                v-for="option in options"
+                :key="option.id"
+                :value="option"
+                v-slot="data"
+                >{{ JSON.stringify(data) }}</RadioGroupOption
+              >
+            </RadioGroup>
+          `,
+          setup: () => {
+            let value = ref(null)
+            return { options, value }
+          },
+        })
+
+        let [alice, bob, charlie] = getRadioGroupOptions()
+        expect(alice).toHaveTextContent(
+          JSON.stringify({ checked: false, disabled: false, active: false })
+        )
+        expect(bob).toHaveTextContent(
+          JSON.stringify({ checked: false, disabled: false, active: false })
+        )
+        expect(charlie).toHaveTextContent(
+          JSON.stringify({ checked: false, disabled: false, active: false })
+        )
+      })
+    )
+
+    it(
       'should be possible to compare objects by a field',
       suppressConsoleLogs(async () => {
         renderTemplate({
