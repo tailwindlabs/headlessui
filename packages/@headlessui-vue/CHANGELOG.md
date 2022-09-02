@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only select the active option when using "singular" mode when pressing `<tab>` in the `Combobox` component ([#1750](https://github.com/tailwindlabs/headlessui/pull/1750))
 - Only restore focus to the `MenuButton` if necessary when activating a `MenuOption` ([#1782](https://github.com/tailwindlabs/headlessui/pull/1782))
 - Don't scroll when wrapping around in focus trap ([#1789](https://github.com/tailwindlabs/headlessui/pull/1789))
+- Improve accessibility when announcing `ListboxOption` and `ComboboxOption` components ([#1812](https://github.com/tailwindlabs/headlessui/pull/1812))
 
 ## [1.6.7] - 2022-07-12
 

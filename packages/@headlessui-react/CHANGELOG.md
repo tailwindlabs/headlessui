@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don't scroll when wrapping around in focus trap ([#1789](https://github.com/tailwindlabs/headlessui/pull/1789))
 - Fix `Transition` component's incorrect cleanup and order of events ([#1803](https://github.com/tailwindlabs/headlessui/pull/1803))
 - Ensure enter transitions work when using `unmount={false}` ([#1811](https://github.com/tailwindlabs/headlessui/pull/1811))
+- Improve accessibility when announcing `Listbox.Option` and `Combobox.Option` components ([#1812](https://github.com/tailwindlabs/headlessui/pull/1812))
 
 ## [1.6.6] - 2022-07-07
 
