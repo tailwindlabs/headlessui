@@ -290,6 +290,95 @@ describe('Rendering', () => {
       )
 
       it(
+        'should be possible to use the by prop (as a string) with a null initial value',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" by="id">
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption :value="{ id: 1, name: 'alice' }">alice</ListboxOption>
+                  <ListboxOption :value="{ id: 2, name: 'bob' }">bob</ListboxOption>
+                  <ListboxOption :value="{ id: 3, name: 'charlie' }">charlie</ListboxOption>
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref(null)
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+          let [alice, bob, charlie] = getListboxOptions()
+          expect(alice).toHaveAttribute('aria-selected', 'false')
+          expect(bob).toHaveAttribute('aria-selected', 'false')
+          expect(charlie).toHaveAttribute('aria-selected', 'false')
+
+          await click(getListboxOptions()[2])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).toHaveAttribute('aria-selected', 'false')
+          expect(bob).toHaveAttribute('aria-selected', 'false')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[1])
+          await click(getListboxButton())
+          ;[alice, bob, charlie] = getListboxOptions()
+          expect(alice).toHaveAttribute('aria-selected', 'false')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).toHaveAttribute('aria-selected', 'false')
+        })
+      )
+
+      // TODO: Does this test prove anything useful?
+      it(
+        'should be possible to use the by prop (as a string) with a null listbox option',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Listbox v-model="value" by="id">
+                <ListboxButton>Trigger</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption :value="null" disabled>Please select an option</ListboxOption>
+                  <ListboxOption :value="{ id: 1, name: 'alice' }">alice</ListboxOption>
+                  <ListboxOption :value="{ id: 2, name: 'bob' }">bob</ListboxOption>
+                  <ListboxOption :value="{ id: 3, name: 'charlie' }">charlie</ListboxOption>
+                </ListboxOptions>
+              </Listbox>
+            `,
+            setup: () => {
+              let value = ref(null)
+              return { options, value }
+            },
+          })
+
+          await click(getListboxButton())
+          let [disabled, alice, bob, charlie] = getListboxOptions()
+          expect(disabled).toHaveAttribute('aria-selected', 'true')
+          expect(alice).toHaveAttribute('aria-selected', 'false')
+          expect(bob).toHaveAttribute('aria-selected', 'false')
+          expect(charlie).toHaveAttribute('aria-selected', 'false')
+
+          await click(getListboxOptions()[3])
+          await click(getListboxButton())
+          ;[disabled, alice, bob, charlie] = getListboxOptions()
+          expect(disabled).toHaveAttribute('aria-selected', 'false')
+          expect(alice).toHaveAttribute('aria-selected', 'false')
+          expect(bob).toHaveAttribute('aria-selected', 'false')
+          expect(charlie).toHaveAttribute('aria-selected', 'true')
+
+          await click(getListboxOptions()[2])
+          await click(getListboxButton())
+          ;[disabled, alice, bob, charlie] = getListboxOptions()
+          expect(disabled).toHaveAttribute('aria-selected', 'false')
+          expect(alice).toHaveAttribute('aria-selected', 'false')
+          expect(bob).toHaveAttribute('aria-selected', 'true')
+          expect(charlie).toHaveAttribute('aria-selected', 'false')
+        })
+      )
+
+      it(
         'should be possible to use completely new objects while rendering (single mode)',
         suppressConsoleLogs(async () => {
           renderTemplate({

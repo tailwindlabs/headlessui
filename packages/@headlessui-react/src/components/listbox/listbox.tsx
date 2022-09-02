@@ -353,7 +353,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
           typeof by === 'string'
             ? (a: TActualType, z: TActualType) => {
                 let property = by as unknown as keyof TActualType
-                return a[property] === z[property]
+                return a?.[property] === z?.[property]
               }
             : by
         ),
