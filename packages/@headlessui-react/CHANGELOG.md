@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only restore focus to the `Menu.Button` if necessary when activating a `Menu.Option` ([#1782](https://github.com/tailwindlabs/headlessui/pull/1782))
 - Don't scroll when wrapping around in focus trap ([#1789](https://github.com/tailwindlabs/headlessui/pull/1789))
 - Fix `Transition` component's incorrect cleanup and order of events ([#1803](https://github.com/tailwindlabs/headlessui/pull/1803))
+- Ensure enter transitions work when using `unmount={false}` ([#1811](https://github.com/tailwindlabs/headlessui/pull/1811))
 
 ## Changed
 

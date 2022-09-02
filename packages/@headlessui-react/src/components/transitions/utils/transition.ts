@@ -106,6 +106,15 @@ export function transition(
   let d = disposables()
   let _done = done !== undefined ? once(done) : () => {}
 
+  // When using unmount={false}, when the element is "hidden", then we apply a `style.display =
+  // 'none'` and a `hidden` attribute. Let's remove that in case we want to make an enter
+  // transition. It can happen that React is removing this a bit too late causing the element to not
+  // transition at all.
+  if (direction === 'enter') {
+    node.removeAttribute('hidden')
+    node.style.display = ''
+  }
+
   let base = match(direction, {
     enter: () => classes.enter,
     leave: () => classes.leave,
