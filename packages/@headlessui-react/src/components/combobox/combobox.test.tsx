@@ -210,6 +210,44 @@ describe('Rendering', () => {
       )
 
       it(
+        'should be possible to compare null values by a field',
+        suppressConsoleLogs(async () => {
+          render(
+            <Combobox value={null} onChange={console.log} by="id">
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                {options.map((option) => (
+                  <Combobox.Option
+                    key={option.id}
+                    value={option}
+                    className={(info) => JSON.stringify(info)}
+                  >
+                    {option.name}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          await click(getComboboxButton())
+
+          let [alice, bob, charlie] = getComboboxOptions()
+          expect(alice).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: true, selected: false, disabled: false })
+          )
+          expect(bob).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: false, selected: false, disabled: false })
+          )
+          expect(charlie).toHaveAttribute(
+            'class',
+            JSON.stringify({ active: false, selected: false, disabled: false })
+          )
+        })
+      )
+
+      it(
         'should be possible to compare objects by a field',
         suppressConsoleLogs(async () => {
           render(

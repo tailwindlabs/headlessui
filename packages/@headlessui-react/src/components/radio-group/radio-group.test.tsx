@@ -405,6 +405,39 @@ describe('Rendering', () => {
     )
 
     it(
+      'should be possible to compare null values by a field',
+      suppressConsoleLogs(async () => {
+        render(
+          <RadioGroup value={null} onChange={console.log} by="id">
+            {options.map((option) => (
+              <RadioGroup.Option
+                key={option.id}
+                value={option}
+                className={(info) => JSON.stringify(info)}
+              >
+                {option.name}
+              </RadioGroup.Option>
+            ))}
+          </RadioGroup>
+        )
+
+        let [alice, bob, charlie] = getRadioGroupOptions()
+        expect(alice).toHaveAttribute(
+          'class',
+          JSON.stringify({ checked: false, disabled: false, active: false })
+        )
+        expect(bob).toHaveAttribute(
+          'class',
+          JSON.stringify({ checked: false, disabled: false, active: false })
+        )
+        expect(charlie).toHaveAttribute(
+          'class',
+          JSON.stringify({ checked: false, disabled: false, active: false })
+        )
+      })
+    )
+
+    it(
       'should be possible to compare objects by a field',
       suppressConsoleLogs(async () => {
         render(

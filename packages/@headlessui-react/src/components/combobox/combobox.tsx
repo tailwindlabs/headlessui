@@ -417,7 +417,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     typeof by === 'string'
       ? (a, z) => {
           let property = by as unknown as keyof TValue
-          return a[property] === z[property]
+          return a?.[property] === z?.[property]
         }
       : by
   )

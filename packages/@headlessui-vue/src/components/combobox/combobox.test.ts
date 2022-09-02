@@ -244,6 +244,45 @@ describe('Rendering', () => {
       )
 
       it(
+        'should be possible to compare null values by a field',
+        suppressConsoleLogs(async () => {
+          renderTemplate({
+            template: html`
+              <Combobox v-model="value" by="id">
+                <ComboboxButton>Trigger</ComboboxButton>
+                <ComboboxOptions>
+                  <ComboboxOption
+                    v-for="option in options"
+                    :key="option.id"
+                    :value="option"
+                    v-slot="data"
+                    >{{ JSON.stringify(data) }}</ComboboxOption
+                  >
+                </ComboboxOptions>
+              </Combobox>
+            `,
+            setup: () => {
+              let value = ref(null)
+              return { options, value }
+            },
+          })
+
+          await click(getComboboxButton())
+
+          let [alice, bob, charlie] = getComboboxOptions()
+          expect(alice).toHaveTextContent(
+            JSON.stringify({ active: true, selected: false, disabled: false })
+          )
+          expect(bob).toHaveTextContent(
+            JSON.stringify({ active: false, selected: false, disabled: false })
+          )
+          expect(charlie).toHaveTextContent(
+            JSON.stringify({ active: false, selected: false, disabled: false })
+          )
+        })
+      )
+
+      it(
         'should be possible to compare objects by a field',
         suppressConsoleLogs(async () => {
           renderTemplate({

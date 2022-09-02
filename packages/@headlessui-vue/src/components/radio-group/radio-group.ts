@@ -115,7 +115,7 @@ export let RadioGroup = defineComponent({
       compare(a: any, z: any) {
         if (typeof props.by === 'string') {
           let property = props.by as unknown as any
-          return a[property] === z[property]
+          return a?.[property] === z?.[property]
         }
         return props.by(a, z)
       },

@@ -140,7 +140,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     typeof by === 'string'
       ? (a: TType, z: TType) => {
           let property = by as unknown as keyof TType
-          return a[property] === z[property]
+          return a?.[property] === z?.[property]
         }
       : by
   )
