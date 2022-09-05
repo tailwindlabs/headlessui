@@ -864,6 +864,74 @@ describe('Rendering', () => {
       expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
     })
 
+    it('should expose the value via the render prop', async () => {
+      let handleSubmission = jest.fn()
+
+      let { getByTestId } = render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Listbox name="assignee">
+            {({ value }) => (
+              <>
+                <div data-testid="value">{value}</div>
+                <Listbox.Button>
+                  {({ value }) => (
+                    <>
+                      Trigger
+                      <div data-testid="value-2">{value}</div>
+                    </>
+                  )}
+                </Listbox.Button>
+                <Listbox.Options>
+                  <Listbox.Option value="alice">Alice</Listbox.Option>
+                  <Listbox.Option value="bob">Bob</Listbox.Option>
+                  <Listbox.Option value="charlie">Charlie</Listbox.Option>
+                </Listbox.Options>
+              </>
+            )}
+          </Listbox>
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+      expect(getByTestId('value')).toHaveTextContent('alice')
+      expect(getByTestId('value-2')).toHaveTextContent('alice')
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose charlie
+      await click(getListboxOptions()[2])
+      expect(getByTestId('value')).toHaveTextContent('charlie')
+      expect(getByTestId('value-2')).toHaveTextContent('charlie')
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Charlie should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
+    })
+
     it('should be possible to provide a default value', async () => {
       let handleSubmission = jest.fn()
 

@@ -413,6 +413,7 @@ export let Combobox = defineComponent({
         disabled,
         activeIndex: api.activeOptionIndex.value,
         activeOption: activeOption.value,
+        value: value.value,
       }
 
       return h(Fragment, [
@@ -563,6 +564,7 @@ export let ComboboxButton = defineComponent({
       let slot = {
         open: api.comboboxState.value === ComboboxStates.Open,
         disabled: api.disabled.value,
+        value: api.value.value,
       }
       let ourProps = {
         ref: api.buttonRef,

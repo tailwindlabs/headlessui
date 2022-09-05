@@ -556,7 +556,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, disabled: false }),
+          textContent: JSON.stringify({ open: false, disabled: false, value: null }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -565,7 +565,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, disabled: false }),
+          textContent: JSON.stringify({ open: true, disabled: false, value: null }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -593,7 +593,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, disabled: false }),
+          textContent: JSON.stringify({ open: false, disabled: false, value: null }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -602,7 +602,7 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, disabled: false }),
+          textContent: JSON.stringify({ open: true, disabled: false, value: null }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -944,6 +944,69 @@ describe('Rendering', () => {
 
       // Choose charlie
       await click(getListboxOptions()[2])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Charlie should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
+    })
+
+    it('should expose the value via the render prop', async () => {
+      let handleSubmission = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <form @submit="handleSubmit">
+            <Listbox name="assignee" v-slot="{ value }">
+              <div data-testid="value">{{value}}</div>
+              <ListboxButton v-slot="{ value }">
+                Trigger
+                <div data-testid="value-2">{{value}}</div>
+              </ListboxButton>
+              <ListboxOptions>
+                <ListboxOption value="alice">Alice</ListboxOption>
+                <ListboxOption value="bob">Bob</ListboxOption>
+                <ListboxOption value="charlie">Charlie</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+            <button id="submit">submit</button>
+          </form>
+        `,
+        setup: () => ({
+          handleSubmit(e: SubmitEvent) {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          },
+        }),
+      })
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+      expect(document.querySelector('[data-testid="value"]')).toHaveTextContent('alice')
+      expect(document.querySelector('[data-testid="value-2"]')).toHaveTextContent('alice')
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose charlie
+      await click(getListboxOptions()[2])
+      expect(document.querySelector('[data-testid="value"]')).toHaveTextContent('charlie')
+      expect(document.querySelector('[data-testid="value-2"]')).toHaveTextContent('charlie')
 
       // Submit
       await click(document.getElementById('submit'))

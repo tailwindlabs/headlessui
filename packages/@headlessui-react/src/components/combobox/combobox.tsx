@@ -815,6 +815,7 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
   disabled: boolean
+  value: any
 }
 type ButtonPropsWeControl =
   | 'id'
@@ -896,7 +897,11 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }, [data.labelRef.current, id])
 
   let slot = useMemo<ButtonRenderPropArg>(
-    () => ({ open: data.comboboxState === ComboboxState.Open, disabled: data.disabled }),
+    () => ({
+      open: data.comboboxState === ComboboxState.Open,
+      disabled: data.disabled,
+      value: data.value,
+    }),
     [data]
   )
   let theirProps = props

@@ -299,10 +299,10 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 let DEFAULT_LISTBOX_TAG = Fragment
-interface ListboxRenderPropArg<TType> {
+interface ListboxRenderPropArg<T> {
   open: boolean
   disabled: boolean
-  value: TType
+  value: T
 }
 
 let ListboxRoot = forwardRefWithAs(function Listbox<
@@ -461,6 +461,7 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
   disabled: boolean
+  value: any
 }
 type ButtonPropsWeControl =
   | 'id'
@@ -537,7 +538,11 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   }, [state.labelRef.current, id])
 
   let slot = useMemo<ButtonRenderPropArg>(
-    () => ({ open: state.listboxState === ListboxStates.Open, disabled: state.disabled }),
+    () => ({
+      open: state.listboxState === ListboxStates.Open,
+      disabled: state.disabled,
+      value: state.propsRef.current.value,
+    }),
     [state]
   )
   let theirProps = props

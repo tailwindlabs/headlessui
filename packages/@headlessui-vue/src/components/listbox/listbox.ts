@@ -330,7 +330,7 @@ export let Listbox = defineComponent({
     return () => {
       let { name, modelValue, disabled, ...theirProps } = props
 
-      let slot = { open: listboxState.value === ListboxStates.Open, disabled }
+      let slot = { open: listboxState.value === ListboxStates.Open, disabled, value: value.value }
 
       return h(Fragment, [
         ...(name != null && value.value != null
@@ -475,7 +475,9 @@ export let ListboxButton = defineComponent({
       let slot = {
         open: api.listboxState.value === ListboxStates.Open,
         disabled: api.disabled.value,
+        value: api.value.value,
       }
+
       let ourProps = {
         ref: api.buttonRef,
         id,
