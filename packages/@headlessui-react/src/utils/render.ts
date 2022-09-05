@@ -175,7 +175,8 @@ function _render<TTag extends ElementType, TSlot>(
           // Filter out undefined values so that they don't override the existing values
           mergeProps(resolvedChildren.props, compact(omit(rest, ['ref']))),
           dataAttributes,
-          refRelatedProps
+          refRelatedProps,
+          mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref)
         )
       )
     }
@@ -191,6 +192,20 @@ function _render<TTag extends ElementType, TSlot>(
     ),
     resolvedChildren
   )
+}
+
+function mergeRefs(...refs: any[]) {
+  return {
+    ref: refs.every((ref) => ref == null)
+      ? undefined
+      : (value: any) => {
+          for (let ref of refs) {
+            if (ref == null) continue
+            if (typeof ref === 'function') ref(value)
+            else ref.current = value
+          }
+        },
+  }
 }
 
 function mergeProps(...listOfProps: Props<any, any>[]) {

@@ -6,6 +6,29 @@ import { Transition } from './transition'
 
 import { executeTimeline } from '../../test-utils/execute-timeline'
 
+function nextFrame() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        resolve()
+      })
+    })
+  })
+}
+
+it('should not steal the ref from the child', async () => {
+  let fn = jest.fn()
+  render(
+    <Transition show={true} as={Fragment}>
+      <div ref={fn}>...</div>
+    </Transition>
+  )
+
+  await nextFrame()
+
+  expect(fn).toHaveBeenCalled()
+})
+
 it('should render without crashing', () => {
   render(
     <Transition show={true}>
