@@ -684,7 +684,7 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: false, disabled: false }),
+          textContent: JSON.stringify({ open: false, disabled: false, value: 'test' }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -693,7 +693,7 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: true, disabled: false }),
+          textContent: JSON.stringify({ open: true, disabled: false, value: 'test' }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
       })
@@ -719,7 +719,7 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: false, disabled: false }),
+          textContent: JSON.stringify({ open: false, disabled: false, value: 'test' }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -728,7 +728,7 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: true, disabled: false }),
+          textContent: JSON.stringify({ open: true, disabled: false, value: 'test' }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
       })
@@ -1028,6 +1028,75 @@ describe('Rendering', () => {
 
       // Choose charlie
       await click(getComboboxOptions()[2])
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Charlie should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'charlie' })
+    })
+
+    it('should expose the value via the render prop', async () => {
+      let handleSubmission = jest.fn()
+
+      let { getByTestId } = render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Combobox name="assignee">
+            {({ value }) => (
+              <>
+                <div data-testid="value">{value}</div>
+                <Combobox.Input onChange={NOOP} />
+                <Combobox.Button>
+                  {({ value }) => (
+                    <>
+                      Trigger
+                      <div data-testid="value-2">{value}</div>
+                    </>
+                  )}
+                </Combobox.Button>
+                <Combobox.Options>
+                  <Combobox.Option value="alice">Alice</Combobox.Option>
+                  <Combobox.Option value="bob">Bob</Combobox.Option>
+                  <Combobox.Option value="charlie">Charlie</Combobox.Option>
+                </Combobox.Options>
+              </>
+            )}
+          </Combobox>
+          <button id="submit">submit</button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // No values
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose alice
+      await click(getComboboxOptions()[0])
+      expect(getByTestId('value')).toHaveTextContent('alice')
+      expect(getByTestId('value-2')).toHaveTextContent('alice')
+
+      // Submit
+      await click(document.getElementById('submit'))
+
+      // Alice should be submitted
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose charlie
+      await click(getComboboxOptions()[2])
+      expect(getByTestId('value')).toHaveTextContent('charlie')
+      expect(getByTestId('value-2')).toHaveTextContent('charlie')
 
       // Submit
       await click(document.getElementById('submit'))
