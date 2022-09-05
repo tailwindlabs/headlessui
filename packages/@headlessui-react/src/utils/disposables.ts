@@ -8,7 +8,7 @@ export function disposables() {
     },
 
     addEventListener<TEventName extends keyof WindowEventMap>(
-      element: HTMLElement,
+      element: HTMLElement | Document,
       name: TEventName,
       listener: (event: WindowEventMap[TEventName]) => any,
       options?: boolean | AddEventListenerOptions

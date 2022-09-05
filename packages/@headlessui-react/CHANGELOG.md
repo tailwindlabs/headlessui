@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve accessibility when announcing `Listbox.Option` and `Combobox.Option` components ([#1812](https://github.com/tailwindlabs/headlessui/pull/1812))
 - Fix `ref` stealing from children ([#1820](https://github.com/tailwindlabs/headlessui/pull/1820))
 - Expose the `value` from the `Combobox` and `Listbox` components render prop ([#1822](https://github.com/tailwindlabs/headlessui/pull/1822))
+- Improve `scroll lock` on iOS ([#1824](https://github.com/tailwindlabs/headlessui/pull/1824))
 
 ## [1.6.6] - 2022-07-07
 

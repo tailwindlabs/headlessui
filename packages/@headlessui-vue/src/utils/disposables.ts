@@ -7,6 +7,16 @@ export function disposables() {
       queue.push(fn)
     },
 
+    addEventListener<TEventName extends keyof WindowEventMap>(
+      element: HTMLElement | Document,
+      name: TEventName,
+      listener: (event: WindowEventMap[TEventName]) => any,
+      options?: boolean | AddEventListenerOptions
+    ) {
+      element.addEventListener(name, listener as any, options)
+      return api.add(() => element.removeEventListener(name, listener as any, options))
+    },
+
     requestAnimationFrame(...args: Parameters<typeof requestAnimationFrame>) {
       let raf = requestAnimationFrame(...args)
       api.add(() => cancelAnimationFrame(raf))
