@@ -22,7 +22,6 @@ import {
 } from '../../utils/render'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { match } from '../../utils/match'
-import { microTask } from '../../utils/micro-task'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
@@ -30,6 +29,7 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
+import { useDisposables } from '../../hooks/use-disposables'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
 
@@ -128,6 +128,7 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
   let doneRef = useLatestValue(done)
   let transitionableChildren = useRef<NestingContextValues['children']['current']>([])
   let mounted = useIsMounted()
+  let d = useDisposables()
 
   let unregister = useEvent((container: ContainerElement, strategy = RenderStrategy.Hidden) => {
     let idx = transitionableChildren.current.findIndex(({ el }) => el === container)
@@ -142,7 +143,7 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
       },
     })
 
-    microTask(() => {
+    d.microTask(() => {
       if (!hasChildren(transitionableChildren) && mounted.current) {
         doneRef.current?.()
       }
