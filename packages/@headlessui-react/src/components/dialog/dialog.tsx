@@ -33,11 +33,12 @@ import { useOpenClosed, State } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { getOwnerDocument } from '../../utils/owner'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
+import { disposables } from '../../utils/disposables'
+import { isIOS } from '../../utils/platform'
 
 enum DialogStates {
   Open,
@@ -88,6 +89,51 @@ function useDialogContext(component: string) {
     throw err
   }
   return context
+}
+
+function useScrollLock(ownerDocument: Document | null, enabled: boolean) {
+  useEffect(() => {
+    if (!enabled) return
+    if (!ownerDocument) return
+
+    let d = disposables()
+
+    function style(node: HTMLElement, property: string, value: string) {
+      let previous = node.style.getPropertyValue(property)
+      Object.assign(node.style, { [property]: value })
+      return d.add(() => {
+        Object.assign(node.style, { [property]: previous })
+      })
+    }
+
+    let documentElement = ownerDocument.documentElement
+    let ownerWindow = ownerDocument.defaultView ?? window
+
+    let scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
+    style(documentElement, 'overflow', 'hidden')
+
+    if (scrollbarWidthBefore > 0) {
+      let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
+      let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
+      style(documentElement, 'paddingRight', `${scrollbarWidth}px`)
+    }
+
+    if (isIOS()) {
+      d.addEventListener(
+        ownerDocument,
+        'touchmove',
+        (e) => {
+          e.preventDefault()
+        },
+        { passive: false }
+      )
+
+      let scrollPosition = window.pageYOffset
+      d.add(() => window.scrollTo(0, scrollPosition))
+    }
+
+    return d.dispose
+  }, [ownerDocument, enabled])
 }
 
 function stateReducer(state: StateDefinition, action: Actions) {
@@ -228,33 +274,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   })
 
   // Scroll lock
-  useEffect(() => {
-    if (dialogState !== DialogStates.Open) return
-    if (hasParentDialog) return
-
-    let ownerDocument = getOwnerDocument(internalDialogRef)
-    if (!ownerDocument) return
-
-    let documentElement = ownerDocument.documentElement
-    let ownerWindow = ownerDocument.defaultView ?? window
-
-    let overflow = documentElement.style.overflow
-    let paddingRight = documentElement.style.paddingRight
-
-    let scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
-    documentElement.style.overflow = 'hidden'
-
-    if (scrollbarWidthBefore > 0) {
-      let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
-      let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
-      documentElement.style.paddingRight = `${scrollbarWidth}px`
-    }
-
-    return () => {
-      documentElement.style.overflow = overflow
-      documentElement.style.paddingRight = paddingRight
-    }
-  }, [dialogState, hasParentDialog])
+  useScrollLock(ownerDocument, dialogState === DialogStates.Open && !hasParentDialog)
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {

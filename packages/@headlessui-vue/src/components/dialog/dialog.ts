@@ -33,6 +33,8 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
+import { disposables } from '../../utils/disposables'
+import { isIOS } from '../../utils/platform'
 
 enum DialogStates {
   Open,
@@ -224,25 +226,43 @@ export let Dialog = defineComponent({
       let owner = ownerDocument.value
       if (!owner) return
 
+      let d = disposables()
+
+      function style(node: HTMLElement, property: string, value: string) {
+        let previous = node.style.getPropertyValue(property)
+        Object.assign(node.style, { [property]: value })
+        return d.add(() => {
+          Object.assign(node.style, { [property]: previous })
+        })
+      }
+
       let documentElement = owner?.documentElement
       let ownerWindow = owner.defaultView ?? window
 
-      let overflow = documentElement.style.overflow
-      let paddingRight = documentElement.style.paddingRight
-
       let scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
-      documentElement.style.overflow = 'hidden'
+      style(documentElement, 'overflow', 'hidden')
 
       if (scrollbarWidthBefore > 0) {
         let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
         let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
-        documentElement.style.paddingRight = `${scrollbarWidth}px`
+        style(documentElement, 'paddingRight', `${scrollbarWidth}px`)
       }
 
-      onInvalidate(() => {
-        documentElement.style.overflow = overflow
-        documentElement.style.paddingRight = paddingRight
-      })
+      if (isIOS()) {
+        d.addEventListener(
+          owner,
+          'touchmove',
+          (e) => {
+            e.preventDefault()
+          },
+          { passive: false }
+        )
+
+        let scrollPosition = window.pageYOffset
+        d.add(() => window.scrollTo(0, scrollPosition))
+      }
+
+      onInvalidate(d.dispose)
     })
 
     // Trigger close when the FocusTrap gets hidden
