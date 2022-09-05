@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don't scroll when wrapping around in focus trap ([#1789](https://github.com/tailwindlabs/headlessui/pull/1789))
 - Improve accessibility when announcing `ListboxOption` and `ComboboxOption` components ([#1812](https://github.com/tailwindlabs/headlessui/pull/1812))
 - Expose the `value` from the `Combobox` and `Listbox` components slot ([#1822](https://github.com/tailwindlabs/headlessui/pull/1822))
+- Improve `scroll lock` on iOS ([#1824](https://github.com/tailwindlabs/headlessui/pull/1824))
 
 ## [1.6.7] - 2022-07-12
 
