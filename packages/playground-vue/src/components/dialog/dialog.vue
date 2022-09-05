@@ -1,4 +1,16 @@
 <template>
+  <p
+    v-for="i in Array(15)
+      .fill(null)
+      .map((_, i) => i)"
+    :key="i"
+    className="m-4"
+  >
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam numquam beatae, maiores sint
+    est perferendis molestiae deleniti dolorem, illum vel, quam atque facilis! Necessitatibus
+    nostrum recusandae nemo corrupti, odio eius?
+  </p>
+
   <button
     type="button"
     @click="toggleIsOpen()"
