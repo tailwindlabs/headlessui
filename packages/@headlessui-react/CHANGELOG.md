@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482), [#1717](https://github.com/tailwindlabs/headlessui/pull/1717), [#1814](https://github.com/tailwindlabs/headlessui/pull/1814), [#1815](https://github.com/tailwindlabs/headlessui/pull/1815))
+- Make form components uncontrollable ([#1683](https://github.com/tailwindlabs/headlessui/pull/1683))
 - Add `@headlessui/tailwindcss` plugin ([#1487](https://github.com/tailwindlabs/headlessui/pull/1487))
 
 ### Fixed
@@ -26,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve outside click on Safari iOS ([#1712](https://github.com/tailwindlabs/headlessui/pull/1712))
 - Improve event handler merging ([#1715](https://github.com/tailwindlabs/headlessui/pull/1715))
 - Fix incorrect scrolling to the bottom when opening a `Dialog` ([#1716](https://github.com/tailwindlabs/headlessui/pull/1716))
-- Make form components uncontrollable ([#1683](https://github.com/tailwindlabs/headlessui/pull/1683))
 - Improve `Combobox` re-opening keyboard issue on mobile ([#1732](https://github.com/tailwindlabs/headlessui/pull/1732))
 - Ensure `Disclosure.Panel` is properly linked ([#1747](https://github.com/tailwindlabs/headlessui/pull/1747))
 - Only select the active option when using "singular" mode when pressing `<tab>` in the `Combobox` component ([#1750](https://github.com/tailwindlabs/headlessui/pull/1750))
