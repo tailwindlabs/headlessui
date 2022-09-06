@@ -331,9 +331,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Everything!
 
 [unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.6...HEAD
-[1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.5...v1.6.6
-[1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.4...v1.6.5
-[1.6.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.3...v1.6.4
+[1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.5...@headlessui/react@v1.6.6
+[1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.4...@headlessui/react@v1.6.5
+[1.6.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.3...@headlessui/react@v1.6.4
 [1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.2...@headlessui/react@v1.6.3
 [1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.1...@headlessui/react@v1.6.2
 [1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.0...@headlessui/react@v1.6.1

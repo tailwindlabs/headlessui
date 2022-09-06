@@ -308,10 +308,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Everything!
 
 [unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.7...HEAD
-[1.6.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.6...v1.6.7
-[1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.5...v1.6.6
-[1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.4...v1.6.5
-[1.6.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.3...v1.6.4
+[1.6.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.6...@headlessui/vue@v1.6.7
+[1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.5...@headlessui/vue@v1.6.6
+[1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.4...@headlessui/vue@v1.6.5
+[1.6.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.3...@headlessui/vue@v1.6.4
 [1.6.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.2...@headlessui/vue@v1.6.3
 [1.6.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.1...@headlessui/vue@v1.6.2
 [1.6.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.0...@headlessui/vue@v1.6.1
