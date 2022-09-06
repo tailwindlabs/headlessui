@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.0] - 2022-09-06
+
 ### Added
 
 - Add `by` prop for `Listbox`, `Combobox` and `RadioGroup` ([#1482](https://github.com/tailwindlabs/headlessui/pull/1482), [#1717](https://github.com/tailwindlabs/headlessui/pull/1717), [#1814](https://github.com/tailwindlabs/headlessui/pull/1814), [#1815](https://github.com/tailwindlabs/headlessui/pull/1815))
@@ -307,7 +311,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.7...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.0...HEAD
+[1.7.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.7...@headlessui/vue@v1.7.0
 [1.6.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.6...@headlessui/vue@v1.6.7
 [1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.5...@headlessui/vue@v1.6.6
 [1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.4...@headlessui/vue@v1.6.5
