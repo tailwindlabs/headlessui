@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `ref` stealing from children ([#1820](https://github.com/tailwindlabs/headlessui/pull/1820))
 - Expose the `value` from the `Combobox` and `Listbox` components render prop ([#1822](https://github.com/tailwindlabs/headlessui/pull/1822))
 - Improve `scroll lock` on iOS ([#1824](https://github.com/tailwindlabs/headlessui/pull/1824))
+- Fix maximum call stack size exceeded error on `Tab` component when using `as={Fragment}` ([#1826](https://github.com/tailwindlabs/headlessui/pull/1826))
 
 ## [1.6.6] - 2022-07-07
 

@@ -333,7 +333,7 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   let internalTabRef = useRef<HTMLElement | null>(null)
   let tabRef = useSyncRefs(internalTabRef, ref, (element) => {
     if (!element) return
-    actions.forceRerender()
+    requestAnimationFrame(() => actions.forceRerender())
   })
 
   useIsoMorphicEffect(() => actions.registerTab(internalTabRef), [actions, internalTabRef])
@@ -490,7 +490,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let internalPanelRef = useRef<HTMLElement>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref, (element) => {
     if (!element) return
-    actions.forceRerender()
+    requestAnimationFrame(() => actions.forceRerender())
   })
 
   useIsoMorphicEffect(() => actions.registerPanel(internalPanelRef), [actions, internalPanelRef])
