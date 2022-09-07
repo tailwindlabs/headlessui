@@ -119,16 +119,10 @@ function useScrollLock(ownerDocument: Document | null, enabled: boolean) {
     }
 
     if (isIOS()) {
-      d.addEventListener(
-        ownerDocument,
-        'touchmove',
-        (e) => {
-          e.preventDefault()
-        },
-        { passive: false }
-      )
-
       let scrollPosition = window.pageYOffset
+      style(documentElement, 'position', 'fixed')
+      style(documentElement, 'marginTop', `-${scrollPosition}px`)
+      style(documentElement, 'width', `100%`)
       d.add(() => window.scrollTo(0, scrollPosition))
     }
 
