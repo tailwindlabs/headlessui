@@ -249,16 +249,10 @@ export let Dialog = defineComponent({
       }
 
       if (isIOS()) {
-        d.addEventListener(
-          owner,
-          'touchmove',
-          (e) => {
-            e.preventDefault()
-          },
-          { passive: false }
-        )
-
         let scrollPosition = window.pageYOffset
+        style(documentElement, 'position', 'fixed')
+        style(documentElement, 'marginTop', `-${scrollPosition}px`)
+        style(documentElement, 'width', `100%`)
         d.add(() => window.scrollTo(0, scrollPosition))
       }
 
