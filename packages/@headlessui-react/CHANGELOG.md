@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Improve iOS scroll locking ([#1830](https://github.com/tailwindlabs/headlessui/pull/1830))
+- Add `<fieldset disabled>` check to radio group options in React ([#1835](https://github.com/tailwindlabs/headlessui/pull/1835))
 
 ## [1.7.0] - 2022-09-06
 
