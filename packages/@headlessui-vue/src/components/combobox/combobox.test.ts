@@ -655,6 +655,27 @@ describe('Rendering', () => {
     )
 
     it(
+      'should be possible to link Input/Button and Label if Label is rendered last',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Combobox v-model="value">
+              <ComboboxInput />
+              <ComboboxButton />
+              <ComboboxLabel>Label</ComboboxLabel>
+            </Combobox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        await new Promise<void>(nextTick)
+
+        assertComboboxLabelLinkedWithCombobox()
+        assertComboboxButtonLinkedWithComboboxLabel()
+      })
+    )
+
+    it(
       'should be possible to render a ComboboxLabel using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         renderTemplate({
