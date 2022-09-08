@@ -8,7 +8,9 @@ import React, {
   // Types
   ContextType,
   ElementType,
+  FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
 } from 'react'
@@ -30,6 +32,7 @@ import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
 
 interface Option<T = unknown> {
   id: string
@@ -385,14 +388,19 @@ let Option = forwardRefWithAs(function Option<
     [id, registerOption, internalOptionRef, props]
   )
 
-  let handleClick = useEvent(() => {
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (!change(value)) return
 
     addFlag(OptionState.Active)
     internalOptionRef.current?.focus()
   })
 
-  let handleFocus = useEvent(() => addFlag(OptionState.Active))
+  let handleFocus = useEvent((event: ReactFocusEvent) => {
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    addFlag(OptionState.Active)
+  })
+
   let handleBlur = useEvent(() => removeFlag(OptionState.Active))
 
   let isFirstOption = firstOption?.id === id
