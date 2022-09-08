@@ -1664,9 +1664,13 @@ export function assertTabs(
   {
     active,
     orientation = 'horizontal',
+    tabContents = null,
+    panelContents = null,
   }: {
     active: number
     orientation?: 'vertical' | 'horizontal'
+    tabContents?: string | null
+    panelContents?: string | null
   },
   list = getTabList(),
   tabs = getTabs(),
@@ -1689,6 +1693,9 @@ export function assertTabs(
       if (tab === activeTab) {
         expect(tab).toHaveAttribute('aria-selected', 'true')
         expect(tab).toHaveAttribute('tabindex', '0')
+        if (tabContents !== null) {
+          expect(tab.textContent).toBe(tabContents)
+        }
       } else {
         expect(tab).toHaveAttribute('aria-selected', 'false')
         expect(tab).toHaveAttribute('tabindex', '-1')
@@ -1716,6 +1723,9 @@ export function assertTabs(
 
       if (panel === activePanel) {
         expect(panel).toHaveAttribute('tabindex', '0')
+        if (tabContents !== null) {
+          expect(panel.textContent).toBe(panelContents)
+        }
       } else {
         expect(panel).toHaveAttribute('tabindex', '-1')
       }

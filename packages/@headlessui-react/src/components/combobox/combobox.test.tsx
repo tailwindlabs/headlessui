@@ -1046,7 +1046,7 @@ describe('Rendering', () => {
             handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
           }}
         >
-          <Combobox name="assignee">
+          <Combobox<string> name="assignee">
             {({ value }) => (
               <>
                 <div data-testid="value">{value}</div>

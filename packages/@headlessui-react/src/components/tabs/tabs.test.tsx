@@ -123,6 +123,50 @@ describe('Rendering', () => {
     })
   )
 
+  it(
+    'should guarantee the order when injecting new tabs dynamically',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [tabs, setTabs] = useState<string[]>([])
+
+        return (
+          <Tab.Group>
+            <Tab.List>
+              {tabs.map((t, i) => (
+                <Tab key={t}>Tab {i + 1}</Tab>
+              ))}
+              <Tab>Insert new</Tab>
+            </Tab.List>
+            <Tab.Panels>
+              {tabs.map((t) => (
+                <Tab.Panel key={t}>{t}</Tab.Panel>
+              ))}
+              <Tab.Panel>
+                <button
+                  onClick={() => {
+                    setTabs((old) => [...old, `Panel ${old.length + 1}`])
+                  }}
+                >
+                  Insert
+                </button>
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        )
+      }
+
+      render(<Example />)
+
+      assertTabs({ active: 0, tabContents: 'Insert new', panelContents: 'Insert' })
+
+      // Add some new tabs
+      await click(getByText('Insert'))
+
+      // We should still be on the tab we were on
+      assertTabs({ active: 1, tabContents: 'Insert new', panelContents: 'Insert' })
+    })
+  )
+
   describe('`renderProps`', () => {
     it(
       'should expose the `selectedIndex` on the `Tab.Group` component',

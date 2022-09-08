@@ -27,6 +27,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { useEvent } from '../../hooks/use-event'
 import { microTask } from '../../utils/micro-task'
+import { Hidden } from '../../internal/hidden'
 
 interface StateDefinition {
   selectedIndex: number
@@ -88,20 +89,23 @@ let reducers: {
   },
   [ActionTypes.RegisterTab](state, action) {
     if (state.tabs.includes(action.tab)) return state
-    return { ...state, tabs: sortByDomNode([...state.tabs, action.tab], (tab) => tab.current) }
+    let activeTab = state.tabs[state.selectedIndex]
+
+    let adjustedTabs = sortByDomNode([...state.tabs, action.tab], (tab) => tab.current)
+    let selectedIndex = adjustedTabs.indexOf(activeTab) ?? state.selectedIndex
+    if (selectedIndex === -1) selectedIndex = state.selectedIndex
+
+    return { ...state, tabs: adjustedTabs, selectedIndex }
   },
   [ActionTypes.UnregisterTab](state, action) {
-    return {
-      ...state,
-      tabs: sortByDomNode(
-        state.tabs.filter((tab) => tab !== action.tab),
-        (tab) => tab.current
-      ),
-    }
+    return { ...state, tabs: state.tabs.filter((tab) => tab !== action.tab) }
   },
   [ActionTypes.RegisterPanel](state, action) {
     if (state.panels.includes(action.panel)) return state
-    return { ...state, panels: [...state.panels, action.panel] }
+    return {
+      ...state,
+      panels: sortByDomNode([...state.panels, action.panel], (panel) => panel.current),
+    }
   },
   [ActionTypes.UnregisterPanel](state, action) {
     return { ...state, panels: state.panels.filter((panel) => panel !== action.panel) }
@@ -487,7 +491,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let SSRContext = useSSRTabsCounter('Tab.Panel')
 
   let id = `headlessui-tabs-panel-${useId()}`
-  let internalPanelRef = useRef<HTMLElement>(null)
+  let internalPanelRef = useRef<HTMLElement | null>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref, (element) => {
     if (!element) return
     requestAnimationFrame(() => actions.forceRerender())
@@ -512,6 +516,10 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     role: 'tabpanel',
     'aria-labelledby': tabs[myIndex]?.current?.id,
     tabIndex: selected ? 0 : -1,
+  }
+
+  if (!selected && (props.unmount ?? true)) {
+    return <Hidden as="span" {...ourProps} />
   }
 
   return render({
