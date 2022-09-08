@@ -632,6 +632,22 @@ describe('Rendering', () => {
     )
 
     it(
+      'should be possible to link Input/Button and Label if Label is rendered last',
+      suppressConsoleLogs(async () => {
+        render(
+          <Combobox value="Test" onChange={console.log}>
+            <Combobox.Input onChange={NOOP} />
+            <Combobox.Button />
+            <Combobox.Label>Label</Combobox.Label>
+          </Combobox>
+        )
+
+        assertComboboxLabelLinkedWithCombobox()
+        assertComboboxButtonLinkedWithComboboxLabel()
+      })
+    )
+
+    it(
       'should be possible to render a Combobox.Label using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         render(

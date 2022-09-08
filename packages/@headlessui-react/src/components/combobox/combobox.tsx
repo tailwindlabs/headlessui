@@ -67,6 +67,7 @@ type ComboboxOptionDataRef<T> = MutableRefObject<{
 
 interface StateDefinition<T> {
   dataRef: MutableRefObject<_Data>
+  labelId: string | null
 
   comboboxState: ComboboxState
 
@@ -83,6 +84,8 @@ enum ActionTypes {
 
   RegisterOption,
   UnregisterOption,
+
+  RegisterLabel,
 }
 
 function adjustOrderedState<T>(
@@ -124,6 +127,7 @@ type Actions<T> =
       trigger?: ActivationTrigger
     }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef<T> }
+  | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
 
 let reducers: {
@@ -227,12 +231,19 @@ let reducers: {
       activationTrigger: ActivationTrigger.Other,
     }
   },
+  [ActionTypes.RegisterLabel]: (state, action) => {
+    return {
+      ...state,
+      labelId: action.id,
+    }
+  },
 }
 
 let ComboboxActionsContext = createContext<{
   openCombobox(): void
   closeCombobox(): void
   registerOption(id: string, dataRef: ComboboxOptionDataRef<unknown>): () => void
+  registerLabel(id: string): () => void
   goToOption(focus: Focus.Specific, id: string, trigger?: ActivationTrigger): void
   goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   selectOption(id: string): void
@@ -402,6 +413,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     options: [],
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
+    labelId: null,
   } as StateDefinition<TValue>)
 
   let defaultToFirstOption = useRef(false)
@@ -536,6 +548,11 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     return () => dispatch({ type: ActionTypes.UnregisterOption, id })
   })
 
+  let registerLabel = useEvent((id) => {
+    dispatch({ type: ActionTypes.RegisterLabel, id })
+    return () => dispatch({ type: ActionTypes.RegisterLabel, id: null })
+  })
+
   let onChange = useEvent((value: unknown) => {
     return match(data.mode, {
       [ValueMode.Single]() {
@@ -560,6 +577,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     () => ({
       onChange,
       registerOption,
+      registerLabel,
       goToOption,
       closeCombobox,
       openCombobox,
@@ -775,9 +793,9 @@ let Input = forwardRefWithAs(function Input<
   // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present
   // Otherwise it's the ID of the non-label element
   let labelledby = useComputed(() => {
-    if (!data.labelRef.current) return undefined
-    return [data.labelRef.current.id].join(' ')
-  }, [data.labelRef.current])
+    if (!data.labelId) return undefined
+    return [data.labelId].join(' ')
+  }, [data.labelId])
 
   let slot = useMemo<InputRenderPropArg>(
     () => ({ open: data.comboboxState === ComboboxState.Open, disabled: data.disabled }),
@@ -892,9 +910,9 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   })
 
   let labelledby = useComputed(() => {
-    if (!data.labelRef.current) return undefined
-    return [data.labelRef.current.id, id].join(' ')
-  }, [data.labelRef.current, id])
+    if (!data.labelId) return undefined
+    return [data.labelId, id].join(' ')
+  }, [data.labelId, id])
 
   let slot = useMemo<ButtonRenderPropArg>(
     () => ({
@@ -943,7 +961,10 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
 ) {
   let data = useData('Combobox.Label')
   let id = `headlessui-combobox-label-${useId()}`
+  let actions = useActions('Combobox.Label')
   let labelRef = useSyncRefs(data.labelRef, ref)
+
+  useIsoMorphicEffect(() => actions.registerLabel(id), [id])
 
   let handleClick = useEvent(() => data.inputRef.current?.focus({ preventScroll: true }))
 
@@ -1027,8 +1048,8 @@ let Options = forwardRefWithAs(function Options<
   })
 
   let labelledby = useComputed(
-    () => data.labelRef.current?.id ?? data.buttonRef.current?.id,
-    [data.labelRef.current, data.buttonRef.current]
+    () => data.labelId ?? data.buttonRef.current?.id,
+    [data.labelId, data.buttonRef.current]
   )
 
   let slot = useMemo<OptionsRenderPropArg>(
