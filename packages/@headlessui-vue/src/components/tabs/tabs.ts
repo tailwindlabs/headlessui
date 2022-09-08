@@ -24,6 +24,7 @@ import { focusIn, Focus } from '../../utils/focus-management'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { microTask } from '../../utils/micro-task'
+import { Hidden } from '../../internal/hidden'
 
 type StateDefinition = {
   // State
@@ -320,7 +321,7 @@ export let Tab = defineComponent({
         id,
         role: 'tab',
         type: type.value,
-        'aria-controls': api.panels.value[myIndex.value]?.value?.id,
+        'aria-controls': dom(api.panels.value[myIndex.value])?.id,
         'aria-selected': selected.value,
         tabIndex: selected.value ? 0 : -1,
         disabled: props.disabled ? true : undefined,
@@ -390,8 +391,12 @@ export let TabPanel = defineComponent({
         ref: internalPanelRef,
         id,
         role: 'tabpanel',
-        'aria-labelledby': api.tabs.value[myIndex.value]?.value?.id,
+        'aria-labelledby': dom(api.tabs.value[myIndex.value])?.id,
         tabIndex: selected.value ? 0 : -1,
+      }
+
+      if (!selected.value && props.unmount) {
+        return h(Hidden, { as: 'span', ...ourProps })
       }
 
       return render({

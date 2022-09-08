@@ -132,6 +132,48 @@ describe('Rendering', () => {
     assertTabs({ active: 2 })
   })
 
+  it(
+    'should guarantee the order when injecting new tabs dynamically',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <TabGroup>
+            <TabList>
+              <Tab v-for="(t, i) in tabs" :key="t">Tab {{ i + 1 }}</Tab>
+              <Tab>Insert new</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel v-for="t in tabs" :key="t">{{ t }}</TabPanel>
+              <TabPanel>
+                <button @click="add">Insert</button>
+              </TabPanel>
+            </TabPanels>
+          </TabGroup>
+        `,
+        setup() {
+          let tabs = ref<string[]>([])
+
+          return {
+            tabs,
+            add() {
+              tabs.value.push(`Panel ${tabs.value.length + 1}`)
+            },
+          }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertTabs({ active: 0, tabContents: 'Insert new', panelContents: 'Insert' })
+
+      // Add some new tabs
+      await click(getByText('Insert'))
+
+      // We should still be on the tab we were on
+      assertTabs({ active: 1, tabContents: 'Insert new', panelContents: 'Insert' })
+    })
+  )
+
   describe('`renderProps`', () => {
     it('should expose the `selectedIndex` on the `Tabs` component', async () => {
       renderTemplate(
