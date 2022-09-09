@@ -220,12 +220,31 @@ let PopoverRoot = forwardRefWithAs(function Popover<
     if (!button) return false
     if (!panel) return false
 
+    // We are part of a different "root" tree, so therefore we can consider it portalled. This is a
+    // heuristic because 3rd party tools could use some form of portal, typically rendered at the
+    // end of the body but we don't have an actual reference to that.
     for (let root of document.querySelectorAll('body > *')) {
       if (Number(root?.contains(button)) ^ Number(root?.contains(panel))) {
         return true
       }
     }
 
+    // Use another heuristic to try and calculate wether or not the focusable elements are near
+    // eachother (aka, following the default focus/tab order from the browser). If they are then it
+    // doesn't really matter if they are portalled or not because we can follow the default tab
+    // order. But if they are not, then we can consider it being portalled so that we can ensure
+    // that tab and shift+tab (hopefully) go to the correct spot.
+    let allFocusableElements = getFocusableElements()
+    let focusableElementIndexesInPanel = getFocusableElements(panel).map((panel) =>
+      allFocusableElements.indexOf(panel)
+    )
+    let buttonIdx = allFocusableElements.indexOf(button)
+
+    if (!focusableElementIndexesInPanel.some((otherIdx) => otherIdx - buttonIdx === 1)) {
+      return true
+    }
+
+    // It may or may not be portalled, but we don't really know.
     return false
   }, [button, panel])
 

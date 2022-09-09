@@ -1,4 +1,4 @@
-import React, { createElement, useEffect, useRef, Fragment } from 'react'
+import React, { createElement, useEffect, useRef, Fragment, useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Popover } from './popover'
@@ -17,6 +17,7 @@ import {
 import { click, press, focus, Keys, MouseButton, shift } from '../../test-utils/interactions'
 import { Portal } from '../portal/portal'
 import { Transition } from '../transitions/transition'
+import ReactDOM from 'react-dom'
 
 jest.mock('../../hooks/use-id')
 
@@ -1612,6 +1613,53 @@ describe('Keyboard interactions', () => {
             </Portal>
           </Popover>
         )
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure the popover is open
+        assertPopoverButton({ state: PopoverState.Visible })
+
+        // Ensure the Link 1 is focused
+        assertActiveElement(getByText('Link 1'))
+
+        // Tab out of the Panel
+        await press(shift(Keys.Tab))
+
+        // Ensure the Popover.Button is focused again
+        assertActiveElement(getPopoverButton())
+
+        // Ensure the Popover is closed
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      })
+    )
+
+    it(
+      'should focus the Popover.Button when pressing Shift+Tab when we focus inside the Popover.Panel (heuristc based portal)',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [portal, setPortal] = useState<HTMLElement | null>(null)
+
+          return (
+            <Popover>
+              <Popover.Button>Trigger 1</Popover.Button>
+              {portal &&
+                ReactDOM.createPortal(
+                  <Popover.Panel focus>
+                    <a href="/">Link 1</a>
+                    <a href="/">Link 2</a>
+                  </Popover.Panel>,
+                  portal
+                )}
+              <button>Before</button>
+              <div ref={setPortal} />
+              <button>After</button>
+            </Popover>
+          )
+        }
+
+        render(<Example />)
 
         // Open the popover
         await click(getPopoverButton())
