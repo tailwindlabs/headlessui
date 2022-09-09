@@ -234,13 +234,16 @@ let PopoverRoot = forwardRefWithAs(function Popover<
     // doesn't really matter if they are portalled or not because we can follow the default tab
     // order. But if they are not, then we can consider it being portalled so that we can ensure
     // that tab and shift+tab (hopefully) go to the correct spot.
-    let allFocusableElements = getFocusableElements()
-    let focusableElementIndexesInPanel = getFocusableElements(panel).map((panel) =>
-      allFocusableElements.indexOf(panel)
-    )
-    let buttonIdx = allFocusableElements.indexOf(button)
+    let elements = getFocusableElements()
+    let buttonIdx = elements.indexOf(button)
 
-    if (!focusableElementIndexesInPanel.some((otherIdx) => otherIdx - buttonIdx === 1)) {
+    let beforeIdx = (buttonIdx + elements.length - 1) % elements.length
+    let afterIdx = (buttonIdx + 1) % elements.length
+
+    let beforeElement = elements[beforeIdx]
+    let afterElement = elements[afterIdx]
+
+    if (!panel.contains(beforeElement) && !panel.contains(afterElement)) {
       return true
     }
 
