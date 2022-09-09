@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, h } from 'vue'
+import { defineComponent, nextTick, ref, watch, h, onMounted } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
@@ -1688,6 +1688,54 @@ describe('Keyboard interactions', () => {
         await press(shift(Keys.Tab))
 
         // Ensure the PopoverButton is focused again
+        assertActiveElement(getPopoverButton())
+
+        // Ensure the Popover is closed
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      })
+    )
+
+    it(
+      'should focus the Popover.Button when pressing Shift+Tab when we focus inside the Popover.Panel (heuristc based portal)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <Teleport v-if="ready" to="#portal">
+                <PopoverPanel focus>
+                  <a href="/">Link 1</a>
+                  <a href="/">Link 2</a>
+                </PopoverPanel>
+              </Teleport>
+              <button>Before</button>
+              <div id="portal" />
+              <button>After</button>
+            </Popover>
+          `,
+          setup() {
+            let ready = ref(false)
+            onMounted(() => {
+              ready.value = true
+            })
+            return { ready }
+          },
+        })
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure the popover is open
+        assertPopoverButton({ state: PopoverState.Visible })
+
+        // Ensure the Link 1 is focused
+        assertActiveElement(getByText('Link 1'))
+
+        // Tab out of the Panel
+        await press(shift(Keys.Tab))
+
+        // Ensure the Popover.Button is focused again
         assertActiveElement(getPopoverButton())
 
         // Ensure the Popover is closed
