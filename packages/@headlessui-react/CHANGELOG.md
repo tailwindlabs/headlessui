@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.1] - 2022-09-12
+
 ### Fixed
 
 - Improve iOS scroll locking ([#1830](https://github.com/tailwindlabs/headlessui/pull/1830))
@@ -342,7 +346,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.0...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.1...HEAD
+[1.7.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.0...@headlessui/react@v1.7.1
 [1.7.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.6...@headlessui/react@v1.7.0
 [1.6.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.5...@headlessui/react@v1.6.6
 [1.6.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.6.4...@headlessui/react@v1.6.5
