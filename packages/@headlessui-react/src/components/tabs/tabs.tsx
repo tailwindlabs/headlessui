@@ -44,8 +44,6 @@ enum ActionTypes {
 
   RegisterPanel,
   UnregisterPanel,
-
-  ForceRerender,
 }
 
 type Actions =
@@ -54,7 +52,6 @@ type Actions =
   | { type: ActionTypes.UnregisterTab; tab: MutableRefObject<HTMLElement | null> }
   | { type: ActionTypes.RegisterPanel; panel: MutableRefObject<HTMLElement | null> }
   | { type: ActionTypes.UnregisterPanel; panel: MutableRefObject<HTMLElement | null> }
-  | { type: ActionTypes.ForceRerender }
 
 let reducers: {
   [P in ActionTypes]: (
@@ -110,9 +107,6 @@ let reducers: {
   [ActionTypes.UnregisterPanel](state, action) {
     return { ...state, panels: state.panels.filter((panel) => panel !== action.panel) }
   },
-  [ActionTypes.ForceRerender](state) {
-    return { ...state }
-  },
 }
 
 let TabsSSRContext = createContext<MutableRefObject<{ tabs: string[]; panels: string[] }> | null>(
@@ -154,7 +148,6 @@ let TabsActionsContext = createContext<{
   registerTab(tab: MutableRefObject<HTMLElement | null>): () => void
   registerPanel(panel: MutableRefObject<HTMLElement | null>): () => void
   change(index: number): void
-  forceRerender(): void
 } | null>(null)
 TabsActionsContext.displayName = 'TabsActionsContext'
 
@@ -228,9 +221,6 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
       registerPanel(panel) {
         dispatch({ type: ActionTypes.RegisterPanel, panel })
         return () => dispatch({ type: ActionTypes.UnregisterPanel, panel })
-      },
-      forceRerender() {
-        dispatch({ type: ActionTypes.ForceRerender })
       },
       change(index: number) {
         if (realSelectedIndex.current !== index) {
@@ -335,10 +325,7 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   let SSRContext = useSSRTabsCounter('Tab')
 
   let internalTabRef = useRef<HTMLElement | null>(null)
-  let tabRef = useSyncRefs(internalTabRef, ref, (element) => {
-    if (!element) return
-    requestAnimationFrame(() => actions.forceRerender())
-  })
+  let tabRef = useSyncRefs(internalTabRef, ref)
 
   useIsoMorphicEffect(() => actions.registerTab(internalTabRef), [actions, internalTabRef])
 
@@ -492,10 +479,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   let id = `headlessui-tabs-panel-${useId()}`
   let internalPanelRef = useRef<HTMLElement | null>(null)
-  let panelRef = useSyncRefs(internalPanelRef, ref, (element) => {
-    if (!element) return
-    requestAnimationFrame(() => actions.forceRerender())
-  })
+  let panelRef = useSyncRefs(internalPanelRef, ref)
 
   useIsoMorphicEffect(() => actions.registerPanel(internalPanelRef), [actions, internalPanelRef])
 
