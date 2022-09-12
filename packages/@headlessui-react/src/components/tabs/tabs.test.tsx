@@ -169,6 +169,56 @@ describe('Rendering', () => {
 
   describe('`renderProps`', () => {
     it(
+      'should be possible to render using as={Fragment}',
+      suppressConsoleLogs(async () => {
+        render(
+          <Tab.Group>
+            <Tab.List>
+              <Tab as={React.Fragment}>
+                <button>Tab 1</button>
+              </Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>Content 2</Tab.Panel>
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        )
+
+        assertTabs({ active: 0, tabContents: 'Tab 1', panelContents: 'Content 1' })
+      })
+    )
+
+    it(
+      'should be possible to render using multiple as={Fragment}',
+      suppressConsoleLogs(async () => {
+        render(
+          <Tab.Group>
+            <Tab.List>
+              <Tab as={React.Fragment}>
+                <button>Tab 1</button>
+              </Tab>
+              <Tab as={React.Fragment}>
+                <button>Tab 2</button>
+              </Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>Content 2</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        )
+
+        assertTabs({ active: 0, tabContents: 'Tab 1', panelContents: 'Content 1' })
+      })
+    )
+
+    it(
       'should expose the `selectedIndex` on the `Tab.Group` component',
       suppressConsoleLogs(async () => {
         render(
