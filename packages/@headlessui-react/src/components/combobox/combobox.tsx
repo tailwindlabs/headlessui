@@ -713,6 +713,7 @@ let Input = forwardRefWithAs(function Input<
 
       case Keys.Enter:
         if (data.comboboxState !== ComboboxState.Open) return
+        if (event.nativeEvent.isComposing) return
 
         event.preventDefault()
         event.stopPropagation()

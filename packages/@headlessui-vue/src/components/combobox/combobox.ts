@@ -674,6 +674,7 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Enter:
           if (api.comboboxState.value !== ComboboxStates.Open) return
+          if (event.isComposing) return
 
           event.preventDefault()
           event.stopPropagation()
