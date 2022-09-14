@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Prevent option selection in `ComboboxInput` while composing ([#1850](https://github.com/tailwindlabs/headlessui/issues/1850))
 
 ## [1.7.1] - 2022-09-12
 
