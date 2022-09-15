@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Prevent option selection in `Combobox.Input` while composing ([#1850](https://github.com/tailwindlabs/headlessui/issues/1850))
+- Ensure we handle the `static` prop in `Tab.Panel` components correctly ([#1856](https://github.com/tailwindlabs/headlessui/pull/1856))
 
 ## [1.7.1] - 2022-09-12
 
