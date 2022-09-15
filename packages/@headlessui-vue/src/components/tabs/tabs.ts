@@ -395,7 +395,7 @@ export let TabPanel = defineComponent({
         tabIndex: selected.value ? 0 : -1,
       }
 
-      if (!selected.value && props.unmount) {
+      if (!selected.value && props.unmount && !props.static) {
         return h(Hidden, { as: 'span', ...ourProps })
       }
 
