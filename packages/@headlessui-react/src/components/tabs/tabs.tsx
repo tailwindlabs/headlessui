@@ -502,7 +502,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     tabIndex: selected ? 0 : -1,
   }
 
-  if (!selected && (props.unmount ?? true)) {
+  if (!selected && (props.unmount ?? true) && !(props.static ?? false)) {
     return <Hidden as="span" {...ourProps} />
   }
 
