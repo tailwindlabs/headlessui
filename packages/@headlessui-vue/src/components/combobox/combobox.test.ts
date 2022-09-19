@@ -493,6 +493,43 @@ describe('Rendering', () => {
       })
     )
 
+    // This really is a bug in Vue but we have a workaround for it
+    it(
+      'selecting an option puts the display value into Combobox.Input when displayValue is provided (when v-model is undefined)',
+      suppressConsoleLogs(async () => {
+        let Example = defineComponent({
+          template: html`
+            <Combobox v-model="value">
+              <ComboboxInput :displayValue="(str) => str?.toUpperCase() ?? ''" />
+              <ComboboxButton>Trigger</ComboboxButton>
+              <ComboboxOptions>
+                <ComboboxOption value="a">Option A</ComboboxOption>
+                <ComboboxOption value="b">Option B</ComboboxOption>
+                <ComboboxOption value="c">Option C</ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => ({ value: ref(undefined) }),
+        })
+
+        renderTemplate(Example)
+
+        // Focus the input
+        await focus(getComboboxInput())
+
+        // Type in it
+        await type(word('A'), getComboboxInput())
+
+        // Stop typing (and clear the input)
+        await press(Keys.Escape, getComboboxInput())
+
+        // Focus the body (so the input loses focus)
+        await focus(document.body)
+
+        expect(getComboboxInput()).toHaveValue('')
+      })
+    )
+
     it('conditionally rendering the input should allow changing the display value', async () => {
       let Example = defineComponent({
         template: html`

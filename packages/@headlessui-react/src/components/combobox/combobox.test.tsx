@@ -461,6 +461,46 @@ describe('Rendering', () => {
     )
 
     it(
+      'selecting an option puts the display value into Combobox.Input when displayValue is provided (when value is undefined)',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState(undefined)
+
+          return (
+            <Combobox value={value} onChange={setValue}>
+              <Combobox.Input
+                onChange={NOOP}
+                displayValue={(str?: string) => str?.toUpperCase() ?? ''}
+              />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="a">Option A</Combobox.Option>
+                <Combobox.Option value="b">Option B</Combobox.Option>
+                <Combobox.Option value="c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        // Focus the input
+        await focus(getComboboxInput())
+
+        // Type in it
+        await type(word('A'), getComboboxInput())
+
+        // Stop typing (and clear the input)
+        await press(Keys.Escape, getComboboxInput())
+
+        // Focus the body (so the input loses focus)
+        await focus(document.body)
+
+        expect(getComboboxInput()).toHaveValue('')
+      })
+    )
+
+    it(
       'conditionally rendering the input should allow changing the display value',
       suppressConsoleLogs(async () => {
         function Example() {
