@@ -629,11 +629,20 @@ export let ComboboxInput = defineComponent({
       }
     }
 
+    // Workaround Vue bug where watching [ref(undefined)] is not fired immediately even when value is true
+    const __fixVueImmediateWatchBug__ = ref('')
+
     onMounted(() => {
-      watch([api.value], () => (currentValue.value = getCurrentValue()), {
-        flush: 'sync',
-        immediate: true,
-      })
+      watch(
+        [api.value, __fixVueImmediateWatchBug__],
+        () => {
+          currentValue.value = getCurrentValue()
+        },
+        {
+          flush: 'sync',
+          immediate: true,
+        }
+      )
 
       watch(
         [currentValue, api.comboboxState],
