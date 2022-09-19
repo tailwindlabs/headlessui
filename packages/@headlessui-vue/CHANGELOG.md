@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Call `displayValue` with a v-model of `ref(undefined)` on `ComboboxInput` ([#1865](https://github.com/tailwindlabs/headlessui/pull/1865))
 
 ## [1.7.2] - 2022-09-15
 
