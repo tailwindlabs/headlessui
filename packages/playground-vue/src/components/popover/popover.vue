@@ -101,7 +101,6 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
 import {
   Popover,
   PopoverOverlay,
@@ -110,7 +109,7 @@ import {
   PopoverButton,
   Portal,
 } from '@headlessui/vue'
-import { usePopper } from '../../playground-utils/hooks/use-popper'
+import { usePopper } from '@/utils/vue/hooks/use-popper'
 
 function html(templates) {
   return templates.join('')

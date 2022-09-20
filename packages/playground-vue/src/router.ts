@@ -1,6 +1,8 @@
-import { createWebHistory, createRouter, RouterView } from 'vue-router'
+import { markRaw } from 'vue'
+import { createWebHistory, createRouter, RouterView, RouteRecordRaw } from 'vue-router'
+import Wrapper from './utils/wrappers/wrapper.vue'
 
-type Component = import('vue').Component
+type Component = import('vue').Component | import('react').Component
 
 function buildRoutes() {
   function titleCase(str) {
@@ -13,7 +15,7 @@ function buildRoutes() {
 
   // 1. Get all the components in the src/components directory
   let files = Object.entries(
-    import.meta.glob('./components/**/*.vue', {
+    import.meta.glob('./components/**/*.{vue,tsx}', {
       eager: true,
       import: 'default',
     })
@@ -24,7 +26,7 @@ function buildRoutes() {
   files = files.map(([file, component]) => [
     file
       .replace('./components/', '/')
-      .replace(/\.vue$/, '')
+      .replace(/\.(vue|tsx)$/, '')
       .toLocaleLowerCase()
       .replace(/^\/home$/g, '/'),
     component,
@@ -61,15 +63,23 @@ function buildRoutes() {
   for (let [path, component] of files) {
     let prefix = path.split('/').slice(0, -1).join('/')
     let parent = routesByPath[prefix]?.children ?? routes
+    let isReact = typeof component === 'function'
+    let isIntermediate = component === RouterView
+    let shouldBeWrapped = !isIntermediate && path !== '/'
+
     let route = {
       path,
-      component: component,
+      component: shouldBeWrapped ? Wrapper : component,
+      props: isIntermediate
+        ? {}
+        : { component: isReact ? component : () => component, type: isReact ? 'react' : 'vue' },
       children: [],
       meta: {
         name: titleCase(path.match(/[^/]+$/)?.[0] ?? 'Home'),
         isRoot: parent === routes,
+        type: isReact ? 'react' : 'vue',
       },
-    }
+    } as RouteRecordRaw
 
     parent.push((routesByPath[path] = route))
   }

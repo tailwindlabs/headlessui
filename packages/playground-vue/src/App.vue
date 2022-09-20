@@ -59,6 +59,26 @@
           </defs>
         </svg>
       </router-link>
+
+      <template v-if="route.meta.type === 'react'">
+        <svg class="-my-2 h-8 w-8" viewBox="-11.5 -10.23174 23 20.46348">
+          <circle cx="0" cy="0" r="2.05" fill="#61dafb" />
+          <g stroke="#61dafb" stroke-width="1" fill="none">
+            <ellipse rx="11" ry="4.2" />
+            <ellipse rx="11" ry="4.2" transform="rotate(60)" />
+            <ellipse rx="11" ry="4.2" transform="rotate(120)" />
+          </g>
+        </svg>
+      </template>
+      <template v-else-if="route.meta.type === 'vue'">
+        <svg class="-my-2 h-8 w-8" viewBox="0 0 128 128">
+          <path
+            fill="#42b883"
+            d="M78.8,10L64,35.4L49.2,10H0l64,110l64-110C128,10,78.8,10,78.8,10z"
+          />
+          <path fill="#35495e" d="M78.8,10L64,35.4L49.2,10H25.6L64,76l38.4-66H78.8z" />
+        </svg>
+      </template>
     </header>
     <main class="flex-1 overflow-auto bg-gray-50">
       <router-view />
@@ -67,15 +87,9 @@
   </div>
 </template>
 
-<script>
-import { computed, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+<script setup>
 import KeyCaster from './KeyCaster.vue'
+import { useRoute } from 'vue-router'
 
-export default {
-  name: 'App',
-  components: {
-    KeyCaster,
-  },
-}
+const route = useRoute()
 </script>

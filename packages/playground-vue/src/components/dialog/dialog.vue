@@ -208,7 +208,7 @@ import {
   TransitionChild,
 } from '@headlessui/vue'
 import Flatpickr from 'vue-flatpickr-component'
-import { usePopper } from '../../playground-utils/hooks/use-popper'
+import { usePopper } from '@/utils/vue/hooks/use-popper'
 
 import 'flatpickr/dist/themes/light.css'
 

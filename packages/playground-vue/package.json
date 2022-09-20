@@ -23,6 +23,7 @@
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
     "react": "17",
+    "react-dom": "17",
     "tailwindcss": "^0.0.0-insiders.83b4811",
     "vue": "^3.2.27",
     "vue-flatpickr-component": "^9.0.5",

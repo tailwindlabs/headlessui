@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss/types').Config} */
 let config = {
-  content: ['./src/**/*.vue', './*.html'],
+  content: ['./src/**/*.{vue,tsx}', './*.html'],
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
