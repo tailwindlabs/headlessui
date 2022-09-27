@@ -82,7 +82,7 @@ export function useOutsideClick(
     'mousedown',
     (event) => {
       if (enabled.value) {
-        initialClickTarget.value = event.target
+        initialClickTarget.value = event.composedPath?.()?.[0] || event.target
       }
     },
     true
