@@ -4,10 +4,11 @@ import { useEvent } from './use-event'
 export function useControllable<T>(
   controlledValue: T | undefined,
   onChange?: (value: T) => void,
-  defaultValue?: T
+  defaultValue?: T,
+  isControlled?: boolean
 ) {
   let [internalValue, setInternalValue] = useState(defaultValue)
-  let isControlled = controlledValue !== undefined
+  isControlled = isControlled ?? controlledValue !== undefined
 
   return [
     (isControlled ? controlledValue : internalValue)!,

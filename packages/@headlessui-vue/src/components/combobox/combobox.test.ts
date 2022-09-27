@@ -5381,7 +5381,7 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should sync the input field correctly and reset it when resetting the value from outside',
+    'should sync the input field correctly and reset it when resetting the value from outside (to null)',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
@@ -5408,6 +5408,48 @@ describe('Mouse interactions', () => {
       // Override the input by typing something
       await type(word('test'), getComboboxInput())
       expect(getComboboxInput()?.value).toBe('test')
+
+      // Reset from outside
+      await click(getByText('reset'))
+
+      // Verify the input is reset correctly
+      expect(getComboboxInput()?.value).toBe('')
+    })
+  )
+
+  it(
+    'should sync the input field correctly and reset it when resetting the value from outside (to undefined)',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+          <button @click="value = undefined">reset</button>
+        `,
+        setup: () => ({ value: ref('bob') }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify the input has the selected value
+      expect(getComboboxInput()?.value).toBe('bob')
+
+      // Override the input by typing something
+      await type(word('alice'), getComboboxInput())
+      expect(getComboboxInput()?.value).toBe('alice')
+
+      // Select the option
+      await press(Keys.ArrowUp)
+      await press(Keys.Enter)
+      expect(getComboboxInput()?.value).toBe('alice')
 
       // Reset from outside
       await click(getByText('reset'))
