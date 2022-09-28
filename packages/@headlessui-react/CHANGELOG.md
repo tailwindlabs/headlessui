@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Improve `Portal` detection for `Popover` components ([#1842](https://github.com/tailwindlabs/headlessui/pull/1842))
 
 ## [1.7.2] - 2022-09-15
 
