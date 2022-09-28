@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref, watch, h } from 'vue'
+import { defineComponent, nextTick, ref, watch, h, onMounted } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
@@ -85,38 +85,46 @@ describe('Rendering', () => {
           html`
             <PopoverGroup>
               <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>Panel 1</PopoverPanel>
+                <PopoverButton data-trigger="1">Trigger 1</PopoverButton>
+                <PopoverPanel data-panel="1">Panel 1</PopoverPanel>
               </Popover>
               <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>Panel 2</PopoverPanel>
+                <PopoverButton data-trigger="2">Trigger 2</PopoverButton>
+                <PopoverPanel data-panel="2">Panel 2</PopoverPanel>
               </Popover>
             </PopoverGroup>
           `
         )
 
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        function getTrigger(number: number) {
+          return document.querySelector(`[data-trigger="${number}"]`)! as HTMLElement
+        }
 
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
+        function getPanel(number: number) {
+          return document.querySelector(`[data-panel="${number}"]`)! as HTMLElement
+        }
 
-        await click(getByText('Trigger 1'))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(1))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(2))
 
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getPanel(1))
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getPanel(2))
 
-        assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
+        await click(getTrigger(1))
 
-        await click(getByText('Trigger 2'))
+        assertPopoverButton({ state: PopoverState.Visible }, getTrigger(1))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(2))
 
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 2'))
+        assertPopoverPanel({ state: PopoverState.Visible }, getPanel(1))
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getPanel(2))
 
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 2'))
+        await click(getTrigger(2))
+
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(1))
+        assertPopoverButton({ state: PopoverState.Visible }, getTrigger(2))
+
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getPanel(1))
+        assertPopoverPanel({ state: PopoverState.Visible }, getPanel(2))
       })
     )
   })
@@ -1098,47 +1106,55 @@ describe('Keyboard interactions', () => {
           html`
             <PopoverGroup>
               <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>Panel 1</PopoverPanel>
+                <PopoverButton data-trigger="1">Trigger 1</PopoverButton>
+                <PopoverPanel data-panel="1">Panel 1</PopoverPanel>
               </Popover>
 
               <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>Panel 2</PopoverPanel>
+                <PopoverButton data-trigger="2">Trigger 2</PopoverButton>
+                <PopoverPanel data-panel="2">Panel 2</PopoverPanel>
               </Popover>
             </PopoverGroup>
           `
         )
 
+        function getTrigger(number: number) {
+          return document.querySelector(`[data-trigger="${number}"]`)! as HTMLElement
+        }
+
+        function getPanel(number: number) {
+          return document.querySelector(`[data-panel="${number}"]`)! as HTMLElement
+        }
+
         // Focus the button of the first Popover
-        getByText('Trigger 1')?.focus()
+        getTrigger(1)?.focus()
 
         // Verify popover is closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(1))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(2))
 
         // Open popover
-        await click(getByText('Trigger 1'))
+        await click(getTrigger(1))
 
         // Verify popover is open
-        assertPopoverButton({ state: PopoverState.Visible }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        assertPopoverButton({ state: PopoverState.Visible }, getTrigger(1))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(2))
 
-        assertPopoverPanel({ state: PopoverState.Visible }, getByText('Panel 1'))
-        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getByText('Panel 2'))
+        assertPopoverPanel({ state: PopoverState.Visible }, getPanel(1))
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted }, getPanel(2))
 
         // Focus the button of the second popover menu
-        getByText('Trigger 2')?.focus()
+        getTrigger(2)?.focus()
 
         // Close popover
         await press(Keys.Escape)
 
         // Verify both popovers are closed
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 1'))
-        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getByText('Trigger 2'))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(1))
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted }, getTrigger(2))
 
         // Verify the button of the second popover is still focused
-        assertActiveElement(getByText('Trigger 2'))
+        assertActiveElement(getTrigger(2))
       })
     )
   })
@@ -1697,6 +1713,54 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should focus the Popover.Button when pressing Shift+Tab when we focus inside the Popover.Panel (heuristc based portal)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <Teleport v-if="ready" to="#portal">
+                <PopoverPanel focus>
+                  <a href="/">Link 1</a>
+                  <a href="/">Link 2</a>
+                </PopoverPanel>
+              </Teleport>
+              <button>Before</button>
+              <div id="portal" />
+              <button>After</button>
+            </Popover>
+          `,
+          setup() {
+            let ready = ref(false)
+            onMounted(() => {
+              ready.value = true
+            })
+            return { ready }
+          },
+        })
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        // Ensure the popover is open
+        assertPopoverButton({ state: PopoverState.Visible })
+
+        // Ensure the Link 1 is focused
+        assertActiveElement(getByText('Link 1'))
+
+        // Tab out of the Panel
+        await press(shift(Keys.Tab))
+
+        // Ensure the Popover.Button is focused again
+        assertActiveElement(getPopoverButton())
+
+        // Ensure the Popover is closed
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      })
+    )
+
+    it(
       'should be possible to focus the last item in the PopoverPanel when pressing Shift+Tab on the next PopoverButton',
       suppressConsoleLogs(async () => {
         renderTemplate(
@@ -1981,7 +2045,7 @@ describe('Keyboard interactions', () => {
       })
     )
 
-    xit(
+    it(
       'should close the Popover by pressing `Enter` on a PopoverButton and go to the href of the `a` inside a PopoverPanel',
       suppressConsoleLogs(async () => {
         renderTemplate(
