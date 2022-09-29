@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Call `displayValue` with a v-model of `ref(undefined)` on `ComboboxInput` ([#1865](https://github.com/tailwindlabs/headlessui/pull/1865))
 - Improve `Portal` detection for `Popover` components ([#1842](https://github.com/tailwindlabs/headlessui/pull/1842))
+- Fix crash when `children` are `undefined` ([#1885](https://github.com/tailwindlabs/headlessui/pull/1885))
 
 ## [1.7.2] - 2022-09-15
 
