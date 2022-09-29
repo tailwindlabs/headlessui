@@ -2,7 +2,7 @@ import React, { createElement, useState, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Combobox } from './combobox'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   click,
   focus,
@@ -5197,8 +5197,53 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should sync the input field correctly and reset it when resetting the value from outside (to undefined)',
-    suppressConsoleLogs(async () => {
+    'should warn when changing the combobox from uncontrolled to controlled',
+    mockingConsoleLogs(async (spy) => {
+      function Example() {
+        let [value, setValue] = useState<string | undefined>(undefined)
+
+        return (
+          <>
+            <Combobox value={value} onChange={setValue}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+            <button onClick={() => setValue('bob')}>to controlled</button>
+          </>
+        )
+      }
+
+      // Render a uncontrolled combobox
+      render(<Example />)
+
+      // Change to an controlled combobox
+      await click(getByText('to controlled'))
+
+      // Make sure we get a warning
+      expect(spy).toBeCalledTimes(1)
+      expect(spy.mock.calls.map((args) => args[0])).toEqual([
+        'A component is changing from uncontrolled to controlled. This may be caused by the value changing from undefined to a defined value, which should not happen.',
+      ])
+
+      // Render a fresh uncontrolled combobox
+      render(<Example />)
+
+      // Change to an controlled combobox
+      await click(getByText('to controlled'))
+
+      // We shouldn't have gotten another warning as we do not want to warn on every render
+      expect(spy).toBeCalledTimes(1)
+    })
+  )
+
+  it(
+    'should warn when changing the combobox from controlled to uncontrolled',
+    mockingConsoleLogs(async (spy) => {
       function Example() {
         let [value, setValue] = useState<string | undefined>('bob')
 
@@ -5213,33 +5258,31 @@ describe('Mouse interactions', () => {
                 <Combobox.Option value="charlie">charlie</Combobox.Option>
               </Combobox.Options>
             </Combobox>
-            <button onClick={() => setValue(undefined)}>reset</button>
+            <button onClick={() => setValue(undefined)}>to uncontrolled</button>
           </>
         )
       }
 
+      // Render a controlled combobox
       render(<Example />)
 
-      // Open combobox
-      await click(getComboboxButton())
+      // Change to an uncontrolled combobox
+      await click(getByText('to uncontrolled'))
 
-      // Verify the input has the selected value
-      expect(getComboboxInput()?.value).toBe('bob')
+      // Make sure we get a warning
+      expect(spy).toBeCalledTimes(1)
+      expect(spy.mock.calls.map((args) => args[0])).toEqual([
+        'A component is changing from controlled to uncontrolled. This may be caused by the value changing from a defined value to undefined, which should not happen.',
+      ])
 
-      // Override the input by typing something
-      await type(word('alice'), getComboboxInput())
-      expect(getComboboxInput()?.value).toBe('alice')
+      // Render a fresh controlled combobox
+      render(<Example />)
 
-      // Select the option
-      await press(Keys.ArrowUp)
-      await press(Keys.Enter)
-      expect(getComboboxInput()?.value).toBe('alice')
+      // Change to an uncontrolled combobox
+      await click(getByText('to uncontrolled'))
 
-      // Reset from outside
-      await click(getByText('reset'))
-
-      // Verify the input is reset correctly
-      expect(getComboboxInput()?.value).toBe('')
+      // We shouldn't have gotten another warning as we do not want to warn on every render
+      expect(spy).toBeCalledTimes(1)
     })
   )
 
