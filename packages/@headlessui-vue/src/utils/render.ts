@@ -108,7 +108,7 @@ function _render({
   }
 
   if (as === 'template') {
-    children = flattenFragments(children as VNode[])
+    children = flattenFragments(children ?? [])
 
     if (Object.keys(incomingProps).length > 0 || Object.keys(attrs).length > 0) {
       let [firstChild, ...other] = children ?? []

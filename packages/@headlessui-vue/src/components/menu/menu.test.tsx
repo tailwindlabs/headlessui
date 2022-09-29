@@ -91,6 +91,12 @@ describe('Safe guards', () => {
 
 describe('Rendering', () => {
   describe('Menu', () => {
+    it('should not crash when rendering no children at all', () => {
+      renderTemplate(jsx`
+        <Menu></Menu>
+      `)
+    })
+
     it('should be possible to render a Menu using a default render prop', async () => {
       renderTemplate(jsx`
         <Menu v-slot="{ open }">
