@@ -404,8 +404,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let [value, theirOnChange] = useControllable<any>(
     controlledValue,
     controlledOnChange,
-    defaultValue,
-    'value' in props
+    defaultValue
   )
 
   let [state, dispatch] = useReducer(stateReducer, {
