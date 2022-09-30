@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve `Portal` detection for `Popover` components ([#1842](https://github.com/tailwindlabs/headlessui/pull/1842))
 - Fix crash when `children` are `undefined` ([#1885](https://github.com/tailwindlabs/headlessui/pull/1885))
 - Fix `useOutsideClick` swallowing events inside ShadowDOM ([#1876](https://github.com/tailwindlabs/headlessui/pull/1876))
+- Fix `Tab` incorrectly activating on `focus` event ([#1887](https://github.com/tailwindlabs/headlessui/pull/1887))
 
 ## [1.7.2] - 2022-09-15
 
