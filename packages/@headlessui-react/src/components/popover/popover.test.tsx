@@ -338,6 +338,33 @@ describe('Rendering', () => {
 
   describe('Popover.Button', () => {
     it(
+      'should be possible to render a Popover.Button using a fragment',
+      suppressConsoleLogs(async () => {
+        render(
+          <Popover>
+            <Popover.Button as={Fragment}>
+              <button>Trigger</button>
+            </Popover.Button>
+            <Popover.Panel></Popover.Panel>
+          </Popover>
+        )
+
+        assertPopoverButton({
+          state: PopoverState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-popover-button-1' },
+        })
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        await click(getPopoverButton())
+
+        assertPopoverButton({
+          state: PopoverState.Visible,
+          attributes: { id: 'headlessui-popover-button-1' },
+        })
+        assertPopoverPanel({ state: PopoverState.Visible })
+      })
+    )
+    it(
       'should be possible to render a Popover.Button using a render prop',
       suppressConsoleLogs(async () => {
         render(

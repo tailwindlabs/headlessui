@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix `<Popover.Button as={Fragment} />` crash ([#1889](https://github.com/tailwindlabs/headlessui/pull/1889))
 
 ## [1.7.3] - 2022-09-30
 
