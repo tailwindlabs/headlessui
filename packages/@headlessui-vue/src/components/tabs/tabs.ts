@@ -20,11 +20,12 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
 import { match } from '../../utils/match'
-import { focusIn, Focus } from '../../utils/focus-management'
+import { focusIn, Focus, FocusResult } from '../../utils/focus-management'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { microTask } from '../../utils/micro-task'
 import { Hidden } from '../../internal/hidden'
+import { getOwnerDocument } from '../../utils/owner'
 
 type StateDefinition = {
   // State
@@ -233,6 +234,16 @@ export let Tab = defineComponent({
     let myIndex = computed(() => api.tabs.value.indexOf(internalTabRef))
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
+    function activateUsing(cb: () => FocusResult) {
+      let result = cb()
+      if (result === FocusResult.Success && api.activation.value === 'auto') {
+        let newTab = getOwnerDocument(internalTabRef)?.activeElement
+        let idx = api.tabs.value.findIndex((tab) => dom(tab) === newTab)
+        if (idx !== -1) api.setSelectedIndex(idx)
+      }
+      return result
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
       let list = api.tabs.value.map((tab) => dom(tab)).filter(Boolean) as HTMLElement[]
 
@@ -250,37 +261,35 @@ export let Tab = defineComponent({
           event.preventDefault()
           event.stopPropagation()
 
-          return focusIn(list, Focus.First)
+          return activateUsing(() => focusIn(list, Focus.First))
 
         case Keys.End:
         case Keys.PageDown:
           event.preventDefault()
           event.stopPropagation()
 
-          return focusIn(list, Focus.Last)
+          return activateUsing(() => focusIn(list, Focus.Last))
       }
 
-      if (
+      let result = activateUsing(() =>
         match(api.orientation.value, {
           vertical() {
             if (event.key === Keys.ArrowUp) return focusIn(list, Focus.Previous | Focus.WrapAround)
             if (event.key === Keys.ArrowDown) return focusIn(list, Focus.Next | Focus.WrapAround)
-            return
+            return FocusResult.Error
           },
           horizontal() {
             if (event.key === Keys.ArrowLeft)
               return focusIn(list, Focus.Previous | Focus.WrapAround)
             if (event.key === Keys.ArrowRight) return focusIn(list, Focus.Next | Focus.WrapAround)
-            return
+            return FocusResult.Error
           },
         })
-      ) {
+      )
+
+      if (result === FocusResult.Success) {
         return event.preventDefault()
       }
-    }
-
-    function handleFocus() {
-      dom(internalTabRef)?.focus()
     }
 
     let ready = ref(false)
@@ -315,7 +324,6 @@ export let Tab = defineComponent({
       let ourProps = {
         ref: internalTabRef,
         onKeydown: handleKeyDown,
-        onFocus: api.activation.value === 'manual' ? handleFocus : handleSelection,
         onMousedown: handleMouseDown,
         onClick: handleSelection,
         id,

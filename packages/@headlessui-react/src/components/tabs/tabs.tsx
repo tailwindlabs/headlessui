@@ -19,7 +19,7 @@ import { render, Features, PropsForFeatures, forwardRefWithAs } from '../../util
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { Keys } from '../../components/keyboard'
-import { focusIn, Focus, sortByDomNode } from '../../utils/focus-management'
+import { focusIn, Focus, sortByDomNode, FocusResult } from '../../utils/focus-management'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -28,6 +28,7 @@ import { FocusSentinel } from '../../internal/focus-sentinel'
 import { useEvent } from '../../hooks/use-event'
 import { microTask } from '../../utils/micro-task'
 import { Hidden } from '../../internal/hidden'
+import { getOwnerDocument } from '../../utils/owner'
 
 interface StateDefinition {
   selectedIndex: number
@@ -322,6 +323,7 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
 
   let { orientation, activation, selectedIndex, tabs, panels } = useData('Tab')
   let actions = useActions('Tab')
+  let data = useData('Tab')
   let SSRContext = useSSRTabsCounter('Tab')
 
   let internalTabRef = useRef<HTMLElement | null>(null)
@@ -335,6 +337,16 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   let myIndex = tabs.indexOf(internalTabRef)
   if (myIndex === -1) myIndex = mySSRIndex
   let selected = myIndex === selectedIndex
+
+  let activateUsing = useEvent((cb: () => FocusResult) => {
+    let result = cb()
+    if (result === FocusResult.Success && activation === 'auto') {
+      let newTab = getOwnerDocument(internalTabRef)?.activeElement
+      let idx = data.tabs.findIndex((tab) => tab.current === newTab)
+      if (idx !== -1) actions.change(idx)
+    }
+    return result
+  })
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     let list = tabs.map((tab) => tab.current).filter(Boolean) as HTMLElement[]
@@ -353,36 +365,34 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
         event.preventDefault()
         event.stopPropagation()
 
-        return focusIn(list, Focus.First)
+        return activateUsing(() => focusIn(list, Focus.First))
 
       case Keys.End:
       case Keys.PageDown:
         event.preventDefault()
         event.stopPropagation()
 
-        return focusIn(list, Focus.Last)
+        return activateUsing(() => focusIn(list, Focus.Last))
     }
 
-    if (
-      match(orientation, {
+    let result = activateUsing(() => {
+      return match(orientation, {
         vertical() {
           if (event.key === Keys.ArrowUp) return focusIn(list, Focus.Previous | Focus.WrapAround)
           if (event.key === Keys.ArrowDown) return focusIn(list, Focus.Next | Focus.WrapAround)
-          return
+          return FocusResult.Error
         },
         horizontal() {
           if (event.key === Keys.ArrowLeft) return focusIn(list, Focus.Previous | Focus.WrapAround)
           if (event.key === Keys.ArrowRight) return focusIn(list, Focus.Next | Focus.WrapAround)
-          return
+          return FocusResult.Error
         },
       })
-    ) {
+    })
+
+    if (result === FocusResult.Success) {
       return event.preventDefault()
     }
-  })
-
-  let handleFocus = useEvent(() => {
-    internalTabRef.current?.focus()
   })
 
   let ready = useRef(false)
@@ -411,7 +421,6 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   let ourProps = {
     ref: tabRef,
     onKeyDown: handleKeyDown,
-    onFocus: activation === 'manual' ? handleFocus : handleSelection,
     onMouseDown: handleMouseDown,
     onClick: handleSelection,
     id,
