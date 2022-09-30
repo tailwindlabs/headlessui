@@ -390,7 +390,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let buttonRef = useSyncRefs(
     internalButtonRef,
     ref,
-    isWithinPanel ? null : (button) => dispatch({ type: ActionTypes.SetButton, button })
+    isWithinPanel ? null : (button) => button && dispatch({ type: ActionTypes.SetButton, button })
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
   let ownerDocument = useOwnerDocument(internalButtonRef)
