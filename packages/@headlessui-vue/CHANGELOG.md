@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.3] - 2022-09-30
+
 ### Fixed
 
 - Call `displayValue` with a v-model of `ref(undefined)` on `ComboboxInput` ([#1865](https://github.com/tailwindlabs/headlessui/pull/1865))
@@ -331,7 +335,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.2...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.3...HEAD
+[1.7.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.2...@headlessui/vue@v1.7.3
 [1.7.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.1...@headlessui/vue@v1.7.2
 [1.7.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.0...@headlessui/vue@v1.7.1
 [1.7.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.6.7...@headlessui/vue@v1.7.0
