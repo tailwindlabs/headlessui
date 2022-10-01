@@ -690,6 +690,16 @@ let Input = forwardRefWithAs(function Input<
     [currentValue, data.comboboxState]
   )
 
+  const isComposing = useRef(false)
+  const handleCompositionStart = useEvent((_: ReactKeyboardEvent<CompositionEvent>) => {
+    isComposing.current = true
+  })
+  const handleCompositionEnd = useEvent((_: ReactKeyboardEvent<CompositionEvent>) => {
+    setTimeout(() => {
+      isComposing.current = false
+    })
+  })
+
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
     switch (event.key) {
       // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
@@ -713,7 +723,7 @@ let Input = forwardRefWithAs(function Input<
 
       case Keys.Enter:
         if (data.comboboxState !== ComboboxState.Open) return
-        if (event.nativeEvent.isComposing) return
+        if (isComposing.current) return
 
         event.preventDefault()
         event.stopPropagation()
@@ -815,6 +825,8 @@ let Input = forwardRefWithAs(function Input<
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     disabled: data.disabled,
+    onCompositionStart: handleCompositionStart,
+    onCompositionEnd: handleCompositionEnd,
     onKeyDown: handleKeyDown,
     onChange: handleChange,
   }
