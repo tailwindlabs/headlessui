@@ -193,6 +193,31 @@ describe('Rendering', () => {
         })
       })
     )
+
+    it('should be possible to manually close the Menu using the exposed close function', async () => {
+      renderTemplate({
+        template: jsx`
+          <Menu v-slot="{ close }">
+            <MenuButton>Trigger</MenuButton>
+            <MenuItems>
+              <MenuItem>
+                <button @click.prevent="close">Close</button>
+              </MenuItem>
+            </MenuItems>
+          </Menu>
+        `,
+      })
+
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      await click(getMenuButton())
+
+      assertMenu({ state: MenuState.Visible })
+
+      await click(getByText('Close'))
+
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+    })
   })
 
   describe('MenuButton', () => {
@@ -711,6 +736,31 @@ describe('Rendering', () => {
       })
 
       await click(getMenuButton())
+    })
+
+    it('should be possible to manually close the Menu using the exposed close function', async () => {
+      renderTemplate({
+        template: jsx`
+          <Menu>
+            <MenuButton>Trigger</MenuButton>
+            <MenuItems>
+              <MenuItem v-slot="{ close }">
+                <button @click.prevent="close">Close</button>
+              </MenuItem>
+            </MenuItems>
+          </Menu>
+        `,
+      })
+
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      await click(getMenuButton())
+
+      assertMenu({ state: MenuState.Visible })
+
+      await click(getByText('Close'))
+
+      assertMenu({ state: MenuState.InvisibleUnmounted })
     })
   })
 

@@ -116,6 +116,43 @@ describe('Rendering', () => {
         assertMenu({ state: MenuState.Visible })
       })
     )
+
+    it(
+      'should be possible to manually close the Menu using the exposed close function',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            {({ close }) => (
+              <>
+                <Menu.Button>Trigger</Menu.Button>
+                <Menu.Items>
+                  <Menu.Item>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        close()
+                      }}
+                    >
+                      Close
+                    </button>
+                  </Menu.Item>
+                </Menu.Items>
+              </>
+            )}
+          </Menu>
+        )
+
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        await click(getMenuButton())
+
+        assertMenu({ state: MenuState.Visible })
+
+        await click(getByText('Close'))
+
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+      })
+    )
   })
 
   describe('Menu.Button', () => {
@@ -347,6 +384,41 @@ describe('Rendering', () => {
           state: MenuState.Visible,
           textContent: JSON.stringify({ active: false, disabled: false }),
         })
+      })
+    )
+
+    it(
+      'should be possible to manually close the Menu using the exposed close function',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <Menu.Button>Trigger</Menu.Button>
+            <Menu.Items>
+              <Menu.Item>
+                {({ close }) => (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      close()
+                    }}
+                  >
+                    Close
+                  </button>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )
+
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        await click(getMenuButton())
+
+        assertMenu({ state: MenuState.Visible })
+
+        await click(getByText('Close'))
+
+        assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
   })
