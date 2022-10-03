@@ -353,6 +353,14 @@ type ComboboxValueProps<
       defaultValue?: TValue
       onChange?(value: TValue): void
       by?: ByComparator<TValue>
+    } & Props<TTag, ComboboxRenderPropArg<TValue>, O>)
+  | ({
+      value?: TValue
+      nullable?: boolean
+      multiple?: boolean
+      defaultValue?: TValue
+      onChange?(value: TValue): void
+      by?: ByComparator<TValue>
     } & Props<TTag, ComboboxRenderPropArg<TValue>, O>),
   { nullable?: TNullable; multiple?: TMultiple }
 >
@@ -382,6 +390,10 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, false, true, TTag>,
+  ref: Ref<TTag>
+): JSX.Element
+function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
+  props: ComboboxProps<TValue, boolean, boolean, TTag>,
   ref: Ref<TTag>
 ): JSX.Element
 
