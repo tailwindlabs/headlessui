@@ -227,6 +227,7 @@ function stateReducer(state: StateDefinition, action: Actions) {
 let DEFAULT_MENU_TAG = Fragment
 interface MenuRenderPropArg {
   open: boolean
+  close: () => void
 }
 
 let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
@@ -259,9 +260,13 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
     menuState === MenuStates.Open
   )
 
+  let close = useEvent(() => {
+    dispatch({ type: ActionTypes.CloseMenu })
+  })
+
   let slot = useMemo<MenuRenderPropArg>(
-    () => ({ open: menuState === MenuStates.Open }),
-    [menuState]
+    () => ({ open: menuState === MenuStates.Open, close }),
+    [menuState, close]
   )
 
   let theirProps = props
@@ -563,6 +568,7 @@ let DEFAULT_ITEM_TAG = Fragment
 interface ItemRenderPropArg {
   active: boolean
   disabled: boolean
+  close: () => void
 }
 type MenuItemPropsWeControl =
   | 'id'
@@ -613,6 +619,10 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     return () => dispatch({ type: ActionTypes.UnregisterItem, id })
   }, [bag, id])
 
+  let close = useEvent(() => {
+    dispatch({ type: ActionTypes.CloseMenu })
+  })
+
   let handleClick = useEvent((event: MouseEvent) => {
     if (disabled) return event.preventDefault()
     dispatch({ type: ActionTypes.CloseMenu })
@@ -641,7 +651,10 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   })
 
-  let slot = useMemo<ItemRenderPropArg>(() => ({ active, disabled }), [active, disabled])
+  let slot = useMemo<ItemRenderPropArg>(
+    () => ({ active, disabled, close }),
+    [active, disabled, close]
+  )
   let ourProps = {
     id,
     ref: itemRef,

@@ -234,7 +234,7 @@ export let Menu = defineComponent({
     )
 
     return () => {
-      let slot = { open: menuState.value === MenuStates.Open }
+      let slot = { open: menuState.value === MenuStates.Open, close: api.closeMenu }
       return render({ ourProps: {}, theirProps: props, slot, slots, attrs, name: 'Menu' })
     }
   },
@@ -554,7 +554,7 @@ export let MenuItem = defineComponent({
 
     return () => {
       let { disabled } = props
-      let slot = { active: active.value, disabled }
+      let slot = { active: active.value, disabled, close: api.closeMenu }
       let ourProps = {
         id,
         ref: internalItemRef,
