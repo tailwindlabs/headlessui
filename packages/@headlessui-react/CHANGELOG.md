@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `<Popover.Button as={Fragment} />` crash ([#1889](https://github.com/tailwindlabs/headlessui/pull/1889))
+- Expose `close` function for `Menu` and `Menu.Item` components ([#1897](https://github.com/tailwindlabs/headlessui/pull/1897))
 
 ## [1.7.3] - 2022-09-30
 

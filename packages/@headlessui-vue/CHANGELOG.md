@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Expose `close` function for `Menu` and `MenuItem` components ([#1897](https://github.com/tailwindlabs/headlessui/pull/1897))
 
 ## [1.7.3] - 2022-09-30
 
