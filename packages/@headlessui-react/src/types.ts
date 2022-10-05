@@ -66,3 +66,70 @@ export type XOR<T, U> = T | U extends __
 
 export type ByComparator<T> = (keyof T & string) | ((a: T, b: T) => boolean)
 export type EnsureArray<T> = T extends any[] ? T : Expand<T>[]
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never
+
+// If this is a simple type UnionToIntersection<Key> will be the same type, otherwise it will an intersection
+// of all types in the union and will not extend `Key` when at least two types are "different"
+export type IsUnion<TType> = [TType] extends [UnionToIntersection<TType>] ? true : false
+
+// Determines if two types are exact matches
+// This means:
+// 1. boolean === true | false
+// 2. boolean !== true
+// 3. boolean !== false
+// 4. boolean !== true | false | 'lol'
+export type IsExactType<TypeOne, TypeTwo> =
+  UnionToIntersection<TypeOne> extends UnionToIntersection<TypeTwo> ? true : false
+
+/**
+ * Extract from T those types that are assignable to U
+ * Only when types are _exact_ matches, not when they are assignable
+ */
+type ExtractExact1<T extends object, U extends object> = T extends U
+  ? {
+      [K in keyof T]: K extends keyof U
+        ? IsExactType<T[K], U[K]> extends true
+          ? T[K]
+          : never
+        : T[K]
+    }
+  : never
+
+/**
+ * Gets all keys that are never in an object
+ */
+type GetNeverKeys<O extends object> = {
+  [K in keyof O]-?: IsExactType<never, O[K]> extends true ? K : never
+}[keyof O]
+
+/**
+ * Eliminate all union possibilities containing a never
+ */
+type ExcludeUnionsWithNeverKeys<T extends object> = IsExactType<never, GetNeverKeys<T>> extends true
+  ? T
+  : Exclude<T, Record<GetNeverKeys<T>, never>>
+
+export type ExtractExact<T extends object, U extends object> = ExcludeUnionsWithNeverKeys<
+  ExtractExact1<T, U>
+>
+
+type Union =
+  | { a: true; b: '1' }
+  | { a: false; b: '2' }
+  | { a: boolean; b: '3' }
+  | { a: boolean; b: '4' }
+  | { a: undefined; b: '5' }
+
+type _1 = ExtractExact<Union, { a: true }> // { a: true; b: '1' }
+type _2 = ExtractExact<Union, { a: false }> // { a: false; b: '2' }
+type _3 = ExtractExact<Union, { a: boolean }> // { a: boolean; b: '3' } | { a: boolean; b: '4' }
+type _4 = ExtractExact<Union, { a: undefined }> // { a: undefined; b: '5' }
+
+let a: _1
+let b: _2
+let c: _3
+let d: _4

@@ -15,7 +15,7 @@ import React, {
   MutableRefObject,
   Ref,
 } from 'react'
-import { ByComparator, EnsureArray, Expand, Props } from '../../types'
+import { ByComparator, EnsureArray, Expand, Props, ExtractExact } from '../../types'
 
 import { useComputed } from '../../hooks/use-computed'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -321,7 +321,7 @@ type ComboboxValueProps<
   TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
   TTag extends ElementType
-> = Extract<
+> = ExtractExact<
   | ({
       value?: EnsureArray<TValue>
       defaultValue?: EnsureArray<TValue>
@@ -359,7 +359,7 @@ type ComboboxValueProps<
       nullable?: boolean
       multiple?: boolean
       defaultValue?: TValue
-      onChange?(value: TValue): void
+      onChange?(value: TValue | EnsureArray<TValue> | null): void
       by?: ByComparator<TValue>
     } & Props<TTag, ComboboxRenderPropArg<TValue>, O>),
   { nullable?: TNullable; multiple?: TMultiple }
