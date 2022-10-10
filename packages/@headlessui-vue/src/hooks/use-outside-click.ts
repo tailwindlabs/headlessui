@@ -30,7 +30,7 @@ export function useOutsideClick(
     }
 
     // Ignore if the target doesn't exist in the DOM anymore
-    if (!target.ownerDocument.documentElement.contains(target)) return
+    if (!target.getRootNode().contains(target)) return
 
     let _containers = (function resolve(containers): ContainerCollection {
       if (typeof containers === 'function') {
