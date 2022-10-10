@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose `close` function for `Menu` and `MenuItem` components ([#1897](https://github.com/tailwindlabs/headlessui/pull/1897))
 - Fix `useOutsideClick`, add improvements for ShadowDOM ([#1914](https://github.com/tailwindlabs/headlessui/pull/1914))
 - Prevent default slot warning when using a component for `as` prop ([#1915](https://github.com/tailwindlabs/headlessui/pull/1915))
+- Fire `<ComboboxInput>`'s `@change` handler when changing the value internally ([#1916](https://github.com/tailwindlabs/headlessui/pull/1916))
 
 ## [1.7.3] - 2022-09-30
 
