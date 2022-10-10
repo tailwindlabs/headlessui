@@ -2935,7 +2935,7 @@ describe('Keyboard interactions', () => {
       it(
         'The onChange handler is fired when the input value is changed internally',
         suppressConsoleLogs(async () => {
-          let currentSearchQuery: string = ""
+          let currentSearchQuery: string = ''
 
           renderTemplate({
             template: html`

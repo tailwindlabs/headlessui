@@ -635,7 +635,7 @@ export let ComboboxInput = defineComponent({
     let shouldIgnoreOpenOnChange = false
     function updateInputAndNotify(currentValue: string) {
       let input = dom(api.inputRef)
-      if (! input) {
+      if (!input) {
         return
       }
 

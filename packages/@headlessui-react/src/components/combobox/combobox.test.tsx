@@ -2855,21 +2855,23 @@ describe('Keyboard interactions', () => {
       it(
         'The onChange handler is fired when the input value is changed internally',
         suppressConsoleLogs(async () => {
-          let currentSearchQuery: string = ""
+          let currentSearchQuery: string = ''
 
           render(
             <Combobox value={null} onChange={console.log}>
-            <Combobox.Input onChange={(event) => {
-              currentSearchQuery = event.target.value
-            }} />
-            <Combobox.Button>Trigger</Combobox.Button>
-            <Combobox.Options>
-              <Combobox.Option value="option-a">Option A</Combobox.Option>
-              <Combobox.Option value="option-b">Option B</Combobox.Option>
-              <Combobox.Option value="option-c">Option C</Combobox.Option>
-            </Combobox.Options>
-          </Combobox>
-        )
+              <Combobox.Input
+                onChange={(event) => {
+                  currentSearchQuery = event.target.value
+                }}
+              />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="option-a">Option A</Combobox.Option>
+                <Combobox.Option value="option-b">Option B</Combobox.Option>
+                <Combobox.Option value="option-c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
 
           // Open combobox
           await click(getComboboxButton())
