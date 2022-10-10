@@ -666,6 +666,33 @@ let Input = forwardRefWithAs(function Input<
   let id = `headlessui-combobox-input-${useId()}`
   let d = useDisposables()
 
+  let shouldIgnoreOpenOnChange = false
+  function updateInputAndNotify(newValue: string) {
+    let input = data.inputRef.current
+    if (!input) {
+      return
+    }
+
+    // The value is already the same, so we can bail out early
+    if (input.value === newValue) {
+      return
+    }
+
+    // Skip React's value setting which causes the input event to not be fired because it de-dupes input/change events
+    let descriptor = Object.getOwnPropertyDescriptor(input.constructor.prototype, 'value')
+    descriptor?.set?.call(input, newValue)
+
+    // Fire an input event which causes the browser to trigger the user's `onChange` handler.
+    // We have to prevent the combobox from opening when this happens. Since these events
+    // fire synchronously `shouldIgnoreOpenOnChange` will be correct during `handleChange`
+    shouldIgnoreOpenOnChange = true
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+
+    // Now we can inform react that the input value has changed
+    input.value = newValue
+    shouldIgnoreOpenOnChange = false
+  }
+
   let currentValue = useMemo(() => {
     if (typeof displayValue === 'function') {
       return displayValue(data.value as unknown as TType) ?? ''
@@ -682,7 +709,7 @@ let Input = forwardRefWithAs(function Input<
     ([currentValue, state], [oldCurrentValue, oldState]) => {
       if (!data.inputRef.current) return
       if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
-        data.inputRef.current.value = currentValue
+        updateInputAndNotify(currentValue)
       } else if (currentValue !== oldCurrentValue) {
         data.inputRef.current.value = currentValue
       }
@@ -787,7 +814,9 @@ let Input = forwardRefWithAs(function Input<
   })
 
   let handleChange = useEvent((event: React.ChangeEvent<HTMLInputElement>) => {
-    actions.openCombobox()
+    if (!shouldIgnoreOpenOnChange) {
+      actions.openCombobox()
+    }
     onChange?.(event)
   })
 
