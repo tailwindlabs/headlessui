@@ -15,7 +15,7 @@ import React, {
   MutableRefObject,
   Ref,
 } from 'react'
-import { ByComparator, EnsureArray, Expand, Props, ExtractExact } from '../../types'
+import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
 import { useComputed } from '../../hooks/use-computed'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -316,12 +316,46 @@ interface ComboboxRenderPropArg<T> {
 
 type O = 'value' | 'defaultValue' | 'nullable' | 'multiple' | 'onChange' | 'by'
 
+type ComboboxValuePropsRaw<TValue> =
+  | {
+      value?: EnsureArray<TValue>
+      defaultValue?: EnsureArray<TValue>
+      nullable: true // We ignore `nullable` in multiple mode
+      multiple: true
+      onChange?(value: EnsureArray<TValue>): void
+      by?: ByComparator<TValue>
+    }
+  | {
+      value?: TValue | null
+      defaultValue?: TValue | null
+      nullable: true
+      multiple?: false
+      onChange?(value: TValue | null): void
+      by?: ByComparator<TValue | null>
+    }
+  | {
+      value?: EnsureArray<TValue>
+      defaultValue?: EnsureArray<TValue>
+      nullable?: false
+      multiple: true
+      onChange?(value: EnsureArray<TValue>): void
+      by?: ByComparator<TValue extends Array<infer U> ? U : TValue>
+    }
+  | {
+      value?: TValue
+      nullable?: false
+      multiple?: false
+      defaultValue?: TValue
+      onChange?(value: TValue): void
+      by?: ByComparator<TValue>
+    }
+
 type ComboboxValueProps<
   TValue,
   TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
   TTag extends ElementType
-> = ExtractExact<
+> = Extract<
   | ({
       value?: EnsureArray<TValue>
       defaultValue?: EnsureArray<TValue>
@@ -353,17 +387,93 @@ type ComboboxValueProps<
       defaultValue?: TValue
       onChange?(value: TValue): void
       by?: ByComparator<TValue>
-    } & Props<TTag, ComboboxRenderPropArg<TValue>, O>)
-  | ({
-      value?: TValue
-      nullable?: boolean
-      multiple?: boolean
-      defaultValue?: TValue
-      onChange?(value: TValue | EnsureArray<TValue> | null): void
-      by?: ByComparator<TValue>
     } & Props<TTag, ComboboxRenderPropArg<TValue>, O>),
   { nullable?: TNullable; multiple?: TMultiple }
 >
+
+// type ComboboxValueProps2<TValue> = {
+//   value: TValue
+// }
+
+type ReactProps = { children?: React.ReactElement<any, any> }
+type Branded<TValue> = TValue & { __brand: '__branded__' }
+
+type MaybeMultiple<TMultiple> = TMultiple extends Branded<boolean>
+  ? { multiple?: Branded<boolean> }
+  : TMultiple extends false
+  ? { multiple?: false }
+  : { multiple: true }
+
+type MaybeNullable<TNullable> = TNullable extends Branded<boolean>
+  ? { nullable?: Branded<boolean> }
+  : TNullable extends false
+  ? { nullable?: false }
+  : { nullable: true }
+
+type BuildPropsType<TValue, TElement, TMultiple, TNullable> = ReactProps &
+  MaybeMultiple<TMultiple> &
+  MaybeNullable<TNullable> & {
+    value: TValue
+    onChange?(value: TElement): void
+  }
+
+// multiple = false
+function FooBar<TValue>(props: BuildPropsType<TValue, TValue, false, false>): JSX.Element
+function FooBar<TValue>(props: BuildPropsType<TValue, TValue, false, true>): JSX.Element
+function FooBar<TValue>(props: BuildPropsType<TValue, TValue, false, boolean>): JSX.Element
+
+// multiple = true
+function FooBar<TValue>(props: BuildPropsType<TValue[], TValue, true, false>): JSX.Element
+function FooBar<TValue>(props: BuildPropsType<TValue[], TValue, true, true>): JSX.Element
+function FooBar<TValue>(props: BuildPropsType<TValue[], TValue, true, boolean>): JSX.Element
+
+// multiple = boolean
+function FooBar<TValue>(
+  props: BuildPropsType<TValue | TValue[], TValue | TValue[], boolean, false>
+): JSX.Element
+function FooBar<TValue>(
+  props: BuildPropsType<TValue | TValue[], TValue | TValue[], boolean, true>
+): JSX.Element
+function FooBar<TValue>(
+  props: BuildPropsType<TValue | TValue[], TValue | TValue[], boolean, boolean>
+): JSX.Element
+
+function FooBar(_: any): JSX.Element {
+  return <div />
+}
+
+let _F = false as false
+let _T = true as true
+let _B = false as boolean
+
+function F() {
+  return null
+
+  return <FooBar value={'a'} multiple={_F} nullable={_F} onChange={(_) => {}} />
+  return <FooBar value={'a'} multiple={_F} nullable={_T} onChange={(_) => {}} />
+  return <FooBar value={'a'} multiple={_F} nullable={_B} onChange={(_) => {}} />
+
+  return <FooBar value={['a']} multiple={_F} nullable={_F} onChange={(_) => {}} />
+  return <FooBar value={['a']} multiple={_F} nullable={_T} onChange={(_) => {}} />
+  return <FooBar value={['a']} multiple={_F} nullable={_B} onChange={(_) => {}} />
+
+  // We need to get errors for this case
+  return <FooBar value={'a'} multiple={_T} nullable={_F} onChange={(_) => {}} />
+  return <FooBar value={'a'} multiple={_T} nullable={_T} onChange={(_) => {}} />
+  return <FooBar value={'a'} multiple={_T} nullable={_B} onChange={(_) => {}} />
+
+  return <FooBar value={['a']} multiple={_T} nullable={_F} onChange={(_) => {}} />
+  return <FooBar value={['a']} multiple={_T} nullable={_T} onChange={(_) => {}} />
+  return <FooBar value={['a']} multiple={_T} nullable={_B} onChange={(_) => {}} />
+
+  return <FooBar value={'a'} multiple={_B} nullable={_F} onChange={(_) => {}} />
+  return <FooBar value={'a'} multiple={_B} nullable={_T} onChange={(_) => {}} />
+  return <FooBar value={'a'} multiple={_B} nullable={_B} onChange={(_) => {}} />
+
+  return <FooBar<string> value={['a']} multiple={_B} nullable={_F} onChange={(_) => {}} />
+  return <FooBar<string> value={['a']} multiple={_B} nullable={_T} onChange={(_) => {}} />
+  return <FooBar<string> value={['a']} multiple={_B} nullable={_B} onChange={(_) => {}} />
+}
 
 type ComboboxProps<
   TValue,
@@ -390,10 +500,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, false, true, TTag>,
-  ref: Ref<TTag>
-): JSX.Element
-function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, boolean, boolean, TTag>,
   ref: Ref<TTag>
 ): JSX.Element
 
