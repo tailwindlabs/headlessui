@@ -678,32 +678,13 @@ let Input = forwardRefWithAs(function Input<
     // displayValue is intentionally left out
   }, [data.value])
 
-  let shouldIgnoreOpenOnChange = false
-  function updateInputValue(newValue: string) {
-    let input = data.inputRef.current
-    if (!input) {
-      return
-    }
-
-    // Skip React's value setting which causes the input event to not be fired because it de-dupes input/change events
-    let descriptor = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')
-    descriptor?.set?.call(input, newValue)
-
-    // Fire an input event which causes the browser to trigger the user's `onChange` handler.
-    // We have to prevent the combobox from opening when this happens. Since these events
-    // fire synchronously `shouldIgnoreOpenOnChange` will be correct during `handleChange`
-    shouldIgnoreOpenOnChange = true
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-    shouldIgnoreOpenOnChange = false
-  }
-
   useWatch(
     ([currentValue, state], [oldCurrentValue, oldState]) => {
       if (!data.inputRef.current) return
       if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
-        updateInputValue(currentValue)
+        data.inputRef.current.value = currentValue
       } else if (currentValue !== oldCurrentValue) {
-        updateInputValue(currentValue)
+        data.inputRef.current.value = currentValue
       }
     },
     [currentValue, data.comboboxState]
@@ -806,9 +787,7 @@ let Input = forwardRefWithAs(function Input<
   })
 
   let handleChange = useEvent((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!shouldIgnoreOpenOnChange) {
-      actions.openCombobox()
-    }
+    actions.openCombobox()
     onChange?.(event)
   })
 
