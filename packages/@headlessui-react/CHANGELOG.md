@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix `<Popover.Button as={Fragment} />` crash ([#1889](https://github.com/tailwindlabs/headlessui/pull/1889))
 - Expose `close` function for `Menu` and `Menu.Item` components ([#1897](https://github.com/tailwindlabs/headlessui/pull/1897))
 - Fix `useOutsideClick`, add improvements for ShadowDOM ([#1914](https://github.com/tailwindlabs/headlessui/pull/1914))
+- Fire `<Combobox.Input>`'s `onChange` handler when changing the value internally ([#1916](https://github.com/tailwindlabs/headlessui/pull/1916))
 
 ### Added
 

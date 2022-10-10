@@ -2851,6 +2851,56 @@ describe('Keyboard interactions', () => {
           expect(getComboboxInput()?.value).toBe('option-b')
         })
       )
+
+      it(
+        'The onChange handler is fired when the input value is changed internally',
+        suppressConsoleLogs(async () => {
+          let currentSearchQuery: string = ''
+
+          render(
+            <Combobox value={null} onChange={console.log}>
+              <Combobox.Input
+                onChange={(event) => {
+                  currentSearchQuery = event.target.value
+                }}
+              />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="option-a">Option A</Combobox.Option>
+                <Combobox.Option value="option-b">Option B</Combobox.Option>
+                <Combobox.Option value="option-c">Option C</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+
+          // Open combobox
+          await click(getComboboxButton())
+
+          // Verify that the current search query is empty
+          expect(currentSearchQuery).toBe('')
+
+          // Look for "Option C"
+          await type(word('Option C'), getComboboxInput())
+
+          // The input should be updated
+          expect(getComboboxInput()?.value).toBe('Option C')
+
+          // The current search query should reflect the input value
+          expect(currentSearchQuery).toBe('Option C')
+
+          // Close combobox
+          await press(Keys.Escape)
+
+          // The input should be empty
+          expect(getComboboxInput()?.value).toBe('')
+
+          // The current search query should be empty like the input
+          expect(currentSearchQuery).toBe('')
+
+          // The combobox should be closed
+          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+        })
+      )
     })
 
     describe('`ArrowDown` key', () => {
@@ -5501,7 +5551,7 @@ describe('Form compatibility', () => {
           }}
         >
           <Combobox value={value} onChange={setValue} name="delivery">
-            <Combobox.Input onChange={console.log} />
+            <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Label>Pizza Delivery</Combobox.Label>
             <Combobox.Options>

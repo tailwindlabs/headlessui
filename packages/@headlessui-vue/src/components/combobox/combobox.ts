@@ -632,6 +632,23 @@ export let ComboboxInput = defineComponent({
     // Workaround Vue bug where watching [ref(undefined)] is not fired immediately even when value is true
     const __fixVueImmediateWatchBug__ = ref('')
 
+    let shouldIgnoreOpenOnChange = false
+    function updateInputAndNotify(currentValue: string) {
+      let input = dom(api.inputRef)
+      if (!input) {
+        return
+      }
+
+      input.value = currentValue
+
+      // Fire an input event which causes the browser to trigger the user's `onChange` handler.
+      // We have to prevent the combobox from opening when this happens. Since these events
+      // fire synchronously `shouldIgnoreOpenOnChange` will be correct during `handleChange`
+      shouldIgnoreOpenOnChange = true
+      input.dispatchEvent(new Event('input', { bubbles: true }))
+      shouldIgnoreOpenOnChange = false
+    }
+
     onMounted(() => {
       watch(
         [api.value, __fixVueImmediateWatchBug__],
@@ -650,7 +667,7 @@ export let ComboboxInput = defineComponent({
           let input = dom(api.inputRef)
           if (!input) return
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
-            input.value = currentValue
+            updateInputAndNotify(currentValue)
           } else if (currentValue !== oldCurrentValue) {
             input.value = currentValue
           }
@@ -756,7 +773,9 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleInput(event: Event & { target: HTMLInputElement }) {
-      api.openCombobox()
+      if (!shouldIgnoreOpenOnChange) {
+        api.openCombobox()
+      }
       emit('change', event)
     }
 
