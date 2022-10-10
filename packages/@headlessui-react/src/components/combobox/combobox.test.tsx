@@ -396,7 +396,7 @@ describe('Rendering', () => {
       'selecting an option puts the value into Combobox.Input when displayValue is not provided',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState(null)
 
           return (
             <Combobox value={value} onChange={setValue}>
@@ -430,7 +430,7 @@ describe('Rendering', () => {
       'selecting an option puts the display value into Combobox.Input when displayValue is provided',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState(null)
 
           return (
             <Combobox value={value} onChange={setValue}>
@@ -558,7 +558,7 @@ describe('Rendering', () => {
       'should be possible to override the `type` on the input',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState(null)
 
           return (
             <Combobox value={value} onChange={setValue}>
