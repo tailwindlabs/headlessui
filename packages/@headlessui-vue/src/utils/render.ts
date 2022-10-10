@@ -147,7 +147,9 @@ function _render({
     return children
   }
 
-  return h(as, Object.assign({}, incomingProps, dataAttributes), children)
+  return h(as, Object.assign({}, incomingProps, dataAttributes), {
+    default: () => children,
+  })
 }
 
 /**
