@@ -2,7 +2,7 @@ import React, { createElement, useState, useEffect } from 'react'
 import { render } from '@testing-library/react'
 
 import { Combobox } from './combobox'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   click,
   focus,
@@ -396,7 +396,7 @@ describe('Rendering', () => {
       'selecting an option puts the value into Combobox.Input when displayValue is not provided',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState(null)
 
           return (
             <Combobox value={value} onChange={setValue}>
@@ -430,7 +430,7 @@ describe('Rendering', () => {
       'selecting an option puts the display value into Combobox.Input when displayValue is provided',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState(null)
 
           return (
             <Combobox value={value} onChange={setValue}>
@@ -558,7 +558,7 @@ describe('Rendering', () => {
       'should be possible to override the `type` on the input',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState(null)
 
           return (
             <Combobox value={value} onChange={setValue}>
@@ -5155,7 +5155,7 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should sync the input field correctly and reset it when resetting the value from outside',
+    'should sync the input field correctly and reset it when resetting the value from outside (to null)',
     suppressConsoleLogs(async () => {
       function Example() {
         let [value, setValue] = useState<string | null>('bob')
@@ -5193,6 +5193,96 @@ describe('Mouse interactions', () => {
 
       // Verify the input is reset correctly
       expect(getComboboxInput()?.value).toBe('')
+    })
+  )
+
+  it(
+    'should warn when changing the combobox from uncontrolled to controlled',
+    mockingConsoleLogs(async (spy) => {
+      function Example() {
+        let [value, setValue] = useState<string | undefined>(undefined)
+
+        return (
+          <>
+            <Combobox value={value} onChange={setValue}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+            <button onClick={() => setValue('bob')}>to controlled</button>
+          </>
+        )
+      }
+
+      // Render a uncontrolled combobox
+      render(<Example />)
+
+      // Change to an controlled combobox
+      await click(getByText('to controlled'))
+
+      // Make sure we get a warning
+      expect(spy).toBeCalledTimes(1)
+      expect(spy.mock.calls.map((args) => args[0])).toEqual([
+        'A component is changing from uncontrolled to controlled. This may be caused by the value changing from undefined to a defined value, which should not happen.',
+      ])
+
+      // Render a fresh uncontrolled combobox
+      render(<Example />)
+
+      // Change to an controlled combobox
+      await click(getByText('to controlled'))
+
+      // We shouldn't have gotten another warning as we do not want to warn on every render
+      expect(spy).toBeCalledTimes(1)
+    })
+  )
+
+  it(
+    'should warn when changing the combobox from controlled to uncontrolled',
+    mockingConsoleLogs(async (spy) => {
+      function Example() {
+        let [value, setValue] = useState<string | undefined>('bob')
+
+        return (
+          <>
+            <Combobox value={value} onChange={setValue}>
+              <Combobox.Input onChange={NOOP} />
+              <Combobox.Button>Trigger</Combobox.Button>
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+            <button onClick={() => setValue(undefined)}>to uncontrolled</button>
+          </>
+        )
+      }
+
+      // Render a controlled combobox
+      render(<Example />)
+
+      // Change to an uncontrolled combobox
+      await click(getByText('to uncontrolled'))
+
+      // Make sure we get a warning
+      expect(spy).toBeCalledTimes(1)
+      expect(spy.mock.calls.map((args) => args[0])).toEqual([
+        'A component is changing from controlled to uncontrolled. This may be caused by the value changing from a defined value to undefined, which should not happen.',
+      ])
+
+      // Render a fresh controlled combobox
+      render(<Example />)
+
+      // Change to an uncontrolled combobox
+      await click(getByText('to uncontrolled'))
+
+      // We shouldn't have gotten another warning as we do not want to warn on every render
+      expect(spy).toBeCalledTimes(1)
     })
   )
 
