@@ -119,7 +119,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   props: Props<
     TTag,
     RadioGroupRenderPropArg<TType>,
-    RadioGroupPropsWeControl | 'value' | 'onChange' | 'disabled' | 'name' | 'by'
+    RadioGroupPropsWeControl | 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'name' | 'by'
   > & {
     value?: TType
     defaultValue?: TType
