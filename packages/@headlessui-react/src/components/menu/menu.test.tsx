@@ -390,8 +390,10 @@ describe('Rendering', () => {
     it(
       'should be possible to manually close the Menu using the exposed close function',
       suppressConsoleLogs(async () => {
+        let onClose = jest.fn()
+
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item>
@@ -419,6 +421,9 @@ describe('Rendering', () => {
         await click(getByText('Close'))
 
         assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
       })
     )
   })
@@ -941,8 +946,10 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the menu with Enter when there is no active menuitem',
       suppressConsoleLogs(async () => {
+        let onClose = jest.fn()
+
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">Item A</Menu.Item>
@@ -971,6 +978,9 @@ describe('Keyboard interactions', () => {
         assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
+
         // Verify the button is focused again
         assertActiveElement(getMenuButton())
       })
@@ -980,8 +990,9 @@ describe('Keyboard interactions', () => {
       'should be possible to close the menu with Enter and invoke the active menu item',
       suppressConsoleLogs(async () => {
         let clickHandler = jest.fn()
+        let onClose = jest.fn()
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a" onClick={clickHandler}>
@@ -1016,6 +1027,9 @@ describe('Keyboard interactions', () => {
         assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
+
         // Verify the button is focused again
         assertActiveElement(getMenuButton())
 
@@ -1029,9 +1043,10 @@ describe('Keyboard interactions', () => {
     'should be possible to use a button as a menu item and invoke it upon Enter',
     suppressConsoleLogs(async () => {
       let clickHandler = jest.fn()
+      let onClose = jest.fn()
 
       render(
-        <Menu>
+        <Menu onClose={onClose}>
           <Menu.Button>Trigger</Menu.Button>
           <Menu.Items>
             <Menu.Item as="a">Item A</Menu.Item>
@@ -1067,6 +1082,9 @@ describe('Keyboard interactions', () => {
       // Verify it is closed
       assertMenuButton({ state: MenuState.InvisibleUnmounted })
       assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Verify `onClose` prop has been called
+      expect(onClose).toHaveBeenCalled()
 
       // Verify the button got "clicked"
       expect(clickHandler).toHaveBeenCalledTimes(1)
@@ -1303,8 +1321,9 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the menu with Space when there is no active menuitem',
       suppressConsoleLogs(async () => {
+        let onClose = jest.fn()
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">Item A</Menu.Item>
@@ -1333,6 +1352,9 @@ describe('Keyboard interactions', () => {
         assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
+
         // Verify the button is focused again
         assertActiveElement(getMenuButton())
       })
@@ -1342,8 +1364,9 @@ describe('Keyboard interactions', () => {
       'should be possible to close the menu with Space and invoke the active menu item',
       suppressConsoleLogs(async () => {
         let clickHandler = jest.fn()
+        let onClose = jest.fn()
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a" onClick={clickHandler}>
@@ -1378,6 +1401,9 @@ describe('Keyboard interactions', () => {
         assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
+
         // Verify the "click" went through on the `a` tag
         expect(clickHandler).toHaveBeenCalled()
 
@@ -1391,8 +1417,9 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close an open menu with Escape',
       suppressConsoleLogs(async () => {
+        let onClose = jest.fn()
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">Item A</Menu.Item>
@@ -1423,6 +1450,9 @@ describe('Keyboard interactions', () => {
         assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
 
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
+
         // Verify the button is focused again
         assertActiveElement(getMenuButton())
       })
@@ -1433,8 +1463,9 @@ describe('Keyboard interactions', () => {
     it(
       'should close when we use Tab',
       suppressConsoleLogs(async () => {
+        let onClose = jest.fn()
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">Item A</Menu.Item>
@@ -1476,14 +1507,18 @@ describe('Keyboard interactions', () => {
         // Verify it is closed
         assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
       })
     )
 
     it(
       'should focus trap when we use Shift+Tab',
       suppressConsoleLogs(async () => {
+        let onClose = jest.fn()
         render(
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">Item A</Menu.Item>
@@ -1525,6 +1560,9 @@ describe('Keyboard interactions', () => {
         // Verify it is closed
         assertMenuButton({ state: MenuState.InvisibleUnmounted })
         assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        // Verify `onClose` prop has been called
+        expect(onClose).toHaveBeenCalled()
       })
     )
   })
@@ -2948,8 +2986,9 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close a menu on click',
     suppressConsoleLogs(async () => {
+      let onClose = jest.fn()
       render(
-        <Menu>
+        <Menu onClose={onClose}>
           <Menu.Button>Trigger</Menu.Button>
           <Menu.Items>
             <Menu.Item as="a">Item A</Menu.Item>
@@ -2971,6 +3010,9 @@ describe('Mouse interactions', () => {
       // Verify it is closed
       assertMenuButton({ state: MenuState.InvisibleUnmounted })
       assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Verify `onClose` prop has been called
+      expect(onClose).toHaveBeenCalled()
     })
   )
 
@@ -3002,8 +3044,9 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click outside of the menu which should close the menu',
     suppressConsoleLogs(async () => {
+      let onClose = jest.fn()
       render(
-        <Menu>
+        <Menu onClose={onClose}>
           <Menu.Button>Trigger</Menu.Button>
           <Menu.Items>
             <Menu.Item as="a">alice</Menu.Item>
@@ -3023,6 +3066,9 @@ describe('Mouse interactions', () => {
       // Should be closed now
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
+      // Verify `onClose` prop has been called
+      expect(onClose).toHaveBeenCalled()
+
       // Verify the button is focused again
       assertActiveElement(getMenuButton())
     })
@@ -3031,8 +3077,9 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click outside of the menu which should close the menu (even if we press the menu button)',
     suppressConsoleLogs(async () => {
+      let onClose = jest.fn()
       render(
-        <Menu>
+        <Menu onClose={onClose}>
           <Menu.Button>Trigger</Menu.Button>
           <Menu.Items>
             <Menu.Item as="a">alice</Menu.Item>
@@ -3051,6 +3098,9 @@ describe('Mouse interactions', () => {
 
       // Should be closed now
       assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Verify `onClose` prop has been called
+      expect(onClose).toHaveBeenCalled()
 
       // Verify the button is focused again
       assertActiveElement(getMenuButton())
@@ -3105,9 +3155,10 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the menu, on an element which is within a focusable element, which closes the menu',
     suppressConsoleLogs(async () => {
       let focusFn = jest.fn()
+      let onClose = jest.fn()
       render(
         <div>
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button onFocus={focusFn}>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">alice</Menu.Item>
@@ -3134,6 +3185,9 @@ describe('Mouse interactions', () => {
       // Ensure the menu is closed
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
+      // Verify `onClose` prop has been called
+      expect(onClose).toHaveBeenCalled()
+
       // Ensure the outside button is focused
       assertActiveElement(document.getElementById('btn'))
 
@@ -3146,9 +3200,10 @@ describe('Mouse interactions', () => {
   it.skip(
     'should be possible to click outside of the menu into an iframe and which should close the menu',
     suppressConsoleLogs(async () => {
+      let onClose = jest.fn()
       render(
         <div>
-          <Menu>
+          <Menu onClose={onClose}>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">alice</Menu.Item>
@@ -3174,6 +3229,9 @@ describe('Mouse interactions', () => {
 
       // Should be closed now
       assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Verify `onClose` prop has been called
+      expect(onClose).toHaveBeenCalled()
 
       // Verify the button is focused again
       assertActiveElement(getMenuButton())
@@ -3397,8 +3455,9 @@ describe('Mouse interactions', () => {
     'should be possible to click a menu item, which closes the menu',
     suppressConsoleLogs(async () => {
       let clickHandler = jest.fn()
+      let onClose = jest.fn()
       render(
-        <Menu>
+        <Menu onClose={onClose}>
           <Menu.Button>Trigger</Menu.Button>
           <Menu.Items>
             <Menu.Item as="a">alice</Menu.Item>
@@ -3420,6 +3479,10 @@ describe('Mouse interactions', () => {
       await click(items[1])
 
       assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Verify `onClose` prop has been called
+      expect(onClose).toHaveBeenCalled()
+
       expect(clickHandler).toHaveBeenCalled()
     })
   )
@@ -3428,8 +3491,9 @@ describe('Mouse interactions', () => {
     'should be possible to click a menu item, which closes the menu and invokes the @click handler',
     suppressConsoleLogs(async () => {
       let clickHandler = jest.fn()
+      let onClose = jest.fn()
       render(
-        <Menu>
+        <Menu onClose={onClose}>
           <Menu.Button>Trigger</Menu.Button>
           <Menu.Items>
             <Menu.Item as="a">alice</Menu.Item>
@@ -3460,6 +3524,9 @@ describe('Mouse interactions', () => {
       // Click the last item, which should close and invoke the handler
       await click(getMenuItems()[2])
       assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      // Verify `onClose` prop has been called two times
+      expect(onClose).toHaveBeenCalledTimes(2)
 
       // Verify the callback has been called
       expect(clickHandler).toHaveBeenCalledTimes(2)

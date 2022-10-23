@@ -43,6 +43,7 @@ import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-cl
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEvent } from '../../hooks/use-event'
+import { useWatch } from '../../hooks/use-watch'
 
 enum MenuStates {
   Open,
@@ -231,7 +232,9 @@ interface MenuRenderPropArg {
 }
 
 let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-  props: Props<TTag, MenuRenderPropArg>,
+  props: Props<TTag, MenuRenderPropArg> & {
+    onClose?: () => void
+  },
   ref: Ref<HTMLElement>
 ) {
   let reducerBag = useReducer(stateReducer, {
@@ -269,8 +272,21 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
     [menuState, close]
   )
 
-  let theirProps = props
+  let { onClose, ...theirProps } = props
   let ourProps = { ref: menuRef }
+
+  useWatch(
+    ([currentMenuState], [oldMenuState]) => {
+      if (!onClose) {
+        return
+      }
+
+      if (currentMenuState === MenuStates.Closed && oldMenuState === MenuStates.Open) {
+        onClose()
+      }
+    },
+    [menuState]
+  )
 
   return (
     <MenuContext.Provider value={reducerBag}>

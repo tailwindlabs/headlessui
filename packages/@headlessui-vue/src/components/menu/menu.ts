@@ -88,7 +88,8 @@ function useMenuContext(component: string) {
 export let Menu = defineComponent({
   name: 'Menu',
   props: { as: { type: [Object, String], default: 'template' } },
-  setup(props, { slots, attrs }) {
+  emits: { close: () => true },
+  setup(props, { slots, attrs, emit }) {
     let menuState = ref<StateDefinition['menuState']['value']>(MenuStates.Closed)
     let buttonRef = ref<StateDefinition['buttonRef']['value']>(null)
     let itemsRef = ref<StateDefinition['itemsRef']['value']>(null)
@@ -139,6 +140,7 @@ export let Menu = defineComponent({
       closeMenu: () => {
         menuState.value = MenuStates.Closed
         activeItemIndex.value = null
+        emit('close')
       },
       openMenu: () => (menuState.value = MenuStates.Open),
       goToItem(focus: Focus, id?: string, trigger?: ActivationTrigger) {
