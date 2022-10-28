@@ -1,4 +1,4 @@
-import React, { createElement, useEffect } from 'react'
+import React, { createElement, useEffect, useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Menu } from './menu'
@@ -141,6 +141,75 @@ describe('Rendering', () => {
             )}
           </Menu>
         )
+
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        await click(getMenuButton())
+
+        assertMenu({ state: MenuState.Visible })
+
+        await click(getByText('Close'))
+
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+      })
+    )
+
+    it(
+      'should be possible to control the Menu using open prop and callbacks',
+      suppressConsoleLogs(async () => {
+        const Controller = () => {
+          const [open, setOpen] = useState(false)
+          const [disabled, setDisabled] = useState(false)
+          return (
+            <>
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  setOpen(!open)
+                }}
+              >
+                {open ? 'Close' : 'Open'}
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  setDisabled(!disabled)
+                }}
+              >
+                {disabled ? 'Enable trigger' : 'Disable trigger'}
+              </button>
+              <Menu
+                open={open}
+                onClose={() => !disabled && setOpen(false)}
+                onOpen={() => !disabled && setOpen(true)}
+              >
+                <>
+                  <Menu.Button>Trigger</Menu.Button>
+                  <Menu.Items>
+                    <Menu.Item as="a">Item A</Menu.Item>
+                    <Menu.Item as="a">Item B</Menu.Item>
+                    <Menu.Item as="a">Item C</Menu.Item>
+                  </Menu.Items>
+                </>
+              </Menu>
+            </>
+          )
+        }
+        render(<Controller />)
+
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        await click(getByText('Open'))
+
+        assertMenu({ state: MenuState.Visible })
+
+        await click(getByText('Disable trigger'))
+        await click(getMenuButton())
+
+        assertMenu({ state: MenuState.Visible })
+
+        await click(getByText('Enable trigger'))
+        await click(getMenuButton())
 
         assertMenu({ state: MenuState.InvisibleUnmounted })
 

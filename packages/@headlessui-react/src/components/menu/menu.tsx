@@ -205,7 +205,8 @@ let reducers: {
   },
 }
 
-let MenuContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
+type MenuContextType = [StateDefinition, Dispatch<Actions>]
+let MenuContext = createContext<MenuContextType | null>(null)
 MenuContext.displayName = 'MenuContext'
 
 function useMenuContext(component: string) {
@@ -231,7 +232,11 @@ interface MenuRenderPropArg {
 }
 
 let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-  props: Props<TTag, MenuRenderPropArg>,
+  props: Props<TTag, MenuRenderPropArg> & {
+    open?: boolean
+    onOpen?: () => void
+    onClose?: () => void
+  },
   ref: Ref<HTMLElement>
 ) {
   let reducerBag = useReducer(stateReducer, {
@@ -243,8 +248,30 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
     activeItemIndex: null,
     activationTrigger: ActivationTrigger.Other,
   } as StateDefinition)
-  let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
+  let [reducerState, reducerDispatch] = reducerBag
+  let { itemsRef, buttonRef } = reducerState
+  let isControlled = props.open != null
+  let menuStateFromProps = props.open ? MenuStates.Open : MenuStates.Closed
+  let menuState = isControlled ? menuStateFromProps : reducerState.menuState
+
   let menuRef = useSyncRefs(ref)
+
+  const dispatch = useEvent((action) => {
+    // can't use match as it doesn't support providing a default
+    if (action.type === ActionTypes.OpenMenu) {
+      if (!isControlled) {
+        reducerDispatch(action)
+      }
+      props.onOpen?.()
+    } else if (action.type === ActionTypes.CloseMenu) {
+      if (!isControlled) {
+        reducerDispatch(action)
+      }
+      props.onClose?.()
+    } else {
+      reducerDispatch(action)
+    }
+  })
 
   // Handle outside click
   useOutsideClick(
@@ -269,11 +296,16 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
     [menuState, close]
   )
 
+  let menuContextValue = useMemo<MenuContextType>(
+    () => [{ ...reducerState, menuState }, dispatch],
+    [menuState, reducerState, dispatch]
+  )
+
   let theirProps = props
   let ourProps = { ref: menuRef }
 
   return (
-    <MenuContext.Provider value={reducerBag}>
+    <MenuContext.Provider value={menuContextValue}>
       <OpenClosedProvider
         value={match(menuState, {
           [MenuStates.Open]: State.Open,
