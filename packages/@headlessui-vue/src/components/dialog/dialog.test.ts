@@ -1264,6 +1264,45 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should not be possible to close the dialog, when we click outside on the body element and closeOnOutsideClick is false',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <div>
+            <button @click="isOpen = !isOpen">Trigger</button>
+            <Dialog :open="isOpen" @close="setIsOpen" :close-on-outside-click="closeOnOutsideClick">
+              Contents
+              <TabSentinel />
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(false)
+          return {
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+            closeOnOutsideClick: false,
+          }
+        },
+      })
+
+      // Open dialog
+      await click(getByText('Trigger'))
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the body to close
+      await click(document.body)
+
+      // Verify it is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
     'should be possible to close the dialog, and keep focus on the focusable element',
     suppressConsoleLogs(async () => {
       renderTemplate({

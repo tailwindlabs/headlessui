@@ -78,6 +78,7 @@ export let Dialog = defineComponent({
     open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
     closeOnEsc: { type: Boolean, default: true },
+    closeOnOutsideClick: { type: Boolean, default: true },
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots, expose }) {
@@ -205,7 +206,12 @@ export let Dialog = defineComponent({
         api.close()
         nextTick(() => target?.focus())
       },
-      computed(() => dialogState.value === DialogStates.Open && !hasNestedDialogs.value)
+      computed(
+        () =>
+          dialogState.value === DialogStates.Open &&
+          !hasNestedDialogs.value &&
+          props.closeOnOutsideClick
+      )
     )
 
     // Handle `Escape` to close
