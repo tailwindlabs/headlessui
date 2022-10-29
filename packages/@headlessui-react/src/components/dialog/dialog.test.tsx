@@ -630,7 +630,7 @@ describe('Composition', () => {
 describe('Keyboard interactions', () => {
   describe('`Escape` key', () => {
     it(
-      'should be possible to close the dialog with Escape',
+      'should be possible to close the dialog with Escape by default',
       suppressConsoleLogs(async () => {
         function Example() {
           let [isOpen, setIsOpen] = useState(false)
@@ -664,6 +664,43 @@ describe('Keyboard interactions', () => {
 
         // Verify it is close
         assertDialog({ state: DialogState.InvisibleUnmounted })
+      })
+    )
+    it(
+      'should not be possible to close the dialog with Escape, when a closeOnEsc is false',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen} closeOnEsc={false}>
+                Contents
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Close dialog
+        await press(Keys.Escape)
+
+        // Verify it is still open
+        assertDialog({ state: DialogState.Visible })
       })
     )
 

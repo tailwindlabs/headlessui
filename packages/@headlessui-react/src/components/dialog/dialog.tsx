@@ -153,10 +153,11 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       onClose(value: boolean): void
       initialFocus?: MutableRefObject<HTMLElement | null>
       __demoMode?: boolean
+      closeOnEsc?: boolean
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { open, onClose, initialFocus, __demoMode = false, ...theirProps } = props
+  let { open, onClose, initialFocus, __demoMode = false, closeOnEsc = true, ...theirProps } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
@@ -258,6 +259,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   // Handle `Escape` to close
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
+    if (!closeOnEsc) return
     if (event.defaultPrevented) return
     if (event.key !== Keys.Escape) return
     if (dialogState !== DialogStates.Open) return

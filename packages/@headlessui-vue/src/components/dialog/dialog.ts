@@ -77,6 +77,7 @@ export let Dialog = defineComponent({
     unmount: { type: Boolean, default: true },
     open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
+    closeOnEsc: { type: Boolean, default: true },
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots, expose }) {
@@ -209,6 +210,7 @@ export let Dialog = defineComponent({
 
     // Handle `Escape` to close
     useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
+      if (!props.closeOnEsc) return
       if (event.defaultPrevented) return
       if (event.key !== Keys.Escape) return
       if (dialogState.value !== DialogStates.Open) return
