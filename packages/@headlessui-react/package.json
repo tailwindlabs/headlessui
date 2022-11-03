@@ -49,5 +49,8 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "snapshot-diff": "^0.8.1"
+  },
+  "dependencies": {
+    "client-only": "^0.0.1"
   }
 }
