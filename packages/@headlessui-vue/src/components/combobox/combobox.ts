@@ -630,7 +630,7 @@ export let ComboboxInput = defineComponent({
     }
 
     // Workaround Vue bug where watching [ref(undefined)] is not fired immediately even when value is true
-    const __fixVueImmediateWatchBug__ = ref('')
+    let __fixVueImmediateWatchBug__ = ref('')
 
     let shouldIgnoreOpenOnChange = false
     function updateInputAndNotify(currentValue: string) {
@@ -676,6 +676,16 @@ export let ComboboxInput = defineComponent({
       )
     })
 
+    let isComposing = ref(false)
+    function handleCompositionstart() {
+      isComposing.value = true
+    }
+    function handleCompositionend() {
+      setTimeout(() => {
+        isComposing.value = false
+      })
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
@@ -700,7 +710,7 @@ export let ComboboxInput = defineComponent({
 
         case Keys.Enter:
           if (api.comboboxState.value !== ComboboxStates.Open) return
-          if (event.isComposing) return
+          if (isComposing.value) return
 
           event.preventDefault()
           event.stopPropagation()
@@ -793,6 +803,8 @@ export let ComboboxInput = defineComponent({
         'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         id,
+        onCompositionstart: handleCompositionstart,
+        onCompositionend: handleCompositionend,
         onKeydown: handleKeyDown,
         onChange: handleChange,
         onInput: handleInput,
