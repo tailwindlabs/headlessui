@@ -630,7 +630,7 @@ export let ComboboxInput = defineComponent({
     }
 
     // Workaround Vue bug where watching [ref(undefined)] is not fired immediately even when value is true
-    const __fixVueImmediateWatchBug__ = ref('')
+    let __fixVueImmediateWatchBug__ = ref('')
 
     onMounted(() => {
       watch(
@@ -659,7 +659,7 @@ export let ComboboxInput = defineComponent({
       )
     })
 
-    const isComposing = ref(false)
+    let isComposing = ref(false)
     function handleCompositionstart() {
       isComposing.value = true
     }

@@ -690,11 +690,11 @@ let Input = forwardRefWithAs(function Input<
     [currentValue, data.comboboxState]
   )
 
-  const isComposing = useRef(false)
-  const handleCompositionStart = useEvent((_: ReactKeyboardEvent<CompositionEvent>) => {
+  let isComposing = useRef(false)
+  let handleCompositionStart = useEvent(() => {
     isComposing.current = true
   })
-  const handleCompositionEnd = useEvent((_: ReactKeyboardEvent<CompositionEvent>) => {
+  let handleCompositionEnd = useEvent(() => {
     setTimeout(() => {
       isComposing.current = false
     })
