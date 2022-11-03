@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.4] - 2022-11-03
+
 ### Fixed
 
 - Fix `<Popover.Button as={Fragment} />` crash ([#1889](https://github.com/tailwindlabs/headlessui/pull/1889))
@@ -371,7 +375,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.3...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.4...HEAD
+[1.7.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.3...@headlessui/react@v1.7.4
 [1.7.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.2...@headlessui/react@v1.7.3
 [1.7.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.1...@headlessui/react@v1.7.2
 [1.7.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.0...@headlessui/react@v1.7.1
