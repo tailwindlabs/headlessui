@@ -335,9 +335,18 @@ export default function App() {
           </Section>
         </div>
 
-        <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
-          Submit
-        </button>
+        <div className="space-x-4">
+          <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
+            Submit
+          </button>
+
+          <button
+            type="reset"
+            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5"
+          >
+            Reset
+          </button>
+        </div>
 
         <div className="w-full border-t py-4">
           <span>Form data (entries):</span>
