@@ -233,7 +233,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   })
 
   let realSelectedIndex = useLatestValue(isControlled ? props.selectedIndex : state.selectedIndex)
-  let tabsActions: _Actions = useMemo(() => ({ registerTab, registerPanel, change }), [])
+  let tabsActions = useMemo<_Actions>(() => ({ registerTab, registerPanel, change }), [])
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.SetSelectedIndex, index: selectedIndex ?? defaultIndex })
