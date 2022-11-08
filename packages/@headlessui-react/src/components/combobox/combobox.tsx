@@ -14,6 +14,7 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  useEffect,
 } from 'react'
 import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
@@ -266,6 +267,7 @@ type _Actions = ReturnType<typeof useActions>
 let ComboboxDataContext = createContext<
   | ({
       value: unknown
+      defaultValue: unknown
       disabled: boolean
       mode: ValueMode
       activeOptionIndex: number | null
@@ -453,6 +455,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       buttonRef,
       optionsRef,
       value,
+      defaultValue,
       disabled,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
       get activeOptionIndex() {
@@ -477,7 +480,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       nullable,
       __demoMode,
     }),
-    [value, disabled, multiple, nullable, __demoMode, state]
+    [value, defaultValue, disabled, multiple, nullable, __demoMode, state]
   )
 
   useIsoMorphicEffect(() => {
@@ -589,6 +592,17 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   let ourProps = ref === null ? {} : { ref }
 
+  let form = useRef<HTMLFormElement | null>(null)
+  let d = useDisposables()
+  useEffect(() => {
+    if (!form.current) return
+    if (defaultValue === undefined) return
+
+    d.addEventListener(form.current, 'reset', () => {
+      onChange(defaultValue)
+    })
+  }, [form, onChange /* Explicitly ignoring `defaultValue` */])
+
   return (
     <ComboboxActionsContext.Provider value={actions}>
       <ComboboxDataContext.Provider value={data}>
@@ -600,9 +614,16 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
         >
           {name != null &&
             value != null &&
-            objectToFormEntries({ [name]: value }).map(([name, value]) => (
+            objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
               <Hidden
                 features={HiddenFeatures.Hidden}
+                ref={
+                  idx === 0
+                    ? (element: HTMLInputElement | null) => {
+                        form.current = element?.closest('form') ?? null
+                      }
+                    : undefined
+                }
                 {...compact({
                   key: name,
                   as: 'input',
@@ -853,6 +874,10 @@ let Input = forwardRefWithAs(function Input<
       data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
+    defaultValue:
+      props.defaultValue ??
+      displayValue?.(data.defaultValue as unknown as TType) ??
+      data.defaultValue,
     disabled: data.disabled,
     onCompositionStart: handleCompositionStart,
     onCompositionEnd: handleCompositionEnd,
