@@ -972,6 +972,112 @@ describe('Rendering', () => {
       expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
     })
 
+    it('should be possible to reset to the default value if the form is reset', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Listbox name="assignee" defaultValue="bob">
+            <Listbox.Button>{({ value }) => value ?? 'Trigger'}</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="alice">Alice</Listbox.Option>
+              <Listbox.Option value="bob">Bob</Listbox.Option>
+              <Listbox.Option value="charlie">Charlie</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+          <button id="submit">submit</button>
+          <button type="reset" id="reset">
+            reset
+          </button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Reset
+      await click(document.getElementById('reset'))
+
+      // The listbox should be reset to bob
+      expect(getListboxButton()).toHaveTextContent('bob')
+
+      // Open listbox
+      await click(getListboxButton())
+      assertActiveListboxOption(getListboxOptions()[1])
+    })
+
+    it('should be possible to reset to the default value if the form is reset (using objects)', async () => {
+      let handleSubmission = jest.fn()
+
+      let data = [
+        { id: 1, name: 'alice', label: 'Alice' },
+        { id: 2, name: 'bob', label: 'Bob' },
+        { id: 3, name: 'charlie', label: 'Charlie' },
+      ]
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Listbox name="assignee" defaultValue={{ id: 2, name: 'bob', label: 'Bob' }} by="id">
+            <Listbox.Button>{({ value }) => value?.name ?? 'Trigger'}</Listbox.Button>
+            <Listbox.Options>
+              {data.map((person) => (
+                <Listbox.Option key={person.id} value={person}>
+                  {person.label}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Listbox>
+          <button id="submit">submit</button>
+          <button type="reset" id="reset">
+            reset
+          </button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({
+        'assignee[id]': '2',
+        'assignee[name]': 'bob',
+        'assignee[label]': 'Bob',
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+
+      // Choose alice
+      await click(getListboxOptions()[0])
+
+      // Reset
+      await click(document.getElementById('reset'))
+
+      // The listbox should be reset to bob
+      expect(getListboxButton()).toHaveTextContent('bob')
+
+      // Open listbox
+      await click(getListboxButton())
+      assertActiveListboxOption(getListboxOptions()[1])
+    })
+
     it('should still call the onChange listeners when choosing new values', async () => {
       let handleChange = jest.fn()
 

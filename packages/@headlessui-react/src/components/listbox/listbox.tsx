@@ -515,6 +515,17 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
 
   let ourProps = { ref: listboxRef }
 
+  let form = useRef<HTMLFormElement | null>(null)
+  let d = useDisposables()
+  useEffect(() => {
+    if (!form.current) return
+    if (defaultValue === undefined) return
+
+    d.addEventListener(form.current, 'reset', () => {
+      onChange(defaultValue)
+    })
+  }, [form, onChange /* Explicitly ignoring `defaultValue` */])
+
   return (
     <ListboxActionsContext.Provider value={actions}>
       <ListboxDataContext.Provider value={data}>
@@ -526,9 +537,16 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
         >
           {name != null &&
             value != null &&
-            objectToFormEntries({ [name]: value }).map(([name, value]) => (
+            objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
               <Hidden
                 features={HiddenFeatures.Hidden}
+                ref={
+                  idx === 0
+                    ? (element: HTMLInputElement | null) => {
+                        form.current = element?.closest('form') ?? null
+                      }
+                    : undefined
+                }
                 {...compact({
                   key: name,
                   as: 'input',

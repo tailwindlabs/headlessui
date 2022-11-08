@@ -1058,6 +1058,118 @@ describe('Rendering', () => {
       expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
     })
 
+    it(
+      'should be possible to reset to the default value if the form is reset',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <Listbox name="assignee" defaultValue="bob">
+                <ListboxButton v-slot="{ value }">{{ value ?? 'Trigger' }}</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption value="alice">Alice</ListboxOption>
+                  <ListboxOption value="bob">Bob</ListboxOption>
+                  <ListboxOption value="charlie">Charlie</ListboxOption>
+                </ListboxOptions>
+              </Listbox>
+              <button id="submit">submit</button>
+              <button type="reset" id="reset">reset</button>
+            </form>
+          `,
+          setup: () => ({
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+
+        await click(document.getElementById('submit'))
+
+        // Bob is the defaultValue
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+        // Open listbox
+        await click(getListboxButton())
+
+        // Choose alice
+        await click(getListboxOptions()[0])
+
+        // Reset
+        await click(document.getElementById('reset'))
+
+        // The listbox should be reset to bob
+        expect(getListboxButton()).toHaveTextContent('bob')
+
+        // Open listbox
+        await click(getListboxButton())
+        assertActiveListboxOption(getListboxOptions()[1])
+      })
+    )
+
+    it(
+      'should be possible to reset to the default value if the form is reset (using objects)',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <Listbox name="assignee" :defaultValue="{ id: 2, name: 'bob', label: 'Bob' }" by="id">
+                <ListboxButton v-slot="{ value }">{{ value ?? 'Trigger' }}</ListboxButton>
+                <ListboxOptions>
+                  <ListboxOption v-for="person in data" :key="person.id" :value="person">
+                    {{ person.label }}
+                  </ListboxOption>
+                <ListboxOptions>
+              </Listbox>
+              <button id="submit">submit</button>
+              <button type="reset" id="reset">reset</button>
+            </form>
+          `,
+          setup: () => ({
+            data,
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+        await click(document.getElementById('submit'))
+
+        // Bob is the defaultValue
+        expect(handleSubmission).toHaveBeenLastCalledWith({
+          'assignee[id]': '2',
+          'assignee[name]': 'bob',
+          'assignee[label]': 'Bob',
+        })
+
+        // Open listbox
+        await click(getListboxButton())
+
+        // Choose alice
+        await click(getListboxOptions()[0])
+
+        // Reset
+        await click(document.getElementById('reset'))
+
+        // The listbox should be reset to bob
+        expect(getListboxButton()).toHaveTextContent('bob')
+
+        // Open listbox
+        await click(getListboxButton())
+        assertActiveListboxOption(getListboxOptions()[1])
+      })
+    )
+
     it('should still call the onChange listeners when choosing new values', async () => {
       let handleChange = jest.fn()
 
