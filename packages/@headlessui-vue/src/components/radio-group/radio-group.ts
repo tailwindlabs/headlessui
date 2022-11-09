@@ -9,6 +9,7 @@ import {
   provide,
   ref,
   toRaw,
+  watch,
 
   // Types
   InjectionKey,
@@ -215,6 +216,28 @@ export let RadioGroup = defineComponent({
     }
 
     let id = `headlessui-radiogroup-${useId()}`
+
+    let form = computed(() => dom(radioGroupRef)?.closest('form'))
+    onMounted(() => {
+      watch(
+        [form],
+        () => {
+          if (!form.value) return
+          if (props.defaultValue === undefined) return
+
+          function handle() {
+            api.change(props.defaultValue)
+          }
+
+          form.value.addEventListener('reset', handle)
+
+          return () => {
+            form.value?.removeEventListener('reset', handle)
+          }
+        },
+        { immediate: true }
+      )
+    })
 
     return () => {
       let { disabled, name, ...theirProps } = props

@@ -1291,6 +1291,127 @@ describe('Rendering', () => {
       expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
     })
 
+    it(
+      'should be possible to reset to the default value if the form is reset',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <Combobox name="assignee" defaultValue="bob">
+                <ComboboxButton v-slot="{ value }">{{ value ?? 'Trigger' }}</ComboboxButton>
+                <ComboboxInput :displayValue="(value) => value" />
+                <ComboboxOptions>
+                  <ComboboxOption value="alice">Alice</ComboboxOption>
+                  <ComboboxOption value="bob">Bob</ComboboxOption>
+                  <ComboboxOption value="charlie">Charlie</ComboboxOption>
+                </ComboboxOptions>
+              </Combobox>
+              <button id="submit">submit</button>
+              <button type="reset" id="reset">reset</button>
+            </form>
+          `,
+          setup: () => ({
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+
+        await click(document.getElementById('submit'))
+
+        // Bob is the defaultValue
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+        // Open combobox
+        await click(getComboboxButton())
+
+        // Choose alice
+        await click(getComboboxOptions()[0])
+        expect(getComboboxButton()).toHaveTextContent('alice')
+        expect(getComboboxInput()).toHaveValue('alice')
+
+        // Reset
+        await click(document.getElementById('reset'))
+
+        // The combobox should be reset to bob
+        expect(getComboboxButton()).toHaveTextContent('bob')
+        expect(getComboboxInput()).toHaveValue('bob')
+
+        // Open combobox
+        await click(getComboboxButton())
+        assertActiveComboboxOption(getComboboxOptions()[1])
+      })
+    )
+
+    it(
+      'should be possible to reset to the default value if the form is reset (using objects)',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <Combobox name="assignee" :defaultValue="{ id: 2, name: 'bob', label: 'Bob' }" by="id">
+                <ComboboxButton v-slot="{ value }">{{ value ?? 'Trigger' }}</ComboboxButton>
+                <ComboboxInput :displayValue="(value) => value.name" />
+                <ComboboxOptions>
+                  <ComboboxOption v-for="person in data" :key="person.id" :value="person">
+                    {{ person.label }}
+                  </ComboboxOption>
+                <ComboboxOptions>
+              </Combobox>
+              <button id="submit">submit</button>
+              <button type="reset" id="reset">reset</button>
+            </form>
+          `,
+          setup: () => ({
+            data,
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+
+        await click(document.getElementById('submit'))
+
+        // Bob is the defaultValue
+        expect(handleSubmission).toHaveBeenLastCalledWith({
+          'assignee[id]': '2',
+          'assignee[name]': 'bob',
+          'assignee[label]': 'Bob',
+        })
+
+        // Open combobox
+        await click(getComboboxButton())
+
+        // Choose alice
+        await click(getComboboxOptions()[0])
+        expect(getComboboxButton()).toHaveTextContent('alice')
+        expect(getComboboxInput()).toHaveValue('alice')
+
+        // Reset
+        await click(document.getElementById('reset'))
+
+        // The combobox should be reset to bob
+        expect(getComboboxButton()).toHaveTextContent('bob')
+        expect(getComboboxInput()).toHaveValue('bob')
+
+        // Open combobox
+        await click(getComboboxButton())
+        assertActiveComboboxOption(getComboboxOptions()[1])
+      })
+    )
+
     it('should still call the onChange listeners when choosing new values', async () => {
       let handleChange = jest.fn()
 

@@ -212,29 +212,28 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     [orientation, activation, state]
   )
 
-  let realSelectedIndex = useLatestValue(isControlled ? props.selectedIndex : state.selectedIndex)
-  let tabsActions: _Actions = useMemo(
-    () => ({
-      registerTab(tab) {
-        dispatch({ type: ActionTypes.RegisterTab, tab })
-        return () => dispatch({ type: ActionTypes.UnregisterTab, tab })
-      },
-      registerPanel(panel) {
-        dispatch({ type: ActionTypes.RegisterPanel, panel })
-        return () => dispatch({ type: ActionTypes.UnregisterPanel, panel })
-      },
-      change(index: number) {
-        if (realSelectedIndex.current !== index) {
-          onChangeRef.current(index)
-        }
+  let registerTab = useEvent((tab) => {
+    dispatch({ type: ActionTypes.RegisterTab, tab })
+    return () => dispatch({ type: ActionTypes.UnregisterTab, tab })
+  })
 
-        if (!isControlled) {
-          dispatch({ type: ActionTypes.SetSelectedIndex, index })
-        }
-      },
-    }),
-    [dispatch, isControlled]
-  )
+  let registerPanel = useEvent((panel) => {
+    dispatch({ type: ActionTypes.RegisterPanel, panel })
+    return () => dispatch({ type: ActionTypes.UnregisterPanel, panel })
+  })
+
+  let change = useEvent((index: number) => {
+    if (realSelectedIndex.current !== index) {
+      onChangeRef.current(index)
+    }
+
+    if (!isControlled) {
+      dispatch({ type: ActionTypes.SetSelectedIndex, index })
+    }
+  })
+
+  let realSelectedIndex = useLatestValue(isControlled ? props.selectedIndex : state.selectedIndex)
+  let tabsActions = useMemo<_Actions>(() => ({ registerTab, registerPanel, change }), [])
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.SetSelectedIndex, index: selectedIndex ?? defaultIndex })

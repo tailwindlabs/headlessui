@@ -64,6 +64,7 @@ type StateDefinition = {
   // State
   comboboxState: Ref<ComboboxStates>
   value: ComputedRef<unknown>
+  defaultValue: ComputedRef<unknown>
 
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
@@ -191,6 +192,7 @@ export let Combobox = defineComponent({
         }
         return props.by(a, z)
       },
+      defaultValue: computed(() => props.defaultValue),
       nullable,
       inputRef,
       labelRef,
@@ -406,6 +408,28 @@ export let Combobox = defineComponent({
         : (options.value[api.activeOptionIndex.value].dataRef.value as any)
     )
 
+    let form = computed(() => dom(inputRef)?.closest('form'))
+    onMounted(() => {
+      watch(
+        [form],
+        () => {
+          if (!form.value) return
+          if (props.defaultValue === undefined) return
+
+          function handle() {
+            api.change(props.defaultValue)
+          }
+
+          form.value.addEventListener('reset', handle)
+
+          return () => {
+            form.value?.removeEventListener('reset', handle)
+          }
+        },
+        { immediate: true }
+      )
+    })
+
     return () => {
       let { name, disabled, ...theirProps } = props
       let slot = {
@@ -604,6 +628,7 @@ export let ComboboxInput = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
     displayValue: { type: Function as PropType<(item: unknown) => string> },
+    defaultValue: { type: String, default: undefined },
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
@@ -789,6 +814,15 @@ export let ComboboxInput = defineComponent({
       emit('change', event)
     }
 
+    let defaultValue = computed(() => {
+      return (
+        props.defaultValue ??
+        props.displayValue?.(api.defaultValue.value) ??
+        api.defaultValue.value ??
+        ''
+      )
+    })
+
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let ourProps = {
@@ -812,6 +846,7 @@ export let ComboboxInput = defineComponent({
         type: attrs.type ?? 'text',
         tabIndex: 0,
         ref: api.inputRef,
+        defaultValue: defaultValue.value,
       }
       let theirProps = omit(props, ['displayValue'])
 

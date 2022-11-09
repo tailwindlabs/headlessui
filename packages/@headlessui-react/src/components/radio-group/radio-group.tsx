@@ -6,13 +6,13 @@ import React, {
   useRef,
 
   // Types
-  ContextType,
   ElementType,
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  useEffect,
 } from 'react'
 
 import { Props, Expand } from '../../types'
@@ -33,6 +33,8 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { useLatestValue } from '../../hooks/use-latest-value'
+import { useDisposables } from '../../hooks/use-disposables'
 
 interface Option<T = unknown> {
   id: string
@@ -79,26 +81,45 @@ let reducers: {
   },
 }
 
-let RadioGroupContext = createContext<{
-  registerOption(option: Option): () => void
-  change(value: unknown): boolean
-  value: unknown
-  firstOption?: Option
-  containsCheckedOption: boolean
-  disabled: boolean
-  compare(a: unknown, z: unknown): boolean
-} | null>(null)
-RadioGroupContext.displayName = 'RadioGroupContext'
+let RadioGroupDataContext = createContext<
+  | ({
+      value: unknown
+      firstOption?: Option
+      containsCheckedOption: boolean
+      disabled: boolean
+      compare(a: unknown, z: unknown): boolean
+    } & StateDefinition)
+  | null
+>(null)
+RadioGroupDataContext.displayName = 'RadioGroupDataContext'
 
-function useRadioGroupContext(component: string) {
-  let context = useContext(RadioGroupContext)
+function useData(component: string) {
+  let context = useContext(RadioGroupDataContext)
   if (context === null) {
     let err = new Error(`<${component} /> is missing a parent <RadioGroup /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useRadioGroupContext)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useData)
     throw err
   }
   return context
 }
+type _Data = ReturnType<typeof useData>
+
+let RadioGroupActionsContext = createContext<{
+  registerOption(option: Option): () => void
+  change(value: unknown): boolean
+} | null>(null)
+RadioGroupActionsContext.displayName = 'RadioGroupActionsContext'
+
+function useActions(component: string) {
+  let context = useContext(RadioGroupActionsContext)
+  if (context === null) {
+    let err = new Error(`<${component} /> is missing a parent <RadioGroup /> component.`)
+    if (Error.captureStackTrace) Error.captureStackTrace(err, useActions)
+    throw err
+  }
+  return context
+}
+type _Actions = ReturnType<typeof useActions>
 
 function stateReducer<T>(state: StateDefinition<T>, action: Actions) {
   return match(action.type, reducers, state, action)
@@ -262,17 +283,13 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
     return () => dispatch({ type: ActionTypes.UnregisterOption, id: option.id })
   })
 
-  let api = useMemo<ContextType<typeof RadioGroupContext>>(
-    () => ({
-      registerOption,
-      firstOption,
-      containsCheckedOption,
-      change: triggerChange,
-      disabled,
-      value,
-      compare,
-    }),
-    [registerOption, firstOption, containsCheckedOption, triggerChange, disabled, value, compare]
+  let radioGroupData = useMemo<_Data>(
+    () => ({ value, firstOption, containsCheckedOption, disabled, compare, ...state }),
+    [value, firstOption, containsCheckedOption, disabled, compare, state]
+  )
+  let radioGroupActions = useMemo<_Actions>(
+    () => ({ registerOption, change: triggerChange }),
+    [registerOption, triggerChange]
   )
 
   let ourProps = {
@@ -286,35 +303,55 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
 
   let slot = useMemo<RadioGroupRenderPropArg<TType>>(() => ({ value }), [value])
 
+  let form = useRef<HTMLFormElement | null>(null)
+  let d = useDisposables()
+  useEffect(() => {
+    if (!form.current) return
+    if (defaultValue === undefined) return
+
+    d.addEventListener(form.current, 'reset', () => {
+      triggerChange(defaultValue!)
+    })
+  }, [form, triggerChange /* Explicitly ignoring `defaultValue` */])
+
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
-        <RadioGroupContext.Provider value={api}>
-          {name != null &&
-            value != null &&
-            objectToFormEntries({ [name]: value }).map(([name, value]) => (
-              <Hidden
-                features={HiddenFeatures.Hidden}
-                {...compact({
-                  key: name,
-                  as: 'input',
-                  type: 'radio',
-                  checked: value != null,
-                  hidden: true,
-                  readOnly: true,
-                  name,
-                  value,
-                })}
-              />
-            ))}
-          {render({
-            ourProps,
-            theirProps,
-            slot,
-            defaultTag: DEFAULT_RADIO_GROUP_TAG,
-            name: 'RadioGroup',
-          })}
-        </RadioGroupContext.Provider>
+        <RadioGroupActionsContext.Provider value={radioGroupActions}>
+          <RadioGroupDataContext.Provider value={radioGroupData}>
+            {name != null &&
+              value != null &&
+              objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
+                <Hidden
+                  features={HiddenFeatures.Hidden}
+                  ref={
+                    idx === 0
+                      ? (element: HTMLInputElement | null) => {
+                          form.current = element?.closest('form') ?? null
+                        }
+                      : undefined
+                  }
+                  {...compact({
+                    key: name,
+                    as: 'input',
+                    type: 'radio',
+                    checked: value != null,
+                    hidden: true,
+                    readOnly: true,
+                    name,
+                    value,
+                  })}
+                />
+              ))}
+            {render({
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_RADIO_GROUP_TAG,
+              name: 'RadioGroup',
+            })}
+          </RadioGroupDataContext.Provider>
+        </RadioGroupActionsContext.Provider>
       </LabelProvider>
     </DescriptionProvider>
   )
@@ -364,33 +401,19 @@ let Option = forwardRefWithAs(function Option<
   let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
 
   let { value, disabled = false, ...theirProps } = props
-  let propsRef = useRef({ value, disabled })
+  let propsRef = useLatestValue({ value, disabled })
 
-  useIsoMorphicEffect(() => {
-    propsRef.current.value = value
-  }, [value, propsRef])
-  useIsoMorphicEffect(() => {
-    propsRef.current.disabled = disabled
-  }, [disabled, propsRef])
-
-  let {
-    registerOption,
-    disabled: radioGroupDisabled,
-    change,
-    firstOption,
-    containsCheckedOption,
-    value: radioGroupValue,
-    compare,
-  } = useRadioGroupContext('RadioGroup.Option')
+  let data = useData('RadioGroup.Option')
+  let actions = useActions('RadioGroup.Option')
 
   useIsoMorphicEffect(
-    () => registerOption({ id, element: internalOptionRef, propsRef }),
-    [id, registerOption, internalOptionRef, props]
+    () => actions.registerOption({ id, element: internalOptionRef, propsRef }),
+    [id, actions, internalOptionRef, props]
   )
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    if (!change(value)) return
+    if (!actions.change(value)) return
 
     addFlag(OptionState.Active)
     internalOptionRef.current?.focus()
@@ -403,10 +426,10 @@ let Option = forwardRefWithAs(function Option<
 
   let handleBlur = useEvent(() => removeFlag(OptionState.Active))
 
-  let isFirstOption = firstOption?.id === id
-  let isDisabled = radioGroupDisabled || disabled
+  let isFirstOption = data.firstOption?.id === id
+  let isDisabled = data.disabled || disabled
 
-  let checked = compare(radioGroupValue as TType, value)
+  let checked = data.compare(data.value as TType, value)
   let ourProps = {
     ref: optionRef,
     id,
@@ -418,7 +441,7 @@ let Option = forwardRefWithAs(function Option<
     tabIndex: (() => {
       if (isDisabled) return -1
       if (checked) return 0
-      if (!containsCheckedOption && isFirstOption) return 0
+      if (!data.containsCheckedOption && isFirstOption) return 0
       return -1
     })(),
     onClick: isDisabled ? undefined : handleClick,

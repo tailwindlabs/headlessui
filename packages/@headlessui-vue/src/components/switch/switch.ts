@@ -6,10 +6,12 @@ import {
   inject,
   provide,
   ref,
+  watch,
 
   // Types
   InjectionKey,
   Ref,
+  onMounted,
 } from 'vue'
 
 import { render, compact, omit } from '../../utils/render'
@@ -21,6 +23,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
+import { dom } from '../../utils/dom'
 
 type StateDefinition = {
   // State
@@ -69,7 +72,7 @@ export let Switch = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: undefined },
-    defaultChecked: { type: Boolean, default: false },
+    defaultChecked: { type: Boolean, optional: true },
     name: { type: String, optional: true },
     value: { type: String, optional: true },
   },
@@ -88,7 +91,7 @@ export let Switch = defineComponent({
       theirOnChange(!checked.value)
     }
 
-    let internalSwitchRef = ref(null)
+    let internalSwitchRef = ref<HTMLButtonElement | null>(null)
     let switchRef = api === null ? internalSwitchRef : api.switchRef
     let type = useResolveButtonType(
       computed(() => ({ as: props.as, type: attrs.type })),
@@ -115,6 +118,27 @@ export let Switch = defineComponent({
     function handleKeyPress(event: KeyboardEvent) {
       event.preventDefault()
     }
+
+    let form = computed(() => dom(switchRef)?.closest?.('form'))
+    onMounted(() => {
+      watch(
+        [form],
+        () => {
+          if (!form.value) return
+          if (props.defaultChecked === undefined) return
+
+          function handle() {
+            theirOnChange(props.defaultChecked)
+          }
+
+          form.value.addEventListener('reset', handle)
+          return () => {
+            form.value?.removeEventListener('reset', handle)
+          }
+        },
+        { immediate: true }
+      )
+    })
 
     return () => {
       let { name, value, ...theirProps } = props

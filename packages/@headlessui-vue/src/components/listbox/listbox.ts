@@ -327,6 +327,28 @@ export let Listbox = defineComponent({
       )
     )
 
+    let form = computed(() => dom(buttonRef)?.closest('form'))
+    onMounted(() => {
+      watch(
+        [form],
+        () => {
+          if (!form.value) return
+          if (props.defaultValue === undefined) return
+
+          function handle() {
+            api.select(props.defaultValue)
+          }
+
+          form.value.addEventListener('reset', handle)
+
+          return () => {
+            form.value?.removeEventListener('reset', handle)
+          }
+        },
+        { immediate: true }
+      )
+    })
+
     return () => {
       let { name, modelValue, disabled, ...theirProps } = props
 

@@ -1202,6 +1202,120 @@ describe('Rendering', () => {
       expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
     })
 
+    it('should be possible to reset to the default value if the form is reset', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Combobox name="assignee" defaultValue="bob">
+            <Combobox.Button>{({ value }) => value ?? 'Trigger'}</Combobox.Button>
+            <Combobox.Input onChange={NOOP} displayValue={(value: string) => value} />
+            <Combobox.Options>
+              <Combobox.Option value="alice">Alice</Combobox.Option>
+              <Combobox.Option value="bob">Bob</Combobox.Option>
+              <Combobox.Option value="charlie">Charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+          <button id="submit">submit</button>
+          <button type="reset" id="reset">
+            reset
+          </button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose alice
+      await click(getComboboxOptions()[0])
+      expect(getComboboxButton()).toHaveTextContent('alice')
+      expect(getComboboxInput()).toHaveValue('alice')
+
+      // Reset
+      await click(document.getElementById('reset'))
+
+      // The combobox should be reset to bob
+      expect(getComboboxButton()).toHaveTextContent('bob')
+      expect(getComboboxInput()).toHaveValue('bob')
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertActiveComboboxOption(getComboboxOptions()[1])
+    })
+
+    it('should be possible to reset to the default value if the form is reset (using objects)', async () => {
+      let handleSubmission = jest.fn()
+
+      let data = [
+        { id: 1, name: 'alice', label: 'Alice' },
+        { id: 2, name: 'bob', label: 'Bob' },
+        { id: 3, name: 'charlie', label: 'Charlie' },
+      ]
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Combobox name="assignee" defaultValue={{ id: 2, name: 'bob', label: 'Bob' }} by="id">
+            <Combobox.Button>{({ value }) => value?.name ?? 'Trigger'}</Combobox.Button>
+            <Combobox.Input onChange={NOOP} displayValue={(value: typeof data[0]) => value.name} />
+            <Combobox.Options>
+              {data.map((person) => (
+                <Combobox.Option key={person.id} value={person}>
+                  {person.label}
+                </Combobox.Option>
+              ))}
+            </Combobox.Options>
+          </Combobox>
+          <button id="submit">submit</button>
+          <button type="reset" id="reset">
+            reset
+          </button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({
+        'assignee[id]': '2',
+        'assignee[name]': 'bob',
+        'assignee[label]': 'Bob',
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Choose alice
+      await click(getComboboxOptions()[0])
+      expect(getComboboxButton()).toHaveTextContent('alice')
+      expect(getComboboxInput()).toHaveValue('alice')
+
+      // Reset
+      await click(document.getElementById('reset'))
+
+      // The combobox should be reset to bob
+      expect(getComboboxButton()).toHaveTextContent('bob')
+      expect(getComboboxInput()).toHaveValue('bob')
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertActiveComboboxOption(getComboboxOptions()[1])
+    })
+
     it('should still call the onChange listeners when choosing new values', async () => {
       let handleChange = jest.fn()
 

@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Reset form-like components when the parent `<form>` resets ([#2004](https://github.com/tailwindlabs/headlessui/pull/2004))
 
 ## [1.7.4] - 2022-11-03
 
