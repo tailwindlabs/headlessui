@@ -11,6 +11,7 @@ import React, {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   Ref,
+  useEffect,
 } from 'react'
 
 import { Props } from '../../types'
@@ -26,6 +27,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { attemptSubmit } from '../../utils/form'
 import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
+import { useDisposables } from '../../hooks/use-disposables'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null
@@ -164,6 +166,17 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     onKeyUp: handleKeyUp,
     onKeyPress: handleKeyPress,
   }
+
+  let d = useDisposables()
+  useEffect(() => {
+    let form = internalSwitchRef.current?.closest('form')
+    if (!form) return
+    if (defaultChecked === undefined) return
+
+    d.addEventListener(form, 'reset', () => {
+      onChange(defaultChecked)
+    })
+  }, [internalSwitchRef, onChange /* Explicitly ignoring `defaultValue` */])
 
   return (
     <>

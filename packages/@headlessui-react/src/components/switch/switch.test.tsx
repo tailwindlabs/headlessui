@@ -229,6 +229,43 @@ describe('Rendering', () => {
       expect(handleSubmission).toHaveBeenLastCalledWith({})
     })
 
+    it('should be possible to reset to the default value if the form is reset', async () => {
+      let handleSubmission = jest.fn()
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Switch name="assignee" value="bob" defaultChecked />
+          <button id="submit">submit</button>
+          <button type="reset" id="reset">
+            reset
+          </button>
+        </form>
+      )
+
+      // Bob is the defaultValue
+      await click(document.getElementById('submit'))
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+      // Toggle the switch
+      await click(getSwitch())
+
+      // Bob should not be active anymore
+      await click(document.getElementById('submit'))
+      expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+      // Reset
+      await click(document.getElementById('reset'))
+
+      // Bob should be submitted again
+      await click(document.getElementById('submit'))
+      expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+    })
+
     it('should still call the onChange listeners when choosing new values', async () => {
       let handleChange = jest.fn()
 
