@@ -337,7 +337,6 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
                     type: 'radio',
                     checked: value != null,
                     hidden: true,
-                    readOnly: true,
                     name,
                     value,
                   })}

@@ -552,7 +552,6 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
                   as: 'input',
                   type: 'hidden',
                   hidden: true,
-                  readOnly: true,
                   name,
                   value,
                 })}
