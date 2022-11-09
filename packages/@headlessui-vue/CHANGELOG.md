@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Reset form-like components when the parent `<form>` resets ([#2004](https://github.com/tailwindlabs/headlessui/pull/2004))
+- Drop unnecessary `readOnly` prop on hidden input fields ([#2005](https://github.com/tailwindlabs/headlessui/pull/2005))
 
 ## [1.7.4] - 2022-11-03
 
