@@ -12,6 +12,7 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  useEffect,
 } from 'react'
 
 import { Props, Expand } from '../../types'
@@ -33,6 +34,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useDisposables } from '../../hooks/use-disposables'
 
 interface Option<T = unknown> {
   id: string
@@ -301,6 +303,17 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
 
   let slot = useMemo<RadioGroupRenderPropArg<TType>>(() => ({ value }), [value])
 
+  let form = useRef<HTMLFormElement | null>(null)
+  let d = useDisposables()
+  useEffect(() => {
+    if (!form.current) return
+    if (defaultValue === undefined) return
+
+    d.addEventListener(form.current, 'reset', () => {
+      triggerChange(defaultValue!)
+    })
+  }, [form, triggerChange /* Explicitly ignoring `defaultValue` */])
+
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
@@ -308,9 +321,16 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
           <RadioGroupDataContext.Provider value={radioGroupData}>
             {name != null &&
               value != null &&
-              objectToFormEntries({ [name]: value }).map(([name, value]) => (
+              objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
                 <Hidden
                   features={HiddenFeatures.Hidden}
+                  ref={
+                    idx === 0
+                      ? (element: HTMLInputElement | null) => {
+                          form.current = element?.closest('form') ?? null
+                        }
+                      : undefined
+                  }
                   {...compact({
                     key: name,
                     as: 'input',

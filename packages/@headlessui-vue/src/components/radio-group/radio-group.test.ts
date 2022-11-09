@@ -717,6 +717,121 @@ describe('Rendering', () => {
     )
 
     it(
+      'should be possible to reset to the default value if the form is reset',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <RadioGroup name="assignee" defaultValue="bob">
+                <RadioGroupOption value="alice">Alice</RadioGroupOption>
+                <RadioGroupOption value="bob">Bob</RadioGroupOption>
+                <RadioGroupOption value="charlie">Charlie</RadioGroupOption>
+              </RadioGroup>
+              <button id="submit">submit</button>
+              <button type="reset" id="reset">reset</button>
+            </form>
+          `,
+          setup: () => ({
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+
+        // Bob is the defaultValue
+        await click(document.getElementById('submit'))
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+
+        // Choose alice
+        await click(getRadioGroupOptions()[0])
+
+        // Alice is now chosen
+        await click(document.getElementById('submit'))
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'alice' })
+
+        // Reset
+        await click(document.getElementById('reset'))
+
+        // Bob should be submitted again
+        await click(document.getElementById('submit'))
+        expect(handleSubmission).toHaveBeenLastCalledWith({ assignee: 'bob' })
+      })
+    )
+
+    it(
+      'should be possible to reset to the default value if the form is reset (using objects)',
+      suppressConsoleLogs(async () => {
+        let handleSubmission = jest.fn()
+
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
+            <form @submit="handleSubmit">
+              <RadioGroup
+                name="assignee"
+                :defaultValue="{ id: 2, name: 'bob', label: 'Bob' }"
+                by="id"
+              >
+                <RadioGroupOption v-for="person in data" :key="person.id" :value="person">
+                  {{ person.label }}
+                </RadioGroupOption>
+              </RadioGroup>
+              <button id="submit">submit</button>
+              <button type="reset" id="reset">reset</button>
+            </form>
+          `,
+          setup: () => ({
+            data,
+            handleSubmit(e: SubmitEvent) {
+              e.preventDefault()
+              handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+            },
+          }),
+        })
+
+        await click(document.getElementById('submit'))
+
+        // Bob is the defaultValue
+        await click(document.getElementById('submit'))
+        expect(handleSubmission).toHaveBeenLastCalledWith({
+          'assignee[id]': '2',
+          'assignee[name]': 'bob',
+          'assignee[label]': 'Bob',
+        })
+
+        // Choose alice
+        await click(getRadioGroupOptions()[0])
+
+        // Alice is now chosen
+        await click(document.getElementById('submit'))
+        expect(handleSubmission).toHaveBeenLastCalledWith({
+          'assignee[id]': '1',
+          'assignee[name]': 'alice',
+          'assignee[label]': 'Alice',
+        })
+
+        // Reset
+        await click(document.getElementById('reset'))
+
+        // Bob should be submitted again
+        await click(document.getElementById('submit'))
+        expect(handleSubmission).toHaveBeenLastCalledWith({
+          'assignee[id]': '2',
+          'assignee[name]': 'bob',
+          'assignee[label]': 'Bob',
+        })
+      })
+    )
+
+    it(
       'should still call the onChange listeners when choosing new values',
       suppressConsoleLogs(async () => {
         let handleChange = jest.fn()
