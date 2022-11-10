@@ -55,6 +55,8 @@ enum PopoverStates {
 interface StateDefinition {
   popoverState: PopoverStates
 
+  buttons: HTMLElement[]
+
   button: HTMLElement | null
   buttonId: string
   panel: HTMLElement | null
@@ -201,6 +203,7 @@ let PopoverRoot = forwardRefWithAs(function Popover<
 
   let reducerBag = useReducer(stateReducer, {
     popoverState: PopoverStates.Closed,
+    buttons: [],
     button: null,
     buttonId,
     panel: null,
@@ -387,10 +390,28 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let panelContext = usePopoverPanelContext()
   let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
 
+  let id = useId()
   let buttonRef = useSyncRefs(
     internalButtonRef,
     ref,
-    isWithinPanel ? null : (button) => button && dispatch({ type: ActionTypes.SetButton, button })
+    isWithinPanel
+      ? null
+      : (button) => {
+          if (button) {
+            state.buttons.push(id)
+          } else {
+            let idx = state.buttons.indexOf(id)
+            if (idx !== -1) state.buttons.splice(idx, 1)
+          }
+
+          if (state.buttons.length > 1) {
+            console.warn(
+              'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+            )
+          }
+
+          button && dispatch({ type: ActionTypes.SetButton, button })
+        }
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
   let ownerDocument = useOwnerDocument(internalButtonRef)
