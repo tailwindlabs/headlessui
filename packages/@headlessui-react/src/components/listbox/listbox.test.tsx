@@ -658,6 +658,16 @@ describe('Rendering', () => {
 
         expect(getListboxButton()).not.toHaveAttribute('type')
       })
+
+      it('should support a custom `id` attribute', async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button id="my-custom-id">Trigger</Listbox.Button>
+          </Listbox>
+        )
+
+        expect(getListboxButton()).toHaveAttribute('id', 'my-custom-id')
+      })
     })
   })
 

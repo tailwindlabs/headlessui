@@ -592,7 +592,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let actions = useActions('Listbox.Button')
   let buttonRef = useSyncRefs(data.buttonRef, ref)
 
-  let id = `headlessui-listbox-button-${useId()}`
+  let id = props.id ?? `headlessui-listbox-button-${useId()}`
   let d = useDisposables()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
