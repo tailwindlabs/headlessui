@@ -281,6 +281,7 @@ let PopoverRoot = forwardRefWithAs(function Popover<
       if (isFocusWithinPopoverGroup()) return
       if (!button) return
       if (!panel) return
+      if (event.target === window) return
       if (beforePanelSentinel.current?.contains?.(event.target as HTMLElement)) return
       if (afterPanelSentinel.current?.contains?.(event.target as HTMLElement)) return
 

@@ -223,6 +223,7 @@ export let Popover = defineComponent({
         if (isFocusWithinPopoverGroup()) return
         if (!button) return
         if (!panel) return
+        if (event.target === window) return
         if (dom(api.beforePanelSentinel)?.contains(event.target as HTMLElement)) return
         if (dom(api.afterPanelSentinel)?.contains(event.target as HTMLElement)) return
 
