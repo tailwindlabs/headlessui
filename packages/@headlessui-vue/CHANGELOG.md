@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Reset form-like components when the parent `<form>` resets ([#2004](https://github.com/tailwindlabs/headlessui/pull/2004))
+- Ensure Popover doesn't crash when `focus` is going to `window` ([#2019](https://github.com/tailwindlabs/headlessui/pull/2019))
 
 ## [1.7.4] - 2022-11-03
 
