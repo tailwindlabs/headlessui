@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Reset form-like components when the parent `<form>` resets ([#2004](https://github.com/tailwindlabs/headlessui/pull/2004))
 - Add warning when using `<Popover.Button />` multiple times ([#2007](https://github.com/tailwindlabs/headlessui/pull/2007))
+- Ensure Popover doesn't crash when `focus` is going to `window` ([#2019](https://github.com/tailwindlabs/headlessui/pull/2019))
 
 ## [1.7.4] - 2022-11-03
 
