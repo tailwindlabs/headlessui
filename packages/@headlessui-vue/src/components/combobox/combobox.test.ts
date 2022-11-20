@@ -494,7 +494,7 @@ describe('Rendering', () => {
     )
 
     it(
-      'should open list when focused',
+      'focusing the input opens the list when openOnFocus',
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: html`

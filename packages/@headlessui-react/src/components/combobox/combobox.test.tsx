@@ -427,7 +427,7 @@ describe('Rendering', () => {
     )
 
     it(
-      'focusing the input opens the list when openOnChange',
+      'focusing the input opens the list when openOnFocus',
       suppressConsoleLogs(async () => {
         function Example() {
           let [value, setValue] = useState(undefined)
