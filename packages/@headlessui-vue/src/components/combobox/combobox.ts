@@ -35,6 +35,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
+import { findAllByTestId } from '@testing-library/dom'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -629,6 +630,7 @@ export let ComboboxInput = defineComponent({
     unmount: { type: Boolean, default: true },
     displayValue: { type: Function as PropType<(item: unknown) => string> },
     defaultValue: { type: String, default: undefined },
+    openOnFocus: { type: Boolean, default: false },
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
@@ -830,6 +832,12 @@ export let ComboboxInput = defineComponent({
       emit('change', event)
     }
 
+    function handleFocus() {
+      if (props.openOnFocus) {
+        api.openCombobox()
+      }
+    }
+
     let defaultValue = computed(() => {
       return (
         props.defaultValue ??
@@ -858,6 +866,7 @@ export let ComboboxInput = defineComponent({
         onKeydown: handleKeyDown,
         onChange: handleChange,
         onInput: handleInput,
+        onFocus: handleFocus,
         role: 'combobox',
         type: attrs.type ?? 'text',
         tabIndex: 0,

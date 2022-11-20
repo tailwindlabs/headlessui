@@ -493,6 +493,32 @@ describe('Rendering', () => {
       })
     )
 
+    it(
+      'should open list when focused',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Combobox v-model="value">
+              <ComboboxInput :displayValue="(str) => str?.toUpperCase() ?? ''" openOnFocus />
+              <ComboboxButton>Trigger</ComboboxButton>
+              <ComboboxOptions>
+                <ComboboxOption value="a">Option A</ComboboxOption>
+                <ComboboxOption value="b">Option B</ComboboxOption>
+                <ComboboxOption value="c">Option C</ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => ({ value: ref(null) }),
+        })
+
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+        await focus(getComboboxInput())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+      })
+    )
+
     // This really is a bug in Vue but we have a workaround for it
     it(
       'selecting an option puts the display value into Combobox.Input when displayValue is provided (when v-model is undefined)',

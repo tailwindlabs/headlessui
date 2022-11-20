@@ -664,7 +664,9 @@ type InputPropsWeControl =
   | 'aria-activedescendant'
   | 'onKeyDown'
   | 'onChange'
+  | 'onFocus'
   | 'displayValue'
+  | ''
 
 let Input = forwardRefWithAs(function Input<
   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
@@ -673,12 +675,13 @@ let Input = forwardRefWithAs(function Input<
   TType = Parameters<typeof ComboboxRoot>[0]['value']
 >(
   props: Props<TTag, InputRenderPropArg, InputPropsWeControl> & {
+    openOnChange?: boolean
     displayValue?(item: TType): string
     onChange(event: React.ChangeEvent<HTMLInputElement>): void
   },
   ref: Ref<HTMLInputElement>
 ) {
-  let { value, onChange, displayValue, type = 'text', ...theirProps } = props
+  let { value, onChange, displayValue, openOnChange = false, type = 'text', ...theirProps } = props
   let data = useData('Combobox.Input')
   let actions = useActions('Combobox.Input')
 
@@ -867,6 +870,12 @@ let Input = forwardRefWithAs(function Input<
     onChange?.(event)
   })
 
+  let handleFocus = useEvent(() => {
+    if (openOnChange) {
+      actions.openCombobox()
+    }
+  })
+
   // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present
   // Otherwise it's the ID of the non-label element
   let labelledby = useComputed(() => {
@@ -899,6 +908,7 @@ let Input = forwardRefWithAs(function Input<
     onCompositionEnd: handleCompositionEnd,
     onKeyDown: handleKeyDown,
     onChange: handleChange,
+    onFocus: handleFocus,
   }
 
   return render({
