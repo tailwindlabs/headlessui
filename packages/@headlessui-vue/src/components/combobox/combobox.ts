@@ -438,6 +438,8 @@ export let Combobox = defineComponent({
         activeIndex: api.activeOptionIndex.value,
         activeOption: activeOption.value,
         value: value.value,
+        openCombobox: api.openCombobox,
+        closeCombobox: api.closeCombobox,
       }
 
       return h(Fragment, [

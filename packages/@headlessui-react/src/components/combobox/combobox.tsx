@@ -314,6 +314,8 @@ interface ComboboxRenderPropArg<T> {
   activeIndex: number | null
   activeOption: T | null
   value: T
+  openCombobox: () => void
+  closeCombobox: () => void
 }
 
 type O = 'value' | 'defaultValue' | 'nullable' | 'multiple' | 'onChange' | 'by'
@@ -494,6 +496,16 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     data.comboboxState === ComboboxState.Open
   )
 
+  let openCombobox = useEvent(() => {
+    dispatch({ type: ActionTypes.OpenCombobox })
+    defaultToFirstOption.current = true
+  })
+
+  let closeCombobox = useEvent(() => {
+    dispatch({ type: ActionTypes.CloseCombobox })
+    defaultToFirstOption.current = false
+  })
+
   let slot = useMemo<ComboboxRenderPropArg<unknown>>(
     () => ({
       open: data.comboboxState === ComboboxState.Open,
@@ -504,8 +516,10 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
           ? null
           : (data.options[data.activeOptionIndex].dataRef.current.value as TValue),
       value,
+      openCombobox,
+      closeCombobox,
     }),
-    [data, disabled, value]
+    [data, disabled, value, openCombobox, closeCombobox]
   )
 
   let selectOption = useEvent((id: string) => {
@@ -524,16 +538,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       // but we are getting the fallback active option back instead.
       dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
     }
-  })
-
-  let openCombobox = useEvent(() => {
-    dispatch({ type: ActionTypes.OpenCombobox })
-    defaultToFirstOption.current = true
-  })
-
-  let closeCombobox = useEvent(() => {
-    dispatch({ type: ActionTypes.CloseCombobox })
-    defaultToFirstOption.current = false
   })
 
   let goToOption = useEvent((focus, id, trigger) => {
