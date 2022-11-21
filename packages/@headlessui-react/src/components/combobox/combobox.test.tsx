@@ -427,6 +427,44 @@ describe('Rendering', () => {
     )
 
     it(
+      'should be possible to open the combobox with scoped slot',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [value, setValue] = useState(undefined)
+
+          return (
+            <Combobox value={value} onChange={setValue}>
+              {({ openCombobox }) => (
+                <>
+                  <Combobox.Input
+                    onChange={NOOP}
+                    onFocus={openCombobox}
+                    displayValue={(str?: string) => str?.toUpperCase() ?? ''}
+                  />
+                  <Combobox.Button>Trigger</Combobox.Button>
+                  <Combobox.Options>
+                    <Combobox.Option value="a">Option A</Combobox.Option>
+                    <Combobox.Option value="b">Option B</Combobox.Option>
+                    <Combobox.Option value="c">Option C</Combobox.Option>
+                  </Combobox.Options>
+                </>
+              )}
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+        // Focus the input
+        await focus(getComboboxInput())
+
+        assertComboboxList({ state: ComboboxState.Visible })
+      })
+    )
+
+    it(
       'selecting an option puts the display value into Combobox.Input when displayValue is provided',
       suppressConsoleLogs(async () => {
         function Example() {
