@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add warning when using `<Popover.Button />` multiple times ([#2007](https://github.com/tailwindlabs/headlessui/pull/2007))
 - Ensure Popover doesn't crash when `focus` is going to `window` ([#2019](https://github.com/tailwindlabs/headlessui/pull/2019))
 - Ensure `shift+home` and `shift+end` works as expected in the `Combobox.Input` component ([#2024](https://github.com/tailwindlabs/headlessui/pull/2024))
+- Improve syncing of the `Combobox.Input` value ([#2042](https://github.com/tailwindlabs/headlessui/pull/2042))
 
 ## [1.7.4] - 2022-11-03
 
