@@ -552,7 +552,7 @@ describe('Transitions', () => {
       `)
     })
 
-    it('should transition in completely (duration defined in seconds) in (render strategy = hidden)', async () => {
+    xit('should transition in completely (duration defined in seconds) in (render strategy = hidden)', async () => {
       let enterDuration = 100
 
       function Example() {
