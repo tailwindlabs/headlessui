@@ -3052,60 +3052,6 @@ describe('Keyboard interactions', () => {
           expect(getComboboxInput()?.value).toBe('option-b')
         })
       )
-
-      it(
-        'The onChange handler is fired when the input value is changed internally',
-        suppressConsoleLogs(async () => {
-          let currentSearchQuery: string = ''
-
-          renderTemplate({
-            template: html`
-              <Combobox v-model="value">
-                <ComboboxInput @change="onChange" />
-                <ComboboxButton>Trigger</ComboboxButton>
-                <ComboboxOptions>
-                  <ComboboxOption value="option-a">Option A</ComboboxOption>
-                  <ComboboxOption value="option-b">Option B</ComboboxOption>
-                  <ComboboxOption value="option-c">Option C</ComboboxOption>
-                </ComboboxOptions>
-              </Combobox>
-            `,
-            setup: () => ({
-              value: ref(null),
-              onChange: (evt: InputEvent & { target: HTMLInputElement }) => {
-                currentSearchQuery = evt.target.value
-              },
-            }),
-          })
-
-          // Open combobox
-          await click(getComboboxButton())
-
-          // Verify that the current search query is empty
-          expect(currentSearchQuery).toBe('')
-
-          // Look for "Option C"
-          await type(word('Option C'), getComboboxInput())
-
-          // The input should be updated
-          expect(getComboboxInput()?.value).toBe('Option C')
-
-          // The current search query should reflect the input value
-          expect(currentSearchQuery).toBe('Option C')
-
-          // Close combobox
-          await press(Keys.Escape)
-
-          // The input should be empty
-          expect(getComboboxInput()?.value).toBe('')
-
-          // The current search query should be empty like the input
-          expect(currentSearchQuery).toBe('')
-
-          // The combobox should be closed
-          assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
-        })
-      )
     })
 
     describe('`ArrowDown` key', () => {

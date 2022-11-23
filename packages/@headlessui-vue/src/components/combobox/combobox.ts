@@ -637,10 +637,21 @@ export let ComboboxInput = defineComponent({
     let api = useComboboxContext('ComboboxInput')
     let id = `headlessui-combobox-input-${useId()}`
 
+    let isTyping = { value: false }
+
     expose({ el: api.inputRef, $el: api.inputRef })
 
     let currentValue = ref(api.value.value as unknown as string)
 
+    // When a `displayValue` prop is given, we should use it to transform the current selected
+    // option(s) so that the format can be chosen by developers implementing this.
+    // This is useful if your data is an object and you just want to pick a certain property or want
+    // to create a dynamic value like `firstName + ' ' + lastName`.
+    //
+    // Note: This can also be used with multiple selected options, but this is a very simple transform
+    // which should always result in a string (since we are filling in the value of the the input),
+    // you don't have to use this at all, a more common UI is a "tag" based UI, which you can render
+    // yourself using the selected option(s).
     let getCurrentValue = () => {
       let value = api.value.value
       if (!dom(api.inputRef)) return ''
@@ -657,23 +668,6 @@ export let ComboboxInput = defineComponent({
     // Workaround Vue bug where watching [ref(undefined)] is not fired immediately even when value is true
     let __fixVueImmediateWatchBug__ = ref('')
 
-    let shouldIgnoreOpenOnChange = false
-    function updateInputAndNotify(currentValue: string) {
-      let input = dom(api.inputRef)
-      if (!input) {
-        return
-      }
-
-      input.value = currentValue
-
-      // Fire an input event which causes the browser to trigger the user's `onChange` handler.
-      // We have to prevent the combobox from opening when this happens. Since these events
-      // fire synchronously `shouldIgnoreOpenOnChange` will be correct during `handleChange`
-      shouldIgnoreOpenOnChange = true
-      input.dispatchEvent(new Event('input', { bubbles: true }))
-      shouldIgnoreOpenOnChange = false
-    }
-
     onMounted(() => {
       watch(
         [api.value, __fixVueImmediateWatchBug__],
@@ -686,13 +680,28 @@ export let ComboboxInput = defineComponent({
         }
       )
 
+      // Syncing the input value has some rules attached to it to guarantee a smooth and expected user
+      // experience:
+      //
+      // - When a user is not typing in the input field, it is safe to update the input value based on
+      //   the selected option(s). See `currentValue` computation from above.
+      // - The value can be updated when:
+      //   - The `value` is set from outside of the component
+      //   - The `value` is set when the user uses their keyboard (confirm via enter or space)
+      //   - The `value` is set when the user clicks on a value to select it
+      // - The value will be reset to the current selected option(s), when:
+      //   - The user is _not_ typing (otherwise you will loose your current state / query)
+      //   - The user cancels the current changes:
+      //     - By pressing `escape`
+      //     - By clicking `outside` of the Combobox
       watch(
         [currentValue, api.comboboxState],
         ([currentValue, state], [oldCurrentValue, oldState]) => {
+          if (isTyping.value) return
           let input = dom(api.inputRef)
           if (!input) return
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
-            updateInputAndNotify(currentValue)
+            input.value = currentValue
           } else if (currentValue !== oldCurrentValue) {
             input.value = currentValue
           }
@@ -712,6 +721,7 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleKeyDown(event: KeyboardEvent) {
+      isTyping.value = true
       switch (event.key) {
         // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
@@ -734,6 +744,7 @@ export let ComboboxInput = defineComponent({
           break
 
         case Keys.Enter:
+          isTyping.value = false
           if (api.comboboxState.value !== ComboboxStates.Open) return
           if (isComposing.value) return
 
@@ -752,6 +763,7 @@ export let ComboboxInput = defineComponent({
           break
 
         case Keys.ArrowDown:
+          isTyping.value = false
           event.preventDefault()
           event.stopPropagation()
           return match(api.comboboxState.value, {
@@ -760,6 +772,7 @@ export let ComboboxInput = defineComponent({
           })
 
         case Keys.ArrowUp:
+          isTyping.value = false
           event.preventDefault()
           event.stopPropagation()
           return match(api.comboboxState.value, {
@@ -779,11 +792,13 @@ export let ComboboxInput = defineComponent({
             break
           }
 
+          isTyping.value = false
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.First)
 
         case Keys.PageUp:
+          isTyping.value = false
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.First)
@@ -793,16 +808,19 @@ export let ComboboxInput = defineComponent({
             break
           }
 
+          isTyping.value = false
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.Last)
 
         case Keys.PageDown:
+          isTyping.value = false
           event.preventDefault()
           event.stopPropagation()
           return api.goToOption(Focus.Last)
 
         case Keys.Escape:
+          isTyping.value = false
           if (api.comboboxState.value !== ComboboxStates.Open) return
           event.preventDefault()
           if (api.optionsRef.value && !api.optionsPropsRef.value.static) {
@@ -812,6 +830,7 @@ export let ComboboxInput = defineComponent({
           break
 
         case Keys.Tab:
+          isTyping.value = false
           if (api.comboboxState.value !== ComboboxStates.Open) return
           if (api.mode.value === ValueMode.Single) api.selectActiveOption()
           api.closeCombobox()
@@ -824,10 +843,12 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleInput(event: Event & { target: HTMLInputElement }) {
-      if (!shouldIgnoreOpenOnChange) {
-        api.openCombobox()
-      }
+      api.openCombobox()
       emit('change', event)
+    }
+
+    function handleBlur() {
+      isTyping.value = false
     }
 
     let defaultValue = computed(() => {
@@ -858,6 +879,7 @@ export let ComboboxInput = defineComponent({
         onKeydown: handleKeyDown,
         onChange: handleChange,
         onInput: handleInput,
+        onBlur: handleBlur,
         role: 'combobox',
         type: attrs.type ?? 'text',
         tabIndex: 0,
