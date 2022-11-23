@@ -490,7 +490,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   // Handle outside click
   useOutsideClick(
     [data.buttonRef, data.inputRef, data.optionsRef],
-    () => dispatch({ type: ActionTypes.CloseCombobox }),
+    () => actions.closeCombobox(),
     data.comboboxState === ComboboxState.Open
   )
 
@@ -522,7 +522,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
       // It could happen that the `activeOptionIndex` stored in state is actually null,
       // but we are getting the fallback active option back instead.
-      dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+      actions.goToOption(Focus.Specific, id)
     }
   })
 
@@ -684,36 +684,20 @@ let Input = forwardRefWithAs(function Input<
 
   let inputRef = useSyncRefs(data.inputRef, ref)
 
+  let isTyping = useRef(false)
+
   let id = `headlessui-combobox-input-${useId()}`
   let d = useDisposables()
 
-  let shouldIgnoreOpenOnChange = false
-  function updateInputAndNotify(newValue: string) {
-    let input = data.inputRef.current
-    if (!input) {
-      return
-    }
-
-    // The value is already the same, so we can bail out early
-    if (input.value === newValue) {
-      return
-    }
-
-    // Skip React's value setting which causes the input event to not be fired because it de-dupes input/change events
-    let descriptor = Object.getOwnPropertyDescriptor(input.constructor.prototype, 'value')
-    descriptor?.set?.call(input, newValue)
-
-    // Fire an input event which causes the browser to trigger the user's `onChange` handler.
-    // We have to prevent the combobox from opening when this happens. Since these events
-    // fire synchronously `shouldIgnoreOpenOnChange` will be correct during `handleChange`
-    shouldIgnoreOpenOnChange = true
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-
-    // Now we can inform react that the input value has changed
-    input.value = newValue
-    shouldIgnoreOpenOnChange = false
-  }
-
+  // When a `displayValue` prop is given, we should use it to transform the current selected
+  // option(s) so that the format can be chosen by developers implementing this.
+  // This is useful if your data is an object and you just want to pick a certain property or want
+  // to create a dynamic value like `firstName + ' ' + lastName`.
+  //
+  // Note: This can also be used with multiple selected options, but this is a very simple transform
+  // which should always result in a string (since we are filling in the value of the the input),
+  // you don't have to use this at all, a more common UI is a "tag" based UI, which you can render
+  // yourself using the selected option(s).
   let currentValue = useMemo(() => {
     if (typeof displayValue === 'function') {
       return displayValue(data.value as unknown as TType) ?? ''
@@ -726,11 +710,26 @@ let Input = forwardRefWithAs(function Input<
     // displayValue is intentionally left out
   }, [data.value])
 
+  // Syncing the input value has some rules attached to it to guarantee a smooth and expected user
+  // experience:
+  //
+  // - When a user is not typing in the input field, it is safe to update the input value based on
+  //   the selected option(s). See `currentValue` computation from above.
+  // - The value can be updated when:
+  //   - The `value` is set from outside of the component
+  //   - The `value` is set when the user uses their keyboard (confirm via enter or space)
+  //   - The `value` is set when the user clicks on a value to select it
+  // - The value will be reset to the current selected option(s), when:
+  //   - The user is _not_ typing (otherwise you will loose your current state / query)
+  //   - The user cancels the current changes:
+  //     - By pressing `escape`
+  //     - By clicking `outside` of the Combobox
   useWatch(
     ([currentValue, state], [oldCurrentValue, oldState]) => {
+      if (isTyping.current) return
       if (!data.inputRef.current) return
       if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
-        updateInputAndNotify(currentValue)
+        data.inputRef.current.value = currentValue
       } else if (currentValue !== oldCurrentValue) {
         data.inputRef.current.value = currentValue
       }
@@ -749,6 +748,7 @@ let Input = forwardRefWithAs(function Input<
   })
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
+    isTyping.current = true
     switch (event.key) {
       // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
 
@@ -770,6 +770,7 @@ let Input = forwardRefWithAs(function Input<
         break
 
       case Keys.Enter:
+        isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
         if (isComposing.current) return
 
@@ -788,6 +789,7 @@ let Input = forwardRefWithAs(function Input<
         break
 
       case Keys.ArrowDown:
+        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return match(data.comboboxState, {
@@ -800,6 +802,7 @@ let Input = forwardRefWithAs(function Input<
         })
 
       case Keys.ArrowUp:
+        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return match(data.comboboxState, {
@@ -821,11 +824,13 @@ let Input = forwardRefWithAs(function Input<
           break
         }
 
+        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.First)
 
       case Keys.PageUp:
+        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.First)
@@ -835,16 +840,19 @@ let Input = forwardRefWithAs(function Input<
           break
         }
 
+        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.Last)
 
       case Keys.PageDown:
+        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.Last)
 
       case Keys.Escape:
+        isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
         event.preventDefault()
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
@@ -853,6 +861,7 @@ let Input = forwardRefWithAs(function Input<
         return actions.closeCombobox()
 
       case Keys.Tab:
+        isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
         if (data.mode === ValueMode.Single) actions.selectActiveOption()
         actions.closeCombobox()
@@ -861,10 +870,12 @@ let Input = forwardRefWithAs(function Input<
   })
 
   let handleChange = useEvent((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!shouldIgnoreOpenOnChange) {
-      actions.openCombobox()
-    }
+    actions.openCombobox()
     onChange?.(event)
+  })
+
+  let handleBlur = useEvent(() => {
+    isTyping.current = false
   })
 
   // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present
@@ -899,6 +910,7 @@ let Input = forwardRefWithAs(function Input<
     onCompositionEnd: handleCompositionEnd,
     onKeyDown: handleKeyDown,
     onChange: handleChange,
+    onBlur: handleBlur,
   }
 
   return render({

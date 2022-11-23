@@ -1,5 +1,5 @@
 <script>
-import { ref, defineComponent, computed } from 'vue'
+import { ref, defineComponent, computed, onMounted, watch } from 'vue'
 import {
   Combobox,
   ComboboxButton,
@@ -33,13 +33,22 @@ export default defineComponent({
   },
   setup() {
     let query = ref('')
-    let activePerson = ref(null) // everybody[Math.floor(Math.random() * everybody.length)]
+    let activePerson = ref(everybody[2]) // everybody[Math.floor(Math.random() * everybody.length)]
     let filteredPeople = computed(() => {
       return query.value === ''
         ? everybody
         : everybody.filter((person) => {
             return person.name.toLowerCase().includes(query.value.toLowerCase())
           })
+    })
+
+    // Choose a random person on mount
+    onMounted(() => {
+      activePerson.value = everybody[Math.floor(Math.random() * everybody.length)]
+    })
+
+    watch(activePerson, () => {
+      query.value = ''
     })
 
     return {
