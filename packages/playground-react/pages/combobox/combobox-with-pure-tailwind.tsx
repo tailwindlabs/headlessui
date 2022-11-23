@@ -50,6 +50,7 @@ export default function Home() {
             value={activePerson}
             onChange={(value) => {
               setActivePerson(value)
+              setQuery('')
             }}
             as="div"
           >
