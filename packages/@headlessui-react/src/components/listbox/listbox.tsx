@@ -578,7 +578,6 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  | 'id'
   | 'type'
   | 'aria-haspopup'
   | 'aria-controls'
@@ -592,11 +591,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-listbox-button-${internalId}`, ...theirProps } = props
   let data = useData('Listbox.Button')
   let actions = useActions('Listbox.Button')
   let buttonRef = useSyncRefs(data.buttonRef, ref)
 
-  let id = `headlessui-listbox-button-${useId()}`
   let d = useDisposables()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -658,7 +658,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     }),
     [data]
   )
-  let theirProps = props
+
   let ourProps = {
     ref: buttonRef,
     id,
@@ -689,14 +689,15 @@ interface LabelRenderPropArg {
   open: boolean
   disabled: boolean
 }
-type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
+type LabelPropsWeControl = 'ref' | 'onClick'
 
 let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
   ref: Ref<HTMLElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-listbox-label-${internalId}`, ...theirProps } = props
   let data = useData('Listbox.Label')
-  let id = `headlessui-listbox-label-${useId()}`
   let actions = useActions('Listbox.Label')
   let labelRef = useSyncRefs(data.labelRef, ref)
 
@@ -708,7 +709,6 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
     () => ({ open: data.listboxState === ListboxStates.Open, disabled: data.disabled }),
     [data]
   )
-  let theirProps = props
   let ourProps = { ref: labelRef, id, onClick: handleClick }
 
   return render({
@@ -730,7 +730,6 @@ type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
   | 'aria-orientation'
-  | 'id'
   | 'onKeyDown'
   | 'role'
   | 'tabIndex'
@@ -744,11 +743,12 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-listbox-options-${internalId}`, ...theirProps } = props
   let data = useData('Listbox.Options')
   let actions = useActions('Listbox.Options')
   let optionsRef = useSyncRefs(data.optionsRef, ref)
 
-  let id = `headlessui-listbox-options-${useId()}`
   let d = useDisposables()
   let searchDisposables = useDisposables()
 
@@ -850,7 +850,6 @@ let Options = forwardRefWithAs(function Options<
     [data]
   )
 
-  let theirProps = props
   let ourProps = {
     'aria-activedescendant':
       data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
@@ -884,7 +883,6 @@ interface OptionRenderPropArg {
   disabled: boolean
 }
 type ListboxOptionPropsWeControl =
-  | 'id'
   | 'role'
   | 'tabIndex'
   | 'aria-disabled'
@@ -907,11 +905,16 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLElement>
 ) {
-  let { disabled = false, value, ...theirProps } = props
+  let internalId = useId()
+  let {
+    id = `headlessui-listbox-option-${internalId}`,
+    disabled = false,
+    value,
+    ...theirProps
+  } = props
   let data = useData('Listbox.Option')
   let actions = useActions('Listbox.Option')
 
-  let id = `headlessui-listbox-option-${useId()}`
   let active =
     data.activeOptionIndex !== null ? data.options[data.activeOptionIndex].id === id : false
 

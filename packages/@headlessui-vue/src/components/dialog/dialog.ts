@@ -77,6 +77,7 @@ export let Dialog = defineComponent({
     unmount: { type: Boolean, default: true },
     open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
+    id: { type: String, default: () => `headlessui-dialog-${useId()}` },
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots, expose }) {
@@ -164,8 +165,6 @@ export let Dialog = defineComponent({
       name: 'DialogDescription',
       slot: computed(() => ({ open: open.value })),
     })
-
-    let id = `headlessui-dialog-${useId()}`
 
     let titleId = ref<StateDefinition['titleId']['value']>(null)
 
@@ -284,6 +283,7 @@ export let Dialog = defineComponent({
     })
 
     return () => {
+      let { id, open: _, initialFocus, ...theirProps } = props
       let ourProps = {
         // Manually passthrough the attributes, because Vue can't automatically pass
         // it to the underlying div because of all the wrapper components below.
@@ -295,7 +295,6 @@ export let Dialog = defineComponent({
         'aria-labelledby': titleId.value,
         'aria-describedby': describedby.value,
       }
-      let { open: _, initialFocus, ...theirProps } = props
 
       let slot = { open: dialogState.value === DialogStates.Open }
 
@@ -342,10 +341,10 @@ export let DialogOverlay = defineComponent({
   name: 'DialogOverlay',
   props: {
     as: { type: [Object, String], default: 'div' },
+    id: { type: String, default: () => `headlessui-dialog-overlay-${useId()}` },
   },
   setup(props, { attrs, slots }) {
     let api = useDialogContext('DialogOverlay')
-    let id = `headlessui-dialog-overlay-${useId()}`
 
     function handleClick(event: MouseEvent) {
       if (event.target !== event.currentTarget) return
@@ -355,12 +354,12 @@ export let DialogOverlay = defineComponent({
     }
 
     return () => {
+      let { id, ...theirProps } = props
       let ourProps = {
         id,
         'aria-hidden': true,
         onClick: handleClick,
       }
-      let theirProps = props
 
       return render({
         ourProps,
@@ -380,11 +379,11 @@ export let DialogBackdrop = defineComponent({
   name: 'DialogBackdrop',
   props: {
     as: { type: [Object, String], default: 'div' },
+    id: { type: String, default: () => `headlessui-dialog-backdrop-${useId()}` },
   },
   inheritAttrs: false,
   setup(props, { attrs, slots, expose }) {
     let api = useDialogContext('DialogBackdrop')
-    let id = `headlessui-dialog-backdrop-${useId()}`
     let internalBackdropRef = ref(null)
 
     expose({ el: internalBackdropRef, $el: internalBackdropRef })
@@ -398,7 +397,7 @@ export let DialogBackdrop = defineComponent({
     })
 
     return () => {
-      let theirProps = props
+      let { id, ...theirProps } = props
       let ourProps = {
         id,
         ref: internalBackdropRef,
@@ -427,10 +426,10 @@ export let DialogPanel = defineComponent({
   name: 'DialogPanel',
   props: {
     as: { type: [Object, String], default: 'div' },
+    id: { type: String, default: () => `headlessui-dialog-panel-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useDialogContext('DialogPanel')
-    let id = `headlessui-dialog-panel-${useId()}`
 
     expose({ el: api.panelRef, $el: api.panelRef })
 
@@ -439,12 +438,12 @@ export let DialogPanel = defineComponent({
     }
 
     return () => {
+      let { id, ...theirProps } = props
       let ourProps = {
         id,
         ref: api.panelRef,
         onClick: handleClick,
       }
-      let theirProps = props
 
       return render({
         ourProps,
@@ -464,19 +463,19 @@ export let DialogTitle = defineComponent({
   name: 'DialogTitle',
   props: {
     as: { type: [Object, String], default: 'h2' },
+    id: { type: String, default: () => `headlessui-dialog-title-${useId()}` },
   },
   setup(props, { attrs, slots }) {
     let api = useDialogContext('DialogTitle')
-    let id = `headlessui-dialog-title-${useId()}`
 
     onMounted(() => {
-      api.setTitleId(id)
+      api.setTitleId(props.id)
       onUnmounted(() => api.setTitleId(null))
     })
 
     return () => {
+      let { id, ...theirProps } = props
       let ourProps = { id }
-      let theirProps = props
 
       return render({
         ourProps,

@@ -312,13 +312,14 @@ let DEFAULT_TAB_TAG = 'button' as const
 interface TabRenderPropArg {
   selected: boolean
 }
-type TabPropsWeControl = 'id' | 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
+type TabPropsWeControl = 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
 
 let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   props: Props<TTag, TabRenderPropArg, TabPropsWeControl>,
   ref: Ref<HTMLElement>
 ) {
-  let id = `headlessui-tabs-tab-${useId()}`
+  let internalId = useId()
+  let { id = `headlessui-tabs-tab-${internalId}`, ...theirProps } = props
 
   let { orientation, activation, selectedIndex, tabs, panels } = useData('Tab')
   let actions = useActions('Tab')
@@ -416,7 +417,6 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
 
   let slot = useMemo(() => ({ selected }), [selected])
 
-  let theirProps = props
   let ourProps = {
     ref: tabRef,
     onKeyDown: handleKeyDown,
@@ -473,7 +473,7 @@ let DEFAULT_PANEL_TAG = 'div' as const
 interface PanelRenderPropArg {
   selected: boolean
 }
-type PanelPropsWeControl = 'id' | 'role' | 'aria-labelledby' | 'tabIndex'
+type PanelPropsWeControl = 'role' | 'aria-labelledby' | 'tabIndex'
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
@@ -481,11 +481,12 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     PropsForFeatures<typeof PanelRenderFeatures>,
   ref: Ref<HTMLElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-tabs-panel-${internalId}`, ...theirProps } = props
   let { selectedIndex, tabs, panels } = useData('Tab.Panel')
   let actions = useActions('Tab.Panel')
   let SSRContext = useSSRTabsCounter('Tab.Panel')
 
-  let id = `headlessui-tabs-panel-${useId()}`
   let internalPanelRef = useRef<HTMLElement | null>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref)
 
@@ -501,7 +502,6 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   let slot = useMemo(() => ({ selected }), [selected])
 
-  let theirProps = props
   let ourProps = {
     ref: panelRef,
     id,
@@ -510,7 +510,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     tabIndex: selected ? 0 : -1,
   }
 
-  if (!selected && (props.unmount ?? true) && !(props.static ?? false)) {
+  if (!selected && (theirProps.unmount ?? true) && !(theirProps.static ?? false)) {
     return <Hidden as="span" {...ourProps} />
   }
 

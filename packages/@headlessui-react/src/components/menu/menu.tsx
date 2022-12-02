@@ -299,7 +299,6 @@ interface ButtonRenderPropArg {
   open: boolean
 }
 type ButtonPropsWeControl =
-  | 'id'
   | 'type'
   | 'aria-haspopup'
   | 'aria-controls'
@@ -311,10 +310,11 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-menu-button-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Button')
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
-  let id = `headlessui-menu-button-${useId()}`
   let d = useDisposables()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -366,7 +366,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     () => ({ open: state.menuState === MenuStates.Open }),
     [state]
   )
-  let theirProps = props
   let ourProps = {
     ref: buttonRef,
     id,
@@ -397,7 +396,6 @@ interface ItemsRenderPropArg {
 type ItemsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
-  | 'id'
   | 'onKeyDown'
   | 'role'
   | 'tabIndex'
@@ -409,11 +407,12 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     PropsForFeatures<typeof ItemsRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-menu-items-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Items')
   let itemsRef = useSyncRefs(state.itemsRef, ref)
   let ownerDocument = useOwnerDocument(state.itemsRef)
 
-  let id = `headlessui-menu-items-${useId()}`
   let searchDisposables = useDisposables()
 
   let usesOpenClosedState = useOpenClosed()
@@ -538,7 +537,6 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     [state]
   )
 
-  let theirProps = props
   let ourProps = {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
@@ -571,7 +569,6 @@ interface ItemRenderPropArg {
   close: () => void
 }
 type MenuItemPropsWeControl =
-  | 'id'
   | 'role'
   | 'tabIndex'
   | 'aria-disabled'
@@ -587,9 +584,9 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   },
   ref: Ref<HTMLElement>
 ) {
-  let { disabled = false, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-menu-item-${internalId}`, disabled = false, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Item')
-  let id = `headlessui-menu-item-${useId()}`
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
   let internalItemRef = useRef<HTMLElement | null>(null)
   let itemRef = useSyncRefs(ref, internalItemRef)

@@ -405,10 +405,12 @@ export let Listbox = defineComponent({
 
 export let ListboxLabel = defineComponent({
   name: 'ListboxLabel',
-  props: { as: { type: [Object, String], default: 'label' } },
+  props: {
+    as: { type: [Object, String], default: 'label' },
+    id: { type: String, default: () => `headlessui-listbox-label-${useId()}` },
+  },
   setup(props, { attrs, slots }) {
     let api = useListboxContext('ListboxLabel')
-    let id = `headlessui-listbox-label-${useId()}`
 
     function handleClick() {
       dom(api.buttonRef)?.focus({ preventScroll: true })
@@ -419,11 +421,12 @@ export let ListboxLabel = defineComponent({
         open: api.listboxState.value === ListboxStates.Open,
         disabled: api.disabled.value,
       }
+      let { id, ...theirProps } = props
       let ourProps = { id, ref: api.labelRef, onClick: handleClick }
 
       return render({
         ourProps,
-        theirProps: props,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -439,10 +442,10 @@ export let ListboxButton = defineComponent({
   name: 'ListboxButton',
   props: {
     as: { type: [Object, String], default: 'button' },
+    id: { type: String, default: () => `headlessui-listbox-button-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useListboxContext('ListboxButton')
-    let id = `headlessui-listbox-button-${useId()}`
 
     expose({ el: api.buttonRef, $el: api.buttonRef })
 
@@ -507,6 +510,7 @@ export let ListboxButton = defineComponent({
         value: api.value.value,
       }
 
+      let { id, ...theirProps } = props
       let ourProps = {
         ref: api.buttonRef,
         id,
@@ -525,7 +529,7 @@ export let ListboxButton = defineComponent({
 
       return render({
         ourProps,
-        theirProps: props,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -543,10 +547,10 @@ export let ListboxOptions = defineComponent({
     as: { type: [Object, String], default: 'ul' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
+    id: { type: String, default: () => `headlessui-listbox-options-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useListboxContext('ListboxOptions')
-    let id = `headlessui-listbox-options-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
     expose({ el: api.optionsRef, $el: api.optionsRef })
@@ -635,6 +639,7 @@ export let ListboxOptions = defineComponent({
 
     return () => {
       let slot = { open: api.listboxState.value === ListboxStates.Open }
+      let { id, ...theirProps } = props
       let ourProps = {
         'aria-activedescendant':
           api.activeOptionIndex.value === null
@@ -649,7 +654,6 @@ export let ListboxOptions = defineComponent({
         tabIndex: 0,
         ref: api.optionsRef,
       }
-      let theirProps = props
 
       return render({
         ourProps,
@@ -671,17 +675,17 @@ export let ListboxOption = defineComponent({
     as: { type: [Object, String], default: 'li' },
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
+    id: { type: String, default: () => `headlessui-listbox.option-${useId()}` },
   },
   setup(props, { slots, attrs, expose }) {
     let api = useListboxContext('ListboxOption')
-    let id = `headlessui-listbox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
 
     expose({ el: internalOptionRef, $el: internalOptionRef })
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
-        ? api.options.value[api.activeOptionIndex.value].id === id
+        ? api.options.value[api.activeOptionIndex.value].id === props.id
         : false
     })
 
@@ -702,7 +706,7 @@ export let ListboxOption = defineComponent({
           return (
             api.options.value.find((option) =>
               currentValues.some((value) => api.compare(toRaw(value), toRaw(option.dataRef.value)))
-            )?.id === id
+            )?.id === props.id
           )
         },
         [ValueMode.Single]: () => selected.value,
@@ -720,8 +724,8 @@ export let ListboxOption = defineComponent({
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 
-    onMounted(() => api.registerOption(id, dataRef))
-    onUnmounted(() => api.unregisterOption(id))
+    onMounted(() => api.registerOption(props.id, dataRef))
+    onUnmounted(() => api.unregisterOption(props.id))
 
     onMounted(() => {
       watch(
@@ -732,10 +736,10 @@ export let ListboxOption = defineComponent({
 
           match(api.mode.value, {
             [ValueMode.Multi]: () => {
-              if (isFirstSelected.value) api.goToOption(Focus.Specific, id)
+              if (isFirstSelected.value) api.goToOption(Focus.Specific, props.id)
             },
             [ValueMode.Single]: () => {
-              api.goToOption(Focus.Specific, id)
+              api.goToOption(Focus.Specific, props.id)
             },
           })
         },
@@ -761,13 +765,13 @@ export let ListboxOption = defineComponent({
 
     function handleFocus() {
       if (props.disabled) return api.goToOption(Focus.Nothing)
-      api.goToOption(Focus.Specific, id)
+      api.goToOption(Focus.Specific, props.id)
     }
 
     function handleMove() {
       if (props.disabled) return
       if (active.value) return
-      api.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
+      api.goToOption(Focus.Specific, props.id, ActivationTrigger.Pointer)
     }
 
     function handleLeave() {
@@ -779,6 +783,7 @@ export let ListboxOption = defineComponent({
     return () => {
       let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
+      let { id, value: _value, disabled: _disabled, ...theirProps } = props
       let ourProps = {
         id,
         ref: internalOptionRef,
@@ -800,7 +805,7 @@ export let ListboxOption = defineComponent({
 
       return render({
         ourProps,
-        theirProps: omit(props, ['value', 'disabled']),
+        theirProps,
         slot,
         attrs,
         slots,

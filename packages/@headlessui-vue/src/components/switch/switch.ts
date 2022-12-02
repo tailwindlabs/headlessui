@@ -75,11 +75,11 @@ export let Switch = defineComponent({
     defaultChecked: { type: Boolean, optional: true },
     name: { type: String, optional: true },
     value: { type: String, optional: true },
+    id: { type: String, default: () => `headlessui-switch-${useId()}` },
   },
   inheritAttrs: false,
   setup(props, { emit, attrs, slots, expose }) {
     let api = inject(GroupContext, null)
-    let id = `headlessui-switch-${useId()}`
 
     let [checked, theirOnChange] = useControllable(
       computed(() => props.modelValue),
@@ -141,7 +141,7 @@ export let Switch = defineComponent({
     })
 
     return () => {
-      let { name, value, ...theirProps } = props
+      let { id, name, value, ...theirProps } = props
       let slot = { checked: checked.value }
       let ourProps = {
         id,

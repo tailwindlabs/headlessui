@@ -43,8 +43,8 @@ interface StateDefinition {
   buttonRef: MutableRefObject<HTMLButtonElement | null>
   panelRef: MutableRefObject<HTMLDivElement | null>
 
-  buttonId: string
-  panelId: string
+  buttonId: string | null
+  panelId: string | null
 }
 
 enum ActionTypes {
@@ -61,8 +61,8 @@ enum ActionTypes {
 type Actions =
   | { type: ActionTypes.ToggleDisclosure }
   | { type: ActionTypes.CloseDisclosure }
-  | { type: ActionTypes.SetButtonId; buttonId: string }
-  | { type: ActionTypes.SetPanelId; panelId: string }
+  | { type: ActionTypes.SetButtonId; buttonId: string | null }
+  | { type: ActionTypes.SetPanelId; panelId: string | null }
   | { type: ActionTypes.LinkPanel }
   | { type: ActionTypes.UnlinkPanel }
 
@@ -157,8 +157,6 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
   ref: Ref<TTag>
 ) {
   let { defaultOpen = false, ...theirProps } = props
-  let buttonId = `headlessui-disclosure-button-${useId()}`
-  let panelId = `headlessui-disclosure-panel-${useId()}`
   let internalDisclosureRef = useRef<HTMLElement | null>(null)
   let disclosureRef = useSyncRefs(
     ref,
@@ -180,18 +178,16 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
     linkedPanel: false,
     buttonRef,
     panelRef,
-    buttonId,
-    panelId,
+    buttonId: null,
+    panelId: null,
   } as StateDefinition)
-  let [{ disclosureState }, dispatch] = reducerBag
-
-  useEffect(() => dispatch({ type: ActionTypes.SetButtonId, buttonId }), [buttonId, dispatch])
-  useEffect(() => dispatch({ type: ActionTypes.SetPanelId, panelId }), [panelId, dispatch])
+  let [{ disclosureState, buttonId }, dispatch] = reducerBag
 
   let close = useEvent((focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => {
     dispatch({ type: ActionTypes.CloseDisclosure })
     let ownerDocument = getOwnerDocument(internalDisclosureRef)
     if (!ownerDocument) return
+    if (!buttonId) return
 
     let restoreElement = (() => {
       if (!focusableElement) return ownerDocument.getElementById(buttonId)
@@ -243,24 +239,29 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
 }
-type ButtonPropsWeControl =
-  | 'id'
-  | 'type'
-  | 'aria-expanded'
-  | 'aria-controls'
-  | 'onKeyDown'
-  | 'onClick'
+type ButtonPropsWeControl = 'type' | 'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
 
 let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-disclosure-button-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Button')
   let panelContext = useDisclosurePanelContext()
   let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
 
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
   let buttonRef = useSyncRefs(internalButtonRef, ref, !isWithinPanel ? state.buttonRef : null)
+
+  useEffect(() => {
+    if (isWithinPanel) return
+
+    dispatch({ type: ActionTypes.SetButtonId, buttonId: id })
+    return () => {
+      dispatch({ type: ActionTypes.SetButtonId, buttonId: null })
+    }
+  }, [id, dispatch, isWithinPanel])
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (isWithinPanel) {
@@ -316,12 +317,11 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   )
 
   let type = useResolveButtonType(props, internalButtonRef)
-  let theirProps = props
   let ourProps = isWithinPanel
     ? { ref: buttonRef, type, onKeyDown: handleKeyDown, onClick: handleClick }
     : {
         ref: buttonRef,
-        id: state.buttonId,
+        id,
         type,
         'aria-expanded': props.disabled
           ? undefined
@@ -348,21 +348,28 @@ interface PanelRenderPropArg {
   open: boolean
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
 }
-type PanelPropsWeControl = 'id'
 
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
-    PropsForFeatures<typeof PanelRenderFeatures>,
+  props: Props<TTag, PanelRenderPropArg> & PropsForFeatures<typeof PanelRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-disclosure-panel-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
 
   let panelRef = useSyncRefs(ref, state.panelRef, (el) => {
     dispatch({ type: el ? ActionTypes.LinkPanel : ActionTypes.UnlinkPanel })
   })
+
+  useEffect(() => {
+    dispatch({ type: ActionTypes.SetPanelId, panelId: id })
+    return () => {
+      dispatch({ type: ActionTypes.SetPanelId, panelId: null })
+    }
+  }, [id, dispatch])
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -378,10 +385,9 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     [state, close]
   )
 
-  let theirProps = props
   let ourProps = {
     ref: panelRef,
-    id: state.panelId,
+    id,
   }
 
   return (

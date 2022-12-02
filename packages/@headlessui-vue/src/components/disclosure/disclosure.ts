@@ -8,6 +8,8 @@ import {
   Ref,
   computed,
   watchEffect,
+  onMounted,
+  onUnmounted,
 } from 'vue'
 
 import { Keys } from '../../keyboard'
@@ -27,9 +29,9 @@ interface StateDefinition {
   // State
   disclosureState: Ref<DisclosureStates>
   panel: Ref<HTMLElement | null>
-  panelId: string
+  panelId: Ref<string | null>
   button: Ref<HTMLButtonElement | null>
-  buttonId: string
+  buttonId: Ref<string | null>
 
   // State mutators
   toggleDisclosure(): void
@@ -53,7 +55,7 @@ function useDisclosureContext(component: string) {
   return context
 }
 
-let DisclosurePanelContext = Symbol('DisclosurePanelContext') as InjectionKey<string | null>
+let DisclosurePanelContext = Symbol('DisclosurePanelContext') as InjectionKey<Ref<string | null>>
 function useDisclosurePanelContext() {
   return inject(DisclosurePanelContext, null)
 }
@@ -67,9 +69,6 @@ export let Disclosure = defineComponent({
     defaultOpen: { type: [Boolean], default: false },
   },
   setup(props, { slots, attrs }) {
-    let buttonId = `headlessui-disclosure-button-${useId()}`
-    let panelId = `headlessui-disclosure-panel-${useId()}`
-
     let disclosureState = ref<StateDefinition['disclosureState']['value']>(
       props.defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed
     )
@@ -77,8 +76,8 @@ export let Disclosure = defineComponent({
     let buttonRef = ref<StateDefinition['button']['value']>(null)
 
     let api = {
-      buttonId,
-      panelId,
+      buttonId: ref(null),
+      panelId: ref(null),
       disclosureState,
       panel: panelRef,
       button: buttonRef,
@@ -139,18 +138,28 @@ export let DisclosureButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
+    id: { type: String, default: () => `headlessui-disclosure-button-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosureButton')
 
+    onMounted(() => {
+      api.buttonId.value = props.id
+    })
+    onUnmounted(() => {
+      api.buttonId.value = null
+    })
+
     let panelContext = useDisclosurePanelContext()
-    let isWithinPanel = panelContext === null ? false : panelContext === api.panelId
+    let isWithinPanel = computed(() =>
+      panelContext === null ? false : panelContext.value === api.panelId.value
+    )
 
     let internalButtonRef = ref<HTMLButtonElement | null>(null)
 
     expose({ el: internalButtonRef, $el: internalButtonRef })
 
-    if (!isWithinPanel) {
+    if (!isWithinPanel.value) {
       watchEffect(() => {
         api.button.value = internalButtonRef.value
       })
@@ -164,7 +173,7 @@ export let DisclosureButton = defineComponent({
     function handleClick() {
       if (props.disabled) return
 
-      if (isWithinPanel) {
+      if (isWithinPanel.value) {
         api.toggleDisclosure()
         dom(api.button)?.focus()
       } else {
@@ -174,7 +183,7 @@ export let DisclosureButton = defineComponent({
     function handleKeyDown(event: KeyboardEvent) {
       if (props.disabled) return
 
-      if (isWithinPanel) {
+      if (isWithinPanel.value) {
         switch (event.key) {
           case Keys.Space:
           case Keys.Enter:
@@ -208,7 +217,8 @@ export let DisclosureButton = defineComponent({
 
     return () => {
       let slot = { open: api.disclosureState.value === DisclosureStates.Open }
-      let ourProps = isWithinPanel
+      let { id, ...theirProps } = props
+      let ourProps = isWithinPanel.value
         ? {
             ref: internalButtonRef,
             type: type.value,
@@ -216,13 +226,13 @@ export let DisclosureButton = defineComponent({
             onKeydown: handleKeyDown,
           }
         : {
-            id: api.buttonId,
+            id,
             ref: internalButtonRef,
             type: type.value,
             'aria-expanded': props.disabled
               ? undefined
               : api.disclosureState.value === DisclosureStates.Open,
-            'aria-controls': dom(api.panel) ? api.panelId : undefined,
+            'aria-controls': dom(api.panel) ? api.panelId.value : undefined,
             disabled: props.disabled ? true : undefined,
             onClick: handleClick,
             onKeydown: handleKeyDown,
@@ -231,7 +241,7 @@ export let DisclosureButton = defineComponent({
 
       return render({
         ourProps,
-        theirProps: props,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -249,9 +259,17 @@ export let DisclosurePanel = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
+    id: { type: String, default: () => `headlessui-disclosure-panel-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosurePanel')
+
+    onMounted(() => {
+      api.panelId.value = props.id
+    })
+    onUnmounted(() => {
+      api.panelId.value = null
+    })
 
     expose({ el: api.panel, $el: api.panel })
 
@@ -268,11 +286,12 @@ export let DisclosurePanel = defineComponent({
 
     return () => {
       let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
-      let ourProps = { id: api.panelId, ref: api.panel }
+      let { id, ...theirProps } = props
+      let ourProps = { id, ref: api.panel }
 
       return render({
         ourProps,
-        theirProps: props,
+        theirProps,
         slot,
         attrs,
         slots,

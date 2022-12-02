@@ -6,7 +6,10 @@ import {
   inject,
   provide,
   ref,
+  shallowRef,
   watchEffect,
+  onMounted,
+  onUnmounted,
 
   // Types
   InjectionKey,
@@ -14,7 +17,7 @@ import {
 } from 'vue'
 
 import { match } from '../../utils/match'
-import { render, omit, Features } from '../../utils/render'
+import { render, Features } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import {
@@ -43,9 +46,9 @@ interface StateDefinition {
   // State
   popoverState: Ref<PopoverStates>
   button: Ref<HTMLElement | null>
-  buttonId: string
+  buttonId: Ref<string | null>
   panel: Ref<HTMLElement | null>
-  panelId: string
+  panelId: Ref<string | null>
 
   isPortalled: Ref<boolean>
 
@@ -82,14 +85,14 @@ function usePopoverGroupContext() {
   return inject(PopoverGroupContext, null)
 }
 
-let PopoverPanelContext = Symbol('PopoverPanelContext') as InjectionKey<string | null>
+let PopoverPanelContext = Symbol('PopoverPanelContext') as InjectionKey<Ref<string | null>>
 function usePopoverPanelContext() {
   return inject(PopoverPanelContext, null)
 }
 
 interface PopoverRegisterBag {
-  buttonId: string
-  panelId: string
+  buttonId: Ref<string | null>
+  panelId: Ref<string | null>
   close(): void
 }
 
@@ -101,9 +104,6 @@ export let Popover = defineComponent({
     as: { type: [Object, String], default: 'div' },
   },
   setup(props, { slots, attrs, expose }) {
-    let buttonId = `headlessui-popover-button-${useId()}`
-    let panelId = `headlessui-popover-panel-${useId()}`
-
     let internalPopoverRef = ref<HTMLElement | null>(null)
 
     expose({ el: internalPopoverRef, $el: internalPopoverRef })
@@ -150,8 +150,8 @@ export let Popover = defineComponent({
 
     let api = {
       popoverState,
-      buttonId,
-      panelId,
+      buttonId: ref(null),
+      panelId: ref(null),
       panel,
       button,
       isPortalled,
@@ -193,8 +193,8 @@ export let Popover = defineComponent({
     )
 
     let registerBag = {
-      buttonId,
-      panelId,
+      buttonId: api.buttonId,
+      panelId: api.panelId,
       close() {
         api.closePopover()
       },
@@ -267,6 +267,7 @@ export let PopoverButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
+    id: { type: String, default: () => `headlessui-popover-button-${useId()}` },
   },
   inheritAttrs: false,
   setup(props, { attrs, slots, expose }) {
@@ -275,16 +276,25 @@ export let PopoverButton = defineComponent({
 
     expose({ el: api.button, $el: api.button })
 
+    onMounted(() => {
+      api.buttonId.value = props.id
+    })
+    onUnmounted(() => {
+      api.buttonId.value = null
+    })
+
     let groupContext = usePopoverGroupContext()
     let closeOthers = groupContext?.closeOthers
 
     let panelContext = usePopoverPanelContext()
-    let isWithinPanel = panelContext === null ? false : panelContext === api.panelId
+    let isWithinPanel = computed(() =>
+      panelContext === null ? false : panelContext.value === api.panelId.value
+    )
 
     let elementRef = ref(null)
     let sentinelId = `headlessui-focus-sentinel-${useId()}`
 
-    if (!isWithinPanel) {
+    if (!isWithinPanel.value) {
       watchEffect(() => {
         api.button.value = elementRef.value
       })
@@ -296,7 +306,7 @@ export let PopoverButton = defineComponent({
     )
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (isWithinPanel) {
+      if (isWithinPanel.value) {
         if (api.popoverState.value === PopoverStates.Closed) return
         switch (event.key) {
           case Keys.Space:
@@ -314,12 +324,13 @@ export let PopoverButton = defineComponent({
           case Keys.Enter:
             event.preventDefault() // Prevent triggering a *click* event
             event.stopPropagation()
-            if (api.popoverState.value === PopoverStates.Closed) closeOthers?.(api.buttonId)
+            if (api.popoverState.value === PopoverStates.Closed) closeOthers?.(api.buttonId.value!)
             api.togglePopover()
             break
 
           case Keys.Escape:
-            if (api.popoverState.value !== PopoverStates.Open) return closeOthers?.(api.buttonId)
+            if (api.popoverState.value !== PopoverStates.Open)
+              return closeOthers?.(api.buttonId.value!)
             if (!dom(api.button)) return
             if (
               ownerDocument.value?.activeElement &&
@@ -335,7 +346,7 @@ export let PopoverButton = defineComponent({
     }
 
     function handleKeyUp(event: KeyboardEvent) {
-      if (isWithinPanel) return
+      if (isWithinPanel.value) return
       if (event.key === Keys.Space) {
         // Required for firefox, event.preventDefault() in handleKeyDown for
         // the Space key doesn't cancel the handleKeyUp, which in turn
@@ -346,13 +357,13 @@ export let PopoverButton = defineComponent({
 
     function handleClick(event: MouseEvent) {
       if (props.disabled) return
-      if (isWithinPanel) {
+      if (isWithinPanel.value) {
         api.closePopover()
         dom(api.button)?.focus() // Re-focus the original opening Button
       } else {
         event.preventDefault()
         event.stopPropagation()
-        if (api.popoverState.value === PopoverStates.Closed) closeOthers?.(api.buttonId)
+        if (api.popoverState.value === PopoverStates.Closed) closeOthers?.(api.buttonId.value!)
         api.togglePopover()
         dom(api.button)?.focus()
       }
@@ -366,7 +377,8 @@ export let PopoverButton = defineComponent({
     return () => {
       let visible = api.popoverState.value === PopoverStates.Open
       let slot = { open: visible }
-      let ourProps = isWithinPanel
+      let { id, ...theirProps } = props
+      let ourProps = isWithinPanel.value
         ? {
             ref: elementRef,
             type: type.value,
@@ -375,12 +387,12 @@ export let PopoverButton = defineComponent({
           }
         : {
             ref: elementRef,
-            id: api.buttonId,
+            id,
             type: type.value,
             'aria-expanded': props.disabled
               ? undefined
               : api.popoverState.value === PopoverStates.Open,
-            'aria-controls': dom(api.panel) ? api.panelId : undefined,
+            'aria-controls': dom(api.panel) ? api.panelId.value : undefined,
             disabled: props.disabled ? true : undefined,
             onKeydown: handleKeyDown,
             onKeyup: handleKeyUp,
@@ -411,14 +423,14 @@ export let PopoverButton = defineComponent({
       return h(Fragment, [
         render({
           ourProps,
-          theirProps: { ...attrs, ...props },
+          theirProps: { ...attrs, ...theirProps },
           slot,
           attrs: attrs,
           slots: slots,
           name: 'PopoverButton',
         }),
         visible &&
-          !isWithinPanel &&
+          !isWithinPanel.value &&
           api.isPortalled.value &&
           h(Hidden, {
             id: sentinelId,
@@ -489,6 +501,7 @@ export let PopoverPanel = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
     focus: { type: Boolean, default: false },
+    id: { type: String, default: () => `headlessui-popover-panel-${useId()}` },
   },
   inheritAttrs: false,
   setup(props, { attrs, slots, expose }) {
@@ -500,6 +513,13 @@ export let PopoverPanel = defineComponent({
     let afterPanelSentinelId = `headlessui-focus-sentinel-after-${useId()}`
 
     expose({ el: api.panel, $el: api.panel })
+
+    onMounted(() => {
+      api.panelId.value = props.id
+    })
+    onUnmounted(() => {
+      api.panelId.value = null
+    })
 
     provide(PopoverPanelContext, api.panelId)
 
@@ -632,9 +652,10 @@ export let PopoverPanel = defineComponent({
         close: api.close,
       }
 
+      let { id, focus: _focus, ...theirProps } = props
       let ourProps = {
         ref: api.panel,
-        id: api.panelId,
+        id,
         onKeydown: handleKeyDown,
         onFocusout: focus && api.popoverState.value === PopoverStates.Open ? handleBlur : undefined,
         tabIndex: -1,
@@ -642,7 +663,7 @@ export let PopoverPanel = defineComponent({
 
       return render({
         ourProps,
-        theirProps: { ...attrs, ...omit(props, ['focus']) },
+        theirProps: { ...attrs, ...theirProps },
         attrs,
         slot,
         slots: {
@@ -690,7 +711,7 @@ export let PopoverGroup = defineComponent({
   },
   setup(props, { attrs, slots, expose }) {
     let groupRef = ref<HTMLElement | null>(null)
-    let popovers = ref<PopoverRegisterBag[]>([])
+    let popovers = shallowRef<PopoverRegisterBag[]>([])
     let ownerDocument = computed(() => getOwnerDocument(groupRef))
 
     expose({ el: groupRef, $el: groupRef })
@@ -717,15 +738,15 @@ export let PopoverGroup = defineComponent({
       // Check if the focus is in one of the button or panel elements. This is important in case you are rendering inside a Portal.
       return popovers.value.some((bag) => {
         return (
-          owner!.getElementById(bag.buttonId)?.contains(element) ||
-          owner!.getElementById(bag.panelId)?.contains(element)
+          owner!.getElementById(bag.buttonId.value!)?.contains(element) ||
+          owner!.getElementById(bag.panelId.value!)?.contains(element)
         )
       })
     }
 
     function closeOthers(buttonId: string) {
       for (let popover of popovers.value) {
-        if (popover.buttonId !== buttonId) popover.close()
+        if (popover.buttonId.value !== buttonId) popover.close()
       }
     }
 

@@ -657,7 +657,6 @@ interface InputRenderPropArg {
   disabled: boolean
 }
 type InputPropsWeControl =
-  | 'id'
   | 'role'
   | 'aria-labelledby'
   | 'aria-expanded'
@@ -678,7 +677,14 @@ let Input = forwardRefWithAs(function Input<
   },
   ref: Ref<HTMLInputElement>
 ) {
-  let { value, onChange, displayValue, type = 'text', ...theirProps } = props
+  let internalId = useId()
+  let {
+    id = `headlessui-combobox-input-${internalId}`,
+    onChange,
+    displayValue,
+    type = 'text',
+    ...theirProps
+  } = props
   let data = useData('Combobox.Input')
   let actions = useActions('Combobox.Input')
 
@@ -686,7 +692,6 @@ let Input = forwardRefWithAs(function Input<
 
   let isTyping = useRef(false)
 
-  let id = `headlessui-combobox-input-${useId()}`
   let d = useDisposables()
 
   // When a `displayValue` prop is given, we should use it to transform the current selected
@@ -931,7 +936,6 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  | 'id'
   | 'type'
   | 'tabIndex'
   | 'aria-haspopup'
@@ -949,8 +953,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let data = useData('Combobox.Button')
   let actions = useActions('Combobox.Button')
   let buttonRef = useSyncRefs(data.buttonRef, ref)
-
-  let id = `headlessui-combobox-button-${useId()}`
+  let internalId = useId()
+  let { id = `headlessui-combobox-button-${internalId}`, ...theirProps } = props
   let d = useDisposables()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
@@ -1017,7 +1021,6 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     }),
     [data]
   )
-  let theirProps = props
   let ourProps = {
     ref: buttonRef,
     id,
@@ -1048,14 +1051,15 @@ interface LabelRenderPropArg {
   open: boolean
   disabled: boolean
 }
-type LabelPropsWeControl = 'id' | 'ref' | 'onClick'
+type LabelPropsWeControl = 'ref' | 'onClick'
 
 let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
   ref: Ref<HTMLLabelElement>
 ) {
+  let internalId = useId()
+  let { id = `headlessui-combobox-label-${internalId}`, ...theirProps } = props
   let data = useData('Combobox.Label')
-  let id = `headlessui-combobox-label-${useId()}`
   let actions = useActions('Combobox.Label')
   let labelRef = useSyncRefs(data.labelRef, ref)
 
@@ -1068,7 +1072,6 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
     [data]
   )
 
-  let theirProps = props
   let ourProps = { ref: labelRef, id, onClick: handleClick }
 
   return render({
@@ -1090,7 +1093,6 @@ type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
   | 'hold'
-  | 'id'
   | 'onKeyDown'
   | 'role'
   | 'tabIndex'
@@ -1106,12 +1108,11 @@ let Options = forwardRefWithAs(function Options<
     },
   ref: Ref<HTMLUListElement>
 ) {
-  let { hold = false, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-combobox-options-${internalId}`, hold = false, ...theirProps } = props
   let data = useData('Combobox.Options')
 
   let optionsRef = useSyncRefs(data.optionsRef, ref)
-
-  let id = `headlessui-combobox-options-${useId()}`
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -1179,7 +1180,7 @@ interface OptionRenderPropArg {
   selected: boolean
   disabled: boolean
 }
-type ComboboxOptionPropsWeControl = 'id' | 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
+type ComboboxOptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
 
 let Option = forwardRefWithAs(function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
@@ -1193,11 +1194,16 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLLIElement>
 ) {
-  let { disabled = false, value, ...theirProps } = props
+  let internalId = useId()
+  let {
+    id = `headlessui-combobox-option-${internalId}`,
+    disabled = false,
+    value,
+    ...theirProps
+  } = props
   let data = useData('Combobox.Option')
   let actions = useActions('Combobox.Option')
 
-  let id = `headlessui-combobox-option-${useId()}`
   let active =
     data.activeOptionIndex !== null ? data.options[data.activeOptionIndex].id === id : false
 

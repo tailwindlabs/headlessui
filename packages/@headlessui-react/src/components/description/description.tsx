@@ -91,14 +91,14 @@ let DEFAULT_DESCRIPTION_TAG = 'p' as const
 
 export let Description = forwardRefWithAs(function Description<
   TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
->(props: Props<TTag, {}, 'id'>, ref: Ref<HTMLParagraphElement>) {
+>(props: Props<TTag>, ref: Ref<HTMLParagraphElement>) {
+  let internalId = useId()
+  let { id = `headlessui-description-${internalId}`, ...theirProps } = props
   let context = useDescriptionContext()
-  let id = `headlessui-description-${useId()}`
   let descriptionRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
-  let theirProps = props
   let ourProps = { ref: descriptionRef, ...context.props, id }
 
   return render({

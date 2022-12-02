@@ -245,10 +245,10 @@ export let MenuButton = defineComponent({
   props: {
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
+    id: { type: String, default: () => `headlessui-menu-button-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useMenuContext('MenuButton')
-    let id = `headlessui-menu-button-${useId()}`
 
     expose({ el: api.buttonRef, $el: api.buttonRef })
 
@@ -310,6 +310,8 @@ export let MenuButton = defineComponent({
 
     return () => {
       let slot = { open: api.menuState.value === MenuStates.Open }
+
+      let { id, ...theirProps } = props
       let ourProps = {
         ref: api.buttonRef,
         id,
@@ -321,7 +323,6 @@ export let MenuButton = defineComponent({
         onKeyup: handleKeyUp,
         onClick: handleClick,
       }
-      let theirProps = props
 
       return render({
         ourProps,
@@ -341,10 +342,10 @@ export let MenuItems = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
+    id: { type: String, default: () => `headlessui-menu-items-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useMenuContext('MenuItems')
-    let id = `headlessui-menu-items-${useId()}`
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
     expose({ el: api.itemsRef, $el: api.itemsRef })
@@ -460,6 +461,7 @@ export let MenuItems = defineComponent({
 
     return () => {
       let slot = { open: api.menuState.value === MenuStates.Open }
+      let { id, ...theirProps } = props
       let ourProps = {
         'aria-activedescendant':
           api.activeItemIndex.value === null
@@ -473,8 +475,6 @@ export let MenuItems = defineComponent({
         tabIndex: 0,
         ref: api.itemsRef,
       }
-
-      let theirProps = props
 
       return render({
         ourProps,
@@ -495,17 +495,17 @@ export let MenuItem = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
+    id: { type: String, default: () => `headlessui-menu-item-${useId()}` },
   },
   setup(props, { slots, attrs, expose }) {
     let api = useMenuContext('MenuItem')
-    let id = `headlessui-menu-item-${useId()}`
     let internalItemRef = ref<HTMLElement | null>(null)
 
     expose({ el: internalItemRef, $el: internalItemRef })
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null
-        ? api.items.value[api.activeItemIndex.value].id === id
+        ? api.items.value[api.activeItemIndex.value].id === props.id
         : false
     })
 
@@ -519,8 +519,8 @@ export let MenuItem = defineComponent({
       if (textValue !== undefined) dataRef.value.textValue = textValue
     })
 
-    onMounted(() => api.registerItem(id, dataRef))
-    onUnmounted(() => api.unregisterItem(id))
+    onMounted(() => api.registerItem(props.id, dataRef))
+    onUnmounted(() => api.unregisterItem(props.id))
 
     watchEffect(() => {
       if (api.menuState.value !== MenuStates.Open) return
@@ -537,13 +537,13 @@ export let MenuItem = defineComponent({
 
     function handleFocus() {
       if (props.disabled) return api.goToItem(Focus.Nothing)
-      api.goToItem(Focus.Specific, id)
+      api.goToItem(Focus.Specific, props.id)
     }
 
     function handleMove() {
       if (props.disabled) return
       if (active.value) return
-      api.goToItem(Focus.Specific, id, ActivationTrigger.Pointer)
+      api.goToItem(Focus.Specific, props.id, ActivationTrigger.Pointer)
     }
 
     function handleLeave() {
@@ -555,6 +555,7 @@ export let MenuItem = defineComponent({
     return () => {
       let { disabled } = props
       let slot = { active: active.value, disabled, close: api.closeMenu }
+      let { id, ...theirProps } = props
       let ourProps = {
         id,
         ref: internalItemRef,
@@ -568,7 +569,6 @@ export let MenuItem = defineComponent({
         onPointerleave: handleLeave,
         onMouseleave: handleLeave,
       }
-      let theirProps = props
 
       return render({
         ourProps,

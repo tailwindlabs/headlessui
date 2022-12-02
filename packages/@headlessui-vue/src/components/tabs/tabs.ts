@@ -219,10 +219,10 @@ export let Tab = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
+    id: { type: String, default: () => `headlessui-tabs-tab-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useTabsContext('Tab')
-    let id = `headlessui-tabs-tab-${useId()}`
 
     let internalTabRef = ref<HTMLElement | null>(null)
 
@@ -321,6 +321,7 @@ export let Tab = defineComponent({
 
     return () => {
       let slot = { selected: selected.value }
+      let { id, ...theirProps } = props
       let ourProps = {
         ref: internalTabRef,
         onKeydown: handleKeyDown,
@@ -337,7 +338,7 @@ export let Tab = defineComponent({
 
       return render({
         ourProps,
-        theirProps: props,
+        theirProps,
         slot,
         attrs,
         slots,
@@ -378,10 +379,10 @@ export let TabPanel = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
+    id: { type: String, default: () => `headlessui-tabs-panel-${useId()}` },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useTabsContext('TabPanel')
-    let id = `headlessui-tabs-panel-${useId()}`
 
     let internalPanelRef = ref<HTMLElement | null>(null)
 
@@ -395,6 +396,7 @@ export let TabPanel = defineComponent({
 
     return () => {
       let slot = { selected: selected.value }
+      let { id, ...theirProps } = props
       let ourProps = {
         ref: internalPanelRef,
         id,
@@ -409,7 +411,7 @@ export let TabPanel = defineComponent({
 
       return render({
         ourProps,
-        theirProps: props,
+        theirProps,
         slot,
         attrs,
         slots,
