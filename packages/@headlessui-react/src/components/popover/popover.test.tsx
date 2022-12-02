@@ -859,7 +859,7 @@ describe('Keyboard interactions', () => {
         assertPopoverButton({ state: PopoverState.Visible })
         assertPopoverPanel({
           state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-2' },
+          attributes: { id: 'headlessui-popover-panel-3' },
         })
 
         // Close popover
@@ -925,7 +925,7 @@ describe('Keyboard interactions', () => {
         assertPopoverButton({ state: PopoverState.Visible })
         assertPopoverPanel({
           state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-2' },
+          attributes: { id: 'headlessui-popover-panel-3' },
         })
 
         // Close popover
@@ -1835,7 +1835,7 @@ describe('Keyboard interactions', () => {
         assertPopoverButton({ state: PopoverState.Visible })
         assertPopoverPanel({
           state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-2' },
+          attributes: { id: 'headlessui-popover-panel-3' },
         })
       })
     )
@@ -1897,7 +1897,7 @@ describe('Keyboard interactions', () => {
         assertPopoverButton({ state: PopoverState.Visible })
         assertPopoverPanel({
           state: PopoverState.Visible,
-          attributes: { id: 'headlessui-popover-panel-2' },
+          attributes: { id: 'headlessui-popover-panel-3' },
         })
 
         // Close popover
@@ -2043,7 +2043,7 @@ describe('Mouse interactions', () => {
       assertPopoverButton({ state: PopoverState.Visible })
       assertPopoverPanel({
         state: PopoverState.Visible,
-        attributes: { id: 'headlessui-popover-panel-2' },
+        attributes: { id: 'headlessui-popover-panel-3' },
       })
     })
   )

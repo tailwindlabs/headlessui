@@ -88,7 +88,6 @@ interface SwitchRenderPropArg {
   checked: boolean
 }
 type SwitchPropsWeControl =
-  | 'id'
   | 'role'
   | 'tabIndex'
   | 'aria-checked'
@@ -115,6 +114,7 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   ref: Ref<HTMLElement>
 ) {
   let {
+    id = `headlessui-switch-${useId()}`,
     checked: controlledChecked,
     defaultChecked = false,
     onChange: controlledOnChange,
@@ -122,7 +122,6 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     value,
     ...theirProps
   } = props
-  let id = `headlessui-switch-${useId()}`
   let groupContext = useContext(GroupContext)
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
   let switchRef = useSyncRefs(

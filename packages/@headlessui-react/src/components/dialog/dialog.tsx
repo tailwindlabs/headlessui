@@ -140,7 +140,7 @@ let DEFAULT_DIALOG_TAG = 'div' as const
 interface DialogRenderPropArg {
   open: boolean
 }
-type DialogPropsWeControl = 'id' | 'role' | 'aria-modal' | 'aria-describedby' | 'aria-labelledby'
+type DialogPropsWeControl = 'role' | 'aria-modal' | 'aria-describedby' | 'aria-labelledby'
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -156,7 +156,14 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { open, onClose, initialFocus, __demoMode = false, ...theirProps } = props
+  let {
+    id = `headlessui-dialog-${useId()}`,
+    open,
+    onClose,
+    initialFocus,
+    __demoMode = false,
+    ...theirProps
+  } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let usesOpenClosedState = useOpenClosed()
@@ -295,8 +302,6 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   let [describedby, DescriptionProvider] = useDescriptions()
 
-  let id = `headlessui-dialog-${useId()}`
-
   let contextBag = useMemo<ContextType<typeof DialogContext>>(
     () => [{ dialogState, close, setTitleId }, state],
     [dialogState, state, close, setTitleId]
@@ -381,15 +386,14 @@ let DEFAULT_OVERLAY_TAG = 'div' as const
 interface OverlayRenderPropArg {
   open: boolean
 }
-type OverlayPropsWeControl = 'id' | 'aria-hidden' | 'onClick'
+type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
 
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
 >(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
+  let { id = `headlessui-dialog-overlay-${useId()}`, ...theirProps } = props
   let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
   let overlayRef = useSyncRefs(ref)
-
-  let id = `headlessui-dialog-overlay-${useId()}`
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (event.target !== event.currentTarget) return
@@ -404,7 +408,6 @@ let Overlay = forwardRefWithAs(function Overlay<
     [dialogState]
   )
 
-  let theirProps = props
   let ourProps = {
     ref: overlayRef,
     id,
@@ -427,15 +430,14 @@ let DEFAULT_BACKDROP_TAG = 'div' as const
 interface BackdropRenderPropArg {
   open: boolean
 }
-type BackdropPropsWeControl = 'id' | 'aria-hidden' | 'onClick'
+type BackdropPropsWeControl = 'aria-hidden' | 'onClick'
 
 let Backdrop = forwardRefWithAs(function Backdrop<
   TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG
 >(props: Props<TTag, BackdropRenderPropArg, BackdropPropsWeControl>, ref: Ref<HTMLDivElement>) {
+  let { id = `headlessui-dialog-backdrop-${useId()}`, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Backdrop')
   let backdropRef = useSyncRefs(ref)
-
-  let id = `headlessui-dialog-backdrop-${useId()}`
 
   useEffect(() => {
     if (state.panelRef.current === null) {
@@ -450,7 +452,6 @@ let Backdrop = forwardRefWithAs(function Backdrop<
     [dialogState]
   )
 
-  let theirProps = props
   let ourProps = {
     ref: backdropRef,
     id,
@@ -483,10 +484,9 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   props: Props<TTag, PanelRenderPropArg>,
   ref: Ref<HTMLDivElement>
 ) {
+  let { id = `headlessui-dialog-panel-${useId()}`, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Panel')
   let panelRef = useSyncRefs(ref, state.panelRef)
-
-  let id = `headlessui-dialog-panel-${useId()}`
 
   let slot = useMemo<PanelRenderPropArg>(
     () => ({ open: dialogState === DialogStates.Open }),
@@ -499,7 +499,6 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     event.stopPropagation()
   })
 
-  let theirProps = props
   let ourProps = {
     ref: panelRef,
     id,
@@ -521,15 +520,14 @@ let DEFAULT_TITLE_TAG = 'h2' as const
 interface TitleRenderPropArg {
   open: boolean
 }
-type TitlePropsWeControl = 'id'
 
 let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
-  props: Props<TTag, TitleRenderPropArg, TitlePropsWeControl>,
+  props: Props<TTag, TitleRenderPropArg>,
   ref: Ref<HTMLHeadingElement>
 ) {
+  let { id = `headlessui-dialog-title-${useId()}`, ...theirProps } = props
   let [{ dialogState, setTitleId }] = useDialogContext('Dialog.Title')
 
-  let id = `headlessui-dialog-title-${useId()}`
   let titleRef = useSyncRefs(ref)
 
   useEffect(() => {
@@ -542,7 +540,6 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
     [dialogState]
   )
 
-  let theirProps = props
   let ourProps = { ref: titleRef, id }
 
   return render({

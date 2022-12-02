@@ -83,14 +83,13 @@ let DEFAULT_LABEL_TAG = 'label' as const
 export let Label = forwardRefWithAs(function Label<
   TTag extends ElementType = typeof DEFAULT_LABEL_TAG
 >(
-  props: Props<TTag, {}, 'id'> & {
+  props: Props<TTag> & {
     passive?: boolean
   },
   ref: Ref<HTMLLabelElement>
 ) {
-  let { passive = false, ...theirProps } = props
+  let { id = `headlessui-label-${useId()}`, passive = false, ...theirProps } = props
   let context = useLabelContext()
-  let id = `headlessui-label-${useId()}`
   let labelRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])

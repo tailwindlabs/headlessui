@@ -131,7 +131,7 @@ let DEFAULT_RADIO_GROUP_TAG = 'div' as const
 interface RadioGroupRenderPropArg<TType> {
   value: TType
 }
-type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby' | 'id'
+type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby'
 
 let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
@@ -152,6 +152,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   ref: Ref<HTMLElement>
 ) {
   let {
+    id = `headlessui-radiogroup-${useId()}`,
     value: controlledValue,
     defaultValue,
     name,
@@ -172,7 +173,6 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   let options = state.options as unknown as Option<TType>[]
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
-  let id = `headlessui-radiogroup-${useId()}`
   let internalRadioGroupRef = useRef<HTMLElement | null>(null)
   let radioGroupRef = useSyncRefs(internalRadioGroupRef, ref)
 
@@ -372,7 +372,6 @@ interface OptionRenderPropArg {
 }
 type RadioPropsWeControl =
   | 'aria-checked'
-  | 'id'
   | 'onBlur'
   | 'onClick'
   | 'onFocus'
@@ -392,15 +391,19 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLElement>
 ) {
+  let {
+    id = `headlessui-radiogroup-option-${useId()}`,
+    value,
+    disabled = false,
+    ...theirProps
+  } = props
   let internalOptionRef = useRef<HTMLElement | null>(null)
   let optionRef = useSyncRefs(internalOptionRef, ref)
-  let id = `headlessui-radiogroup-option-${useId()}`
 
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
   let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
 
-  let { value, disabled = false, ...theirProps } = props
   let propsRef = useLatestValue({ value, disabled })
 
   let data = useData('RadioGroup.Option')
