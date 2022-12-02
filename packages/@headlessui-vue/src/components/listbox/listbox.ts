@@ -168,7 +168,14 @@ export let Listbox = defineComponent({
 
     let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
     let [value, theirOnChange] = useControllable(
-      computed(() => props.modelValue),
+      computed(() =>
+        props.modelValue === undefined
+          ? match(mode.value, {
+              [ValueMode.Multi]: [],
+              [ValueMode.Single]: undefined,
+            })
+          : props.modelValue
+      ),
       (value: unknown) => emit('update:modelValue', value),
       computed(() => props.defaultValue)
     )

@@ -403,7 +403,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     multiple = false,
     ...theirProps
   } = props
-  let [value, theirOnChange] = useControllable<any>(
+  let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
     controlledValue,
     controlledOnChange,
     defaultValue

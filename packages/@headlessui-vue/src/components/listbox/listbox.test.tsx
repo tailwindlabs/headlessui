@@ -183,6 +183,45 @@ describe('Rendering', () => {
       })
     )
 
+    it(
+      'should not crash in multiple mode',
+      suppressConsoleLogs(async () => {
+        let options = [
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'Bob' },
+          { id: 3, name: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
+            <Listbox multiple name="abc">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption
+                  v-for="option in options"
+                  :key="option.id"
+                  :value="option"
+                  v-slot="data"
+                  >{{ JSON.stringify(data) }}</ListboxOption
+                >
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => {
+            let value = ref(options[1])
+            return { options, value }
+          },
+        })
+
+        await click(getListboxButton())
+        let [alice, bob, charlie] = getListboxOptions()
+
+        await click(alice)
+        await click(bob)
+        await click(charlie)
+      })
+    )
+
     describe('Equality', () => {
       let options = [
         { id: 1, name: 'Alice' },

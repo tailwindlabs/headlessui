@@ -203,6 +203,45 @@ describe('Rendering', () => {
       })
     )
 
+    it(
+      'should not crash in multiple mode',
+      suppressConsoleLogs(async () => {
+        let options = [
+          { id: 1, name: 'Alice' },
+          { id: 2, name: 'Bob' },
+          { id: 3, name: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
+            <Combobox multiple name="abc">
+              <ComboboxButton>Trigger</ComboboxButton>
+              <ComboboxOptions>
+                <ComboboxOption
+                  v-for="option in options"
+                  :key="option.id"
+                  :value="option"
+                  v-slot="data"
+                  >{{ JSON.stringify(data) }}</ComboboxOption
+                >
+              </ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => {
+            let value = ref(options[1])
+            return { options, value }
+          },
+        })
+
+        await click(getComboboxButton())
+        let [alice, bob, charlie] = getComboboxOptions()
+
+        await click(alice)
+        await click(bob)
+        await click(charlie)
+      })
+    )
+
     describe('Equality', () => {
       let options = [
         { id: 1, name: 'Alice' },
