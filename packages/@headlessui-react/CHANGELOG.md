@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `shift+home` and `shift+end` works as expected in the `Combobox.Input` component ([#2024](https://github.com/tailwindlabs/headlessui/pull/2024))
 - Improve syncing of the `Combobox.Input` value ([#2042](https://github.com/tailwindlabs/headlessui/pull/2042))
 - Fix crash when using `multiple` mode without `value` prop (uncontrolled) for `Listbox` and `Combobox` components ([#2058](https://github.com/tailwindlabs/headlessui/pull/2058))
+- Apply `enter` and `enterFrom` classes in SSR for `Transition` component ([#2059](https://github.com/tailwindlabs/headlessui/pull/2059))
 
 ## [1.7.4] - 2022-11-03
 
