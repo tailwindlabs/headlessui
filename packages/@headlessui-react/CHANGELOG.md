@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve syncing of the `Combobox.Input` value ([#2042](https://github.com/tailwindlabs/headlessui/pull/2042))
 - Fix crash when using `multiple` mode without `value` prop (uncontrolled) for `Listbox` and `Combobox` components ([#2058](https://github.com/tailwindlabs/headlessui/pull/2058))
 - Apply `enter` and `enterFrom` classes in SSR for `Transition` component ([#2059](https://github.com/tailwindlabs/headlessui/pull/2059))
+- Allow passing in your own `id` prop ([#2060](https://github.com/tailwindlabs/headlessui/pull/2060))
 
 ## [1.7.4] - 2022-11-03
 
