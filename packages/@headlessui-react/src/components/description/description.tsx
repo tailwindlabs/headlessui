@@ -92,7 +92,8 @@ let DEFAULT_DESCRIPTION_TAG = 'p' as const
 export let Description = forwardRefWithAs(function Description<
   TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
 >(props: Props<TTag>, ref: Ref<HTMLParagraphElement>) {
-  let { id = `headlessui-description-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-description-${internalId}`, ...theirProps } = props
   let context = useDescriptionContext()
   let descriptionRef = useSyncRefs(ref)
 

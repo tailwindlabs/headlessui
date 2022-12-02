@@ -88,7 +88,8 @@ export let Label = forwardRefWithAs(function Label<
   },
   ref: Ref<HTMLLabelElement>
 ) {
-  let { id = `headlessui-label-${useId()}`, passive = false, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-label-${internalId}`, passive = false, ...theirProps } = props
   let context = useLabelContext()
   let labelRef = useSyncRefs(ref)
 

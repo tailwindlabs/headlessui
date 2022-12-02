@@ -318,7 +318,8 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   props: Props<TTag, TabRenderPropArg, TabPropsWeControl>,
   ref: Ref<HTMLElement>
 ) {
-  let { id = `headlessui-tabs-tab-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-tabs-tab-${internalId}`, ...theirProps } = props
 
   let { orientation, activation, selectedIndex, tabs, panels } = useData('Tab')
   let actions = useActions('Tab')
@@ -480,7 +481,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     PropsForFeatures<typeof PanelRenderFeatures>,
   ref: Ref<HTMLElement>
 ) {
-  let { id = `headlessui-tabs-panel-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-tabs-panel-${internalId}`, ...theirProps } = props
   let { selectedIndex, tabs, panels } = useData('Tab.Panel')
   let actions = useActions('Tab.Panel')
   let SSRContext = useSSRTabsCounter('Tab.Panel')

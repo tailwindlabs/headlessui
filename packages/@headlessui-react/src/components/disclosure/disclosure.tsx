@@ -245,7 +245,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let { id = `headlessui-disclosure-button-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-disclosure-button-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Button')
   let panelContext = useDisclosurePanelContext()
   let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
@@ -354,7 +355,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   props: Props<TTag, PanelRenderPropArg> & PropsForFeatures<typeof PanelRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
-  let { id = `headlessui-disclosure-panel-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-disclosure-panel-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
 

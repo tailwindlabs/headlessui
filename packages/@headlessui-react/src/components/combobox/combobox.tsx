@@ -677,8 +677,9 @@ let Input = forwardRefWithAs(function Input<
   },
   ref: Ref<HTMLInputElement>
 ) {
+  let internalId = useId()
   let {
-    id = `headlessui-combobox-input-${useId()}`,
+    id = `headlessui-combobox-input-${internalId}`,
     onChange,
     displayValue,
     type = 'text',
@@ -952,7 +953,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let data = useData('Combobox.Button')
   let actions = useActions('Combobox.Button')
   let buttonRef = useSyncRefs(data.buttonRef, ref)
-  let { id = `headlessui-combobox-button-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-combobox-button-${internalId}`, ...theirProps } = props
   let d = useDisposables()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
@@ -1055,7 +1057,8 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
   ref: Ref<HTMLLabelElement>
 ) {
-  let { id = `headlessui-combobox-label-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-combobox-label-${internalId}`, ...theirProps } = props
   let data = useData('Combobox.Label')
   let actions = useActions('Combobox.Label')
   let labelRef = useSyncRefs(data.labelRef, ref)
@@ -1105,7 +1108,8 @@ let Options = forwardRefWithAs(function Options<
     },
   ref: Ref<HTMLUListElement>
 ) {
-  let { id = `headlessui-combobox-options-${useId()}`, hold = false, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-combobox-options-${internalId}`, hold = false, ...theirProps } = props
   let data = useData('Combobox.Options')
 
   let optionsRef = useSyncRefs(data.optionsRef, ref)
@@ -1190,8 +1194,9 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLLIElement>
 ) {
+  let internalId = useId()
   let {
-    id = `headlessui-combobox-option-${useId()}`,
+    id = `headlessui-combobox-option-${internalId}`,
     disabled = false,
     value,
     ...theirProps

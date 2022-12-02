@@ -113,8 +113,9 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   },
   ref: Ref<HTMLElement>
 ) {
+  let internalId = useId()
   let {
-    id = `headlessui-switch-${useId()}`,
+    id = `headlessui-switch-${internalId}`,
     checked: controlledChecked,
     defaultChecked = false,
     onChange: controlledOnChange,

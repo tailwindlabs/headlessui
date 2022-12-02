@@ -156,8 +156,9 @@ let DialogRoot = forwardRefWithAs(function Dialog<
     },
   ref: Ref<HTMLDivElement>
 ) {
+  let internalId = useId()
   let {
-    id = `headlessui-dialog-${useId()}`,
+    id = `headlessui-dialog-${internalId}`,
     open,
     onClose,
     initialFocus,
@@ -391,7 +392,8 @@ type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
 >(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
-  let { id = `headlessui-dialog-overlay-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-dialog-overlay-${internalId}`, ...theirProps } = props
   let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
   let overlayRef = useSyncRefs(ref)
 
@@ -435,7 +437,8 @@ type BackdropPropsWeControl = 'aria-hidden' | 'onClick'
 let Backdrop = forwardRefWithAs(function Backdrop<
   TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG
 >(props: Props<TTag, BackdropRenderPropArg, BackdropPropsWeControl>, ref: Ref<HTMLDivElement>) {
-  let { id = `headlessui-dialog-backdrop-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-dialog-backdrop-${internalId}`, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Backdrop')
   let backdropRef = useSyncRefs(ref)
 
@@ -484,7 +487,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   props: Props<TTag, PanelRenderPropArg>,
   ref: Ref<HTMLDivElement>
 ) {
-  let { id = `headlessui-dialog-panel-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-dialog-panel-${internalId}`, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Panel')
   let panelRef = useSyncRefs(ref, state.panelRef)
 
@@ -525,7 +529,8 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
   props: Props<TTag, TitleRenderPropArg>,
   ref: Ref<HTMLHeadingElement>
 ) {
-  let { id = `headlessui-dialog-title-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-dialog-title-${internalId}`, ...theirProps } = props
   let [{ dialogState, setTitleId }] = useDialogContext('Dialog.Title')
 
   let titleRef = useSyncRefs(ref)

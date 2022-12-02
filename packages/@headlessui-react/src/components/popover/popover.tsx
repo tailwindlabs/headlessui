@@ -378,7 +378,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let { id = `headlessui-popover-button-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-popover-button-${internalId}`, ...theirProps } = props
   let [state, dispatch] = usePopoverContext('Popover.Button')
   let { isPortalled } = usePopoverAPIContext('Popover.Button')
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
@@ -576,7 +577,8 @@ let Overlay = forwardRefWithAs(function Overlay<
     PropsForFeatures<typeof OverlayRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
-  let { id = `headlessui-popover-overlay-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-popover-overlay-${internalId}`, ...theirProps } = props
   let [{ popoverState }, dispatch] = usePopoverContext('Popover.Overlay')
   let overlayRef = useSyncRefs(ref)
 
@@ -635,7 +637,8 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     },
   ref: Ref<HTMLDivElement>
 ) {
-  let { id = `headlessui-popover-panel-${useId()}`, focus = false, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-popover-panel-${internalId}`, focus = false, ...theirProps } = props
 
   let [state, dispatch] = usePopoverContext('Popover.Panel')
   let { close, isPortalled } = usePopoverAPIContext('Popover.Panel')

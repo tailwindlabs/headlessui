@@ -151,8 +151,9 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   },
   ref: Ref<HTMLElement>
 ) {
+  let internalId = useId()
   let {
-    id = `headlessui-radiogroup-${useId()}`,
+    id = `headlessui-radiogroup-${internalId}`,
     value: controlledValue,
     defaultValue,
     name,
@@ -391,8 +392,9 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLElement>
 ) {
+  let internalId = useId()
   let {
-    id = `headlessui-radiogroup-option-${useId()}`,
+    id = `headlessui-radiogroup-option-${internalId}`,
     value,
     disabled = false,
     ...theirProps

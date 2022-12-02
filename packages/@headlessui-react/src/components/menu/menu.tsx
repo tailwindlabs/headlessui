@@ -310,7 +310,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let { id = `headlessui-menu-button-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-menu-button-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Button')
   let buttonRef = useSyncRefs(state.buttonRef, ref)
 
@@ -406,7 +407,8 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     PropsForFeatures<typeof ItemsRenderFeatures>,
   ref: Ref<HTMLDivElement>
 ) {
-  let { id = `headlessui-menu-items-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-menu-items-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Items')
   let itemsRef = useSyncRefs(state.itemsRef, ref)
   let ownerDocument = useOwnerDocument(state.itemsRef)
@@ -582,7 +584,8 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   },
   ref: Ref<HTMLElement>
 ) {
-  let { id = `headlessui-menu-item-${useId()}`, disabled = false, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-menu-item-${internalId}`, disabled = false, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Item')
   let active = state.activeItemIndex !== null ? state.items[state.activeItemIndex].id === id : false
   let internalItemRef = useRef<HTMLElement | null>(null)

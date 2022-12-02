@@ -591,7 +591,8 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let { id = `headlessui-listbox-button-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-listbox-button-${internalId}`, ...theirProps } = props
   let data = useData('Listbox.Button')
   let actions = useActions('Listbox.Button')
   let buttonRef = useSyncRefs(data.buttonRef, ref)
@@ -694,7 +695,8 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
   props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
   ref: Ref<HTMLElement>
 ) {
-  let { id = `headlessui-listbox-label-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-listbox-label-${internalId}`, ...theirProps } = props
   let data = useData('Listbox.Label')
   let actions = useActions('Listbox.Label')
   let labelRef = useSyncRefs(data.labelRef, ref)
@@ -741,7 +743,8 @@ let Options = forwardRefWithAs(function Options<
     PropsForFeatures<typeof OptionsRenderFeatures>,
   ref: Ref<HTMLElement>
 ) {
-  let { id = `headlessui-listbox-options-${useId()}`, ...theirProps } = props
+  let internalId = useId()
+  let { id = `headlessui-listbox-options-${internalId}`, ...theirProps } = props
   let data = useData('Listbox.Options')
   let actions = useActions('Listbox.Options')
   let optionsRef = useSyncRefs(data.optionsRef, ref)
@@ -902,8 +905,9 @@ let Option = forwardRefWithAs(function Option<
   },
   ref: Ref<HTMLElement>
 ) {
+  let internalId = useId()
   let {
-    id = `headlessui-listbox-option-${useId()}`,
+    id = `headlessui-listbox-option-${internalId}`,
     disabled = false,
     value,
     ...theirProps
