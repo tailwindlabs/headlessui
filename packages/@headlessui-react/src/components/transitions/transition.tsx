@@ -30,6 +30,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
 import { useDisposables } from '../../hooks/use-disposables'
+import { classNames } from '../../utils/class-names'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
 
@@ -411,6 +412,15 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
 
   let theirProps = rest
   let ourProps = { ref: transitionRef }
+
+  let isServer = typeof window === 'undefined' || typeof document === 'undefined'
+  if (appear && show && isServer) {
+    theirProps = {
+      ...theirProps,
+      // Already apply the `enter` and `enterFrom` on the server if required
+      className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
+    }
+  }
 
   return (
     <NestingContext.Provider value={nesting}>
