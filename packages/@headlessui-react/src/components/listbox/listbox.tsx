@@ -358,7 +358,11 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
-  let [value, theirOnChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
+  let [value = multiple ? [] : undefined, theirOnChange] = useControllable(
+    controlledValue,
+    controlledOnChange,
+    defaultValue
+  )
 
   let [state, dispatch] = useReducer(stateReducer, {
     dataRef: createRef(),

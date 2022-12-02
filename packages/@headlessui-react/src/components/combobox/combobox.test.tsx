@@ -172,6 +172,29 @@ describe('Rendering', () => {
       })
     )
 
+    it(
+      'should not crash in multiple mode',
+      suppressConsoleLogs(async () => {
+        render(
+          <Combobox multiple name="abc">
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              <Combobox.Option value={{ id: 1, name: 'alice' }}>alice</Combobox.Option>
+              <Combobox.Option value={{ id: 2, name: 'bob' }}>bob</Combobox.Option>
+              <Combobox.Option value={{ id: 3, name: 'charlie' }}>charlie</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+        )
+
+        await click(getComboboxButton())
+        let [alice, bob, charlie] = getComboboxOptions()
+
+        await click(alice)
+        await click(bob)
+        await click(charlie)
+      })
+    )
+
     describe('Equality', () => {
       let options = [
         { id: 1, name: 'Alice' },
