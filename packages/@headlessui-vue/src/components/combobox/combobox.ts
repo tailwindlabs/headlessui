@@ -118,7 +118,12 @@ export let Combobox = defineComponent({
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
     by: { type: [String, Function], default: () => defaultComparator },
-    modelValue: { type: [Object, String, Number, Boolean], default: undefined },
+    modelValue: {
+      type: [Object, String, Number, Boolean] as PropType<
+        object | string | number | boolean | null
+      >,
+      default: undefined,
+    },
     defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
     name: { type: String },
     nullable: { type: Boolean, default: false },

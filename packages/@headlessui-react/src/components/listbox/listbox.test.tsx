@@ -456,6 +456,30 @@ describe('Rendering', () => {
         })
       )
     })
+
+    it(
+      'null should be a valid value for the Listbox',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox value={null} onChange={console.log}>
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Options>
+              <Listbox.Option value="a">Option A</Listbox.Option>
+              <Listbox.Option value="b">Option B</Listbox.Option>
+              <Listbox.Option value="c">Option C</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+        )
+
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        await click(getListboxButton())
+
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({ state: ListboxState.Visible })
+      })
+    )
   })
 
   describe('Listbox.Label', () => {
