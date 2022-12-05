@@ -126,7 +126,12 @@ export let Listbox = defineComponent({
       >,
       default: undefined,
     },
-    defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
+    defaultValue: {
+      type: [Object, String, Number, Boolean] as PropType<
+        object | string | number | boolean | null
+      >,
+      default: undefined,
+    },
     name: { type: String, optional: true },
     multiple: { type: [Boolean], default: false },
   },
@@ -679,7 +684,11 @@ export let ListboxOption = defineComponent({
   name: 'ListboxOption',
   props: {
     as: { type: [Object, String], default: 'li' },
-    value: { type: [Object, String, Number, Boolean] },
+    value: {
+      type: [Object, String, Number, Boolean] as PropType<
+        object | string | number | boolean | null
+      >,
+    },
     disabled: { type: Boolean, default: false },
     id: { type: String, default: () => `headlessui-listbox.option-${useId()}` },
   },
