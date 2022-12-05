@@ -573,10 +573,10 @@ export let MenuItem = defineComponent({
         'aria-disabled': disabled === true ? true : undefined,
         onClick: handleClick,
         onFocus: handleFocus,
-        onPointermove: handleMove,
-        onMousemove: handleMove,
         onPointerenter: handleEnter,
         onMouseenter: handleEnter,
+        onPointermove: handleMove,
+        onMousemove: handleMove,
         onPointerleave: handleLeave,
         onMouseleave: handleLeave,
       }

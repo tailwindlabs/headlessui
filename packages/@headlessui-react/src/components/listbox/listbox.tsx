@@ -888,6 +888,8 @@ type ListboxOptionPropsWeControl =
   | 'tabIndex'
   | 'aria-disabled'
   | 'aria-selected'
+  | 'onPointerEnter'
+  | 'onMouseEnter'
   | 'onPointerLeave'
   | 'onMouseLeave'
   | 'onPointerMove'
