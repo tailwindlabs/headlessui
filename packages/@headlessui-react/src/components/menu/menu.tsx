@@ -43,7 +43,7 @@ import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-cl
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEvent } from '../../hooks/use-event'
-import { useTrackedPointer } from 'hooks/use-tracked-pointer'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 enum MenuStates {
   Open,

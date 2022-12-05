@@ -31,7 +31,7 @@ import {
   restoreFocusIfNecessary,
 } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useTrackedPointer } from 'hooks/use-tracked-pointer'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 enum MenuStates {
   Open,

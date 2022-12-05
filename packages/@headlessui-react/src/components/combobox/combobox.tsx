@@ -43,7 +43,7 @@ import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-cl
 import { Keys } from '../keyboard'
 import { useControllable } from '../../hooks/use-controllable'
 import { useWatch } from '../../hooks/use-watch'
-import { useTrackedPointer } from 'hooks/use-tracked-pointer'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 enum ComboboxState {
   Open,

@@ -35,7 +35,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
-import { useTrackedPointer } from 'hooks/use-tracked-pointer'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z

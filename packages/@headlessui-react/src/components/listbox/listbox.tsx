@@ -39,7 +39,7 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
 import { useLatestValue } from '../../hooks/use-latest-value'
-import { useTrackedPointer } from 'hooks/use-tracked-pointer'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 enum ListboxStates {
   Open,
