@@ -1058,21 +1058,21 @@ export let ComboboxOption = defineComponent({
       api.goToOption(Focus.Specific, id)
     }
 
-    let pointer = useTrackedPointer();
+    let pointer = useTrackedPointer()
 
     function handleEnter(evt: PointerEvent) {
       pointer.update(evt)
     }
 
     function handleMove(evt: PointerEvent) {
-      if (! pointer.wasMoved(evt)) return;
+      if (!pointer.wasMoved(evt)) return
       if (props.disabled) return
       if (active.value) return
       api.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
     }
 
     function handleLeave(evt: PointerEvent) {
-      if (! pointer.wasMoved(evt)) return;
+      if (!pointer.wasMoved(evt)) return
       if (props.disabled) return
       if (!active.value) return
       if (api.optionsPropsRef.value.hold) return

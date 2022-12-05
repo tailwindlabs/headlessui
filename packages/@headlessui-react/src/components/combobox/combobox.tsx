@@ -1256,19 +1256,19 @@ let Option = forwardRefWithAs(function Option<
     actions.goToOption(Focus.Specific, id)
   })
 
-  let pointer = useTrackedPointer();
+  let pointer = useTrackedPointer()
 
   let handleEnter = useEvent((evt) => pointer.update(evt))
 
   let handleMove = useEvent((evt) => {
-    if (! pointer.wasMoved(evt)) return;
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (active) return
     actions.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
   })
 
   let handleLeave = useEvent((evt) => {
-    if (! pointer.wasMoved(evt)) return;
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (!active) return
     if (data.optionsPropsRef.current.hold) return

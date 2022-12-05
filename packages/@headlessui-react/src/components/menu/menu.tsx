@@ -632,12 +632,12 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   })
 
-  let pointer = useTrackedPointer();
+  let pointer = useTrackedPointer()
 
-  let handleEnter = useEvent((evt) => pointer.update(evt));
+  let handleEnter = useEvent((evt) => pointer.update(evt))
 
   let handleMove = useEvent((evt) => {
-    if (!pointer.wasMoved(evt)) return;
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (active) return
     dispatch({
@@ -649,7 +649,7 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
   })
 
   let handleLeave = useEvent((evt) => {
-    if (!pointer.wasMoved(evt)) return;
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (!active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
