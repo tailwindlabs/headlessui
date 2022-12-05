@@ -13,7 +13,7 @@ export function useTrackedPointer() {
     wasMoved(evt: PointerEvent) {
       // TODO: This is a hack to get around the fact that our tests don't "move" the virtual pointer
       if (process.env.NODE_ENV === 'test') {
-        return true;
+        return true
       }
 
       let newPos = eventToPosition(evt)
