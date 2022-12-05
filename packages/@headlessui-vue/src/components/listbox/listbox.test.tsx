@@ -495,6 +495,33 @@ describe('Rendering', () => {
         })
       )
     })
+
+    it(
+      'null should be a valid value for the Listbox',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <Listbox v-model="value" by="id">
+              <ListboxButton>Trigger</ListboxButton>
+              <ListboxOptions>
+                <ListboxOption :value="{ id: 1, name: 'alice' }">alice</ListboxOption>
+                <ListboxOption :value="{ id: 2, name: 'bob' }">bob</ListboxOption>
+                <ListboxOption :value="{ id: 3, name: 'charlie' }">charlie</ListboxOption>
+              </ListboxOptions>
+            </Listbox>
+          `,
+          setup: () => ({ value: null }),
+        })
+
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        await click(getListboxButton())
+
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({ state: ListboxState.Visible })
+      })
+    )
   })
 
   describe('ListboxLabel', () => {

@@ -18,6 +18,7 @@ import {
   InjectionKey,
   Ref,
   UnwrapNestedRefs,
+  PropType,
 } from 'vue'
 
 import { Features, render, omit, compact } from '../../utils/render'
@@ -119,7 +120,12 @@ export let Listbox = defineComponent({
     disabled: { type: [Boolean], default: false },
     by: { type: [String, Function], default: () => defaultComparator },
     horizontal: { type: [Boolean], default: false },
-    modelValue: { type: [Object, String, Number, Boolean], default: undefined },
+    modelValue: {
+      type: [Object, String, Number, Boolean] as PropType<
+        object | string | number | boolean | null
+      >,
+      default: undefined,
+    },
     defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
     name: { type: String, optional: true },
     multiple: { type: [Boolean], default: false },
