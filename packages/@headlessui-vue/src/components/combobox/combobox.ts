@@ -124,7 +124,12 @@ export let Combobox = defineComponent({
       >,
       default: undefined,
     },
-    defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
+    defaultValue: {
+      type: [Object, String, Number, Boolean] as PropType<
+        object | string | number | boolean | null
+      >,
+      default: undefined,
+    },
     name: { type: String },
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
@@ -993,7 +998,11 @@ export let ComboboxOption = defineComponent({
   name: 'ComboboxOption',
   props: {
     as: { type: [Object, String], default: 'li' },
-    value: { type: [Object, String, Number, Boolean] },
+    value: {
+      type: [Object, String, Number, Boolean] as PropType<
+        object | string | number | boolean | null
+      >,
+    },
     disabled: { type: Boolean, default: false },
   },
   setup(props, { slots, attrs, expose }) {
