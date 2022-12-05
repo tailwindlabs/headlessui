@@ -31,6 +31,7 @@ import {
   restoreFocusIfNecessary,
 } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useTrackedPointer } from 'hooks/use-tracked-pointer'
 
 enum MenuStates {
   Open,
@@ -540,13 +541,21 @@ export let MenuItem = defineComponent({
       api.goToItem(Focus.Specific, props.id)
     }
 
-    function handleMove() {
+    let pointer = useTrackedPointer();
+
+    function handleEnter(evt: PointerEvent) {
+      pointer.update(evt)
+    }
+
+    function handleMove(evt: PointerEvent) {
+      if (! pointer.wasMoved(evt)) return;
       if (props.disabled) return
       if (active.value) return
       api.goToItem(Focus.Specific, props.id, ActivationTrigger.Pointer)
     }
 
-    function handleLeave() {
+    function handleLeave(evt: PointerEvent) {
+      if (! pointer.wasMoved(evt)) return;
       if (props.disabled) return
       if (!active.value) return
       api.goToItem(Focus.Nothing)
@@ -566,6 +575,8 @@ export let MenuItem = defineComponent({
         onFocus: handleFocus,
         onPointermove: handleMove,
         onMousemove: handleMove,
+        onPointerenter: handleEnter,
+        onMouseenter: handleEnter,
         onPointerleave: handleLeave,
         onMouseleave: handleLeave,
       }
