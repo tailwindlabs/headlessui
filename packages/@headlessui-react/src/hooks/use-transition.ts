@@ -1,8 +1,7 @@
 import { MutableRefObject } from 'react'
 
-import { Reason, transition } from '../components/transitions/utils/transition'
+import { transition } from '../components/transitions/utils/transition'
 import { disposables } from '../utils/disposables'
-import { match } from '../utils/match'
 
 import { useDisposables } from './use-disposables'
 import { useIsMounted } from './use-is-mounted'
@@ -47,15 +46,9 @@ export function useTransition({ container, direction, classes, onStart, onStop }
     onStart.current(latestDirection.current)
 
     dd.add(
-      transition(node, classes.current, latestDirection.current === 'enter', (reason) => {
+      transition(node, classes.current, latestDirection.current === 'enter', () => {
         dd.dispose()
-
-        match(reason, {
-          [Reason.Ended]() {
-            onStop.current(latestDirection.current)
-          },
-          [Reason.Cancelled]: () => {},
-        })
+        onStop.current(latestDirection.current)
       })
     )
 

@@ -1,4 +1,4 @@
-import { Reason, transition } from './transition'
+import { transition } from './transition'
 
 import { reportChanges } from '../../../test-utils/report-dom-node-changes'
 import { disposables } from '../../../utils/disposables'
@@ -26,7 +26,7 @@ it('should be possible to transition', async () => {
     )
   )
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     transition(
       element,
       {
@@ -83,7 +83,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
     )
   )
 
-  let reason = await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     transition(
       element,
       {
@@ -101,7 +101,6 @@ it('should wait the correct amount of time to finish a transition', async () => 
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))
-  expect(reason).toBe(Reason.Ended)
 
   // Initial render:
   expect(snapshots[0].content).toEqual(`<div style="transition-duration: ${duration}ms;"></div>`)
@@ -153,7 +152,7 @@ it('should keep the delay time into account', async () => {
     )
   )
 
-  let reason = await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     transition(
       element,
       {
@@ -171,7 +170,6 @@ it('should keep the delay time into account', async () => {
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))
-  expect(reason).toBe(Reason.Ended)
 
   let estimatedDuration = Number(
     (snapshots[snapshots.length - 1].recordedAt - snapshots[snapshots.length - 2].recordedAt) /
