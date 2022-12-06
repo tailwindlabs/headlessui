@@ -10,15 +10,7 @@ function removeClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.remove(...classes)
 }
 
-export enum Reason {
-  // Transition succesfully ended
-  Ended = 'ended',
-
-  // Transition was cancelled
-  Cancelled = 'cancelled',
-}
-
-function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
+function waitForTransition(node: HTMLElement, done: () => void) {
   let d = disposables()
 
   if (!node) return d.dispose
@@ -43,24 +35,24 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   if (totalDuration !== 0) {
     if (process.env.NODE_ENV === 'test') {
       let dispose = d.setTimeout(() => {
-        done(Reason.Ended)
+        done()
         dispose()
       }, totalDuration)
     } else {
       let dispose = d.addEventListener(node, 'transitionend', (event) => {
         if (event.target !== event.currentTarget) return
-        done(Reason.Ended)
+        done()
         dispose()
       })
     }
   } else {
     // No transition is happening, so we should cleanup already. Otherwise we have to wait until we
     // get disposed.
-    done(Reason.Ended)
+    done()
   }
 
   // If we get disposed before the transition finishes, we should cleanup anyway.
-  d.add(() => done(Reason.Cancelled))
+  d.add(() => done())
 
   return d.dispose
 }
@@ -77,7 +69,7 @@ export function transition(
     entered: string[]
   },
   show: boolean,
-  done?: (reason: Reason) => void
+  done?: () => void
 ) {
   let direction = show ? 'enter' : 'leave'
   let d = disposables()
@@ -121,13 +113,11 @@ export function transition(
     removeClasses(node, ...from)
     addClasses(node, ...to)
 
-    waitForTransition(node, (reason) => {
-      if (reason === Reason.Ended) {
-        removeClasses(node, ...base)
-        addClasses(node, ...classes.entered)
-      }
+    waitForTransition(node, () => {
+      removeClasses(node, ...base)
+      addClasses(node, ...classes.entered)
 
-      return _done(reason)
+      return _done()
     })
   })
 
