@@ -41,40 +41,17 @@ function waitForTransition(node: HTMLElement, done: (reason: Reason) => void) {
   let totalDuration = durationMs + delayMs
 
   if (totalDuration !== 0) {
-    let listeners: (() => void)[] = []
-
     if (process.env.NODE_ENV === 'test') {
-      listeners.push(
-        d.setTimeout(() => {
-          done(Reason.Ended)
-          listeners.splice(0).forEach((dispose) => dispose())
-        }, totalDuration)
-      )
+      let dispose = d.setTimeout(() => {
+        done(Reason.Ended)
+        dispose()
+      }, totalDuration)
     } else {
-      listeners.push(
-        d.addEventListener(node, 'transitionrun', (event) => {
-          if (event.target !== event.currentTarget) return
-
-          // Cleanup "old" listeners
-          listeners.splice(0).forEach((dispose) => dispose())
-
-          // Register new listeners
-          listeners.push(
-            d.addEventListener(node, 'transitionend', (event) => {
-              if (event.target !== event.currentTarget) return
-
-              done(Reason.Ended)
-              listeners.splice(0).forEach((dispose) => dispose())
-            }),
-            d.addEventListener(node, 'transitioncancel', (event) => {
-              if (event.target !== event.currentTarget) return
-
-              done(Reason.Cancelled)
-              listeners.splice(0).forEach((dispose) => dispose())
-            })
-          )
-        })
-      )
+      let dispose = d.addEventListener(node, 'transitionend', (event) => {
+        if (event.target !== event.currentTarget) return
+        done(Reason.Ended)
+        dispose()
+      })
     }
   } else {
     // No transition is happening, so we should cleanup already. Otherwise we have to wait until we
