@@ -1,5 +1,6 @@
 import { fireEvent } from '@testing-library/dom'
 import { disposables } from '../utils/disposables'
+import { pointer } from './fake-pointer'
 
 let d = disposables()
 
@@ -297,9 +298,11 @@ export async function mouseEnter(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    fireEvent.pointerOver(element)
-    fireEvent.pointerEnter(element)
-    fireEvent.mouseOver(element)
+    pointer.randomize()
+
+    fireEvent.pointerOver(element, pointer.options)
+    fireEvent.pointerEnter(element, pointer.options)
+    fireEvent.mouseOver(element, pointer.options)
 
     await new Promise(nextFrame)
   } catch (err) {
@@ -312,8 +315,13 @@ export async function mouseMove(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    fireEvent.pointerMove(element)
-    fireEvent.mouseMove(element)
+    pointer.advance()
+
+    pointer.bypassingTrackingChecks(() => {
+      fireEvent.pointerMove(element)
+    })
+
+    fireEvent.mouseMove(element, pointer.options)
 
     await new Promise(nextFrame)
   } catch (err) {
@@ -326,10 +334,15 @@ export async function mouseLeave(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    fireEvent.pointerOut(element)
-    fireEvent.pointerLeave(element)
-    fireEvent.mouseOut(element)
-    fireEvent.mouseLeave(element)
+    pointer.advance()
+
+    pointer.bypassingTrackingChecks(() => {
+      fireEvent.pointerOut(element)
+      fireEvent.pointerLeave(element)
+    })
+
+    fireEvent.mouseOut(element, pointer.options)
+    fireEvent.mouseLeave(element, pointer.options)
 
     await new Promise(nextFrame)
   } catch (err) {

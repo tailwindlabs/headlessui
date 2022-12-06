@@ -28,12 +28,12 @@ resolverOptions+=('/**/*.{ts,tsx}')
 resolverOptions+=('--ignore=.test.,__mocks__')
 INPUT_FILES=$($resolver ${resolverOptions[@]})
 
-NODE_ENV=production  $esbuild $INPUT_FILES --format=esm --outdir=$DST               --outbase=$SRC --minify --pure:React.createElement ${sharedOptions[@]} &
-NODE_ENV=production  $esbuild $input       --format=esm --outfile=$DST/$name.esm.js --outbase=$SRC --minify --pure:React.createElement ${sharedOptions[@]} &
+NODE_ENV=production  $esbuild $INPUT_FILES --format=esm --outdir=$DST               --outbase=$SRC --minify --pure:React.createElement ${sharedOptions[@]} --define:process.env.TEST_IGNORE_TRACKED_POINTER="false" &
+NODE_ENV=production  $esbuild $input       --format=esm --outfile=$DST/$name.esm.js --outbase=$SRC --minify --pure:React.createElement ${sharedOptions[@]} --define:process.env.TEST_IGNORE_TRACKED_POINTER="false" &
 
 # Common JS
-NODE_ENV=production  $esbuild $input --format=cjs --outfile=$DST/$name.prod.cjs --minify --bundle --pure:React.createElement ${sharedOptions[@]} $@ &
-NODE_ENV=development $esbuild $input --format=cjs --outfile=$DST/$name.dev.cjs           --bundle --pure:React.createElement ${sharedOptions[@]} $@ &
+NODE_ENV=production  $esbuild $input --format=cjs --outfile=$DST/$name.prod.cjs --minify --bundle --pure:React.createElement ${sharedOptions[@]} $@ --define:process.env.TEST_IGNORE_TRACKED_POINTER="false" &
+NODE_ENV=development $esbuild $input --format=cjs --outfile=$DST/$name.dev.cjs           --bundle --pure:React.createElement ${sharedOptions[@]} $@ --define:process.env.TEST_IGNORE_TRACKED_POINTER="false" &
 
 # Generate types
 tsc --emitDeclarationOnly --outDir $DST &

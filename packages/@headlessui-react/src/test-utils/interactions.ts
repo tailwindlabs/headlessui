@@ -1,5 +1,6 @@
 import { fireEvent } from '@testing-library/react'
 import { disposables } from '../utils/disposables'
+import { pointer } from './fake-pointer'
 
 let d = disposables()
 
@@ -318,7 +319,10 @@ export async function mouseMove(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    fireEvent.pointerMove(element)
+    pointer.bypassingTrackingChecks(() => {
+      fireEvent.pointerMove(element)
+    })
+
     fireEvent.mouseMove(element)
 
     await new Promise(nextFrame)
@@ -332,8 +336,11 @@ export async function mouseLeave(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
-    fireEvent.pointerOut(element)
-    fireEvent.pointerLeave(element)
+    pointer.bypassingTrackingChecks(() => {
+      fireEvent.pointerOut(element)
+      fireEvent.pointerLeave(element)
+    })
+
     fireEvent.mouseOut(element)
     fireEvent.mouseLeave(element)
 
