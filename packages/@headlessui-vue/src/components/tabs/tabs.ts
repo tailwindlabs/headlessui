@@ -58,6 +58,10 @@ function useTabsContext(component: string) {
   return context
 }
 
+let TabsSSRContext = Symbol('TabsSSRContext') as InjectionKey<
+  Ref<{ tabs: string[]; panels: string[] } | null>
+>
+
 // ---
 
 export let TabGroup = defineComponent({
@@ -84,7 +88,7 @@ export let TabGroup = defineComponent({
     )
 
     let api = {
-      selectedIndex,
+      selectedIndex: computed(() => selectedIndex.value ?? props.defaultIndex ?? null),
       orientation: computed(() => (props.vertical ? 'vertical' : 'horizontal')),
       activation: computed(() => (props.manual ? 'manual' : 'auto')),
       tabs,
@@ -115,6 +119,16 @@ export let TabGroup = defineComponent({
     }
 
     provide(TabsContext, api)
+
+    let SSRCounter = ref({ tabs: [], panels: [] })
+    let mounted = ref(false)
+    onMounted(() => {
+      mounted.value = true
+    })
+    provide(
+      TabsSSRContext,
+      computed(() => (mounted.value ? null : SSRCounter.value))
+    )
 
     watchEffect(() => {
       if (api.tabs.value.length <= 0) return
@@ -231,7 +245,22 @@ export let Tab = defineComponent({
     onMounted(() => api.registerTab(internalTabRef))
     onUnmounted(() => api.unregisterTab(internalTabRef))
 
-    let myIndex = computed(() => api.tabs.value.indexOf(internalTabRef))
+    let SSRContext = inject(TabsSSRContext)!
+    let mySSRIndex = computed(() => {
+      if (SSRContext.value) {
+        let mySSRIndex = SSRContext.value.tabs.indexOf(props.id)
+        if (mySSRIndex === -1) return SSRContext.value.tabs.push(props.id) - 1
+        return mySSRIndex
+      }
+
+      return -1
+    })
+
+    let myIndex = computed(() => {
+      let myIndex = api.tabs.value.indexOf(internalTabRef)
+      if (myIndex === -1) return mySSRIndex.value
+      return myIndex
+    })
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
     function activateUsing(cb: () => FocusResult) {
@@ -391,7 +420,22 @@ export let TabPanel = defineComponent({
     onMounted(() => api.registerPanel(internalPanelRef))
     onUnmounted(() => api.unregisterPanel(internalPanelRef))
 
-    let myIndex = computed(() => api.panels.value.indexOf(internalPanelRef))
+    let SSRContext = inject(TabsSSRContext)!
+    let mySSRIndex = computed(() => {
+      if (SSRContext.value) {
+        let mySSRIndex = SSRContext.value.panels.indexOf(props.id)
+        if (mySSRIndex === -1) return SSRContext.value.panels.push(props.id) - 1
+        return mySSRIndex
+      }
+
+      return -1
+    })
+
+    let myIndex = computed(() => {
+      let myIndex = api.panels.value.indexOf(internalPanelRef)
+      if (myIndex === -1) return mySSRIndex.value
+      return myIndex
+    })
     let selected = computed(() => myIndex.value === api.selectedIndex.value)
 
     return () => {
