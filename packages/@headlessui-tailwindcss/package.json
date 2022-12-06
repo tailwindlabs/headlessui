@@ -1,6 +1,6 @@
 {
   "name": "@headlessui/tailwindcss",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A complementary Tailwind CSS plugin",
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
