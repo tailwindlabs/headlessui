@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crash when using `multiple` mode without `value` prop (uncontrolled) for `Listbox` and `Combobox` components ([#2058](https://github.com/tailwindlabs/headlessui/pull/2058))
 - Allow passing in your own `id` prop ([#2060](https://github.com/tailwindlabs/headlessui/pull/2060))
 - Add `null` as a valid type for Listbox and Combobox in Vue ([#2064](https://github.com/tailwindlabs/headlessui/pull/2064), [#2067](https://github.com/tailwindlabs/headlessui/pull/2067))
+- Improve SSR for Tabs in Vue ([#2068](https://github.com/tailwindlabs/headlessui/pull/2068))
 
 ## [1.7.4] - 2022-11-03
 
