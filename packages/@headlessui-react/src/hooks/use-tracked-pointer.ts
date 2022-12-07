@@ -25,7 +25,7 @@ export function useTrackedPointer() {
       }
 
       lastPos.current = newPos
-      return false
+      return true
     },
 
     update(evt: PointerEvent) {

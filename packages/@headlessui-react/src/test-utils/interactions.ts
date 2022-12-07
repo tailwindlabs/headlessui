@@ -319,11 +319,13 @@ export async function mouseMove(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
+    pointer.advance()
+
     pointer.bypassingTrackingChecks(() => {
       fireEvent.pointerMove(element)
     })
 
-    fireEvent.mouseMove(element)
+    fireEvent.mouseMove(element, pointer.options)
 
     await new Promise(nextFrame)
   } catch (err) {
@@ -336,13 +338,15 @@ export async function mouseLeave(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
 
+    pointer.advance()
+
     pointer.bypassingTrackingChecks(() => {
       fireEvent.pointerOut(element)
       fireEvent.pointerLeave(element)
     })
 
-    fireEvent.mouseOut(element)
-    fireEvent.mouseLeave(element)
+    fireEvent.mouseOut(element, pointer.options)
+    fireEvent.mouseLeave(element, pointer.options)
 
     await new Promise(nextFrame)
   } catch (err) {
