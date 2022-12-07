@@ -43,6 +43,7 @@ import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-cl
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEvent } from '../../hooks/use-event'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 enum MenuStates {
   Open,
@@ -631,7 +632,12 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Specific, id })
   })
 
-  let handleMove = useEvent(() => {
+  let pointer = useTrackedPointer()
+
+  let handleEnter = useEvent((evt) => pointer.update(evt))
+
+  let handleMove = useEvent((evt) => {
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (active) return
     dispatch({
@@ -642,7 +648,8 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     })
   })
 
-  let handleLeave = useEvent(() => {
+  let handleLeave = useEvent((evt) => {
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (!active) return
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
@@ -661,6 +668,8 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
+    onPointerEnter: handleEnter,
+    onMouseEnter: handleEnter,
     onPointerMove: handleMove,
     onMouseMove: handleMove,
     onPointerLeave: handleLeave,

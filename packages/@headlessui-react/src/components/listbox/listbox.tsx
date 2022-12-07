@@ -39,6 +39,7 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 enum ListboxStates {
   Open,
@@ -957,13 +958,19 @@ let Option = forwardRefWithAs(function Option<
     actions.goToOption(Focus.Specific, id)
   })
 
-  let handleMove = useEvent(() => {
+  let pointer = useTrackedPointer()
+
+  let handleEnter = useEvent((evt) => pointer.update(evt))
+
+  let handleMove = useEvent((evt) => {
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (active) return
     actions.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
   })
 
-  let handleLeave = useEvent(() => {
+  let handleLeave = useEvent((evt) => {
+    if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (!active) return
     actions.goToOption(Focus.Nothing)
@@ -986,6 +993,8 @@ let Option = forwardRefWithAs(function Option<
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
+    onPointerEnter: handleEnter,
+    onMouseEnter: handleEnter,
     onPointerMove: handleMove,
     onMouseMove: handleMove,
     onPointerLeave: handleLeave,

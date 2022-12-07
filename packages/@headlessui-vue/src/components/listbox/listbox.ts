@@ -34,6 +34,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -783,13 +784,21 @@ export let ListboxOption = defineComponent({
       api.goToOption(Focus.Specific, props.id)
     }
 
-    function handleMove() {
+    let pointer = useTrackedPointer()
+
+    function handleEnter(evt: PointerEvent) {
+      pointer.update(evt)
+    }
+
+    function handleMove(evt: PointerEvent) {
+      if (!pointer.wasMoved(evt)) return
       if (props.disabled) return
       if (active.value) return
       api.goToOption(Focus.Specific, props.id, ActivationTrigger.Pointer)
     }
 
-    function handleLeave() {
+    function handleLeave(evt: PointerEvent) {
+      if (!pointer.wasMoved(evt)) return
       if (props.disabled) return
       if (!active.value) return
       api.goToOption(Focus.Nothing)
@@ -812,6 +821,8 @@ export let ListboxOption = defineComponent({
         disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
         onFocus: handleFocus,
+        onPointerenter: handleEnter,
+        onMouseenter: handleEnter,
         onPointermove: handleMove,
         onMousemove: handleMove,
         onPointerleave: handleLeave,

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Apply `enter` and `enterFrom` classes in SSR for `Transition` component ([#2059](https://github.com/tailwindlabs/headlessui/pull/2059))
 - Allow passing in your own `id` prop ([#2060](https://github.com/tailwindlabs/headlessui/pull/2060))
 - Fix `Dialog` unmounting problem due to incorrect `transitioncancel` event in the `Transition` component on Android ([#2071](https://github.com/tailwindlabs/headlessui/pull/2071))
+- Ignore pointer events in Listbox, Menu, and Combobox when cursor hasn't moved ([#2069](https://github.com/tailwindlabs/headlessui/pull/2069))
 
 ## [1.7.4] - 2022-11-03
 
