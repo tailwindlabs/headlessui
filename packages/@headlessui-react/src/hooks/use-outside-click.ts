@@ -69,6 +69,12 @@ export function useOutsideClick(
       if (domNode?.contains(target)) {
         return
       }
+
+      // If the click crossed a shadow boundary, we need to check if the container
+      // is inside the tree by using `composedPath` to "pierce" the shadow boundary
+      if (event.composed && event.composedPath().includes(domNode as EventTarget)) {
+        return
+      }
     }
 
     // This allows us to check whether the event was defaultPrevented when you are nesting this
