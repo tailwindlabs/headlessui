@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow passing in your own `id` prop ([#2060](https://github.com/tailwindlabs/headlessui/pull/2060))
 - Fix `Dialog` unmounting problem due to incorrect `transitioncancel` event in the `Transition` component on Android ([#2071](https://github.com/tailwindlabs/headlessui/pull/2071))
 - Ignore pointer events in Listbox, Menu, and Combobox when cursor hasn't moved ([#2069](https://github.com/tailwindlabs/headlessui/pull/2069))
+- Allow clicks inside dialog panel when target is inside shadow root ([#2079](https://github.com/tailwindlabs/headlessui/pull/2079))
 
 ## [1.7.4] - 2022-11-03
 

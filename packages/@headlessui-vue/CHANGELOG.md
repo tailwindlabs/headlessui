@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `null` as a valid type for Listbox and Combobox in Vue ([#2064](https://github.com/tailwindlabs/headlessui/pull/2064), [#2067](https://github.com/tailwindlabs/headlessui/pull/2067))
 - Improve SSR for Tabs in Vue ([#2068](https://github.com/tailwindlabs/headlessui/pull/2068))
 - Ignore pointer events in Listbox, Menu, and Combobox when cursor hasn't moved ([#2069](https://github.com/tailwindlabs/headlessui/pull/2069))
+- Allow clicks inside dialog panel when target is inside shadow root ([#2079](https://github.com/tailwindlabs/headlessui/pull/2079))
 
 ## [1.7.4] - 2022-11-03
 
