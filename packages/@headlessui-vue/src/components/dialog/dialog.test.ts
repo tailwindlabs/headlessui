@@ -1482,6 +1482,107 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should be possible to click elements inside the dialog when they reside inside a shadow boundary',
+    suppressConsoleLogs(async () => {
+      let fn = jest.fn()
+
+      let ShadowChildren = defineComponent({
+        props: ['id', 'buttonId'],
+        setup(props) {
+          let container = ref<HTMLDivElement | null>(null)
+
+          onMounted(() => {
+            if (!container.value || container.value.shadowRoot) {
+              return
+            }
+
+            let shadowRoot = container.value.attachShadow({ mode: 'open' })
+            let button = document.createElement('button')
+            button.id = props.buttonId
+            button.textContent = 'Inside shadow root'
+            button.addEventListener('click', fn)
+            shadowRoot.appendChild(button)
+          })
+
+          return () => h('div', { id: props.id, ref: container })
+        },
+      })
+
+      renderTemplate({
+        components: { ShadowChildren },
+        template: `
+          <div>
+            <button @click="setIsOpen(true)">open</button>
+            <Dialog :open="isOpen" @close="setIsOpen(false)">
+              <div>
+                <button id="btn_outside_light" @click="fn">
+                  Button
+                </button>
+                <ShadowChildren id="outside_shadow" buttonId="btn_outside_shadow" />
+              </div>
+              <DialogPanel>
+                <button id="btn_inside_light" @click="fn">
+                  Button
+                </button>
+                <ShadowChildren id="inside_shadow" buttonId="btn_inside_shadow" />
+              </DialogPanel>
+            </Dialog>
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            fn,
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      await nextFrame()
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button inside the dialog (light DOM)
+      await click(document.querySelector('#btn_inside_light'))
+
+      // Verify the button was clicked
+      expect(fn).toHaveBeenCalledTimes(1)
+
+      // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button inside the dialog (shadow DOM)
+      await click(
+        document.querySelector('#inside_shadow')?.shadowRoot?.querySelector('#btn_inside_shadow') ??
+          null
+      )
+
+      // Verify the button was clicked
+      expect(fn).toHaveBeenCalledTimes(2)
+
+      // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button outside the dialog (shadow DOM)
+      await click(
+        document
+          .querySelector('#outside_shadow')
+          ?.shadowRoot?.querySelector('#btn_outside_shadow') ?? null
+      )
+
+      // Verify the button was clicked
+      expect(fn).toHaveBeenCalledTimes(3)
+
+      // Verify the dialog is closed
+      assertDialog({ state: DialogState.InvisibleUnmounted })
+    })
+  )
+
+  it(
     'should close the Dialog if we click outside the DialogPanel',
     suppressConsoleLogs(async () => {
       renderTemplate({
