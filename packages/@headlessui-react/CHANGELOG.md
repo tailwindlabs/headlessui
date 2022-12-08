@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.5] - 2022-12-08
+
 ### Fixed
 
 - Reset form-like components when the parent `<form>` resets ([#2004](https://github.com/tailwindlabs/headlessui/pull/2004))
@@ -387,7 +391,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.4...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.5...HEAD
+[1.7.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.4...@headlessui/react@v1.7.5
 [1.7.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.3...@headlessui/react@v1.7.4
 [1.7.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.2...@headlessui/react@v1.7.3
 [1.7.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.1...@headlessui/react@v1.7.2
