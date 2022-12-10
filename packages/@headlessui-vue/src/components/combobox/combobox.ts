@@ -1089,7 +1089,7 @@ export let ComboboxOption = defineComponent({
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
         // According to the WAI-ARIA best practices, we should use aria-checked for
-        // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
+        // multi-select,but Voice-Over disagrees. So we use aria-selected instead for
         // both single and multi-select.
         'aria-selected': selected.value,
         disabled: undefined, // Never forward the `disabled` prop
