@@ -661,18 +661,16 @@ export let ComboboxInput = defineComponent({
 
     expose({ el: api.inputRef, $el: api.inputRef })
 
-    let currentValue = ref(api.value.value as unknown as string)
-
     // When a `displayValue` prop is given, we should use it to transform the current selected
-    // option(s) so that the format can be chosen by developers implementing this.
-    // This is useful if your data is an object and you just want to pick a certain property or want
-    // to create a dynamic value like `firstName + ' ' + lastName`.
+    // option(s) so that the format can be chosen by developers implementing this. This is useful if
+    // your data is an object and you just want to pick a certain property or want to create a dynamic
+    // value like `firstName + ' ' + lastName`.
     //
     // Note: This can also be used with multiple selected options, but this is a very simple transform
-    // which should always result in a string (since we are filling in the value of the the input),
+    // which should always result in a string (since we are filling in the value of the text input),
     // you don't have to use this at all, a more common UI is a "tag" based UI, which you can render
     // yourself using the selected option(s).
-    let getCurrentValue = () => {
+    let currentDisplayValue = computed(() => {
       let value = api.value.value
       if (!dom(api.inputRef)) return ''
 
@@ -683,28 +681,14 @@ export let ComboboxInput = defineComponent({
       } else {
         return ''
       }
-    }
-
-    // Workaround Vue bug where watching [ref(undefined)] is not fired immediately even when value is true
-    let __fixVueImmediateWatchBug__ = ref('')
+    })
 
     onMounted(() => {
-      watch(
-        [api.value, __fixVueImmediateWatchBug__],
-        () => {
-          currentValue.value = getCurrentValue()
-        },
-        {
-          flush: 'sync',
-          immediate: true,
-        }
-      )
-
       // Syncing the input value has some rules attached to it to guarantee a smooth and expected user
       // experience:
       //
       // - When a user is not typing in the input field, it is safe to update the input value based on
-      //   the selected option(s). See `currentValue` computation from above.
+      //   the selected option(s). See `currentDisplayValue` computation from above.
       // - The value can be updated when:
       //   - The `value` is set from outside of the component
       //   - The `value` is set when the user uses their keyboard (confirm via enter or space)
@@ -715,15 +699,15 @@ export let ComboboxInput = defineComponent({
       //     - By pressing `escape`
       //     - By clicking `outside` of the Combobox
       watch(
-        [currentValue, api.comboboxState],
-        ([currentValue, state], [oldCurrentValue, oldState]) => {
+        [currentDisplayValue, api.comboboxState],
+        ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
           if (isTyping.value) return
           let input = dom(api.inputRef)
           if (!input) return
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
-            input.value = currentValue
-          } else if (currentValue !== oldCurrentValue) {
-            input.value = currentValue
+            input.value = currentDisplayValue
+          } else if (currentDisplayValue !== oldCurrentDisplayValue) {
+            input.value = currentDisplayValue
           }
         },
         { immediate: true }

@@ -629,11 +629,11 @@ describe('Rendering', () => {
 
       await click(getByText('Toggle suffix'))
 
-      expect(getComboboxInput()).toHaveValue('B no suffix') // No re-sync yet
+      expect(getComboboxInput()).toHaveValue('B with suffix')
 
       await click(getComboboxButton())
 
-      expect(getComboboxInput()).toHaveValue('B no suffix') // No re-sync yet
+      expect(getComboboxInput()).toHaveValue('B with suffix')
 
       await click(getComboboxOptions()[0])
 
