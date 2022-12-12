@@ -412,6 +412,30 @@ describe('Rendering', () => {
         })
       )
     })
+
+    it(
+      'should not crash when a defaultValue is not given',
+      suppressConsoleLogs(async () => {
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        render(
+          <Combobox name="assignee" by="id">
+            <Combobox.Input displayValue={(value: { name: string }) => value.name} />
+            <Combobox.Options>
+              {data.map((person) => (
+                <Combobox.Option key={person.id} value={person}>
+                  {person.label}
+                </Combobox.Option>
+              ))}
+            </Combobox.Options>
+          </Combobox>
+        )
+      })
+    )
   })
 
   describe('Combobox.Input', () => {

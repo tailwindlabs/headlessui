@@ -465,6 +465,31 @@ describe('Rendering', () => {
         })
       )
     })
+
+    it(
+      'should not crash when a defaultValue is not given',
+      suppressConsoleLogs(async () => {
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
+            <Combobox name="assignee" by="id">
+              <ComboboxInput :displayValue="(value) => value.name" />
+              <ComboboxOptions>
+                <ComboboxOption v-for="person in data" :key="person.id" :value="person">
+                  {{ person.label }}
+                </ComboboxOption>
+              <ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => ({ data }),
+        })
+      })
+    )
   })
 
   describe('ComboboxInput', () => {
