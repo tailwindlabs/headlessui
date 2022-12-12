@@ -696,15 +696,15 @@ let Input = forwardRefWithAs(function Input<
   let d = useDisposables()
 
   // When a `displayValue` prop is given, we should use it to transform the current selected
-  // option(s) so that the format can be chosen by developers implementing this.
-  // This is useful if your data is an object and you just want to pick a certain property or want
-  // to create a dynamic value like `firstName + ' ' + lastName`.
+  // option(s) so that the format can be chosen by developers implementing this. This is useful if
+  // your data is an object and you just want to pick a certain property or want to create a dynamic
+  // value like `firstName + ' ' + lastName`.
   //
   // Note: This can also be used with multiple selected options, but this is a very simple transform
-  // which should always result in a string (since we are filling in the value of the the input),
+  // which should always result in a string (since we are filling in the value of the text input),
   // you don't have to use this at all, a more common UI is a "tag" based UI, which you can render
   // yourself using the selected option(s).
-  let currentValue = useMemo(() => {
+  let currentDisplayValue = (function () {
     if (typeof displayValue === 'function' && data.value !== undefined) {
       return displayValue(data.value as unknown as TType) ?? ''
     } else if (typeof data.value === 'string') {
@@ -712,15 +712,13 @@ let Input = forwardRefWithAs(function Input<
     } else {
       return ''
     }
-
-    // displayValue is intentionally left out
-  }, [data.value])
+  })()
 
   // Syncing the input value has some rules attached to it to guarantee a smooth and expected user
   // experience:
   //
   // - When a user is not typing in the input field, it is safe to update the input value based on
-  //   the selected option(s). See `currentValue` computation from above.
+  //   the selected option(s). See `currentDisplayValue` computation from above.
   // - The value can be updated when:
   //   - The `value` is set from outside of the component
   //   - The `value` is set when the user uses their keyboard (confirm via enter or space)
@@ -731,16 +729,16 @@ let Input = forwardRefWithAs(function Input<
   //     - By pressing `escape`
   //     - By clicking `outside` of the Combobox
   useWatch(
-    ([currentValue, state], [oldCurrentValue, oldState]) => {
+    ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
       if (isTyping.current) return
       if (!data.inputRef.current) return
       if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
-        data.inputRef.current.value = currentValue
-      } else if (currentValue !== oldCurrentValue) {
-        data.inputRef.current.value = currentValue
+        data.inputRef.current.value = currentDisplayValue
+      } else if (currentDisplayValue !== oldCurrentDisplayValue) {
+        data.inputRef.current.value = currentDisplayValue
       }
     },
-    [currentValue, data.comboboxState]
+    [currentDisplayValue, data.comboboxState]
   )
 
   let isComposing = useRef(false)
