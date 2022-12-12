@@ -676,7 +676,7 @@ export let ComboboxInput = defineComponent({
       let value = api.value.value
       if (!dom(api.inputRef)) return ''
 
-      if (typeof props.displayValue !== 'undefined') {
+      if (typeof props.displayValue !== 'undefined' && value !== undefined) {
         return props.displayValue(value as unknown) ?? ''
       } else if (typeof value === 'string') {
         return value
@@ -874,7 +874,9 @@ export let ComboboxInput = defineComponent({
     let defaultValue = computed(() => {
       return (
         props.defaultValue ??
-        props.displayValue?.(api.defaultValue.value) ??
+        (api.defaultValue.value !== undefined
+          ? props.displayValue?.(api.defaultValue.value)
+          : null) ??
         api.defaultValue.value ??
         ''
       )

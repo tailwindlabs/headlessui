@@ -705,7 +705,7 @@ let Input = forwardRefWithAs(function Input<
   // you don't have to use this at all, a more common UI is a "tag" based UI, which you can render
   // yourself using the selected option(s).
   let currentValue = useMemo(() => {
-    if (typeof displayValue === 'function') {
+    if (typeof displayValue === 'function' && data.value !== undefined) {
       return displayValue(data.value as unknown as TType) ?? ''
     } else if (typeof data.value === 'string') {
       return data.value
@@ -909,7 +909,9 @@ let Input = forwardRefWithAs(function Input<
     'aria-labelledby': labelledby,
     defaultValue:
       props.defaultValue ??
-      displayValue?.(data.defaultValue as unknown as TType) ??
+      (data.defaultValue !== undefined
+        ? displayValue?.(data.defaultValue as unknown as TType)
+        : null) ??
       data.defaultValue,
     disabled: data.disabled,
     onCompositionStart: handleCompositionStart,
