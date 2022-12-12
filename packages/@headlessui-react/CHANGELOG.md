@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix regression where `displayValue` crashes ([#2087](https://github.com/tailwindlabs/headlessui/pull/2087))
+- Fix `displayValue` syncing when `Combobox.Input` is unmounted and re-mounted in different trees ([#2090](https://github.com/tailwindlabs/headlessui/pull/2090))
 
 ## [1.7.5] - 2022-12-08
 
