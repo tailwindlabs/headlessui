@@ -1,10 +1,17 @@
-import React, { useState, useRef, FocusEvent } from 'react'
+import React, { useState, useRef } from 'react'
 import { render, screen } from '@testing-library/react'
 
 import { FocusTrap } from './focus-trap'
 import { assertActiveElement } from '../../test-utils/accessibility-assertions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { click, press, shift, Keys } from '../../test-utils/interactions'
+
+beforeAll(() => {
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
+  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
+})
+
+afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
   return new Promise<void>((resolve) => {
@@ -365,76 +372,134 @@ it('should be possible skip disabled elements within the focus trap', async () =
   assertActiveElement(document.getElementById('item-a'))
 })
 
-it('should try to focus all focusable items (and fail)', async () => {
-  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
-  let focusHandler = jest.fn()
-  function handleFocus(e: FocusEvent) {
-    let target = e.target as HTMLElement
-    focusHandler(target.id)
-    screen.getByText('After')?.focus()
-  }
+it(
+  'should not be possible to programmatically escape the focus trap',
+  suppressConsoleLogs(async () => {
+    function Example() {
+      return (
+        <>
+          <input id="a" autoFocus />
 
-  render(
-    <>
-      <button id="before">Before</button>
-      <FocusTrap>
-        <button id="item-a" onFocus={handleFocus}>
-          Item A
-        </button>
-        <button id="item-b" onFocus={handleFocus}>
-          Item B
-        </button>
-        <button id="item-c" onFocus={handleFocus}>
-          Item C
-        </button>
-        <button id="item-d" onFocus={handleFocus}>
-          Item D
-        </button>
-      </FocusTrap>
-      <button>After</button>
-    </>
-  )
+          <FocusTrap>
+            <input id="b" />
+            <input id="c" />
+            <input id="d" />
+          </FocusTrap>
+        </>
+      )
+    }
 
-  await nextFrame()
+    render(<Example />)
 
-  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c'], ['item-d']])
-  expect(spy).toHaveBeenCalledWith('There are no focusable elements inside the <FocusTrap />')
-  spy.mockReset()
-})
+    await nextFrame()
 
-it('should end up at the last focusable element', async () => {
-  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
+    let [a, b, c, d] = Array.from(document.querySelectorAll('input'))
 
-  let focusHandler = jest.fn()
-  function handleFocus(e: FocusEvent) {
-    let target = e.target as HTMLElement
-    focusHandler(target.id)
-    screen.getByText('After')?.focus()
-  }
+    // Ensure that input-b is the active element
+    assertActiveElement(b)
 
-  render(
-    <>
-      <button id="before">Before</button>
-      <FocusTrap>
-        <button id="item-a" onFocus={handleFocus}>
-          Item A
-        </button>
-        <button id="item-b" onFocus={handleFocus}>
-          Item B
-        </button>
-        <button id="item-c" onFocus={handleFocus}>
-          Item C
-        </button>
-        <button id="item-d">Item D</button>
-      </FocusTrap>
-      <button>After</button>
-    </>
-  )
+    // Tab to the next item
+    await press(Keys.Tab)
 
-  await nextFrame()
+    // Ensure that input-c is the active element
+    assertActiveElement(c)
 
-  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c']])
-  assertActiveElement(screen.getByText('Item D'))
-  expect(spy).not.toHaveBeenCalled()
-  spy.mockReset()
-})
+    // Try to move focus
+    a?.focus()
+
+    // Ensure that input-c is still the active element
+    assertActiveElement(c)
+
+    // Click on an element within the FocusTrap
+    await click(b)
+
+    // Ensure that input-b is the active element
+    assertActiveElement(b)
+
+    // Try to move focus again
+    a?.focus()
+
+    // Ensure that input-b is still the active element
+    assertActiveElement(b)
+
+    // Focus on an element within the FocusTrap
+    d?.focus()
+
+    // Ensure that input-d is the active element
+    assertActiveElement(d)
+
+    // Try to move focus again
+    a?.focus()
+
+    // Ensure that input-d is still the active element
+    assertActiveElement(d)
+  })
+)
+
+it(
+  'should not be possible to escape the FocusTrap due to strange tabIndex usage',
+  suppressConsoleLogs(async () => {
+    function Example() {
+      return (
+        <>
+          <div tabIndex={-1}>
+            <input tabIndex={2} id="a" />
+            <input tabIndex={1} id="b" />
+          </div>
+
+          <FocusTrap>
+            <input tabIndex={1} id="c" />
+            <input id="d" />
+          </FocusTrap>
+        </>
+      )
+    }
+
+    render(<Example />)
+
+    await nextFrame()
+
+    let [_a, _b, c, d] = Array.from(document.querySelectorAll('input'))
+
+    // First item in the FocusTrap should be the active one
+    assertActiveElement(c)
+
+    // Tab to the next item
+    await press(Keys.Tab)
+
+    // Ensure that input-d is the active element
+    assertActiveElement(d)
+
+    // Tab to the next item
+    await press(Keys.Tab)
+
+    // Ensure that input-c is the active element
+    assertActiveElement(c)
+
+    // Tab to the next item
+    await press(Keys.Tab)
+
+    // Ensure that input-d is the active element
+    assertActiveElement(d)
+
+    // Let's go the other way
+
+    // Tab to the previous item
+    await press(shift(Keys.Tab))
+
+    // Ensure that input-c is the active element
+    assertActiveElement(c)
+
+    // Tab to the previous item
+    await press(shift(Keys.Tab))
+
+    // Ensure that input-d is the active element
+    assertActiveElement(d)
+
+    // Tab to the previous item
+    await press(shift(Keys.Tab))
+
+    // Ensure that input-c is the active element
+    assertActiveElement(c)
+  })
+)

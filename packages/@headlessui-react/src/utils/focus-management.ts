@@ -154,9 +154,10 @@ export function focusIn(
   container: HTMLElement | HTMLElement[],
   focus: Focus,
   {
-  sorted = true,
+    sorted = true,
     relativeTo = null,
-  }: Partial<{ sorted: boolean; relativeTo: HTMLElement | null }> = {}
+    skipElements = [],
+  }: Partial<{ sorted: boolean; relativeTo: HTMLElement | null; skipElements: HTMLElement[] }> = {}
 ) {
   let ownerDocument = Array.isArray(container)
     ? container.length > 0
@@ -169,6 +170,10 @@ export function focusIn(
       ? sortByDomNode(container)
       : container
     : getFocusableElements(container)
+
+  if (skipElements.length > 0) {
+    elements = elements.filter((x) => !skipElements.includes(x))
+  }
 
   relativeTo = relativeTo ?? (ownerDocument.activeElement as HTMLElement)
 

@@ -387,73 +387,68 @@ it('should be possible skip disabled elements within the focus trap', async () =
   assertActiveElement(document.getElementById('item-a'))
 })
 
-it('should try to focus all focusable items in order (and fail)', async () => {
-  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
-  let focusHandler = jest.fn()
+it(
+  'should not be possible to escape the FocusTrap due to strange tabIndex usage',
+  suppressConsoleLogs(async () => {
+    renderTemplate(
+      html`
+        <div>
+          <div :tabindex="-1">
+            <input :tabindex="2" id="a" />
+            <input :tabindex="1" id="b" />
+          </div>
 
-  renderTemplate({
-    template: html`
-      <div>
-        <button id="before">Before</button>
-        <FocusTrap>
-          <button id="item-a" @focus="handleFocus">Item A</button>
-          <button id="item-b" @focus="handleFocus">Item B</button>
-          <button id="item-c" @focus="handleFocus">Item C</button>
-          <button id="item-d" @focus="handleFocus">Item D</button>
-        </FocusTrap>
-        <button>After</button>
-      </div>
-    `,
-    setup() {
-      return {
-        handleFocus(e: Event) {
-          let target = e.target as HTMLElement
-          focusHandler(target.id)
-          getByText('After')?.focus()
-        },
-      }
-    },
+          <FocusTrap>
+            <input :tabindex="1" id="c" />
+            <input id="d" />
+          </FocusTrap>
+        </div>
+      `
+    )
+
+    await nextFrame()
+
+    let [_a, _b, c, d] = Array.from(document.querySelectorAll('input'))
+
+    // First item in the FocusTrap should be the active one
+    assertActiveElement(c)
+
+    // Tab to the next item
+    await press(Keys.Tab)
+
+    // Ensure that input-d is the active element
+    assertActiveElement(d)
+
+    // Tab to the next item
+    await press(Keys.Tab)
+
+    // Ensure that input-c is the active element
+    assertActiveElement(c)
+
+    // Tab to the next item
+    await press(Keys.Tab)
+
+    // Ensure that input-d is the active element
+    assertActiveElement(d)
+
+    // Let's go the other way
+
+    // Tab to the previous item
+    await press(shift(Keys.Tab))
+
+    // Ensure that input-c is the active element
+    assertActiveElement(c)
+
+    // Tab to the previous item
+    await press(shift(Keys.Tab))
+
+    // Ensure that input-d is the active element
+    assertActiveElement(d)
+
+    // Tab to the previous item
+    await press(shift(Keys.Tab))
+
+    // Ensure that input-c is the active element
+    assertActiveElement(c)
   })
-
-  await nextFrame()
-
-  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c'], ['item-d']])
-  expect(spy).toHaveBeenCalledWith('There are no focusable elements inside the <FocusTrap />')
-  spy.mockReset()
-})
-
-it('should end up at the last focusable element', async () => {
-  let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
-  let focusHandler = jest.fn()
-
-  renderTemplate({
-    template: html`
-      <div>
-        <button id="before">Before</button>
-        <FocusTrap>
-          <button id="item-a" @focus="handleFocus">Item A</button>
-          <button id="item-b" @focus="handleFocus">Item B</button>
-          <button id="item-c" @focus="handleFocus">Item C</button>
-          <button id="item-d">Item D</button>
-        </FocusTrap>
-        <button>After</button>
-      </div>
-    `,
-    setup() {
-      return {
-        handleFocus(e: Event) {
-          let target = e.target as HTMLElement
-          focusHandler(target.id)
-          getByText('After')?.focus()
-        },
-      }
-    },
-  })
-
-  await nextFrame()
-
-  expect(focusHandler.mock.calls).toEqual([['item-a'], ['item-b'], ['item-c']])
-  assertActiveElement(getByText('Item D'))
-  expect(spy).not.toHaveBeenCalled()
-  spy.mockReset()
-})
+)

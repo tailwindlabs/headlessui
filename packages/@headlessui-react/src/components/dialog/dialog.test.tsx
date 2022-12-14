@@ -218,7 +218,6 @@ describe('Rendering', () => {
     })
 
     it('should be possible to use a different render strategy for the Dialog', async () => {
-      let focusCounter = jest.fn()
       function Example() {
         let [isOpen, setIsOpen] = useState(false)
 
@@ -228,7 +227,7 @@ describe('Rendering', () => {
               Trigger
             </button>
             <Dialog open={isOpen} onClose={setIsOpen} unmount={false}>
-              <input onFocus={focusCounter} />
+              <input />
             </Dialog>
           </>
         )
@@ -239,17 +238,14 @@ describe('Rendering', () => {
       await nextFrame()
 
       assertDialog({ state: DialogState.InvisibleHidden })
-      expect(focusCounter).toHaveBeenCalledTimes(0)
 
       // Let's open the Dialog, to see if it is not hidden anymore
       await click(document.getElementById('trigger'))
-      expect(focusCounter).toHaveBeenCalledTimes(1)
 
       assertDialog({ state: DialogState.Visible })
 
       // Let's close the Dialog
       await press(Keys.Escape)
-      expect(focusCounter).toHaveBeenCalledTimes(1)
 
       assertDialog({ state: DialogState.InvisibleHidden })
     })
