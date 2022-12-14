@@ -140,14 +140,16 @@ export function sortByDomNode<T>(
 }
 
 export function focusFrom(current: HTMLElement | null, focus: Focus) {
-  return focusIn(getFocusableElements(), focus, true, current)
+  return focusIn(getFocusableElements(), focus, { relativeTo: current })
 }
 
 export function focusIn(
   container: HTMLElement | HTMLElement[],
   focus: Focus,
+  {
   sorted = true,
-  active: HTMLElement | null = null
+    relativeTo = null,
+  }: Partial<{ sorted: boolean; relativeTo: HTMLElement | null }> = {}
 ) {
   let ownerDocument =
     (Array.isArray(container)
@@ -161,7 +163,7 @@ export function focusIn(
       ? sortByDomNode(container)
       : container
     : getFocusableElements(container)
-  active = active ?? (ownerDocument.activeElement as HTMLElement)
+  relativeTo = relativeTo ?? (ownerDocument.activeElement as HTMLElement)
 
   let direction = (() => {
     if (focus & (Focus.First | Focus.Next)) return Direction.Next
@@ -172,8 +174,8 @@ export function focusIn(
 
   let startIndex = (() => {
     if (focus & Focus.First) return 0
-    if (focus & Focus.Previous) return Math.max(0, elements.indexOf(active)) - 1
-    if (focus & Focus.Next) return Math.max(0, elements.indexOf(active)) + 1
+    if (focus & Focus.Previous) return Math.max(0, elements.indexOf(relativeTo)) - 1
+    if (focus & Focus.Next) return Math.max(0, elements.indexOf(relativeTo)) + 1
     if (focus & Focus.Last) return elements.length - 1
 
     throw new Error('Missing Focus.First, Focus.Previous, Focus.Next or Focus.Last')
