@@ -59,7 +59,11 @@ enum Direction {
 
 export function getFocusableElements(container: HTMLElement | null = document.body) {
   if (container == null) return []
-  return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector))
+  return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).sort(
+    // We want to move `:tabindex="0"` to the end of the list, this is what the browser does as well.
+    (a, z) =>
+      Math.sign((a.tabIndex || Number.MAX_SAFE_INTEGER) - (z.tabIndex || Number.MAX_SAFE_INTEGER))
+  )
 }
 
 export enum FocusableMode {
