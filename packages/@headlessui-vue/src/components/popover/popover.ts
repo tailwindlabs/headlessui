@@ -632,7 +632,7 @@ export let PopoverPanel = defineComponent({
               }
             }
 
-            focusIn(combined, Focus.First, false)
+            focusIn(combined, Focus.First, { sorted: false })
           },
           [TabDirection.Backwards]: () => focusIn(el, Focus.Previous),
         })

@@ -792,7 +792,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
             }
           }
 
-          focusIn(combined, Focus.First, false)
+          focusIn(combined, Focus.First, { sorted: false })
         },
         [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
       })

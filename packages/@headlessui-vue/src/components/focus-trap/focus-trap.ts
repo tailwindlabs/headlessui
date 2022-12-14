@@ -81,29 +81,70 @@ export let FocusTrap = Object.assign(
       )
 
       let direction = useTabDirection()
-      function handleFocus() {
+      function handleFocus(e: FocusEvent) {
         let el = dom(container) as HTMLElement
         if (!el) return
 
         // TODO: Cleanup once we are using real browser tests
-        if (process.env.NODE_ENV === 'test') {
-          microTask(() => {
-            match(direction.value, {
-              [TabDirection.Forwards]: () => focusIn(el, Focus.First),
-              [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
-            })
-          })
-        } else {
+        let wrapper = process.env.NODE_ENV === 'test' ? microTask : (cb: Function) => cb()
+        wrapper(() => {
           match(direction.value, {
-            [TabDirection.Forwards]: () => focusIn(el, Focus.First),
-            [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+            [TabDirection.Forwards]: () =>
+              focusIn(el, Focus.First, { skipElements: [e.relatedTarget as HTMLElement] }),
+            [TabDirection.Backwards]: () =>
+              focusIn(el, Focus.Last, { skipElements: [e.relatedTarget as HTMLElement] }),
           })
+        })
+      }
+
+      let recentlyUsedTabKey = ref(false)
+      function handleKeyDown(e: KeyboardEvent) {
+        if (e.key === 'Tab') {
+          recentlyUsedTabKey.value = true
+          requestAnimationFrame(() => {
+            recentlyUsedTabKey.value = false
+          })
+        }
+      }
+
+      function handleBlur(e: FocusEvent) {
+        let allContainers = new Set(props.containers?.value)
+        allContainers.add(container)
+
+        let relatedTarget = e.relatedTarget as HTMLElement | null
+        if (!relatedTarget) return
+
+        // Known guards, leave them alone!
+        if (relatedTarget.dataset.headlessuiFocusGuard === 'true') {
+          return
+        }
+
+        // Blur is triggered due to focus on relatedTarget, and the relatedTarget is not inside any
+        // of the dialog containers. In other words, let's move focus back in!
+        if (!contains(allContainers, relatedTarget)) {
+          // Was the blur invoke via the keyboard? Redirect to the next in line.
+          if (recentlyUsedTabKey.value) {
+            focusIn(
+              dom(container) as HTMLElement,
+              match(direction.value, {
+                [TabDirection.Forwards]: () => Focus.Next,
+                [TabDirection.Backwards]: () => Focus.Previous,
+              }) | Focus.WrapAround,
+              { relativeTo: e.target as HTMLElement }
+            )
+          }
+
+          // It was invoke via something else (e.g.: click, programmatically, ...). Redirect to the
+          // previous active item in the FocusTrap
+          else if (e.target instanceof HTMLElement) {
+            focusElement(e.target)
+          }
         }
       }
 
       return () => {
         let slot = {}
-        let ourProps = { ref: container }
+        let ourProps = { ref: container, onKeydown: handleKeyDown, onFocusout: handleBlur }
         let { features, initialFocus, containers: _containers, ...theirProps } = props
 
         return h(Fragment, [
@@ -111,6 +152,7 @@ export let FocusTrap = Object.assign(
             h(Hidden, {
               as: 'button',
               type: 'button',
+              'data-headlessui-focus-guard': true,
               onFocus: handleFocus,
               features: HiddenFeatures.Focusable,
             }),
@@ -126,6 +168,7 @@ export let FocusTrap = Object.assign(
             h(Hidden, {
               as: 'button',
               type: 'button',
+              'data-headlessui-focus-guard': true,
               onFocus: handleFocus,
               features: HiddenFeatures.Focusable,
             }),

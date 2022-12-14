@@ -66,7 +66,11 @@ enum Direction {
 
 export function getFocusableElements(container: HTMLElement | null = document.body) {
   if (container == null) return []
-  return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector))
+  return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).sort(
+    // We want to move `tabIndex={0}` to the end of the list, this is what the browser does as well.
+    (a, z) =>
+      Math.sign((a.tabIndex || Number.MAX_SAFE_INTEGER) - (z.tabIndex || Number.MAX_SAFE_INTEGER))
+  )
 }
 
 export enum FocusableMode {
@@ -143,14 +147,17 @@ export function sortByDomNode<T>(
 }
 
 export function focusFrom(current: HTMLElement | null, focus: Focus) {
-  return focusIn(getFocusableElements(), focus, true, current)
+  return focusIn(getFocusableElements(), focus, { relativeTo: current })
 }
 
 export function focusIn(
   container: HTMLElement | HTMLElement[],
   focus: Focus,
-  sorted = true,
-  active: HTMLElement | null = null
+  {
+    sorted = true,
+    relativeTo = null,
+    skipElements = [],
+  }: Partial<{ sorted: boolean; relativeTo: HTMLElement | null; skipElements: HTMLElement[] }> = {}
 ) {
   let ownerDocument = Array.isArray(container)
     ? container.length > 0
@@ -163,7 +170,12 @@ export function focusIn(
       ? sortByDomNode(container)
       : container
     : getFocusableElements(container)
-  active = active ?? (ownerDocument.activeElement as HTMLElement)
+
+  if (skipElements.length > 0) {
+    elements = elements.filter((x) => !skipElements.includes(x))
+  }
+
+  relativeTo = relativeTo ?? (ownerDocument.activeElement as HTMLElement)
 
   let direction = (() => {
     if (focus & (Focus.First | Focus.Next)) return Direction.Next
@@ -174,8 +186,8 @@ export function focusIn(
 
   let startIndex = (() => {
     if (focus & Focus.First) return 0
-    if (focus & Focus.Previous) return Math.max(0, elements.indexOf(active)) - 1
-    if (focus & Focus.Next) return Math.max(0, elements.indexOf(active)) + 1
+    if (focus & Focus.Previous) return Math.max(0, elements.indexOf(relativeTo)) - 1
+    if (focus & Focus.Next) return Math.max(0, elements.indexOf(relativeTo)) + 1
     if (focus & Focus.Last) return elements.length - 1
 
     throw new Error('Missing Focus.First, Focus.Previous, Focus.Next or Focus.Last')

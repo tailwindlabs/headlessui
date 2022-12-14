@@ -6,6 +6,7 @@ import React, {
   ElementType,
   MutableRefObject,
   Ref,
+  FocusEvent as ReactFocusEvent,
 } from 'react'
 
 import { Props } from '../../types'
@@ -22,6 +23,7 @@ import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { microTask } from '../../utils/micro-task'
 import { useWatch } from '../../hooks/use-watch'
+import { useDisposables } from '../../hooks/use-disposables'
 
 let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 
@@ -75,27 +77,69 @@ export let FocusTrap = Object.assign(
     )
 
     let direction = useTabDirection()
-    let handleFocus = useEvent(() => {
+    let handleFocus = useEvent((e: ReactFocusEvent) => {
       let el = container.current as HTMLElement
       if (!el) return
 
       // TODO: Cleanup once we are using real browser tests
-      if (process.env.NODE_ENV === 'test') {
-        microTask(() => {
-          match(direction.current, {
-            [TabDirection.Forwards]: () => focusIn(el, Focus.First),
-            [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
-          })
-        })
-      } else {
+      let wrapper = process.env.NODE_ENV === 'test' ? microTask : (cb: Function) => cb()
+      wrapper(() => {
         match(direction.current, {
-          [TabDirection.Forwards]: () => focusIn(el, Focus.First),
-          [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+          [TabDirection.Forwards]: () =>
+            focusIn(el, Focus.First, { skipElements: [e.relatedTarget as HTMLElement] }),
+          [TabDirection.Backwards]: () =>
+            focusIn(el, Focus.Last, { skipElements: [e.relatedTarget as HTMLElement] }),
         })
-      }
+      })
     })
 
-    let ourProps = { ref: focusTrapRef }
+    let d = useDisposables()
+    let recentlyUsedTabKey = useRef(false)
+    let ourProps = {
+      ref: focusTrapRef,
+      onKeyDown(e: KeyboardEvent) {
+        if (e.key == 'Tab') {
+          recentlyUsedTabKey.current = true
+          d.requestAnimationFrame(() => {
+            recentlyUsedTabKey.current = false
+          })
+        }
+      },
+      onBlur(e: ReactFocusEvent) {
+        let allContainers = new Set(containers?.current)
+        allContainers.add(container)
+
+        let relatedTarget = e.relatedTarget as HTMLElement | null
+        if (!relatedTarget) return
+
+        // Known guards, leave them alone!
+        if (relatedTarget.dataset.headlessuiFocusGuard === 'true') {
+          return
+        }
+
+        // Blur is triggered due to focus on relatedTarget, and the relatedTarget is not inside any
+        // of the dialog containers. In other words, let's move focus back in!
+        if (!contains(allContainers, relatedTarget)) {
+          // Was the blur invoke via the keyboard? Redirect to the next in line.
+          if (recentlyUsedTabKey.current) {
+            focusIn(
+              container.current as HTMLElement,
+              match(direction.current, {
+                [TabDirection.Forwards]: () => Focus.Next,
+                [TabDirection.Backwards]: () => Focus.Previous,
+              }) | Focus.WrapAround,
+              { relativeTo: e.target as HTMLElement }
+            )
+          }
+
+          // It was invoke via something else (e.g.: click, programmatically, ...). Redirect to the
+          // previous active item in the FocusTrap
+          else if (e.target instanceof HTMLElement) {
+            focusElement(e.target)
+          }
+        }
+      },
+    }
 
     return (
       <>
@@ -103,6 +147,7 @@ export let FocusTrap = Object.assign(
           <Hidden
             as="button"
             type="button"
+            data-headlessui-focus-guard
             onFocus={handleFocus}
             features={HiddenFeatures.Focusable}
           />
@@ -117,6 +162,7 @@ export let FocusTrap = Object.assign(
           <Hidden
             as="button"
             type="button"
+            data-headlessui-focus-guard
             onFocus={handleFocus}
             features={HiddenFeatures.Focusable}
           />
