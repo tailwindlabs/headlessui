@@ -317,7 +317,7 @@ export let MenuButton = defineComponent({
         ref: api.buttonRef,
         id,
         type: type.value,
-        'aria-haspopup': true,
+        'aria-haspopup': 'menu',
         'aria-controls': dom(api.itemsRef)?.id,
         'aria-expanded': props.disabled ? undefined : api.menuState.value === MenuStates.Open,
         onKeydown: handleKeyDown,

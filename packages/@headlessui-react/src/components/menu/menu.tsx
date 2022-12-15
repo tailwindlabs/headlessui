@@ -371,7 +371,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     ref: buttonRef,
     id,
     type: useResolveButtonType(props, state.buttonRef),
-    'aria-haspopup': true,
+    'aria-haspopup': 'menu',
     'aria-controls': state.itemsRef.current?.id,
     'aria-expanded': props.disabled ? undefined : state.menuState === MenuStates.Open,
     onKeyDown: handleKeyDown,
