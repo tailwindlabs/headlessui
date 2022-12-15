@@ -272,7 +272,23 @@ export let Dialog = defineComponent({
         )
 
         // Restore scroll position
-        d.add(() => window.scrollTo(0, scrollPosition))
+        d.add(() => {
+          // Before opening the Dialog, we capture the current pageYOffset, and offset the page with
+          // this value so that we can also scroll to `(0, 0)`.
+          //
+          // If we want to restore a few things can happen:
+          //
+          // 1. The window.pageYOffset is still at 0, this means nothing happened, and we can safely
+          // restore to the captured value earlier.
+          // 2. The window.pageYOffset is **not** at 0. This means that something happened (e.g.: a
+          // link was scrolled into view in the background). Ideally we want to restore to this _new_
+          // position. To do this, we can take the new value into account with the captured value from
+          // before.
+          //
+          // (Since the value of window.pageYOffset is 0 in the first case, we should be able to
+          // always sum these values)
+          window.scrollTo(0, window.pageYOffset + scrollPosition)
+        })
       }
 
       onInvalidate(d.dispose)
