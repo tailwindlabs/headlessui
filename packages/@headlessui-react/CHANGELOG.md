@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix regression where `displayValue` crashes ([#2087](https://github.com/tailwindlabs/headlessui/pull/2087))
 - Fix `displayValue` syncing when `Combobox.Input` is unmounted and re-mounted in different trees ([#2090](https://github.com/tailwindlabs/headlessui/pull/2090))
 - Fix FocusTrap escape due to strange tabindex values ([#2093](https://github.com/tailwindlabs/headlessui/pull/2093))
-- Improve scroll locking on iOS ([#2100](https://github.com/tailwindlabs/headlessui/pull/2100))
+- Improve scroll locking on iOS ([#2100](https://github.com/tailwindlabs/headlessui/pull/2100), [28234b0e](https://github.com/tailwindlabs/headlessui/commit/28234b0e37633c0e2ec62ac8bd12320207a5d02b))
 
 ## [1.7.5] - 2022-12-08
 
