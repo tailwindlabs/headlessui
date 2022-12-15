@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.6] - 2022-12-15
+
 ### Fixed
 
 - Fix regression where `displayValue` crashes ([#2087](https://github.com/tailwindlabs/headlessui/pull/2087))
@@ -364,7 +368,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.5...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.6...HEAD
+[1.7.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.5...@headlessui/vue@v1.7.6
 [1.7.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.4...@headlessui/vue@v1.7.5
 [1.7.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.3...@headlessui/vue@v1.7.4
 [1.7.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.2...@headlessui/vue@v1.7.3
