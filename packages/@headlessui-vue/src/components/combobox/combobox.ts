@@ -616,7 +616,7 @@ export let ComboboxButton = defineComponent({
         id,
         type: type.value,
         tabindex: '-1',
-        'aria-haspopup': true,
+        'aria-haspopup': 'listbox',
         'aria-controls': dom(api.optionsRef)?.id,
         'aria-expanded': api.disabled.value
           ? undefined

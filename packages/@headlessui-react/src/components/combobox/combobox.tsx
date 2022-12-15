@@ -1027,7 +1027,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     id,
     type: useResolveButtonType(props, data.buttonRef),
     tabIndex: -1,
-    'aria-haspopup': true,
+    'aria-haspopup': 'listbox',
     'aria-controls': data.optionsRef.current?.id,
     'aria-expanded': data.disabled ? undefined : data.comboboxState === ComboboxState.Open,
     'aria-labelledby': labelledby,

@@ -527,7 +527,7 @@ export let ListboxButton = defineComponent({
         ref: api.buttonRef,
         id,
         type: type.value,
-        'aria-haspopup': true,
+        'aria-haspopup': 'listbox',
         'aria-controls': dom(api.optionsRef)?.id,
         'aria-expanded': api.disabled.value
           ? undefined
