@@ -110,9 +110,7 @@ let reducers: {
   },
 }
 
-let TabsSSRContext = createContext<MutableRefObject<{ tabs: number; panels: number }> | null>(
-  null
-)
+let TabsSSRContext = createContext<MutableRefObject<{ tabs: number; panels: number }> | null>(null)
 TabsSSRContext.displayName = 'TabsSSRContext'
 
 function useSSRTabsCounter(component: string) {
@@ -332,7 +330,9 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   useIsoMorphicEffect(() => actions.registerTab(internalTabRef), [actions, internalTabRef])
 
   let mySSRIndex = useRef(-1)
-  if (mySSRIndex.current === -1) mySSRIndex.current = SSRContext.current ? SSRContext.current.tabs++ : -1
+  if (mySSRIndex.current === -1) {
+    mySSRIndex.current = SSRContext.current ? SSRContext.current.tabs++ : -1
+  }
 
   let myIndex = tabs.indexOf(internalTabRef)
   if (myIndex === -1) myIndex = mySSRIndex.current
@@ -493,7 +493,9 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   useIsoMorphicEffect(() => actions.registerPanel(internalPanelRef), [actions, internalPanelRef])
 
   let mySSRIndex = useRef(-1)
-  if (mySSRIndex.current === -1) mySSRIndex.current = SSRContext.current ? SSRContext.current.panels++ : -1
+  if (mySSRIndex.current === -1) {
+    mySSRIndex.current = SSRContext.current ? SSRContext.current.panels++ : -1
+  }
 
   let myIndex = panels.indexOf(internalPanelRef)
   if (myIndex === -1) myIndex = mySSRIndex.current
