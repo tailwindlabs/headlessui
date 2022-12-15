@@ -31,6 +31,7 @@ import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
 import { useDisposables } from '../../hooks/use-disposables'
 import { classNames } from '../../utils/class-names'
+import { env } from '../../utils/env'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
 
@@ -413,8 +414,7 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   let theirProps = rest
   let ourProps = { ref: transitionRef }
 
-  let isServer = typeof window === 'undefined' || typeof document === 'undefined'
-  if (appear && show && isServer) {
+  if (appear && show && env.isServer) {
     theirProps = {
       ...theirProps,
       // Already apply the `enter` and `enterFrom` on the server if required

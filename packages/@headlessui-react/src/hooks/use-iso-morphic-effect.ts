@@ -1,4 +1,10 @@
-import { useLayoutEffect, useEffect } from 'react'
-import { isServer } from '../utils/ssr'
+import { useLayoutEffect, useEffect, EffectCallback, DependencyList } from 'react'
+import { env } from '../utils/env'
 
-export let useIsoMorphicEffect = isServer ? useEffect : useLayoutEffect
+export let useIsoMorphicEffect = (effect: EffectCallback, deps?: DependencyList | undefined) => {
+  if (env.isServer) {
+    useEffect(effect, deps)
+  } else {
+    useLayoutEffect(effect, deps)
+  }
+}
