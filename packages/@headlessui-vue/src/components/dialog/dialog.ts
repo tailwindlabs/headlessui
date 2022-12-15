@@ -183,22 +183,23 @@ export let Dialog = defineComponent({
 
     provide(DialogContext, api)
 
+    function resolveAllowedContainers() {
+      // Third party roots
+      let rootContainers = Array.from(
+        ownerDocument.value?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
+      ).filter((container) => {
+        if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
+        if (container.contains(dom(mainTreeNode))) return false // Skip if it is the main app
+        if (api.panelRef.value && container.contains(api.panelRef.value)) return false
+        return true // Keep
+      })
+
+      return [...rootContainers, api.panelRef.value ?? internalDialogRef.value] as HTMLElement[]
+    }
+
     // Handle outside click
     useOutsideClick(
-      () => {
-        // Third party roots
-        let rootContainers = Array.from(
-          ownerDocument.value?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
-        ).filter((container) => {
-          if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-          if (container.contains(dom(mainTreeNode))) return false // Skip if it is the main app
-          if (api.panelRef.value && container.contains(api.panelRef.value)) return false
-          return true // Keep
-        })
-
-        return [...rootContainers, api.panelRef.value ?? internalDialogRef.value] as HTMLElement[]
-      },
-
+      () => resolveAllowedContainers(),
       (_event, target) => {
         api.close()
         nextTick(() => target?.focus())
@@ -249,9 +250,28 @@ export let Dialog = defineComponent({
 
       if (isIOS()) {
         let scrollPosition = window.pageYOffset
-        style(documentElement, 'position', 'fixed')
-        style(documentElement, 'marginTop', `-${scrollPosition}px`)
-        style(documentElement, 'width', `100%`)
+        style(document.body, 'marginTop', `-${scrollPosition}px`)
+        window.scrollTo(0, 0)
+
+        d.addEventListener(
+          owner,
+          'touchmove',
+          (e) => {
+            // Check if we are scrolling inside any of the allowed containers, if not let's cancel
+            // the event!
+            if (
+              e.target instanceof HTMLElement &&
+              !resolveAllowedContainers().some((container) =>
+                container.contains(e.target as HTMLElement)
+              )
+            ) {
+              e.preventDefault()
+            }
+          },
+          { passive: false }
+        )
+
+        // Restore scroll position
         d.add(() => window.scrollTo(0, scrollPosition))
       }
 

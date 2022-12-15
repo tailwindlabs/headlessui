@@ -91,7 +91,11 @@ function useDialogContext(component: string) {
   return context
 }
 
-function useScrollLock(ownerDocument: Document | null, enabled: boolean) {
+function useScrollLock(
+  ownerDocument: Document | null,
+  enabled: boolean,
+  resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
+) {
   useEffect(() => {
     if (!enabled) return
     if (!ownerDocument) return
@@ -120,9 +124,27 @@ function useScrollLock(ownerDocument: Document | null, enabled: boolean) {
 
     if (isIOS()) {
       let scrollPosition = window.pageYOffset
-      style(documentElement, 'position', 'fixed')
-      style(documentElement, 'marginTop', `-${scrollPosition}px`)
-      style(documentElement, 'width', `100%`)
+      style(document.body, 'marginTop', `-${scrollPosition}px`)
+      window.scrollTo(0, 0)
+
+      d.addEventListener(
+        ownerDocument,
+        'touchmove',
+        (e) => {
+          // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
+          if (
+            e.target instanceof HTMLElement &&
+            !resolveAllowedContainers().some((container) =>
+              container.contains(e.target as HTMLElement)
+            )
+          ) {
+            e.preventDefault()
+          }
+        },
+        { passive: false }
+      )
+
+      // Restore scroll position
       d.add(() => window.scrollTo(0, scrollPosition))
     }
 
@@ -242,27 +264,22 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // Ensure other elements can't be interacted with
   useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
 
-  // Close Dialog on outside click
-  useOutsideClick(
-    () => {
-      // Third party roots
-      let rootContainers = Array.from(
-        ownerDocument?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
-      ).filter((container) => {
-        if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-        if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
-        if (state.panelRef.current && container.contains(state.panelRef.current)) return false
-        return true // Keep
-      })
+  let resolveContainers = useEvent(() => {
+    // Third party roots
+    let rootContainers = Array.from(
+      ownerDocument?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
+    ).filter((container) => {
+      if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
+      if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
+      if (state.panelRef.current && container.contains(state.panelRef.current)) return false
+      return true // Keep
+    })
 
-      return [
-        ...rootContainers,
-        state.panelRef.current ?? internalDialogRef.current,
-      ] as HTMLElement[]
-    },
-    close,
-    enabled && !hasNestedDialogs
-  )
+    return [...rootContainers, state.panelRef.current ?? internalDialogRef.current] as HTMLElement[]
+  })
+
+  // Close Dialog on outside click
+  useOutsideClick(() => resolveContainers(), close, enabled && !hasNestedDialogs)
 
   // Handle `Escape` to close
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
@@ -276,7 +293,11 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   })
 
   // Scroll lock
-  useScrollLock(ownerDocument, dialogState === DialogStates.Open && !hasParentDialog)
+  useScrollLock(
+    ownerDocument,
+    dialogState === DialogStates.Open && !hasParentDialog,
+    resolveContainers
+  )
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
