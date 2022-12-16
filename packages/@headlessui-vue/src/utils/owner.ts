@@ -1,11 +1,11 @@
 import { Ref } from 'vue'
 import { dom } from './dom'
-import { isServer } from './ssr'
+import { env } from './env'
 
 export function getOwnerDocument<T extends Element | Ref<Element | null>>(
   element: T | null | undefined
 ) {
-  if (isServer) return null
+  if (env.isServer) return null
   if (element instanceof Node) return element.ownerDocument
   if (element?.hasOwnProperty('value')) {
     let domElement = dom(element)

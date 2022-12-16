@@ -1,5 +1,5 @@
 import { watchEffect } from 'vue'
-import { isServer } from '../utils/ssr'
+import { env } from '../utils/env'
 
 export function useEventListener<TType extends keyof WindowEventMap>(
   element: HTMLElement | Document | Window | EventTarget | null | undefined,
@@ -7,7 +7,7 @@ export function useEventListener<TType extends keyof WindowEventMap>(
   listener: (event: WindowEventMap[TType]) => any,
   options?: boolean | AddEventListenerOptions
 ) {
-  if (isServer) return
+  if (env.isServer) return
 
   watchEffect((onInvalidate) => {
     element = element ?? window
