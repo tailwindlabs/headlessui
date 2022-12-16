@@ -110,9 +110,7 @@ let reducers: {
   },
 }
 
-let TabsSSRContext = createContext<MutableRefObject<{ tabs: string[]; panels: string[] }> | null>(
-  null
-)
+let TabsSSRContext = createContext<MutableRefObject<{ tabs: number; panels: number }> | null>(null)
 TabsSSRContext.displayName = 'TabsSSRContext'
 
 function useSSRTabsCounter(component: string) {
@@ -239,7 +237,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     dispatch({ type: ActionTypes.SetSelectedIndex, index: selectedIndex ?? defaultIndex })
   }, [selectedIndex /* Deliberately skipping defaultIndex */])
 
-  let SSRCounter = useRef({ tabs: [], panels: [] })
+  let SSRCounter = useRef({ tabs: 0, panels: 0 })
   let ourProps = { ref: tabsRef }
 
   return (
@@ -331,11 +329,13 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
 
   useIsoMorphicEffect(() => actions.registerTab(internalTabRef), [actions, internalTabRef])
 
-  let mySSRIndex = SSRContext.current.tabs.indexOf(id)
-  if (mySSRIndex === -1) mySSRIndex = SSRContext.current.tabs.push(id) - 1
+  let mySSRIndex = useRef(-1)
+  if (mySSRIndex.current === -1) {
+    mySSRIndex.current = SSRContext.current ? SSRContext.current.tabs++ : -1
+  }
 
   let myIndex = tabs.indexOf(internalTabRef)
-  if (myIndex === -1) myIndex = mySSRIndex
+  if (myIndex === -1) myIndex = mySSRIndex.current
   let selected = myIndex === selectedIndex
 
   let activateUsing = useEvent((cb: () => FocusResult) => {
@@ -492,11 +492,13 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   useIsoMorphicEffect(() => actions.registerPanel(internalPanelRef), [actions, internalPanelRef])
 
-  let mySSRIndex = SSRContext.current.panels.indexOf(id)
-  if (mySSRIndex === -1) mySSRIndex = SSRContext.current.panels.push(id) - 1
+  let mySSRIndex = useRef(-1)
+  if (mySSRIndex.current === -1) {
+    mySSRIndex.current = SSRContext.current ? SSRContext.current.panels++ : -1
+  }
 
   let myIndex = panels.indexOf(internalPanelRef)
-  if (myIndex === -1) myIndex = mySSRIndex
+  if (myIndex === -1) myIndex = mySSRIndex.current
 
   let selected = myIndex === selectedIndex
 

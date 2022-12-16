@@ -1,5 +1,4 @@
-import { createSSRApp, nextTick, ref } from 'vue'
-import { renderToString } from 'vue/server-renderer'
+import { nextTick, ref } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -553,60 +552,6 @@ describe('Rendering', () => {
 
       // Nothing should change...
       assertTabs({ active: 2 })
-    })
-  })
-
-  describe('SSR', () => {
-    it('should be possible to server side render the first Tab and Panel', async () => {
-      let app = createSSRApp({
-        components: { TabGroup, TabList, Tab, TabPanels, TabPanel },
-        template: html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
-        `,
-      })
-
-      let contents = await renderToString(app)
-      expect(contents).toContain(`Content 1`)
-      expect(contents).not.toContain(`Content 2`)
-      expect(contents).not.toContain(`Content 3`)
-    })
-
-    it('should be possible to server side render the defaultIndex Tab and Panel', async () => {
-      let app = createSSRApp({
-        components: { TabGroup, TabList, Tab, TabPanels, TabPanel },
-        template: html`
-          <TabGroup :defaultIndex="1">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
-        `,
-      })
-
-      let contents = await renderToString(app)
-      expect(contents).not.toContain(`Content 1`)
-      expect(contents).toContain(`Content 2`)
-      expect(contents).not.toContain(`Content 3`)
     })
   })
 })

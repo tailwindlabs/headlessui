@@ -246,6 +246,7 @@ export let Tab = defineComponent({
     onUnmounted(() => api.unregisterTab(internalTabRef))
 
     let SSRContext = inject(TabsSSRContext)!
+    // Note: there's a divergence here between React and Vue. Vue can work with `indexOf` implementation while React on the server can't.
     let mySSRIndex = computed(() => {
       if (SSRContext.value) {
         let mySSRIndex = SSRContext.value.tabs.indexOf(props.id)

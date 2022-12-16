@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Changed
+
+- Adjust SSR detection mechanism ([#2102](https://github.com/tailwindlabs/headlessui/pull/2102))
 
 ## [1.7.7] - 2022-12-16
 
