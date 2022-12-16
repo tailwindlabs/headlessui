@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Improve scroll restoration after `Dialog` closes ([b20e48dd](https://github.com/tailwindlabs/headlessui/commit/b20e48dde3c37867f3900be3d475f9ac2058b587))
 
 ## [1.7.6] - 2022-12-15
 
