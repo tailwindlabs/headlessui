@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.7] - 2022-12-16
+
 ### Fixed
 
 - Improve scroll restoration after `Dialog` closes ([b20e48dd](https://github.com/tailwindlabs/headlessui/commit/b20e48dde3c37867f3900be3d475f9ac2058b587))
@@ -370,7 +374,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.6...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.7...HEAD
+[1.7.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.6...@headlessui/vue@v1.7.7
 [1.7.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.5...@headlessui/vue@v1.7.6
 [1.7.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.4...@headlessui/vue@v1.7.5
 [1.7.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.3...@headlessui/vue@v1.7.4
