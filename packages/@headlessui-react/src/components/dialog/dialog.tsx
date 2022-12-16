@@ -39,6 +39,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
 import { disposables } from '../../utils/disposables'
 import { isIOS } from '../../utils/platform'
+import { useLatestValue } from '../../hooks/use-latest-value'
 
 enum DialogStates {
   Open,
@@ -94,7 +95,13 @@ function useDialogContext(component: string) {
 function useScrollLock(
   ownerDocument: Document | null,
   enabled: boolean,
-  resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
+  {
+    resolveAllowedContainers = () => [],
+    shouldRestoreScroll,
+  }: {
+    resolveAllowedContainers?: () => HTMLElement[]
+    shouldRestoreScroll: MutableRefObject<boolean>
+  }
 ) {
   useEffect(() => {
     if (!enabled) return
@@ -173,6 +180,18 @@ function useScrollLock(
 
       // Restore scroll position
       d.add(() => {
+        // Only try to restore the scroll if that feature is enabled
+        if (!shouldRestoreScroll.current) {
+          return
+        }
+
+        // If we captured an element that should be scrolled to, then we can try to do that if the
+        // element is still connected (aka, still in the DOM).
+        else if (scrollToElement && scrollToElement.isConnected) {
+          scrollToElement.scrollIntoView({ block: 'nearest' })
+          scrollToElement = null
+        }
+
         // Before opening the Dialog, we capture the current pageYOffset, and offset the page with
         // this value so that we can also scroll to `(0, 0)`.
         //
@@ -187,13 +206,8 @@ function useScrollLock(
         //
         // (Since the value of window.pageYOffset is 0 in the first case, we should be able to
         // always sum these values)
-        window.scrollTo(0, window.pageYOffset + scrollPosition)
-
-        // If we captured an element that should be scrolled to, then we can try to do that if the
-        // element is still connected (aka, still in the DOM).
-        if (scrollToElement && scrollToElement.isConnected) {
-          scrollToElement.scrollIntoView({ block: 'nearest' })
-          scrollToElement = null
+        else {
+          window.scrollTo(0, window.pageYOffset + scrollPosition)
         }
       })
     }
@@ -222,6 +236,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   props: Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
     PropsForFeatures<typeof DialogRenderFeatures> & {
       open?: boolean
+      restoreScrollPosition?: boolean
       onClose(value: boolean): void
       initialFocus?: MutableRefObject<HTMLElement | null>
       __demoMode?: boolean
@@ -231,6 +246,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let internalId = useId()
   let {
     id = `headlessui-dialog-${internalId}`,
+    restoreScrollPosition = true,
     open,
     onClose,
     initialFocus,
@@ -343,11 +359,10 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   })
 
   // Scroll lock
-  useScrollLock(
-    ownerDocument,
-    dialogState === DialogStates.Open && !hasParentDialog,
-    resolveContainers
-  )
+  useScrollLock(ownerDocument, dialogState === DialogStates.Open && !hasParentDialog, {
+    resolveAllowedContainers: resolveContainers,
+    shouldRestoreScroll: useLatestValue(restoreScrollPosition),
+  })
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
