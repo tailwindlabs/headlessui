@@ -11,7 +11,7 @@
 
 ## Documentation
 
-For full documentation, visit [headlessui.dev](https://headlessui.dev).
+For full documentation, visit [headlessui.com](https://headlessui.com).
 
 ### Installing the latest version
 
