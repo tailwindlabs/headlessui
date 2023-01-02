@@ -14,7 +14,7 @@ export function useTrackedPointer() {
       // FIXME: Remove this once we use browser testing in all the relevant places.
       // NOTE: This is replaced with a compile-time define during the build process
       // This hack exists to work around a few failing tests caused by our inability to "move" the virtual pointer in JSDOM pointer events.
-      if (process.env.TEST_BYPASS_TRACKED_POINTER) {
+      if (typeof process !== 'undefined' && process.env.TEST_BYPASS_TRACKED_POINTER) {
         return true
       }
 
