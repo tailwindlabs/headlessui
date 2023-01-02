@@ -571,6 +571,7 @@ export let MenuItem = defineComponent({
         role: 'menuitem',
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
+        disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
         onFocus: handleFocus,
         onPointerenter: handleEnter,
