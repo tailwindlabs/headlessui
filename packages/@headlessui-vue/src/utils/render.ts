@@ -122,6 +122,8 @@ function _render({
             `However we need to passthrough the following props:`,
             Object.keys(incomingProps)
               .concat(Object.keys(attrs))
+              .map((name) => name.trim())
+              .filter((current, idx, all) => all.indexOf(current) === idx)
               .sort((a, z) => a.localeCompare(z))
               .map((line) => `  - ${line}`)
               .join('\n'),
@@ -137,7 +139,19 @@ function _render({
         )
       }
 
-      return cloneVNode(firstChild, Object.assign({}, incomingProps, dataAttributes))
+      let mergedProps = mergeProps(firstChild.props ?? {}, incomingProps)
+      let cloned = cloneVNode(firstChild, mergedProps)
+      // Explicitly override props starting with `on`. This is for event handlers, but there are
+      // scenario's where we set them to `undefined` explicitly (when `aria-disabled="true"` is
+      // happening instead of `disabled`). But cloneVNode doesn't like overriding `onXXX` props so
+      // we have to do it manually.
+      for (let prop in mergedProps) {
+        if (prop.startsWith('on')) {
+          cloned.props ||= {}
+          cloned.props[prop] = mergedProps[prop]
+        }
+      }
+      return cloned
     }
 
     if (Array.isArray(children) && children.length === 1) {
@@ -247,7 +261,7 @@ export function omit<T extends Record<any, any>, Keys extends keyof T>(
   object: T,
   keysToOmit: readonly Keys[] = []
 ) {
-  let clone = Object.assign({}, object)
+  let clone = Object.assign({}, object) as T
   for (let key of keysToOmit) {
     if (key in clone) delete clone[key]
   }
