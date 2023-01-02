@@ -493,6 +493,7 @@ export let MenuItems = defineComponent({
 
 export let MenuItem = defineComponent({
   name: 'MenuItem',
+  inheritAttrs: false,
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
@@ -584,7 +585,7 @@ export let MenuItem = defineComponent({
 
       return render({
         ourProps,
-        theirProps,
+        theirProps: { ...attrs, ...theirProps },
         slot,
         attrs,
         slots,
