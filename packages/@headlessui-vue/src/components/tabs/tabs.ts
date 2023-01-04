@@ -20,7 +20,7 @@ import { useId } from '../../hooks/use-id'
 import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
 import { match } from '../../utils/match'
-import { focusIn, Focus, FocusResult } from '../../utils/focus-management'
+import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { microTask } from '../../utils/micro-task'
@@ -134,6 +134,9 @@ export let TabGroup = defineComponent({
       if (api.tabs.value.length <= 0) return
       if (props.selectedIndex === null && selectedIndex.value !== null) return
 
+      api.tabs.value = sortByDomNode(api.tabs.value, dom)
+      api.panels.value = sortByDomNode(api.panels.value, dom)
+
       let tabs = api.tabs.value.map((tab) => dom(tab)).filter(Boolean) as HTMLElement[]
       let focusableTabs = tabs.filter((tab) => !tab.hasAttribute('disabled'))
 
@@ -157,7 +160,25 @@ export let TabGroup = defineComponent({
         let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
         if (!next) return
 
-        selectedIndex.value = tabs.indexOf(next)
+        let localSelectedIndex = tabs.indexOf(next) ?? api.selectedIndex.value
+        if (localSelectedIndex === -1) localSelectedIndex = api.selectedIndex.value
+
+        selectedIndex.value = localSelectedIndex
+      }
+    })
+
+    watchEffect(() => {
+      if (!isControlled.value) return
+      if (realSelectedIndex.value == null) return
+      if (api.tabs.value.length <= 0) return
+
+      let sorted = sortByDomNode(api.tabs.value, dom)
+      let didOrderChange = sorted.some((tab, i) => dom(api.tabs.value[i]) !== dom(tab))
+
+      if (didOrderChange) {
+        api.setSelectedIndex(
+          sorted.findIndex((x) => dom(x) === dom(api.tabs.value[realSelectedIndex.value!]))
+        )
       }
     })
 

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix SSR tab rendering on React 17 ([#2102](https://github.com/tailwindlabs/headlessui/pull/2102))
+- Fix arrow key handling in `Tab` (after DOM order changes) ([#2145](https://github.com/tailwindlabs/headlessui/pull/2145))
 
 ## [1.7.7] - 2022-12-16
 

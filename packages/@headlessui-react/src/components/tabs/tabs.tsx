@@ -61,29 +61,37 @@ let reducers: {
   ) => StateDefinition
 } = {
   [ActionTypes.SetSelectedIndex](state, action) {
-    let focusableTabs = state.tabs.filter((tab) => !tab.current?.hasAttribute('disabled'))
+    let tabs = sortByDomNode(state.tabs, (tab) => tab.current)
+    let panels = sortByDomNode(state.panels, (panel) => panel.current)
+
+    let focusableTabs = tabs.filter((tab) => !tab.current?.hasAttribute('disabled'))
+
+    let nextState = { ...state, tabs, panels }
 
     // Underflow
     if (action.index < 0) {
-      return { ...state, selectedIndex: state.tabs.indexOf(focusableTabs[0]) }
+      return { ...nextState, selectedIndex: tabs.indexOf(focusableTabs[0]) }
     }
 
     // Overflow
-    else if (action.index > state.tabs.length) {
+    else if (action.index > tabs.length) {
       return {
-        ...state,
-        selectedIndex: state.tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
+        ...nextState,
+        selectedIndex: tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
       }
     }
 
     // Middle
-    let before = state.tabs.slice(0, action.index)
-    let after = state.tabs.slice(action.index)
+    let before = tabs.slice(0, action.index)
+    let after = tabs.slice(action.index)
 
     let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
-    if (!next) return state
+    if (!next) return nextState
 
-    return { ...state, selectedIndex: state.tabs.indexOf(next) }
+    let selectedIndex = tabs.indexOf(next) ?? state.selectedIndex
+    if (selectedIndex === -1) selectedIndex = state.selectedIndex
+
+    return { ...nextState, selectedIndex }
   },
   [ActionTypes.RegisterTab](state, action) {
     if (state.tabs.includes(action.tab)) return state
@@ -236,6 +244,20 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.SetSelectedIndex, index: selectedIndex ?? defaultIndex })
   }, [selectedIndex /* Deliberately skipping defaultIndex */])
+
+  useIsoMorphicEffect(() => {
+    if (realSelectedIndex.current === undefined) return
+    if (state.tabs.length <= 0) return
+
+    // TODO: Figure out a way to detect this without the slow sort on every render. Might be fine
+    //       unless you have a lot of tabs.
+    let sorted = sortByDomNode(state.tabs, (tab) => tab.current)
+    let didOrderChange = sorted.some((tab, i) => state.tabs[i] !== tab)
+
+    if (didOrderChange) {
+      change(sorted.indexOf(state.tabs[realSelectedIndex.current]))
+    }
+  })
 
   let SSRCounter = useRef({ tabs: 0, panels: 0 })
   let ourProps = { ref: tabsRef }

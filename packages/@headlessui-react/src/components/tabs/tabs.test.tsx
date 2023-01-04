@@ -167,6 +167,177 @@ describe('Rendering', () => {
     })
   )
 
+  it(
+    'should guarantee the order of DOM nodes when reversing the tabs and panels themselves, then performing actions (controlled component)',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [selectedIndex, setSelectedIndex] = useState(1)
+        let [tabs, setTabs] = useState([0, 1, 2])
+
+        return (
+          <>
+            <button
+              onClick={() => {
+                setTabs((tabs) => tabs.slice().reverse())
+                setSelectedIndex((idx) => tabs.length - 1 - idx)
+              }}
+            >
+              reverse
+            </button>
+            <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
+              <Tab.List>
+                {tabs.map((tab) => (
+                  <Tab key={tab}>Tab {tab}</Tab>
+                ))}
+              </Tab.List>
+
+              <Tab.Panels>
+                {tabs.map((tab) => (
+                  <Tab.Panel key={tab}>Content {tab}</Tab.Panel>
+                ))}
+              </Tab.Panels>
+            </Tab.Group>
+            <p id="selectedIndex">{selectedIndex}</p>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      let selectedIndexElement = document.getElementById('selectedIndex')
+
+      assertTabs({ active: 1 })
+
+      await click(getByText('Tab 0'))
+      assertTabs({ active: 0 })
+      expect(selectedIndexElement).toHaveTextContent('0')
+
+      await click(getByText('Tab 1'))
+      assertTabs({ active: 1 })
+      expect(selectedIndexElement).toHaveTextContent('1')
+
+      await click(getByText('Tab 2'))
+      assertTabs({ active: 2 })
+      expect(selectedIndexElement).toHaveTextContent('2')
+
+      await click(getByText('reverse'))
+
+      // Note: the indices are reversed now
+      await click(getByText('Tab 0'))
+      assertTabs({ active: 2 })
+      expect(selectedIndexElement).toHaveTextContent('2')
+
+      await click(getByText('Tab 1'))
+      assertTabs({ active: 1 })
+      expect(selectedIndexElement).toHaveTextContent('1')
+
+      await click(getByText('Tab 2'))
+      assertTabs({ active: 0 })
+      expect(selectedIndexElement).toHaveTextContent('0')
+
+      await click(getByText('reverse'))
+
+      // Note: the indices are reversed again now (back to normal)
+      await click(getByText('Tab 0'))
+      assertTabs({ active: 0 })
+      expect(selectedIndexElement).toHaveTextContent('0')
+
+      await click(getByText('Tab 1'))
+      assertTabs({ active: 1 })
+      expect(selectedIndexElement).toHaveTextContent('1')
+
+      await click(getByText('Tab 2'))
+      assertTabs({ active: 2 })
+      expect(selectedIndexElement).toHaveTextContent('2')
+    })
+  )
+
+  it(
+    'should guarantee the order of DOM nodes when reversing the tabs and panels themselves, then performing actions (uncontrolled component)',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [tabs, setTabs] = useState([0, 1, 2])
+
+        return (
+          <>
+            <button
+              onClick={() => {
+                setTabs((tabs) => tabs.slice().reverse())
+              }}
+            >
+              reverse
+            </button>
+            <Tab.Group>
+              {({ selectedIndex }) => (
+                <>
+                  <Tab.List>
+                    {tabs.map((tab) => (
+                      <Tab key={tab}>Tab {tab}</Tab>
+                    ))}
+                  </Tab.List>
+
+                  <Tab.Panels>
+                    {tabs.map((tab) => (
+                      <Tab.Panel key={tab}>Content {tab}</Tab.Panel>
+                    ))}
+                  </Tab.Panels>
+
+                  <p id="selectedIndex">{selectedIndex}</p>
+                </>
+              )}
+            </Tab.Group>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      let selectedIndexElement = document.getElementById('selectedIndex')
+
+      await click(getByText('Tab 0'))
+      assertTabs({ active: 0 })
+      expect(selectedIndexElement).toHaveTextContent('0')
+
+      await click(getByText('Tab 1'))
+      assertTabs({ active: 1 })
+      expect(selectedIndexElement).toHaveTextContent('1')
+
+      await click(getByText('Tab 2'))
+      assertTabs({ active: 2 })
+      expect(selectedIndexElement).toHaveTextContent('2')
+
+      await click(getByText('reverse'))
+
+      // Note: the indices are reversed now
+      await click(getByText('Tab 0'))
+      assertTabs({ active: 2 })
+      expect(selectedIndexElement).toHaveTextContent('2')
+
+      await click(getByText('Tab 1'))
+      assertTabs({ active: 1 })
+      expect(selectedIndexElement).toHaveTextContent('1')
+
+      await click(getByText('Tab 2'))
+      assertTabs({ active: 0 })
+      expect(selectedIndexElement).toHaveTextContent('0')
+
+      await click(getByText('reverse'))
+
+      // Note: the indices are reversed again now (back to normal)
+      await click(getByText('Tab 0'))
+      assertTabs({ active: 0 })
+      expect(selectedIndexElement).toHaveTextContent('0')
+
+      await click(getByText('Tab 1'))
+      assertTabs({ active: 1 })
+      expect(selectedIndexElement).toHaveTextContent('1')
+
+      await click(getByText('Tab 2'))
+      assertTabs({ active: 2 })
+      expect(selectedIndexElement).toHaveTextContent('2')
+    })
+  )
+
   describe('`renderProps`', () => {
     it(
       'should be possible to render using as={Fragment}',
