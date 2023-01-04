@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ensure `disabled="false"` is not incorrectly passed to the underlying DOM Node ([#2138](https://github.com/tailwindlabs/headlessui/pull/2138))
 - Fix arrow key handling in `Tab` (after DOM order changes) ([#2145](https://github.com/tailwindlabs/headlessui/pull/2145))
+- Fix `Tab` key with non focusable elements in `Popover.Panel` ([#2147](https://github.com/tailwindlabs/headlessui/pull/2147))
 
 ## [1.7.7] - 2022-12-16
 
