@@ -26,6 +26,7 @@ import {
   focusIn,
   isFocusableElement,
   FocusableMode,
+  FocusResult,
 } from '../../utils/focus-management'
 import { dom } from '../../utils/dom'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
@@ -406,10 +407,21 @@ export let PopoverButton = defineComponent({
         if (!el) return
 
         function run() {
-          match(direction.value, {
+          let result = match(direction.value, {
             [TabDirection.Forwards]: () => focusIn(el, Focus.First),
             [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
           })
+
+          if (result === FocusResult.Error) {
+            focusIn(
+              getFocusableElements().filter((el) => el.dataset.headlessuiFocusGuard !== 'true'),
+              match(direction.value, {
+                [TabDirection.Forwards]: Focus.Next,
+                [TabDirection.Backwards]: Focus.Previous,
+              }),
+              { relativeTo: dom(api.button) }
+            )
+          }
         }
 
         // TODO: Cleanup once we are using real browser tests
@@ -435,6 +447,7 @@ export let PopoverButton = defineComponent({
           h(Hidden, {
             id: sentinelId,
             features: HiddenFeatures.Focusable,
+            'data-headlessui-focus-guard': true,
             as: 'button',
             type: 'button',
             onFocus: handleFocus,
@@ -584,7 +597,12 @@ export let PopoverPanel = defineComponent({
       function run() {
         match(direction.value, {
           [TabDirection.Forwards]: () => {
-            focusIn(el, Focus.Next)
+            // Try to focus the first thing in the panel. But if that fails (e.g.: there are no
+            // focusable elements, then we can move outside of the panel)
+            let result = focusIn(el, Focus.First)
+            if (result === FocusResult.Error) {
+              dom(api.afterPanelSentinel)?.focus()
+            }
           },
           [TabDirection.Backwards]: () => {
             // Coming from the Popover.Panel (which is portalled to somewhere else). Let's redirect
@@ -623,10 +641,7 @@ export let PopoverPanel = defineComponent({
 
             // Ignore sentinel buttons and items inside the panel
             for (let element of combined.slice()) {
-              if (
-                element?.id?.startsWith?.('headlessui-focus-sentinel-') ||
-                panel?.contains(element)
-              ) {
+              if (element.dataset.headlessuiFocusGuard === 'true' || panel?.contains(element)) {
                 let idx = combined.indexOf(element)
                 if (idx !== -1) combined.splice(idx, 1)
               }
@@ -634,7 +649,14 @@ export let PopoverPanel = defineComponent({
 
             focusIn(combined, Focus.First, { sorted: false })
           },
-          [TabDirection.Backwards]: () => focusIn(el, Focus.Previous),
+          [TabDirection.Backwards]: () => {
+            // Try to focus the first thing in the panel. But if that fails (e.g.: there are no
+            // focusable elements, then we can move outside of the panel)
+            let result = focusIn(el, Focus.Previous)
+            if (result === FocusResult.Error) {
+              dom(api.button)?.focus()
+            }
+          },
         })
       }
 
@@ -676,6 +698,7 @@ export let PopoverPanel = defineComponent({
                   id: beforePanelSentinelId,
                   ref: api.beforePanelSentinel,
                   features: HiddenFeatures.Focusable,
+                  'data-headlessui-focus-guard': true,
                   as: 'button',
                   type: 'button',
                   onFocus: handleBeforeFocus,
@@ -687,6 +710,7 @@ export let PopoverPanel = defineComponent({
                   id: afterPanelSentinelId,
                   ref: api.afterPanelSentinel,
                   features: HiddenFeatures.Focusable,
+                  'data-headlessui-focus-guard': true,
                   as: 'button',
                   type: 'button',
                   onFocus: handleAfterFocus,

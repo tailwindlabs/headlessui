@@ -1336,6 +1336,40 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should close the Popover menu once we Tab out of a Popover without focusable elements',
+      suppressConsoleLogs(async () => {
+        render(
+          <>
+            <a href="/">Previous</a>
+
+            <Popover>
+              <Popover.Button>Trigger 1</Popover.Button>
+              <Popover.Panel>No focusable elements here</Popover.Panel>
+            </Popover>
+
+            <a href="/">Next</a>
+          </>
+        )
+
+        // Focus the button of the Popover
+        await focus(getPopoverButton())
+
+        // Open popover
+        await click(getPopoverButton())
+
+        // Let's Tab out of the Popover
+        await press(Keys.Tab)
+
+        // Verify the next link is now focused
+        assertActiveElement(getByText('Next'))
+
+        // Verify the popover is closed
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      })
+    )
+
+    it(
       'should close the Popover when the Popover.Panel has a focus prop',
       suppressConsoleLogs(async () => {
         render(
