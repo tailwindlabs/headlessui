@@ -45,6 +45,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
 import { microTask } from '../../utils/micro-task'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 
 type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
 
@@ -56,7 +57,7 @@ enum PopoverStates {
 interface StateDefinition {
   popoverState: PopoverStates
 
-  buttons: string[]
+  buttons: MutableRefObject<string[]>
 
   button: HTMLElement | null
   buttonId: string | null
@@ -200,9 +201,10 @@ let PopoverRoot = forwardRefWithAs(function Popover<
     })
   )
 
+  let buttons = useRef([])
   let reducerBag = useReducer(stateReducer, {
     popoverState: PopoverStates.Closed,
-    buttons: [],
+    buttons,
     button: null,
     buttonId: null,
     panel: null,
@@ -390,7 +392,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let closeOthers = groupContext?.closeOthers
 
   let panelContext = usePopoverPanelContext()
-  let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
+  let isWithinPanel = panelContext !== null
 
   useEffect(() => {
     if (isWithinPanel) return
@@ -398,7 +400,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     return () => {
       dispatch({ type: ActionTypes.SetButtonId, buttonId: null })
     }
-  }, [id, dispatch])
+  }, [isWithinPanel, id, dispatch])
 
   let buttonRef = useSyncRefs(
     internalButtonRef,
@@ -407,13 +409,13 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       ? null
       : (button) => {
           if (button) {
-            state.buttons.push(id)
+            state.buttons.current.push(id)
           } else {
-            let idx = state.buttons.indexOf(id)
-            if (idx !== -1) state.buttons.splice(idx, 1)
+            let idx = state.buttons.current.indexOf(id)
+            if (idx !== -1) state.buttons.current.splice(idx, 1)
           }
 
-          if (state.buttons.length > 1) {
+          if (state.buttons.current.length > 1) {
             console.warn(
               'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
             )
@@ -652,7 +654,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   })
   let ownerDocument = useOwnerDocument(internalPanelRef)
 
-  useEffect(() => {
+  useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.SetPanelId, panelId: id })
     return () => {
       dispatch({ type: ActionTypes.SetPanelId, panelId: null })
@@ -715,7 +717,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
   let ourProps = {
     ref: panelRef,
-    id: state.panelId,
+    id,
     onKeyDown: handleKeyDown,
     onBlur:
       focus && state.popoverState === PopoverStates.Open
@@ -807,7 +809,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   })
 
   return (
-    <PopoverPanelContext.Provider value={state.panelId}>
+    <PopoverPanelContext.Provider value={id}>
       {visible && isPortalled && (
         <Hidden
           id={beforePanelSentinelId}
