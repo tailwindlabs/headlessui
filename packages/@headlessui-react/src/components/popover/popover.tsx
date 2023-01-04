@@ -33,6 +33,7 @@ import {
   focusIn,
   isFocusableElement,
   FocusableMode,
+  FocusResult,
 } from '../../utils/focus-management'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -526,10 +527,21 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     if (!el) return
 
     function run() {
-      match(direction.current, {
+      let result = match(direction.current, {
         [TabDirection.Forwards]: () => focusIn(el, Focus.First),
         [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
       })
+
+      if (result === FocusResult.Error) {
+        focusIn(
+          getFocusableElements().filter((el) => el.dataset.headlessuiFocusGuard !== 'true'),
+          match(direction.current, {
+            [TabDirection.Forwards]: Focus.Next,
+            [TabDirection.Backwards]: Focus.Previous,
+          }),
+          { relativeTo: state.button }
+        )
+      }
     }
 
     // TODO: Cleanup once we are using real browser tests
@@ -553,6 +565,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
         <Hidden
           id={sentinelId}
           features={HiddenFeatures.Focusable}
+          data-headlessui-focus-guard
           as="button"
           type="button"
           onFocus={handleFocus}
@@ -748,7 +761,12 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     function run() {
       match(direction.current, {
         [TabDirection.Forwards]: () => {
-          focusIn(el, Focus.First)
+          // Try to focus the first thing in the panel. But if that fails (e.g.: there are no
+          // focusable elements, then we can move outside of the panel)
+          let result = focusIn(el, Focus.First)
+          if (result === FocusResult.Error) {
+            state.afterPanelSentinel.current?.focus()
+          }
         },
         [TabDirection.Backwards]: () => {
           // Coming from the Popover.Panel (which is portalled to somewhere else). Let's redirect
@@ -785,10 +803,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
           // Ignore sentinel buttons and items inside the panel
           for (let element of combined.slice()) {
-            if (
-              element?.id?.startsWith?.('headlessui-focus-sentinel-') ||
-              state.panel?.contains(element)
-            ) {
+            if (element.dataset.headlessuiFocusGuard === 'true' || state.panel?.contains(element)) {
               let idx = combined.indexOf(element)
               if (idx !== -1) combined.splice(idx, 1)
             }
@@ -796,7 +811,14 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 
           focusIn(combined, Focus.First, { sorted: false })
         },
-        [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+        [TabDirection.Backwards]: () => {
+          // Try to focus the first thing in the panel. But if that fails (e.g.: there are no
+          // focusable elements, then we can move outside of the panel)
+          let result = focusIn(el, Focus.Previous)
+          if (result === FocusResult.Error) {
+            state.button?.focus()
+          }
+        },
       })
     }
 
@@ -815,6 +837,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
           id={beforePanelSentinelId}
           ref={state.beforePanelSentinel}
           features={HiddenFeatures.Focusable}
+          data-headlessui-focus-guard
           as="button"
           type="button"
           onFocus={handleBeforeFocus}
@@ -834,6 +857,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
           id={afterPanelSentinelId}
           ref={state.afterPanelSentinel}
           features={HiddenFeatures.Focusable}
+          data-headlessui-focus-guard
           as="button"
           type="button"
           onFocus={handleAfterFocus}

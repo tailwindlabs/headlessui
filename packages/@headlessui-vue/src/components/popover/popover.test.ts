@@ -15,7 +15,7 @@ import {
   assertContainsActiveElement,
   getPopoverOverlay,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, Keys, MouseButton, shift } from '../../test-utils/interactions'
+import { click, focus, press, Keys, MouseButton, shift } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
@@ -1356,6 +1356,40 @@ describe('Keyboard interactions', () => {
         // Verify we are focused on the second link
         await press(Keys.Tab)
         assertActiveElement(getByText('Link 2'))
+
+        // Let's Tab out of the Popover
+        await press(Keys.Tab)
+
+        // Verify the next link is now focused
+        assertActiveElement(getByText('Next'))
+
+        // Verify the popover is closed
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      })
+    )
+
+    it(
+      'should close the Popover menu once we Tab out of a Popover without focusable elements',
+      suppressConsoleLogs(async () => {
+        renderTemplate(
+          html`
+            <div>
+              <Popover>
+                <PopoverButton>Trigger 1</PopoverButton>
+                <PopoverPanel>No focusable elements here</PopoverPanel>
+              </Popover>
+
+              <a href="/">Next</a>
+            </div>
+          `
+        )
+
+        // Focus the button of the Popover
+        await focus(getPopoverButton())
+
+        // Open popover
+        await click(getPopoverButton())
 
         // Let's Tab out of the Popover
         await press(Keys.Tab)

@@ -1475,7 +1475,7 @@ describe('Mouse interactions', () => {
     })
   )
 
-  fit(
+  it(
     'should be possible to click elements inside the dialog when they reside inside a shadow boundary',
     suppressConsoleLogs(async () => {
       let fn = jest.fn()
