@@ -413,7 +413,7 @@ describe('Keyboard interactions', () => {
   })
 
   describe('`Enter` key', () => {
-    it('should not be possible to use Enter to toggle the Switch', async () => {
+    it('should be possible to use Enter to toggle the Switch', async () => {
       let handleChange = jest.fn()
       render(<Switch checked={false} onChange={handleChange} />)
 
@@ -426,7 +426,7 @@ describe('Keyboard interactions', () => {
       // Try to toggle
       await press(Keys.Enter)
 
-      expect(handleChange).not.toHaveBeenCalled()
+      expect(handleChange).toHaveBeenCalled()
     })
 
     it('should submit the form on `Enter`', async () => {

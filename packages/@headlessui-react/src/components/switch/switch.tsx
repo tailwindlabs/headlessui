@@ -145,6 +145,7 @@ let SwitchRoot = forwardRefWithAs(function Switch<
       event.preventDefault()
       toggle()
     } else if (event.key === Keys.Enter) {
+      toggle()
       attemptSubmit(event.currentTarget)
     }
   })
