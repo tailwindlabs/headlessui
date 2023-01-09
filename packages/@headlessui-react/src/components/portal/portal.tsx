@@ -107,7 +107,9 @@ let PortalRoot = forwardRefWithAs(function Portal<
         if (!trulyUnmounted.current) return
         if (!target || !element) return
 
-        target.removeChild(element)
+        if (element instanceof Node && target.contains(element)) {
+          target.removeChild(element)
+        }
 
         if (target.childNodes.length <= 0) {
           target.parentElement?.removeChild(target)
