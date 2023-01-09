@@ -10,6 +10,8 @@ import {
   ReactElement,
 } from 'react'
 import { Props, XOR, __, Expand } from '../types'
+import { classNames } from './class-names'
+import { env } from './env'
 import { match } from './match'
 
 export enum Features {
@@ -168,6 +170,10 @@ function _render<TTag extends ElementType, TSlot>(
         )
       }
 
+      // Merge class name prop in SSR
+      let newClassName = classNames(resolvedChildren.props?.className, rest.className)
+      let classNameProps = newClassName ? { className: newClassName } : {}
+
       return cloneElement(
         resolvedChildren,
         Object.assign(
@@ -176,7 +182,8 @@ function _render<TTag extends ElementType, TSlot>(
           mergeProps(resolvedChildren.props, compact(omit(rest, ['ref']))),
           dataAttributes,
           refRelatedProps,
-          mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref)
+          mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref),
+          classNameProps
         )
       )
     }
