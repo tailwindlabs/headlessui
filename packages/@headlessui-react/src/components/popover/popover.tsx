@@ -58,7 +58,7 @@ enum PopoverStates {
 interface StateDefinition {
   popoverState: PopoverStates
 
-  buttons: MutableRefObject<string[]>
+  buttons: MutableRefObject<Symbol[]>
 
   button: HTMLElement | null
   buttonId: string | null
@@ -403,6 +403,22 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     }
   }, [isWithinPanel, id, dispatch])
 
+  // This is a little bit different compared to the `id` we already have. The goal is to have a very
+  // unique identifier for this specific component. This can be achieved with the `id` from above.
+  //
+  // However, the difference is for React 17 and lower where the `useId` hook doesn't exist yet.
+  // There we will generate a unique ID based on a simple counter, but for SSR this will result in
+  // `undefined` first, later it is patched to be a unique ID. The problem is that this patching
+  // happens after the component is rendered and therefore there is a moment in time where multiple
+  // buttons have the exact same ID and the `state.buttons` would result in something like:
+  //
+  // ```js
+  // ['headlessui-popover-button-undefined', 'headlessui-popover-button-1']
+  // ```
+  //
+  // With this approach we guarantee that there is a unique value for each button.
+  let [uniqueIdentifier] = useState(() => Symbol())
+
   let buttonRef = useSyncRefs(
     internalButtonRef,
     ref,
@@ -410,9 +426,9 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
       ? null
       : (button) => {
           if (button) {
-            state.buttons.current.push(id)
+            state.buttons.current.push(uniqueIdentifier)
           } else {
-            let idx = state.buttons.current.indexOf(id)
+            let idx = state.buttons.current.indexOf(uniqueIdentifier)
             if (idx !== -1) state.buttons.current.splice(idx, 1)
           }
 
