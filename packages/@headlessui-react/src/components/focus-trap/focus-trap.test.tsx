@@ -109,6 +109,50 @@ it('should warn when there is no focusable element inside the FocusTrap', async 
 })
 
 it(
+  'should not be possible to programmatically escape the focus trap (if there is only 1 focusable element)',
+  suppressConsoleLogs(async () => {
+    function Example() {
+      return (
+        <>
+          <input id="a" autoFocus />
+
+          <FocusTrap>
+            <input id="b" />
+          </FocusTrap>
+        </>
+      )
+    }
+
+    render(<Example />)
+
+    await nextFrame()
+
+    let [a, b] = Array.from(document.querySelectorAll('input'))
+
+    // Ensure that input-b is the active element
+    assertActiveElement(b)
+
+    // Tab to the next item
+    await press(Keys.Tab)
+
+    // Ensure that input-b is still the active element
+    assertActiveElement(b)
+
+    // Try to move focus
+    a?.focus()
+
+    // Ensure that input-b is still the active element
+    assertActiveElement(b)
+
+    // Click on an element within the FocusTrap
+    await click(b)
+
+    // Ensure that input-b is the active element
+    assertActiveElement(b)
+  })
+)
+
+it(
   'should not be possible to programmatically escape the focus trap',
   suppressConsoleLogs(async () => {
     function Example() {
@@ -212,6 +256,56 @@ it('should restore the previously focused element, before entering the FocusTrap
 
   // Ensure that we restored focus correctly
   assertActiveElement(document.getElementById('item-2'))
+})
+
+it('should stay in the FocusTrap when using `tab`, if there is only 1 focusable element', async () => {
+  render(
+    <>
+      <button>Before</button>
+      <FocusTrap>
+        <button id="item-a">Item A</button>
+      </FocusTrap>
+      <button>After</button>
+    </>
+  )
+
+  await nextFrame()
+
+  // Item A should be focused because the FocusTrap will focus the first item
+  assertActiveElement(document.getElementById('item-a'))
+
+  // Next
+  await press(Keys.Tab)
+  assertActiveElement(document.getElementById('item-a'))
+
+  // Next
+  await press(Keys.Tab)
+  assertActiveElement(document.getElementById('item-a'))
+})
+
+it('should stay in the FocusTrap when using `shift+tab`, if there is only 1 focusable element', async () => {
+  render(
+    <>
+      <button>Before</button>
+      <FocusTrap>
+        <button id="item-a">Item A</button>
+      </FocusTrap>
+      <button>After</button>
+    </>
+  )
+
+  await nextFrame()
+
+  // Item A should be focused because the FocusTrap will focus the first item
+  assertActiveElement(document.getElementById('item-a'))
+
+  // Previous (loop around!)
+  await press(shift(Keys.Tab))
+  assertActiveElement(document.getElementById('item-a'))
+
+  // Previous
+  await press(shift(Keys.Tab))
+  assertActiveElement(document.getElementById('item-a'))
 })
 
 it('should be possible tab to the next focusable element within the focus trap', async () => {
