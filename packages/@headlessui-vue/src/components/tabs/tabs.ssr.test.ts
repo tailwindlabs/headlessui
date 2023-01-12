@@ -1,9 +1,7 @@
-import { createApp, createSSRApp, defineComponent, h } from 'vue'
-import { renderToString } from 'vue/server-renderer'
+import { defineComponent } from 'vue'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
 import { html } from '../../test-utils/html'
-import { render } from '../../test-utils/vue-testing-library'
-import { env } from '../../utils/env'
+import { renderHydrate, renderSSR } from '../../test-utils/ssr'
 
 jest.mock('../../hooks/use-id')
 
@@ -36,7 +34,7 @@ let Example = defineComponent({
 describe('Rendering', () => {
   describe('SSR', () => {
     it('should be possible to server side render the first Tab and Panel', async () => {
-      let { contents } = await serverRender(Example)
+      let { contents } = await renderSSR(Example)
 
       expect(contents).toContain(`Content 1`)
       expect(contents).not.toContain(`Content 2`)
@@ -44,7 +42,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to server side render the defaultIndex Tab and Panel', async () => {
-      let { contents } = await serverRender(Example, { defaultIndex: 1 })
+      let { contents } = await renderSSR(Example, { defaultIndex: 1 })
 
       expect(contents).not.toContain(`Content 1`)
       expect(contents).toContain(`Content 2`)
@@ -54,7 +52,7 @@ describe('Rendering', () => {
 
   describe('Hydration', () => {
     it('should be possible to server side render the first Tab and Panel', async () => {
-      let { contents } = await hydrateRender(Example)
+      let { contents } = await renderHydrate(Example)
 
       expect(contents).toContain(`Content 1`)
       expect(contents).not.toContain(`Content 2`)
@@ -62,7 +60,7 @@ describe('Rendering', () => {
     })
 
     it('should be possible to server side render the defaultIndex Tab and Panel', async () => {
-      let { contents } = await hydrateRender(Example, { defaultIndex: 1 })
+      let { contents } = await renderHydrate(Example, { defaultIndex: 1 })
 
       expect(contents).not.toContain(`Content 1`)
       expect(contents).toContain(`Content 2`)
@@ -70,30 +68,3 @@ describe('Rendering', () => {
     })
   })
 })
-
-async function serverRender(component: any, rootProps: any = {}) {
-  let container = document.createElement('div')
-  document.body.appendChild(container)
-
-  // Render on the server
-  env.set('server')
-  let app = createSSRApp(component, rootProps)
-  let contents = await renderToString(app)
-  container.innerHTML = contents
-
-  return {
-    contents,
-    hydrate() {
-      let app = createApp(component, rootProps)
-      app.mount(container)
-
-      return {
-        contents: container.innerHTML,
-      }
-    },
-  }
-}
-
-async function hydrateRender(component: any, rootProps: any = {}) {
-  return serverRender(component, rootProps).then(({ hydrate }) => hydrate())
-}

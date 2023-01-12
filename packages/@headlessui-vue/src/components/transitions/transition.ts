@@ -14,10 +14,12 @@ import {
   InjectionKey,
   Ref,
   ConcreteComponent,
+  normalizeClass,
 } from 'vue'
 
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
+import { env } from '../../utils/env'
 
 import { Features, omit, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
@@ -312,8 +314,8 @@ export let TransitionChild = defineComponent({
 
     return () => {
       let {
-        appear,
-        show,
+        appear: _appear,
+        show: _show,
 
         // Class names
         enter,
@@ -327,7 +329,15 @@ export let TransitionChild = defineComponent({
       } = props
 
       let ourProps = { ref: container }
-      let theirProps = rest
+      let theirProps = {
+        ...rest,
+        ...(appear && show && env.isServer
+          ? {
+              // Already apply the `enter` and `enterFrom` on the server if required
+              class: normalizeClass([rest.class, ...enterClasses, ...enterFromClasses]),
+            }
+          : {}),
+      }
 
       return render({
         theirProps,
