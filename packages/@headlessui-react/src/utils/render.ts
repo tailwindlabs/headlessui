@@ -11,7 +11,6 @@ import {
 } from 'react'
 import { Props, XOR, __, Expand } from '../types'
 import { classNames } from './class-names'
-import { env } from './env'
 import { match } from './match'
 
 export enum Features {
