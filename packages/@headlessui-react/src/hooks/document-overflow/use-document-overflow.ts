@@ -8,7 +8,7 @@ import { lockOverflow } from './lock-overflow'
 
 interface DocEntry {
   count: number
-  onChange: Set<ChangeHandler>
+  pipes: Set<ChangeHandler>
 }
 
 let overflows = createStore(() => new Map<Document, DocEntry>())
@@ -27,12 +27,12 @@ overflows.subscribe(() => {
 
   // Write data to all the documents
   // This is e separate pass for performance reasons
-  for (let [doc, { count, onChange }] of docs) {
+  for (let [doc, { count, pipes }] of docs) {
     let oldStyle = styles.get(doc)
     let newStyle = count > 0 ? 'hidden' : ''
 
     if (oldStyle !== newStyle) {
-      let updateDocument = pipeline([...onChange, adjustScrollbarPadding, lockOverflow])
+      let updateDocument = pipeline([...pipes, adjustScrollbarPadding, lockOverflow])
 
       updateDocument({
         doc: doc,
@@ -43,7 +43,7 @@ overflows.subscribe(() => {
     // We have to clean up after ourselves so we don't leak memory
     // Using a WeakMap would be ideal, but it's not iterable
     if (count === 0) {
-      onChange.clear()
+      pipes.clear()
       docs.delete(doc)
     }
   }
@@ -60,7 +60,7 @@ export function useDocumentOverflowController(doc: Document | null) {
 
   return {
     locked,
-    lock(onChange?: ChangeHandler): LockGuard {
+    lock(pipes?: Array<ChangeHandler>): LockGuard {
       if (!doc) {
         return {
           release: () => {},
@@ -73,12 +73,12 @@ export function useDocumentOverflowController(doc: Document | null) {
         if (entry) {
           entry.count++
         } else {
-          entry = { count: 1, onChange: new Set() }
+          entry = { count: 1, pipes: new Set() }
           docs.set(doc, entry)
         }
 
-        if (onChange) {
-          entry.onChange.add(onChange)
+        for (let pipe of pipes ?? []) {
+          entry.pipes.add(pipe)
         }
 
         return docs
@@ -128,15 +128,14 @@ export function useDocumentOverflowLockedEffect(
     let d = disposables()
 
     // Prevent the document from scrolling
-    let guard = controller.lock((req, next) => {
-      if (!pipes || !pipes.length) {
-        return
-      }
+    let guard = controller.lock([
+      // Make sure the disposables are passed through the pipeline
+      (req, next) => next(Object.assign({}, req, { d })),
 
-      let newReq = Object.assign({}, req, { d })
-
-      return pipeline(pipes)(newReq, next)
-    })
+      // Run component-defined pipes when the document is locked or unlocked
+      // Also… tell typescript we know what we're doing lol
+      ...((pipes ?? []) as ChangeHandler<any>[]),
+    ])
 
     return () => {
       guard.release()
