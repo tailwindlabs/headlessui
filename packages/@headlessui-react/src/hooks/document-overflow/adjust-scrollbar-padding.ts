@@ -1,7 +1,10 @@
 import { ScrollLockRequest } from './handler'
 
-export function adjustScrollbarPadding(request: ScrollLockRequest, next: () => void) {
-  let { doc } = request
+export function adjustScrollbarPadding(
+  req: ScrollLockRequest,
+  next: (req: ScrollLockRequest) => void
+) {
+  let { doc } = req
   let documentElement = doc.documentElement
 
   // Record the scrollbar width before we change the style
@@ -9,7 +12,7 @@ export function adjustScrollbarPadding(request: ScrollLockRequest, next: () => v
   let scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
 
   // Update the overflow style of the document itself
-  next()
+  next(req)
 
   // Account for the change in scrollbar width
   // NOTE: This is a bit of a hack, but it's the only way to do this

@@ -1,39 +1,17 @@
+import { disposables } from '../../utils/disposables'
 import { createStore } from '../../utils/store'
 import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
 import { useStore } from '../use-store'
 import { adjustScrollbarPadding } from './adjust-scrollbar-padding'
-import { pipeline } from './handler'
+import { ChangeHandler, pipeline, ScrollLockRequest } from './handler'
 import { lockOverflow } from './lock-overflow'
-
-type ChangeHandler = {
-  willChange?(willLock: boolean): void
-  didChange?(didLock: boolean): void
-}
 
 interface DocEntry {
   count: number
   onChange: Set<ChangeHandler>
 }
 
-function updateDocumentOverflow(doc: Document, newStyle: string) {
-  // Record the scrollbar width before we change the style
-  let ownerWindow = doc.defaultView ?? window
-  let scrollbarWidthBefore = ownerWindow.innerWidth - doc.documentElement.clientWidth
-
-  // Update the overflow style of the document itself
-  doc.documentElement.style.overflow = newStyle
-
-  let scrollbarWidthAfter = doc.documentElement.clientWidth - doc.documentElement.offsetWidth
-  let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
-
-  // Account for the scrollbar width
-  // NOTE: This is a bit of a hack, but it's the only way to do this
-  doc.documentElement.style.paddingRight = `${scrollbarWidth}px`
-}
-
 let overflows = createStore(() => new Map<Document, DocEntry>())
-
-let updateDocumentStyle = pipeline([adjustScrollbarPadding, lockOverflow])
 
 // Update the document overflow state when the store changes
 // This MUST happen outside of react for this to work properly.
@@ -54,16 +32,12 @@ overflows.subscribe(() => {
     let newStyle = count > 0 ? 'hidden' : ''
 
     if (oldStyle !== newStyle) {
-      // Will change callbacks allow us to read the current state of the document and store it for later
-      onChange.forEach((handler) => handler.willChange?.(count > 0))
+      let updateDocument = pipeline([...onChange, adjustScrollbarPadding, lockOverflow])
 
-      updateDocumentStyle({
+      updateDocument({
         doc: doc,
         isLocked: count > 0,
       })
-
-      // Did change callbacks allow us to read the new state of the document after the lock / unlock has been applied
-      onChange.forEach((handler) => handler.didChange?.(count > 0))
     }
 
     // We have to clean up after ourselves so we don't leak memory
@@ -103,7 +77,7 @@ export function useDocumentOverflowController(doc: Document | null) {
           docs.set(doc, entry)
         }
 
-        if (onChange?.willChange || onChange?.didChange) {
+        if (onChange) {
           entry.onChange.add(onChange)
         }
 
@@ -135,10 +109,14 @@ export function useIsDocumentOverflowLocked(doc: Document | null) {
   return controller.locked
 }
 
+export type ScrollLockRequestWithDisposables = ScrollLockRequest & {
+  d: ReturnType<typeof disposables>
+}
+
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  onChange?: ChangeHandler
+  pipes?: Array<ChangeHandler<ScrollLockRequestWithDisposables>>
 ) {
   let controller = useDocumentOverflowController(doc)
 
@@ -147,9 +125,23 @@ export function useDocumentOverflowLockedEffect(
       return
     }
 
+    let d = disposables()
+
     // Prevent the document from scrolling
-    let guard = controller.lock(onChange)
-    return () => guard.release()
+    let guard = controller.lock((req, next) => {
+      if (!pipes || !pipes.length) {
+        return
+      }
+
+      let newReq = Object.assign({}, req, { d })
+
+      return pipeline(pipes)(newReq, next)
+    })
+
+    return () => {
+      guard.release()
+      d.dispose()
+    }
   }, [shouldBeLocked, doc])
 
   return controller.locked
