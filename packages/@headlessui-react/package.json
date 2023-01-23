@@ -51,6 +51,8 @@
     "snapshot-diff": "^0.8.1"
   },
   "dependencies": {
-    "client-only": "^0.0.1"
+    "@types/use-sync-external-store": "^0.0.3",
+    "client-only": "^0.0.1",
+    "use-sync-external-store": "^1.2.0"
   }
 }

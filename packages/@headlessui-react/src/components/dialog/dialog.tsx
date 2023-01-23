@@ -39,6 +39,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
 import { disposables } from '../../utils/disposables'
 import { isIOS } from '../../utils/platform'
+import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
 
 enum DialogStates {
   Open,
@@ -96,8 +97,10 @@ function useScrollLock(
   enabled: boolean,
   resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
 ) {
+  let isLocked = useDocumentOverflowLockedEffect(ownerDocument, enabled)
+
   useEffect(() => {
-    if (!enabled) return
+    if (!isLocked) return
     if (!ownerDocument) return
 
     let d = disposables()
@@ -115,7 +118,6 @@ function useScrollLock(
     let ownerWindow = ownerDocument.defaultView ?? window
 
     let scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
-    style(documentElement, 'overflow', 'hidden')
 
     if (scrollbarWidthBefore > 0) {
       let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
@@ -199,7 +201,7 @@ function useScrollLock(
     }
 
     return d.dispose
-  }, [ownerDocument, enabled])
+  }, [ownerDocument, isLocked])
 }
 
 function stateReducer(state: StateDefinition, action: Actions) {
