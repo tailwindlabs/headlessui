@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix false positive warning when using `<Popover.Button />` in React 17 ([#2163](https://github.com/tailwindlabs/headlessui/pull/2163))
 - Fix `failed to removeChild on Node` bug ([#2164](https://github.com/tailwindlabs/headlessui/pull/2164))
 - Don’t overwrite classes during SSR when rendering fragments ([#2173](https://github.com/tailwindlabs/headlessui/pull/2173))
+- Improve `Combobox` accessibility ([#2153](https://github.com/tailwindlabs/headlessui/pull/2153))
 
 ## [1.7.7] - 2022-12-16
 

@@ -712,6 +712,35 @@ export let ComboboxInput = defineComponent({
         },
         { immediate: true }
       )
+
+      // Trick VoiceOver in behaving a little bit better. Manually "resetting" the input makes
+      // VoiceOver a bit more happy and doesn't require some changes manually first before
+      // announcing items correctly. This is a bit of a hacks, but it is a workaround for a
+      // VoiceOver bug.
+      //
+      // TODO: VoiceOver is still relatively buggy if you start VoiceOver while the Combobox is
+      // already in an open state.
+      watch([api.comboboxState], ([newState], [oldState]) => {
+        if (newState === ComboboxStates.Open && oldState === ComboboxStates.Closed) {
+          let input = dom(api.inputRef)
+          if (!input) return
+
+          // Capture current state
+          let currentValue = input.value
+          let { selectionStart, selectionEnd, selectionDirection } = input
+
+          // Trick VoiceOver into announcing the value
+          input.value = ''
+
+          // Rollback to original state
+          input.value = currentValue
+          if (selectionDirection !== null) {
+            input.setSelectionRange(selectionStart, selectionEnd, selectionDirection)
+          } else {
+            input.setSelectionRange(selectionStart, selectionEnd)
+          }
+        }
+      })
     })
 
     let isComposing = ref(false)
@@ -880,6 +909,7 @@ export let ComboboxInput = defineComponent({
             : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+        'aria-autocomplete': 'list',
         id,
         onCompositionstart: handleCompositionstart,
         onCompositionend: handleCompositionend,
@@ -956,10 +986,6 @@ export let ComboboxOptions = defineComponent({
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let ourProps = {
-        'aria-activedescendant':
-          api.activeOptionIndex.value === null
-            ? undefined
-            : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         id,
         ref: api.optionsRef,

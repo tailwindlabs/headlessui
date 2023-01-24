@@ -662,6 +662,7 @@ type InputPropsWeControl =
   | 'aria-labelledby'
   | 'aria-expanded'
   | 'aria-activedescendant'
+  | 'aria-autocomplete'
   | 'onKeyDown'
   | 'onChange'
   | 'displayValue'
@@ -739,6 +740,37 @@ let Input = forwardRefWithAs(function Input<
       }
     },
     [currentDisplayValue, data.comboboxState]
+  )
+
+  // Trick VoiceOver in behaving a little bit better. Manually "resetting" the input makes VoiceOver
+  // a bit more happy and doesn't require some changes manually first before announcing items
+  // correctly. This is a bit of a hacks, but it is a workaround for a VoiceOver bug.
+  //
+  // TODO: VoiceOver is still relatively buggy if you start VoiceOver while the Combobox is already
+  // in an open state.
+  useWatch(
+    ([newState], [oldState]) => {
+      if (newState === ComboboxState.Open && oldState === ComboboxState.Closed) {
+        let input = data.inputRef.current
+        if (!input) return
+
+        // Capture current state
+        let currentValue = input.value
+        let { selectionStart, selectionEnd, selectionDirection } = input
+
+        // Trick VoiceOver into announcing the value
+        input.value = ''
+
+        // Rollback to original state
+        input.value = currentValue
+        if (selectionDirection !== null) {
+          input.setSelectionRange(selectionStart, selectionEnd, selectionDirection)
+        } else {
+          input.setSelectionRange(selectionStart, selectionEnd)
+        }
+      }
+    },
+    [data.comboboxState]
   )
 
   let isComposing = useRef(false)
@@ -905,6 +937,7 @@ let Input = forwardRefWithAs(function Input<
       data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
+    'aria-autocomplete': 'list',
     defaultValue:
       props.defaultValue ??
       (data.defaultValue !== undefined
@@ -1090,13 +1123,7 @@ let DEFAULT_OPTIONS_TAG = 'ul' as const
 interface OptionsRenderPropArg {
   open: boolean
 }
-type OptionsPropsWeControl =
-  | 'aria-activedescendant'
-  | 'aria-labelledby'
-  | 'hold'
-  | 'onKeyDown'
-  | 'role'
-  | 'tabIndex'
+type OptionsPropsWeControl = 'aria-labelledby' | 'hold' | 'onKeyDown' | 'role' | 'tabIndex'
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -1154,8 +1181,6 @@ let Options = forwardRefWithAs(function Options<
     [data]
   )
   let ourProps = {
-    'aria-activedescendant':
-      data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     role: 'listbox',
     id,
