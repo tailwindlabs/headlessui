@@ -111,8 +111,8 @@ export let FocusTrap = Object.assign(
         let allContainers = new Set(props.containers?.value)
         allContainers.add(container)
 
-        let relatedTarget = e.relatedTarget as HTMLElement | null
-        if (!relatedTarget) return
+        let relatedTarget = e.relatedTarget
+        if (!(relatedTarget instanceof HTMLElement)) return
 
         // Known guards, leave them alone!
         if (relatedTarget.dataset.headlessuiFocusGuard === 'true') {
