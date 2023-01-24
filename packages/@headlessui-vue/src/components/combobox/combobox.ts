@@ -957,10 +957,6 @@ export let ComboboxOptions = defineComponent({
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let ourProps = {
-        'aria-activedescendant':
-          api.activeOptionIndex.value === null
-            ? undefined
-            : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         id,
         ref: api.optionsRef,

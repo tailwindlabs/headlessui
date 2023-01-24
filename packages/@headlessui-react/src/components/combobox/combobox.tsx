@@ -1092,13 +1092,7 @@ let DEFAULT_OPTIONS_TAG = 'ul' as const
 interface OptionsRenderPropArg {
   open: boolean
 }
-type OptionsPropsWeControl =
-  | 'aria-activedescendant'
-  | 'aria-labelledby'
-  | 'hold'
-  | 'onKeyDown'
-  | 'role'
-  | 'tabIndex'
+type OptionsPropsWeControl = 'aria-labelledby' | 'hold' | 'onKeyDown' | 'role' | 'tabIndex'
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -1156,8 +1150,6 @@ let Options = forwardRefWithAs(function Options<
     [data]
   )
   let ourProps = {
-    'aria-activedescendant':
-      data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     role: 'listbox',
     id,
