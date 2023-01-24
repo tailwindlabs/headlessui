@@ -662,6 +662,7 @@ type InputPropsWeControl =
   | 'aria-labelledby'
   | 'aria-expanded'
   | 'aria-activedescendant'
+  | 'aria-autocomplete'
   | 'onKeyDown'
   | 'onChange'
   | 'displayValue'
@@ -905,6 +906,7 @@ let Input = forwardRefWithAs(function Input<
       data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
+    'aria-autocomplete': 'list',
     defaultValue:
       props.defaultValue ??
       (data.defaultValue !== undefined

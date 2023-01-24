@@ -880,6 +880,7 @@ export let ComboboxInput = defineComponent({
             : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+        'aria-autocomplete': 'list',
         id,
         onCompositionstart: handleCompositionstart,
         onCompositionend: handleCompositionend,
