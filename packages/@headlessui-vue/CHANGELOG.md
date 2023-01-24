@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix arrow key handling in `Tab` (after DOM order changes) ([#2145](https://github.com/tailwindlabs/headlessui/pull/2145))
 - Fix `Tab` key with non focusable elements in `Popover.Panel` ([#2147](https://github.com/tailwindlabs/headlessui/pull/2147))
 - Don’t overwrite classes during SSR when rendering fragments ([#2173](https://github.com/tailwindlabs/headlessui/pull/2173))
+- Improve `Combobox` accessibility ([#2153](https://github.com/tailwindlabs/headlessui/pull/2153))
 
 ## [1.7.7] - 2022-12-16
 
