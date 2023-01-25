@@ -43,7 +43,7 @@ import {
   ScrollLockRequestWithDisposables,
   useDocumentOverflowLockedEffect,
 } from '../../hooks/document-overflow/use-document-overflow'
-import { ScrollLockRequest } from 'hooks/document-overflow/handler'
+import { ScrollLockRequest } from 'hooks/document-overflow/request'
 import { handleIOSLocking } from 'hooks/document-overflow/handle-ios-locking'
 
 enum DialogStates {

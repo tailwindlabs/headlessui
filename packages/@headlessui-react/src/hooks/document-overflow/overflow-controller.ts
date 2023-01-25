@@ -1,4 +1,3 @@
-import { disposables } from 'utils/disposables'
 import { useStore } from '../../hooks/use-store'
 import { ScrollLockMiddleware } from './request'
 import { overflows } from './overflow-store'
@@ -22,20 +21,15 @@ export function useDocumentOverflowController(doc: Document | null) {
       }
 
       overflows.update((docs) => {
-        let entry = docs.get(doc)
-
-        if (!entry) {
-          entry = {
-            d: disposables(),
-            ctx: {},
-            count: 1,
-            pipes: new Set(pipes ?? []),
-          }
-
-          docs.set(doc, entry)
-        } else {
-          entry.count++
+        let entry = docs.get(doc) ?? {
+          d: undefined,
+          ctx: {},
+          count: 0,
+          pipes: new Set(pipes ?? []),
         }
+
+        entry.count++
+        docs.set(doc, entry)
       })
 
       return {

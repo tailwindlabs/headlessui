@@ -5,7 +5,7 @@ export function handleIOSLocking(
   resolveAllowedContainers: () => HTMLElement[]
 ): ScrollLockMiddleware {
   return function (req: ScrollLockRequest, next: (req: ScrollLockRequest) => void) {
-    if (!isIOS()) {
+    if (!isIOS() || !req.d) {
       return next(req)
     }
 

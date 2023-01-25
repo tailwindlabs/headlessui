@@ -26,7 +26,7 @@ export function useDocumentOverflowLockedEffect(
     // Prevent the document from scrolling
     let guard = controller.lock([
       // Make sure the disposables are passed through the pipeline
-      (req, next) => next(Object.assign({}, req, { d })),
+      (req, next) => next(Object.assign(req, { d })),
 
       // Run component-defined pipes when the document is locked or unlocked
       // Also… tell typescript we know what we're doing lol

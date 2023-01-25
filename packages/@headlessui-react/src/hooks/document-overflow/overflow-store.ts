@@ -6,7 +6,7 @@ import { ScrollLockMiddleware } from './request'
 import { lockOverflow } from './lock-overflow'
 
 interface DocEntry {
-  d: Disposables
+  d: Disposables | undefined
   ctx: Record<string, any>
   count: number
   pipes: Set<ScrollLockMiddleware>

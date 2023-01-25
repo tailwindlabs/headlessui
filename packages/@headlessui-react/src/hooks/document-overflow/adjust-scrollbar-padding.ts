@@ -8,9 +8,7 @@ export function adjustScrollbarPadding(
 
   if (!req.isLocked) {
     next(req)
-
     doc.documentElement.style.overflow = req.ctx.oldPaddingRight
-
     return
   }
 
