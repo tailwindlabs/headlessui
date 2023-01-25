@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don’t overwrite classes during SSR when rendering fragments ([#2173](https://github.com/tailwindlabs/headlessui/pull/2173))
 - Improve `Combobox` accessibility ([#2153](https://github.com/tailwindlabs/headlessui/pull/2153))
 - Fix crash when reading `headlessuiFocusGuard` of `relatedTarget` in the `FocusTrap` component ([#2203](https://github.com/tailwindlabs/headlessui/pull/2203))
+- Fix `FocusTrap` in `Dialog` when there is only 1 focusable element ([#2172](https://github.com/tailwindlabs/headlessui/pull/2172))
 
 ## [1.7.7] - 2022-12-16
 
