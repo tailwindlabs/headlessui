@@ -37,14 +37,8 @@ import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
-import { disposables } from '../../utils/disposables'
-import { isIOS } from '../../utils/platform'
-import {
-  ScrollLockRequestWithDisposables,
-  useDocumentOverflowLockedEffect,
-} from '../../hooks/document-overflow/use-document-overflow'
-import { ScrollLockRequest } from 'hooks/document-overflow/request'
-import { handleIOSLocking } from 'hooks/document-overflow/handle-ios-locking'
+import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
+import { handleIOSLocking } from '../../hooks/document-overflow/handle-ios-locking'
 
 enum DialogStates {
   Open,
