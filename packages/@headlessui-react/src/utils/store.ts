@@ -4,7 +4,7 @@ type UnsubscribeFn = () => void
 export interface Store<T> {
   getSnapshot(): T
   subscribe(onChange: ChangeFn): UnsubscribeFn
-  merge(updater: (state: T) => Partial<T>): void
+  update(updater: (state: T) => void): void
   replace(updater: (state: T) => T): void
 }
 
@@ -28,13 +28,14 @@ export function createStore<T>(initial: () => T): Store<T> {
       return () => listeners.delete(onChange)
     },
 
-    replace(updater) {
-      state = updater(state)
+    update(updater) {
+      updater(state)
       listeners.forEach((listener) => listener())
     },
 
-    merge(updater) {
-      this.replace((state) => ({ ...state, ...updater(state) }))
+    replace(updater) {
+      state = updater(state)
+      listeners.forEach((listener) => listener())
     },
   }
 }

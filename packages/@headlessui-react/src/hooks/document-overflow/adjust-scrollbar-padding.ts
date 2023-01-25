@@ -6,7 +6,7 @@ export function adjustScrollbarPadding(
 ) {
   let { doc } = req
 
-  if (! req.isLocked) {
+  if (!req.isLocked) {
     next(req)
 
     doc.documentElement.style.overflow = req.ctx.oldPaddingRight

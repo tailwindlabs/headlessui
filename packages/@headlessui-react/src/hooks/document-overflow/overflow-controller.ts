@@ -21,7 +21,7 @@ export function useDocumentOverflowController(doc: Document | null) {
         }
       }
 
-      overflows.replace((docs) => {
+      overflows.update((docs) => {
         let entry = docs.get(doc)
 
         if (!entry) {
@@ -29,33 +29,23 @@ export function useDocumentOverflowController(doc: Document | null) {
             d: disposables(),
             ctx: {},
             count: 1,
-            pipes: new Set(),
+            pipes: new Set(pipes ?? []),
           }
 
           docs.set(doc, entry)
         } else {
           entry.count++
         }
-
-        for (let pipe of pipes ?? []) {
-          entry.pipes.add(pipe)
-        }
-
-        return docs
       })
 
       return {
         release: () => {
-          overflows.replace((docs) => {
+          overflows.update((docs) => {
             let entry = docs.get(doc)
 
             if (entry) {
               entry.count--
-
-              // NOTE: Change functions are deleted after being called when the count is 0
             }
-
-            return docs
           })
         },
       }
