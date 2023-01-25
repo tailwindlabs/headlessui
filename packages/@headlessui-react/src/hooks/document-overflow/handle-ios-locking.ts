@@ -6,8 +6,18 @@ export function handleIOSLocking(
   d: Disposables,
   resolveAllowedContainers: () => HTMLElement[]
 ): ScrollLockMiddleware {
+  function inAllowedContainer(el: HTMLElement) {
+    return resolveAllowedContainers().some((container) => container.contains(el))
+  }
+
   return function (req: ScrollLockRequest, next: (req: ScrollLockRequest) => void) {
     if (!isIOS()) {
+      return next(req)
+    }
+
+    // If we're not locking, then we don't need to do anything special
+    // This is because the necessary cleanup is handled by the passed-in disposables
+    if (!req.isLocked) {
       return next(req)
     }
 
@@ -32,17 +42,19 @@ export function handleIOSLocking(
       ownerDocument,
       'click',
       (e) => {
-        if (e.target instanceof HTMLElement) {
-          try {
-            let anchor = e.target.closest('a')
-            if (!anchor) return
-            let { hash } = new URL(anchor.href)
-            let el = ownerDocument.querySelector(hash)
-            if (el && !resolveAllowedContainers().some((container) => container.contains(el))) {
-              scrollToElement = el as HTMLElement
-            }
-          } catch (err) {}
+        if (!(e.target instanceof HTMLElement)) {
+          return
         }
+
+        try {
+          let anchor = e.target.closest('a')
+          if (!anchor) return
+          let { hash } = new URL(anchor.href)
+          let el = ownerDocument.querySelector(hash)
+          if (el && !inAllowedContainer(el as HTMLElement)) {
+            scrollToElement = el as HTMLElement
+          }
+        } catch (err) {}
       },
       true
     )
@@ -52,12 +64,7 @@ export function handleIOSLocking(
       'touchmove',
       (e) => {
         // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
-        if (
-          e.target instanceof HTMLElement &&
-          !resolveAllowedContainers().some((container) =>
-            container.contains(e.target as HTMLElement)
-          )
-        ) {
+        if (e.target instanceof HTMLElement && !inAllowedContainer(e.target as HTMLElement)) {
           e.preventDefault()
         }
       },

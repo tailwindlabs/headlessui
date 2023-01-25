@@ -28,9 +28,10 @@ overflows.subscribe(() => {
   // This is e separate pass for performance reasons
   for (let [doc, { count, pipes, ctx }] of docs) {
     let oldStyle = styles.get(doc)
-    let newStyle = count > 0 ? 'hidden' : ''
+    let needsChange =
+      (count !== 0 && oldStyle !== 'hidden') || (count === 0 && oldStyle === 'hidden')
 
-    if (oldStyle !== newStyle) {
+    if (needsChange) {
       let updateDocument = pipeline([...pipes, adjustScrollbarPadding, lockOverflow])
 
       updateDocument({
