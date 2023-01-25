@@ -171,7 +171,7 @@ export function focusIn(
       : container
     : getFocusableElements(container)
 
-  if (skipElements.length > 0) {
+  if (skipElements.length > 0 && elements.length > 1) {
     elements = elements.filter((x) => !skipElements.includes(x))
   }
 

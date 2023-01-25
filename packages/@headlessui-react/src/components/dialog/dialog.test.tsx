@@ -21,7 +21,7 @@ import {
   getDialogs,
   getDialogOverlays,
 } from '../../test-utils/accessibility-assertions'
-import { click, mouseDrag, press, Keys } from '../../test-utils/interactions'
+import { click, mouseDrag, press, Keys, shift } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
 import { Transition } from '../transitions/transition'
 import { createPortal } from 'react-dom'
@@ -794,6 +794,106 @@ describe('Keyboard interactions', () => {
 
         // Verify that we can tab around
         await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+      })
+    )
+
+    it(
+      'should not escape the FocusTrap when there is only 1 focusable element (going forwards)',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <button>Before</button>
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                <Dialog.Panel>
+                  <input type="text" id="a" />
+                </Dialog.Panel>
+              </Dialog>
+              <button>After</button>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Verify that the input field is focused
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we stay within the Dialog
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we stay within the Dialog
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we stay within the Dialog
+        await press(Keys.Tab)
+        assertActiveElement(document.getElementById('a'))
+      })
+    )
+
+    it(
+      'should not escape the FocusTrap when there is only 1 focusable element (going backwards)',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <button>Before</button>
+              <Dialog open={isOpen} onClose={setIsOpen}>
+                <Dialog.Panel>
+                  <input type="text" id="a" />
+                </Dialog.Panel>
+              </Dialog>
+              <button>After</button>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Verify that the input field is focused
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we stay within the Dialog
+        await press(shift(Keys.Tab))
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we stay within the Dialog
+        await press(shift(Keys.Tab))
+        assertActiveElement(document.getElementById('a'))
+
+        // Verify that we stay within the Dialog
+        await press(shift(Keys.Tab))
         assertActiveElement(document.getElementById('a'))
       })
     )

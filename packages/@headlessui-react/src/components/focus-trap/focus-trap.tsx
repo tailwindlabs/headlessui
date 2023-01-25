@@ -85,10 +85,12 @@ export let FocusTrap = Object.assign(
       let wrapper = process.env.NODE_ENV === 'test' ? microTask : (cb: Function) => cb()
       wrapper(() => {
         match(direction.current, {
-          [TabDirection.Forwards]: () =>
-            focusIn(el, Focus.First, { skipElements: [e.relatedTarget as HTMLElement] }),
-          [TabDirection.Backwards]: () =>
-            focusIn(el, Focus.Last, { skipElements: [e.relatedTarget as HTMLElement] }),
+          [TabDirection.Forwards]: () => {
+            focusIn(el, Focus.First, { skipElements: [e.relatedTarget as HTMLElement] })
+          },
+          [TabDirection.Backwards]: () => {
+            focusIn(el, Focus.Last, { skipElements: [e.relatedTarget as HTMLElement] })
+          },
         })
       })
     })
