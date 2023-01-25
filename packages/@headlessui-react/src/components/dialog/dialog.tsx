@@ -96,8 +96,8 @@ function useScrollLock(
   enabled: boolean,
   resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
 ) {
-  useDocumentOverflowLockedEffect(ownerDocument, enabled, [
-    handleIOSLocking(resolveAllowedContainers),
+  useDocumentOverflowLockedEffect(ownerDocument, enabled, (d) => [
+    handleIOSLocking(d, resolveAllowedContainers),
   ])
 }
 

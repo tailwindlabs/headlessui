@@ -1,4 +1,4 @@
-import { disposables } from '../../utils/disposables'
+import { Disposables, disposables } from '../../utils/disposables'
 import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
 import { ScrollLockMiddleware } from './request'
 import { useDocumentOverflowController } from './overflow-controller'
@@ -12,7 +12,7 @@ export function useIsDocumentOverflowLocked(doc: Document | null) {
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  pipes?: Array<ScrollLockMiddleware>
+  pipes?: (d: Disposables) => ScrollLockMiddleware[]
 ) {
   let controller = useDocumentOverflowController(doc)
 
@@ -24,14 +24,7 @@ export function useDocumentOverflowLockedEffect(
     let d = disposables()
 
     // Prevent the document from scrolling
-    let guard = controller.lock([
-      // Make sure the disposables are passed through the pipeline
-      (req, next) => next(Object.assign(req, { d })),
-
-      // Run component-defined pipes when the document is locked or unlocked
-      // Also… tell typescript we know what we're doing lol
-      ...(pipes ?? []),
-    ])
+    let guard = controller.lock(pipes ? pipes(d) : [])
 
     return () => {
       guard.release()

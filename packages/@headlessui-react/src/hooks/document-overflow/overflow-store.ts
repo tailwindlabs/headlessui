@@ -1,12 +1,10 @@
 import { pipeline } from '../../utils/pipeline'
-import { Disposables } from '../../utils/disposables'
 import { createStore } from '../../utils/store'
 import { adjustScrollbarPadding } from './adjust-scrollbar-padding'
 import { ScrollLockMiddleware } from './request'
 import { lockOverflow } from './lock-overflow'
 
 interface DocEntry {
-  d: Disposables | undefined
   ctx: Record<string, any>
   count: number
   pipes: Set<ScrollLockMiddleware>
@@ -28,7 +26,7 @@ overflows.subscribe(() => {
 
   // Write data to all the documents
   // This is e separate pass for performance reasons
-  for (let [doc, { d, count, pipes, ctx }] of docs) {
+  for (let [doc, { count, pipes, ctx }] of docs) {
     let oldStyle = styles.get(doc)
     let newStyle = count > 0 ? 'hidden' : ''
 
@@ -36,7 +34,6 @@ overflows.subscribe(() => {
       let updateDocument = pipeline([...pipes, adjustScrollbarPadding, lockOverflow])
 
       updateDocument({
-        d,
         ctx,
         doc,
         isLocked: count > 0,

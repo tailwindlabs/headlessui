@@ -1,15 +1,17 @@
+import { Disposables } from 'utils/disposables'
 import { isIOS } from '../../utils/platform'
 import { ScrollLockMiddleware, ScrollLockRequest } from './request'
 
 export function handleIOSLocking(
+  d: Disposables,
   resolveAllowedContainers: () => HTMLElement[]
 ): ScrollLockMiddleware {
   return function (req: ScrollLockRequest, next: (req: ScrollLockRequest) => void) {
-    if (!isIOS() || !req.d) {
+    if (!isIOS()) {
       return next(req)
     }
 
-    let { d, doc: ownerDocument } = req
+    let { doc: ownerDocument } = req
 
     let scrollPosition = window.pageYOffset
 
