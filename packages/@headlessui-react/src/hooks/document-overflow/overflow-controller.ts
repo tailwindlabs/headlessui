@@ -1,5 +1,6 @@
+import { disposables } from 'utils/disposables'
 import { useStore } from '../../hooks/use-store'
-import { ChangeHandler } from './handler'
+import { Middleware } from './handler'
 import { overflows } from './overflow-store'
 
 export interface LockGuard {
@@ -13,7 +14,7 @@ export function useDocumentOverflowController(doc: Document | null) {
 
   return {
     locked,
-    lock(pipes?: Array<ChangeHandler>): LockGuard {
+    lock(pipes?: Array<Middleware>): LockGuard {
       if (!doc) {
         return {
           release: () => {},
@@ -23,11 +24,17 @@ export function useDocumentOverflowController(doc: Document | null) {
       overflows.replace((docs) => {
         let entry = docs.get(doc)
 
-        if (entry) {
-          entry.count++
-        } else {
-          entry = { count: 1, pipes: new Set(), ctx: {} }
+        if (!entry) {
+          entry = {
+            d: disposables(),
+            ctx: {},
+            count: 1,
+            pipes: new Set(),
+          }
+
           docs.set(doc, entry)
+        } else {
+          entry.count++
         }
 
         for (let pipe of pipes ?? []) {

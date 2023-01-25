@@ -1,6 +1,6 @@
 import { disposables } from '../../utils/disposables'
 import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
-import { ChangeHandler, ScrollLockRequest } from './handler'
+import { Middleware } from './handler'
 import { useDocumentOverflowController } from './overflow-controller'
 
 export function useIsDocumentOverflowLocked(doc: Document | null) {
@@ -9,14 +9,10 @@ export function useIsDocumentOverflowLocked(doc: Document | null) {
   return controller.locked
 }
 
-export type ScrollLockRequestWithDisposables = ScrollLockRequest & {
-  d: ReturnType<typeof disposables>
-}
-
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  pipes?: Array<ChangeHandler<ScrollLockRequestWithDisposables>>
+  pipes?: Array<Middleware>
 ) {
   let controller = useDocumentOverflowController(doc)
 
@@ -34,7 +30,7 @@ export function useDocumentOverflowLockedEffect(
 
       // Run component-defined pipes when the document is locked or unlocked
       // Also… tell typescript we know what we're doing lol
-      ...((pipes ?? []) as ChangeHandler<any>[]),
+      ...(pipes ?? []),
     ])
 
     return () => {
