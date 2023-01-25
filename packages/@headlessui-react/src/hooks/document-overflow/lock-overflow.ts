@@ -1,4 +1,4 @@
-import { ScrollLockRequest } from './handler'
+import { ScrollLockRequest } from './request'
 
 export function lockOverflow(req: ScrollLockRequest, next: (req: ScrollLockRequest) => void) {
   let { doc } = req

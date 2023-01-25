@@ -1,6 +1,6 @@
 import { disposables } from '../../utils/disposables'
 import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
-import { Middleware } from './handler'
+import { ScrollLockMiddleware } from './request'
 import { useDocumentOverflowController } from './overflow-controller'
 
 export function useIsDocumentOverflowLocked(doc: Document | null) {
@@ -12,7 +12,7 @@ export function useIsDocumentOverflowLocked(doc: Document | null) {
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  pipes?: Array<Middleware>
+  pipes?: Array<ScrollLockMiddleware>
 ) {
   let controller = useDocumentOverflowController(doc)
 

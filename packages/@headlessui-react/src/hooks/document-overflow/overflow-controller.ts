@@ -1,6 +1,6 @@
 import { disposables } from 'utils/disposables'
 import { useStore } from '../../hooks/use-store'
-import { Middleware } from './handler'
+import { ScrollLockMiddleware } from './request'
 import { overflows } from './overflow-store'
 
 export interface LockGuard {
@@ -14,7 +14,7 @@ export function useDocumentOverflowController(doc: Document | null) {
 
   return {
     locked,
-    lock(pipes?: Array<Middleware>): LockGuard {
+    lock(pipes?: Array<ScrollLockMiddleware>): LockGuard {
       if (!doc) {
         return {
           release: () => {},

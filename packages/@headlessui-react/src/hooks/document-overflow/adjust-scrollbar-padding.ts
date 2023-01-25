@@ -1,4 +1,4 @@
-import { ScrollLockRequest } from './handler'
+import { ScrollLockRequest } from './request'
 
 export function adjustScrollbarPadding(
   req: ScrollLockRequest,

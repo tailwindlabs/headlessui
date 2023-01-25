@@ -1,19 +1,18 @@
+import { pipeline } from '../../utils/pipeline'
 import { Disposables } from '../../utils/disposables'
 import { createStore } from '../../utils/store'
 import { adjustScrollbarPadding } from './adjust-scrollbar-padding'
-import { Middleware, pipeline } from './handler'
+import { ScrollLockMiddleware } from './request'
 import { lockOverflow } from './lock-overflow'
 
 interface DocEntry {
   d: Disposables
   ctx: Record<string, any>
   count: number
-  pipes: Set<Middleware>
+  pipes: Set<ScrollLockMiddleware>
 }
 
-export let overflows = createStore(
-  () => new Map<Document, DocEntry>()
-)
+export let overflows = createStore(() => new Map<Document, DocEntry>())
 
 // Update the document overflow state when the store changes
 // This MUST happen outside of react for this to work properly.
@@ -34,11 +33,7 @@ overflows.subscribe(() => {
     let newStyle = count > 0 ? 'hidden' : ''
 
     if (oldStyle !== newStyle) {
-      let updateDocument = pipeline([
-        ...pipes,
-        adjustScrollbarPadding,
-        lockOverflow,
-      ])
+      let updateDocument = pipeline([...pipes, adjustScrollbarPadding, lockOverflow])
 
       updateDocument({
         d,

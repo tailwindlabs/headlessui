@@ -1,7 +1,9 @@
 import { isIOS } from '../../utils/platform'
-import { Middleware, ScrollLockRequest } from './handler'
+import { ScrollLockMiddleware, ScrollLockRequest } from './request'
 
-export function handleIOSLocking(resolveAllowedContainers: () => HTMLElement[]): Middleware {
+export function handleIOSLocking(
+  resolveAllowedContainers: () => HTMLElement[]
+): ScrollLockMiddleware {
   return function (req: ScrollLockRequest, next: (req: ScrollLockRequest) => void) {
     if (!isIOS()) {
       return next(req)
