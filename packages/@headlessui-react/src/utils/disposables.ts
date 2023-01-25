@@ -1,5 +1,7 @@
 import { microTask } from './micro-task'
 
+export type Disposables = ReturnType<typeof disposables>
+
 export function disposables() {
   let disposables: Function[] = []
   let queue: Function[] = []

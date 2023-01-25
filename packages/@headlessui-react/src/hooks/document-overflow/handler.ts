@@ -1,4 +1,5 @@
 export interface ScrollLockRequest {
+  ctx: Record<string, any>
   doc: Document
   isLocked: boolean
 }
