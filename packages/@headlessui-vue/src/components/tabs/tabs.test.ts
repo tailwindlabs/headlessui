@@ -199,7 +199,6 @@ describe('Rendering', () => {
             selectedIndex,
             reverse() {
               tabs.value = tabs.value.slice().reverse()
-              selectedIndex.value = tabs.value.length - 1 - selectedIndex.value
             },
             handleChange(value: number) {
               selectedIndex.value = value
@@ -999,6 +998,106 @@ describe('`selectedIndex`', () => {
     assertTabs({ active: 0 })
     assertActiveElement(getByText('Tab 1'))
   })
+
+  it(
+    'should wrap around when overflowing the index when using a controlled component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <TabGroup :selectedIndex="value" @change="set" v-slot="{ selectedIndex }">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+
+            <button @click="set(selectedIndex + 1)">Next</button>
+          </TabGroup>
+        `,
+        setup() {
+          let value = ref(0)
+          return {
+            value,
+            set(v: number) {
+              value.value = v
+            },
+          }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertActiveElement(document.body)
+
+      await click(getByText('Next'))
+      assertTabs({ active: 1 })
+
+      await click(getByText('Next'))
+      assertTabs({ active: 2 })
+
+      await click(getByText('Next'))
+      assertTabs({ active: 0 })
+
+      await click(getByText('Next'))
+      assertTabs({ active: 1 })
+    })
+  )
+
+  it(
+    'should wrap around when underflowing the index when using a controlled component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <TabGroup :selectedIndex="value" @change="set" v-slot="{ selectedIndex }">
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>Content 1</TabPanel>
+              <TabPanel>Content 2</TabPanel>
+              <TabPanel>Content 3</TabPanel>
+            </TabPanels>
+
+            <button @click="set(selectedIndex - 1)">Previous</button>
+          </TabGroup>
+        `,
+        setup() {
+          let value = ref(0)
+          return {
+            value,
+            set(v: number) {
+              value.value = v
+            },
+          }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertActiveElement(document.body)
+
+      await click(getByText('Previous'))
+      assertTabs({ active: 2 })
+
+      await click(getByText('Previous'))
+      assertTabs({ active: 1 })
+
+      await click(getByText('Previous'))
+      assertTabs({ active: 0 })
+
+      await click(getByText('Previous'))
+      assertTabs({ active: 2 })
+    })
+  )
 })
 
 describe('Keyboard interactions', () => {

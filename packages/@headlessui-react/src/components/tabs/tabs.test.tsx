@@ -179,7 +179,6 @@ describe('Rendering', () => {
             <button
               onClick={() => {
                 setTabs((tabs) => tabs.slice().reverse())
-                setSelectedIndex((idx) => tabs.length - 1 - idx)
               }}
             >
               reverse
@@ -1081,6 +1080,94 @@ describe('Rendering', () => {
 
         assertTabs({ active: 0 })
         assertActiveElement(getByText('Tab 1'))
+      })
+    )
+
+    it(
+      'should wrap around when overflowing the index when using a controlled component',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [selectedIndex, setSelectedIndex] = useState(0)
+
+          return (
+            <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
+              {({ selectedIndex }) => (
+                <>
+                  <Tab.List>
+                    <Tab>Tab 1</Tab>
+                    <Tab>Tab 2</Tab>
+                    <Tab>Tab 3</Tab>
+                  </Tab.List>
+                  <Tab.Panels>
+                    <Tab.Panel>Content 1</Tab.Panel>
+                    <Tab.Panel>Content 2</Tab.Panel>
+                    <Tab.Panel>Content 3</Tab.Panel>
+                  </Tab.Panels>
+                  <button onClick={() => setSelectedIndex(selectedIndex + 1)}>Next</button>
+                </>
+              )}
+            </Tab.Group>
+          )
+        }
+        render(<Example />)
+
+        assertActiveElement(document.body)
+
+        await click(getByText('Next'))
+        assertTabs({ active: 1 })
+
+        await click(getByText('Next'))
+        assertTabs({ active: 2 })
+
+        await click(getByText('Next'))
+        assertTabs({ active: 0 })
+
+        await click(getByText('Next'))
+        assertTabs({ active: 1 })
+      })
+    )
+
+    it(
+      'should wrap around when underflowing the index when using a controlled component',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [selectedIndex, setSelectedIndex] = useState(0)
+
+          return (
+            <Tab.Group selectedIndex={selectedIndex} onChange={setSelectedIndex}>
+              {({ selectedIndex }) => (
+                <>
+                  <Tab.List>
+                    <Tab>Tab 1</Tab>
+                    <Tab>Tab 2</Tab>
+                    <Tab>Tab 3</Tab>
+                  </Tab.List>
+                  <Tab.Panels>
+                    <Tab.Panel>Content 1</Tab.Panel>
+                    <Tab.Panel>Content 2</Tab.Panel>
+                    <Tab.Panel>Content 3</Tab.Panel>
+                  </Tab.Panels>
+                  <button onClick={() => setSelectedIndex(selectedIndex - 1)}>Previous</button>
+                </>
+              )}
+            </Tab.Group>
+          )
+        }
+        render(<Example />)
+
+        assertActiveElement(document.body)
+
+        await click(getByText('Previous'))
+        assertTabs({ active: 2 })
+
+        await click(getByText('Previous'))
+        assertTabs({ active: 1 })
+
+        await click(getByText('Previous'))
+        assertTabs({ active: 0 })
+
+        await click(getByText('Previous'))
+        assertTabs({ active: 2 })
       })
     )
   })
