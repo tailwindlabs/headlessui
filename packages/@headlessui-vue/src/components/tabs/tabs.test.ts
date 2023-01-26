@@ -199,7 +199,6 @@ describe('Rendering', () => {
             selectedIndex,
             reverse() {
               tabs.value = tabs.value.slice().reverse()
-              selectedIndex.value = tabs.value.length - 1 - selectedIndex.value
             },
             handleChange(value: number) {
               selectedIndex.value = value

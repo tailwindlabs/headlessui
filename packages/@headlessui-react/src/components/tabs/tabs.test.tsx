@@ -179,7 +179,6 @@ describe('Rendering', () => {
             <button
               onClick={() => {
                 setTabs((tabs) => tabs.slice().reverse())
-                setSelectedIndex((idx) => tabs.length - 1 - idx)
               }}
             >
               reverse
