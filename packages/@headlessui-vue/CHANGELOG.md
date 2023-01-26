@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve `Combobox` accessibility ([#2153](https://github.com/tailwindlabs/headlessui/pull/2153))
 - Fix crash when reading `headlessuiFocusGuard` of `relatedTarget` in the `FocusTrap` component ([#2203](https://github.com/tailwindlabs/headlessui/pull/2203))
 - Fix `FocusTrap` in `Dialog` when there is only 1 focusable element ([#2172](https://github.com/tailwindlabs/headlessui/pull/2172))
+- Improve `Tabs` wrapping around when controlling the component and overflowing the `selectedIndex` ([#2213](https://github.com/tailwindlabs/headlessui/pull/2213))
 
 ## [1.7.7] - 2022-12-16
 
