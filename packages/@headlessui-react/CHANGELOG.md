@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crash when reading `headlessuiFocusGuard` of `relatedTarget` in the `FocusTrap` component ([#2203](https://github.com/tailwindlabs/headlessui/pull/2203))
 - Fix `FocusTrap` in `Dialog` when there is only 1 focusable element ([#2172](https://github.com/tailwindlabs/headlessui/pull/2172))
 
+### Added
+
+- Allow setting `tabIndex` on the `Tab.Panel` ([#2214](https://github.com/tailwindlabs/headlessui/pull/2214))
+
 ## [1.7.7] - 2022-12-16
 
 ### Fixed
