@@ -520,7 +520,7 @@ let DEFAULT_PANEL_TAG = 'div' as const
 interface PanelRenderPropArg {
   selected: boolean
 }
-type PanelPropsWeControl = 'role' | 'aria-labelledby' | 'tabIndex'
+type PanelPropsWeControl = 'role' | 'aria-labelledby'
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
@@ -529,7 +529,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-tabs-panel-${internalId}`, ...theirProps } = props
+  let { id = `headlessui-tabs-panel-${internalId}`, tabIndex = 0, ...theirProps } = props
   let { selectedIndex, tabs, panels } = useData('Tab.Panel')
   let actions = useActions('Tab.Panel')
   let SSRContext = useSSRTabsCounter('Tab.Panel')
@@ -556,7 +556,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     id,
     role: 'tabpanel',
     'aria-labelledby': tabs[myIndex]?.current?.id,
-    tabIndex: selected ? 0 : -1,
+    tabIndex: selected ? tabIndex : -1,
   }
 
   if (!selected && (theirProps.unmount ?? true) && !(theirProps.static ?? false)) {

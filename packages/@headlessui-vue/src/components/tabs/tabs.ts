@@ -483,6 +483,7 @@ export let TabPanel = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
     id: { type: String, default: () => `headlessui-tabs-panel-${useId()}` },
+    tabIndex: { type: Number, default: 0 },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useTabsContext('TabPanel')
@@ -514,13 +515,13 @@ export let TabPanel = defineComponent({
 
     return () => {
       let slot = { selected: selected.value }
-      let { id, ...theirProps } = props
+      let { id, tabIndex, ...theirProps } = props
       let ourProps = {
         ref: internalPanelRef,
         id,
         role: 'tabpanel',
         'aria-labelledby': dom(api.tabs.value[myIndex.value])?.id,
-        tabIndex: selected.value ? 0 : -1,
+        tabIndex: selected.value ? tabIndex : -1,
       }
 
       if (!selected.value && props.unmount && !props.static) {
