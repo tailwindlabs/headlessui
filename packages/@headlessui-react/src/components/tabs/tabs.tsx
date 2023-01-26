@@ -30,6 +30,17 @@ import { microTask } from '../../utils/micro-task'
 import { Hidden } from '../../internal/hidden'
 import { getOwnerDocument } from '../../utils/owner'
 
+enum Direction {
+  Forwards,
+  Backwards,
+}
+
+enum Ordering {
+  Less = -1,
+  Equal = 0,
+  Greater = 1,
+}
+
 interface StateDefinition {
   selectedIndex: number
 
@@ -68,16 +79,30 @@ let reducers: {
 
     let nextState = { ...state, tabs, panels }
 
-    // Underflow
-    if (action.index < 0) {
-      return { ...nextState, selectedIndex: tabs.indexOf(focusableTabs[0]) }
-    }
+    if (
+      // Underflow
+      action.index < 0 ||
+      // Overflow
+      action.index > tabs.length - 1
+    ) {
+      let direction = match(Math.sign(action.index - state.selectedIndex), {
+        [Ordering.Less]: () => Direction.Backwards,
+        [Ordering.Equal]: () => {
+          return match(Math.sign(action.index), {
+            [Ordering.Less]: () => Direction.Forwards,
+            [Ordering.Equal]: () => Direction.Forwards,
+            [Ordering.Greater]: () => Direction.Backwards,
+          })
+        },
+        [Ordering.Greater]: () => Direction.Forwards,
+      })
 
-    // Overflow
-    else if (action.index > tabs.length) {
       return {
         ...nextState,
-        selectedIndex: tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
+        selectedIndex: match(direction, {
+          [Direction.Forwards]: () => tabs.indexOf(focusableTabs[0]),
+          [Direction.Backwards]: () => tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
+        }),
       }
     }
 

@@ -13,6 +13,7 @@ import {
   // Types
   InjectionKey,
   Ref,
+  watch,
 } from 'vue'
 
 import { Features, render, omit } from '../../utils/render'
@@ -26,6 +27,17 @@ import { FocusSentinel } from '../../internal/focus-sentinel'
 import { microTask } from '../../utils/micro-task'
 import { Hidden } from '../../internal/hidden'
 import { getOwnerDocument } from '../../utils/owner'
+
+enum Direction {
+  Forwards,
+  Backwards,
+}
+
+enum Ordering {
+  Less = -1,
+  Equal = 0,
+  Greater = 1,
+}
 
 type StateDefinition = {
   // State
@@ -78,7 +90,9 @@ export let TabGroup = defineComponent({
   },
   inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
-    let selectedIndex = ref<StateDefinition['selectedIndex']['value']>(null)
+    let selectedIndex = ref<StateDefinition['selectedIndex']['value']>(
+      props.selectedIndex ?? props.defaultIndex
+    )
     let tabs = ref<StateDefinition['tabs']['value']>([])
     let panels = ref<StateDefinition['panels']['value']>([])
 
@@ -86,6 +100,60 @@ export let TabGroup = defineComponent({
     let realSelectedIndex = computed(() =>
       isControlled.value ? props.selectedIndex : selectedIndex.value
     )
+
+    function setSelectedIndex(indexToSet: number) {
+      let tabs = sortByDomNode(api.tabs.value, dom)
+      let panels = sortByDomNode(api.panels.value, dom)
+
+      let focusableTabs = tabs.filter((tab) => !dom(tab)?.hasAttribute('disabled'))
+
+      if (
+        // Underflow
+        indexToSet < 0 ||
+        // Overflow
+        indexToSet > tabs.length - 1
+      ) {
+        let direction = match(
+          selectedIndex.value === null // Not set yet
+            ? Ordering.Equal
+            : Math.sign(indexToSet - selectedIndex.value!),
+          {
+            [Ordering.Less]: () => Direction.Backwards,
+            [Ordering.Equal]: () => {
+              return match(Math.sign(indexToSet), {
+                [Ordering.Less]: () => Direction.Forwards,
+                [Ordering.Equal]: () => Direction.Forwards,
+                [Ordering.Greater]: () => Direction.Backwards,
+              })
+            },
+            [Ordering.Greater]: () => Direction.Forwards,
+          }
+        )
+
+        selectedIndex.value = match(direction, {
+          [Direction.Forwards]: () => tabs.indexOf(focusableTabs[0]),
+          [Direction.Backwards]: () => tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
+        })
+        api.tabs.value = tabs
+        api.panels.value = panels
+      }
+
+      // Middle
+      else {
+        let before = tabs.slice(0, indexToSet)
+        let after = tabs.slice(indexToSet)
+
+        let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
+        if (!next) return
+
+        let localSelectedIndex = tabs.indexOf(next) ?? api.selectedIndex.value
+        if (localSelectedIndex === -1) localSelectedIndex = api.selectedIndex.value
+
+        selectedIndex.value = localSelectedIndex
+        api.tabs.value = tabs
+        api.panels.value = panels
+      }
+    }
 
     let api = {
       selectedIndex: computed(() => selectedIndex.value ?? props.defaultIndex ?? null),
@@ -99,18 +167,29 @@ export let TabGroup = defineComponent({
         }
 
         if (!isControlled.value) {
-          selectedIndex.value = index
+          setSelectedIndex(index)
         }
       },
       registerTab(tab: typeof tabs['value'][number]) {
-        if (!tabs.value.includes(tab)) tabs.value.push(tab)
+        if (tabs.value.includes(tab)) return
+        let activeTab = tabs.value[selectedIndex.value!]
+
+        tabs.value.push(tab)
+        tabs.value = sortByDomNode(tabs.value, dom)
+
+        let localSelectedIndex = tabs.value.indexOf(activeTab) ?? selectedIndex.value
+        if (localSelectedIndex !== -1) {
+          selectedIndex.value = localSelectedIndex
+        }
       },
       unregisterTab(tab: typeof tabs['value'][number]) {
         let idx = tabs.value.indexOf(tab)
         if (idx !== -1) tabs.value.splice(idx, 1)
       },
       registerPanel(panel: typeof panels['value'][number]) {
-        if (!panels.value.includes(panel)) panels.value.push(panel)
+        if (panels.value.includes(panel)) return
+        panels.value.push(panel)
+        panels.value = sortByDomNode(panels.value, dom)
       },
       unregisterPanel(panel: typeof panels['value'][number]) {
         let idx = panels.value.indexOf(panel)
@@ -130,41 +209,14 @@ export let TabGroup = defineComponent({
       computed(() => (mounted.value ? null : SSRCounter.value))
     )
 
-    watchEffect(() => {
-      if (api.tabs.value.length <= 0) return
-      if (props.selectedIndex === null && selectedIndex.value !== null) return
+    let incomingSelectedIndex = computed(() => props.selectedIndex)
 
-      api.tabs.value = sortByDomNode(api.tabs.value, dom)
-      api.panels.value = sortByDomNode(api.panels.value, dom)
-
-      let tabs = api.tabs.value.map((tab) => dom(tab)).filter(Boolean) as HTMLElement[]
-      let focusableTabs = tabs.filter((tab) => !tab.hasAttribute('disabled'))
-
-      let indexToSet = props.selectedIndex ?? props.defaultIndex
-
-      // Underflow
-      if (indexToSet < 0) {
-        selectedIndex.value = tabs.indexOf(focusableTabs[0])
-      }
-
-      // Overflow
-      else if (indexToSet > api.tabs.value.length) {
-        selectedIndex.value = tabs.indexOf(focusableTabs[focusableTabs.length - 1])
-      }
-
-      // Middle
-      else {
-        let before = tabs.slice(0, indexToSet)
-        let after = tabs.slice(indexToSet)
-
-        let next = [...after, ...before].find((tab) => focusableTabs.includes(tab))
-        if (!next) return
-
-        let localSelectedIndex = tabs.indexOf(next) ?? api.selectedIndex.value
-        if (localSelectedIndex === -1) localSelectedIndex = api.selectedIndex.value
-
-        selectedIndex.value = localSelectedIndex
-      }
+    onMounted(() => {
+      watch(
+        [incomingSelectedIndex /* Deliberately skipping defaultIndex */],
+        () => setSelectedIndex(props.selectedIndex ?? props.defaultIndex),
+        { immediate: true }
+      )
     })
 
     watchEffect(() => {
