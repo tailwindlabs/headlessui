@@ -15,8 +15,6 @@ export let overflows = shallowRef(new Map<Document, DocEntry>())
 // Update the document overflow state when the store changes
 // This MUST happen outside of react for this to work properly.
 watch(overflows, (docs) => {
-  console.log('overflows changed', { docs })
-
   let styles = new Map<Document, string | undefined>()
 
   // Read data from all the documents
@@ -32,7 +30,6 @@ watch(overflows, (docs) => {
       (count !== 0 && oldStyle !== 'hidden') || (count === 0 && oldStyle === 'hidden')
 
     if (needsChange) {
-      console.log('Needs change')
       let updateDocument = pipeline([...pipes, adjustScrollbarPadding, lockOverflow])
 
       updateDocument({
