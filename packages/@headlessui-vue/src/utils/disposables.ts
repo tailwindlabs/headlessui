@@ -1,3 +1,5 @@
+export type Disposables = ReturnType<typeof disposables>
+
 export function disposables() {
   let disposables: Function[] = []
   let queue: Function[] = []
@@ -35,6 +37,14 @@ export function disposables() {
 
     add(cb: () => void) {
       disposables.push(cb)
+    },
+
+    style(node: HTMLElement, property: string, value: string) {
+      let previous = node.style.getPropertyValue(property)
+      Object.assign(node.style, { [property]: value })
+      return this.add(() => {
+        Object.assign(node.style, { [property]: previous })
+      })
     },
 
     dispose() {
