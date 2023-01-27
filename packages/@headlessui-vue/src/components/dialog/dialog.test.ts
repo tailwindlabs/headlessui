@@ -459,6 +459,10 @@ describe('Rendering', () => {
         // The first step is just making sure that scroll locking works
         // when there are multiple dialogs open at the same time
         let DialogWrapper = defineComponent({
+          components: {
+            TransitionRoot,
+            Dialog,
+          },
           props: {
             id: String,
             dialogs: Array as PropType<string[]>,
@@ -468,11 +472,11 @@ describe('Rendering', () => {
             <button :id="id" @click="toggle(id)">
               Toggle {{ id }}
             </button>
-            <Transition as="template" :show="dialogs.includes(id)">
+            <TransitionRoot as="template" :show="dialogs.includes(id)">
               <Dialog @close="toggle(id, false)">
                 <input type="text" />
               </Dialog>
-            </Transition>
+            </TransitionRoot>
           `,
 
           setup(props) {
@@ -512,22 +516,26 @@ describe('Rendering', () => {
         let btn3 = document.getElementById('trigger_d3')
 
         // Open the dialog & expect overflow
+        console.log('Click btn1')
         await click(btn1)
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // Open the dialog & expect overflow
+        console.log('Click btn2')
         await click(btn2)
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // Open the dialog & expect overflow
+        console.log('Click btn3')
         await click(btn3)
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // At this point only the last dialog should be open
         // Close the dialog & dont expect overflow
+        console.log('Click btn3')
         await click(btn3)
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('')

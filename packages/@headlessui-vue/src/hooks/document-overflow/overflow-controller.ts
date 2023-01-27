@@ -1,6 +1,6 @@
 import { ScrollLockMiddleware } from './request'
 import { overflows } from './overflow-store'
-import { computed, Ref } from 'vue'
+import { computed, Ref, triggerRef } from 'vue'
 
 export interface LockGuard {
   release: () => void
@@ -23,7 +23,8 @@ export function useDocumentOverflowController(doc: Ref<Document | null>) {
         }
       }
 
-      let entry = overflows.value.get(doc.value) ?? {
+      let docs = overflows.value
+      let entry = docs.get(doc.value) ?? {
         d: undefined,
         ctx: {},
         count: 0,
@@ -31,6 +32,7 @@ export function useDocumentOverflowController(doc: Ref<Document | null>) {
       }
       entry.count++
       overflows.value.set(doc.value, entry)
+      triggerRef(overflows)
 
       return {
         release: () => {
@@ -39,6 +41,7 @@ export function useDocumentOverflowController(doc: Ref<Document | null>) {
           if (entry) {
             entry.count--
           }
+          triggerRef(overflows)
         },
       }
     },
