@@ -1,4 +1,13 @@
-import { defineComponent, ref, nextTick, h, ConcreteComponent, onMounted } from 'vue'
+import {
+  defineComponent,
+  ref,
+  nextTick,
+  h,
+  ConcreteComponent,
+  onMounted,
+  PropType,
+  computed,
+} from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import {
@@ -42,13 +51,13 @@ global.IntersectionObserver = class FakeIntersectionObserver {
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
-  return new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        resolve()
-      })
-    })
-  })
+  return frames(1)
+}
+
+async function frames(count: number) {
+  for (let n = 0; n <= count; n++) {
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+  }
 }
 
 let TabSentinel = defineComponent({
@@ -439,6 +448,89 @@ describe('Rendering', () => {
 
         // Expect overflow
         expect(document.documentElement.style.overflow).toBe('hidden')
+      })
+    )
+
+    fit(
+      'scroll locking should work when transitioning between dialogs',
+      suppressConsoleLogs(async () => {
+        // While we don't support multiple dialogs
+        // We at least want to work towards supporting it at some point
+        // The first step is just making sure that scroll locking works
+        // when there are multiple dialogs open at the same time
+        let DialogWrapper = defineComponent({
+          props: {
+            id: String,
+            dialogs: Array as PropType<string[]>,
+            toggle: Function as PropType<(id: string, force?: boolean) => void>,
+          },
+          template: `
+            <button :id="id" @click="toggle(id)">
+              Toggle {{ id }}
+            </button>
+            <Transition as="template" :show="dialogs.includes(id)">
+              <Dialog @close="toggle(id, false)">
+                <input type="text" />
+              </Dialog>
+            </Transition>
+          `,
+
+          setup(props) {
+            return {
+              id: computed(() => `trigger_${props.id}`),
+            }
+          },
+        })
+
+        let Example = defineComponent({
+          components: { DialogWrapper },
+          template: `
+            <DialogWrapper id="d1" :dialogs="dialogs" :toggle="toggle" />
+            <DialogWrapper id="d2" :dialogs="dialogs" :toggle="toggle" />
+            <DialogWrapper id="d3" :dialogs="dialogs" :toggle="toggle" />
+          `,
+
+          setup() {
+            let dialogs = ref<string[]>([])
+            return {
+              dialogs,
+              toggle(id: string, force?: boolean) {
+                let shouldShow = force !== undefined ? force : !dialogs.value.includes(id)
+                dialogs.value = shouldShow ? [id] : []
+              },
+            }
+          },
+        })
+
+        renderTemplate(Example)
+
+        // No overflow yet
+        expect(document.documentElement.style.overflow).toBe('')
+
+        let btn1 = document.getElementById('trigger_d1')
+        let btn2 = document.getElementById('trigger_d2')
+        let btn3 = document.getElementById('trigger_d3')
+
+        // Open the dialog & expect overflow
+        await click(btn1)
+        await frames(2)
+        expect(document.documentElement.style.overflow).toBe('hidden')
+
+        // Open the dialog & expect overflow
+        await click(btn2)
+        await frames(2)
+        expect(document.documentElement.style.overflow).toBe('hidden')
+
+        // Open the dialog & expect overflow
+        await click(btn3)
+        await frames(2)
+        expect(document.documentElement.style.overflow).toBe('hidden')
+
+        // At this point only the last dialog should be open
+        // Close the dialog & dont expect overflow
+        await click(btn3)
+        await frames(2)
+        expect(document.documentElement.style.overflow).toBe('')
       })
     )
   })
