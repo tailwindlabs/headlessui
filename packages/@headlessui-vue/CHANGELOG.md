@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crash when reading `headlessuiFocusGuard` of `relatedTarget` in the `FocusTrap` component ([#2203](https://github.com/tailwindlabs/headlessui/pull/2203))
 - Fix `FocusTrap` in `Dialog` when there is only 1 focusable element ([#2172](https://github.com/tailwindlabs/headlessui/pull/2172))
 - Improve `Tabs` wrapping around when controlling the component and overflowing the `selectedIndex` ([#2213](https://github.com/tailwindlabs/headlessui/pull/2213))
+- Fix `shadow-root` bug closing `Dialog` containers ([#2217](https://github.com/tailwindlabs/headlessui/pull/2217))
 
 ### Added
 
