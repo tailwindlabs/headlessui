@@ -32,6 +32,7 @@ watch(overflows, (docs) => {
     if (needsChange) {
       let updateDocument = pipeline([...pipes, adjustScrollbarPadding, lockOverflow])
 
+      console.log(`Updating document style: ${count > 0 ? 'hidden' : 'auto'}; count: ${count}`)
       updateDocument({
         ctx,
         doc,

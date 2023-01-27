@@ -25,6 +25,10 @@ export function useDocumentOverflowController(docRef: Ref<Document | null>) {
         }
       }
 
+      let lockId = Math.random().toString(36).substr(2, 9)
+
+      console.log(`Lock Scrolling: ${lockId}`)
+
       let docs = overflows.value
       let entry = docs.get(doc) ?? {
         d: undefined,
@@ -45,8 +49,9 @@ export function useDocumentOverflowController(docRef: Ref<Document | null>) {
 
           let entry = overflows.value.get(doc)
           if (entry) {
+            console.log(`Unlock Scrolling: ${lockId} ${entry.count}`)
             entry.count--
-            // triggerRef(overflows)
+            triggerRef(overflows)
           }
         },
       }
