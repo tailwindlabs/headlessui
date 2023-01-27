@@ -186,8 +186,10 @@ export let Dialog = defineComponent({
     function resolveAllowedContainers() {
       // Third party roots
       let rootContainers = Array.from(
-        ownerDocument.value?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
+        ownerDocument.value?.querySelectorAll('html > *, body > *, [data-headlessui-portal]') ?? []
       ).filter((container) => {
+        if (container === document.body) return false // Skip `<body>`
+        if (container === document.head) return false // Skip `<head>`
         if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
         if (container.contains(dom(mainTreeNode))) return false // Skip if it is the main app
         if (api.panelRef.value && container.contains(api.panelRef.value)) return false

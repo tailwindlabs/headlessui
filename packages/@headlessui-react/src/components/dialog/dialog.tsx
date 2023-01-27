@@ -317,8 +317,10 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let resolveContainers = useEvent(() => {
     // Third party roots
     let rootContainers = Array.from(
-      ownerDocument?.querySelectorAll('body > *, [data-headlessui-portal]') ?? []
+      ownerDocument?.querySelectorAll('html > *, body > *, [data-headlessui-portal]') ?? []
     ).filter((container) => {
+      if (container === document.body) return false // Skip `<body>`
+      if (container === document.head) return false // Skip `<head>`
       if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
       if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
       if (state.panelRef.current && container.contains(state.panelRef.current)) return false
