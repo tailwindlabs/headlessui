@@ -36,9 +36,13 @@ export function useDocumentOverflowController(docRef: Ref<Document | null>) {
       overflows.value.set(doc, entry)
       triggerRef(overflows)
 
+      let released = false
       return {
         release: () => {
           if (!doc) return
+          if (released) return
+          released = true
+
           let entry = overflows.value.get(doc)
           if (entry) {
             entry.count--
