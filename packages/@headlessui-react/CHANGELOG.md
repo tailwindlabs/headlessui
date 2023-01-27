@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.8] - 2023-01-27
+
 ### Fixed
 
 - Fix SSR tab rendering on React 17 ([#2102](https://github.com/tailwindlabs/headlessui/pull/2102))
@@ -423,7 +427,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.7...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.8...HEAD
+[1.7.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.7...@headlessui/react@v1.7.8
 [1.7.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.6...@headlessui/react@v1.7.7
 [1.7.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.5...@headlessui/react@v1.7.6
 [1.7.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.4...@headlessui/react@v1.7.5
