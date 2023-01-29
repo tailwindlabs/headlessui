@@ -1,8 +1,7 @@
 import { Disposables, disposables } from '../../utils/disposables'
 import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
-import { ScrollLockStep } from './steps'
 import { useStore } from '../../hooks/use-store'
-import { overflows } from './overflow-store'
+import { overflows, ScrollLockStep } from './overflow-store'
 
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,

@@ -1,12 +1,16 @@
-import { disposables, Disposables } from 'utils/disposables'
+import { disposables, Disposables } from '../../utils/disposables'
 import { createStore } from '../../utils/store'
-import { ScrollLockStep } from './steps'
 
 interface DocEntry {
   doc: Document
   count: number
   steps: Set<ScrollLockStep>
   d: Disposables
+}
+
+export interface ScrollLockStep {
+  before?(doc: Document, d: Disposables): void
+  after?(doc: Document, d: Disposables): void
 }
 
 export let overflows = createStore(() => new Map<Document, DocEntry>(), {
@@ -20,6 +24,8 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
 
     entry.count++
     this.set(doc, entry)
+
+    return this
   },
 
   POP(doc: Document) {
@@ -27,6 +33,8 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
     if (entry) {
       entry.count--
     }
+
+    return this
   },
 
   SCROLL_PREVENT({ doc, steps, d }: DocEntry) {
