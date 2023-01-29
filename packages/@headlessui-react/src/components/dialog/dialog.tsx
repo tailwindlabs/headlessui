@@ -38,9 +38,6 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
-import { handleIOSLocking } from '../../hooks/document-overflow/handle-ios-locking'
-import { preventScroll } from '../../hooks/document-overflow/prevent-scroll'
-import { adjustScrollbarPadding } from '../../hooks/document-overflow/adjust-scrollbar-padding'
 
 enum DialogStates {
   Open,
@@ -98,15 +95,10 @@ function useScrollLock(
   enabled: boolean,
   resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
 ) {
-  useDocumentOverflowLockedEffect(
-    ownerDocument,
-    enabled,
-    () => [handleIOSLocking(), adjustScrollbarPadding(), preventScroll()],
-    (meta = {}) => ({
-      ...meta,
-      containers: [...(meta.containers ?? []), resolveAllowedContainers],
-    })
-  )
+  useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta = {}) => ({
+    ...meta,
+    containers: [...(meta.containers ?? []), resolveAllowedContainers],
+  }))
 }
 
 function stateReducer(state: StateDefinition, action: Actions) {

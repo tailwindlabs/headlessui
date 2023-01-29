@@ -1,10 +1,12 @@
 import { disposables, Disposables } from '../../utils/disposables'
 import { createStore } from '../../utils/store'
+import { adjustScrollbarPadding } from './adjust-scrollbar-padding'
+import { handleIOSLocking } from './handle-ios-locking'
+import { preventScroll } from './prevent-scroll'
 
 interface DocEntry {
   doc: Document
   count: number
-  steps: Set<ScrollLockStep>
   d: Disposables
   meta: Record<string, any>
 }
@@ -21,15 +23,10 @@ export interface ScrollLockStep<MetaType extends Record<string, any> = any> {
 }
 
 export let overflows = createStore(() => new Map<Document, DocEntry>(), {
-  PUSH(
-    doc: Document,
-    steps: ScrollLockStep[],
-    meta: (meta?: Record<string, any>) => Record<string, any>
-  ) {
+  PUSH(doc: Document, meta: (meta?: Record<string, any>) => Record<string, any>) {
     let entry = this.get(doc) ?? {
       doc,
       count: 0,
-      steps: new Set(steps),
       d: disposables(),
       meta: meta(),
     }
@@ -51,8 +48,14 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
     return this
   },
 
-  SCROLL_PREVENT({ doc, steps, d, meta }: DocEntry) {
+  SCROLL_PREVENT({ doc, d, meta }: DocEntry) {
     let ctx = { doc, d, meta }
+
+    let steps: ScrollLockStep<any>[] = [
+      handleIOSLocking(),
+      adjustScrollbarPadding(),
+      preventScroll(),
+    ]
 
     // Run all `before` actions together
     steps.forEach(({ before }) => before?.(ctx))
@@ -65,8 +68,7 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
     d.dispose()
   },
 
-  TEARDOWN({ doc, steps }: DocEntry) {
-    steps.clear()
+  TEARDOWN({ doc }: DocEntry) {
     this.delete(doc)
   },
 })
