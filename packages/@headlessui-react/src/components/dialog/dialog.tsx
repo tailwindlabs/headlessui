@@ -96,7 +96,6 @@ function useScrollLock(
   resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
 ) {
   useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta = {}) => ({
-    ...meta,
     containers: [...(meta.containers ?? []), resolveAllowedContainers],
   }))
 }

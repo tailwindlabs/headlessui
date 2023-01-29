@@ -23,17 +23,22 @@ export interface ScrollLockStep<MetaType extends Record<string, any> = any> {
 }
 
 export let overflows = createStore(() => new Map<Document, DocEntry>(), {
-  PUSH(doc: Document, meta: (meta?: Record<string, any>) => Record<string, any>) {
+  PUSH(doc: Document, buildMeta: (meta?: Record<string, any>) => Record<string, any>) {
     let entry = this.get(doc) ?? {
       doc,
       count: 0,
       d: disposables(),
-      meta: meta(),
+      meta: buildMeta(),
+    }
+
+    if (entry.count > 0) {
+      entry.meta = {
+        ...entry.meta,
+        ...buildMeta(entry.meta),
+      }
     }
 
     entry.count++
-    entry.meta = meta(entry.meta)
-
     this.set(doc, entry)
 
     return this
