@@ -8,9 +8,14 @@ interface DocEntry {
   d: Disposables
 }
 
+export interface Context {
+  doc: Document
+  d: Disposables
+}
+
 export interface ScrollLockStep {
-  before?(doc: Document, d: Disposables): void
-  after?(doc: Document, d: Disposables): void
+  before?(ctx: Context): void
+  after?(ctx: Context): void
 }
 
 export let overflows = createStore(() => new Map<Document, DocEntry>(), {
@@ -38,11 +43,13 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
   },
 
   SCROLL_PREVENT({ doc, steps, d }: DocEntry) {
+    let ctx = { doc, d }
+
     // Run all `before` actions together
-    steps.forEach(({ before }) => before?.(doc, d))
+    steps.forEach(({ before }) => before?.(ctx))
 
     // Run all `after` actions together
-    steps.forEach(({ after }) => after?.(doc, d))
+    steps.forEach(({ after }) => after?.(ctx))
   },
 
   SCROLL_ALLOW({ d }: DocEntry) {

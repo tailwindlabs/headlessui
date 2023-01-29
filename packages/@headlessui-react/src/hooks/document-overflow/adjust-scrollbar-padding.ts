@@ -1,17 +1,17 @@
-import { Disposables } from '../../utils/disposables'
+import { ScrollLockStep } from './overflow-store'
 
-export function adjustScrollbarPadding() {
+export function adjustScrollbarPadding(): ScrollLockStep {
   let scrollbarWidthBefore: number
 
   return {
-    before(doc: Document) {
+    before({ doc }) {
       let documentElement = doc.documentElement
       let ownerWindow = doc.defaultView ?? window
 
       scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
     },
 
-    after(doc: Document, d: Disposables) {
+    after({ doc, d }) {
       let documentElement = doc.documentElement
 
       // Account for the change in scrollbar width

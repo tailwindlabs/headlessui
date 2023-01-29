@@ -1,8 +1,8 @@
-import { Disposables } from '../../utils/disposables'
+import { ScrollLockStep } from './overflow-store'
 
-export function preventScroll() {
+export function preventScroll(): ScrollLockStep {
   return {
-    before(doc: Document, d: Disposables) {
+    before({ doc, d }) {
       d.style(doc.documentElement, 'overflow', 'hidden')
     },
   }
