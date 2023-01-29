@@ -1,16 +1,51 @@
-import { pipeline } from '../../utils/pipeline'
+import { disposables, Disposables } from 'utils/disposables'
 import { createStore } from '../../utils/store'
-import { adjustScrollbarPadding } from './adjust-scrollbar-padding'
-import { ScrollLockMiddleware } from './request'
-import { lockOverflow } from './lock-overflow'
+import { ScrollLockStep } from './steps'
 
 interface DocEntry {
-  ctx: Record<string, any>
+  doc: Document
   count: number
-  pipes: Set<ScrollLockMiddleware>
+  steps: Set<ScrollLockStep>
+  d: Disposables
 }
 
-export let overflows = createStore(() => new Map<Document, DocEntry>())
+export let overflows = createStore(() => new Map<Document, DocEntry>(), {
+  PUSH(doc: Document, steps: ScrollLockStep[]) {
+    let entry = this.get(doc) ?? {
+      doc,
+      count: 0,
+      steps: new Set(steps ?? []),
+      d: disposables(),
+    }
+
+    entry.count++
+    this.set(doc, entry)
+  },
+
+  POP(doc: Document) {
+    let entry = this.get(doc)
+    if (entry) {
+      entry.count--
+    }
+  },
+
+  SCROLL_PREVENT({ doc, steps, d }: DocEntry) {
+    // Run all `before` actions together
+    steps.forEach(({ before }) => before?.(doc, d))
+
+    // Run all `after` actions together
+    steps.forEach(({ after }) => after?.(doc, d))
+  },
+
+  SCROLL_ALLOW({ d }: DocEntry) {
+    d.dispose()
+  },
+
+  TEARDOWN({ doc, steps }: DocEntry) {
+    steps.clear()
+    this.delete(doc)
+  },
+})
 
 // Update the document overflow state when the store changes
 // This MUST happen outside of react for this to work properly.
@@ -25,27 +60,19 @@ overflows.subscribe(() => {
   }
 
   // Write data to all the documents
-  // This is e separate pass for performance reasons
-  for (let [doc, { count, pipes, ctx }] of docs) {
-    let oldStyle = styles.get(doc)
-    let needsChange =
-      (count !== 0 && oldStyle !== 'hidden') || (count === 0 && oldStyle === 'hidden')
+  for (let entry of docs.values()) {
+    let isHidden = styles.get(entry.doc) === 'hidden'
+    let isLocked = entry.count !== 0
+    let willChange = (isLocked && !isHidden) || (!isLocked && isHidden)
 
-    if (needsChange) {
-      let updateDocument = pipeline([...pipes, adjustScrollbarPadding, lockOverflow])
-
-      updateDocument({
-        ctx,
-        doc,
-        isLocked: count > 0,
-      })
+    if (willChange) {
+      overflows.dispatch(entry.count > 0 ? 'SCROLL_PREVENT' : 'SCROLL_ALLOW', entry)
     }
 
     // We have to clean up after ourselves so we don't leak memory
     // Using a WeakMap would be ideal, but it's not iterable
-    if (count === 0) {
-      pipes.clear()
-      docs.delete(doc)
+    if (entry.count === 0) {
+      overflows.dispatch('TEARDOWN', entry)
     }
   }
 })

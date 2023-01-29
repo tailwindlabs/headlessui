@@ -1,32 +1,25 @@
-import { ScrollLockRequest } from './request'
+import { Disposables } from '../../utils/disposables'
 
-export function adjustScrollbarPadding(
-  req: ScrollLockRequest,
-  next: (req: ScrollLockRequest) => void
-) {
-  let { doc } = req
+export function adjustScrollbarPadding() {
+  let scrollbarWidthBefore: number
 
-  if (!req.isLocked) {
-    next(req)
-    doc.documentElement.style.paddingRight = req.ctx.oldPaddingRight
-    return
+  return {
+    before(doc: Document) {
+      let documentElement = doc.documentElement
+      let ownerWindow = doc.defaultView ?? window
+
+      scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
+    },
+
+    after(doc: Document, d: Disposables) {
+      let documentElement = doc.documentElement
+
+      // Account for the change in scrollbar width
+      // NOTE: This is a bit of a hack, but it's the only way to do this
+      let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
+      let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
+
+      d.style(documentElement, 'paddingRight', `${scrollbarWidth}px`)
+    },
   }
-
-  let documentElement = doc.documentElement
-
-  // Record the scrollbar width before we change the style
-  let ownerWindow = doc.defaultView ?? window
-  let scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
-
-  req.ctx.oldPaddingRight = documentElement.style.paddingRight
-
-  // Update the overflow style of the document itself
-  next(req)
-
-  // Account for the change in scrollbar width
-  // NOTE: This is a bit of a hack, but it's the only way to do this
-  let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
-  let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
-
-  documentElement.style.paddingRight = `${scrollbarWidth}px`
 }

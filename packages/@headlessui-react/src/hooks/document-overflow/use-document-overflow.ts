@@ -1,36 +1,33 @@
 import { Disposables, disposables } from '../../utils/disposables'
 import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
-import { ScrollLockMiddleware } from './request'
-import { useDocumentOverflowController } from './overflow-controller'
-
-export function useIsDocumentOverflowLocked(doc: Document | null) {
-  let controller = useDocumentOverflowController(doc)
-
-  return controller.locked
-}
+import { ScrollLockStep } from './steps'
+import { useStore } from '../../hooks/use-store'
+import { overflows } from './overflow-store'
 
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  pipes?: (d: Disposables) => ScrollLockMiddleware[]
+  steps?: (d: Disposables) => ScrollLockStep[]
 ) {
-  let controller = useDocumentOverflowController(doc)
+  let store = useStore(overflows)
+  let entry = doc ? store.get(doc) : undefined
+  let locked = entry ? entry.count > 0 : false
 
   useIsoMorphicEffect(() => {
     if (!doc || !shouldBeLocked) {
       return
     }
 
-    let d = disposables()
-
     // Prevent the document from scrolling
-    let guard = controller.lock(pipes ? pipes(d) : [])
+    let d = disposables()
+    overflows.dispatch('PUSH', doc, steps ? steps(d) : [])
 
     return () => {
-      guard.release()
+      // Allow document to scroll
+      overflows.dispatch('POP', doc)
       d.dispose()
     }
   }, [shouldBeLocked, doc])
 
-  return controller.locked
+  return locked
 }

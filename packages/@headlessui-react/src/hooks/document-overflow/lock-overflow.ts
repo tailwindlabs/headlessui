@@ -1,15 +1,9 @@
-import { ScrollLockRequest } from './request'
+import { Disposables } from 'utils/disposables'
 
-export function lockOverflow(req: ScrollLockRequest, next: (req: ScrollLockRequest) => void) {
-  let { doc } = req
-
-  if (req.isLocked) {
-    req.ctx.oldOverflow = doc.documentElement.style.overflow
-    doc.documentElement.style.overflow = 'hidden'
-  } else {
-    doc.documentElement.style.overflow = req.ctx.oldOverflow
+export function lockOverflow() {
+  return {
+    before(doc: Document, d: Disposables) {
+      d.style(doc.documentElement, 'overflow', 'hidden')
+    },
   }
-
-  // Keep processing the chain
-  next(req)
 }
