@@ -4,8 +4,6 @@ export function adjustScrollbarPadding(): ScrollLockStep {
   let scrollbarWidthBefore: number
 
   return {
-    behavior: 'once',
-
     before({ doc }) {
       let documentElement = doc.documentElement
       let ownerWindow = doc.defaultView ?? window

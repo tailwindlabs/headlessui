@@ -7,9 +7,7 @@ export function handleIOSLocking(
   resolveAllowedContainers: () => HTMLElement[]
 ): ScrollLockStep {
   if (!isIOS()) {
-    return {
-      behavior: 'once',
-    }
+    return {}
   }
 
   function inAllowedContainer(el: HTMLElement) {
@@ -19,8 +17,6 @@ export function handleIOSLocking(
   let scrollPosition: number
 
   return {
-    behavior: 'once',
-
     before() {
       scrollPosition = window.pageYOffset
     },

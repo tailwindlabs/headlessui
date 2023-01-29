@@ -14,7 +14,6 @@ export interface Context {
 }
 
 export interface ScrollLockStep {
-  behavior: 'once' | 'always'
   before?(ctx: Context): void
   after?(ctx: Context): void
 }
@@ -44,7 +43,13 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
   },
 
   SCROLL_PREVENT({ doc, steps, d }: DocEntry) {
-    overflows.dispatch('RUN', steps, { doc, d })
+    let ctx = { doc, d }
+
+    // Run all `before` actions together
+    steps.forEach(({ before }) => before?.(ctx))
+
+    // Run all `after` actions together
+    steps.forEach(({ after }) => after?.(ctx))
   },
 
   SCROLL_ALLOW({ d }: DocEntry) {
@@ -54,14 +59,6 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
   TEARDOWN({ doc, steps }: DocEntry) {
     steps.clear()
     this.delete(doc)
-  },
-
-  RUN(steps: ScrollLockStep[], ctx: Context) {
-    // Run all `before` actions together
-    steps.forEach(({ before }) => before?.(ctx))
-
-    // Run all `after` actions together
-    steps.forEach(({ after }) => after?.(ctx))
   },
 })
 
@@ -85,13 +82,6 @@ overflows.subscribe(() => {
 
     if (willChange) {
       overflows.dispatch(entry.count > 0 ? 'SCROLL_PREVENT' : 'SCROLL_ALLOW', entry)
-    } else {
-      let toRun = Array.from(entry.steps).filter((s) => s.behavior === 'always')
-
-      overflows.dispatch('RUN', toRun, {
-        doc: entry.doc,
-        d: entry.d,
-      })
     }
 
     // We have to clean up after ourselves so we don't leak memory
