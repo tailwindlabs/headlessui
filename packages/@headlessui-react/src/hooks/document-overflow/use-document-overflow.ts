@@ -6,7 +6,7 @@ import { overflows, ScrollLockStep } from './overflow-store'
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  steps?: (d: Disposables) => ScrollLockStep[]
+  steps: (d: Disposables) => ScrollLockStep[]
 ) {
   let store = useStore(overflows)
   let entry = doc ? store.get(doc) : undefined
@@ -19,7 +19,7 @@ export function useDocumentOverflowLockedEffect(
 
     // Prevent the document from scrolling
     let d = disposables()
-    overflows.dispatch('PUSH', doc, steps ? steps(d) : [])
+    overflows.dispatch('PUSH', doc, steps(d))
 
     return () => {
       // Allow document to scroll

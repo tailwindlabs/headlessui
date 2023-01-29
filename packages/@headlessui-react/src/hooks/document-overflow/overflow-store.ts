@@ -23,7 +23,7 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
     let entry = this.get(doc) ?? {
       doc,
       count: 0,
-      steps: new Set(steps ?? []),
+      steps: new Set(steps),
       d: disposables(),
     }
 
