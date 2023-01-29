@@ -1,4 +1,4 @@
-import { Disposables } from 'utils/disposables'
+import { Disposables } from '../../utils/disposables'
 import { isIOS } from '../../utils/platform'
 
 export function handleIOSLocking(d: Disposables, resolveAllowedContainers: () => HTMLElement[]) {

@@ -39,7 +39,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
 import { handleIOSLocking } from '../../hooks/document-overflow/handle-ios-locking'
-import { lockOverflow } from '../../hooks/document-overflow/lock-overflow'
+import { preventScroll } from '../../hooks/document-overflow/prevent-scroll'
 import { adjustScrollbarPadding } from '../../hooks/document-overflow/adjust-scrollbar-padding'
 
 enum DialogStates {
@@ -101,7 +101,7 @@ function useScrollLock(
   useDocumentOverflowLockedEffect(ownerDocument, enabled, (d) => [
     handleIOSLocking(d, resolveAllowedContainers),
     adjustScrollbarPadding(),
-    lockOverflow(),
+    preventScroll(),
   ])
 }
 
