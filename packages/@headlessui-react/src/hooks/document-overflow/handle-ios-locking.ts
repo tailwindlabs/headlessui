@@ -1,17 +1,13 @@
-import { Disposables } from '../../utils/disposables'
 import { isIOS } from '../../utils/platform'
 import { ScrollLockStep } from './overflow-store'
 
-export function handleIOSLocking(
-  d: Disposables,
-  resolveAllowedContainers: () => HTMLElement[]
-): ScrollLockStep {
+interface ContainerMetadata {
+  containers: (() => HTMLElement[])[]
+}
+
+export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
   if (!isIOS()) {
     return {}
-  }
-
-  function inAllowedContainer(el: HTMLElement) {
-    return resolveAllowedContainers().some((container) => container.contains(el))
   }
 
   let scrollPosition: number
@@ -21,7 +17,13 @@ export function handleIOSLocking(
       scrollPosition = window.pageYOffset
     },
 
-    after({ doc }) {
+    after({ doc, d, meta }) {
+      function inAllowedContainer(el: HTMLElement) {
+        return meta.containers.some((resolve) =>
+          resolve().some((container) => container.contains(el))
+        )
+      }
+
       d.style(doc.body, 'marginTop', `-${scrollPosition}px`)
       window.scrollTo(0, 0)
 

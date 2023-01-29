@@ -98,11 +98,15 @@ function useScrollLock(
   enabled: boolean,
   resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
 ) {
-  useDocumentOverflowLockedEffect(ownerDocument, enabled, (d) => [
-    handleIOSLocking(d, resolveAllowedContainers),
-    adjustScrollbarPadding(),
-    preventScroll(),
-  ])
+  useDocumentOverflowLockedEffect(
+    ownerDocument,
+    enabled,
+    () => [handleIOSLocking(), adjustScrollbarPadding(), preventScroll()],
+    (meta = {}) => ({
+      ...meta,
+      containers: [...(meta.containers ?? []), resolveAllowedContainers],
+    })
+  )
 }
 
 function stateReducer(state: StateDefinition, action: Actions) {

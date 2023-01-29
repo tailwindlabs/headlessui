@@ -1,4 +1,3 @@
-import { Disposables, disposables } from '../../utils/disposables'
 import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
 import { useStore } from '../../hooks/use-store'
 import { overflows, ScrollLockStep } from './overflow-store'
@@ -6,7 +5,8 @@ import { overflows, ScrollLockStep } from './overflow-store'
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  steps: (d: Disposables) => ScrollLockStep[]
+  steps: () => ScrollLockStep[],
+  meta: (meta?: Record<string, any>) => Record<string, any>
 ) {
   let store = useStore(overflows)
   let entry = doc ? store.get(doc) : undefined
@@ -18,14 +18,10 @@ export function useDocumentOverflowLockedEffect(
     }
 
     // Prevent the document from scrolling
-    let d = disposables()
-    overflows.dispatch('PUSH', doc, steps(d))
+    overflows.dispatch('PUSH', doc, steps(), meta)
 
-    return () => {
-      // Allow document to scroll
-      overflows.dispatch('POP', doc)
-      d.dispose()
-    }
+    // Allow document to scroll
+    return () => overflows.dispatch('POP', doc)
   }, [shouldBeLocked, doc])
 
   return locked

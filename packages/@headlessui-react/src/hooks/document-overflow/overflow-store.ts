@@ -6,28 +6,37 @@ interface DocEntry {
   count: number
   steps: Set<ScrollLockStep>
   d: Disposables
+  meta: Record<string, any>
 }
 
-export interface Context {
+export interface Context<MetaType extends Record<string, any> = any> {
   doc: Document
   d: Disposables
+  meta: MetaType
 }
 
-export interface ScrollLockStep {
-  before?(ctx: Context): void
-  after?(ctx: Context): void
+export interface ScrollLockStep<MetaType extends Record<string, any> = any> {
+  before?(ctx: Context<MetaType>): void
+  after?(ctx: Context<MetaType>): void
 }
 
 export let overflows = createStore(() => new Map<Document, DocEntry>(), {
-  PUSH(doc: Document, steps: ScrollLockStep[]) {
+  PUSH(
+    doc: Document,
+    steps: ScrollLockStep[],
+    meta: (meta?: Record<string, any>) => Record<string, any>
+  ) {
     let entry = this.get(doc) ?? {
       doc,
       count: 0,
       steps: new Set(steps),
       d: disposables(),
+      meta: meta(),
     }
 
     entry.count++
+    entry.meta = meta(entry.meta)
+
     this.set(doc, entry)
 
     return this
@@ -42,8 +51,8 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
     return this
   },
 
-  SCROLL_PREVENT({ doc, steps, d }: DocEntry) {
-    let ctx = { doc, d }
+  SCROLL_PREVENT({ doc, steps, d, meta }: DocEntry) {
+    let ctx = { doc, d, meta }
 
     // Run all `before` actions together
     steps.forEach(({ before }) => before?.(ctx))
