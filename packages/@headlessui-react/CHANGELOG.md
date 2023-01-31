@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix SSR tab hydration when using Strict Mode in development ([#2231](https://github.com/tailwindlabs/headlessui/pull/2231))
 
 ## [1.7.8] - 2023-01-27
 
