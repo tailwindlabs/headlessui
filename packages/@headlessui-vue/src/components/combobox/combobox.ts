@@ -562,7 +562,7 @@ export let ComboboxButton = defineComponent({
 
     function handleKeydown(event: KeyboardEvent) {
       switch (event.key) {
-        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+        // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
         case Keys.ArrowDown:
           event.preventDefault()
@@ -756,7 +756,7 @@ export let ComboboxInput = defineComponent({
     function handleKeyDown(event: KeyboardEvent) {
       isTyping.value = true
       switch (event.key) {
-        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+        // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
         case Keys.Backspace:
         case Keys.Delete:

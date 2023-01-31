@@ -463,7 +463,7 @@ export let ListboxButton = defineComponent({
 
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
-        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-13
+        // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/#keyboard-interaction-13
 
         case Keys.Space:
         case Keys.Enter:
@@ -571,7 +571,7 @@ export let ListboxOptions = defineComponent({
       if (searchDebounce.value) clearTimeout(searchDebounce.value)
 
       switch (event.key) {
-        // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+        // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
         // @ts-expect-error Fallthrough is expected here
         case Keys.Space:
