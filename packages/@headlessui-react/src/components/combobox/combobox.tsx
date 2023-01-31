@@ -786,7 +786,7 @@ let Input = forwardRefWithAs(function Input<
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
     isTyping.current = true
     switch (event.key) {
-      // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+      // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
       case Keys.Backspace:
       case Keys.Delete:
@@ -993,7 +993,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
     switch (event.key) {
-      // Ref: https://www.w3.org/TR/wai-aria-practices-1.2/#keyboard-interaction-12
+      // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
       case Keys.ArrowDown:
         event.preventDefault()
