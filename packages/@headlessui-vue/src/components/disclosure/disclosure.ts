@@ -1,4 +1,4 @@
-// WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#disclosure
+// WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
 import {
   defineComponent,
   ref,

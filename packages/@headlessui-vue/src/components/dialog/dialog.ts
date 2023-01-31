@@ -1,4 +1,4 @@
-// WAI-ARIA: https://www.w3.org/TR/wai-aria-practices-1.2/#dialog_modal
+// WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/
 import {
   computed,
   defineComponent,
