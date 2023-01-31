@@ -29,6 +29,7 @@ import { useEvent } from '../../hooks/use-event'
 import { microTask } from '../../utils/micro-task'
 import { Hidden } from '../../internal/hidden'
 import { getOwnerDocument } from '../../utils/owner'
+import { StableCollection, useStableCollectionIndex } from '../../utils/stable-collection'
 
 enum Direction {
   Forwards,
@@ -141,19 +142,6 @@ let reducers: {
   [ActionTypes.UnregisterPanel](state, action) {
     return { ...state, panels: state.panels.filter((panel) => panel !== action.panel) }
   },
-}
-
-let TabsSSRContext = createContext<MutableRefObject<{ tabs: number; panels: number }> | null>(null)
-TabsSSRContext.displayName = 'TabsSSRContext'
-
-function useSSRTabsCounter(component: string) {
-  let context = useContext(TabsSSRContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Tab.Group /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useSSRTabsCounter)
-    throw err
-  }
-  return context
 }
 
 let TabsDataContext = createContext<
@@ -284,11 +272,10 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
     }
   })
 
-  let SSRCounter = useRef({ tabs: 0, panels: 0 })
   let ourProps = { ref: tabsRef }
 
   return (
-    <TabsSSRContext.Provider value={SSRCounter}>
+    <StableCollection>
       <TabsActionsContext.Provider value={tabsActions}>
         <TabsDataContext.Provider value={tabsData}>
           {tabsData.tabs.length <= 0 && (
@@ -314,7 +301,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
           })}
         </TabsDataContext.Provider>
       </TabsActionsContext.Provider>
-    </TabsSSRContext.Provider>
+    </StableCollection>
   )
 })
 
@@ -369,20 +356,16 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
   let { orientation, activation, selectedIndex, tabs, panels } = useData('Tab')
   let actions = useActions('Tab')
   let data = useData('Tab')
-  let SSRContext = useSSRTabsCounter('Tab')
 
   let internalTabRef = useRef<HTMLElement | null>(null)
   let tabRef = useSyncRefs(internalTabRef, ref)
 
   useIsoMorphicEffect(() => actions.registerTab(internalTabRef), [actions, internalTabRef])
 
-  let mySSRIndex = useRef(-1)
-  if (mySSRIndex.current === -1) {
-    mySSRIndex.current = SSRContext.current ? SSRContext.current.tabs++ : -1
-  }
+  let mySSRIndex = useStableCollectionIndex('tabs')
 
   let myIndex = tabs.indexOf(internalTabRef)
-  if (myIndex === -1) myIndex = mySSRIndex.current
+  if (myIndex === -1) myIndex = mySSRIndex
   let selected = myIndex === selectedIndex
 
   let activateUsing = useEvent((cb: () => FocusResult) => {
@@ -532,20 +515,16 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let { id = `headlessui-tabs-panel-${internalId}`, tabIndex = 0, ...theirProps } = props
   let { selectedIndex, tabs, panels } = useData('Tab.Panel')
   let actions = useActions('Tab.Panel')
-  let SSRContext = useSSRTabsCounter('Tab.Panel')
 
   let internalPanelRef = useRef<HTMLElement | null>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref)
 
   useIsoMorphicEffect(() => actions.registerPanel(internalPanelRef), [actions, internalPanelRef])
 
-  let mySSRIndex = useRef(-1)
-  if (mySSRIndex.current === -1) {
-    mySSRIndex.current = SSRContext.current ? SSRContext.current.panels++ : -1
-  }
+  let mySSRIndex = useStableCollectionIndex('panels')
 
   let myIndex = panels.indexOf(internalPanelRef)
-  if (myIndex === -1) myIndex = mySSRIndex.current
+  if (myIndex === -1) myIndex = mySSRIndex
 
   let selected = myIndex === selectedIndex
 

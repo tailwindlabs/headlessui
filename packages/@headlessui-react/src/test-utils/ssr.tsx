@@ -1,5 +1,5 @@
-import { RenderResult } from '@testing-library/react'
-import { render, RenderOptions } from '@testing-library/react'
+import { cleanup, RenderResult } from '@testing-library/react'
+import { render, RenderOptions, screen } from '@testing-library/react'
 import React, { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import { env } from '../utils/env'
@@ -37,15 +37,19 @@ export async function renderSSR(
   let result = render(<div dangerouslySetInnerHTML={{ __html: contents }} />, options)
 
   async function hydrate(): Promise<ServerRenderResult> {
-    // This hack-ish way of unmounting the server rendered content is necessary
-    // otherwise we won't actually end up testing the hydration code path properly.
-    // Probably because React hangs on to internal references on the DOM nodes
-    result.unmount()
+    cleanup()
+
+    container.remove()
+
+    container = document.createElement('div')
     container.innerHTML = contents
+    document.body.appendChild(container)
 
     env.set('client')
+
     let newResult = render(ui, {
       ...options,
+      container,
       hydrate: true,
     })
 
@@ -68,3 +72,5 @@ export async function renderSSR(
 export async function renderHydrate(el: ReactElement, options: ServerRenderOptions = {}) {
   return renderSSR(el, options).then((r) => r.hydrate())
 }
+
+export { screen }
