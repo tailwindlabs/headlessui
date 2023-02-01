@@ -29,6 +29,7 @@ import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-cl
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
+import { startTransition } from '../../utils/start-transition'
 
 enum DisclosureStates {
   Open,
@@ -361,7 +362,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
 
   let panelRef = useSyncRefs(ref, state.panelRef, (el) => {
-    dispatch({ type: el ? ActionTypes.LinkPanel : ActionTypes.UnlinkPanel })
+    startTransition(() => dispatch({ type: el ? ActionTypes.LinkPanel : ActionTypes.UnlinkPanel }))
   })
 
   useEffect(() => {
