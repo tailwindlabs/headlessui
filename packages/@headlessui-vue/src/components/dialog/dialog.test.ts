@@ -473,7 +473,7 @@ describe('Rendering', () => {
               Toggle {{ id }}
             </button>
             <TransitionRoot as="template" :show="dialogs.includes(id)">
-              <Dialog @close="toggle(id, false)">
+              <Dialog @close="toggle(id, false)" :data-debug="id">
                 <input type="text" />
               </Dialog>
             </TransitionRoot>
@@ -538,6 +538,7 @@ describe('Rendering', () => {
         console.log('Click btn3')
         await click(btn3)
         await frames(2)
+        console.log('waited 2 frames')
 
         expect(document.documentElement.style.overflow).toBe('')
       })

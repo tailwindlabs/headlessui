@@ -15,6 +15,7 @@ import {
   InjectionKey,
   PropType,
   Ref,
+  watchSyncEffect,
 } from 'vue'
 
 import { render, Features } from '../../utils/render'
@@ -220,10 +221,15 @@ export let Dialog = defineComponent({
       api.close()
     })
 
+    watchSyncEffect(() => {
+      console.log('enabled %s: %s', attrs['data-debug'], enabled.value)
+    })
+
     // Scroll lock
-    useDocumentOverflowLockedEffect(ownerDocument, enabled, (d) => [
-      handleIOSLocking(d, resolveAllowedContainers),
-    ])
+    useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta = {}) => ({
+      // @ts-ignore
+      containers: [...(meta.containers ?? []), resolveAllowedContainers],
+    }))
 
     // Trigger close when the FocusTrap gets hidden
     watchEffect((onInvalidate) => {
