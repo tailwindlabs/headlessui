@@ -451,7 +451,7 @@ describe('Rendering', () => {
       })
     )
 
-    fit(
+    it(
       'scroll locking should work when transitioning between dialogs',
       suppressConsoleLogs(async () => {
         // While we don't support multiple dialogs
