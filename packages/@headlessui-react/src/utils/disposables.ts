@@ -1,5 +1,7 @@
 import { microTask } from './micro-task'
 
+export type Disposables = ReturnType<typeof disposables>
+
 export function disposables() {
   let disposables: Function[] = []
   let queue: Function[] = []
@@ -68,6 +70,14 @@ export function disposables() {
       for (let handle of queue.splice(0)) {
         await handle()
       }
+    },
+
+    style(node: HTMLElement, property: string, value: string) {
+      let previous = node.style.getPropertyValue(property)
+      Object.assign(node.style, { [property]: value })
+      return this.add(() => {
+        Object.assign(node.style, { [property]: previous })
+      })
     },
   }
 

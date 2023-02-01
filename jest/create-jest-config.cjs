@@ -8,6 +8,9 @@ module.exports = function createJestConfig(root, options) {
         '^.+\\.(t|j)sx?$': '@swc/jest',
         ...transform,
       },
+      globals: {
+        __DEV__: true,
+      },
     },
     rest
   )
