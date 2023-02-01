@@ -19,9 +19,9 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
     after({ doc, d, meta }) {
       function inAllowedContainer(el: HTMLElement) {
-        return meta.containers.some((resolve) =>
-          resolve().some((container) => container.contains(el))
-        )
+        return meta.containers
+          .flatMap((resolve) => resolve())
+          .some((container) => container.contains(el))
       }
 
       d.style(doc.body, 'marginTop', `-${scrollPosition}px`)
