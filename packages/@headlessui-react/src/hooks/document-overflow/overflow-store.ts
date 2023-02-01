@@ -8,8 +8,10 @@ interface DocEntry {
   doc: Document
   count: number
   d: Disposables
-  meta: Record<string, any>
+  meta: Set<MetaFn>
 }
+
+export type MetaFn = (meta: Record<string, any>) => Record<string, any>
 
 export interface Context<MetaType extends Record<string, any> = any> {
   doc: Document
@@ -23,38 +25,41 @@ export interface ScrollLockStep<MetaType extends Record<string, any> = any> {
 }
 
 export let overflows = createStore(() => new Map<Document, DocEntry>(), {
-  PUSH(doc: Document, buildMeta: (meta?: Record<string, any>) => Record<string, any>) {
+  PUSH(doc: Document, buildMeta: MetaFn) {
     let entry = this.get(doc) ?? {
       doc,
       count: 0,
       d: disposables(),
-      meta: buildMeta(),
-    }
-
-    if (entry.count > 0) {
-      entry.meta = {
-        ...entry.meta,
-        ...buildMeta(entry.meta),
-      }
+      meta: new Set(),
     }
 
     entry.count++
+    entry.meta.add(buildMeta)
     this.set(doc, entry)
 
     return this
   },
 
-  POP(doc: Document) {
+  POP(doc: Document, buildMeta: MetaFn) {
     let entry = this.get(doc)
     if (entry) {
       entry.count--
+      entry.meta.delete(buildMeta)
     }
 
     return this
   },
 
   SCROLL_PREVENT({ doc, d, meta }: DocEntry) {
-    let ctx = { doc, d, meta }
+    function buildMeta() {
+      let tmp = {}
+      for (let fn of meta) {
+        Object.assign(tmp, fn(tmp))
+      }
+      return tmp
+    }
+
+    let ctx = { doc, d, meta: buildMeta() }
 
     let steps: ScrollLockStep<any>[] = [
       handleIOSLocking(),

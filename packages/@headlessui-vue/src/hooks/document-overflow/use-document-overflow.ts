@@ -1,11 +1,11 @@
 import { useStore } from '../../hooks/use-store'
-import { overflows } from './overflow-store'
-import { computed, onMounted, onUnmounted, Ref, watch } from 'vue'
+import { overflows, MetaFn } from './overflow-store'
+import { computed, Ref, watch } from 'vue'
 
 export function useDocumentOverflowLockedEffect(
   doc: Ref<Document | null>,
   shouldBeLocked: Ref<boolean>,
-  meta: (meta?: Record<string, any>) => Record<string, any>
+  meta: MetaFn
 ) {
   let store = useStore(overflows)
   let locked = computed(() => {
@@ -27,7 +27,7 @@ export function useDocumentOverflowLockedEffect(
       let didRunCleanup = false
       onInvalidate(() => {
         if (didRunCleanup) return
-        overflows.dispatch('POP', oldDoc ?? doc)
+        overflows.dispatch('POP', oldDoc ?? doc, meta)
 
         // This shouldn't be necessary, but it is.
         // Seems like a Vue bug.

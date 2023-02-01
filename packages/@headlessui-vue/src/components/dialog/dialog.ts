@@ -221,8 +221,7 @@ export let Dialog = defineComponent({
     })
 
     // Scroll lock
-    useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta = {}) => ({
-      // @ts-ignore
+    useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta) => ({
       containers: [...(meta.containers ?? []), resolveAllowedContainers],
     }))
 

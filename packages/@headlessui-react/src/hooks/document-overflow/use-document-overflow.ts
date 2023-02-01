@@ -5,7 +5,7 @@ import { overflows } from './overflow-store'
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  meta: (meta?: Record<string, any>) => Record<string, any>
+  meta: (meta: Record<string, any>) => Record<string, any>
 ) {
   let store = useStore(overflows)
   let entry = doc ? store.get(doc) : undefined
@@ -20,7 +20,7 @@ export function useDocumentOverflowLockedEffect(
     overflows.dispatch('PUSH', doc, meta)
 
     // Allow document to scroll
-    return () => overflows.dispatch('POP', doc)
+    return () => overflows.dispatch('POP', doc, meta)
   }, [shouldBeLocked, doc])
 
   return locked
