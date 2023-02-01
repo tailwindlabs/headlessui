@@ -15,7 +15,6 @@ import {
   InjectionKey,
   PropType,
   Ref,
-  watchSyncEffect,
 } from 'vue'
 
 import { render, Features } from '../../utils/render'
@@ -219,10 +218,6 @@ export let Dialog = defineComponent({
       event.preventDefault()
       event.stopPropagation()
       api.close()
-    })
-
-    watchSyncEffect(() => {
-      console.log('enabled %s: %s', attrs['data-debug'], enabled.value)
     })
 
     // Scroll lock

@@ -473,7 +473,7 @@ describe('Rendering', () => {
               Toggle {{ id }}
             </button>
             <TransitionRoot as="template" :show="dialogs.includes(id)">
-              <Dialog @close="toggle(id, false)" :data-debug="id">
+              <Dialog :data-debug="id">
                 <input type="text" />
               </Dialog>
             </TransitionRoot>

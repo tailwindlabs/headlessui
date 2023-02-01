@@ -21,27 +21,23 @@ export function useDocumentOverflowLockedEffect(
       }
 
       // Prevent the document from scrolling
-      console.log('PUSH')
       overflows.dispatch('PUSH', doc, meta)
 
       // Allow document to scroll
       let didRunCleanup = false
       onInvalidate(() => {
         if (didRunCleanup) return
-        console.log('POP')
-        overflows.dispatch('POP', oldDoc)
+        overflows.dispatch('POP', oldDoc ?? doc)
+
+        // This shouldn't be necessary, but it is.
+        // Seems like a Vue bug.
         didRunCleanup = true
       })
     },
     {
       immediate: true,
-      flush: 'sync',
     }
   )
-
-  onUnmounted(() => {
-    overflows.dispatch('POP', doc.value)
-  })
 
   return locked
 }
