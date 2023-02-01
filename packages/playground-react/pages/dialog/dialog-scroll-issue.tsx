@@ -8,10 +8,10 @@ function MyDialog({ open, close }) {
         <Dialog onClose={close} className="relative z-50">
           <Transition.Child
             as={Fragment}
-            enter="transition duration-100 ease-out"
+            enter="transition duration-500 ease-out"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="transition duration-75 ease-out"
+            leave="transition duration-500 ease-out"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
