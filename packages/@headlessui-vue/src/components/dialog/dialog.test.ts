@@ -466,22 +466,25 @@ describe('Rendering', () => {
           props: {
             id: String,
             dialogs: Array as PropType<string[]>,
-            toggle: Function as PropType<(id: string, force?: boolean) => void>,
+            toggle: Function as PropType<(id: string, state: string) => void>,
           },
           template: `
-            <button :id="id" @click="toggle(id)">
-              Toggle {{ id }}
+            <button :id="id_open" @click="toggle(id, 'open')">
+              Open {{ id }}
             </button>
             <TransitionRoot as="template" :show="dialogs.includes(id)">
-              <Dialog :data-debug="id">
-                <input type="text" />
+              <Dialog @close="toggle(id, 'close')" :data-debug="id">
+                <button :id="id_close" @click="toggle(id, 'close')">
+                  Close {{ id }}
+                </button>
               </Dialog>
             </TransitionRoot>
           `,
 
           setup(props) {
             return {
-              id: computed(() => `trigger_${props.id}`),
+              id_open: computed(() => `open_${props.id}`),
+              id_close: computed(() => `close_${props.id}`),
             }
           },
         })
@@ -498,9 +501,12 @@ describe('Rendering', () => {
             let dialogs = ref<string[]>([])
             return {
               dialogs,
-              toggle(id: string, force?: boolean) {
-                let shouldShow = force !== undefined ? force : !dialogs.value.includes(id)
-                dialogs.value = shouldShow ? [id] : []
+              toggle(id: string, state: 'open' | 'close') {
+                if (state === 'open' && !dialogs.value.includes(id)) {
+                  dialogs.value = [id]
+                } else if (state === 'close' && dialogs.value.includes(id)) {
+                  dialogs.value = dialogs.value.filter((x) => x !== id)
+                }
               },
             }
           },
@@ -511,34 +517,30 @@ describe('Rendering', () => {
         // No overflow yet
         expect(document.documentElement.style.overflow).toBe('')
 
-        let btn1 = document.getElementById('trigger_d1')
-        let btn2 = document.getElementById('trigger_d2')
-        let btn3 = document.getElementById('trigger_d3')
+        let open1 = () => document.getElementById('open_d1')
+        let open2 = () => document.getElementById('open_d2')
+        let open3 = () => document.getElementById('open_d3')
+        let close3 = () => document.getElementById('close_d3')
 
         // Open the dialog & expect overflow
-        console.log('Click btn1')
-        await click(btn1)
+        await click(open1())
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // Open the dialog & expect overflow
-        console.log('Click btn2')
-        await click(btn2)
+        await click(open2())
         await frames(2)
         // expect(document.documentElement.style.overflow).toBe('hidden')
 
         // Open the dialog & expect overflow
-        console.log('Click btn3')
-        await click(btn3)
+        await click(open3())
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // At this point only the last dialog should be open
         // Close the dialog & dont expect overflow
-        console.log('Click btn3')
-        await click(btn3)
+        await click(close3())
         await frames(2)
-        console.log('waited 2 frames')
 
         expect(document.documentElement.style.overflow).toBe('')
       })

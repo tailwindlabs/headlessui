@@ -335,9 +335,12 @@ describe('Rendering', () => {
         function Example() {
           let [dialogs, setDialogs] = useState<string[]>([])
           let toggle = useCallback(
-            (id: string, force?: boolean) => {
-              let shouldShow = force !== undefined ? force : !dialogs.includes(id)
-              setDialogs(shouldShow ? [id] : [])
+            (id: string, state: 'open' | 'close') => {
+              if (state === 'open' && !dialogs.includes(id)) {
+                setDialogs([id])
+              } else if (state === 'close' && dialogs.includes(id)) {
+                setDialogs(dialogs.filter((x) => x !== id))
+              }
             },
             [dialogs]
           )
@@ -358,16 +361,18 @@ describe('Rendering', () => {
         }: {
           id: string
           dialogs: string[]
-          toggle: (id: string, force?: boolean) => void
+          toggle: (id: string, state: 'open' | 'close') => void
         }) {
           return (
             <>
-              <button id={`trigger_${id}`} onClick={() => toggle(id)}>
-                Toggle {id}
+              <button id={`open_${id}`} onClick={() => toggle(id, 'open')}>
+                Open {id}
               </button>
               <Transition as={Fragment} show={dialogs.includes(id)}>
-                <Dialog onClose={() => toggle(id, false)}>
-                  <input type="text" />
+                <Dialog onClose={() => toggle(id, 'close')}>
+                  <button id={`close_${id}`} onClick={() => toggle(id, 'close')}>
+                    Close {id}
+                  </button>
                 </Dialog>
               </Transition>
             </>
@@ -379,28 +384,29 @@ describe('Rendering', () => {
         // No overflow yet
         expect(document.documentElement.style.overflow).toBe('')
 
-        let btn1 = document.getElementById('trigger_d1')
-        let btn2 = document.getElementById('trigger_d2')
-        let btn3 = document.getElementById('trigger_d3')
+        let open1 = () => document.getElementById('open_d1')
+        let open2 = () => document.getElementById('open_d2')
+        let open3 = () => document.getElementById('open_d3')
+        let close3 = () => document.getElementById('close_d3')
 
         // Open the dialog & expect overflow
-        await click(btn1)
+        await click(open1())
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // Open the dialog & expect overflow
-        await click(btn2)
+        await click(open2())
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // Open the dialog & expect overflow
-        await click(btn3)
+        await click(open3())
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('hidden')
 
         // At this point only the last dialog should be open
         // Close the dialog & dont expect overflow
-        await click(btn3)
+        await click(close3())
         await frames(2)
         expect(document.documentElement.style.overflow).toBe('')
       })
