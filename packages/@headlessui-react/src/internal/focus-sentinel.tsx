@@ -1,4 +1,5 @@
-import React, { useState, FocusEvent as ReactFocusEvent } from 'react'
+import * as React from 'react'
+import { useState, FocusEvent as ReactFocusEvent } from 'react'
 
 import { Hidden, Features } from './hidden'
 

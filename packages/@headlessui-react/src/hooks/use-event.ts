@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import { useLatestValue } from './use-latest-value'
 
 export let useEvent =
