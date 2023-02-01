@@ -11,6 +11,14 @@ interface DocEntry {
   meta: Set<MetaFn>
 }
 
+function buildMeta(fns: Iterable<MetaFn>) {
+  let tmp = {}
+  for (let fn of fns) {
+    Object.assign(tmp, fn(tmp))
+  }
+  return tmp
+}
+
 export type MetaFn = (meta: Record<string, any>) => Record<string, any>
 
 export interface Context<MetaType extends Record<string, any> = any> {
@@ -51,18 +59,10 @@ export let overflows = createStore(() => new Map<Document, DocEntry>(), {
   },
 
   SCROLL_PREVENT({ doc, d, meta }: DocEntry) {
-    function buildMeta() {
-      let tmp = {}
-      for (let fn of meta) {
-        Object.assign(tmp, fn(tmp))
-      }
-      return tmp
-    }
-
     let ctx = {
       doc,
       d,
-      meta: buildMeta(),
+      meta: buildMeta(meta),
     }
 
     let steps: ScrollLockStep<any>[] = [
