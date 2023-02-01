@@ -1,4 +1,4 @@
-import React, { createElement, useEffect, useRef } from 'react'
+import React, { createElement, Suspense, useEffect, useRef } from 'react'
 import { render } from '@testing-library/react'
 
 import { Disclosure } from './disclosure'
@@ -236,6 +236,19 @@ describe('Rendering', () => {
         assertActiveElement(getByText('restoreable'))
       })
     )
+
+    it('should not crash when using Suspense boundaries', async () => {
+      render(
+        <Disclosure defaultOpen={true}>
+          <Disclosure.Button>Click me!</Disclosure.Button>
+          <Disclosure.Panel>
+            <Suspense fallback={null}>
+              <p>Hi there</p>
+            </Suspense>
+          </Disclosure.Panel>
+        </Disclosure>
+      )
+    })
   })
 
   describe('Disclosure.Button', () => {
