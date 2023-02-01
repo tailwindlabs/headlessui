@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Don't break overflow when multiple dialogs are open at the same time ([#2215](https://github.com/tailwindlabs/headlessui/pull/2215))
 
 ## [1.7.8] - 2023-01-27
 
