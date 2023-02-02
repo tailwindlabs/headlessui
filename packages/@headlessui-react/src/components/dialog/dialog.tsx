@@ -1,5 +1,6 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/
-import React, {
+import * as React from 'react'
+import {
   createContext,
   createRef,
   useContext,
