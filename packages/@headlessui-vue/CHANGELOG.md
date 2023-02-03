@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.9] - 2023-02-03
+
 ### Fixed
 
 - Don't break overflow when multiple dialogs are open at the same time ([#2215](https://github.com/tailwindlabs/headlessui/pull/2215))
@@ -398,7 +402,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.8...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.9...HEAD
+[1.7.9]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.8...@headlessui/vue@v1.7.9
 [1.7.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.7...@headlessui/vue@v1.7.8
 [1.7.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.6...@headlessui/vue@v1.7.7
 [1.7.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.5...@headlessui/vue@v1.7.6
