@@ -721,6 +721,140 @@ describe('Rendering', () => {
       // Nothing should change...
       assertTabs({ active: 2 })
     })
+
+    it(
+      'should select first tab if no tabs were provided originally',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <TabGroup :defaultIndex="0">
+              <TabList>
+                <Tab v-for="tab in tabs">{{ tab }}</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel v-for="tab in tabs">content for: {{ tab }}</TabPanel>
+              </TabPanels>
+            </TabGroup>
+
+            <button>after</button>
+            <button @click="tabs.value = ['tab 1', 'tab 2', 'tab 3']">change</button>
+          `,
+          setup() {
+            let tabs = ref<string[]>([])
+            return {
+              tabs,
+            }
+          },
+        })
+
+        assertActiveElement(document.body)
+
+        // There are no tab initially
+        assertTabs({ active: -1 })
+
+        // There are not tabs so this should not change anything
+        await press(Keys.Tab)
+        assertTabs({ active: -1 })
+
+        // Add some tabs
+        await click(getByText('change'))
+
+        // When going from no tabs to some tabs, the tab based on defaultIndex should be selected
+        assertTabs({ active: 0 })
+      })
+    )
+
+    it(
+      'should select first tab if no tabs were provided originally (with a defaultIndex of 1)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <TabGroup :defaultIndex="1">
+              <TabList>
+                <Tab v-for="tab in tabs">{{ tab }}</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel v-for="tab in tabs">content for: {{ tab }}</TabPanel>
+              </TabPanels>
+            </TabGroup>
+
+            <button>after</button>
+            <button @click="tabs.value = ['tab 1', 'tab 2', 'tab 3']">change</button>
+          `,
+          setup() {
+            let tabs = ref<string[]>([])
+            return {
+              tabs,
+            }
+          },
+        })
+
+        assertActiveElement(document.body)
+
+        // There are no tab initially
+        assertTabs({ active: -1 })
+
+        // There are not tabs so this should not change anything
+        await press(Keys.Tab)
+        assertTabs({ active: -1 })
+
+        // Add some tabs
+        await click(getByText('change'))
+
+        // When going from no tabs to some tabs, the tab based on defaultIndex should be selected
+        assertTabs({ active: 1 })
+      })
+    )
+
+    it(
+      'should select first tab if no tabs were provided originally (with a defaultIndex of 1)',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: html`
+            <TabGroup :defaultIndex="1">
+              <TabList>
+                <Tab v-for="tab in tabs">{{ tab }}</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel v-for="tab in tabs">content for: {{ tab }}</TabPanel>
+              </TabPanels>
+            </TabGroup>
+
+            <button>after</button>
+            <button @click="tabs.value = ['tab 1', 'tab 2', 'tab 3']">change 1</button>
+            <button @click="tabs.value = []">change 2</button>
+            <button @click="tabs.value = ['tab 1', 'tab 2', 'tab 3']">change 3</button>
+          `,
+          setup() {
+            let tabs = ref<string[]>([])
+            return {
+              tabs,
+            }
+          },
+        })
+
+        assertActiveElement(document.body)
+
+        // There are no tab initially
+        assertTabs({ active: -1 })
+
+        // There are not tabs so this should not change anything
+        await press(Keys.Tab)
+        assertTabs({ active: -1 })
+
+        // Add some tabs
+        await click(getByText('change 1'))
+
+        // Add some tabs
+        await click(getByText('change 2'))
+
+        // Add some tabs
+        await click(getByText('change 3'))
+
+        // When going from no tabs to some tabs, the tab based on defaultIndex should be selected
+        assertTabs({ active: 1 })
+      })
+    )
   })
 })
 

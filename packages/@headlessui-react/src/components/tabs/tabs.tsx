@@ -99,6 +99,15 @@ let reducers: {
         [Ordering.Greater]: () => Direction.Forwards,
       })
 
+      // If there are no focusable tabs then.
+      // We won't change the selected index
+      // because it's likely the user is
+      // lazy loading tabs and there's
+      // nothing to focus on yet
+      if (focusableTabs.length === 0) {
+        return nextState
+      }
+
       return {
         ...nextState,
         selectedIndex: match(direction, {
