@@ -68,7 +68,7 @@ type ComboboxOptionDataRef<T> = MutableRefObject<{
 }>
 
 interface StateDefinition<T> {
-  dataRef: MutableRefObject<_Data>
+  dataRef: MutableRefObject<_Data | null>
   labelId: string | null
 
   comboboxState: ComboboxState
@@ -139,30 +139,33 @@ let reducers: {
   ) => StateDefinition<T>
 } = {
   [ActionTypes.CloseCombobox](state) {
-    if (state.dataRef.current.disabled) return state
+    if (state.dataRef.current?.disabled) return state
     if (state.comboboxState === ComboboxState.Closed) return state
     return { ...state, activeOptionIndex: null, comboboxState: ComboboxState.Closed }
   },
   [ActionTypes.OpenCombobox](state) {
-    if (state.dataRef.current.disabled) return state
+    if (state.dataRef.current?.disabled) return state
     if (state.comboboxState === ComboboxState.Open) return state
 
     // Check if we have a selected value that we can make active
     let activeOptionIndex = state.activeOptionIndex
-    let { isSelected } = state.dataRef.current
-    let optionIdx = state.options.findIndex((option) => isSelected(option.dataRef.current.value))
 
-    if (optionIdx !== -1) {
-      activeOptionIndex = optionIdx
+    if (state.dataRef.current) {
+      let { isSelected } = state.dataRef.current
+      let optionIdx = state.options.findIndex((option) => isSelected(option.dataRef.current.value))
+
+      if (optionIdx !== -1) {
+        activeOptionIndex = optionIdx
+      }
     }
 
     return { ...state, comboboxState: ComboboxState.Open, activeOptionIndex }
   },
   [ActionTypes.GoToOption](state, action) {
-    if (state.dataRef.current.disabled) return state
+    if (state.dataRef.current?.disabled) return state
     if (
-      state.dataRef.current.optionsRef.current &&
-      !state.dataRef.current.optionsPropsRef.current.static &&
+      state.dataRef.current?.optionsRef.current &&
+      !state.dataRef.current?.optionsPropsRef.current.static &&
       state.comboboxState === ComboboxState.Closed
     ) {
       return state
@@ -203,7 +206,7 @@ let reducers: {
 
     // Check if we need to make the newly registered option active.
     if (state.activeOptionIndex === null) {
-      if (state.dataRef.current.isSelected(action.dataRef.current.value)) {
+      if (state.dataRef.current?.isSelected(action.dataRef.current.value)) {
         adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
       }
     }
@@ -214,7 +217,7 @@ let reducers: {
       activationTrigger: ActivationTrigger.Other,
     }
 
-    if (state.dataRef.current.__demoMode && state.dataRef.current.value === undefined) {
+    if (state.dataRef.current?.__demoMode && state.dataRef.current.value === undefined) {
       nextState.activeOptionIndex = 0
     }
 
