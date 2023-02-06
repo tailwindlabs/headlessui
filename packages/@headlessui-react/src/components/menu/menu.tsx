@@ -1,6 +1,5 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/
-import * as React from 'react'
-import {
+import React, {
   Fragment,
   createContext,
   createRef,

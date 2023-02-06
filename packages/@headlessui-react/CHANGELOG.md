@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix SSR tab hydration when using Strict Mode in development ([#2231](https://github.com/tailwindlabs/headlessui/pull/2231))
 - Don't break overflow when multiple dialogs are open at the same time ([#2215](https://github.com/tailwindlabs/headlessui/pull/2215))
 - Fix "This `Suspense` boundary received an update before it finished hydrating" error in the `Disclosure` component ([#2238](https://github.com/tailwindlabs/headlessui/pull/2238))
-- Use the `import * as React from 'react'` pattern ([#2242](https://github.com/tailwindlabs/headlessui/pull/2242))
 
 ## [1.7.8] - 2023-01-27
 

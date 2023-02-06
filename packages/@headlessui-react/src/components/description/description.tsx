@@ -1,5 +1,4 @@
-import * as React from 'react'
-import {
+import React, {
   createContext,
   useContext,
   useMemo,

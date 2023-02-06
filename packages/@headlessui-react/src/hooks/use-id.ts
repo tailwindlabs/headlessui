@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { useServerHandoffComplete } from './use-server-handoff-complete'
 import { env } from '../utils/env'

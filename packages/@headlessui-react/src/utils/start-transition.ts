@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 
 export let startTransition =
   // Prefer React's `startTransition` if it's available.
