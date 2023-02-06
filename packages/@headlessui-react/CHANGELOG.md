@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet!
 
+## [1.7.10] - 2023-02-06
+
+- Nothing yet!
+
 ### Fixed
 
 - Revert "Use the `import * as React from 'react'` pattern ([#2242](https://github.com/tailwindlabs/headlessui/pull/2242))
@@ -440,7 +444,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.9...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.10...HEAD
+[1.7.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.9...@headlessui/react@v1.7.10
 [1.7.9]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.8...@headlessui/react@v1.7.9
 [1.7.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.7...@headlessui/react@v1.7.8
 [1.7.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.6...@headlessui/react@v1.7.7
