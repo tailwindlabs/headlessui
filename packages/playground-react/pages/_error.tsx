@@ -8,7 +8,7 @@ import { ExamplesType, resolveAllExamples } from '../utils/resolve-all-examples'
 function NextLink(props: React.ComponentProps<'a'>) {
   let { href, children, ...rest } = props
   return (
-    <Link href={href}>
+    <Link href={href} legacyBehavior>
       <a {...rest}>{children}</a>
     </Link>
   )

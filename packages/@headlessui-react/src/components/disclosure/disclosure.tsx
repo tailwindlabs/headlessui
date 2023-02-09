@@ -1,3 +1,4 @@
+'use client'
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
 import React, {
   Fragment,
