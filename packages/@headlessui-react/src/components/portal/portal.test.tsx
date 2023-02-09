@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useRef } from 'react'
 import { render } from '@testing-library/react'
 

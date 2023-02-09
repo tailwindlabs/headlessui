@@ -1,3 +1,4 @@
+'use client'
 import { render } from '@testing-library/react'
 import { Description, useDescriptions } from './description'
 import React, { ReactNode } from 'react'
