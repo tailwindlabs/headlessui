@@ -1454,10 +1454,14 @@ describe('Events', () => {
                 leaveFrom="leave-from"
                 leaveTo="leave-to"
               >
-                <button data-testid="hide" onClick={() => setShow(false)}>Hide</button>
+                <button data-testid="hide" onClick={() => setShow(false)}>
+                  Hide
+                </button>
               </Transition.Child>
             </Transition.Root>
-            <button data-testid="show" onClick={() => setShow(true)}>Show</button>
+            <button data-testid="show" onClick={() => setShow(true)}>
+              Show
+            </button>
           </>
         )
       }
