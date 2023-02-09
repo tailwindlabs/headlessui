@@ -61,8 +61,10 @@ function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props
       <LabelProvider
         name="Switch.Label"
         props={{
-          onClick() {
+          htmlFor: context.switch?.id,
+          onClick(event: React.MouseEvent<HTMLLabelElement>) {
             if (!switchElement) return
+            event.preventDefault()
             switchElement.click()
             switchElement.focus({ preventScroll: true })
           },

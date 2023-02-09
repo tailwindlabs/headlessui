@@ -99,6 +99,7 @@ export let Label = forwardRefWithAs(function Label<
 
   if (passive) {
     if ('onClick' in ourProps) {
+      delete (ourProps as any)['htmlFor']
       delete (ourProps as any)['onClick']
     }
 
