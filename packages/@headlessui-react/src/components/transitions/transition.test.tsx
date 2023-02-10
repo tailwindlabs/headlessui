@@ -1398,7 +1398,7 @@ describe('Events', () => {
     })
   )
 
-  fit(
+  it(
     'should fire only one event for a given component change',
     suppressConsoleLogs(async () => {
       let eventHandler = jest.fn()
