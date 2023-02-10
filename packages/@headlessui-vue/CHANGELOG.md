@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Don’t fire `afterLeave` event more than once for a given transition ([#2267](https://github.com/tailwindlabs/headlessui/pull/2267))
 
 ## [1.7.9] - 2023-02-03
 
