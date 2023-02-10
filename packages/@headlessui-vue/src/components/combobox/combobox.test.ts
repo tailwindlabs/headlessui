@@ -5879,6 +5879,50 @@ describe('Multi-select', () => {
       assertComboboxOption(options[2], { selected: true })
     })
   )
+
+  it(
+    'should reset the active option, if the active option gets unmounted',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" multiple>
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption
+                v-for="user in users.filter(p => !value.includes(p))"
+                :key="user"
+                :value="user"
+                >{{ user }}</ComboboxOption
+              >
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => {
+          let users = ['alice', 'bob', 'charlie']
+
+          let value = ref([])
+          return { users, value }
+        },
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertCombobox({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      // Go to the next option
+      await press(Keys.ArrowDown)
+      assertActiveComboboxOption(options[1])
+
+      // Select the option
+      await press(Keys.Enter)
+
+      // The active option is reset to the very first one
+      assertActiveComboboxOption(options[0])
+    })
+  )
 })
 
 describe('Form compatibility', () => {
