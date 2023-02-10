@@ -281,7 +281,8 @@ export function assertCombobox(
     state: ComboboxState
     mode?: ComboboxMode
   },
-  combobox = getComboboxInput()
+  combobox = getComboboxInput(),
+  listbox = getListbox()
 ) {
   try {
     switch (options.state) {
@@ -307,7 +308,7 @@ export function assertCombobox(
         expect(combobox).toHaveAttribute('role', 'combobox')
 
         if (options.mode && options.mode === ComboboxMode.Multiple) {
-          expect(combobox).toHaveAttribute('aria-multiselectable', 'true')
+          expect(listbox).toHaveAttribute('aria-multiselectable', 'true')
         }
 
         if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)

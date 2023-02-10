@@ -938,7 +938,6 @@ let Input = forwardRefWithAs(function Input<
     'aria-expanded': data.disabled ? undefined : data.comboboxState === ComboboxState.Open,
     'aria-activedescendant':
       data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
-    'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     'aria-autocomplete': 'list',
     defaultValue:
@@ -1186,6 +1185,7 @@ let Options = forwardRefWithAs(function Options<
   let ourProps = {
     'aria-labelledby': labelledby,
     role: 'listbox',
+    'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     id,
     ref: optionsRef,
   }
