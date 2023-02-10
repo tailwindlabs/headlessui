@@ -907,7 +907,6 @@ export let ComboboxInput = defineComponent({
           api.activeOptionIndex.value === null
             ? undefined
             : api.options.value[api.activeOptionIndex.value]?.id,
-        'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         'aria-autocomplete': 'list',
         id,
@@ -990,6 +989,7 @@ export let ComboboxOptions = defineComponent({
         id,
         ref: api.optionsRef,
         role: 'listbox',
+        'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
       }
       let theirProps = omit(props, ['hold'])
 
