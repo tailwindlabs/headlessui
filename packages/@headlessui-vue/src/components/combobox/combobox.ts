@@ -36,6 +36,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { isMobile } from '../../utils/platform'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -1062,6 +1063,22 @@ export let ComboboxOption = defineComponent({
       api.selectOption(id)
       if (api.mode.value === ValueMode.Single) {
         api.closeCombobox()
+      }
+
+      // We want to make sure that we don't accidentally trigger the virtual keyboard.
+      //
+      // This would happen if the input is focused, the options are open, you select an option
+      // (which would blur the input, and focus the option (button), then we re-focus the input).
+      //
+      // This would be annoying on mobile (or on devices with a virtual keyboard). Right now we are
+      // assuming that the virtual keyboard would open on mobile devices (iOS / Android). This
+      // assumption is not perfect, but will work in the majority of the cases.
+      //
+      // Ideally we can have a better check where we can explicitly check for the virtual keyboard.
+      // But right now this is still an experimental feature:
+      // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
+      if (!isMobile()) {
+        requestAnimationFrame(() => dom(api.inputRef)?.focus())
       }
     }
 
