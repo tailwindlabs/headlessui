@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Don’t fire `afterLeave` event more than once for a given transition ([#2267](https://github.com/tailwindlabs/headlessui/pull/2267))
 - Move `aria-multiselectable` to `[role=listbox]` in the `Combobox` component ([#2271](https://github.com/tailwindlabs/headlessui/pull/2271))
+- Re-focus `Combobox.Input` when a `Combobox.Option` is selected ([#2272](https://github.com/tailwindlabs/headlessui/pull/2272))
 
 ## [1.7.9] - 2023-02-03
 

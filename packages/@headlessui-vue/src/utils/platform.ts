@@ -1,3 +1,6 @@
+// This file contains functions to detect the platform the app is running on. They aren't perfect,
+// and we are making assumptions here. But it's the best we can do for now.
+
 export function isIOS() {
   // TODO: This is not a great way to detect iOS, but it's the best I can do for now.
   // - `window.platform` is deprecated
@@ -11,4 +14,12 @@ export function isIOS() {
     // work as expected 🤔).
     (/Mac/gi.test(window.navigator.platform) && window.navigator.maxTouchPoints > 0)
   )
+}
+
+export function isAndroid() {
+  return /Android/gi.test(window.navigator.userAgent)
+}
+
+export function isMobile() {
+  return isIOS() || isAndroid()
 }
