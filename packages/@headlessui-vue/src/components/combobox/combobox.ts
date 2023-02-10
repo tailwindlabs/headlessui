@@ -391,6 +391,22 @@ export let Combobox = defineComponent({
         activationTrigger.value = ActivationTrigger.Other
       },
       unregisterOption(id: string) {
+        // When we are unregistering the currently active option, then we also have to make sure to
+        // reset the `defaultToFirstOption` flag, so that visually something is selected and the
+        // next time you press a key on your keyboard it will go to the proper next or previous
+        // option in the list.
+        //
+        // Since this was the active option and it could have been anywhere in the list, resetting
+        // to the very first option seems like a fine default. We _could_ be smarter about this by
+        // going to the previous / next item in list if we know the direction of the keyboard
+        // navigation, but that might be too complex/confusing from an end users perspective.
+        if (
+          api.activeOptionIndex.value !== null &&
+          api.options.value[api.activeOptionIndex.value]?.id === id
+        ) {
+          defaultToFirstOption.value = true
+        }
+
         let adjustedState = adjustOrderedState((options) => {
           let idx = options.findIndex((a) => a.id === id)
           if (idx !== -1) options.splice(idx, 1)

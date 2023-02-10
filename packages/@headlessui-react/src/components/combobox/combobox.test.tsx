@@ -4400,6 +4400,10 @@ describe('Keyboard interactions', () => {
 
           let options: ReturnType<typeof getComboboxOptions>
 
+          options = getComboboxOptions()
+          expect(options[0]).toHaveTextContent('person a')
+          assertActiveComboboxOption(options[0])
+
           await press(Keys.ArrowDown)
 
           // Person B should be active
@@ -5644,6 +5648,50 @@ describe('Multi-select', () => {
       assertComboboxOption(options[0], { selected: false })
       assertComboboxOption(options[1], { selected: true })
       assertComboboxOption(options[2], { selected: true })
+    })
+  )
+
+  it(
+    'should reset the active option, if the active option gets unmounted',
+    suppressConsoleLogs(async () => {
+      let users = ['alice', 'bob', 'charlie']
+      function Example() {
+        let [value, setValue] = useState<string[]>([])
+
+        return (
+          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+            <Combobox.Input onChange={() => {}} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Options>
+              {users
+                .filter((user) => !value.includes(user))
+                .map((user) => (
+                  <Combobox.Option key={user} value={user}>
+                    {user}
+                  </Combobox.Option>
+                ))}
+            </Combobox.Options>
+          </Combobox>
+        )
+      }
+
+      render(<Example />)
+
+      // Open combobox
+      await click(getComboboxButton())
+      assertCombobox({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      // Go to the next option
+      await press(Keys.ArrowDown)
+      assertActiveComboboxOption(options[1])
+
+      // Select the option
+      await press(Keys.Enter)
+
+      // The active option is reset to the very first one
+      assertActiveComboboxOption(options[0])
     })
   )
 })

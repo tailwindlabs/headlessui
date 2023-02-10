@@ -488,6 +488,17 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     [value, defaultValue, disabled, multiple, nullable, __demoMode, state]
   )
 
+  let lastActiveOption = useRef(
+    data.activeOptionIndex !== null ? data.options[data.activeOptionIndex] : null
+  )
+  useEffect(() => {
+    let currentActiveOption =
+      data.activeOptionIndex !== null ? data.options[data.activeOptionIndex] : null
+    if (lastActiveOption.current !== currentActiveOption) {
+      lastActiveOption.current = currentActiveOption
+    }
+  })
+
   useIsoMorphicEffect(() => {
     state.dataRef.current = data
   }, [data])
@@ -553,7 +564,22 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   let registerOption = useEvent((id, dataRef) => {
     dispatch({ type: ActionTypes.RegisterOption, id, dataRef })
-    return () => dispatch({ type: ActionTypes.UnregisterOption, id })
+    return () => {
+      // When we are unregistering the currently active option, then we also have to make sure to
+      // reset the `defaultToFirstOption` flag, so that visually something is selected and the next
+      // time you press a key on your keyboard it will go to the proper next or previous option in
+      // the list.
+      //
+      // Since this was the active option and it could have been anywhere in the list, resetting to
+      // the very first option seems like a fine default. We _could_ be smarter about this by going
+      // to the previous / next item in list if we know the direction of the keyboard navigation,
+      // but that might be too complex/confusing from an end users perspective.
+      if (lastActiveOption.current?.id === id) {
+        defaultToFirstOption.current = true
+      }
+
+      dispatch({ type: ActionTypes.UnregisterOption, id })
+    }
   })
 
   let registerLabel = useEvent((id) => {

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure we handle `null` dataRef values correctly ([#2258](https://github.com/tailwindlabs/headlessui/pull/2258))
 - Move `aria-multiselectable` to `[role=listbox]` in the `Combobox` component ([#2271](https://github.com/tailwindlabs/headlessui/pull/2271))
 - Re-focus `Combobox.Input` when a `Combobox.Option` is selected ([#2272](https://github.com/tailwindlabs/headlessui/pull/2272))
+- Ensure we reset the `activeOptionIndex` if the active option is unmounted ([#2274](https://github.com/tailwindlabs/headlessui/pull/2274))
 
 ## [1.7.10] - 2023-02-06
 
