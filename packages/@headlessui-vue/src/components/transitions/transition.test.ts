@@ -1258,4 +1258,93 @@ describe('Events', () => {
       expect(leaveHookDiff).toBeLessThanOrEqual(leaveDuration * 3)
     })
   )
+
+  it(
+    'should fire only one event for a given component change',
+    suppressConsoleLogs(async () => {
+      let eventHandler = jest.fn()
+      let enterDuration = 50
+      let leaveDuration = 75
+
+      withStyles(`
+        .enter-1 { transition-duration: ${enterDuration * 1}ms; }
+        .enter-2 { transition-duration: ${enterDuration * 2}ms; }
+        .enter-from { opacity: 0%; }
+        .enter-to { opacity: 100%; }
+
+        .leave-1 { transition-duration: ${leaveDuration * 1}ms; }
+        .leave-2 { transition-duration: ${leaveDuration * 2}ms; }
+        .leave-from { opacity: 100%; }
+        .leave-to { opacity: 0%; }
+      `)
+
+      let Example = defineComponent({
+        components: { TransitionRoot, TransitionChild },
+        template: html`
+          <TransitionRoot
+            :show="show"
+            as="div"
+            @beforeEnter="eventHandler('beforeEnter', Date.now() - start)"
+            @afterEnter="eventHandler('afterEnter', Date.now() - start)"
+            @beforeLeave="eventHandler('beforeLeave', Date.now() - start)"
+            @afterLeave="eventHandler('afterLeave', Date.now() - start)"
+            enter="enter-2"
+            enterFrom="enter-from"
+            enterTo="enter-to"
+            leave="leave-2"
+            leaveFrom="leave-from"
+            leaveTo="leave-to"
+          >
+            <TransitionChild
+              enter="enter-1"
+              enterFrom="enter-from"
+              enterTo="enter-to"
+              leave="leave-1"
+              leaveFrom="leave-from"
+              leaveTo="leave-to"
+            />
+            <TransitionChild
+              enter="enter-1"
+              enterFrom="enter-from"
+              enterTo="enter-to"
+              leave="leave-1"
+              leaveFrom="leave-from"
+              leaveTo="leave-to"
+            >
+              <button data-testid="hide" @click="show = false" @click="hide">Hide</button>
+            </TransitionChild>
+          </TransitionRoot>
+
+          <button data-testid="show" @click="show = true">Show</button>
+        `,
+        setup() {
+          let show = ref(false)
+          let start = ref(Date.now())
+
+          onMounted(() => (start.value = Date.now()))
+
+          return { show, start, eventHandler }
+        },
+      })
+
+      renderTemplate(Example)
+
+      fireEvent.click(getByTestId('show'))
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      fireEvent.click(getByTestId('hide'))
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      expect(eventHandler).toHaveBeenCalledTimes(4)
+      expect(eventHandler.mock.calls.map(([name]) => name)).toEqual([
+        // Order is important here
+        'beforeEnter',
+        'afterEnter',
+        'beforeLeave',
+        'afterLeave',
+      ])
+    })
+  )
 })

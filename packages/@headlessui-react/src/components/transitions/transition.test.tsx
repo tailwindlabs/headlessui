@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useRef, useLayoutEffect } from 'react'
+import React, { Fragment, useState, useRef, useLayoutEffect, useEffect } from 'react'
 import { render, fireEvent } from '@testing-library/react'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -1394,6 +1394,95 @@ describe('Events', () => {
         'child-2-1: afterLeave',
         'child-2: afterLeave',
         'root: afterLeave',
+      ])
+    })
+  )
+
+  it(
+    'should fire only one event for a given component change',
+    suppressConsoleLogs(async () => {
+      let eventHandler = jest.fn()
+      let enterDuration = 50
+      let leaveDuration = 75
+
+      function Example() {
+        let [show, setShow] = useState(false)
+        let [start, setStart] = useState(Date.now())
+
+        useEffect(() => setStart(Date.now()), [])
+
+        return (
+          <>
+            <style>{`
+              .enter-1 { transition-duration: ${enterDuration * 1}ms; }
+              .enter-2 { transition-duration: ${enterDuration * 2}ms; }
+              .enter-from { opacity: 0%; }
+              .enter-to { opacity: 100%; }
+
+              .leave-1 { transition-duration: ${leaveDuration * 1}ms; }
+              .leave-2 { transition-duration: ${leaveDuration * 2}ms; }
+              .leave-from { opacity: 100%; }
+              .leave-to { opacity: 0%; }
+            `}</style>
+            <Transition.Root
+              show={show}
+              as="div"
+              beforeEnter={() => eventHandler('beforeEnter', Date.now() - start)}
+              afterEnter={() => eventHandler('afterEnter', Date.now() - start)}
+              beforeLeave={() => eventHandler('beforeLeave', Date.now() - start)}
+              afterLeave={() => eventHandler('afterLeave', Date.now() - start)}
+              enter="enter-2"
+              enterFrom="enter-from"
+              enterTo="enter-to"
+              leave="leave-2"
+              leaveFrom="leave-from"
+              leaveTo="leave-to"
+            >
+              <Transition.Child
+                enter="enter-1"
+                enterFrom="enter-from"
+                enterTo="enter-to"
+                leave="leave-1"
+                leaveFrom="leave-from"
+                leaveTo="leave-to"
+              />
+              <Transition.Child
+                enter="enter-1"
+                enterFrom="enter-from"
+                enterTo="enter-to"
+                leave="leave-1"
+                leaveFrom="leave-from"
+                leaveTo="leave-to"
+              >
+                <button data-testid="hide" onClick={() => setShow(false)}>
+                  Hide
+                </button>
+              </Transition.Child>
+            </Transition.Root>
+            <button data-testid="show" onClick={() => setShow(true)}>
+              Show
+            </button>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      fireEvent.click(document.querySelector('[data-testid=show]')!)
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      fireEvent.click(document.querySelector('[data-testid=hide]')!)
+
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      expect(eventHandler).toHaveBeenCalledTimes(4)
+      expect(eventHandler.mock.calls.map(([name]) => name)).toEqual([
+        // Order is important here
+        'beforeEnter',
+        'afterEnter',
+        'beforeLeave',
+        'afterLeave',
       ])
     })
   )
