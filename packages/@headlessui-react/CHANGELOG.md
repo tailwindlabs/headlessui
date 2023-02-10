@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ensure we handle `null` dataRef values correctly ([#2258](https://github.com/tailwindlabs/headlessui/pull/2258))
+- Move `aria-multiselectable` to `[role=listbox]` in the `Combobox` component ([#2271](https://github.com/tailwindlabs/headlessui/pull/2271))
 
 ## [1.7.10] - 2023-02-06
 
