@@ -473,7 +473,7 @@ export let PopoverOverlay = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return api.popoverState.value === PopoverStates.Open
@@ -551,7 +551,7 @@ export let PopoverPanel = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return api.popoverState.value === PopoverStates.Open

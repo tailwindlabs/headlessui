@@ -457,10 +457,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
   let usesOpenClosedState = useOpenClosed()
 
   if (show === undefined && usesOpenClosedState !== null) {
-    show = match(usesOpenClosedState, {
-      [State.Open]: true,
-      [State.Closed]: false,
-    })
+    show = (usesOpenClosedState & State.Open) === State.Open
   }
 
   if (![true, false].includes(show as unknown as boolean)) {

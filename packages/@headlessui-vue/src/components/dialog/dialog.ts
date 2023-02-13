@@ -91,11 +91,7 @@ export let Dialog = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let open = computed(() => {
       if (props.open === Missing && usesOpenClosedState !== null) {
-        // Update the `open` prop based on the open closed state
-        return match(usesOpenClosedState.value, {
-          [State.Open]: true,
-          [State.Closed]: false,
-        })
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
       return props.open
     })

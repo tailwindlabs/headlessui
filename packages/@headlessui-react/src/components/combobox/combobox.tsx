@@ -1174,7 +1174,7 @@ let Options = forwardRefWithAs(function Options<
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
     if (usesOpenClosedState !== null) {
-      return usesOpenClosedState === State.Open
+      return (usesOpenClosedState & State.Open) === State.Open
     }
 
     return data.comboboxState === ComboboxState.Open

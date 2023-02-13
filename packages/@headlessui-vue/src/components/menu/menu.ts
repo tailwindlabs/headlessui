@@ -454,7 +454,7 @@ export let MenuItems = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return api.menuState.value === MenuStates.Open

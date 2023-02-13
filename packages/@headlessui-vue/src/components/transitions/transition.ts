@@ -384,10 +384,7 @@ export let TransitionRoot = defineComponent({
 
     let show = computed(() => {
       if (props.show === null && usesOpenClosedState !== null) {
-        return match(usesOpenClosedState.value, {
-          [State.Open]: true,
-          [State.Closed]: false,
-        })
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return props.show

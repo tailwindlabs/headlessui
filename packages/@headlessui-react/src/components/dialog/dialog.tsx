@@ -140,10 +140,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let usesOpenClosedState = useOpenClosed()
   if (open === undefined && usesOpenClosedState !== null) {
     // Update the `open` prop based on the open closed state
-    open = match(usesOpenClosedState, {
-      [State.Open]: true,
-      [State.Closed]: false,
-    })
+    open = (usesOpenClosedState & State.Open) === State.Open
   }
 
   let containers = useRef<Set<MutableRefObject<HTMLElement | null>>>(new Set())
