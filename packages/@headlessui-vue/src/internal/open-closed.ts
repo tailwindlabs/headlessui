@@ -10,8 +10,10 @@ import {
 let Context = Symbol('Context') as InjectionKey<Ref<State>>
 
 export enum State {
-  Open,
-  Closed,
+  Open = 1 << 0,
+  Closed = 1 << 1,
+  Closing = 1 << 2,
+  Opening = 1 << 3,
 }
 
 export function hasOpenClosed() {
