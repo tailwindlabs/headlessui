@@ -202,14 +202,16 @@ interface TabsRenderPropArg {
   selectedIndex: number
 }
 
+export type PropsTabs<TTag extends ElementType> = Props<TTag, TabsRenderPropArg> & {
+  defaultIndex?: number
+  onChange?: (index: number) => void
+  selectedIndex?: number
+  vertical?: boolean
+  manual?: boolean
+}
+
 let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
-  props: Props<TTag, TabsRenderPropArg> & {
-    defaultIndex?: number
-    onChange?: (index: number) => void
-    selectedIndex?: number
-    vertical?: boolean
-    manual?: boolean
-  },
+  props: PropsTabs<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let {
@@ -322,8 +324,12 @@ interface ListRenderPropArg {
 }
 type ListPropsWeControl = 'role' | 'aria-orientation'
 
+export type PropsTabList<TTag extends ElementType> = Props<TTag, ListRenderPropArg, ListPropsWeControl> & {
+  //
+}
+
 let List = forwardRefWithAs(function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
-  props: Props<TTag, ListRenderPropArg, ListPropsWeControl> & {},
+  props: PropsTabList<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { orientation, selectedIndex } = useData('Tab.List')
@@ -355,8 +361,12 @@ interface TabRenderPropArg {
 }
 type TabPropsWeControl = 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
 
+export type PropsTab<TTag extends ElementType> = Props<TTag, TabRenderPropArg, TabPropsWeControl> & {
+  //
+}
+
 let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
-  props: Props<TTag, TabRenderPropArg, TabPropsWeControl>,
+  props: PropsTab<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -485,8 +495,10 @@ interface PanelsRenderPropArg {
   selectedIndex: number
 }
 
+export type PropsTabPanels<TTag extends ElementType> = Props<TTag, PanelsRenderPropArg>
+
 let Panels = forwardRefWithAs(function Panels<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
-  props: Props<TTag, PanelsRenderPropArg>,
+  props: PropsTabPanels<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { selectedIndex } = useData('Tab.Panels')
@@ -515,9 +527,10 @@ interface PanelRenderPropArg {
 type PanelPropsWeControl = 'role' | 'aria-labelledby'
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsTabPanel<TTag extends ElementType> = Props<TTag, PanelRenderPropArg, PanelPropsWeControl> & PropsForFeatures<typeof PanelRenderFeatures>
+
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
-    PropsForFeatures<typeof PanelRenderFeatures>,
+  props: PropsTabPanel<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()

@@ -149,12 +149,14 @@ interface DisclosureRenderPropArg {
   close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
 }
 
+export type PropsDisclosure<TTag extends ElementType> = Props<TTag, DisclosureRenderPropArg> & {
+  defaultOpen?: boolean
+}
+
 let DisclosureRoot = forwardRefWithAs(function Disclosure<
   TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG
 >(
-  props: Props<TTag, DisclosureRenderPropArg> & {
-    defaultOpen?: boolean
-  },
+  props: PropsDisclosure<TTag>,
   ref: Ref<TTag>
 ) {
   let { defaultOpen = false, ...theirProps } = props
@@ -242,8 +244,10 @@ interface ButtonRenderPropArg {
 }
 type ButtonPropsWeControl = 'type' | 'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
 
+export type PropsDisclosureButton<TTag extends ElementType> = Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>
+
 let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
+  props: PropsDisclosureButton<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -352,8 +356,10 @@ interface PanelRenderPropArg {
 
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsDisclosurePanel<TTag extends ElementType> = Props<TTag, PanelRenderPropArg> & PropsForFeatures<typeof PanelRenderFeatures>
+
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg> & PropsForFeatures<typeof PanelRenderFeatures>,
+  props: PropsDisclosurePanel<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()

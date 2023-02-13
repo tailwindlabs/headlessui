@@ -697,16 +697,18 @@ type InputPropsWeControl =
   | 'onChange'
   | 'displayValue'
 
+export type PropsComboboxInput<TTag extends ElementType, TType> = Props<TTag, InputRenderPropArg, InputPropsWeControl> & {
+  displayValue?(item: TType): string
+  onChange(event: React.ChangeEvent<HTMLInputElement>): void
+}
+
 let Input = forwardRefWithAs(function Input<
   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
   TType = Parameters<typeof ComboboxRoot>[0]['value']
 >(
-  props: Props<TTag, InputRenderPropArg, InputPropsWeControl> & {
-    displayValue?(item: TType): string
-    onChange(event: React.ChangeEvent<HTMLInputElement>): void
-  },
+  props: PropsComboboxInput<TTag, TType>,
   ref: Ref<HTMLInputElement>
 ) {
   let internalId = useId()
@@ -1009,8 +1011,10 @@ type ButtonPropsWeControl =
   | 'onClick'
   | 'onKeyDown'
 
+export type PropsComboboxButton<TTag extends ElementType> = Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>
+
 let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
+  props: PropsComboboxButton<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let data = useData('Combobox.Button')
@@ -1116,8 +1120,10 @@ interface LabelRenderPropArg {
 }
 type LabelPropsWeControl = 'ref' | 'onClick'
 
+export type PropsComboboxLabel<TTag extends ElementType> = Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
+
 let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
+  props: PropsComboboxLabel<TTag>,
   ref: Ref<HTMLLabelElement>
 ) {
   let internalId = useId()
@@ -1156,13 +1162,15 @@ type OptionsPropsWeControl = 'aria-labelledby' | 'hold' | 'onKeyDown' | 'role' |
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsComboboxOptions<TTag extends ElementType> = Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
+PropsForFeatures<typeof OptionsRenderFeatures> & {
+  hold?: boolean
+}
+
 let Options = forwardRefWithAs(function Options<
   TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG
 >(
-  props: Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
-    PropsForFeatures<typeof OptionsRenderFeatures> & {
-      hold?: boolean
-    },
+  props: PropsComboboxOptions<TTag>,
   ref: Ref<HTMLUListElement>
 ) {
   let internalId = useId()
@@ -1238,16 +1246,18 @@ interface OptionRenderPropArg {
 }
 type ComboboxOptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
 
+export type PropsComboboxOption<TTag extends ElementType, TType> = Props<TTag, OptionRenderPropArg, ComboboxOptionPropsWeControl | 'value'> & {
+  disabled?: boolean
+  value: TType
+}
+
 let Option = forwardRefWithAs(function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
   TType = Parameters<typeof ComboboxRoot>[0]['value']
 >(
-  props: Props<TTag, OptionRenderPropArg, ComboboxOptionPropsWeControl | 'value'> & {
-    disabled?: boolean
-    value: TType
-  },
+  props: PropsComboboxOption<TTag, TType>,
   ref: Ref<HTMLLIElement>
 ) {
   let internalId = useId()

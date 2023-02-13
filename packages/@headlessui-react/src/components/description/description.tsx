@@ -89,9 +89,11 @@ export function useDescriptions(): [
 
 let DEFAULT_DESCRIPTION_TAG = 'p' as const
 
+export type PropsDescription<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG> = Props<TTag>
+
 export let Description = forwardRefWithAs(function Description<
   TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
->(props: Props<TTag>, ref: Ref<HTMLParagraphElement>) {
+>(props: PropsDescription<TTag>, ref: Ref<HTMLParagraphElement>) {
   let internalId = useId()
   let { id = `headlessui-description-${internalId}`, ...theirProps } = props
   let context = useDescriptionContext()

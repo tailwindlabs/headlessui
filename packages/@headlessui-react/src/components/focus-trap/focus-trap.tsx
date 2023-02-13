@@ -47,13 +47,15 @@ enum Features {
   All = InitialFocus | TabLock | FocusLock | RestoreFocus,
 }
 
+export type PropsFocusTrap<TTag extends ElementType> = Props<TTag> & {
+  initialFocus?: MutableRefObject<HTMLElement | null>
+  features?: Features
+  containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
+}
+
 export let FocusTrap = Object.assign(
   forwardRefWithAs(function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
-    props: Props<TTag> & {
-      initialFocus?: MutableRefObject<HTMLElement | null>
-      features?: Features
-      containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
-    },
+    props: PropsFocusTrap<TTag>,
     ref: Ref<HTMLDivElement>
   ) {
     let container = useRef<HTMLDivElement | null>(null)

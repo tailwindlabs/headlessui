@@ -115,16 +115,18 @@ type DialogPropsWeControl = 'role' | 'aria-modal' | 'aria-describedby' | 'aria-l
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsDialog<TTag extends ElementType> = Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
+PropsForFeatures<typeof DialogRenderFeatures> & {
+  open?: boolean
+  onClose(value: boolean): void
+  initialFocus?: MutableRefObject<HTMLElement | null>
+  __demoMode?: boolean
+}
+
 let DialogRoot = forwardRefWithAs(function Dialog<
   TTag extends ElementType = typeof DEFAULT_DIALOG_TAG
 >(
-  props: Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
-    PropsForFeatures<typeof DialogRenderFeatures> & {
-      open?: boolean
-      onClose(value: boolean): void
-      initialFocus?: MutableRefObject<HTMLElement | null>
-      __demoMode?: boolean
-    },
+  props: PropsDialog<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -404,9 +406,11 @@ interface OverlayRenderPropArg {
 }
 type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
 
+export type PropsDialogOverlay<TTag extends ElementType> = Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>
+
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
->(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
+>(props: PropsDialogOverlay<TTag>, ref: Ref<HTMLDivElement>) {
   let internalId = useId()
   let { id = `headlessui-dialog-overlay-${internalId}`, ...theirProps } = props
   let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
@@ -449,9 +453,11 @@ interface BackdropRenderPropArg {
 }
 type BackdropPropsWeControl = 'aria-hidden' | 'onClick'
 
+export type PropsDialogBackdrop<TTag extends ElementType> = Props<TTag, BackdropRenderPropArg, BackdropPropsWeControl>
+
 let Backdrop = forwardRefWithAs(function Backdrop<
   TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG
->(props: Props<TTag, BackdropRenderPropArg, BackdropPropsWeControl>, ref: Ref<HTMLDivElement>) {
+>(props: PropsDialogBackdrop<TTag>, ref: Ref<HTMLDivElement>) {
   let internalId = useId()
   let { id = `headlessui-dialog-backdrop-${internalId}`, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Backdrop')
@@ -498,8 +504,10 @@ interface PanelRenderPropArg {
   open: boolean
 }
 
+export type PropsDialogPanel<TTag extends ElementType> = Props<TTag, PanelRenderPropArg>
+
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg>,
+  props: PropsDialogPanel<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -540,8 +548,10 @@ interface TitleRenderPropArg {
   open: boolean
 }
 
+export type PropsDialogTitle<TTag extends ElementType> = Props<TTag, TitleRenderPropArg>
+
 let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
-  props: Props<TTag, TitleRenderPropArg>,
+  props: PropsDialogTitle<TTag>,
   ref: Ref<HTMLHeadingElement>
 ) {
   let internalId = useId()

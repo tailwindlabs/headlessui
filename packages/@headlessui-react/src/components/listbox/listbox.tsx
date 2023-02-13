@@ -324,25 +324,27 @@ interface ListboxRenderPropArg<T> {
   value: T
 }
 
+export type PropsListbox<TTag extends ElementType, TType, TActualType> = Props<
+  TTag,
+  ListboxRenderPropArg<TType>,
+  'value' | 'defaultValue' | 'onChange' | 'by' | 'disabled' | 'horizontal' | 'name' | 'multiple'
+> & {
+  value?: TType
+  defaultValue?: TType
+  onChange?(value: TType): void
+  by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
+  disabled?: boolean
+  horizontal?: boolean
+  name?: string
+  multiple?: boolean
+}
+
 let ListboxRoot = forwardRefWithAs(function Listbox<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType
 >(
-  props: Props<
-    TTag,
-    ListboxRenderPropArg<TType>,
-    'value' | 'defaultValue' | 'onChange' | 'by' | 'disabled' | 'horizontal' | 'name' | 'multiple'
-  > & {
-    value?: TType
-    defaultValue?: TType
-    onChange?(value: TType): void
-    by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
-    disabled?: boolean
-    horizontal?: boolean
-    name?: string
-    multiple?: boolean
-  },
+  props: PropsListbox<TTag, TType, TActualType>,
   ref: Ref<TTag>
 ) {
   let {
@@ -588,8 +590,10 @@ type ButtonPropsWeControl =
   | 'onKeyDown'
   | 'onClick'
 
+export type PropsListboxButton<TTag extends ElementType> = Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>
+
 let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
+  props: PropsListboxButton<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -692,8 +696,10 @@ interface LabelRenderPropArg {
 }
 type LabelPropsWeControl = 'ref' | 'onClick'
 
+export type PropsListboxLabel<TTag extends ElementType> = Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
+
 let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: Props<TTag, LabelRenderPropArg, LabelPropsWeControl>,
+  props: PropsListboxLabel<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -737,11 +743,13 @@ type OptionsPropsWeControl =
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsListboxOptions<TTag extends ElementType> = Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
+PropsForFeatures<typeof OptionsRenderFeatures>
+
 let Options = forwardRefWithAs(function Options<
   TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG
 >(
-  props: Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
-    PropsForFeatures<typeof OptionsRenderFeatures>,
+  props: PropsListboxOptions<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -894,16 +902,18 @@ type ListboxOptionPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
+export type PropsListboxOption<TTag extends ElementType, TType> = Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'value'> & {
+  disabled?: boolean
+  value: TType
+}
+
 let Option = forwardRefWithAs(function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Listbox itself.
   // But today is not that day..
   TType = Parameters<typeof ListboxRoot>[0]['value']
 >(
-  props: Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'value'> & {
-    disabled?: boolean
-    value: TType
-  },
+  props: PropsListboxOption<TTag, TType>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()

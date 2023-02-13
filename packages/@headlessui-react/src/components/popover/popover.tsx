@@ -191,9 +191,11 @@ interface PopoverRenderPropArg {
   ): void
 }
 
+export type PropsPopover<TTag extends ElementType> = Props<TTag, PopoverRenderPropArg>
+
 let PopoverRoot = forwardRefWithAs(function Popover<
   TTag extends ElementType = typeof DEFAULT_POPOVER_TAG
->(props: Props<TTag, PopoverRenderPropArg>, ref: Ref<HTMLElement>) {
+>(props: PropsPopover<TTag>, ref: Ref<HTMLElement>) {
   let internalPopoverRef = useRef<HTMLElement | null>(null)
   let popoverRef = useSyncRefs(
     ref,
@@ -377,8 +379,10 @@ interface ButtonRenderPropArg {
 }
 type ButtonPropsWeControl = 'type' | 'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
 
+export type PropsPopoverButton<TTag extends ElementType> = Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>
+
 let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
+  props: PropsPopoverButton<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -606,11 +610,13 @@ type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
 
 let OverlayRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsPopoverOverlay<TTag extends ElementType> = Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>
+  & PropsForFeatures<typeof OverlayRenderFeatures>
+
 let Overlay = forwardRefWithAs(function Overlay<
   TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
 >(
-  props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl> &
-    PropsForFeatures<typeof OverlayRenderFeatures>,
+  props: PropsPopoverOverlay<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -666,11 +672,13 @@ type PanelPropsWeControl = 'onKeyDown'
 
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsPopoverPanel<TTag extends ElementType> = Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
+PropsForFeatures<typeof PanelRenderFeatures> & {
+  focus?: boolean
+}
+
 let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
-    PropsForFeatures<typeof PanelRenderFeatures> & {
-      focus?: boolean
-    },
+  props: PropsPopoverPanel<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -893,8 +901,10 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
 let DEFAULT_GROUP_TAG = 'div' as const
 interface GroupRenderPropArg {}
 
+export type PropsPopoverGroup<TTag extends ElementType> = Props<TTag, GroupRenderPropArg>
+
 let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, GroupRenderPropArg>,
+  props: PropsPopoverGroup<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalGroupRef = useRef<HTMLElement | null>(null)

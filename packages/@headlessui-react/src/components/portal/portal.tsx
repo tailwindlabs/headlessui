@@ -68,9 +68,11 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 let DEFAULT_PORTAL_TAG = Fragment
 interface PortalRenderPropArg {}
 
+export type PropsPortal<TTag extends ElementType> = Props<TTag, PortalRenderPropArg>
+
 let PortalRoot = forwardRefWithAs(function Portal<
   TTag extends ElementType = typeof DEFAULT_PORTAL_TAG
->(props: Props<TTag, PortalRenderPropArg>, ref: Ref<HTMLElement>) {
+>(props: PropsPortal<TTag>, ref: Ref<HTMLElement>) {
   let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
@@ -142,10 +144,12 @@ interface GroupRenderPropArg {}
 
 let PortalGroupContext = createContext<MutableRefObject<HTMLElement | null> | null>(null)
 
+export type PropsPortalGroup<TTag extends ElementType> = Props<TTag, GroupRenderPropArg> & {
+  target: MutableRefObject<HTMLElement | null>
+}
+
 let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
-  props: Props<TTag, GroupRenderPropArg> & {
-    target: MutableRefObject<HTMLElement | null>
-  },
+  props: PropsPortalGroup<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { target, ...theirProps } = props

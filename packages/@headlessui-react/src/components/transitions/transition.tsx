@@ -72,7 +72,7 @@ export interface TransitionEvents {
   afterLeave?: () => void
 }
 
-type TransitionChildProps<TTag extends ReactTag> = Props<TTag, TransitionChildRenderPropArg> &
+export type PropsTransitionChild<TTag extends ReactTag> = Props<TTag, TransitionChildRenderPropArg> &
   PropsForFeatures<typeof TransitionChildRenderFeatures> &
   TransitionClasses &
   TransitionEvents & { appear?: boolean }
@@ -274,7 +274,7 @@ let TransitionChildRenderFeatures = Features.RenderStrategy
 
 let TransitionChild = forwardRefWithAs(function TransitionChild<
   TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
->(props: TransitionChildProps<TTag>, ref: Ref<HTMLElement>) {
+>(props: PropsTransitionChild<TTag>, ref: Ref<HTMLElement>) {
   let {
     // Event "handlers"
     beforeEnter,
@@ -460,9 +460,14 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   )
 })
 
+export type PropsTransitionRoot<TTag extends ElementType> = TransitionChildProps<TTag> & {
+  show?: boolean;
+  appear?: boolean;
+}
+
 let TransitionRoot = forwardRefWithAs(function Transition<
   TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
->(props: TransitionChildProps<TTag> & { show?: boolean; appear?: boolean }, ref: Ref<HTMLElement>) {
+>(props: PropsTransitionRoot<TTag>, ref: Ref<HTMLElement>) {
   // @ts-expect-error
   let { show, appear = false, unmount, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
@@ -553,7 +558,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
 
 let Child = forwardRefWithAs(function Child<
   TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
->(props: TransitionChildProps<TTag>, ref: MutableRefObject<HTMLElement>) {
+>(props: PropsTransitionChild<TTag>, ref: MutableRefObject<HTMLElement>) {
   let hasTransitionContext = useContext(TransitionContext) !== null
   let hasOpenClosedContext = useOpenClosed() !== null
 

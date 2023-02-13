@@ -80,12 +80,14 @@ export function useLabels(): [string | undefined, (props: LabelProviderProps) =>
 
 let DEFAULT_LABEL_TAG = 'label' as const
 
+export type PropsLabel<TTag extends ElementType = typeof DEFAULT_LABEL_TAG> = Props<TTag> & {
+  passive?: boolean
+}
+
 export let Label = forwardRefWithAs(function Label<
   TTag extends ElementType = typeof DEFAULT_LABEL_TAG
 >(
-  props: Props<TTag> & {
-    passive?: boolean
-  },
+  props: PropsLabel<TTag>,
   ref: Ref<HTMLLabelElement>
 ) {
   let internalId = useId()

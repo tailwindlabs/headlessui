@@ -231,8 +231,10 @@ interface MenuRenderPropArg {
   close: () => void
 }
 
+export type PropsMenu<TTag extends ElementType> = Props<TTag, MenuRenderPropArg>
+
 let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-  props: Props<TTag, MenuRenderPropArg>,
+  props: PropsMenu<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let reducerBag = useReducer(stateReducer, {
@@ -307,8 +309,10 @@ type ButtonPropsWeControl =
   | 'onKeyDown'
   | 'onClick'
 
+export type PropsMenuButton<TTag extends ElementType> = Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>
+
 let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
+  props: PropsMenuButton<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -403,9 +407,11 @@ type ItemsPropsWeControl =
 
 let ItemsRenderFeatures = Features.RenderStrategy | Features.Static
 
+export type PropsMenuItems<TTag extends ElementType> = Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
+PropsForFeatures<typeof ItemsRenderFeatures>
+
 let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
-  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
-    PropsForFeatures<typeof ItemsRenderFeatures>,
+  props: PropsMenuItems<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -579,10 +585,12 @@ type MenuItemPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
+export type PropsMenuItem<TTag extends ElementType> = Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl> & {
+  disabled?: boolean
+}
+
 let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
-  props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl> & {
-    disabled?: boolean
-  },
+  props: PropsMenuItem<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()

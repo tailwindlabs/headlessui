@@ -43,7 +43,9 @@ GroupContext.displayName = 'GroupContext'
 
 let DEFAULT_GROUP_TAG = Fragment
 
-function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props<TTag>) {
+export type PropsSwitchGroup<TTag extends ElementType> = Props<TTag>
+
+function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: PropsSwitchGroup<TTag>) {
   let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
@@ -97,20 +99,22 @@ type SwitchPropsWeControl =
   | 'onKeyUp'
   | 'onKeyPress'
 
+export type PropsSwitch<TTag extends ElementType> = Props<
+  TTag,
+  SwitchRenderPropArg,
+  SwitchPropsWeControl | 'checked' | 'defaultChecked' | 'onChange' | 'name' | 'value'
+> & {
+  checked?: boolean
+  defaultChecked?: boolean
+  onChange?(checked: boolean): void
+  name?: string
+  value?: string
+}
+
 let SwitchRoot = forwardRefWithAs(function Switch<
   TTag extends ElementType = typeof DEFAULT_SWITCH_TAG
 >(
-  props: Props<
-    TTag,
-    SwitchRenderPropArg,
-    SwitchPropsWeControl | 'checked' | 'defaultChecked' | 'onChange' | 'name' | 'value'
-  > & {
-    checked?: boolean
-    defaultChecked?: boolean
-    onChange?(checked: boolean): void
-    name?: string
-    value?: string
-  },
+  props: PropsSwitch<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -200,4 +204,8 @@ let SwitchRoot = forwardRefWithAs(function Switch<
 
 // ---
 
-export let Switch = Object.assign(SwitchRoot, { Group, Label, Description })
+export let Switch = Object.assign(SwitchRoot, {
+  Group,
+  Label,
+  Description,
+})

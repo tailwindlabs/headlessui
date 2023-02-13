@@ -133,22 +133,24 @@ interface RadioGroupRenderPropArg<TType> {
 }
 type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby'
 
+export type PropsRadioGroup<TTag extends ElementType, TType> = Props<
+  TTag,
+  RadioGroupRenderPropArg<TType>,
+  RadioGroupPropsWeControl | 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'name' | 'by'
+> & {
+  value?: TType
+  defaultValue?: TType
+  onChange?(value: TType): void
+  by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
+  disabled?: boolean
+  name?: string
+}
+
 let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
   TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   TType = string
 >(
-  props: Props<
-    TTag,
-    RadioGroupRenderPropArg<TType>,
-    RadioGroupPropsWeControl | 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'name' | 'by'
-  > & {
-    value?: TType
-    defaultValue?: TType
-    onChange?(value: TType): void
-    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
-    disabled?: boolean
-    name?: string
-  },
+  props: PropsRadioGroup<TTag, TType>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -380,16 +382,18 @@ type RadioPropsWeControl =
   | 'role'
   | 'tabIndex'
 
+export type PropsRadioOption<TTag extends ElementType, TType> = Props<TTag, OptionRenderPropArg, RadioPropsWeControl | 'value' | 'disabled'> & {
+  value: TType
+  disabled?: boolean
+}
+
 let Option = forwardRefWithAs(function Option<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in RadioGroup itself.
   // But today is not that day..
   TType = Parameters<typeof RadioGroupRoot>[0]['value']
 >(
-  props: Props<TTag, OptionRenderPropArg, RadioPropsWeControl | 'value' | 'disabled'> & {
-    value: TType
-    disabled?: boolean
-  },
+  props: PropsRadioOption<TTag, TType>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()

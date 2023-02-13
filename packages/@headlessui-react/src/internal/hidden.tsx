@@ -15,9 +15,11 @@ export enum Features {
   Hidden = 1 << 2,
 }
 
+export type PropsHidden<TTag extends ElementType> = Props<TTag> & { features?: Features }
+
 export let Hidden = forwardRefWithAs(function VisuallyHidden<
   TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG
->(props: Props<TTag> & { features?: Features }, ref: Ref<HTMLElement>) {
+>(props: PropsHidden<TTag>, ref: Ref<HTMLElement>) {
   let { features = Features.None, ...theirProps } = props
   let ourProps = {
     ref,
