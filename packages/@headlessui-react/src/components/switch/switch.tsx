@@ -111,7 +111,7 @@ let SwitchRoot = forwardRefWithAs(function Switch<
     name?: string
     value?: string
   },
-  ref: Ref<HTMLElement>
+  ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
   let {
@@ -128,7 +128,6 @@ let SwitchRoot = forwardRefWithAs(function Switch<
   let switchRef = useSyncRefs(
     internalSwitchRef,
     ref,
-    // @ts-expect-error figure out the correct type here
     groupContext === null ? null : groupContext.setSwitch
   )
 
