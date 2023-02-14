@@ -9,7 +9,6 @@ import {
   ElementType,
   ReactElement,
   Ref,
-  ReactNode,
 } from 'react'
 import { Props, XOR, __, Expand } from '../types'
 import { classNames } from './class-names'
