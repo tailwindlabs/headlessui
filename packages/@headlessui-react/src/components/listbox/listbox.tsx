@@ -23,7 +23,15 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useComputed } from '../../hooks/use-computed'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { EnsureArray, Props } from '../../types'
-import { Features, forwardRefWithAs, PropsForFeatures, render, compact } from '../../utils/render'
+import {
+  Features,
+  forwardRefWithAs,
+  PropsForFeatures,
+  render,
+  compact,
+  HasDisplayName,
+  RefProp,
+} from '../../utils/render'
 import { match } from '../../utils/match'
 import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
@@ -339,14 +347,11 @@ export type PropsListbox<TTag extends ElementType, TType, TActualType> = Props<
   multiple?: boolean
 }
 
-let ListboxRoot = forwardRefWithAs(function Listbox<
+function ListboxFn<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType
->(
-  props: PropsListbox<TTag, TType, TActualType>,
-  ref: Ref<TTag>
-) {
+>(props: PropsListbox<TTag, TType, TActualType>, ref: Ref<TTag>) {
   let {
     value: controlledValue,
     defaultValue,
@@ -570,7 +575,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
       </ListboxDataContext.Provider>
     </ListboxActionsContext.Provider>
   )
-})
+}
 
 // ---
 
@@ -590,9 +595,13 @@ type ButtonPropsWeControl =
   | 'onKeyDown'
   | 'onClick'
 
-export type PropsListboxButton<TTag extends ElementType> = Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>
+export type PropsListboxButton<TTag extends ElementType> = Props<
+  TTag,
+  ButtonRenderPropArg,
+  ButtonPropsWeControl
+>
 
-let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: PropsListboxButton<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
@@ -685,7 +694,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Listbox.Button',
   })
-})
+}
 
 // ---
 
@@ -696,9 +705,13 @@ interface LabelRenderPropArg {
 }
 type LabelPropsWeControl = 'ref' | 'onClick'
 
-export type PropsListboxLabel<TTag extends ElementType> = Props<TTag, LabelRenderPropArg, LabelPropsWeControl>
+export type PropsListboxLabel<TTag extends ElementType> = Props<
+  TTag,
+  LabelRenderPropArg,
+  LabelPropsWeControl
+>
 
-let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: PropsListboxLabel<TTag>,
   ref: Ref<HTMLElement>
 ) {
@@ -725,7 +738,7 @@ let Label = forwardRefWithAs(function Label<TTag extends ElementType = typeof DE
     defaultTag: DEFAULT_LABEL_TAG,
     name: 'Listbox.Label',
   })
-})
+}
 
 // ---
 
@@ -743,12 +756,14 @@ type OptionsPropsWeControl =
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsListboxOptions<TTag extends ElementType> = Props<TTag, OptionsRenderPropArg, OptionsPropsWeControl> &
-PropsForFeatures<typeof OptionsRenderFeatures>
+export type PropsListboxOptions<TTag extends ElementType> = Props<
+  TTag,
+  OptionsRenderPropArg,
+  OptionsPropsWeControl
+> &
+  PropsForFeatures<typeof OptionsRenderFeatures>
 
-let Options = forwardRefWithAs(function Options<
-  TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG
->(
+function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   props: PropsListboxOptions<TTag>,
   ref: Ref<HTMLElement>
 ) {
@@ -881,7 +896,7 @@ let Options = forwardRefWithAs(function Options<
     visible,
     name: 'Listbox.Options',
   })
-})
+}
 
 // ---
 
@@ -902,20 +917,21 @@ type ListboxOptionPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
-export type PropsListboxOption<TTag extends ElementType, TType> = Props<TTag, OptionRenderPropArg, ListboxOptionPropsWeControl | 'value'> & {
+export type PropsListboxOption<TTag extends ElementType, TType> = Props<
+  TTag,
+  OptionRenderPropArg,
+  ListboxOptionPropsWeControl | 'value'
+> & {
   disabled?: boolean
   value: TType
 }
 
-let Option = forwardRefWithAs(function Option<
+function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Listbox itself.
   // But today is not that day..
   TType = Parameters<typeof ListboxRoot>[0]['value']
->(
-  props: PropsListboxOption<TTag, TType>,
-  ref: Ref<HTMLElement>
-) {
+>(props: PropsListboxOption<TTag, TType>, ref: Ref<HTMLElement>) {
   let internalId = useId()
   let {
     id = `headlessui-listbox-option-${internalId}`,
@@ -950,7 +966,13 @@ let Option = forwardRefWithAs(function Option<
       internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [internalOptionRef, active, data.listboxState, data.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex])
+  }, [
+    internalOptionRef,
+    active,
+    data.listboxState,
+    data.activationTrigger,
+    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex,
+  ])
 
   useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
 
@@ -1018,8 +1040,51 @@ let Option = forwardRefWithAs(function Option<
     defaultTag: DEFAULT_OPTION_TAG,
     name: 'Listbox.Option',
   })
-})
+}
 
 // ---
+
+interface ComponentListbox extends HasDisplayName {
+  <
+    TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
+    TType = string,
+    TActualType = TType extends (infer U)[] ? U : TType
+  >(
+    props: PropsListbox<TTag, TType, TActualType> & RefProp<typeof ListboxFn>
+  ): JSX.Element
+}
+
+interface ComponentListboxButton extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+    props: PropsListboxButton<TTag> & RefProp<typeof ButtonFn>
+  ): JSX.Element
+}
+
+interface ComponentListboxLabel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+    props: PropsListboxLabel<TTag> & RefProp<typeof LabelFn>
+  ): JSX.Element
+}
+
+interface ComponentListboxOptions extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
+    props: PropsListboxOptions<TTag> & RefProp<typeof OptionsFn>
+  ): JSX.Element
+}
+
+interface ComponentListboxOption extends HasDisplayName {
+  <
+    TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
+    TType = Parameters<typeof ListboxRoot>[0]['value']
+  >(
+    props: PropsListboxOption<TTag, TType> & RefProp<typeof OptionFn>
+  ): JSX.Element
+}
+
+let ListboxRoot = forwardRefWithAs(ListboxFn) as unknown as ComponentListbox
+let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentListboxButton
+let Label = forwardRefWithAs(LabelFn) as unknown as ComponentListboxLabel
+let Options = forwardRefWithAs(OptionsFn) as unknown as ComponentListboxOptions
+let Option = forwardRefWithAs(OptionFn) as unknown as ComponentListboxOption
 
 export let Listbox = Object.assign(ListboxRoot, { Button, Label, Options, Option })
