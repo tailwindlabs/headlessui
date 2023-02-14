@@ -20,7 +20,14 @@ import React, {
 
 import { Props } from '../../types'
 import { match } from '../../utils/match'
-import { forwardRefWithAs, render, Features, PropsForFeatures } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  render,
+  Features,
+  PropsForFeatures,
+  HasDisplayName,
+  RefProp,
+} from '../../utils/render'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -115,17 +122,19 @@ type DialogPropsWeControl = 'role' | 'aria-modal' | 'aria-describedby' | 'aria-l
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsDialog<TTag extends ElementType> = Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
-PropsForFeatures<typeof DialogRenderFeatures> & {
-  open?: boolean
-  onClose(value: boolean): void
-  initialFocus?: MutableRefObject<HTMLElement | null>
-  __demoMode?: boolean
-}
+export type PropsDialog<TTag extends ElementType> = Props<
+  TTag,
+  DialogRenderPropArg,
+  DialogPropsWeControl
+> &
+  PropsForFeatures<typeof DialogRenderFeatures> & {
+    open?: boolean
+    onClose(value: boolean): void
+    initialFocus?: MutableRefObject<HTMLElement | null>
+    __demoMode?: boolean
+  }
 
-let DialogRoot = forwardRefWithAs(function Dialog<
-  TTag extends ElementType = typeof DEFAULT_DIALOG_TAG
->(
+function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   props: PropsDialog<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
@@ -396,7 +405,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNode} />
     </StackProvider>
   )
-})
+}
 
 // ---
 
@@ -406,11 +415,16 @@ interface OverlayRenderPropArg {
 }
 type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
 
-export type PropsDialogOverlay<TTag extends ElementType> = Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>
+export type PropsDialogOverlay<TTag extends ElementType> = Props<
+  TTag,
+  OverlayRenderPropArg,
+  OverlayPropsWeControl
+>
 
-let Overlay = forwardRefWithAs(function Overlay<
-  TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
->(props: PropsDialogOverlay<TTag>, ref: Ref<HTMLDivElement>) {
+function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
+  props: PropsDialogOverlay<TTag>,
+  ref: Ref<HTMLDivElement>
+) {
   let internalId = useId()
   let { id = `headlessui-dialog-overlay-${internalId}`, ...theirProps } = props
   let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
@@ -443,7 +457,7 @@ let Overlay = forwardRefWithAs(function Overlay<
     defaultTag: DEFAULT_OVERLAY_TAG,
     name: 'Dialog.Overlay',
   })
-})
+}
 
 // ---
 
@@ -453,11 +467,16 @@ interface BackdropRenderPropArg {
 }
 type BackdropPropsWeControl = 'aria-hidden' | 'onClick'
 
-export type PropsDialogBackdrop<TTag extends ElementType> = Props<TTag, BackdropRenderPropArg, BackdropPropsWeControl>
+export type PropsDialogBackdrop<TTag extends ElementType> = Props<
+  TTag,
+  BackdropRenderPropArg,
+  BackdropPropsWeControl
+>
 
-let Backdrop = forwardRefWithAs(function Backdrop<
-  TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG
->(props: PropsDialogBackdrop<TTag>, ref: Ref<HTMLDivElement>) {
+function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+  props: PropsDialogBackdrop<TTag>,
+  ref: Ref<HTMLDivElement>
+) {
   let internalId = useId()
   let { id = `headlessui-dialog-backdrop-${internalId}`, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Backdrop')
@@ -495,7 +514,7 @@ let Backdrop = forwardRefWithAs(function Backdrop<
       </Portal>
     </ForcePortalRoot>
   )
-})
+}
 
 // ---
 
@@ -506,7 +525,7 @@ interface PanelRenderPropArg {
 
 export type PropsDialogPanel<TTag extends ElementType> = Props<TTag, PanelRenderPropArg>
 
-let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: PropsDialogPanel<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
@@ -539,7 +558,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     defaultTag: DEFAULT_PANEL_TAG,
     name: 'Dialog.Panel',
   })
-})
+}
 
 // ---
 
@@ -550,7 +569,7 @@ interface TitleRenderPropArg {
 
 export type PropsDialogTitle<TTag extends ElementType> = Props<TTag, TitleRenderPropArg>
 
-let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
+function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   props: PropsDialogTitle<TTag>,
   ref: Ref<HTMLHeadingElement>
 ) {
@@ -579,8 +598,50 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
     defaultTag: DEFAULT_TITLE_TAG,
     name: 'Dialog.Title',
   })
-})
+}
 
 // ---
 
-export let Dialog = Object.assign(DialogRoot, { Backdrop, Panel, Overlay, Title, Description })
+interface ComponentDialog extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
+    props: PropsDialog<TTag> & RefProp<typeof DialogFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogBackdrop extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+    props: PropsDialogBackdrop<TTag> & RefProp<typeof BackdropFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogPanel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+    props: PropsDialogPanel<TTag> & RefProp<typeof PanelFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogOverlay extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
+    props: PropsDialogOverlay<TTag> & RefProp<typeof OverlayFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogTitle extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
+    props: PropsDialogTitle<TTag> & RefProp<typeof TitleFn>
+  ): JSX.Element
+}
+
+let DialogRoot = forwardRefWithAs(DialogFn) as unknown as ComponentDialog
+let Backdrop = forwardRefWithAs(BackdropFn) as unknown as ComponentDialogBackdrop
+let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentDialogPanel
+let Overlay = forwardRefWithAs(OverlayFn) as unknown as ComponentDialogOverlay
+let Title = forwardRefWithAs(TitleFn) as unknown as ComponentDialogTitle
+
+export let Dialog = Object.assign(DialogRoot, {
+  Backdrop,
+  Panel,
+  Overlay,
+  Title,
+  Description,
+})
