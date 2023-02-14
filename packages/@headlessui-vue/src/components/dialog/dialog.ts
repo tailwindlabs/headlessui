@@ -133,9 +133,21 @@ export let Dialog = defineComponent({
     // in between. We only care abou whether you are the top most one or not.
     let position = computed(() => (!hasNestedDialogs.value ? 'leaf' : 'parent'))
 
+    // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes
+    // the OpenClosed state) then we get some information via context about its state. When the
+    // `Transition` is about to close, then the `State.Closing` state will be exposed. This allows us
+    // to enable/disable certain functionality in the `Dialog` upfront instead of waiting until the
+    // `Transition` is done transitioning.
+    let isClosing = computed(() =>
+      usesOpenClosedState !== null
+        ? (usesOpenClosedState.value & State.Closing) === State.Closing
+        : false
+    )
+
     // Ensure other elements can't be interacted with
     let inertOthersEnabled = computed(() => {
       if (!hasNestedDialogs.value) return false
+      if (isClosing.value) return false
       return enabled.value
     })
     useInertOthers(internalDialogRef, inertOthersEnabled)
@@ -231,6 +243,7 @@ export let Dialog = defineComponent({
 
     // Scroll lock
     let scrollLockEnabled = computed(() => {
+      if (isClosing.value) return false
       if (dialogState.value !== DialogStates.Open) return false
       if (hasParentDialog) return false
       return true

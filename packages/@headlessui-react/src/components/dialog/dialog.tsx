@@ -206,9 +206,18 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // in between. We only care abou whether you are the top most one or not.
   let position = !hasNestedDialogs ? 'leaf' : 'parent'
 
+  // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes
+  // the OpenClosed state) then we get some information via context about its state. When the
+  // `Transition` is about to close, then the `State.Closing` state will be exposed. This allows us
+  // to enable/disable certain functionality in the `Dialog` upfront instead of waiting until the
+  // `Transition` is done transitioning.
+  let isClosing =
+    usesOpenClosedState !== null ? (usesOpenClosedState & State.Closing) === State.Closing : false
+
   // Ensure other elements can't be interacted with
   let inertOthersEnabled = (() => {
     if (!hasNestedDialogs) return false
+    if (isClosing) return false
     return enabled
   })()
   useInertOthers(internalDialogRef, inertOthersEnabled)
@@ -254,6 +263,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   // Scroll lock
   let scrollLockEnabled = (() => {
+    if (isClosing) return false
     if (dialogState !== DialogStates.Open) return false
     if (hasParentDialog) return false
     return true
