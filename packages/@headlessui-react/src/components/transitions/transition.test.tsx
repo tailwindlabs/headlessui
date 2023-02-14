@@ -127,15 +127,15 @@ describe('Setup API', () => {
 
     it('should be possible to change the underlying DOM tag', () => {
       let { container } = render(
-        <Transition show={true} as="a">
+        <Transition show={true} as="span">
           Children
         </Transition>
       )
 
       expect(container.firstChild).toMatchInlineSnapshot(`
-        <a>
+        <span>
           Children
-        </a>
+        </span>
       `)
     })
 
