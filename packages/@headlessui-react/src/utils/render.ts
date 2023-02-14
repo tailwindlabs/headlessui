@@ -8,6 +8,8 @@ import {
   // Types
   ElementType,
   ReactElement,
+  Ref,
+  ReactNode,
 } from 'react'
 import { Props, XOR, __, Expand } from '../types'
 import { classNames } from './class-names'
@@ -56,7 +58,9 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
   visible = true,
   name,
 }: {
-  ourProps: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  ourProps: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>> & {
+    ref?: Ref<HTMLElement | ElementType>
+  }
   theirProps: Expand<Props<TTag, TSlot, any>>
   slot?: TSlot
   defaultTag: ElementType
@@ -272,6 +276,14 @@ function mergeProps(...listOfProps: Props<any, any>[]) {
 
   return target
 }
+
+export type HasDisplayName = {
+  displayName: string
+}
+
+export type RefProp<T extends Function> = T extends (props: any, ref: Ref<infer RefType>) => any
+  ? { ref?: Ref<RefType> }
+  : never
 
 /**
  * This is a hack, but basically we want to keep the full 'API' of the component, but we do want to

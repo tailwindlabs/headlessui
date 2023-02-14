@@ -16,9 +16,11 @@ import { Props, ReactTag } from '../../types'
 import {
   Features,
   forwardRefWithAs,
+  HasDisplayName,
   PropsForFeatures,
   render,
   RenderStrategy,
+  RefProp,
 } from '../../utils/render'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { match } from '../../utils/match'
@@ -72,7 +74,10 @@ export interface TransitionEvents {
   afterLeave?: () => void
 }
 
-export type PropsTransitionChild<TTag extends ReactTag> = Props<TTag, TransitionChildRenderPropArg> &
+export type PropsTransitionChild<TTag extends ReactTag> = Omit<
+  Props<TTag, TransitionChildRenderPropArg>,
+  'ref'
+> &
   PropsForFeatures<typeof TransitionChildRenderFeatures> &
   TransitionClasses &
   TransitionEvents & { appear?: boolean }
@@ -272,9 +277,10 @@ let DEFAULT_TRANSITION_CHILD_TAG = 'div' as const
 type TransitionChildRenderPropArg = MutableRefObject<HTMLDivElement>
 let TransitionChildRenderFeatures = Features.RenderStrategy
 
-let TransitionChild = forwardRefWithAs(function TransitionChild<
-  TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
->(props: PropsTransitionChild<TTag>, ref: Ref<HTMLElement>) {
+function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+  props: PropsTransitionChild<TTag>,
+  ref: Ref<HTMLElement>
+) {
   let {
     // Event "handlers"
     beforeEnter,
@@ -458,16 +464,17 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
       </OpenClosedProvider>
     </NestingContext.Provider>
   )
-})
-
-export type PropsTransitionRoot<TTag extends ElementType> = TransitionChildProps<TTag> & {
-  show?: boolean;
-  appear?: boolean;
 }
 
-let TransitionRoot = forwardRefWithAs(function Transition<
-  TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
->(props: PropsTransitionRoot<TTag>, ref: Ref<HTMLElement>) {
+export type PropsTransitionRoot<TTag extends ElementType> = PropsTransitionChild<TTag> & {
+  show?: boolean
+  appear?: boolean
+}
+
+function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+  props: PropsTransitionRoot<TTag>,
+  ref: Ref<HTMLElement>
+) {
   // @ts-expect-error
   let { show, appear = false, unmount, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
@@ -554,11 +561,12 @@ let TransitionRoot = forwardRefWithAs(function Transition<
       </TransitionContext.Provider>
     </NestingContext.Provider>
   )
-})
+}
 
-let Child = forwardRefWithAs(function Child<
-  TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG
->(props: PropsTransitionChild<TTag>, ref: MutableRefObject<HTMLElement>) {
+function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+  props: PropsTransitionChild<TTag>,
+  ref: MutableRefObject<HTMLElement>
+) {
   let hasTransitionContext = useContext(TransitionContext) !== null
   let hasOpenClosedContext = useOpenClosed() !== null
 
@@ -571,6 +579,22 @@ let Child = forwardRefWithAs(function Child<
       )}
     </>
   )
-})
+}
+
+interface ComponentTransitionRoot extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+    props: PropsTransitionRoot<TTag> & RefProp<typeof TransitionRootFn>
+  ): JSX.Element
+}
+
+interface ComponentTransitionChild extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+    props: PropsTransitionChild<TTag> & RefProp<typeof TransitionChildFn>
+  ): JSX.Element
+}
+
+let TransitionRoot = forwardRefWithAs(TransitionRootFn) as unknown as ComponentTransitionRoot
+let TransitionChild = forwardRefWithAs(TransitionChildFn) as unknown as ComponentTransitionChild
+let Child = forwardRefWithAs(ChildFn) as unknown as ComponentTransitionChild
 
 export let Transition = Object.assign(TransitionRoot, { Child, Root: TransitionRoot })

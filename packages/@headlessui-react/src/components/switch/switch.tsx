@@ -15,7 +15,7 @@ import React, {
 } from 'react'
 
 import { Props } from '../../types'
-import { forwardRefWithAs, render, compact } from '../../utils/render'
+import { forwardRefWithAs, render, compact, HasDisplayName, RefProp } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -45,7 +45,9 @@ let DEFAULT_GROUP_TAG = Fragment
 
 export type PropsSwitchGroup<TTag extends ElementType> = Props<TTag>
 
-function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: PropsSwitchGroup<TTag>) {
+function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
+  props: PropsSwitchGroup<TTag>
+) {
   let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
@@ -111,9 +113,7 @@ export type PropsSwitch<TTag extends ElementType> = Props<
   value?: string
 }
 
-let SwitchRoot = forwardRefWithAs(function Switch<
-  TTag extends ElementType = typeof DEFAULT_SWITCH_TAG
->(
+function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   props: PropsSwitch<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
@@ -200,9 +200,24 @@ let SwitchRoot = forwardRefWithAs(function Switch<
       {render({ ourProps, theirProps, slot, defaultTag: DEFAULT_SWITCH_TAG, name: 'Switch' })}
     </>
   )
-})
+}
 
 // ---
+
+interface ComponentSwitch extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
+    props: PropsSwitch<TTag> & RefProp<typeof SwitchFn>
+  ): JSX.Element
+}
+
+interface ComponentSwitchGroup extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
+    props: PropsSwitchGroup<TTag> & RefProp<typeof GroupFn>
+  ): JSX.Element
+}
+
+let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as ComponentSwitch
+let Group = forwardRefWithAs(GroupFn) as unknown as ComponentSwitchGroup
 
 export let Switch = Object.assign(SwitchRoot, {
   Group,

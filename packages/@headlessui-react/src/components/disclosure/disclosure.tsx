@@ -20,7 +20,14 @@ import React, {
 
 import { Props } from '../../types'
 import { match } from '../../utils/match'
-import { forwardRefWithAs, render, Features, PropsForFeatures } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  render,
+  Features,
+  PropsForFeatures,
+  HasDisplayName,
+  RefProp,
+} from '../../utils/render'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
@@ -153,9 +160,7 @@ export type PropsDisclosure<TTag extends ElementType> = Props<TTag, DisclosureRe
   defaultOpen?: boolean
 }
 
-let DisclosureRoot = forwardRefWithAs(function Disclosure<
-  TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG
->(
+function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   props: PropsDisclosure<TTag>,
   ref: Ref<TTag>
 ) {
@@ -234,7 +239,7 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
       </DisclosureAPIContext.Provider>
     </DisclosureContext.Provider>
   )
-})
+}
 
 // ---
 
@@ -244,9 +249,13 @@ interface ButtonRenderPropArg {
 }
 type ButtonPropsWeControl = 'type' | 'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
 
-export type PropsDisclosureButton<TTag extends ElementType> = Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>
+export type PropsDisclosureButton<TTag extends ElementType> = Props<
+  TTag,
+  ButtonRenderPropArg,
+  ButtonPropsWeControl
+>
 
-let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: PropsDisclosureButton<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
@@ -344,7 +353,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Disclosure.Button',
   })
-})
+}
 
 // ---
 
@@ -356,9 +365,10 @@ interface PanelRenderPropArg {
 
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsDisclosurePanel<TTag extends ElementType> = Props<TTag, PanelRenderPropArg> & PropsForFeatures<typeof PanelRenderFeatures>
+export type PropsDisclosurePanel<TTag extends ElementType> = Props<TTag, PanelRenderPropArg> &
+  PropsForFeatures<typeof PanelRenderFeatures>
 
-let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: PropsDisclosurePanel<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
@@ -410,8 +420,30 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
       })}
     </DisclosurePanelContext.Provider>
   )
-})
+}
 
 // ---
+
+interface ComponentDisclosure extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
+    props: PropsDisclosure<TTag> & RefProp<typeof DisclosureFn>
+  ): JSX.Element
+}
+
+interface ComponentDisclosureButton extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+    props: PropsDisclosure<TTag> & RefProp<typeof ButtonFn>
+  ): JSX.Element
+}
+
+interface ComponentDisclosurePanel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+    props: PropsDisclosure<TTag> & RefProp<typeof PanelFn>
+  ): JSX.Element
+}
+
+let DisclosureRoot = forwardRefWithAs(DisclosureFn) as unknown as ComponentDisclosure
+let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentDisclosureButton
+let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentDisclosurePanel
 
 export let Disclosure = Object.assign(DisclosureRoot, { Button, Panel })

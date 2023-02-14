@@ -12,7 +12,7 @@ import React, {
 
 import { Props } from '../../types'
 import { useId } from '../../hooks/use-id'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useEvent } from '../../hooks/use-event'
@@ -84,9 +84,7 @@ export type PropsLabel<TTag extends ElementType = typeof DEFAULT_LABEL_TAG> = Pr
   passive?: boolean
 }
 
-export let Label = forwardRefWithAs(function Label<
-  TTag extends ElementType = typeof DEFAULT_LABEL_TAG
->(
+function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: PropsLabel<TTag>,
   ref: Ref<HTMLLabelElement>
 ) {
@@ -116,4 +114,18 @@ export let Label = forwardRefWithAs(function Label<
     defaultTag: DEFAULT_LABEL_TAG,
     name: context.name || 'Label',
   })
+}
+
+// ---
+
+interface ComponentLabel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+    props: PropsLabel<TTag> & RefProp<typeof LabelFn>
+  ): JSX.Element
+}
+
+let LabelRoot = forwardRefWithAs(LabelFn) as unknown as ComponentLabel
+
+export let Label = Object.assign(LabelRoot, {
+  //
 })

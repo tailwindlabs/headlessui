@@ -16,7 +16,7 @@ import React, {
 } from 'react'
 
 import { Props, Expand } from '../../types'
-import { forwardRefWithAs, render, compact } from '../../utils/render'
+import { forwardRefWithAs, render, compact, RefProp, HasDisplayName } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -146,10 +146,7 @@ export type PropsRadioGroup<TTag extends ElementType, TType> = Props<
   name?: string
 }
 
-let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
-  TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
-  TType = string
->(
+function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
   props: PropsRadioGroup<TTag, TType>,
   ref: Ref<HTMLElement>
 ) {
@@ -358,7 +355,7 @@ let RadioGroupRoot = forwardRefWithAs(function RadioGroup<
       </LabelProvider>
     </DescriptionProvider>
   )
-})
+}
 
 // ---
 
@@ -382,20 +379,21 @@ type RadioPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-export type PropsRadioOption<TTag extends ElementType, TType> = Props<TTag, OptionRenderPropArg, RadioPropsWeControl | 'value' | 'disabled'> & {
+export type PropsRadioOption<TTag extends ElementType, TType> = Props<
+  TTag,
+  OptionRenderPropArg,
+  RadioPropsWeControl | 'value' | 'disabled'
+> & {
   value: TType
   disabled?: boolean
 }
 
-let Option = forwardRefWithAs(function Option<
+function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in RadioGroup itself.
   // But today is not that day..
   TType = Parameters<typeof RadioGroupRoot>[0]['value']
->(
-  props: PropsRadioOption<TTag, TType>,
-  ref: Ref<HTMLElement>
-) {
+>(props: PropsRadioOption<TTag, TType>, ref: Ref<HTMLElement>) {
   let internalId = useId()
   let {
     id = `headlessui-radiogroup-option-${internalId}`,
@@ -475,8 +473,23 @@ let Option = forwardRefWithAs(function Option<
       </LabelProvider>
     </DescriptionProvider>
   )
-})
+}
 
 // ---
+
+interface ComponentRadioGroup extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
+    props: PropsRadioGroup<TTag, TType> & RefProp<typeof RadioGroupFn>
+  ): JSX.Element
+}
+
+interface ComponentRadioOption extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_OPTION_TAG, TType = string>(
+    props: PropsRadioOption<TTag, TType> & RefProp<typeof OptionFn>
+  ): JSX.Element
+}
+
+let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as ComponentRadioGroup
+let Option = forwardRefWithAs(OptionFn) as unknown as ComponentRadioOption
 
 export let RadioGroup = Object.assign(RadioGroupRoot, { Option, Label, Description })

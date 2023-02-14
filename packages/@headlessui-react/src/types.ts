@@ -11,7 +11,7 @@ export type __ = typeof __
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 
 export type PropsOf<TTag extends ReactTag> = TTag extends React.ElementType
-  ? React.ComponentProps<TTag>
+  ? Omit<React.ComponentProps<TTag>, 'ref'>
   : never
 
 type PropsWeControl = 'as' | 'children' | 'refName' | 'className'
@@ -52,6 +52,12 @@ export type Props<
   TSlot = {},
   TOmitableProps extends PropertyKey = __
 > = CleanProps<TTag, TOmitableProps> & OurProps<TTag, TSlot> & ClassNameOverride<TTag, TSlot>
+
+export type PropsWithoutRef<
+  TTag extends ReactTag,
+  TSlot = {},
+  TOmitableProps extends PropertyKey = __
+> = Omit<Props<TTag, TSlot, TOmitableProps>, 'ref'>
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 export type XOR<T, U> = T | U extends __
