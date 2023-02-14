@@ -133,10 +133,13 @@ export let Dialog = defineComponent({
     // in between. We only care abou whether you are the top most one or not.
     let position = computed(() => (!hasNestedDialogs.value ? 'leaf' : 'parent'))
 
-    useInertOthers(
-      internalDialogRef,
-      computed(() => (hasNestedDialogs.value ? enabled.value : false))
-    )
+    // Ensure other elements can't be interacted with
+    let inertOthersEnabled = computed(() => {
+      if (!hasNestedDialogs.value) return false
+      return enabled.value
+    })
+    useInertOthers(internalDialogRef, inertOthersEnabled)
+
     useStackProvider({
       type: 'Dialog',
       enabled: computed(() => dialogState.value === DialogStates.Open),
@@ -196,28 +199,43 @@ export let Dialog = defineComponent({
     }
 
     // Handle outside click
+    let outsideClickEnabled = computed(() => {
+      if (!enabled.value) return false
+      if (hasNestedDialogs.value) return false
+      return true
+    })
     useOutsideClick(
       () => resolveAllowedContainers(),
       (_event, target) => {
         api.close()
         nextTick(() => target?.focus())
       },
-      computed(() => dialogState.value === DialogStates.Open && !hasNestedDialogs.value)
+      outsideClickEnabled
     )
 
     // Handle `Escape` to close
+    let escapeToCloseEnabled = computed(() => {
+      if (hasNestedDialogs.value) return false
+      if (dialogState.value !== DialogStates.Open) return false
+      return true
+    })
     useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
+      if (!escapeToCloseEnabled.value) return
       if (event.defaultPrevented) return
       if (event.key !== Keys.Escape) return
-      if (dialogState.value !== DialogStates.Open) return
-      if (hasNestedDialogs.value) return
+
       event.preventDefault()
       event.stopPropagation()
       api.close()
     })
 
     // Scroll lock
-    useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta) => ({
+    let scrollLockEnabled = computed(() => {
+      if (dialogState.value !== DialogStates.Open) return false
+      if (hasParentDialog) return false
+      return true
+    })
+    useDocumentOverflowLockedEffect(ownerDocument, scrollLockEnabled, (meta) => ({
       containers: [...(meta.containers ?? []), resolveAllowedContainers],
     }))
 

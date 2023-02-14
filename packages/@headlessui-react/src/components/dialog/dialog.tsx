@@ -207,7 +207,11 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let position = !hasNestedDialogs ? 'leaf' : 'parent'
 
   // Ensure other elements can't be interacted with
-  useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
+  let inertOthersEnabled = (() => {
+    if (!hasNestedDialogs) return false
+    return enabled
+  })()
+  useInertOthers(internalDialogRef, inertOthersEnabled)
 
   let resolveContainers = useEvent(() => {
     // Third party roots
@@ -226,25 +230,35 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   })
 
   // Close Dialog on outside click
-  useOutsideClick(() => resolveContainers(), close, enabled && !hasNestedDialogs)
+  let outsideClickEnabled = (() => {
+    if (!enabled) return false
+    if (hasNestedDialogs) return false
+    return true
+  })()
+  useOutsideClick(() => resolveContainers(), close, outsideClickEnabled)
 
   // Handle `Escape` to close
+  let escapeToCloseEnabled = (() => {
+    if (hasNestedDialogs) return false
+    if (dialogState !== DialogStates.Open) return false
+    return true
+  })()
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
+    if (!escapeToCloseEnabled) return
     if (event.defaultPrevented) return
     if (event.key !== Keys.Escape) return
-    if (dialogState !== DialogStates.Open) return
-    if (hasNestedDialogs) return
     event.preventDefault()
     event.stopPropagation()
     close()
   })
 
   // Scroll lock
-  useScrollLock(
-    ownerDocument,
-    dialogState === DialogStates.Open && !hasParentDialog,
-    resolveContainers
-  )
+  let scrollLockEnabled = (() => {
+    if (dialogState !== DialogStates.Open) return false
+    if (hasParentDialog) return false
+    return true
+  })()
+  useScrollLock(ownerDocument, scrollLockEnabled, resolveContainers)
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
