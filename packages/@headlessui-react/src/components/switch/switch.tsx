@@ -217,7 +217,7 @@ interface ComponentSwitchGroup extends HasDisplayName {
 }
 
 let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as ComponentSwitch
-let Group = forwardRefWithAs(GroupFn) as unknown as ComponentSwitchGroup
+let Group = GroupFn as unknown as ComponentSwitchGroup
 
 export let Switch = Object.assign(SwitchRoot, {
   Group,
