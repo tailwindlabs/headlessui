@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.10] - 2023-02-15
+
 ### Fixed
 
 - Don’t fire `afterLeave` event more than once for a given transition ([#2267](https://github.com/tailwindlabs/headlessui/pull/2267))
@@ -408,7 +412,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.9...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.10...HEAD
+[1.7.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.9...@headlessui/vue@v1.7.10
 [1.7.9]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.8...@headlessui/vue@v1.7.9
 [1.7.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.7...@headlessui/vue@v1.7.8
 [1.7.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.6...@headlessui/vue@v1.7.7
