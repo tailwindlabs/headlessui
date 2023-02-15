@@ -32,6 +32,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useDisposables } from '../../hooks/use-disposables'
 import { classNames } from '../../utils/class-names'
 import { env } from '../../utils/env'
+import { useFlags } from '../../hooks/use-flags'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
 
@@ -359,18 +360,32 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
     return show ? 'enter' : 'leave'
   })() as TransitionDirection
 
+  let transitionStateFlags = useFlags(0)
+
   let beforeEvent = useEvent((direction: TransitionDirection) => {
     return match(direction, {
-      enter: () => events.current.beforeEnter(),
-      leave: () => events.current.beforeLeave(),
+      enter: () => {
+        transitionStateFlags.addFlag(State.Opening)
+        events.current.beforeEnter()
+      },
+      leave: () => {
+        transitionStateFlags.addFlag(State.Closing)
+        events.current.beforeLeave()
+      },
       idle: () => {},
     })
   })
 
   let afterEvent = useEvent((direction: TransitionDirection) => {
     return match(direction, {
-      enter: () => events.current.afterEnter(),
-      leave: () => events.current.afterLeave(),
+      enter: () => {
+        transitionStateFlags.removeFlag(State.Opening)
+        events.current.afterEnter()
+      },
+      leave: () => {
+        transitionStateFlags.removeFlag(State.Closing)
+        events.current.afterLeave()
+      },
       idle: () => {},
     })
   })
@@ -425,10 +440,12 @@ let TransitionChild = forwardRefWithAs(function TransitionChild<
   return (
     <NestingContext.Provider value={nesting}>
       <OpenClosedProvider
-        value={match(state, {
-          [TreeStates.Visible]: State.Open,
-          [TreeStates.Hidden]: State.Closed,
-        })}
+        value={
+          match(state, {
+            [TreeStates.Visible]: State.Open,
+            [TreeStates.Hidden]: State.Closed,
+          }) | transitionStateFlags.flags
+        }
       >
         {render({
           ourProps,
@@ -457,10 +474,7 @@ let TransitionRoot = forwardRefWithAs(function Transition<
   let usesOpenClosedState = useOpenClosed()
 
   if (show === undefined && usesOpenClosedState !== null) {
-    show = match(usesOpenClosedState, {
-      [State.Open]: true,
-      [State.Closed]: false,
-    })
+    show = (usesOpenClosedState & State.Open) === State.Open
   }
 
   if (![true, false].includes(show as unknown as boolean)) {

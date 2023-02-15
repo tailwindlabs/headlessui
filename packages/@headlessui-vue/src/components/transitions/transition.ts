@@ -155,16 +155,38 @@ export let TransitionChild = defineComponent({
     afterLeave: () => true,
   },
   setup(props, { emit, attrs, slots, expose }) {
+    let transitionStateFlags = ref(0)
+
+    function beforeEnter() {
+      transitionStateFlags.value |= State.Opening
+      emit('beforeEnter')
+    }
+
+    function afterEnter() {
+      transitionStateFlags.value &= ~State.Opening
+      emit('afterEnter')
+    }
+
+    function beforeLeave() {
+      transitionStateFlags.value |= State.Closing
+      emit('beforeLeave')
+    }
+
+    function afterLeave() {
+      transitionStateFlags.value &= ~State.Closing
+      emit('afterLeave')
+    }
+
     if (!hasTransitionContext() && hasOpenClosed()) {
       return () =>
         h(
           TransitionRoot,
           {
             ...props,
-            onBeforeEnter: () => emit('beforeEnter'),
-            onAfterEnter: () => emit('afterEnter'),
-            onBeforeLeave: () => emit('beforeLeave'),
-            onAfterLeave: () => emit('afterLeave'),
+            onBeforeEnter: beforeEnter,
+            onAfterEnter: afterEnter,
+            onBeforeLeave: beforeLeave,
+            onAfterLeave: afterLeave,
           },
           slots
         )
@@ -191,7 +213,7 @@ export let TransitionChild = defineComponent({
       if (!isTransitioning.value && state.value !== TreeStates.Hidden) {
         state.value = TreeStates.Hidden
         unregister(id)
-        emit('afterLeave')
+        afterLeave()
       }
     })
 
@@ -252,8 +274,8 @@ export let TransitionChild = defineComponent({
 
       isTransitioning.value = true
 
-      if (show.value) emit('beforeEnter')
-      if (!show.value) emit('beforeLeave')
+      if (show.value) beforeEnter()
+      if (!show.value) beforeLeave()
 
       onInvalidate(
         show.value
@@ -265,7 +287,7 @@ export let TransitionChild = defineComponent({
               enteredClasses,
               (reason) => {
                 isTransitioning.value = false
-                if (reason === Reason.Finished) emit('afterEnter')
+                if (reason === Reason.Finished) afterEnter()
               }
             )
           : transition(
@@ -284,7 +306,7 @@ export let TransitionChild = defineComponent({
                 if (!hasChildren(nesting)) {
                   state.value = TreeStates.Hidden
                   unregister(id)
-                  emit('afterLeave')
+                  afterLeave()
                 }
               }
             )
@@ -304,11 +326,12 @@ export let TransitionChild = defineComponent({
 
     provide(NestingContext, nesting)
     useOpenClosedProvider(
-      computed(() =>
-        match(state.value, {
-          [TreeStates.Visible]: State.Open,
-          [TreeStates.Hidden]: State.Closed,
-        })
+      computed(
+        () =>
+          match(state.value, {
+            [TreeStates.Visible]: State.Open,
+            [TreeStates.Hidden]: State.Closed,
+          }) | transitionStateFlags.value
       )
     )
 
@@ -384,10 +407,7 @@ export let TransitionRoot = defineComponent({
 
     let show = computed(() => {
       if (props.show === null && usesOpenClosedState !== null) {
-        return match(usesOpenClosedState.value, {
-          [State.Open]: true,
-          [State.Closed]: false,
-        })
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return props.show

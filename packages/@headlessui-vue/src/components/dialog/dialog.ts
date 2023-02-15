@@ -34,7 +34,6 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
-import { handleIOSLocking } from '../../hooks/document-overflow/handle-ios-locking'
 
 enum DialogStates {
   Open,
@@ -91,11 +90,7 @@ export let Dialog = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let open = computed(() => {
       if (props.open === Missing && usesOpenClosedState !== null) {
-        // Update the `open` prop based on the open closed state
-        return match(usesOpenClosedState.value, {
-          [State.Open]: true,
-          [State.Closed]: false,
-        })
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
       return props.open
     })
@@ -137,10 +132,25 @@ export let Dialog = defineComponent({
     // in between. We only care abou whether you are the top most one or not.
     let position = computed(() => (!hasNestedDialogs.value ? 'leaf' : 'parent'))
 
-    useInertOthers(
-      internalDialogRef,
-      computed(() => (hasNestedDialogs.value ? enabled.value : false))
+    // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes
+    // the OpenClosed state) then we get some information via context about its state. When the
+    // `Transition` is about to close, then the `State.Closing` state will be exposed. This allows us
+    // to enable/disable certain functionality in the `Dialog` upfront instead of waiting until the
+    // `Transition` is done transitioning.
+    let isClosing = computed(() =>
+      usesOpenClosedState !== null
+        ? (usesOpenClosedState.value & State.Closing) === State.Closing
+        : false
     )
+
+    // Ensure other elements can't be interacted with
+    let inertOthersEnabled = computed(() => {
+      if (!hasNestedDialogs.value) return false
+      if (isClosing.value) return false
+      return enabled.value
+    })
+    useInertOthers(internalDialogRef, inertOthersEnabled)
+
     useStackProvider({
       type: 'Dialog',
       enabled: computed(() => dialogState.value === DialogStates.Open),
@@ -200,28 +210,44 @@ export let Dialog = defineComponent({
     }
 
     // Handle outside click
+    let outsideClickEnabled = computed(() => {
+      if (!enabled.value) return false
+      if (hasNestedDialogs.value) return false
+      return true
+    })
     useOutsideClick(
       () => resolveAllowedContainers(),
       (_event, target) => {
         api.close()
         nextTick(() => target?.focus())
       },
-      computed(() => dialogState.value === DialogStates.Open && !hasNestedDialogs.value)
+      outsideClickEnabled
     )
 
     // Handle `Escape` to close
+    let escapeToCloseEnabled = computed(() => {
+      if (hasNestedDialogs.value) return false
+      if (dialogState.value !== DialogStates.Open) return false
+      return true
+    })
     useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
+      if (!escapeToCloseEnabled.value) return
       if (event.defaultPrevented) return
       if (event.key !== Keys.Escape) return
-      if (dialogState.value !== DialogStates.Open) return
-      if (hasNestedDialogs.value) return
+
       event.preventDefault()
       event.stopPropagation()
       api.close()
     })
 
     // Scroll lock
-    useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta) => ({
+    let scrollLockEnabled = computed(() => {
+      if (isClosing.value) return false
+      if (dialogState.value !== DialogStates.Open) return false
+      if (hasParentDialog) return false
+      return true
+    })
+    useDocumentOverflowLockedEffect(ownerDocument, scrollLockEnabled, (meta) => ({
       containers: [...(meta.containers ?? []), resolveAllowedContainers],
     }))
 

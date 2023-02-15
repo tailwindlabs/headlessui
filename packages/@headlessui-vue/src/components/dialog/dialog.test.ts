@@ -8,7 +8,7 @@ import {
   PropType,
   computed,
 } from 'vue'
-import { createRenderTemplate, render, screen } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import {
   Dialog,
@@ -41,6 +41,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, mouseDrag, press, Keys, shift } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { useOpenClosedProvider, State } from '../../internal/open-closed'
 
 // @ts-expect-error
 global.IntersectionObserver = class FakeIntersectionObserver {
@@ -542,6 +543,75 @@ describe('Rendering', () => {
         await click(close3())
         await frames(2)
 
+        expect(document.documentElement.style.overflow).toBe('')
+      })
+    )
+
+    it(
+      'should remove the scroll lock when the open closed state is `Closing`',
+      suppressConsoleLogs(async () => {
+        let Wrapper = defineComponent({
+          props: {
+            state: {
+              type: Number as PropType<State>,
+              default: State.Open,
+            },
+          },
+          setup(props, { slots }) {
+            useOpenClosedProvider(ref(props.state))
+            return () => h('div', {}, slots.default?.())
+          },
+        })
+
+        let x = renderTemplate({
+          components: {
+            Dialog,
+            Wrapper,
+          },
+          template: `
+            <Wrapper :state="state">
+              <Dialog :open="true" @close="() => {}">
+                <input id="a" type="text" />
+                <input id="b" type="text" />
+                <input id="c" type="text" />
+              </Dialog>
+            </Wrapper>
+          `,
+
+          setup: () => ({ state: State.Open }),
+        })
+
+        await nextFrame()
+
+        // The overflow should be there
+        expect(document.documentElement.style.overflow).toBe('hidden')
+
+        // Reset the document
+        x.unmount()
+        await nextFrame()
+
+        // Re-render but with the `Closing` state
+        renderTemplate({
+          components: {
+            Dialog,
+            Wrapper,
+          },
+          template: `
+            <Wrapper :state="state">
+              <Dialog :open="true" @close="() => {}">
+                <input id="a" type="text" />
+                <input id="b" type="text" />
+                <input id="c" type="text" />
+              </Dialog>
+            </Wrapper>
+          `,
+
+          setup: () => ({ state: State.Open | State.Closing }),
+        })
+
+        await nextFrame()
+
+        // The moment the dialog is closing, the overflow should be gone
         expect(document.documentElement.style.overflow).toBe('')
       })
     )

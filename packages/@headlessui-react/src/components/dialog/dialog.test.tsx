@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import React, { createElement, useRef, useState, Fragment, useEffect, useCallback } from 'react'
 import { render } from '@testing-library/react'
 
@@ -24,7 +25,7 @@ import {
 import { click, mouseDrag, press, Keys, shift } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
 import { Transition } from '../transitions/transition'
-import { createPortal } from 'react-dom'
+import { OpenClosedProvider, State } from '../../internal/open-closed'
 
 jest.mock('../../hooks/use-id')
 
@@ -408,6 +409,34 @@ describe('Rendering', () => {
         // Close the dialog & dont expect overflow
         await click(close3())
         await frames(2)
+        expect(document.documentElement.style.overflow).toBe('')
+      })
+    )
+
+    it(
+      'should remove the scroll lock when the open closed state is `Closing`',
+      suppressConsoleLogs(async () => {
+        function Example({ value = State.Open }) {
+          return (
+            <OpenClosedProvider value={value}>
+              <Dialog open={true} onClose={() => {}}>
+                <input id="a" type="text" />
+                <input id="b" type="text" />
+                <input id="c" type="text" />
+              </Dialog>
+            </OpenClosedProvider>
+          )
+        }
+
+        let { rerender } = render(<Example value={State.Open} />)
+
+        // The overflow should be there
+        expect(document.documentElement.style.overflow).toBe('hidden')
+
+        // Re-render but with the `Closing` state
+        rerender(<Example value={State.Open | State.Closing} />)
+
+        // The moment the dialog is closing, the overflow should be gone
         expect(document.documentElement.style.overflow).toBe('')
       })
     )

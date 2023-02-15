@@ -375,7 +375,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
     if (usesOpenClosedState !== null) {
-      return usesOpenClosedState === State.Open
+      return (usesOpenClosedState & State.Open) === State.Open
     }
 
     return state.disclosureState === DisclosureStates.Open

@@ -140,10 +140,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let usesOpenClosedState = useOpenClosed()
   if (open === undefined && usesOpenClosedState !== null) {
     // Update the `open` prop based on the open closed state
-    open = match(usesOpenClosedState, {
-      [State.Open]: true,
-      [State.Closed]: false,
-    })
+    open = (usesOpenClosedState & State.Open) === State.Open
   }
 
   let containers = useRef<Set<MutableRefObject<HTMLElement | null>>>(new Set())
@@ -209,8 +206,21 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // in between. We only care abou whether you are the top most one or not.
   let position = !hasNestedDialogs ? 'leaf' : 'parent'
 
+  // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes
+  // the OpenClosed state) then we get some information via context about its state. When the
+  // `Transition` is about to close, then the `State.Closing` state will be exposed. This allows us
+  // to enable/disable certain functionality in the `Dialog` upfront instead of waiting until the
+  // `Transition` is done transitioning.
+  let isClosing =
+    usesOpenClosedState !== null ? (usesOpenClosedState & State.Closing) === State.Closing : false
+
   // Ensure other elements can't be interacted with
-  useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
+  let inertOthersEnabled = (() => {
+    if (!hasNestedDialogs) return false
+    if (isClosing) return false
+    return enabled
+  })()
+  useInertOthers(internalDialogRef, inertOthersEnabled)
 
   let resolveContainers = useEvent(() => {
     // Third party roots
@@ -229,25 +239,36 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   })
 
   // Close Dialog on outside click
-  useOutsideClick(() => resolveContainers(), close, enabled && !hasNestedDialogs)
+  let outsideClickEnabled = (() => {
+    if (!enabled) return false
+    if (hasNestedDialogs) return false
+    return true
+  })()
+  useOutsideClick(() => resolveContainers(), close, outsideClickEnabled)
 
   // Handle `Escape` to close
+  let escapeToCloseEnabled = (() => {
+    if (hasNestedDialogs) return false
+    if (dialogState !== DialogStates.Open) return false
+    return true
+  })()
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
+    if (!escapeToCloseEnabled) return
     if (event.defaultPrevented) return
     if (event.key !== Keys.Escape) return
-    if (dialogState !== DialogStates.Open) return
-    if (hasNestedDialogs) return
     event.preventDefault()
     event.stopPropagation()
     close()
   })
 
   // Scroll lock
-  useScrollLock(
-    ownerDocument,
-    dialogState === DialogStates.Open && !hasParentDialog,
-    resolveContainers
-  )
+  let scrollLockEnabled = (() => {
+    if (isClosing) return false
+    if (dialogState !== DialogStates.Open) return false
+    if (hasParentDialog) return false
+    return true
+  })()
+  useScrollLock(ownerDocument, scrollLockEnabled, resolveContainers)
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {

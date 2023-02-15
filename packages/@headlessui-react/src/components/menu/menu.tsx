@@ -419,7 +419,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
     if (usesOpenClosedState !== null) {
-      return usesOpenClosedState === State.Open
+      return (usesOpenClosedState & State.Open) === State.Open
     }
 
     return state.menuState === MenuStates.Open
