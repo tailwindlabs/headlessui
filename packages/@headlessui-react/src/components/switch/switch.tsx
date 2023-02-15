@@ -19,8 +19,8 @@ import { forwardRefWithAs, render, compact, HasDisplayName, RefProp } from '../.
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { Label, useLabels } from '../label/label'
-import { Description, useDescriptions } from '../description/description'
+import { ComponentLabel, Label, useLabels } from '../label/label'
+import { ComponentDescription, Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
@@ -216,11 +216,14 @@ interface ComponentSwitchGroup extends HasDisplayName {
   ): JSX.Element
 }
 
+interface ComponentSwitchLabel extends ComponentLabel {}
+interface ComponentSwitchDescription extends ComponentDescription {}
+
 let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as ComponentSwitch
 let Group = GroupFn as unknown as ComponentSwitchGroup
 
 export let Switch = Object.assign(SwitchRoot, {
   Group,
-  Label,
-  Description,
+  Label: Label as ComponentSwitchLabel,
+  Description: Description as ComponentSwitchDescription,
 })

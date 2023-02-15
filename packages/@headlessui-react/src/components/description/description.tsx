@@ -115,7 +115,7 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
 }
 
 // ---
-interface ComponentDescription extends HasDisplayName {
+export interface ComponentDescription extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
     props: PropsDescription<TTag> & RefProp<typeof DescriptionFn>
   ): JSX.Element

@@ -23,8 +23,12 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { Keys } from '../../components/keyboard'
 import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { useFlags } from '../../hooks/use-flags'
-import { Label, useLabels } from '../../components/label/label'
-import { Description, useDescriptions } from '../../components/description/description'
+import { ComponentLabel, Label, useLabels } from '../../components/label/label'
+import {
+  ComponentDescription,
+  Description,
+  useDescriptions,
+} from '../../components/description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
@@ -489,7 +493,14 @@ interface ComponentRadioOption extends HasDisplayName {
   ): JSX.Element
 }
 
+interface ComponentRadioLabel extends ComponentLabel {}
+interface ComponentRadioDescription extends ComponentDescription {}
+
 let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as ComponentRadioGroup
 let Option = forwardRefWithAs(OptionFn) as unknown as ComponentRadioOption
 
-export let RadioGroup = Object.assign(RadioGroupRoot, { Option, Label, Description })
+export let RadioGroup = Object.assign(RadioGroupRoot, {
+  Option,
+  Label: Label as ComponentRadioLabel,
+  Description: Description as ComponentRadioDescription,
+})

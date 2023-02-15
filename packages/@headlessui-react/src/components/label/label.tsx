@@ -118,7 +118,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
 // ---
 
-interface ComponentLabel extends HasDisplayName {
+export interface ComponentLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     props: PropsLabel<TTag> & RefProp<typeof LabelFn>
   ): JSX.Element

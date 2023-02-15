@@ -35,7 +35,7 @@ import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
 import { Portal } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
-import { Description, useDescriptions } from '../description/description'
+import { ComponentDescription, Description, useDescriptions } from '../description/description'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
@@ -632,6 +632,8 @@ interface ComponentDialogTitle extends HasDisplayName {
   ): JSX.Element
 }
 
+interface ComponentDialogDescription extends ComponentDescription {}
+
 let DialogRoot = forwardRefWithAs(DialogFn) as unknown as ComponentDialog
 let Backdrop = forwardRefWithAs(BackdropFn) as unknown as ComponentDialogBackdrop
 let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentDialogPanel
@@ -643,5 +645,5 @@ export let Dialog = Object.assign(DialogRoot, {
   Panel,
   Overlay,
   Title,
-  Description,
+  Description: Description as ComponentDialogDescription,
 })
