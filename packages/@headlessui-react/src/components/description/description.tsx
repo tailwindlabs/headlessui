@@ -89,11 +89,11 @@ export function useDescriptions(): [
 
 let DEFAULT_DESCRIPTION_TAG = 'p' as const
 
-export type PropsDescription<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG> =
+export type DescriptionProps<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG> =
   Props<TTag>
 
 function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
-  props: PropsDescription<TTag>,
+  props: DescriptionProps<TTag>,
   ref: Ref<HTMLParagraphElement>
 ) {
   let internalId = useId()
@@ -117,7 +117,7 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
 // ---
 export interface ComponentDescription extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
-    props: PropsDescription<TTag> & RefProp<typeof DescriptionFn>
+    props: DescriptionProps<TTag> & RefProp<typeof DescriptionFn>
   ): JSX.Element
 }
 

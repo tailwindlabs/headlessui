@@ -209,7 +209,7 @@ interface TabsRenderPropArg {
   selectedIndex: number
 }
 
-export type PropsTabGroup<TTag extends ElementType> = Props<TTag, TabsRenderPropArg> & {
+export type TabGroupProps<TTag extends ElementType> = Props<TTag, TabsRenderPropArg> & {
   defaultIndex?: number
   onChange?: (index: number) => void
   selectedIndex?: number
@@ -218,7 +218,7 @@ export type PropsTabGroup<TTag extends ElementType> = Props<TTag, TabsRenderProp
 }
 
 function GroupFn<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
-  props: PropsTabGroup<TTag>,
+  props: TabGroupProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let {
@@ -331,7 +331,7 @@ interface ListRenderPropArg {
 }
 type ListPropsWeControl = 'role' | 'aria-orientation'
 
-export type PropsTabList<TTag extends ElementType> = Props<
+export type TabListProps<TTag extends ElementType> = Props<
   TTag,
   ListRenderPropArg,
   ListPropsWeControl
@@ -340,7 +340,7 @@ export type PropsTabList<TTag extends ElementType> = Props<
 }
 
 function ListFn<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
-  props: PropsTabList<TTag>,
+  props: TabListProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { orientation, selectedIndex } = useData('Tab.List')
@@ -372,7 +372,7 @@ interface TabRenderPropArg {
 }
 type TabPropsWeControl = 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
 
-export type PropsTab<TTag extends ElementType> = Props<
+export type TabProps<TTag extends ElementType> = Props<
   TTag,
   TabRenderPropArg,
   TabPropsWeControl
@@ -381,7 +381,7 @@ export type PropsTab<TTag extends ElementType> = Props<
 }
 
 function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
-  props: PropsTab<TTag>,
+  props: TabProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -510,10 +510,10 @@ interface PanelsRenderPropArg {
   selectedIndex: number
 }
 
-export type PropsTabPanels<TTag extends ElementType> = Props<TTag, PanelsRenderPropArg>
+export type TabPanelsProps<TTag extends ElementType> = Props<TTag, PanelsRenderPropArg>
 
 function PanelsFn<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
-  props: PropsTabPanels<TTag>,
+  props: TabPanelsProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { selectedIndex } = useData('Tab.Panels')
@@ -542,7 +542,7 @@ interface PanelRenderPropArg {
 type PanelPropsWeControl = 'role' | 'aria-labelledby'
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsTabPanel<TTag extends ElementType> = Props<
+export type TabPanelProps<TTag extends ElementType> = Props<
   TTag,
   PanelRenderPropArg,
   PanelPropsWeControl
@@ -550,7 +550,7 @@ export type PropsTabPanel<TTag extends ElementType> = Props<
   PropsForFeatures<typeof PanelRenderFeatures>
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: PropsTabPanel<TTag>,
+  props: TabPanelProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -599,31 +599,31 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
 interface ComponentTab extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
-    props: PropsTab<TTag> & RefProp<typeof TabFn>
+    props: TabProps<TTag> & RefProp<typeof TabFn>
   ): JSX.Element
 }
 
 interface ComponentTabGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
-    props: PropsTabGroup<TTag> & RefProp<typeof GroupFn>
+    props: TabGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 
 interface ComponentTabList extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
-    props: PropsTabList<TTag> & RefProp<typeof ListFn>
+    props: TabListProps<TTag> & RefProp<typeof ListFn>
   ): JSX.Element
 }
 
 interface ComponentTabPanels extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
-    props: PropsTabPanels<TTag> & RefProp<typeof PanelsFn>
+    props: TabPanelsProps<TTag> & RefProp<typeof PanelsFn>
   ): JSX.Element
 }
 
 interface ComponentTabPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-    props: PropsTabPanel<TTag> & RefProp<typeof PanelFn>
+    props: TabPanelProps<TTag> & RefProp<typeof PanelFn>
   ): JSX.Element
 }
 

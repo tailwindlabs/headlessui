@@ -43,10 +43,10 @@ GroupContext.displayName = 'GroupContext'
 
 let DEFAULT_GROUP_TAG = Fragment
 
-export type PropsSwitchGroup<TTag extends ElementType> = Props<TTag>
+export type SwitchGroupProps<TTag extends ElementType> = Props<TTag>
 
 function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
-  props: PropsSwitchGroup<TTag>
+  props: SwitchGroupProps<TTag>
 ) {
   let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
   let [labelledby, LabelProvider] = useLabels()
@@ -101,7 +101,7 @@ type SwitchPropsWeControl =
   | 'onKeyUp'
   | 'onKeyPress'
 
-export type PropsSwitch<TTag extends ElementType> = Props<
+export type SwitchProps<TTag extends ElementType> = Props<
   TTag,
   SwitchRenderPropArg,
   SwitchPropsWeControl | 'checked' | 'defaultChecked' | 'onChange' | 'name' | 'value'
@@ -114,7 +114,7 @@ export type PropsSwitch<TTag extends ElementType> = Props<
 }
 
 function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
-  props: PropsSwitch<TTag>,
+  props: SwitchProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -206,13 +206,13 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
 
 interface ComponentSwitch extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
-    props: PropsSwitch<TTag> & RefProp<typeof SwitchFn>
+    props: SwitchProps<TTag> & RefProp<typeof SwitchFn>
   ): JSX.Element
 }
 
 interface ComponentSwitchGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
-    props: PropsSwitchGroup<TTag> & RefProp<typeof GroupFn>
+    props: SwitchGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 

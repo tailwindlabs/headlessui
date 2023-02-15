@@ -238,10 +238,10 @@ interface MenuRenderPropArg {
   close: () => void
 }
 
-export type PropsMenu<TTag extends ElementType> = Props<TTag, MenuRenderPropArg>
+export type MenuProps<TTag extends ElementType> = Props<TTag, MenuRenderPropArg>
 
 function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-  props: PropsMenu<TTag>,
+  props: MenuProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let reducerBag = useReducer(stateReducer, {
@@ -316,14 +316,14 @@ type ButtonPropsWeControl =
   | 'onKeyDown'
   | 'onClick'
 
-export type PropsMenuButton<TTag extends ElementType> = Props<
+export type MenuButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
   ButtonPropsWeControl
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: PropsMenuButton<TTag>,
+  props: MenuButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -418,7 +418,7 @@ type ItemsPropsWeControl =
 
 let ItemsRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsMenuItems<TTag extends ElementType> = Props<
+export type MenuItemsProps<TTag extends ElementType> = Props<
   TTag,
   ItemsRenderPropArg,
   ItemsPropsWeControl
@@ -426,7 +426,7 @@ export type PropsMenuItems<TTag extends ElementType> = Props<
   PropsForFeatures<typeof ItemsRenderFeatures>
 
 function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
-  props: PropsMenuItems<TTag>,
+  props: MenuItemsProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -600,7 +600,7 @@ type MenuItemPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
-export type PropsMenuItem<TTag extends ElementType> = Props<
+export type MenuItemProps<TTag extends ElementType> = Props<
   TTag,
   ItemRenderPropArg,
   MenuItemPropsWeControl
@@ -609,7 +609,7 @@ export type PropsMenuItem<TTag extends ElementType> = Props<
 }
 
 function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
-  props: PropsMenuItem<TTag>,
+  props: MenuItemProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -722,25 +722,25 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 
 interface ComponentMenu extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-    props: PropsMenu<TTag> & RefProp<typeof MenuFn>
+    props: MenuProps<TTag> & RefProp<typeof MenuFn>
   ): JSX.Element
 }
 
 interface ComponentMenuButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-    props: PropsMenuButton<TTag> & RefProp<typeof ButtonFn>
+    props: MenuButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
 interface ComponentMenuItems extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
-    props: PropsMenuItems<TTag> & RefProp<typeof ItemsFn>
+    props: MenuItemsProps<TTag> & RefProp<typeof ItemsFn>
   ): JSX.Element
 }
 
 interface ComponentMenuItem extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
-    props: PropsMenuItem<TTag> & RefProp<typeof ItemFn>
+    props: MenuItemProps<TTag> & RefProp<typeof ItemFn>
   ): JSX.Element
 }
 

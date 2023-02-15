@@ -47,14 +47,14 @@ enum Features {
   All = InitialFocus | TabLock | FocusLock | RestoreFocus,
 }
 
-export type PropsFocusTrap<TTag extends ElementType> = Props<TTag> & {
+export type FocusTrapProps<TTag extends ElementType> = Props<TTag> & {
   initialFocus?: MutableRefObject<HTMLElement | null>
   features?: Features
   containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
 }
 
 function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
-  props: PropsFocusTrap<TTag>,
+  props: FocusTrapProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let container = useRef<HTMLDivElement | null>(null)
@@ -178,7 +178,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
 interface ComponentFocusTrap extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
-    props: PropsFocusTrap<TTag> & RefProp<typeof FocusTrapFn>
+    props: FocusTrapProps<TTag> & RefProp<typeof FocusTrapFn>
   ): JSX.Element
 }
 

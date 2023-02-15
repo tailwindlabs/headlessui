@@ -372,7 +372,7 @@ type ComboboxValueProps<
   { nullable?: TNullable; multiple?: TMultiple }
 >
 
-export type PropsCombobox<
+export type ComboboxProps<
   TValue,
   TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
@@ -384,24 +384,24 @@ export type PropsCombobox<
 }
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: PropsCombobox<TValue, true, true, TTag>,
+  props: ComboboxProps<TValue, true, true, TTag>,
   ref: Ref<TTag>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: PropsCombobox<TValue, true, false, TTag>,
+  props: ComboboxProps<TValue, true, false, TTag>,
   ref: Ref<TTag>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: PropsCombobox<TValue, false, false, TTag>,
+  props: ComboboxProps<TValue, false, false, TTag>,
   ref: Ref<TTag>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: PropsCombobox<TValue, false, true, TTag>,
+  props: ComboboxProps<TValue, false, true, TTag>,
   ref: Ref<TTag>
 ): JSX.Element
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: PropsCombobox<TValue, boolean | undefined, boolean | undefined, TTag>,
+  props: ComboboxProps<TValue, boolean | undefined, boolean | undefined, TTag>,
   ref: Ref<TTag>
 ) {
   let {
@@ -704,7 +704,7 @@ type InputPropsWeControl =
   | 'onChange'
   | 'displayValue'
 
-export type PropsComboboxInput<TTag extends ElementType, TType> = Props<
+export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
   TTag,
   InputRenderPropArg,
   InputPropsWeControl
@@ -718,7 +718,7 @@ function InputFn<
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
   TType = Parameters<typeof ComboboxRoot>[0]['value']
->(props: PropsComboboxInput<TTag, TType>, ref: Ref<HTMLInputElement>) {
+>(props: ComboboxInputProps<TTag, TType>, ref: Ref<HTMLInputElement>) {
   let internalId = useId()
   let {
     id = `headlessui-combobox-input-${internalId}`,
@@ -1019,14 +1019,14 @@ type ButtonPropsWeControl =
   | 'onClick'
   | 'onKeyDown'
 
-export type PropsComboboxButton<TTag extends ElementType> = Props<
+export type ComboboxButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
   ButtonPropsWeControl
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: PropsComboboxButton<TTag>,
+  props: ComboboxButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let data = useData('Combobox.Button')
@@ -1132,14 +1132,14 @@ interface LabelRenderPropArg {
 }
 type LabelPropsWeControl = 'ref' | 'onClick'
 
-export type PropsComboboxLabel<TTag extends ElementType> = Props<
+export type ComboboxLabelProps<TTag extends ElementType> = Props<
   TTag,
   LabelRenderPropArg,
   LabelPropsWeControl
 >
 
 function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: PropsComboboxLabel<TTag>,
+  props: ComboboxLabelProps<TTag>,
   ref: Ref<HTMLLabelElement>
 ) {
   let internalId = useId()
@@ -1178,7 +1178,7 @@ type OptionsPropsWeControl = 'aria-labelledby' | 'hold' | 'onKeyDown' | 'role' |
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsComboboxOptions<TTag extends ElementType> = Props<
+export type ComboboxOptionsProps<TTag extends ElementType> = Props<
   TTag,
   OptionsRenderPropArg,
   OptionsPropsWeControl
@@ -1188,7 +1188,7 @@ export type PropsComboboxOptions<TTag extends ElementType> = Props<
   }
 
 function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
-  props: PropsComboboxOptions<TTag>,
+  props: ComboboxOptionsProps<TTag>,
   ref: Ref<HTMLUListElement>
 ) {
   let internalId = useId()
@@ -1264,7 +1264,7 @@ interface OptionRenderPropArg {
 }
 type ComboboxOptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
 
-export type PropsComboboxOption<TTag extends ElementType, TType> = Props<
+export type ComboboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
   ComboboxOptionPropsWeControl | 'value'
@@ -1278,7 +1278,7 @@ function OptionFn<
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
   TType = Parameters<typeof ComboboxRoot>[0]['value']
->(props: PropsComboboxOption<TTag, TType>, ref: Ref<HTMLLIElement>) {
+>(props: ComboboxOptionProps<TTag, TType>, ref: Ref<HTMLLIElement>) {
   let internalId = useId()
   let {
     id = `headlessui-combobox-option-${internalId}`,
@@ -1420,40 +1420,40 @@ function OptionFn<
 
 interface ComponentCombobox extends HasDisplayName {
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: PropsCombobox<TValue, true, true, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, true, true, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: PropsCombobox<TValue, true, false, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, true, false, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: PropsCombobox<TValue, false, false, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, false, false, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: PropsCombobox<TValue, false, true, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, false, true, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
 }
 
 interface ComponentComboboxButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-    props: PropsComboboxButton<TTag> & RefProp<typeof ButtonFn>
+    props: ComboboxButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
 interface ComponentComboboxInput extends HasDisplayName {
   <TType, TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
-    props: PropsComboboxInput<TTag, TType> & RefProp<typeof InputFn>
+    props: ComboboxInputProps<TTag, TType> & RefProp<typeof InputFn>
   ): JSX.Element
 }
 
 interface ComponentComboboxLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-    props: PropsComboboxLabel<TTag> & RefProp<typeof LabelFn>
+    props: ComboboxLabelProps<TTag> & RefProp<typeof LabelFn>
   ): JSX.Element
 }
 
 interface ComponentComboboxOptions extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
-    props: PropsComboboxOptions<TTag> & RefProp<typeof OptionsFn>
+    props: ComboboxOptionsProps<TTag> & RefProp<typeof OptionsFn>
   ): JSX.Element
 }
 
@@ -1462,7 +1462,7 @@ interface ComponentComboboxOption extends HasDisplayName {
     TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
     TType = Parameters<typeof ComboboxRoot>[0]['value']
   >(
-    props: PropsComboboxOption<TTag, TType> & RefProp<typeof OptionFn>
+    props: ComboboxOptionProps<TTag, TType> & RefProp<typeof OptionFn>
   ): JSX.Element
 }
 

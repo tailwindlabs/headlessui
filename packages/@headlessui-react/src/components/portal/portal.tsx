@@ -68,10 +68,10 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 let DEFAULT_PORTAL_TAG = Fragment
 interface PortalRenderPropArg {}
 
-export type PropsPortal<TTag extends ElementType> = Props<TTag, PortalRenderPropArg>
+export type PortalProps<TTag extends ElementType> = Props<TTag, PortalRenderPropArg>
 
 function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
-  props: PropsPortal<TTag>,
+  props: PortalProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let theirProps = props
@@ -145,12 +145,12 @@ interface GroupRenderPropArg {}
 
 let PortalGroupContext = createContext<MutableRefObject<HTMLElement | null> | null>(null)
 
-export type PropsPortalGroup<TTag extends ElementType> = Props<TTag, GroupRenderPropArg> & {
+export type PortalGroupProps<TTag extends ElementType> = Props<TTag, GroupRenderPropArg> & {
   target: MutableRefObject<HTMLElement | null>
 }
 
 function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
-  props: PropsPortalGroup<TTag>,
+  props: PortalGroupProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { target, ...theirProps } = props
@@ -174,13 +174,13 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
 
 interface ComponentPortal extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
-    props: PropsPortal<TTag> & RefProp<typeof PortalFn>
+    props: PortalProps<TTag> & RefProp<typeof PortalFn>
   ): JSX.Element
 }
 
 interface ComponentPortalGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
-    props: PropsPortalGroup<TTag> & RefProp<typeof GroupFn>
+    props: PortalGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 

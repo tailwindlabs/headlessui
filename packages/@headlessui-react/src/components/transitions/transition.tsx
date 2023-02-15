@@ -74,7 +74,7 @@ export interface TransitionEvents {
   afterLeave?: () => void
 }
 
-export type PropsTransitionChild<TTag extends ReactTag> = Omit<
+export type TransitionChildProps<TTag extends ReactTag> = Omit<
   Props<TTag, TransitionChildRenderPropArg>,
   'ref'
 > &
@@ -278,7 +278,7 @@ type TransitionChildRenderPropArg = MutableRefObject<HTMLDivElement>
 let TransitionChildRenderFeatures = Features.RenderStrategy
 
 function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: PropsTransitionChild<TTag>,
+  props: TransitionChildProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let {
@@ -466,13 +466,13 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   )
 }
 
-export type PropsTransitionRoot<TTag extends ElementType> = PropsTransitionChild<TTag> & {
+export type TransitionRootProps<TTag extends ElementType> = TransitionChildProps<TTag> & {
   show?: boolean
   appear?: boolean
 }
 
 function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: PropsTransitionRoot<TTag>,
+  props: TransitionRootProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   // @ts-expect-error
@@ -564,7 +564,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
 }
 
 function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-  props: PropsTransitionChild<TTag>,
+  props: TransitionChildProps<TTag>,
   ref: MutableRefObject<HTMLElement>
 ) {
   let hasTransitionContext = useContext(TransitionContext) !== null
@@ -583,13 +583,13 @@ function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>
 
 interface ComponentTransitionRoot extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-    props: PropsTransitionRoot<TTag> & RefProp<typeof TransitionRootFn>
+    props: TransitionRootProps<TTag> & RefProp<typeof TransitionRootFn>
   ): JSX.Element
 }
 
 interface ComponentTransitionChild extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
-    props: PropsTransitionChild<TTag> & RefProp<typeof TransitionChildFn>
+    props: TransitionChildProps<TTag> & RefProp<typeof TransitionChildFn>
   ): JSX.Element
 }
 

@@ -80,12 +80,12 @@ export function useLabels(): [string | undefined, (props: LabelProviderProps) =>
 
 let DEFAULT_LABEL_TAG = 'label' as const
 
-export type PropsLabel<TTag extends ElementType = typeof DEFAULT_LABEL_TAG> = Props<TTag> & {
+export type LabelProps<TTag extends ElementType = typeof DEFAULT_LABEL_TAG> = Props<TTag> & {
   passive?: boolean
 }
 
 function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: PropsLabel<TTag>,
+  props: LabelProps<TTag>,
   ref: Ref<HTMLLabelElement>
 ) {
   let internalId = useId()
@@ -120,7 +120,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
 export interface ComponentLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-    props: PropsLabel<TTag> & RefProp<typeof LabelFn>
+    props: LabelProps<TTag> & RefProp<typeof LabelFn>
   ): JSX.Element
 }
 

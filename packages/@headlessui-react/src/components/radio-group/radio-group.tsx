@@ -137,7 +137,7 @@ interface RadioGroupRenderPropArg<TType> {
 }
 type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby'
 
-export type PropsRadioGroup<TTag extends ElementType, TType> = Props<
+export type RadioGroupProps<TTag extends ElementType, TType> = Props<
   TTag,
   RadioGroupRenderPropArg<TType>,
   RadioGroupPropsWeControl | 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'name' | 'by'
@@ -151,7 +151,7 @@ export type PropsRadioGroup<TTag extends ElementType, TType> = Props<
 }
 
 function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
-  props: PropsRadioGroup<TTag, TType>,
+  props: RadioGroupProps<TTag, TType>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -383,7 +383,7 @@ type RadioPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-export type PropsRadioOption<TTag extends ElementType, TType> = Props<
+export type RadioOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
   RadioPropsWeControl | 'value' | 'disabled'
@@ -397,7 +397,7 @@ function OptionFn<
   // TODO: One day we will be able to infer this type from the generic in RadioGroup itself.
   // But today is not that day..
   TType = Parameters<typeof RadioGroupRoot>[0]['value']
->(props: PropsRadioOption<TTag, TType>, ref: Ref<HTMLElement>) {
+>(props: RadioOptionProps<TTag, TType>, ref: Ref<HTMLElement>) {
   let internalId = useId()
   let {
     id = `headlessui-radiogroup-option-${internalId}`,
@@ -483,13 +483,13 @@ function OptionFn<
 
 interface ComponentRadioGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
-    props: PropsRadioGroup<TTag, TType> & RefProp<typeof RadioGroupFn>
+    props: RadioGroupProps<TTag, TType> & RefProp<typeof RadioGroupFn>
   ): JSX.Element
 }
 
 interface ComponentRadioOption extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTION_TAG, TType = string>(
-    props: PropsRadioOption<TTag, TType> & RefProp<typeof OptionFn>
+    props: RadioOptionProps<TTag, TType> & RefProp<typeof OptionFn>
   ): JSX.Element
 }
 

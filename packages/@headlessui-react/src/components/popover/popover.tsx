@@ -198,10 +198,10 @@ interface PopoverRenderPropArg {
   ): void
 }
 
-export type PropsPopover<TTag extends ElementType> = Props<TTag, PopoverRenderPropArg>
+export type PopoverProps<TTag extends ElementType> = Props<TTag, PopoverRenderPropArg>
 
 function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
-  props: PropsPopover<TTag>,
+  props: PopoverProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalPopoverRef = useRef<HTMLElement | null>(null)
@@ -387,14 +387,14 @@ interface ButtonRenderPropArg {
 }
 type ButtonPropsWeControl = 'type' | 'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
 
-export type PropsPopoverButton<TTag extends ElementType> = Props<
+export type PopoverButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
   ButtonPropsWeControl
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: PropsPopoverButton<TTag>,
+  props: PopoverButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -622,7 +622,7 @@ type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
 
 let OverlayRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsPopoverOverlay<TTag extends ElementType> = Props<
+export type PopoverOverlayProps<TTag extends ElementType> = Props<
   TTag,
   OverlayRenderPropArg,
   OverlayPropsWeControl
@@ -630,7 +630,7 @@ export type PropsPopoverOverlay<TTag extends ElementType> = Props<
   PropsForFeatures<typeof OverlayRenderFeatures>
 
 function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
-  props: PropsPopoverOverlay<TTag>,
+  props: PopoverOverlayProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -686,7 +686,7 @@ type PanelPropsWeControl = 'onKeyDown'
 
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsPopoverPanel<TTag extends ElementType> = Props<
+export type PopoverPanelProps<TTag extends ElementType> = Props<
   TTag,
   PanelRenderPropArg,
   PanelPropsWeControl
@@ -696,7 +696,7 @@ export type PropsPopoverPanel<TTag extends ElementType> = Props<
   }
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: PropsPopoverPanel<TTag>,
+  props: PopoverPanelProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -919,10 +919,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 let DEFAULT_GROUP_TAG = 'div' as const
 interface GroupRenderPropArg {}
 
-export type PropsPopoverGroup<TTag extends ElementType> = Props<TTag, GroupRenderPropArg>
+export type PopoverGroupProps<TTag extends ElementType> = Props<TTag, GroupRenderPropArg>
 
 function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: PropsPopoverGroup<TTag>,
+  props: PopoverGroupProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalGroupRef = useRef<HTMLElement | null>(null)
@@ -1000,31 +1000,31 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
 interface ComponentPopover extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
-    props: PropsPopover<TTag> & RefProp<typeof PopoverFn>
+    props: PopoverProps<TTag> & RefProp<typeof PopoverFn>
   ): JSX.Element
 }
 
 interface ComponentPopoverButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-    props: PropsPopoverButton<TTag> & RefProp<typeof ButtonFn>
+    props: PopoverButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
 interface ComponentPopoverOverlay extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
-    props: PropsPopoverOverlay<TTag> & RefProp<typeof OverlayFn>
+    props: PopoverOverlayProps<TTag> & RefProp<typeof OverlayFn>
   ): JSX.Element
 }
 
 interface ComponentPopoverPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-    props: PropsPopoverPanel<TTag> & RefProp<typeof PanelFn>
+    props: PopoverPanelProps<TTag> & RefProp<typeof PanelFn>
   ): JSX.Element
 }
 
 interface ComponentPopoverGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
-    props: PropsPopoverGroup<TTag> & RefProp<typeof GroupFn>
+    props: PopoverGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 

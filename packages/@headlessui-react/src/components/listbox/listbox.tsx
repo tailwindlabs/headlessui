@@ -332,7 +332,7 @@ interface ListboxRenderPropArg<T> {
   value: T
 }
 
-export type PropsListbox<TTag extends ElementType, TType, TActualType> = Props<
+export type ListboxProps<TTag extends ElementType, TType, TActualType> = Props<
   TTag,
   ListboxRenderPropArg<TType>,
   'value' | 'defaultValue' | 'onChange' | 'by' | 'disabled' | 'horizontal' | 'name' | 'multiple'
@@ -351,7 +351,7 @@ function ListboxFn<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType
->(props: PropsListbox<TTag, TType, TActualType>, ref: Ref<TTag>) {
+>(props: ListboxProps<TTag, TType, TActualType>, ref: Ref<TTag>) {
   let {
     value: controlledValue,
     defaultValue,
@@ -595,14 +595,14 @@ type ButtonPropsWeControl =
   | 'onKeyDown'
   | 'onClick'
 
-export type PropsListboxButton<TTag extends ElementType> = Props<
+export type ListboxButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
   ButtonPropsWeControl
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: PropsListboxButton<TTag>,
+  props: ListboxButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -705,14 +705,14 @@ interface LabelRenderPropArg {
 }
 type LabelPropsWeControl = 'ref' | 'onClick'
 
-export type PropsListboxLabel<TTag extends ElementType> = Props<
+export type ListboxLabelProps<TTag extends ElementType> = Props<
   TTag,
   LabelRenderPropArg,
   LabelPropsWeControl
 >
 
 function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: PropsListboxLabel<TTag>,
+  props: ListboxLabelProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -756,7 +756,7 @@ type OptionsPropsWeControl =
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
-export type PropsListboxOptions<TTag extends ElementType> = Props<
+export type ListboxOptionsProps<TTag extends ElementType> = Props<
   TTag,
   OptionsRenderPropArg,
   OptionsPropsWeControl
@@ -764,7 +764,7 @@ export type PropsListboxOptions<TTag extends ElementType> = Props<
   PropsForFeatures<typeof OptionsRenderFeatures>
 
 function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
-  props: PropsListboxOptions<TTag>,
+  props: ListboxOptionsProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -917,7 +917,7 @@ type ListboxOptionPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
-export type PropsListboxOption<TTag extends ElementType, TType> = Props<
+export type ListboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
   ListboxOptionPropsWeControl | 'value'
@@ -931,7 +931,7 @@ function OptionFn<
   // TODO: One day we will be able to infer this type from the generic in Listbox itself.
   // But today is not that day..
   TType = Parameters<typeof ListboxRoot>[0]['value']
->(props: PropsListboxOption<TTag, TType>, ref: Ref<HTMLElement>) {
+>(props: ListboxOptionProps<TTag, TType>, ref: Ref<HTMLElement>) {
   let internalId = useId()
   let {
     id = `headlessui-listbox-option-${internalId}`,
@@ -1050,25 +1050,25 @@ interface ComponentListbox extends HasDisplayName {
     TType = string,
     TActualType = TType extends (infer U)[] ? U : TType
   >(
-    props: PropsListbox<TTag, TType, TActualType> & RefProp<typeof ListboxFn>
+    props: ListboxProps<TTag, TType, TActualType> & RefProp<typeof ListboxFn>
   ): JSX.Element
 }
 
 interface ComponentListboxButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-    props: PropsListboxButton<TTag> & RefProp<typeof ButtonFn>
+    props: ListboxButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
 interface ComponentListboxLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-    props: PropsListboxLabel<TTag> & RefProp<typeof LabelFn>
+    props: ListboxLabelProps<TTag> & RefProp<typeof LabelFn>
   ): JSX.Element
 }
 
 interface ComponentListboxOptions extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
-    props: PropsListboxOptions<TTag> & RefProp<typeof OptionsFn>
+    props: ListboxOptionsProps<TTag> & RefProp<typeof OptionsFn>
   ): JSX.Element
 }
 
@@ -1077,7 +1077,7 @@ interface ComponentListboxOption extends HasDisplayName {
     TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
     TType = Parameters<typeof ListboxRoot>[0]['value']
   >(
-    props: PropsListboxOption<TTag, TType> & RefProp<typeof OptionFn>
+    props: ListboxOptionProps<TTag, TType> & RefProp<typeof OptionFn>
   ): JSX.Element
 }
 
