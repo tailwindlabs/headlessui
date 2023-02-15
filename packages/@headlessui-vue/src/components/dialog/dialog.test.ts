@@ -8,7 +8,7 @@ import {
   PropType,
   computed,
 } from 'vue'
-import { createRenderTemplate, render, screen } from '../../test-utils/vue-testing-library'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import {
   Dialog,

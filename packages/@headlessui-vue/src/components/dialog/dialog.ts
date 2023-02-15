@@ -34,7 +34,6 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
-import { handleIOSLocking } from '../../hooks/document-overflow/handle-ios-locking'
 
 enum DialogStates {
   Open,
