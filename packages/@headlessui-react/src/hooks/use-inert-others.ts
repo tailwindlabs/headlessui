@@ -7,7 +7,6 @@ let originals = new Map<HTMLElement, { 'aria-hidden': string | null; inert: bool
 
 function inert(element: HTMLElement) {
   element.setAttribute('aria-hidden', 'true')
-  // @ts-expect-error `inert` does not exist on HTMLElement (yet!)
   element.inert = true
 }
 
@@ -17,7 +16,6 @@ function restore(element: HTMLElement) {
 
   if (original['aria-hidden'] === null) element.removeAttribute('aria-hidden')
   else element.setAttribute('aria-hidden', original['aria-hidden'])
-  // @ts-expect-error `inert` does not exist on HTMLElement (yet!)
   element.inert = original.inert
 }
 
@@ -57,7 +55,6 @@ export function useInertOthers<TElement extends HTMLElement>(
       if (interactables.size === 1) {
         originals.set(child, {
           'aria-hidden': child.getAttribute('aria-hidden'),
-          // @ts-expect-error `inert` does not exist on HTMLElement (yet!)
           inert: child.inert,
         })
 
@@ -87,7 +84,6 @@ export function useInertOthers<TElement extends HTMLElement>(
 
           originals.set(child, {
             'aria-hidden': child.getAttribute('aria-hidden'),
-            // @ts-expect-error `inert` does not exist on HTMLElement (yet!)
             inert: child.inert,
           })
 
