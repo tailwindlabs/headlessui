@@ -586,7 +586,7 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  | 'type'
+  // | 'type' // We allow this to be overridden
   | 'aria-haspopup'
   | 'aria-controls'
   | 'aria-expanded'
