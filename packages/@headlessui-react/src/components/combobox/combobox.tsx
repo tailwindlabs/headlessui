@@ -724,6 +724,7 @@ function InputFn<
     id = `headlessui-combobox-input-${internalId}`,
     onChange,
     displayValue,
+    // @ts-ignore: We know this MAY NOT exist for a given tag but we only care when it _does_ exist.
     type = 'text',
     ...theirProps
   } = props
@@ -1009,7 +1010,7 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  | 'type'
+  // | 'type' // While we do "control" this prop we allow it to be overridden
   | 'tabIndex'
   | 'aria-haspopup'
   | 'aria-controls'
