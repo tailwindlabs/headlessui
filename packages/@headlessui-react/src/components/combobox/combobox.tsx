@@ -710,7 +710,7 @@ export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
   InputPropsWeControl
 > & {
   displayValue?(item: TType): string
-  onChange(event: React.ChangeEvent<HTMLInputElement>): void
+  onChange?(event: React.ChangeEvent<HTMLInputElement>): void
 }
 
 function InputFn<
