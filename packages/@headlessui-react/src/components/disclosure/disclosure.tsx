@@ -432,13 +432,13 @@ interface ComponentDisclosure extends HasDisplayName {
 
 interface ComponentDisclosureButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-    props: DisclosureProps<TTag> & RefProp<typeof ButtonFn>
+    props: DisclosureButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
 interface ComponentDisclosurePanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-    props: DisclosureProps<TTag> & RefProp<typeof PanelFn>
+    props: DisclosurePanelProps<TTag> & RefProp<typeof PanelFn>
   ): JSX.Element
 }
 
