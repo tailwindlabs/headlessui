@@ -145,7 +145,7 @@ export let Dialog = defineComponent({
 
     // Ensure other elements can't be interacted with
     let inertOthersEnabled = computed(() => {
-      if (!hasNestedDialogs.value) return false
+      if (hasNestedDialogs.value) return false
       if (isClosing.value) return false
       return enabled.value
     })

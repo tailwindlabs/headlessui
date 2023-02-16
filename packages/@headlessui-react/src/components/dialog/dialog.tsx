@@ -216,7 +216,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   // Ensure other elements can't be interacted with
   let inertOthersEnabled = (() => {
-    if (!hasNestedDialogs) return false
+    if (hasNestedDialogs) return false
     if (isClosing) return false
     return enabled
   })()
