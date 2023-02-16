@@ -309,12 +309,8 @@ interface ButtonRenderPropArg {
   open: boolean
 }
 type ButtonPropsWeControl =
-  | 'type'
-  | 'aria-haspopup'
-  | 'aria-controls'
-  | 'aria-expanded'
-  | 'onKeyDown'
-  | 'onClick'
+  // | 'type' // We allow this to be overridden
+  'aria-haspopup' | 'aria-controls' | 'aria-expanded' | 'onKeyDown' | 'onClick'
 
 export type MenuButtonProps<TTag extends ElementType> = Props<
   TTag,
