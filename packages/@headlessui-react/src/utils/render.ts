@@ -125,8 +125,8 @@ function _render<TTag extends ElementType, TSlot>(
     | ReactElement[]
 
   // Allow for className to be a function with the slot as the contents
-  if (rest.className && typeof rest.className === 'function') {
-    ;(rest as any).className = rest.className(slot)
+  if ('className' in rest && rest.className && typeof rest.className === 'function') {
+    rest.className = rest.className(slot)
   }
 
   let dataAttributes: Record<string, string> = {}
@@ -173,6 +173,7 @@ function _render<TTag extends ElementType, TSlot>(
       }
 
       // Merge class name prop in SSR
+      // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
       let newClassName = classNames(resolvedChildren.props?.className, rest.className)
       let classNameProps = newClassName ? { className: newClassName } : {}
 
@@ -181,7 +182,7 @@ function _render<TTag extends ElementType, TSlot>(
         Object.assign(
           {},
           // Filter out undefined values so that they don't override the existing values
-          mergeProps(resolvedChildren.props, compact(omit(rest, ['ref']))),
+          mergeProps(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
           dataAttributes,
           refRelatedProps,
           mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref),
@@ -305,7 +306,7 @@ export function compact<T extends Record<any, any>>(object: T) {
 }
 
 function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) {
-  let clone = Object.assign({}, object)
+  let clone = Object.assign({}, object) as T
   for (let key of keysToOmit) {
     if (key in clone) delete clone[key]
   }
