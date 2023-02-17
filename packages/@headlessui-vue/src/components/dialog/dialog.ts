@@ -21,7 +21,7 @@ import { render, Features } from '../../utils/render'
 import { Keys } from '../../keyboard'
 import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { useInertOthers } from '../../hooks/use-inert-others'
+import { useInert } from '../../hooks/use-inert'
 import { Portal, PortalGroup } from '../portal/portal'
 import { StackMessage, useStackProvider } from '../../internal/stack-context'
 import { match } from '../../utils/match'
@@ -145,11 +145,34 @@ export let Dialog = defineComponent({
 
     // Ensure other elements can't be interacted with
     let inertOthersEnabled = computed(() => {
-      if (!hasNestedDialogs.value) return false
+      // Nested dialogs should not modify the `inert` property, only the root one should.
+      if (hasParentDialog) return false
       if (isClosing.value) return false
       return enabled.value
     })
-    useInertOthers(internalDialogRef, inertOthersEnabled)
+    let resolveRootOfMainTreeNode = computed(() => {
+      return (Array.from(ownerDocument.value?.querySelectorAll('body > *') ?? []).find((root) => {
+        // Skip the portal root, we don't want to make that one inert
+        if (root.id === 'headlessui-portal-root') return false
+
+        // Find the root of the main tree node
+        return root.contains(dom(mainTreeNode)) && root instanceof HTMLElement
+      }) ?? null) as HTMLElement | null
+    })
+    useInert(resolveRootOfMainTreeNode, inertOthersEnabled)
+
+    // This would mark the parent dialogs as inert
+    let inertParentDialogs = computed(() => {
+      if (hasNestedDialogs.value) return true
+      return enabled.value
+    })
+    let resolveRootOfParentDialog = computed(() => {
+      return (Array.from(
+        ownerDocument.value?.querySelectorAll('[data-headlessui-portal]') ?? []
+      ).find((root) => root.contains(dom(mainTreeNode)) && root instanceof HTMLElement) ??
+        null) as HTMLElement | null
+    })
+    useInert(resolveRootOfParentDialog, inertParentDialogs)
 
     useStackProvider({
       type: 'Dialog',

@@ -2,6 +2,7 @@
 import React, {
   createContext,
   createRef,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -25,7 +26,6 @@ import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { Description, useDescriptions } from '../description/description'
@@ -38,6 +38,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
+import { useInert } from '../../hooks/use-inert'
 
 enum DialogStates {
   Open,
@@ -216,11 +217,33 @@ let DialogRoot = forwardRefWithAs(function Dialog<
 
   // Ensure other elements can't be interacted with
   let inertOthersEnabled = (() => {
-    if (!hasNestedDialogs) return false
+    // Nested dialogs should not modify the `inert` property, only the root one should.
+    if (hasParentDialog) return false
     if (isClosing) return false
     return enabled
   })()
-  useInertOthers(internalDialogRef, inertOthersEnabled)
+  let resolveRootOfMainTreeNode = useCallback(() => {
+    return (Array.from(ownerDocument?.querySelectorAll('body > *') ?? []).find((root) => {
+      // Skip the portal root, we don't want to make that one inert
+      if (root.id === 'headlessui-portal-root') return false
+
+      // Find the root of the main tree node
+      return root.contains(mainTreeNode.current) && root instanceof HTMLElement
+    }) ?? null) as HTMLElement | null
+  }, [mainTreeNode])
+  useInert(resolveRootOfMainTreeNode, inertOthersEnabled)
+
+  // This would mark the parent dialogs as inert
+  let inertParentDialogs = (() => {
+    if (hasNestedDialogs) return true
+    return enabled
+  })()
+  let resolveRootOfParentDialog = useCallback(() => {
+    return (Array.from(ownerDocument?.querySelectorAll('[data-headlessui-portal]') ?? []).find(
+      (root) => root.contains(mainTreeNode.current) && root instanceof HTMLElement
+    ) ?? null) as HTMLElement | null
+  }, [mainTreeNode])
+  useInert(resolveRootOfParentDialog, inertParentDialogs)
 
   let resolveContainers = useEvent(() => {
     // Third party roots

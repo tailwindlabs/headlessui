@@ -1817,6 +1817,31 @@ export function assertNotFocusable(element: HTMLElement | null) {
   }
 }
 
+export function assertInert(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    expect(element).toHaveAttribute('aria-hidden', 'true')
+    expect(element).toHaveProperty('inert', true)
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertInert)
+    throw err
+  }
+}
+
+export function assertNotInert(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    // NOTE: We can't test that the element doesn't have `aria-hidden`, because this can still be
+    // the case even if they are not inert.
+    expect(element.inert).toBeUndefined()
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertNotInert)
+    throw err
+  }
+}
+
 // ---
 
 export function getByText(text: string): HTMLElement | null {
