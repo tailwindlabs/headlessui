@@ -2481,3 +2481,64 @@ describe('Mouse interactions', () => {
     })
   )
 })
+
+describe('Nested popovers', () => {
+  it(
+    'should be possible to nest Popover components and control them individually',
+    suppressConsoleLogs(async () => {
+      render(
+        <Popover data-testid="popover-a">
+          <Popover.Button>Toggle A</Popover.Button>
+          <Popover.Panel>
+            <span>Contents A</span>
+            <Popover data-testid="popover-b">
+              <Popover.Button>Toggle B</Popover.Button>
+              <Popover.Panel>
+                <span>Contents B</span>
+              </Popover.Panel>
+            </Popover>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Verify that Popover B is not there yet
+      expect(document.querySelector('[data-testid="popover-b"]')).toBeNull()
+
+      // Open Popover A
+      await click(getByText('Toggle A'))
+
+      // Ensure Popover A is visible
+      assertPopoverPanel(
+        { state: PopoverState.Visible },
+        document.querySelector(
+          '[data-testid="popover-a"] [id^="headlessui-popover-panel-"]'
+        ) as HTMLElement
+      )
+
+      // Ensure Popover B is visible
+      assertPopoverPanel(
+        { state: PopoverState.InvisibleUnmounted },
+        document.querySelector(
+          '[data-testid="popover-b"] [id^="headlessui-popover-panel-"]'
+        ) as HTMLElement
+      )
+
+      // Open Popover B
+      await click(getByText('Toggle B'))
+
+      // Ensure both popovers are open
+      assertPopoverPanel(
+        { state: PopoverState.Visible },
+        document.querySelector(
+          '[data-testid="popover-a"] [id^="headlessui-popover-panel-"]'
+        ) as HTMLElement
+      )
+      assertPopoverPanel(
+        { state: PopoverState.Visible },
+        document.querySelector(
+          '[data-testid="popover-b"] [id^="headlessui-popover-panel-"]'
+        ) as HTMLElement
+      )
+    })
+  )
+})
