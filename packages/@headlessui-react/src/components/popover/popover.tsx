@@ -393,7 +393,12 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
   let closeOthers = groupContext?.closeOthers
 
   let panelContext = usePopoverPanelContext()
-  let isWithinPanel = panelContext !== null
+
+  // A button inside a panel will just have "close" functionality, no "open" functionality. However,
+  // if a `Popover.Button` is rendered inside a `Popover` which in turn is rendered inside a
+  // `Popover.Panel` (aka nested popovers), then we need to make sure that the button is able to
+  // open the nested popover.
+  let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
 
   useEffect(() => {
     if (isWithinPanel) return
