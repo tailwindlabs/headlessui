@@ -17,10 +17,10 @@ export type PropsOf<TTag extends ReactTag> = TTag extends React.ElementType
 type PropsWeControl = 'as' | 'children' | 'refName' | 'className'
 
 // Resolve the props of the component, but ensure to omit certain props that we control
-type CleanProps<
-  TTag extends ReactTag,
-  TOmitableProps extends PropertyKey = never
-> = Omit<PropsOf<TTag>, TOmitableProps | PropsWeControl>
+type CleanProps<TTag extends ReactTag, TOmitableProps extends PropertyKey = never> = Omit<
+  PropsOf<TTag>,
+  TOmitableProps | PropsWeControl
+>
 
 // Add certain props that we control
 type OurProps<TTag extends ReactTag, TSlot> = {
