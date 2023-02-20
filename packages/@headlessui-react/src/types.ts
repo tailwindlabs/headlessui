@@ -51,12 +51,6 @@ export type Props<
   TOmitableProps extends PropertyKey = never
 > = CleanProps<TTag, TOmitableProps> & OurProps<TTag, TSlot> & ClassNameOverride<TTag, TSlot>
 
-export type PropsWithoutRef<
-  TTag extends ReactTag,
-  TSlot = {},
-  TOmitableProps extends PropertyKey = never
-> = Omit<Props<TTag, TSlot, TOmitableProps>, 'ref'>
-
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 export type XOR<T, U> = T | U extends __
   ? never
