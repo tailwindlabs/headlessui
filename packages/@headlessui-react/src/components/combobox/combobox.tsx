@@ -321,12 +321,12 @@ function stateReducer<T>(state: StateDefinition<T>, action: Actions<T>) {
 // ---
 
 let DEFAULT_COMBOBOX_TAG = Fragment
-interface ComboboxRenderPropArg<T> {
+interface ComboboxRenderPropArg<TValue, TActive = TValue> {
   open: boolean
   disabled: boolean
   activeIndex: number | null
-  activeOption: T | null
-  value: T
+  activeOption: TActive | null
+  value: TValue
 }
 
 type O = 'value' | 'defaultValue' | 'nullable' | 'multiple' | 'onChange' | 'by'
@@ -344,7 +344,7 @@ type ComboboxValueProps<
       multiple: true
       onChange?(value: EnsureArray<TValue>): void
       by?: ByComparator<TValue>
-    } & Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>>, O>)
+    } & Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>, TValue>, O>)
   | ({
       value?: TValue | null
       defaultValue?: TValue | null
@@ -360,7 +360,7 @@ type ComboboxValueProps<
       multiple: true
       onChange?(value: EnsureArray<TValue>): void
       by?: ByComparator<TValue extends Array<infer U> ? U : TValue>
-    } & Expand<Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>>, O>>)
+    } & Expand<Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>, TValue>, O>>)
   | ({
       value?: TValue
       nullable?: false
