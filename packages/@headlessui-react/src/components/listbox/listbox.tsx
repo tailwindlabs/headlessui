@@ -394,7 +394,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () =>
-          (value as unknown as EnsureArray<TType>).some((option) => compare(option, compareValue)),
+          (value as unknown as EnsureArray<TType>)?.some((option) => compare(option, compareValue)),
         [ValueMode.Single]: () => compare(value as TType, compareValue),
       }),
     [value]
@@ -485,7 +485,7 @@ let ListboxRoot = forwardRefWithAs(function Listbox<
         return theirOnChange?.(value as TType)
       },
       [ValueMode.Multi]() {
-        let copy = (data.value as TActualType[]).slice()
+        let copy = (data.value as TActualType[])?.slice() ?? []
 
         let idx = copy.findIndex((item) => compare(item, value as TActualType))
         if (idx === -1) {
