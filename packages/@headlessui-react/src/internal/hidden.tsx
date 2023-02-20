@@ -15,12 +15,12 @@ export enum Features {
   Hidden = 1 << 2,
 }
 
-export type PropsHidden<TTag extends ElementType> = Props<TTag> & {
+export type HiddenProps<TTag extends ElementType> = Props<TTag> & {
   features?: Features
 }
 
 function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG>(
-  props: PropsHidden<TTag>,
+  props: HiddenProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { features = Features.None, ...theirProps } = props
@@ -55,7 +55,7 @@ function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDE
 
 interface ComponentHidden extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG>(
-    props: PropsHidden<TTag> & RefProp<typeof VisuallyHidden>
+    props: HiddenProps<TTag> & RefProp<typeof VisuallyHidden>
   ): JSX.Element
 }
 
