@@ -370,7 +370,9 @@ let DEFAULT_TAB_TAG = 'button' as const
 interface TabRenderPropArg {
   selected: boolean
 }
-type TabPropsWeControl = 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
+type TabPropsWeControl =
+  // | 'type' // We allow this to be overridden
+  'role' | 'aria-controls' | 'aria-selected' | 'tabIndex'
 
 export type TabProps<TTag extends ElementType> = Props<
   TTag,

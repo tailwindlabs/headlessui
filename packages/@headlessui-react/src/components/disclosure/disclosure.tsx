@@ -247,7 +247,9 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
 }
-type ButtonPropsWeControl = 'type' | 'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
+type ButtonPropsWeControl =
+  // | 'type' // We allow this to be overridden
+  'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
 
 export type DisclosureButtonProps<TTag extends ElementType> = Props<
   TTag,
