@@ -20,7 +20,14 @@ import React, {
 
 import { Props } from '../../types'
 import { match } from '../../utils/match'
-import { forwardRefWithAs, render, Features, PropsForFeatures } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  render,
+  Features,
+  PropsForFeatures,
+  HasDisplayName,
+  RefProp,
+} from '../../utils/render'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
@@ -149,12 +156,12 @@ interface DisclosureRenderPropArg {
   close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
 }
 
-let DisclosureRoot = forwardRefWithAs(function Disclosure<
-  TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG
->(
-  props: Props<TTag, DisclosureRenderPropArg> & {
-    defaultOpen?: boolean
-  },
+export type DisclosureProps<TTag extends ElementType> = Props<TTag, DisclosureRenderPropArg> & {
+  defaultOpen?: boolean
+}
+
+function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
+  props: DisclosureProps<TTag>,
   ref: Ref<TTag>
 ) {
   let { defaultOpen = false, ...theirProps } = props
@@ -232,7 +239,7 @@ let DisclosureRoot = forwardRefWithAs(function Disclosure<
       </DisclosureAPIContext.Provider>
     </DisclosureContext.Provider>
   )
-})
+}
 
 // ---
 
@@ -240,10 +247,18 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
 }
-type ButtonPropsWeControl = 'type' | 'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
+type ButtonPropsWeControl =
+  // | 'type' // We allow this to be overridden
+  'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
 
-let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
+export type DisclosureButtonProps<TTag extends ElementType> = Props<
+  TTag,
+  ButtonRenderPropArg,
+  ButtonPropsWeControl
+>
+
+function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+  props: DisclosureButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -340,7 +355,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Disclosure.Button',
   })
-})
+}
 
 // ---
 
@@ -352,8 +367,11 @@ interface PanelRenderPropArg {
 
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
-let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg> & PropsForFeatures<typeof PanelRenderFeatures>,
+export type DisclosurePanelProps<TTag extends ElementType> = Props<TTag, PanelRenderPropArg> &
+  PropsForFeatures<typeof PanelRenderFeatures>
+
+function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+  props: DisclosurePanelProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -404,8 +422,30 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
       })}
     </DisclosurePanelContext.Provider>
   )
-})
+}
 
 // ---
+
+interface ComponentDisclosure extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
+    props: DisclosureProps<TTag> & RefProp<typeof DisclosureFn>
+  ): JSX.Element
+}
+
+interface ComponentDisclosureButton extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+    props: DisclosureButtonProps<TTag> & RefProp<typeof ButtonFn>
+  ): JSX.Element
+}
+
+interface ComponentDisclosurePanel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+    props: DisclosurePanelProps<TTag> & RefProp<typeof PanelFn>
+  ): JSX.Element
+}
+
+let DisclosureRoot = forwardRefWithAs(DisclosureFn) as unknown as ComponentDisclosure
+let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentDisclosureButton
+let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentDisclosurePanel
 
 export let Disclosure = Object.assign(DisclosureRoot, { Button, Panel })

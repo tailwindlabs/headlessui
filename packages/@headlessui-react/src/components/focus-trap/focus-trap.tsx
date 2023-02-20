@@ -10,7 +10,7 @@ import React, {
 } from 'react'
 
 import { Props } from '../../types'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
@@ -47,133 +47,148 @@ enum Features {
   All = InitialFocus | TabLock | FocusLock | RestoreFocus,
 }
 
-export let FocusTrap = Object.assign(
-  forwardRefWithAs(function FocusTrap<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
-    props: Props<TTag> & {
-      initialFocus?: MutableRefObject<HTMLElement | null>
-      features?: Features
-      containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
-    },
-    ref: Ref<HTMLDivElement>
-  ) {
-    let container = useRef<HTMLDivElement | null>(null)
-    let focusTrapRef = useSyncRefs(container, ref)
-    let { initialFocus, containers, features = Features.All, ...theirProps } = props
+export type FocusTrapProps<TTag extends ElementType> = Props<TTag> & {
+  initialFocus?: MutableRefObject<HTMLElement | null>
+  features?: Features
+  containers?: MutableRefObject<Set<MutableRefObject<HTMLElement | null>>>
+}
 
-    if (!useServerHandoffComplete()) {
-      features = Features.None
-    }
+function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
+  props: FocusTrapProps<TTag>,
+  ref: Ref<HTMLDivElement>
+) {
+  let container = useRef<HTMLDivElement | null>(null)
+  let focusTrapRef = useSyncRefs(container, ref)
+  let { initialFocus, containers, features = Features.All, ...theirProps } = props
 
-    let ownerDocument = useOwnerDocument(container)
+  if (!useServerHandoffComplete()) {
+    features = Features.None
+  }
 
-    useRestoreFocus({ ownerDocument }, Boolean(features & Features.RestoreFocus))
-    let previousActiveElement = useInitialFocus(
-      { ownerDocument, container, initialFocus },
-      Boolean(features & Features.InitialFocus)
-    )
-    useFocusLock(
-      { ownerDocument, container, containers, previousActiveElement },
-      Boolean(features & Features.FocusLock)
-    )
+  let ownerDocument = useOwnerDocument(container)
 
-    let direction = useTabDirection()
-    let handleFocus = useEvent((e: ReactFocusEvent) => {
-      let el = container.current as HTMLElement
-      if (!el) return
+  useRestoreFocus({ ownerDocument }, Boolean(features & Features.RestoreFocus))
+  let previousActiveElement = useInitialFocus(
+    { ownerDocument, container, initialFocus },
+    Boolean(features & Features.InitialFocus)
+  )
+  useFocusLock(
+    { ownerDocument, container, containers, previousActiveElement },
+    Boolean(features & Features.FocusLock)
+  )
 
-      // TODO: Cleanup once we are using real browser tests
-      let wrapper = process.env.NODE_ENV === 'test' ? microTask : (cb: Function) => cb()
-      wrapper(() => {
-        match(direction.current, {
-          [TabDirection.Forwards]: () => {
-            focusIn(el, Focus.First, { skipElements: [e.relatedTarget as HTMLElement] })
-          },
-          [TabDirection.Backwards]: () => {
-            focusIn(el, Focus.Last, { skipElements: [e.relatedTarget as HTMLElement] })
-          },
-        })
+  let direction = useTabDirection()
+  let handleFocus = useEvent((e: ReactFocusEvent) => {
+    let el = container.current as HTMLElement
+    if (!el) return
+
+    // TODO: Cleanup once we are using real browser tests
+    let wrapper = process.env.NODE_ENV === 'test' ? microTask : (cb: Function) => cb()
+    wrapper(() => {
+      match(direction.current, {
+        [TabDirection.Forwards]: () => {
+          focusIn(el, Focus.First, { skipElements: [e.relatedTarget as HTMLElement] })
+        },
+        [TabDirection.Backwards]: () => {
+          focusIn(el, Focus.Last, { skipElements: [e.relatedTarget as HTMLElement] })
+        },
       })
     })
+  })
 
-    let d = useDisposables()
-    let recentlyUsedTabKey = useRef(false)
-    let ourProps = {
-      ref: focusTrapRef,
-      onKeyDown(e: KeyboardEvent) {
-        if (e.key == 'Tab') {
-          recentlyUsedTabKey.current = true
-          d.requestAnimationFrame(() => {
-            recentlyUsedTabKey.current = false
-          })
+  let d = useDisposables()
+  let recentlyUsedTabKey = useRef(false)
+  let ourProps = {
+    ref: focusTrapRef,
+    onKeyDown(e: KeyboardEvent) {
+      if (e.key == 'Tab') {
+        recentlyUsedTabKey.current = true
+        d.requestAnimationFrame(() => {
+          recentlyUsedTabKey.current = false
+        })
+      }
+    },
+    onBlur(e: ReactFocusEvent) {
+      let allContainers = new Set(containers?.current)
+      allContainers.add(container)
+
+      let relatedTarget = e.relatedTarget
+      if (!(relatedTarget instanceof HTMLElement)) return
+
+      // Known guards, leave them alone!
+      if (relatedTarget.dataset.headlessuiFocusGuard === 'true') {
+        return
+      }
+
+      // Blur is triggered due to focus on relatedTarget, and the relatedTarget is not inside any
+      // of the dialog containers. In other words, let's move focus back in!
+      if (!contains(allContainers, relatedTarget)) {
+        // Was the blur invoke via the keyboard? Redirect to the next in line.
+        if (recentlyUsedTabKey.current) {
+          focusIn(
+            container.current as HTMLElement,
+            match(direction.current, {
+              [TabDirection.Forwards]: () => Focus.Next,
+              [TabDirection.Backwards]: () => Focus.Previous,
+            }) | Focus.WrapAround,
+            { relativeTo: e.target as HTMLElement }
+          )
         }
-      },
-      onBlur(e: ReactFocusEvent) {
-        let allContainers = new Set(containers?.current)
-        allContainers.add(container)
 
-        let relatedTarget = e.relatedTarget
-        if (!(relatedTarget instanceof HTMLElement)) return
-
-        // Known guards, leave them alone!
-        if (relatedTarget.dataset.headlessuiFocusGuard === 'true') {
-          return
+        // It was invoke via something else (e.g.: click, programmatically, ...). Redirect to the
+        // previous active item in the FocusTrap
+        else if (e.target instanceof HTMLElement) {
+          focusElement(e.target)
         }
+      }
+    },
+  }
 
-        // Blur is triggered due to focus on relatedTarget, and the relatedTarget is not inside any
-        // of the dialog containers. In other words, let's move focus back in!
-        if (!contains(allContainers, relatedTarget)) {
-          // Was the blur invoke via the keyboard? Redirect to the next in line.
-          if (recentlyUsedTabKey.current) {
-            focusIn(
-              container.current as HTMLElement,
-              match(direction.current, {
-                [TabDirection.Forwards]: () => Focus.Next,
-                [TabDirection.Backwards]: () => Focus.Previous,
-              }) | Focus.WrapAround,
-              { relativeTo: e.target as HTMLElement }
-            )
-          }
+  return (
+    <>
+      {Boolean(features & Features.TabLock) && (
+        <Hidden
+          as="button"
+          type="button"
+          data-headlessui-focus-guard
+          onFocus={handleFocus}
+          features={HiddenFeatures.Focusable}
+        />
+      )}
+      {render({
+        ourProps,
+        theirProps,
+        defaultTag: DEFAULT_FOCUS_TRAP_TAG,
+        name: 'FocusTrap',
+      })}
+      {Boolean(features & Features.TabLock) && (
+        <Hidden
+          as="button"
+          type="button"
+          data-headlessui-focus-guard
+          onFocus={handleFocus}
+          features={HiddenFeatures.Focusable}
+        />
+      )}
+    </>
+  )
+}
 
-          // It was invoke via something else (e.g.: click, programmatically, ...). Redirect to the
-          // previous active item in the FocusTrap
-          else if (e.target instanceof HTMLElement) {
-            focusElement(e.target)
-          }
-        }
-      },
-    }
+// ---
 
-    return (
-      <>
-        {Boolean(features & Features.TabLock) && (
-          <Hidden
-            as="button"
-            type="button"
-            data-headlessui-focus-guard
-            onFocus={handleFocus}
-            features={HiddenFeatures.Focusable}
-          />
-        )}
-        {render({
-          ourProps,
-          theirProps,
-          defaultTag: DEFAULT_FOCUS_TRAP_TAG,
-          name: 'FocusTrap',
-        })}
-        {Boolean(features & Features.TabLock) && (
-          <Hidden
-            as="button"
-            type="button"
-            data-headlessui-focus-guard
-            onFocus={handleFocus}
-            features={HiddenFeatures.Focusable}
-          />
-        )}
-      </>
-    )
-  }),
-  { features: Features }
-)
+interface ComponentFocusTrap extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
+    props: FocusTrapProps<TTag> & RefProp<typeof FocusTrapFn>
+  ): JSX.Element
+}
+
+let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as unknown as ComponentFocusTrap
+
+export let FocusTrap = Object.assign(FocusTrapRoot, {
+  features: Features,
+})
+
+// ---
 
 function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, enabled: boolean) {
   let restoreElement = useRef<HTMLElement | null>(null)

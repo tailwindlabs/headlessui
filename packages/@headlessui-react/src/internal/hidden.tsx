@@ -1,6 +1,6 @@
 import { ElementType, Ref } from 'react'
 import { Props } from '../types'
-import { forwardRefWithAs, render } from '../utils/render'
+import { forwardRefWithAs, render, HasDisplayName, RefProp } from '../utils/render'
 
 let DEFAULT_VISUALLY_HIDDEN_TAG = 'div' as const
 
@@ -15,9 +15,14 @@ export enum Features {
   Hidden = 1 << 2,
 }
 
-export let Hidden = forwardRefWithAs(function VisuallyHidden<
-  TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG
->(props: Props<TTag> & { features?: Features }, ref: Ref<HTMLElement>) {
+export type HiddenProps<TTag extends ElementType> = Props<TTag> & {
+  features?: Features
+}
+
+function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG>(
+  props: HiddenProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
   let { features = Features.None, ...theirProps } = props
   let ourProps = {
     ref,
@@ -46,4 +51,12 @@ export let Hidden = forwardRefWithAs(function VisuallyHidden<
     defaultTag: DEFAULT_VISUALLY_HIDDEN_TAG,
     name: 'Hidden',
   })
-})
+}
+
+interface ComponentHidden extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG>(
+    props: HiddenProps<TTag> & RefProp<typeof VisuallyHidden>
+  ): JSX.Element
+}
+
+export let Hidden = forwardRefWithAs(VisuallyHidden) as unknown as ComponentHidden

@@ -12,7 +12,7 @@ import React, {
 
 import { Props } from '../../types'
 import { useId } from '../../hooks/use-id'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useEvent } from '../../hooks/use-event'
@@ -80,12 +80,12 @@ export function useLabels(): [string | undefined, (props: LabelProviderProps) =>
 
 let DEFAULT_LABEL_TAG = 'label' as const
 
-export let Label = forwardRefWithAs(function Label<
-  TTag extends ElementType = typeof DEFAULT_LABEL_TAG
->(
-  props: Props<TTag> & {
-    passive?: boolean
-  },
+export type LabelProps<TTag extends ElementType = typeof DEFAULT_LABEL_TAG> = Props<TTag> & {
+  passive?: boolean
+}
+
+function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+  props: LabelProps<TTag>,
   ref: Ref<HTMLLabelElement>
 ) {
   let internalId = useId()
@@ -114,4 +114,18 @@ export let Label = forwardRefWithAs(function Label<
     defaultTag: DEFAULT_LABEL_TAG,
     name: context.name || 'Label',
   })
+}
+
+// ---
+
+export interface ComponentLabel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
+    props: LabelProps<TTag> & RefProp<typeof LabelFn>
+  ): JSX.Element
+}
+
+let LabelRoot = forwardRefWithAs(LabelFn) as unknown as ComponentLabel
+
+export let Label = Object.assign(LabelRoot, {
+  //
 })

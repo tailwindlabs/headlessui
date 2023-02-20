@@ -20,7 +20,14 @@ import React, {
 
 import { Props } from '../../types'
 import { match } from '../../utils/match'
-import { forwardRefWithAs, render, Features, PropsForFeatures } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  render,
+  Features,
+  PropsForFeatures,
+  HasDisplayName,
+  RefProp,
+} from '../../utils/render'
 import { disposables } from '../../utils/disposables'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -231,8 +238,10 @@ interface MenuRenderPropArg {
   close: () => void
 }
 
-let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-  props: Props<TTag, MenuRenderPropArg>,
+export type MenuProps<TTag extends ElementType> = Props<TTag, MenuRenderPropArg>
+
+function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
+  props: MenuProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let reducerBag = useReducer(stateReducer, {
@@ -291,7 +300,7 @@ let MenuRoot = forwardRefWithAs(function Menu<TTag extends ElementType = typeof 
       </OpenClosedProvider>
     </MenuContext.Provider>
   )
-})
+}
 
 // ---
 
@@ -300,15 +309,17 @@ interface ButtonRenderPropArg {
   open: boolean
 }
 type ButtonPropsWeControl =
-  | 'type'
-  | 'aria-haspopup'
-  | 'aria-controls'
-  | 'aria-expanded'
-  | 'onKeyDown'
-  | 'onClick'
+  // | 'type' // We allow this to be overridden
+  'aria-haspopup' | 'aria-controls' | 'aria-expanded' | 'onKeyDown' | 'onClick'
 
-let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  props: Props<TTag, ButtonRenderPropArg, ButtonPropsWeControl>,
+export type MenuButtonProps<TTag extends ElementType> = Props<
+  TTag,
+  ButtonRenderPropArg,
+  ButtonPropsWeControl
+>
+
+function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+  props: MenuButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -386,7 +397,7 @@ let Button = forwardRefWithAs(function Button<TTag extends ElementType = typeof 
     defaultTag: DEFAULT_BUTTON_TAG,
     name: 'Menu.Button',
   })
-})
+}
 
 // ---
 
@@ -403,9 +414,15 @@ type ItemsPropsWeControl =
 
 let ItemsRenderFeatures = Features.RenderStrategy | Features.Static
 
-let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
-  props: Props<TTag, ItemsRenderPropArg, ItemsPropsWeControl> &
-    PropsForFeatures<typeof ItemsRenderFeatures>,
+export type MenuItemsProps<TTag extends ElementType> = Props<
+  TTag,
+  ItemsRenderPropArg,
+  ItemsPropsWeControl
+> &
+  PropsForFeatures<typeof ItemsRenderFeatures>
+
+function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
+  props: MenuItemsProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -559,7 +576,7 @@ let Items = forwardRefWithAs(function Items<TTag extends ElementType = typeof DE
     visible,
     name: 'Menu.Items',
   })
-})
+}
 
 // ---
 
@@ -579,10 +596,16 @@ type MenuItemPropsWeControl =
   | 'onMouseMove'
   | 'onFocus'
 
-let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
-  props: Props<TTag, ItemRenderPropArg, MenuItemPropsWeControl> & {
-    disabled?: boolean
-  },
+export type MenuItemProps<TTag extends ElementType> = Props<
+  TTag,
+  ItemRenderPropArg,
+  MenuItemPropsWeControl
+> & {
+  disabled?: boolean
+}
+
+function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
+  props: MenuItemProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -601,7 +624,13 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
       internalItemRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
     return d.dispose
-  }, [internalItemRef, active, state.menuState, state.activationTrigger, /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex])
+  }, [
+    internalItemRef,
+    active,
+    state.menuState,
+    state.activationTrigger,
+    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex,
+  ])
 
   let bag = useRef<MenuItemDataRef['current']>({ disabled, domRef: internalItemRef })
 
@@ -683,8 +712,37 @@ let Item = forwardRefWithAs(function Item<TTag extends ElementType = typeof DEFA
     defaultTag: DEFAULT_ITEM_TAG,
     name: 'Menu.Item',
   })
-})
+}
 
 // ---
+
+interface ComponentMenu extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
+    props: MenuProps<TTag> & RefProp<typeof MenuFn>
+  ): JSX.Element
+}
+
+interface ComponentMenuButton extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+    props: MenuButtonProps<TTag> & RefProp<typeof ButtonFn>
+  ): JSX.Element
+}
+
+interface ComponentMenuItems extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
+    props: MenuItemsProps<TTag> & RefProp<typeof ItemsFn>
+  ): JSX.Element
+}
+
+interface ComponentMenuItem extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
+    props: MenuItemProps<TTag> & RefProp<typeof ItemFn>
+  ): JSX.Element
+}
+
+let MenuRoot = forwardRefWithAs(MenuFn) as unknown as ComponentMenu
+let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentMenuButton
+let Items = forwardRefWithAs(ItemsFn) as unknown as ComponentMenuItems
+let Item = forwardRefWithAs(ItemFn) as unknown as ComponentMenuItem
 
 export let Menu = Object.assign(MenuRoot, { Button, Items, Item })

@@ -15,12 +15,12 @@ import React, {
 } from 'react'
 
 import { Props } from '../../types'
-import { forwardRefWithAs, render, compact } from '../../utils/render'
+import { forwardRefWithAs, render, compact, HasDisplayName, RefProp } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { Label, useLabels } from '../label/label'
-import { Description, useDescriptions } from '../description/description'
+import { ComponentLabel, Label, useLabels } from '../label/label'
+import { ComponentDescription, Description, useDescriptions } from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
@@ -43,7 +43,11 @@ GroupContext.displayName = 'GroupContext'
 
 let DEFAULT_GROUP_TAG = Fragment
 
-function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(props: Props<TTag>) {
+export type SwitchGroupProps<TTag extends ElementType> = Props<TTag>
+
+function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
+  props: SwitchGroupProps<TTag>
+) {
   let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
@@ -97,20 +101,20 @@ type SwitchPropsWeControl =
   | 'onKeyUp'
   | 'onKeyPress'
 
-let SwitchRoot = forwardRefWithAs(function Switch<
-  TTag extends ElementType = typeof DEFAULT_SWITCH_TAG
->(
-  props: Props<
-    TTag,
-    SwitchRenderPropArg,
-    SwitchPropsWeControl | 'checked' | 'defaultChecked' | 'onChange' | 'name' | 'value'
-  > & {
-    checked?: boolean
-    defaultChecked?: boolean
-    onChange?(checked: boolean): void
-    name?: string
-    value?: string
-  },
+export type SwitchProps<TTag extends ElementType> = Props<
+  TTag,
+  SwitchRenderPropArg,
+  SwitchPropsWeControl | 'checked' | 'defaultChecked' | 'onChange' | 'name' | 'value'
+> & {
+  checked?: boolean
+  defaultChecked?: boolean
+  onChange?(checked: boolean): void
+  name?: string
+  value?: string
+}
+
+function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
+  props: SwitchProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
@@ -196,8 +200,30 @@ let SwitchRoot = forwardRefWithAs(function Switch<
       {render({ ourProps, theirProps, slot, defaultTag: DEFAULT_SWITCH_TAG, name: 'Switch' })}
     </>
   )
-})
+}
 
 // ---
 
-export let Switch = Object.assign(SwitchRoot, { Group, Label, Description })
+interface ComponentSwitch extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
+    props: SwitchProps<TTag> & RefProp<typeof SwitchFn>
+  ): JSX.Element
+}
+
+interface ComponentSwitchGroup extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
+    props: SwitchGroupProps<TTag> & RefProp<typeof GroupFn>
+  ): JSX.Element
+}
+
+interface ComponentSwitchLabel extends ComponentLabel {}
+interface ComponentSwitchDescription extends ComponentDescription {}
+
+let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as ComponentSwitch
+let Group = GroupFn as unknown as ComponentSwitchGroup
+
+export let Switch = Object.assign(SwitchRoot, {
+  Group,
+  Label: Label as ComponentSwitchLabel,
+  Description: Description as ComponentSwitchDescription,
+})

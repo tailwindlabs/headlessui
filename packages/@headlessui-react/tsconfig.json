@@ -19,7 +19,7 @@
       "@headlessui/react": ["src"],
       "*": ["src/*", "node_modules/*"]
     },
-    "jsx": "preserve",
+    "jsx": "react",
     "esModuleInterop": true,
     "target": "ESNext",
     "allowJs": true,

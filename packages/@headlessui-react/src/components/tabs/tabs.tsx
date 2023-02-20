@@ -15,7 +15,14 @@ import React, {
 } from 'react'
 
 import { Props } from '../../types'
-import { render, Features, PropsForFeatures, forwardRefWithAs } from '../../utils/render'
+import {
+  render,
+  Features,
+  PropsForFeatures,
+  forwardRefWithAs,
+  RefProp,
+  HasDisplayName,
+} from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { match } from '../../utils/match'
 import { Keys } from '../../components/keyboard'
@@ -202,14 +209,16 @@ interface TabsRenderPropArg {
   selectedIndex: number
 }
 
-let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
-  props: Props<TTag, TabsRenderPropArg> & {
-    defaultIndex?: number
-    onChange?: (index: number) => void
-    selectedIndex?: number
-    vertical?: boolean
-    manual?: boolean
-  },
+export type TabGroupProps<TTag extends ElementType> = Props<TTag, TabsRenderPropArg> & {
+  defaultIndex?: number
+  onChange?: (index: number) => void
+  selectedIndex?: number
+  vertical?: boolean
+  manual?: boolean
+}
+
+function GroupFn<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
+  props: TabGroupProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let {
@@ -312,7 +321,7 @@ let Tabs = forwardRefWithAs(function Tabs<TTag extends ElementType = typeof DEFA
       </TabsActionsContext.Provider>
     </StableCollection>
   )
-})
+}
 
 // ---
 
@@ -322,8 +331,16 @@ interface ListRenderPropArg {
 }
 type ListPropsWeControl = 'role' | 'aria-orientation'
 
-let List = forwardRefWithAs(function List<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
-  props: Props<TTag, ListRenderPropArg, ListPropsWeControl> & {},
+export type TabListProps<TTag extends ElementType> = Props<
+  TTag,
+  ListRenderPropArg,
+  ListPropsWeControl
+> & {
+  //
+}
+
+function ListFn<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
+  props: TabListProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { orientation, selectedIndex } = useData('Tab.List')
@@ -345,7 +362,7 @@ let List = forwardRefWithAs(function List<TTag extends ElementType = typeof DEFA
     defaultTag: DEFAULT_LIST_TAG,
     name: 'Tabs.List',
   })
-})
+}
 
 // ---
 
@@ -353,10 +370,20 @@ let DEFAULT_TAB_TAG = 'button' as const
 interface TabRenderPropArg {
   selected: boolean
 }
-type TabPropsWeControl = 'role' | 'type' | 'aria-controls' | 'aria-selected' | 'tabIndex'
+type TabPropsWeControl =
+  // | 'type' // We allow this to be overridden
+  'role' | 'aria-controls' | 'aria-selected' | 'tabIndex'
 
-let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
-  props: Props<TTag, TabRenderPropArg, TabPropsWeControl>,
+export type TabProps<TTag extends ElementType> = Props<
+  TTag,
+  TabRenderPropArg,
+  TabPropsWeControl
+> & {
+  //
+}
+
+function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
+  props: TabProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -476,7 +503,7 @@ let TabRoot = forwardRefWithAs(function Tab<TTag extends ElementType = typeof DE
     defaultTag: DEFAULT_TAB_TAG,
     name: 'Tabs.Tab',
   })
-})
+}
 
 // ---
 
@@ -485,8 +512,10 @@ interface PanelsRenderPropArg {
   selectedIndex: number
 }
 
-let Panels = forwardRefWithAs(function Panels<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
-  props: Props<TTag, PanelsRenderPropArg>,
+export type TabPanelsProps<TTag extends ElementType> = Props<TTag, PanelsRenderPropArg>
+
+function PanelsFn<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
+  props: TabPanelsProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { selectedIndex } = useData('Tab.Panels')
@@ -504,7 +533,7 @@ let Panels = forwardRefWithAs(function Panels<TTag extends ElementType = typeof 
     defaultTag: DEFAULT_PANELS_TAG,
     name: 'Tabs.Panels',
   })
-})
+}
 
 // ---
 
@@ -515,9 +544,15 @@ interface PanelRenderPropArg {
 type PanelPropsWeControl = 'role' | 'aria-labelledby'
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 
-let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg, PanelPropsWeControl> &
-    PropsForFeatures<typeof PanelRenderFeatures>,
+export type TabPanelProps<TTag extends ElementType> = Props<
+  TTag,
+  PanelRenderPropArg,
+  PanelPropsWeControl
+> &
+  PropsForFeatures<typeof PanelRenderFeatures>
+
+function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+  props: TabPanelProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
@@ -560,8 +595,44 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     visible: selected,
     name: 'Tabs.Panel',
   })
-})
+}
 
 // ---
 
-export let Tab = Object.assign(TabRoot, { Group: Tabs, List, Panels, Panel })
+interface ComponentTab extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
+    props: TabProps<TTag> & RefProp<typeof TabFn>
+  ): JSX.Element
+}
+
+interface ComponentTabGroup extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
+    props: TabGroupProps<TTag> & RefProp<typeof GroupFn>
+  ): JSX.Element
+}
+
+interface ComponentTabList extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
+    props: TabListProps<TTag> & RefProp<typeof ListFn>
+  ): JSX.Element
+}
+
+interface ComponentTabPanels extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
+    props: TabPanelsProps<TTag> & RefProp<typeof PanelsFn>
+  ): JSX.Element
+}
+
+interface ComponentTabPanel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+    props: TabPanelProps<TTag> & RefProp<typeof PanelFn>
+  ): JSX.Element
+}
+
+let TabRoot = forwardRefWithAs(TabFn) as unknown as ComponentTab
+let Group = forwardRefWithAs(GroupFn) as unknown as ComponentTabGroup
+let List = forwardRefWithAs(ListFn) as unknown as ComponentTabList
+let Panels = forwardRefWithAs(PanelsFn) as unknown as ComponentTabPanels
+let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentTabPanel
+
+export let Tab = Object.assign(TabRoot, { Group, List, Panels, Panel })

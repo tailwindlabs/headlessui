@@ -14,7 +14,7 @@ import React, {
 import { createPortal } from 'react-dom'
 
 import { Props } from '../../types'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, RefProp, HasDisplayName, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
@@ -68,9 +68,12 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 let DEFAULT_PORTAL_TAG = Fragment
 interface PortalRenderPropArg {}
 
-let PortalRoot = forwardRefWithAs(function Portal<
-  TTag extends ElementType = typeof DEFAULT_PORTAL_TAG
->(props: Props<TTag, PortalRenderPropArg>, ref: Ref<HTMLElement>) {
+export type PortalProps<TTag extends ElementType> = Props<TTag, PortalRenderPropArg>
+
+function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
+  props: PortalProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
   let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
@@ -133,7 +136,7 @@ let PortalRoot = forwardRefWithAs(function Portal<
         }),
         element
       )
-})
+}
 
 // ---
 
@@ -142,10 +145,12 @@ interface GroupRenderPropArg {}
 
 let PortalGroupContext = createContext<MutableRefObject<HTMLElement | null> | null>(null)
 
-let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
-  props: Props<TTag, GroupRenderPropArg> & {
-    target: MutableRefObject<HTMLElement | null>
-  },
+export type PortalGroupProps<TTag extends ElementType> = Props<TTag, GroupRenderPropArg> & {
+  target: MutableRefObject<HTMLElement | null>
+}
+
+function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
+  props: PortalGroupProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let { target, ...theirProps } = props
@@ -163,8 +168,23 @@ let Group = forwardRefWithAs(function Group<TTag extends ElementType = typeof DE
       })}
     </PortalGroupContext.Provider>
   )
-})
+}
 
 // ---
+
+interface ComponentPortal extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
+    props: PortalProps<TTag> & RefProp<typeof PortalFn>
+  ): JSX.Element
+}
+
+interface ComponentPortalGroup extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
+    props: PortalGroupProps<TTag> & RefProp<typeof GroupFn>
+  ): JSX.Element
+}
+
+let PortalRoot = forwardRefWithAs(PortalFn) as unknown as ComponentPortal
+let Group = forwardRefWithAs(GroupFn) as unknown as ComponentPortalGroup
 
 export let Portal = Object.assign(PortalRoot, { Group })

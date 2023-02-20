@@ -12,7 +12,7 @@ import React, {
 
 import { Props } from '../../types'
 import { useId } from '../../hooks/use-id'
-import { forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useEvent } from '../../hooks/use-event'
@@ -89,9 +89,13 @@ export function useDescriptions(): [
 
 let DEFAULT_DESCRIPTION_TAG = 'p' as const
 
-export let Description = forwardRefWithAs(function Description<
-  TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
->(props: Props<TTag>, ref: Ref<HTMLParagraphElement>) {
+export type DescriptionProps<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG> =
+  Props<TTag>
+
+function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
+  props: DescriptionProps<TTag>,
+  ref: Ref<HTMLParagraphElement>
+) {
   let internalId = useId()
   let { id = `headlessui-description-${internalId}`, ...theirProps } = props
   let context = useDescriptionContext()
@@ -108,4 +112,17 @@ export let Description = forwardRefWithAs(function Description<
     defaultTag: DEFAULT_DESCRIPTION_TAG,
     name: context.name || 'Description',
   })
+}
+
+// ---
+export interface ComponentDescription extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
+    props: DescriptionProps<TTag> & RefProp<typeof DescriptionFn>
+  ): JSX.Element
+}
+
+let DescriptionRoot = forwardRefWithAs(DescriptionFn) as unknown as ComponentDescription
+
+export let Description = Object.assign(DescriptionRoot, {
+  //
 })

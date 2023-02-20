@@ -424,7 +424,10 @@ describe('Rendering', () => {
 
         render(
           <Combobox name="assignee" by="id">
-            <Combobox.Input displayValue={(value: { name: string }) => value.name} />
+            <Combobox.Input
+              displayValue={(value: { name: string }) => value.name}
+              onChange={NOOP}
+            />
             <Combobox.Options>
               {data.map((person) => (
                 <Combobox.Option key={person.id} value={person}>
