@@ -28,8 +28,8 @@ export default plugin.withOptions<Options>(({ prefix = 'ui' } = {}) => {
       ])
 
       addVariant(`${prefix}-not-${state}`, [
-        `&[data-headlessui-state]:not([data-headlessui-state~="${state}"])`,
-        `:where([data-headlessui-state]:not([data-headlessui-state~="${state}"])) &:not([data-headlessui-state])`,
+        `&[data-headlessui-state~="not-${state}"]`,
+        `:where([data-headlessui-state~="not-${state}"]) &`,
       ])
     }
   }

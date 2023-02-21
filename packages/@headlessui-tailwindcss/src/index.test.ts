@@ -40,12 +40,10 @@ it('should generate the inverse "not" css for an exposed state', async () => {
 
   return run('@tailwind utilities', config).then((result) => {
     expect(result.css).toMatchFormattedCss(css`
-      .ui-not-open\:underline[data-headlessui-state]:not([data-headlessui-state~='open']) {
+      .ui-not-open\:underline[data-headlessui-state~='not-open'] {
         text-decoration-line: underline;
       }
-
-      :where([data-headlessui-state]:not([data-headlessui-state~='open']))
-        .ui-not-open\:underline:not([data-headlessui-state]) {
+      :where([data-headlessui-state~='not-open']) .ui-not-open\:underline {
         text-decoration-line: underline;
       }
     `)
@@ -79,12 +77,10 @@ describe('custom prefix', () => {
 
     return run('@tailwind utilities', config).then((result) => {
       expect(result.css).toMatchFormattedCss(css`
-        .hui-not-open\:underline[data-headlessui-state]:not([data-headlessui-state~='open']) {
+        .hui-not-open\:underline[data-headlessui-state~='not-open'] {
           text-decoration-line: underline;
         }
-
-        :where([data-headlessui-state]:not([data-headlessui-state~='open']))
-          .hui-not-open\:underline:not([data-headlessui-state]) {
+        :where([data-headlessui-state~='not-open']) .hui-not-open\:underline {
           text-decoration-line: underline;
         }
       `)
