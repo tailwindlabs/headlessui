@@ -39,15 +39,13 @@ export function shift(event: Partial<KeyboardEvent>) {
 export function word(input: string): Partial<KeyboardEvent>[] {
   let result = input.split('').map((key) => ({ key }))
 
-  d.enqueue(() => {
-    let element = document.activeElement
+  let element = document.activeElement
 
-    if (element instanceof HTMLInputElement) {
-      fireEvent.change(element, {
-        target: Object.assign({}, element, { value: input }),
-      })
-    }
-  })
+  if (element instanceof HTMLInputElement) {
+    fireEvent.change(element, {
+      target: Object.assign({}, element, { value: input }),
+    })
+  }
 
   return result
 }
@@ -206,8 +204,6 @@ export async function type(events: Partial<KeyboardEvent>[], element = document.
 
     // We don't want to actually wait in our tests, so let's advance
     jest.runAllTimers()
-
-    await d.workQueue()
 
     await new Promise(nextFrame)
   } catch (err) {
