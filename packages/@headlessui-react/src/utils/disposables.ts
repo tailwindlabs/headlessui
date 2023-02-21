@@ -4,13 +4,8 @@ export type Disposables = ReturnType<typeof disposables>
 
 export function disposables() {
   let disposables: Function[] = []
-  let queue: Function[] = []
 
   let api = {
-    enqueue(fn: Function) {
-      queue.push(fn)
-    },
-
     addEventListener<TEventName extends keyof WindowEventMap>(
       element: HTMLElement | Window | Document,
       name: TEventName,
@@ -63,12 +58,6 @@ export function disposables() {
     dispose() {
       for (let dispose of disposables.splice(0)) {
         dispose()
-      }
-    },
-
-    async workQueue() {
-      for (let handle of queue.splice(0)) {
-        await handle()
       }
     },
 
