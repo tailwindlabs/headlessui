@@ -1,10 +1,12 @@
 import React, { Fragment, useState, useRef, useLayoutEffect, useEffect } from 'react'
-import { render, fireEvent } from '@testing-library/react'
+import { render, fireEvent, act as _act } from '@testing-library/react'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from './transition'
 
 import { executeTimeline } from '../../test-utils/execute-timeline'
+
+let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 
 function nextFrame() {
   return new Promise<void>((resolve) => {
@@ -423,21 +425,25 @@ describe('Setup API', () => {
       `)
     })
 
-    it('should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true', () => {
-      let { container } = render(
-        <Transition
-          show={true}
-          appear={true}
-          enter="enter"
-          enterFrom="enter-from"
-          enterTo="enter-to"
-          leave="leave"
-          leaveFrom="leave-from"
-          leaveTo="leave-to"
-        >
-          Children
-        </Transition>
+    it('should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true', async () => {
+      let { container } = await act(() =>
+        render(
+          <Transition
+            show={true}
+            appear={true}
+            enter="enter"
+            enterFrom="enter-from"
+            enterTo="enter-to"
+            leave="leave"
+            leaveFrom="leave-from"
+            leaveTo="leave-to"
+          >
+            Children
+          </Transition>
+        )
       )
+
+      expect(container).toBeDefined()
 
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div
