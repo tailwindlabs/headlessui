@@ -888,10 +888,6 @@ export let ComboboxInput = defineComponent({
       }
     }
 
-    function handleChange(event: Event & { target: HTMLInputElement }) {
-      emit('change', event)
-    }
-
     function handleInput(event: Event & { target: HTMLInputElement }) {
       api.openCombobox()
       emit('change', event)
@@ -930,7 +926,6 @@ export let ComboboxInput = defineComponent({
         onCompositionstart: handleCompositionstart,
         onCompositionend: handleCompositionend,
         onKeydown: handleKeyDown,
-        onChange: handleChange,
         onInput: handleInput,
         onBlur: handleBlur,
         role: 'combobox',
