@@ -496,6 +496,86 @@ describe('Rendering', () => {
     assertActiveElement(getByText('Option 3'))
   })
 
+  it(
+    'should expose internal data as a render prop',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <RadioGroup v-model="value">
+            <RadioGroupOption value="a">Option 1</RadioGroupOption>
+            <RadioGroupOption value="b">Option 2</RadioGroupOption>
+            <RadioGroupOption value="c">Option 3</RadioGroupOption>
+          </RadioGroup>
+        `,
+        setup() {
+          return {
+            value: ref(null),
+          }
+        },
+      })
+
+      await nextFrame()
+
+      let options = getRadioGroupOptions()
+
+      // Nothing is active yet
+      expect(options[0]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+      expect(options[1]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+      expect(options[2]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+
+      // Focus the RadioGroup
+      await press(Keys.Tab)
+
+      // The first one should be active, but not checked yet
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'not-checked not-disabled active')
+      expect(options[1]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+      expect(options[2]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+
+      // Select the first one
+      await press(Keys.Space)
+
+      // The first one should be active and checked
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'checked not-disabled active')
+      expect(options[1]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+      expect(options[2]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+
+      // Go to the next option
+      await press(Keys.ArrowDown)
+
+      // The second one should be active and checked
+      expect(options[0]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+      expect(options[1]).toHaveAttribute('data-headlessui-state', 'checked not-disabled active')
+      expect(options[2]).toHaveAttribute(
+        'data-headlessui-state',
+        'not-checked not-disabled not-active'
+      )
+    })
+  )
+
   describe('Equality', () => {
     let options = [
       { id: 1, name: 'Alice' },

@@ -139,6 +139,8 @@ function _render<TTag extends ElementType, TSlot>(
       }
       if (v === true) {
         states.push(k)
+      } else {
+        states.push(`not-${k}`)
       }
     }
 

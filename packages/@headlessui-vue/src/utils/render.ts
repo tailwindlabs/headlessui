@@ -101,6 +101,8 @@ function _render({
       }
       if (v === true) {
         states.push(k)
+      } else {
+        states.push(`not-${k}`)
       }
     }
 
