@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.12] - 2023-02-24
+
 ### Added
 
 - Add explicit props types for every component ([#2282](https://github.com/tailwindlabs/headlessui/pull/2282))
@@ -462,7 +466,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.11...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.12...HEAD
+[1.7.12]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.11...@headlessui/react@v1.7.12
 [1.7.11]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.10...@headlessui/react@v1.7.11
 [1.7.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.9...@headlessui/react@v1.7.10
 [1.7.9]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.8...@headlessui/react@v1.7.9
