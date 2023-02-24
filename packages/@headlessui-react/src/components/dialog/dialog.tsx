@@ -309,18 +309,21 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (dialogState !== DialogStates.Open) return
     if (!internalDialogRef.current) return
 
-    let observer = new IntersectionObserver((entries) => {
-      for (let entry of entries) {
-        if (
-          entry.boundingClientRect.x === 0 &&
-          entry.boundingClientRect.y === 0 &&
-          entry.boundingClientRect.width === 0 &&
-          entry.boundingClientRect.height === 0
-        ) {
-          close()
+    let observer = new IntersectionObserver(
+      (entries) => {
+        for (let entry of entries) {
+          if (
+            entry.boundingClientRect.x === 0 &&
+            entry.boundingClientRect.y === 0 &&
+            entry.boundingClientRect.width === 0 &&
+            entry.boundingClientRect.height === 0
+          ) {
+            close()
+          }
         }
-      }
-    })
+      },
+      { root: internalDialogRef.current.parentElement }
+    )
 
     observer.observe(internalDialogRef.current)
 
