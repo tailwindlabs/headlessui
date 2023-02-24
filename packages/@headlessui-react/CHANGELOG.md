@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure the main tree and parent `Dialog` components are marked as `inert` ([#2290](https://github.com/tailwindlabs/headlessui/pull/2290))
 - Fix nested `Popover` components not opening ([#2293](https://github.com/tailwindlabs/headlessui/pull/2293))
 - Make React types more compatible with other libraries ([#2282](https://github.com/tailwindlabs/headlessui/pull/2282))
+- Fix `Dialog` cleanup when the `Dialog` becomes hidden ([#2303](https://github.com/tailwindlabs/headlessui/pull/2303))
 
 ## [1.7.11] - 2023-02-15
 

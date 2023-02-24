@@ -30,7 +30,7 @@ import { OpenClosedProvider, State } from '../../internal/open-closed'
 jest.mock('../../hooks/use-id')
 
 // @ts-expect-error
-global.IntersectionObserver = class FakeIntersectionObserver {
+global.ResizeObserver = class FakeResizeObserver {
   observe() {}
   disconnect() {}
 }
