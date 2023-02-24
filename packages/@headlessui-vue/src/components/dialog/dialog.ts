@@ -280,21 +280,14 @@ export let Dialog = defineComponent({
       let container = dom(internalDialogRef)
       if (!container) return
 
-      let observer = new IntersectionObserver(
-        (entries) => {
-          for (let entry of entries) {
-            if (
-              entry.boundingClientRect.x === 0 &&
-              entry.boundingClientRect.y === 0 &&
-              entry.boundingClientRect.width === 0 &&
-              entry.boundingClientRect.height === 0
-            ) {
-              api.close()
-            }
+      let observer = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          let rect = entry.target.getBoundingClientRect()
+          if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
+            api.close()
           }
-        },
-        { root: container.parentElement }
-      )
+        }
+      })
 
       observer.observe(container)
 
