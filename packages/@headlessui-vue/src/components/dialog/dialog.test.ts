@@ -44,7 +44,7 @@ import { html } from '../../test-utils/html'
 import { useOpenClosedProvider, State } from '../../internal/open-closed'
 
 // @ts-expect-error
-global.IntersectionObserver = class FakeIntersectionObserver {
+global.ResizeObserver = class FakeResizeObserver {
   observe() {}
   disconnect() {}
 }
