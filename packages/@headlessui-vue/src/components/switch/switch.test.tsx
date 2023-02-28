@@ -10,7 +10,7 @@ import {
   getSwitchLabel,
   getByText,
 } from '../../test-utils/accessibility-assertions'
-import { press, click, Keys } from '../../test-utils/interactions'
+import { press, click, Keys, mouseEnter } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
@@ -711,6 +711,39 @@ describe('Mouse interactions', () => {
 
     // Ensure state is still Off
     assertSwitch({ state: SwitchState.Off })
+  })
+
+  xit('should be possible to hover the label and trigger a hover on the switch', async () => {
+    // This test doen't work in JSDOM :(
+    // Keeping it here for reference when we can test this in a real browser
+    renderTemplate({
+      template: html`
+        <SwitchGroup>
+          <style>
+            .bg {
+              background-color: rgba(0, 255, 0);
+            }
+            .bg-on-hover:hover {
+              background-color: rgba(255, 0, 0);
+            }
+          </style>
+          <Switch v-model="checked" className="bg bg-on-hover" />
+          <SwitchLabel>The label</SwitchLabel>
+        </SwitchGroup>
+      `,
+      setup() {
+        return { checked: ref(false) }
+      },
+    })
+
+    // Verify the switch is not hovered
+    expect(window.getComputedStyle(getSwitch()!).backgroundColor).toBe('rgb(0, 255, 0)')
+
+    // Hover over the *label*
+    await mouseEnter(getSwitchLabel())
+
+    // Make sure the switch gets hover styles
+    expect(window.getComputedStyle(getSwitch()!).backgroundColor).toBe('rgb(255, 0, 0)')
   })
 })
 
