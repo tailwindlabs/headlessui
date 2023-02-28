@@ -90,6 +90,11 @@ export let Label = defineComponent({
         // @ts-expect-error props are dynamic via context, some components will provide an onClick
         // then we can delete it.
         delete ourProps['onClick']
+
+        // @ts-expect-error props are dynamic via context, some components will provide an htmlFor
+        // then we can delete it.
+        delete ourProps['htmlFor']
+
         // @ts-expect-error props are dynamic via context, some components will provide an onClick
         // then we can delete it.
         delete theirProps['onClick']
