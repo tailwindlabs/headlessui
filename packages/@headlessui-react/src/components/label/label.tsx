@@ -99,6 +99,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
   if (passive) {
     if ('onClick' in ourProps) {
+      delete (ourProps as any)['htmlFor']
       delete (ourProps as any)['onClick']
     }
 

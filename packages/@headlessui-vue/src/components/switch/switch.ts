@@ -46,8 +46,12 @@ export let SwitchGroup = defineComponent({
     let labelledby = useLabels({
       name: 'SwitchLabel',
       props: {
-        onClick() {
+        htmlFor: computed(() => switchRef.value?.id),
+        onClick(event: MouseEvent & { currentTarget: HTMLElement }) {
           if (!switchRef.value) return
+          if (event.currentTarget.tagName === 'LABEL') {
+            event.preventDefault()
+          }
           switchRef.value.click()
           switchRef.value.focus({ preventScroll: true })
         },

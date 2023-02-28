@@ -10,7 +10,7 @@ import {
   getSwitchLabel,
   getByText,
 } from '../../test-utils/accessibility-assertions'
-import { press, click, focus, Keys } from '../../test-utils/interactions'
+import { press, click, focus, Keys, mouseEnter } from '../../test-utils/interactions'
 
 jest.mock('../../hooks/use-id')
 
@@ -594,6 +594,32 @@ describe('Mouse interactions', () => {
 
     // Ensure state is still off
     assertSwitch({ state: SwitchState.Off })
+  })
+
+  xit('should be possible to hover the label and trigger a hover on the switch', async () => {
+    // This test doen't work in JSDOM :(
+    // Keeping it here for reference when we can test this in a real browser
+    function Example() {
+      let [state] = useState(false)
+      return (
+        <Switch.Group>
+          <style>{`.bg{background-color:rgba(0,255,0)}.bg-on-hover:hover{background-color:rgba(255,0,0)}`}</style>
+          <Switch checked={state} className="bg bg-on-hover" />
+          <Switch.Label>The label</Switch.Label>
+        </Switch.Group>
+      )
+    }
+
+    render(<Example />)
+
+    // Verify the switch is not hovered
+    expect(window.getComputedStyle(getSwitch()!).backgroundColor).toBe('rgb(0, 255, 0)')
+
+    // Hover over the *label*
+    await mouseEnter(getSwitchLabel())
+
+    // Make sure the switch gets hover styles
+    expect(window.getComputedStyle(getSwitch()!).backgroundColor).toBe('rgb(255, 0, 0)')
   })
 })
 

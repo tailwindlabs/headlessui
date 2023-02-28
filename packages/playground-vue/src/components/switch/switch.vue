@@ -3,7 +3,12 @@
     <SwitchGroup as="div" class="flex items-center space-x-4">
       <SwitchLabel>Enable notifications</SwitchLabel>
 
-      <Switch as="button" v-model="state" :className="resolveSwitchClass" v-slot="{ checked }">
+      <Switch
+        as="button"
+        v-model="state"
+        :class="resolveSwitchClass({ checked: state })"
+        v-slot="{ checked }"
+      >
         <span
           class="inline-block h-5 w-5 transform rounded-full bg-white transition duration-200 ease-in-out"
           :class="{ 'translate-x-5': checked, 'translate-x-0': !checked }"
@@ -14,7 +19,7 @@
 </template>
 
 <script>
-import { defineComponent, h, ref, onMounted, watchEffect, watch } from 'vue'
+import { ref } from 'vue'
 import { SwitchGroup, Switch, SwitchLabel } from '@headlessui/vue'
 
 function classNames(...classes) {
@@ -23,15 +28,15 @@ function classNames(...classes) {
 
 export default {
   components: { SwitchGroup, Switch, SwitchLabel },
-  setup(props, context) {
+  setup() {
     let state = ref(false)
 
     return {
       state,
       resolveSwitchClass({ checked }) {
         return classNames(
-          'relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline',
-          checked ? 'bg-indigo-600' : 'bg-gray-200'
+          'focus:shadow-outline relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
+          checked ? 'bg-indigo-600 hover:bg-indigo-800' : 'bg-gray-200 hover:bg-gray-400'
         )
       },
     }
