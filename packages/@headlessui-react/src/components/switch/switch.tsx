@@ -68,7 +68,9 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
           htmlFor: context.switch?.id,
           onClick(event: React.MouseEvent<HTMLLabelElement>) {
             if (!switchElement) return
-            event.preventDefault()
+            if (event.currentTarget.tagName === 'LABEL') {
+              event.preventDefault()
+            }
             switchElement.click()
             switchElement.focus({ preventScroll: true })
           },
