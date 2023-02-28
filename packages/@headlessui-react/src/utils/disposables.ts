@@ -3,7 +3,7 @@ import { microTask } from './micro-task'
 export type Disposables = ReturnType<typeof disposables>
 
 export function disposables() {
-  let disposables: Function[] = []
+  let _disposables: Function[] = []
 
   let api = {
     addEventListener<TEventName extends keyof WindowEventMap>(
@@ -44,29 +44,36 @@ export function disposables() {
       })
     },
 
-    add(cb: () => void) {
-      disposables.push(cb)
-      return () => {
-        let idx = disposables.indexOf(cb)
-        if (idx >= 0) {
-          let [dispose] = disposables.splice(idx, 1)
-          dispose()
-        }
-      }
-    },
-
-    dispose() {
-      for (let dispose of disposables.splice(0)) {
-        dispose()
-      }
-    },
-
     style(node: HTMLElement, property: string, value: string) {
       let previous = node.style.getPropertyValue(property)
       Object.assign(node.style, { [property]: value })
       return this.add(() => {
         Object.assign(node.style, { [property]: previous })
       })
+    },
+
+    group(cb: (d: typeof this) => void) {
+      let d = disposables()
+      cb(d)
+      return this.add(() => d.dispose())
+    },
+
+    add(cb: () => void) {
+      _disposables.push(cb)
+      return () => {
+        let idx = _disposables.indexOf(cb)
+        if (idx >= 0) {
+          for (let dispose of _disposables.splice(idx, 1)) {
+            dispose()
+          }
+        }
+      }
+    },
+
+    dispose() {
+      for (let dispose of _disposables.splice(0)) {
+        dispose()
+      }
     },
   }
 
