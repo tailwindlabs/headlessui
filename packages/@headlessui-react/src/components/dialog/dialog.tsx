@@ -2,6 +2,7 @@
 import React, {
   createContext,
   createRef,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -19,16 +20,22 @@ import React, {
 
 import { Props } from '../../types'
 import { match } from '../../utils/match'
-import { forwardRefWithAs, render, Features, PropsForFeatures } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  render,
+  Features,
+  PropsForFeatures,
+  HasDisplayName,
+  RefProp,
+} from '../../utils/render'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { useInertOthers } from '../../hooks/use-inert-others'
 import { Portal } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
-import { Description, useDescriptions } from '../description/description'
+import { ComponentDescription, Description, useDescriptions } from '../description/description'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
@@ -38,6 +45,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
+import { useInert } from '../../hooks/use-inert'
 
 enum DialogStates {
   Open,
@@ -114,16 +122,20 @@ type DialogPropsWeControl = 'role' | 'aria-modal' | 'aria-describedby' | 'aria-l
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
-let DialogRoot = forwardRefWithAs(function Dialog<
-  TTag extends ElementType = typeof DEFAULT_DIALOG_TAG
->(
-  props: Props<TTag, DialogRenderPropArg, DialogPropsWeControl> &
-    PropsForFeatures<typeof DialogRenderFeatures> & {
-      open?: boolean
-      onClose(value: boolean): void
-      initialFocus?: MutableRefObject<HTMLElement | null>
-      __demoMode?: boolean
-    },
+export type DialogProps<TTag extends ElementType> = Props<
+  TTag,
+  DialogRenderPropArg,
+  DialogPropsWeControl
+> &
+  PropsForFeatures<typeof DialogRenderFeatures> & {
+    open?: boolean
+    onClose(value: boolean): void
+    initialFocus?: MutableRefObject<HTMLElement | null>
+    __demoMode?: boolean
+  }
+
+function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
+  props: DialogProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -140,10 +152,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   let usesOpenClosedState = useOpenClosed()
   if (open === undefined && usesOpenClosedState !== null) {
     // Update the `open` prop based on the open closed state
-    open = match(usesOpenClosedState, {
-      [State.Open]: true,
-      [State.Closed]: false,
-    })
+    open = (usesOpenClosedState & State.Open) === State.Open
   }
 
   let containers = useRef<Set<MutableRefObject<HTMLElement | null>>>(new Set())
@@ -209,8 +218,43 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   // in between. We only care abou whether you are the top most one or not.
   let position = !hasNestedDialogs ? 'leaf' : 'parent'
 
+  // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes
+  // the OpenClosed state) then we get some information via context about its state. When the
+  // `Transition` is about to close, then the `State.Closing` state will be exposed. This allows us
+  // to enable/disable certain functionality in the `Dialog` upfront instead of waiting until the
+  // `Transition` is done transitioning.
+  let isClosing =
+    usesOpenClosedState !== null ? (usesOpenClosedState & State.Closing) === State.Closing : false
+
   // Ensure other elements can't be interacted with
-  useInertOthers(internalDialogRef, hasNestedDialogs ? enabled : false)
+  let inertOthersEnabled = (() => {
+    // Nested dialogs should not modify the `inert` property, only the root one should.
+    if (hasParentDialog) return false
+    if (isClosing) return false
+    return enabled
+  })()
+  let resolveRootOfMainTreeNode = useCallback(() => {
+    return (Array.from(ownerDocument?.querySelectorAll('body > *') ?? []).find((root) => {
+      // Skip the portal root, we don't want to make that one inert
+      if (root.id === 'headlessui-portal-root') return false
+
+      // Find the root of the main tree node
+      return root.contains(mainTreeNode.current) && root instanceof HTMLElement
+    }) ?? null) as HTMLElement | null
+  }, [mainTreeNode])
+  useInert(resolveRootOfMainTreeNode, inertOthersEnabled)
+
+  // This would mark the parent dialogs as inert
+  let inertParentDialogs = (() => {
+    if (hasNestedDialogs) return true
+    return enabled
+  })()
+  let resolveRootOfParentDialog = useCallback(() => {
+    return (Array.from(ownerDocument?.querySelectorAll('[data-headlessui-portal]') ?? []).find(
+      (root) => root.contains(mainTreeNode.current) && root instanceof HTMLElement
+    ) ?? null) as HTMLElement | null
+  }, [mainTreeNode])
+  useInert(resolveRootOfParentDialog, inertParentDialogs)
 
   let resolveContainers = useEvent(() => {
     // Third party roots
@@ -229,39 +273,46 @@ let DialogRoot = forwardRefWithAs(function Dialog<
   })
 
   // Close Dialog on outside click
-  useOutsideClick(() => resolveContainers(), close, enabled && !hasNestedDialogs)
+  let outsideClickEnabled = (() => {
+    if (!enabled) return false
+    if (hasNestedDialogs) return false
+    return true
+  })()
+  useOutsideClick(() => resolveContainers(), close, outsideClickEnabled)
 
   // Handle `Escape` to close
+  let escapeToCloseEnabled = (() => {
+    if (hasNestedDialogs) return false
+    if (dialogState !== DialogStates.Open) return false
+    return true
+  })()
   useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
+    if (!escapeToCloseEnabled) return
     if (event.defaultPrevented) return
     if (event.key !== Keys.Escape) return
-    if (dialogState !== DialogStates.Open) return
-    if (hasNestedDialogs) return
     event.preventDefault()
     event.stopPropagation()
     close()
   })
 
   // Scroll lock
-  useScrollLock(
-    ownerDocument,
-    dialogState === DialogStates.Open && !hasParentDialog,
-    resolveContainers
-  )
+  let scrollLockEnabled = (() => {
+    if (isClosing) return false
+    if (dialogState !== DialogStates.Open) return false
+    if (hasParentDialog) return false
+    return true
+  })()
+  useScrollLock(ownerDocument, scrollLockEnabled, resolveContainers)
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
     if (dialogState !== DialogStates.Open) return
     if (!internalDialogRef.current) return
 
-    let observer = new IntersectionObserver((entries) => {
+    let observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
-        if (
-          entry.boundingClientRect.x === 0 &&
-          entry.boundingClientRect.y === 0 &&
-          entry.boundingClientRect.width === 0 &&
-          entry.boundingClientRect.height === 0
-        ) {
+        let rect = entry.target.getBoundingClientRect()
+        if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
           close()
         }
       }
@@ -350,7 +401,7 @@ let DialogRoot = forwardRefWithAs(function Dialog<
       <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNode} />
     </StackProvider>
   )
-})
+}
 
 // ---
 
@@ -360,9 +411,16 @@ interface OverlayRenderPropArg {
 }
 type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
 
-let Overlay = forwardRefWithAs(function Overlay<
-  TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG
->(props: Props<TTag, OverlayRenderPropArg, OverlayPropsWeControl>, ref: Ref<HTMLDivElement>) {
+export type DialogOverlayProps<TTag extends ElementType> = Props<
+  TTag,
+  OverlayRenderPropArg,
+  OverlayPropsWeControl
+>
+
+function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
+  props: DialogOverlayProps<TTag>,
+  ref: Ref<HTMLDivElement>
+) {
   let internalId = useId()
   let { id = `headlessui-dialog-overlay-${internalId}`, ...theirProps } = props
   let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
@@ -395,7 +453,7 @@ let Overlay = forwardRefWithAs(function Overlay<
     defaultTag: DEFAULT_OVERLAY_TAG,
     name: 'Dialog.Overlay',
   })
-})
+}
 
 // ---
 
@@ -405,9 +463,16 @@ interface BackdropRenderPropArg {
 }
 type BackdropPropsWeControl = 'aria-hidden' | 'onClick'
 
-let Backdrop = forwardRefWithAs(function Backdrop<
-  TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG
->(props: Props<TTag, BackdropRenderPropArg, BackdropPropsWeControl>, ref: Ref<HTMLDivElement>) {
+export type DialogBackdropProps<TTag extends ElementType> = Props<
+  TTag,
+  BackdropRenderPropArg,
+  BackdropPropsWeControl
+>
+
+function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+  props: DialogBackdropProps<TTag>,
+  ref: Ref<HTMLDivElement>
+) {
   let internalId = useId()
   let { id = `headlessui-dialog-backdrop-${internalId}`, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Backdrop')
@@ -445,7 +510,7 @@ let Backdrop = forwardRefWithAs(function Backdrop<
       </Portal>
     </ForcePortalRoot>
   )
-})
+}
 
 // ---
 
@@ -454,8 +519,10 @@ interface PanelRenderPropArg {
   open: boolean
 }
 
-let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
-  props: Props<TTag, PanelRenderPropArg>,
+export type DialogPanelProps<TTag extends ElementType> = Props<TTag, PanelRenderPropArg>
+
+function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+  props: DialogPanelProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
@@ -487,7 +554,7 @@ let Panel = forwardRefWithAs(function Panel<TTag extends ElementType = typeof DE
     defaultTag: DEFAULT_PANEL_TAG,
     name: 'Dialog.Panel',
   })
-})
+}
 
 // ---
 
@@ -496,8 +563,10 @@ interface TitleRenderPropArg {
   open: boolean
 }
 
-let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
-  props: Props<TTag, TitleRenderPropArg>,
+export type DialogTitleProps<TTag extends ElementType> = Props<TTag, TitleRenderPropArg>
+
+function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
+  props: DialogTitleProps<TTag>,
   ref: Ref<HTMLHeadingElement>
 ) {
   let internalId = useId()
@@ -525,8 +594,52 @@ let Title = forwardRefWithAs(function Title<TTag extends ElementType = typeof DE
     defaultTag: DEFAULT_TITLE_TAG,
     name: 'Dialog.Title',
   })
-})
+}
 
 // ---
 
-export let Dialog = Object.assign(DialogRoot, { Backdrop, Panel, Overlay, Title, Description })
+interface ComponentDialog extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
+    props: DialogProps<TTag> & RefProp<typeof DialogFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogBackdrop extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+    props: DialogBackdropProps<TTag> & RefProp<typeof BackdropFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogPanel extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+    props: DialogPanelProps<TTag> & RefProp<typeof PanelFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogOverlay extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
+    props: DialogOverlayProps<TTag> & RefProp<typeof OverlayFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogTitle extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
+    props: DialogTitleProps<TTag> & RefProp<typeof TitleFn>
+  ): JSX.Element
+}
+
+interface ComponentDialogDescription extends ComponentDescription {}
+
+let DialogRoot = forwardRefWithAs(DialogFn) as unknown as ComponentDialog
+let Backdrop = forwardRefWithAs(BackdropFn) as unknown as ComponentDialogBackdrop
+let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentDialogPanel
+let Overlay = forwardRefWithAs(OverlayFn) as unknown as ComponentDialogOverlay
+let Title = forwardRefWithAs(TitleFn) as unknown as ComponentDialogTitle
+
+export let Dialog = Object.assign(DialogRoot, {
+  Backdrop,
+  Panel,
+  Overlay,
+  Title,
+  Description: Description as ComponentDialogDescription,
+})

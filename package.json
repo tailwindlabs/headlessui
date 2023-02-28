@@ -41,7 +41,7 @@
     "@swc/jest": "^0.2.17",
     "@testing-library/jest-dom": "^5.16.4",
     "@types/node": "^14.14.22",
-    "esbuild": "^0.14.11",
+    "esbuild": "^0.17.8",
     "fast-glob": "^3.2.11",
     "husky": "^4.3.8",
     "jest": "26",
@@ -51,6 +51,6 @@
     "prettier-plugin-tailwindcss": "^0.1.4",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "typescript": "^4.9.5"
   }
 }

@@ -21,7 +21,7 @@ import { render, Features } from '../../utils/render'
 import { Keys } from '../../keyboard'
 import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { useInertOthers } from '../../hooks/use-inert-others'
+import { useInert } from '../../hooks/use-inert'
 import { Portal, PortalGroup } from '../portal/portal'
 import { StackMessage, useStackProvider } from '../../internal/stack-context'
 import { match } from '../../utils/match'
@@ -34,7 +34,6 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
-import { handleIOSLocking } from '../../hooks/document-overflow/handle-ios-locking'
 
 enum DialogStates {
   Open,
@@ -91,11 +90,7 @@ export let Dialog = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let open = computed(() => {
       if (props.open === Missing && usesOpenClosedState !== null) {
-        // Update the `open` prop based on the open closed state
-        return match(usesOpenClosedState.value, {
-          [State.Open]: true,
-          [State.Closed]: false,
-        })
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
       return props.open
     })
@@ -137,10 +132,48 @@ export let Dialog = defineComponent({
     // in between. We only care abou whether you are the top most one or not.
     let position = computed(() => (!hasNestedDialogs.value ? 'leaf' : 'parent'))
 
-    useInertOthers(
-      internalDialogRef,
-      computed(() => (hasNestedDialogs.value ? enabled.value : false))
+    // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes
+    // the OpenClosed state) then we get some information via context about its state. When the
+    // `Transition` is about to close, then the `State.Closing` state will be exposed. This allows us
+    // to enable/disable certain functionality in the `Dialog` upfront instead of waiting until the
+    // `Transition` is done transitioning.
+    let isClosing = computed(() =>
+      usesOpenClosedState !== null
+        ? (usesOpenClosedState.value & State.Closing) === State.Closing
+        : false
     )
+
+    // Ensure other elements can't be interacted with
+    let inertOthersEnabled = computed(() => {
+      // Nested dialogs should not modify the `inert` property, only the root one should.
+      if (hasParentDialog) return false
+      if (isClosing.value) return false
+      return enabled.value
+    })
+    let resolveRootOfMainTreeNode = computed(() => {
+      return (Array.from(ownerDocument.value?.querySelectorAll('body > *') ?? []).find((root) => {
+        // Skip the portal root, we don't want to make that one inert
+        if (root.id === 'headlessui-portal-root') return false
+
+        // Find the root of the main tree node
+        return root.contains(dom(mainTreeNode)) && root instanceof HTMLElement
+      }) ?? null) as HTMLElement | null
+    })
+    useInert(resolveRootOfMainTreeNode, inertOthersEnabled)
+
+    // This would mark the parent dialogs as inert
+    let inertParentDialogs = computed(() => {
+      if (hasNestedDialogs.value) return true
+      return enabled.value
+    })
+    let resolveRootOfParentDialog = computed(() => {
+      return (Array.from(
+        ownerDocument.value?.querySelectorAll('[data-headlessui-portal]') ?? []
+      ).find((root) => root.contains(dom(mainTreeNode)) && root instanceof HTMLElement) ??
+        null) as HTMLElement | null
+    })
+    useInert(resolveRootOfParentDialog, inertParentDialogs)
+
     useStackProvider({
       type: 'Dialog',
       enabled: computed(() => dialogState.value === DialogStates.Open),
@@ -200,28 +233,44 @@ export let Dialog = defineComponent({
     }
 
     // Handle outside click
+    let outsideClickEnabled = computed(() => {
+      if (!enabled.value) return false
+      if (hasNestedDialogs.value) return false
+      return true
+    })
     useOutsideClick(
       () => resolveAllowedContainers(),
       (_event, target) => {
         api.close()
         nextTick(() => target?.focus())
       },
-      computed(() => dialogState.value === DialogStates.Open && !hasNestedDialogs.value)
+      outsideClickEnabled
     )
 
     // Handle `Escape` to close
+    let escapeToCloseEnabled = computed(() => {
+      if (hasNestedDialogs.value) return false
+      if (dialogState.value !== DialogStates.Open) return false
+      return true
+    })
     useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
+      if (!escapeToCloseEnabled.value) return
       if (event.defaultPrevented) return
       if (event.key !== Keys.Escape) return
-      if (dialogState.value !== DialogStates.Open) return
-      if (hasNestedDialogs.value) return
+
       event.preventDefault()
       event.stopPropagation()
       api.close()
     })
 
     // Scroll lock
-    useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta) => ({
+    let scrollLockEnabled = computed(() => {
+      if (isClosing.value) return false
+      if (dialogState.value !== DialogStates.Open) return false
+      if (hasParentDialog) return false
+      return true
+    })
+    useDocumentOverflowLockedEffect(ownerDocument, scrollLockEnabled, (meta) => ({
       containers: [...(meta.containers ?? []), resolveAllowedContainers],
     }))
 
@@ -231,14 +280,10 @@ export let Dialog = defineComponent({
       let container = dom(internalDialogRef)
       if (!container) return
 
-      let observer = new IntersectionObserver((entries) => {
+      let observer = new ResizeObserver((entries) => {
         for (let entry of entries) {
-          if (
-            entry.boundingClientRect.x === 0 &&
-            entry.boundingClientRect.y === 0 &&
-            entry.boundingClientRect.width === 0 &&
-            entry.boundingClientRect.height === 0
-          ) {
+          let rect = entry.target.getBoundingClientRect()
+          if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
             api.close()
           }
         }

@@ -288,6 +288,11 @@ export let PopoverButton = defineComponent({
     let closeOthers = groupContext?.closeOthers
 
     let panelContext = usePopoverPanelContext()
+
+    // A button inside a panel will just have "close" functionality, no "open" functionality.
+    // However, if a `Popover.Button` is rendered inside a `Popover` which in turn is rendered
+    // inside a `Popover.Panel` (aka nested popovers), then we need to make sure that the button is
+    // able to open the nested popover.
     let isWithinPanel = computed(() =>
       panelContext === null ? false : panelContext.value === api.panelId.value
     )
@@ -473,7 +478,7 @@ export let PopoverOverlay = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return api.popoverState.value === PopoverStates.Open
@@ -551,7 +556,7 @@ export let PopoverPanel = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return api.popoverState.value === PopoverStates.Open

@@ -36,6 +36,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { isMobile } from '../../utils/platform'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -390,6 +391,22 @@ export let Combobox = defineComponent({
         activationTrigger.value = ActivationTrigger.Other
       },
       unregisterOption(id: string) {
+        // When we are unregistering the currently active option, then we also have to make sure to
+        // reset the `defaultToFirstOption` flag, so that visually something is selected and the
+        // next time you press a key on your keyboard it will go to the proper next or previous
+        // option in the list.
+        //
+        // Since this was the active option and it could have been anywhere in the list, resetting
+        // to the very first option seems like a fine default. We _could_ be smarter about this by
+        // going to the previous / next item in list if we know the direction of the keyboard
+        // navigation, but that might be too complex/confusing from an end users perspective.
+        if (
+          api.activeOptionIndex.value !== null &&
+          api.options.value[api.activeOptionIndex.value]?.id === id
+        ) {
+          defaultToFirstOption.value = true
+        }
+
         let adjustedState = adjustOrderedState((options) => {
           let idx = options.findIndex((a) => a.id === id)
           if (idx !== -1) options.splice(idx, 1)
@@ -871,10 +888,6 @@ export let ComboboxInput = defineComponent({
       }
     }
 
-    function handleChange(event: Event & { target: HTMLInputElement }) {
-      emit('change', event)
-    }
-
     function handleInput(event: Event & { target: HTMLInputElement }) {
       api.openCombobox()
       emit('change', event)
@@ -897,7 +910,7 @@ export let ComboboxInput = defineComponent({
 
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
-      let { id, displayValue, ...theirProps } = props
+      let { id, displayValue, onChange: _onChange, ...theirProps } = props
       let ourProps = {
         'aria-controls': api.optionsRef.value?.id,
         'aria-expanded': api.disabled.value
@@ -907,14 +920,12 @@ export let ComboboxInput = defineComponent({
           api.activeOptionIndex.value === null
             ? undefined
             : api.options.value[api.activeOptionIndex.value]?.id,
-        'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         'aria-autocomplete': 'list',
         id,
         onCompositionstart: handleCompositionstart,
         onCompositionend: handleCompositionend,
         onKeydown: handleKeyDown,
-        onChange: handleChange,
         onInput: handleInput,
         onBlur: handleBlur,
         role: 'combobox',
@@ -964,7 +975,7 @@ export let ComboboxOptions = defineComponent({
     let usesOpenClosedState = useOpenClosed()
     let visible = computed(() => {
       if (usesOpenClosedState !== null) {
-        return usesOpenClosedState.value === State.Open
+        return (usesOpenClosedState.value & State.Open) === State.Open
       }
 
       return api.comboboxState.value === ComboboxStates.Open
@@ -990,6 +1001,7 @@ export let ComboboxOptions = defineComponent({
         id,
         ref: api.optionsRef,
         role: 'listbox',
+        'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
       }
       let theirProps = omit(props, ['hold'])
 
@@ -1062,6 +1074,22 @@ export let ComboboxOption = defineComponent({
       api.selectOption(id)
       if (api.mode.value === ValueMode.Single) {
         api.closeCombobox()
+      }
+
+      // We want to make sure that we don't accidentally trigger the virtual keyboard.
+      //
+      // This would happen if the input is focused, the options are open, you select an option
+      // (which would blur the input, and focus the option (button), then we re-focus the input).
+      //
+      // This would be annoying on mobile (or on devices with a virtual keyboard). Right now we are
+      // assuming that the virtual keyboard would open on mobile devices (iOS / Android). This
+      // assumption is not perfect, but will work in the majority of the cases.
+      //
+      // Ideally we can have a better check where we can explicitly check for the virtual keyboard.
+      // But right now this is still an experimental feature:
+      // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
+      if (!isMobile()) {
+        requestAnimationFrame(() => dom(api.inputRef)?.focus())
       }
     }
 

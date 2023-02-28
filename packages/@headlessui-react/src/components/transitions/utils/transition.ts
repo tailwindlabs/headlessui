@@ -39,6 +39,23 @@ function waitForTransition(node: HTMLElement, done: () => void) {
         dispose()
       }, totalDuration)
     } else {
+      d.group((d) => {
+        // Mark the transition as done when the timeout is reached. This is a fallback in case the
+        // transitionrun event is not fired.
+        d.setTimeout(() => {
+          done()
+          d.dispose()
+        }, totalDuration)
+
+        // The moment the transitionrun event fires, we should cleanup the timeout fallback, because
+        // then we know that we can use the native transition events because something is
+        // transitioning.
+        d.addEventListener(node, 'transitionrun', (event) => {
+          if (event.target !== event.currentTarget) return
+          d.dispose()
+        })
+      })
+
       let dispose = d.addEventListener(node, 'transitionend', (event) => {
         if (event.target !== event.currentTarget) return
         done()

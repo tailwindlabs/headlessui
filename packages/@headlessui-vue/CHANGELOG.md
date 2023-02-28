@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet!
 
+## [1.7.11] - 2023-02-24
+
+### Fixed
+
+- Ensure the main tree and parent `Dialog` components are marked as `inert` ([#2290](https://github.com/tailwindlabs/headlessui/pull/2290))
+- Fix nested `Popover` components not opening ([#2293](https://github.com/tailwindlabs/headlessui/pull/2293))
+- Fix `change` event incorrectly getting called on `blur` ([#2296](https://github.com/tailwindlabs/headlessui/pull/2296))
+- Fix `Dialog` cleanup when the `Dialog` becomes hidden ([#2303](https://github.com/tailwindlabs/headlessui/pull/2303))
+
+## [1.7.10] - 2023-02-15
+
+### Fixed
+
+- Don’t fire `afterLeave` event more than once for a given transition ([#2267](https://github.com/tailwindlabs/headlessui/pull/2267))
+- Move `aria-multiselectable` to `[role=listbox]` in the `Combobox` component ([#2271](https://github.com/tailwindlabs/headlessui/pull/2271))
+- Re-focus `Combobox.Input` when a `Combobox.Option` is selected ([#2272](https://github.com/tailwindlabs/headlessui/pull/2272))
+- Ensure we reset the `activeOptionIndex` if the active option is unmounted ([#2274](https://github.com/tailwindlabs/headlessui/pull/2274))
+- Start cleanup phase of the `Dialog` component when going into the `Closing` state ([#2264](https://github.com/tailwindlabs/headlessui/pull/2264))
+
 ## [1.7.9] - 2023-02-03
 
 ### Fixed
@@ -402,7 +421,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.9...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.11...HEAD
+[1.7.11]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.10...@headlessui/vue@v1.7.11
+[1.7.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.9...@headlessui/vue@v1.7.10
 [1.7.9]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.8...@headlessui/vue@v1.7.9
 [1.7.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.7...@headlessui/vue@v1.7.8
 [1.7.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.6...@headlessui/vue@v1.7.7

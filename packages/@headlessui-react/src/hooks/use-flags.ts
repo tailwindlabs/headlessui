@@ -8,5 +8,5 @@ export function useFlags(initialFlags = 0) {
   let removeFlag = useCallback((flag: number) => setFlags((flags) => flags & ~flag), [setFlags])
   let toggleFlag = useCallback((flag: number) => setFlags((flags) => flags ^ flag), [setFlags])
 
-  return { addFlag, hasFlag, removeFlag, toggleFlag }
+  return { flags, addFlag, hasFlag, removeFlag, toggleFlag }
 }

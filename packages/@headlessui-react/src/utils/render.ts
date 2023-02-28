@@ -8,6 +8,7 @@ import {
   // Types
   ElementType,
   ReactElement,
+  Ref,
 } from 'react'
 import { Props, XOR, __, Expand } from '../types'
 import { classNames } from './class-names'
@@ -56,7 +57,9 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
   visible = true,
   name,
 }: {
-  ourProps: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>>
+  ourProps: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>> & {
+    ref?: Ref<HTMLElement | ElementType>
+  }
   theirProps: Expand<Props<TTag, TSlot, any>>
   slot?: TSlot
   defaultTag: ElementType
@@ -122,8 +125,8 @@ function _render<TTag extends ElementType, TSlot>(
     | ReactElement[]
 
   // Allow for className to be a function with the slot as the contents
-  if (rest.className && typeof rest.className === 'function') {
-    ;(rest as any).className = rest.className(slot)
+  if ('className' in rest && rest.className && typeof rest.className === 'function') {
+    rest.className = rest.className(slot)
   }
 
   let dataAttributes: Record<string, string> = {}
@@ -170,6 +173,7 @@ function _render<TTag extends ElementType, TSlot>(
       }
 
       // Merge class name prop in SSR
+      // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
       let newClassName = classNames(resolvedChildren.props?.className, rest.className)
       let classNameProps = newClassName ? { className: newClassName } : {}
 
@@ -178,7 +182,7 @@ function _render<TTag extends ElementType, TSlot>(
         Object.assign(
           {},
           // Filter out undefined values so that they don't override the existing values
-          mergeProps(resolvedChildren.props, compact(omit(rest, ['ref']))),
+          mergeProps(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
           dataAttributes,
           refRelatedProps,
           mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref),
@@ -273,6 +277,14 @@ function mergeProps(...listOfProps: Props<any, any>[]) {
   return target
 }
 
+export type HasDisplayName = {
+  displayName: string
+}
+
+export type RefProp<T extends Function> = T extends (props: any, ref: Ref<infer RefType>) => any
+  ? { ref?: Ref<RefType> }
+  : never
+
 /**
  * This is a hack, but basically we want to keep the full 'API' of the component, but we do want to
  * wrap it in a forwardRef so that we _can_ passthrough the ref
@@ -294,7 +306,7 @@ export function compact<T extends Record<any, any>>(object: T) {
 }
 
 function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) {
-  let clone = Object.assign({}, object)
+  let clone = Object.assign({}, object) as T
   for (let key of keysToOmit) {
     if (key in clone) delete clone[key]
   }

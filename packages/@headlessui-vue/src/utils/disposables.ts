@@ -1,14 +1,9 @@
 export type Disposables = ReturnType<typeof disposables>
 
 export function disposables() {
-  let disposables: Function[] = []
-  let queue: Function[] = []
+  let _disposables: Function[] = []
 
   let api = {
-    enqueue(fn: Function) {
-      queue.push(fn)
-    },
-
     addEventListener<TEventName extends keyof WindowEventMap>(
       element: HTMLElement | Window | Document,
       name: TEventName,
@@ -35,10 +30,6 @@ export function disposables() {
       api.add(() => clearTimeout(timer))
     },
 
-    add(cb: () => void) {
-      disposables.push(cb)
-    },
-
     style(node: HTMLElement, property: string, value: string) {
       let previous = node.style.getPropertyValue(property)
       Object.assign(node.style, { [property]: value })
@@ -47,15 +38,27 @@ export function disposables() {
       })
     },
 
-    dispose() {
-      for (let dispose of disposables.splice(0)) {
-        dispose()
+    group(cb: (d: typeof this) => void) {
+      let d = disposables()
+      cb(d)
+      return this.add(() => d.dispose())
+    },
+
+    add(cb: () => void) {
+      _disposables.push(cb)
+      return () => {
+        let idx = _disposables.indexOf(cb)
+        if (idx >= 0) {
+          for (let dispose of _disposables.splice(idx, 1)) {
+            dispose()
+          }
+        }
       }
     },
 
-    async workQueue() {
-      for (let handle of queue.splice(0)) {
-        await handle()
+    dispose() {
+      for (let dispose of _disposables.splice(0)) {
+        dispose()
       }
     },
   }

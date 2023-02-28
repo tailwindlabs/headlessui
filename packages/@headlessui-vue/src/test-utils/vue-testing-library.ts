@@ -41,6 +41,9 @@ export function render(TestComponent: any, options?: Parameters<typeof mount>[1]
   mountedWrappers.add(wrapper)
 
   return {
+    unmount() {
+      wrapper.unmount()
+    },
     get container() {
       return wrapper.element.parentElement!
     },

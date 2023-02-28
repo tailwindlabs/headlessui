@@ -281,7 +281,8 @@ export function assertCombobox(
     state: ComboboxState
     mode?: ComboboxMode
   },
-  combobox = getComboboxInput()
+  combobox = getComboboxInput(),
+  listbox = getListbox()
 ) {
   try {
     switch (options.state) {
@@ -307,7 +308,7 @@ export function assertCombobox(
         expect(combobox).toHaveAttribute('role', 'combobox')
 
         if (options.mode && options.mode === ComboboxMode.Multiple) {
-          expect(combobox).toHaveAttribute('aria-multiselectable', 'true')
+          expect(listbox).toHaveAttribute('aria-multiselectable', 'true')
         }
 
         if (options.textContent) expect(combobox).toHaveTextContent(options.textContent)
@@ -1812,6 +1813,31 @@ export function assertNotFocusable(element: HTMLElement | null) {
     expect(isFocusableElement(element, FocusableMode.Strict)).toBe(false)
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNotFocusable)
+    throw err
+  }
+}
+
+export function assertInert(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    expect(element).toHaveAttribute('aria-hidden', 'true')
+    expect(element).toHaveProperty('inert', true)
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertInert)
+    throw err
+  }
+}
+
+export function assertNotInert(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    // NOTE: We can't test that the element doesn't have `aria-hidden`, because this can still be
+    // the case even if they are not inert.
+    expect(element.inert).toBeUndefined()
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertNotInert)
     throw err
   }
 }
