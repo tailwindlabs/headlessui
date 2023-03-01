@@ -22,7 +22,7 @@ import {
   getDialogs,
   getDialogOverlays,
 } from '../../test-utils/accessibility-assertions'
-import { click, mouseDrag, press, Keys, shift } from '../../test-utils/interactions'
+import { click, mouseDrag, press, Keys, shift, focus } from '../../test-utils/interactions'
 import { PropsOf } from '../../types'
 import { Transition } from '../transitions/transition'
 import { OpenClosedProvider, State } from '../../internal/open-closed'
@@ -1351,6 +1351,62 @@ describe('Mouse interactions', () => {
 
       // Verify we clicked on the 3rd party button
       expect(fn).toHaveBeenCalledTimes(1)
+
+      // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
+    'should be possible to focus elements created by third party libraries',
+    suppressConsoleLogs(async () => {
+      let fn = jest.fn()
+      let handleFocus = jest.fn()
+
+      function ThirdPartyLibrary() {
+        return createPortal(
+          <>
+            <button data-lib onClick={fn}>
+              3rd party button
+            </button>
+          </>,
+          document.body
+        )
+      }
+
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+
+        return (
+          <div>
+            <span>Main app</span>
+            <Dialog open={isOpen} onClose={setIsOpen}>
+              <div>
+                Contents
+                <TabSentinel onFocus={handleFocus} />
+              </div>
+            </Dialog>
+            <ThirdPartyLibrary />
+          </div>
+        )
+      }
+
+      render(<Example />)
+
+      await nextFrame()
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button inside the 3rd party library
+      await focus(document.querySelector('[data-lib]'))
+
+      // Verify that the focus is on the 3rd party button, and that we are not redirecting focus to
+      // the dialog again.
+      assertActiveElement(document.querySelector('[data-lib]'))
+
+      // This should only have been called once (when opening the Dialog)
+      expect(handleFocus).toHaveBeenCalledTimes(1)
 
       // Verify the dialog is still open
       assertDialog({ state: DialogState.Visible })

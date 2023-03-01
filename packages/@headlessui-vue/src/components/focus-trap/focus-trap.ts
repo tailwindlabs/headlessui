@@ -22,6 +22,27 @@ import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { microTask } from '../../utils/micro-task'
 
+type Containers =
+  // Lazy resolved containers
+  | (() => Iterable<HTMLElement>)
+
+  // List of containers
+  | Ref<Set<Ref<HTMLElement | null>>>
+
+function resolveContainers(containers?: Containers): Set<HTMLElement> {
+  if (!containers) return new Set<HTMLElement>()
+  if (typeof containers === 'function') return new Set(containers())
+
+  let all = new Set<HTMLElement>()
+  for (let container of containers.value) {
+    let el = dom(container)
+    if (el instanceof HTMLElement) {
+      all.add(el)
+    }
+  }
+  return all
+}
+
 enum Features {
   /** No features enabled for the focus trap. */
   None = 1 << 0,
@@ -50,7 +71,7 @@ export let FocusTrap = Object.assign(
       initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
       features: { type: Number as PropType<Features>, default: Features.All },
       containers: {
-        type: Object as PropType<Ref<Set<Ref<HTMLElement | null>>>>,
+        type: [Object, Function] as PropType<Containers>,
         default: ref(new Set()),
       },
     },
@@ -110,8 +131,8 @@ export let FocusTrap = Object.assign(
       }
 
       function handleBlur(e: FocusEvent) {
-        let allContainers = new Set(props.containers?.value)
-        allContainers.add(container)
+        let allContainers = resolveContainers(props.containers)
+        if (dom(container) instanceof HTMLElement) allContainers.add(dom(container)!)
 
         let relatedTarget = e.relatedTarget
         if (!(relatedTarget instanceof HTMLElement)) return
@@ -124,7 +145,7 @@ export let FocusTrap = Object.assign(
         // Blur is triggered due to focus on relatedTarget, and the relatedTarget is not inside any
         // of the dialog containers. In other words, let's move focus back in!
         if (!contains(allContainers, relatedTarget)) {
-          // Was the blur invoke via the keyboard? Redirect to the next in line.
+          // Was the blur invoked via the keyboard? Redirect to the next in line.
           if (recentlyUsedTabKey.value) {
             focusIn(
               dom(container) as HTMLElement,
@@ -136,7 +157,7 @@ export let FocusTrap = Object.assign(
             )
           }
 
-          // It was invoke via something else (e.g.: click, programmatically, ...). Redirect to the
+          // It was invoked via something else (e.g.: click, programmatically, ...). Redirect to the
           // previous active item in the FocusTrap
           else if (e.target instanceof HTMLElement) {
             focusElement(e.target)
@@ -307,7 +328,7 @@ function useFocusLock(
   }: {
     ownerDocument: Ref<Document | null>
     container: Ref<HTMLElement | null>
-    containers: Ref<Set<Ref<HTMLElement | null>>>
+    containers: Containers
     previousActiveElement: Ref<HTMLElement | null>
   },
   enabled: Ref<boolean>
@@ -319,8 +340,8 @@ function useFocusLock(
     (event) => {
       if (!enabled.value) return
 
-      let allContainers = new Set(containers?.value)
-      allContainers.add(container)
+      let allContainers = resolveContainers(containers)
+      if (dom(container) instanceof HTMLElement) allContainers.add(dom(container)!)
 
       let previous = previousActiveElement.value
       if (!previous) return
@@ -344,9 +365,9 @@ function useFocusLock(
   )
 }
 
-function contains(containers: Set<Ref<HTMLElement | null>>, element: HTMLElement) {
+function contains(containers: Set<HTMLElement>, element: HTMLElement) {
   for (let container of containers) {
-    if (container.value?.contains(element)) return true
+    if (container.contains(element)) return true
   }
 
   return false

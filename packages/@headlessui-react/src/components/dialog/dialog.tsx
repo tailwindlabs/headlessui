@@ -155,7 +155,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     open = (usesOpenClosedState & State.Open) === State.Open
   }
 
-  let containers = useRef<Set<MutableRefObject<HTMLElement | null>>>(new Set())
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
@@ -256,7 +255,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   }, [mainTreeNode])
   useInert(resolveRootOfParentDialog, inertParentDialogs)
 
-  let resolveContainers = useEvent(() => {
+  let resolveRootContainers = useEvent(() => {
     // Third party roots
     let rootContainers = Array.from(
       ownerDocument?.querySelectorAll('html > *, body > *, [data-headlessui-portal]') ?? []
@@ -278,7 +277,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasNestedDialogs) return false
     return true
   })()
-  useOutsideClick(() => resolveContainers(), close, outsideClickEnabled)
+  useOutsideClick(() => resolveRootContainers(), close, outsideClickEnabled)
 
   // Handle `Escape` to close
   let escapeToCloseEnabled = (() => {
@@ -302,7 +301,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasParentDialog) return false
     return true
   })()
-  useScrollLock(ownerDocument, scrollLockEnabled, resolveContainers)
+  useScrollLock(ownerDocument, scrollLockEnabled, resolveRootContainers)
 
   // Trigger close when the FocusTrap gets hidden
   useEffect(() => {
@@ -349,18 +348,12 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
       type="Dialog"
       enabled={dialogState === DialogStates.Open}
       element={internalDialogRef}
-      onUpdate={useEvent((message, type, element) => {
+      onUpdate={useEvent((message, type) => {
         if (type !== 'Dialog') return
 
         match(message, {
-          [StackMessage.Add]() {
-            containers.current.add(element)
-            setNestedDialogCount((count) => count + 1)
-          },
-          [StackMessage.Remove]() {
-            containers.current.add(element)
-            setNestedDialogCount((count) => count - 1)
-          },
+          [StackMessage.Add]: () => setNestedDialogCount((count) => count + 1),
+          [StackMessage.Remove]: () => setNestedDialogCount((count) => count - 1),
         })
       })}
     >
@@ -372,7 +365,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
                 <DescriptionProvider slot={slot} name="Dialog.Description">
                   <FocusTrap
                     initialFocus={initialFocus}
-                    containers={containers}
+                    containers={resolveRootContainers}
                     features={
                       enabled
                         ? match(position, {

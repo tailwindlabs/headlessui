@@ -95,7 +95,6 @@ export let Dialog = defineComponent({
       return props.open
     })
 
-    let containers = ref<Set<Ref<HTMLElement | null>>>(new Set())
     let internalDialogRef = ref<HTMLDivElement | null>(null)
 
     // Reference to a node in the "main" tree, not in the portalled Dialog tree.
@@ -178,18 +177,12 @@ export let Dialog = defineComponent({
       type: 'Dialog',
       enabled: computed(() => dialogState.value === DialogStates.Open),
       element: internalDialogRef,
-      onUpdate: (message, type, element) => {
+      onUpdate: (message, type) => {
         if (type !== 'Dialog') return
 
         return match(message, {
-          [StackMessage.Add]() {
-            containers.value.add(element)
-            nestedDialogCount.value += 1
-          },
-          [StackMessage.Remove]() {
-            containers.value.delete(element)
-            nestedDialogCount.value -= 1
-          },
+          [StackMessage.Add]: () => (nestedDialogCount.value += 1),
+          [StackMessage.Remove]: () => (nestedDialogCount.value -= 1),
         })
       },
     })
@@ -216,7 +209,7 @@ export let Dialog = defineComponent({
 
     provide(DialogContext, api)
 
-    function resolveAllowedContainers() {
+    function resolveRootContainers() {
       // Third party roots
       let rootContainers = Array.from(
         ownerDocument.value?.querySelectorAll('html > *, body > *, [data-headlessui-portal]') ?? []
@@ -239,7 +232,7 @@ export let Dialog = defineComponent({
       return true
     })
     useOutsideClick(
-      () => resolveAllowedContainers(),
+      () => resolveRootContainers(),
       (_event, target) => {
         api.close()
         nextTick(() => target?.focus())
@@ -271,7 +264,7 @@ export let Dialog = defineComponent({
       return true
     })
     useDocumentOverflowLockedEffect(ownerDocument, scrollLockEnabled, (meta) => ({
-      containers: [...(meta.containers ?? []), resolveAllowedContainers],
+      containers: [...(meta.containers ?? []), resolveRootContainers],
     }))
 
     // Trigger close when the FocusTrap gets hidden
@@ -318,7 +311,7 @@ export let Dialog = defineComponent({
                 FocusTrap,
                 {
                   initialFocus,
-                  containers,
+                  containers: resolveRootContainers,
                   features: enabled.value
                     ? match(position.value, {
                         parent: FocusTrap.features.RestoreFocus,

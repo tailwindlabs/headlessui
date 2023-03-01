@@ -39,7 +39,7 @@ import {
   getDialogs,
   getDialogOverlays,
 } from '../../test-utils/accessibility-assertions'
-import { click, mouseDrag, press, Keys, shift } from '../../test-utils/interactions'
+import { click, mouseDrag, press, Keys, shift, focus } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
 import { useOpenClosedProvider, State } from '../../internal/open-closed'
 
@@ -1763,6 +1763,67 @@ describe('Mouse interactions', () => {
 
       // Verify we clicked on the 3rd party button
       expect(fn).toHaveBeenCalledTimes(1)
+
+      // Verify the dialog is still open
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
+  it(
+    'should be possible to focus elements created by third party libraries',
+    suppressConsoleLogs(async () => {
+      let fn = jest.fn()
+      let handleFocus = jest.fn()
+
+      let ThirdPartyLibrary = defineComponent({
+        template: html`
+          <teleport to="body">
+            <button data-lib @click="fn">3rd party button</button>
+          </teleport>
+        `,
+        setup: () => ({ fn }),
+      })
+
+      renderTemplate({
+        components: { ThirdPartyLibrary },
+        template: `
+          <div>
+            <span>Main app</span>
+            <Dialog :open="isOpen" @close="setIsOpen">
+              <div>
+                Contents
+                <TabSentinel @focus="handleFocus" />
+              </div>
+            </Dialog>
+            <ThirdPartyLibrary />
+          </div>
+        `,
+        setup() {
+          let isOpen = ref(true)
+          return {
+            handleFocus,
+            isOpen,
+            setIsOpen(value: boolean) {
+              isOpen.value = value
+            },
+          }
+        },
+      })
+
+      await nextFrame()
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the button inside the 3rd party library
+      await focus(document.querySelector('[data-lib]'))
+
+      // Verify that the focus is on the 3rd party button, and that we are not redirecting focus to
+      // the dialog again.
+      assertActiveElement(document.querySelector('[data-lib]'))
+
+      // This should only have been called once (when opening the Dialog)
+      expect(handleFocus).toHaveBeenCalledTimes(1)
 
       // Verify the dialog is still open
       assertDialog({ state: DialogState.Visible })
