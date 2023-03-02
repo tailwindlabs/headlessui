@@ -74,13 +74,14 @@ export interface TransitionEvents {
   afterLeave?: () => void
 }
 
-export type TransitionChildProps<TTag extends ReactTag> = Omit<
-  Props<TTag, TransitionChildRenderPropArg>,
-  'ref'
-> &
+export type TransitionChildProps<TTag extends ReactTag> = Props<
+  TTag,
+  TransitionChildRenderPropArg,
+  never,
   PropsForFeatures<typeof TransitionChildRenderFeatures> &
-  TransitionClasses &
-  TransitionEvents & { appear?: boolean }
+    TransitionClasses &
+    TransitionEvents & { appear?: boolean }
+>
 
 function useTransitionContext() {
   let context = useContext(TransitionContext)
@@ -573,8 +574,10 @@ function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>
   return (
     <>
       {!hasTransitionContext && hasOpenClosedContext ? (
+        // @ts-expect-error This is an object
         <TransitionRoot ref={ref} {...props} />
       ) : (
+        // @ts-expect-error This is an object
         <TransitionChild ref={ref} {...props} />
       )}
     </>
