@@ -409,7 +409,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     defaultValue,
     onChange: controlledOnChange,
     name,
-    by = (a: any, z: any) => a === z,
+    by = (a: TValue, z: TValue) => a === z,
     disabled = false,
     __demoMode = false,
     nullable = false,
@@ -440,16 +440,18 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let buttonRef = useRef<_Data['buttonRef']['current']>(null)
   let optionsRef = useRef<_Data['optionsRef']['current']>(null)
 
+  type TActualValue = true extends typeof multiple ? EnsureArray<TValue>[number] : TValue
   let compare = useEvent(
+    // @ts-expect-error Eventually we'll want to tackle this, but for now this will do.
     typeof by === 'string'
-      ? (a, z) => {
-          let property = by as unknown as keyof TValue
+      ? (a: TActualValue, z: TActualValue) => {
+          let property = by as unknown as keyof TActualValue
           return a?.[property] === z?.[property]
         }
       : by
   )
 
-  let isSelected: (value: unknown) => boolean = useCallback(
+  let isSelected: (value: TValue) => boolean = useCallback(
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () =>
