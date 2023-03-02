@@ -357,7 +357,13 @@ export let TransitionChild = defineComponent({
         ...(appear && show && env.isServer
           ? {
               // Already apply the `enter` and `enterFrom` on the server if required
-              class: normalizeClass([rest.class, ...enterClasses, ...enterFromClasses]),
+              class: normalizeClass([
+                attrs.class,
+                // @ts-expect-error not explicitly defined
+                rest.class,
+                ...enterClasses,
+                ...enterFromClasses,
+              ]),
             }
           : {}),
       }
