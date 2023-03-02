@@ -14,6 +14,16 @@ function resolveClass({ active, disabled }) {
   )
 }
 
+function Button(props: React.ComponentProps<'button'>) {
+  return (
+    <button
+      type="button"
+      className="rounded bg-gray-200 px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
+      {...props}
+    />
+  )
+}
+
 function Nested({ onClose, level = 0 }) {
   let [showChild, setShowChild] = useState(false)
 
@@ -29,15 +39,9 @@ function Nested({ onClose, level = 0 }) {
         >
           <p>Level: {level}</p>
           <div className="space-x-4">
-            <button className="rounded bg-gray-200 px-2 py-1" onClick={() => setShowChild(true)}>
-              Open (1)
-            </button>
-            <button className="rounded bg-gray-200 px-2 py-1" onClick={() => setShowChild(true)}>
-              Open (2)
-            </button>
-            <button className="rounded bg-gray-200 px-2 py-1" onClick={() => setShowChild(true)}>
-              Open (3)
-            </button>
+            <Button onClick={() => setShowChild(true)}>Open (1)</Button>
+            <Button onClick={() => setShowChild(true)}>Open (2)</Button>
+            <Button onClick={() => setShowChild(true)}>Open (3)</Button>
           </div>
         </div>
         {showChild && <Nested onClose={() => setShowChild(false)} level={level + 1} />}
@@ -60,15 +64,10 @@ export default function Home() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setIsOpen((v) => !v)}
-        className="focus:shadow-outline-blue m-12 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
-      >
-        Toggle!
-      </button>
-
-      <button onClick={() => setNested(true)}>Show nested</button>
+      <div className="flex gap-4 p-12">
+        <Button onClick={() => setIsOpen((v) => !v)}>Toggle!</Button>
+        <Button onClick={() => setNested(true)}>Show nested</Button>
+      </div>
       {nested && <Nested onClose={() => setNested(false)} />}
 
       <div

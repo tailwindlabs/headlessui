@@ -1,25 +1,8 @@
 <template>
-  <p
-    v-for="i in Array(15)
-      .fill(null)
-      .map((_, i) => i)"
-    :key="i"
-    className="m-4"
-  >
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam numquam beatae, maiores sint
-    est perferendis molestiae deleniti dolorem, illum vel, quam atque facilis! Necessitatibus
-    nostrum recusandae nemo corrupti, odio eius?
-  </p>
-
-  <button
-    type="button"
-    @click="toggleIsOpen()"
-    class="focus:shadow-outline-blue m-12 rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium leading-6 text-gray-700 shadow-sm transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
-  >
-    Toggle!
-  </button>
-
-  <button @click="nested = true">Show nested</button>
+  <div className="flex gap-4 p-12">
+    <Button @click="toggleIsOpen()">Toggle!</Button>
+    <Button @click="nested = true">Show nested</Button>
+  </div>
   <Nested v-if="nested" @close="nested = false" />
 
   <TransitionRoot :show="isOpen" as="template">
@@ -224,6 +207,22 @@ function resolveClass({ active, disabled }) {
   )
 }
 
+let Button = defineComponent({
+  setup(props, { slots }) {
+    return () =>
+      h(
+        'button',
+        {
+          type: 'button',
+          class:
+            'rounded bg-gray-200 px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2',
+          ...props,
+        },
+        slots.default?.()
+      )
+  },
+})
+
 let Nested = defineComponent({
   components: { Dialog, DialogOverlay },
   emits: ['close'],
@@ -247,21 +246,9 @@ let Nested = defineComponent({
           [
             h('p', `Level: ${level}`),
             h('div', { class: 'space-x-4' }, [
-              h(
-                'button',
-                { class: 'rounded bg-gray-200 px-2 py-1', onClick: () => (showChild.value = true) },
-                `Open ${level + 1} a`
-              ),
-              h(
-                'button',
-                { class: 'rounded bg-gray-200 px-2 py-1', onClick: () => (showChild.value = true) },
-                `Open ${level + 1} b`
-              ),
-              h(
-                'button',
-                { class: 'rounded bg-gray-200 px-2 py-1', onClick: () => (showChild.value = true) },
-                `Open ${level + 1} c`
-              ),
+              h(Button, { onClick: () => (showChild.value = true) }, () => `Open ${level + 1} a`),
+              h(Button, { onClick: () => (showChild.value = true) }, () => `Open ${level + 1} b`),
+              h(Button, { onClick: () => (showChild.value = true) }, () => `Open ${level + 1} c`),
             ]),
           ]
         ),
@@ -277,6 +264,7 @@ let Nested = defineComponent({
 
 export default {
   components: {
+    Button,
     Nested,
     Dialog,
     DialogTitle,
