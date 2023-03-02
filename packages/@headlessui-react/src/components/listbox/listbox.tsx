@@ -357,7 +357,7 @@ function ListboxFn<
     defaultValue,
     name,
     onChange: controlledOnChange,
-    by = (a, z) => a === z,
+    by = (a: TActualType, z: TActualType) => a === z,
     disabled = false,
     horizontal = false,
     multiple = false,
@@ -366,7 +366,7 @@ function ListboxFn<
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
-  let [value = multiple ? [] : undefined, theirOnChange] = useControllable(
+  let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
     controlledValue,
     controlledOnChange,
     defaultValue
@@ -397,12 +397,12 @@ function ListboxFn<
       : by
   )
 
-  let isSelected: (value: unknown) => boolean = useCallback(
+  let isSelected: (value: TActualType) => boolean = useCallback(
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () =>
           (value as unknown as EnsureArray<TType>).some((option) => compare(option, compareValue)),
-        [ValueMode.Single]: () => compare(value as TType, compareValue),
+        [ValueMode.Single]: () => compare(value as TActualType, compareValue),
       }),
     [value]
   )

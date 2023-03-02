@@ -68,7 +68,7 @@ describe('safeguards', () => {
     'should be possible to render a Listbox without crashing',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a">Option A</Listbox.Option>
@@ -93,7 +93,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             {({ open }) => (
               <>
                 <Listbox.Button>Trigger</Listbox.Button>
@@ -129,7 +129,7 @@ describe('Rendering', () => {
       'should be possible to disable a Listbox',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log} disabled>
+          <Listbox value={undefined} onChange={(x) => console.log(x)} disabled>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -197,7 +197,7 @@ describe('Rendering', () => {
         'should use object equality by default',
         suppressConsoleLogs(async () => {
           render(
-            <Listbox value={options[1]} onChange={console.log}>
+            <Listbox value={options[1]} onChange={(x) => console.log(x)}>
               <Listbox.Button>Trigger</Listbox.Button>
               <Listbox.Options>
                 {options.map((option) => (
@@ -227,7 +227,7 @@ describe('Rendering', () => {
         'should be possible to compare objects by a field',
         suppressConsoleLogs(async () => {
           render(
-            <Listbox value={{ id: 2, name: 'Bob' }} onChange={console.log} by="id">
+            <Listbox value={{ id: 2, name: 'Bob' }} onChange={(x) => console.log(x)} by="id">
               <Listbox.Button>Trigger</Listbox.Button>
               <Listbox.Options>
                 {options.map((option) => (
@@ -259,7 +259,7 @@ describe('Rendering', () => {
           render(
             <Listbox
               value={{ id: 2, name: 'Bob' }}
-              onChange={console.log}
+              onChange={(x) => console.log(x)}
               by={(a, z) => a.id === z.id}
             >
               <Listbox.Button>Trigger</Listbox.Button>
@@ -461,7 +461,7 @@ describe('Rendering', () => {
       'null should be a valid value for the Listbox',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={null} onChange={console.log}>
+          <Listbox value={null} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -487,7 +487,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox.Label using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Label>{JSON.stringify}</Listbox.Label>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
@@ -524,7 +524,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox.Label using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Label as="p">{JSON.stringify}</Listbox.Label>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
@@ -558,7 +558,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox.Button using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>{JSON.stringify}</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -590,7 +590,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox.Button using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button as="div" role="button">
               {JSON.stringify}
             </Listbox.Button>
@@ -624,7 +624,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox.Button and a Listbox.Label and see them linked together',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Label>Label</Listbox.Label>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
@@ -650,7 +650,7 @@ describe('Rendering', () => {
     describe('`type` attribute', () => {
       it('should set the `type` to "button" by default', async () => {
         render(
-          <Listbox value={null} onChange={console.log}>
+          <Listbox value={null} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
           </Listbox>
         )
@@ -660,7 +660,7 @@ describe('Rendering', () => {
 
       it('should not set the `type` to "button" if it already contains a `type`', async () => {
         render(
-          <Listbox value={null} onChange={console.log}>
+          <Listbox value={null} onChange={(x) => console.log(x)}>
             <Listbox.Button type="submit">Trigger</Listbox.Button>
           </Listbox>
         )
@@ -674,7 +674,7 @@ describe('Rendering', () => {
         ))
 
         render(
-          <Listbox value={null} onChange={console.log}>
+          <Listbox value={null} onChange={(x) => console.log(x)}>
             <Listbox.Button as={CustomButton}>Trigger</Listbox.Button>
           </Listbox>
         )
@@ -684,7 +684,7 @@ describe('Rendering', () => {
 
       it('should not set the type if the "as" prop is not a "button"', async () => {
         render(
-          <Listbox value={null} onChange={console.log}>
+          <Listbox value={null} onChange={(x) => console.log(x)}>
             <Listbox.Button as="div">Trigger</Listbox.Button>
           </Listbox>
         )
@@ -698,7 +698,7 @@ describe('Rendering', () => {
         ))
 
         render(
-          <Listbox value={null} onChange={console.log}>
+          <Listbox value={null} onChange={(x) => console.log(x)}>
             <Listbox.Button as={CustomButton}>Trigger</Listbox.Button>
           </Listbox>
         )
@@ -713,7 +713,7 @@ describe('Rendering', () => {
       'should be possible to render Listbox.Options using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               {(data) => (
@@ -747,7 +747,7 @@ describe('Rendering', () => {
 
     it('should be possible to always render the Listbox.Options if we provide it a `static` prop', () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options static>
             <Listbox.Option value="a">Option A</Listbox.Option>
@@ -763,7 +763,7 @@ describe('Rendering', () => {
 
     it('should be possible to use a different render strategy for the Listbox.Options', async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options unmount={false}>
             <Listbox.Option value="a">Option A</Listbox.Option>
@@ -787,7 +787,7 @@ describe('Rendering', () => {
       'should be possible to render a Listbox.Option using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">{JSON.stringify}</Listbox.Option>
@@ -819,7 +819,7 @@ describe('Rendering', () => {
     function Example({ hide = false }) {
       return (
         <>
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option 1</Listbox.Option>
@@ -1163,7 +1163,7 @@ describe('Rendering composition', () => {
     'should be possible to conditionally render classNames (aka className can be a function?!)',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a" className={(bag) => JSON.stringify(bag)}>
@@ -1238,7 +1238,7 @@ describe('Rendering composition', () => {
     'should be possible to swap the Listbox option with a button for example',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option as="button" value="a">
@@ -1285,7 +1285,7 @@ describe('Composition', () => {
     suppressConsoleLogs(async () => {
       let orderFn = jest.fn()
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Debug name="Listbox" fn={orderFn} />
           <Transition>
@@ -1341,7 +1341,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Enter',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1387,7 +1387,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with Enter when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log} disabled>
+          <Listbox value={undefined} onChange={(x) => console.log(x)} disabled>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1422,7 +1422,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Enter, and focus the selected option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value="b" onChange={console.log}>
+          <Listbox value="b" onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1467,7 +1467,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Enter, and focus the selected option (when using the `hidden` render strategy)',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value="b" onChange={console.log}>
+          <Listbox value="b" onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options unmount={false}>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1534,7 +1534,7 @@ describe('Keyboard interactions', () => {
         ]
         let selectedOption = myOptions[1]
         render(
-          <Listbox value={selectedOption} onChange={console.log}>
+          <Listbox value={selectedOption} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               {myOptions.map((myOption) => (
@@ -1581,7 +1581,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options />
           </Listbox>
@@ -1605,7 +1605,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Enter',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -1640,7 +1640,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Enter (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -1677,7 +1677,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon Enter key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -1713,7 +1713,7 @@ describe('Keyboard interactions', () => {
       'should be possible to close the listbox with Enter when there is no active listboxoption',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1819,7 +1819,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Space',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1862,7 +1862,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with Space when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log} disabled>
+          <Listbox value={undefined} onChange={(x) => console.log(x)} disabled>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1897,7 +1897,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with Space, and focus the selected option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value="b" onChange={console.log}>
+          <Listbox value="b" onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -1942,7 +1942,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options />
           </Listbox>
@@ -1966,7 +1966,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Space',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -2001,7 +2001,7 @@ describe('Keyboard interactions', () => {
       'should focus the first non disabled listbox option when opening with Space (jump over multiple disabled ones)',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -2038,7 +2038,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon Space key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -2142,7 +2142,7 @@ describe('Keyboard interactions', () => {
       'should be possible to close an open listbox with Escape',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2185,7 +2185,7 @@ describe('Keyboard interactions', () => {
       'should focus trap when we use Tab',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2236,7 +2236,7 @@ describe('Keyboard interactions', () => {
       'should focus trap when we use Shift+Tab',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2289,7 +2289,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowDown',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2334,7 +2334,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with ArrowDown when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log} disabled>
+          <Listbox value={undefined} onChange={(x) => console.log(x)} disabled>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2369,7 +2369,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowDown, and focus the selected option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value="b" onChange={console.log}>
+          <Listbox value="b" onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2414,7 +2414,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options />
           </Listbox>
@@ -2438,7 +2438,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2484,7 +2484,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the listbox options and skip the first disabled one',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -2524,7 +2524,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowDown to navigate the listbox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -2564,7 +2564,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowRight to navigate the listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log} horizontal>
+          <Listbox value={undefined} onChange={(x) => console.log(x)} horizontal>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2612,7 +2612,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowUp and the last option should be active',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2657,7 +2657,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to open the listbox with ArrowUp and the last option should be active when the button is disabled',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log} disabled>
+          <Listbox value={undefined} onChange={(x) => console.log(x)} disabled>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2692,7 +2692,7 @@ describe('Keyboard interactions', () => {
       'should be possible to open the listbox with ArrowUp, and focus the selected option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value="b" onChange={console.log}>
+          <Listbox value="b" onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2737,7 +2737,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option when there are no listbox options at all',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options />
           </Listbox>
@@ -2761,7 +2761,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowUp to navigate the listbox options and jump to the first non-disabled one',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2799,7 +2799,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to navigate up or down if there is only a single non-disabled option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -2845,7 +2845,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowUp to navigate the listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2902,7 +2902,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use ArrowLeft to navigate the listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log} horizontal>
+          <Listbox value={undefined} onChange={(x) => console.log(x)} horizontal>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2960,7 +2960,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the last listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -2991,7 +2991,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the last non disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3027,7 +3027,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the End key to go to the first listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3062,7 +3062,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon End key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3100,7 +3100,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the last listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3131,7 +3131,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the last non disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3167,7 +3167,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageDown key to go to the first listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3202,7 +3202,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon PageDown key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3240,7 +3240,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the first listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3271,7 +3271,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the first non disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3306,7 +3306,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the Home key to go to the last listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3341,7 +3341,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon Home key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3379,7 +3379,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the first listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3410,7 +3410,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the first non disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3445,7 +3445,7 @@ describe('Keyboard interactions', () => {
       'should be possible to use the PageUp key to go to the last listbox option if that is the only non-disabled listbox option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3480,7 +3480,7 @@ describe('Keyboard interactions', () => {
       'should have no active listbox option upon PageUp key press, when there are no non-disabled listbox options',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option disabled value="a">
@@ -3518,7 +3518,7 @@ describe('Keyboard interactions', () => {
       'should be possible to type a full word that has a perfect match',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -3551,7 +3551,7 @@ describe('Keyboard interactions', () => {
       'should be possible to type a partial of a word',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -3590,7 +3590,7 @@ describe('Keyboard interactions', () => {
       'should be possible to type words with spaces',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">value a</Listbox.Option>
@@ -3629,7 +3629,7 @@ describe('Keyboard interactions', () => {
       'should not be possible to search for a disabled option',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -3664,7 +3664,7 @@ describe('Keyboard interactions', () => {
       'should be possible to search for a word (case insensitive)',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -3697,7 +3697,7 @@ describe('Keyboard interactions', () => {
       'should be possible to search for the next occurence',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">alice</Listbox.Option>
@@ -3731,7 +3731,7 @@ describe('Keyboard interactions', () => {
       'should stay on the same item while keystrokes still match',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">alice</Listbox.Option>
@@ -3807,7 +3807,7 @@ describe('Mouse interactions', () => {
     'should focus the Listbox.Button when we click the Listbox.Label',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Label>Label</Listbox.Label>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
@@ -3833,7 +3833,7 @@ describe('Mouse interactions', () => {
     'should not focus the Listbox.Button when we right click the Listbox.Label',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Label>Label</Listbox.Label>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
@@ -3859,7 +3859,7 @@ describe('Mouse interactions', () => {
     'should be possible to open the listbox on click',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3898,7 +3898,7 @@ describe('Mouse interactions', () => {
     'should not be possible to open the listbox on right click',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a">Item A</Listbox.Option>
@@ -3926,7 +3926,7 @@ describe('Mouse interactions', () => {
     'should not be possible to open the listbox on click when the button is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log} disabled>
+        <Listbox value={undefined} onChange={(x) => console.log(x)} disabled>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a">Option A</Listbox.Option>
@@ -3958,7 +3958,7 @@ describe('Mouse interactions', () => {
     'should be possible to open the listbox on click, and focus the selected option',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value="b" onChange={console.log}>
+        <Listbox value="b" onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a">Option A</Listbox.Option>
@@ -4000,7 +4000,7 @@ describe('Mouse interactions', () => {
     'should be possible to close a listbox on click',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="a">Option A</Listbox.Option>
@@ -4029,7 +4029,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we click outside of a closed listbox',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4054,7 +4054,7 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the listbox which should close the listbox',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4085,7 +4085,7 @@ describe('Mouse interactions', () => {
     suppressConsoleLogs(async () => {
       render(
         <div>
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4094,7 +4094,7 @@ describe('Mouse interactions', () => {
             </Listbox.Options>
           </Listbox>
 
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4128,7 +4128,7 @@ describe('Mouse interactions', () => {
     'should be possible to click outside of the listbox which should close the listbox (even if we press the listbox button)',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4160,7 +4160,7 @@ describe('Mouse interactions', () => {
       let focusFn = jest.fn()
       render(
         <div>
-          <Listbox value={undefined} onChange={console.log}>
+          <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button onFocus={focusFn}>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4199,7 +4199,7 @@ describe('Mouse interactions', () => {
     'should be possible to hover an option and make it active',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4231,7 +4231,7 @@ describe('Mouse interactions', () => {
     'should make a listbox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4255,7 +4255,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the listbox option is already active',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4285,7 +4285,7 @@ describe('Mouse interactions', () => {
     'should be a no-op when we move the mouse and the listbox option is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4311,7 +4311,7 @@ describe('Mouse interactions', () => {
     'should not be possible to hover an option that is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4340,7 +4340,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value="bob" onChange={console.log}>
+        <Listbox value="bob" onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4382,7 +4382,7 @@ describe('Mouse interactions', () => {
     'should be possible to mouse leave a disabled option and be a no-op',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4516,7 +4516,7 @@ describe('Mouse interactions', () => {
     'should be possible focus a listbox option, so that it becomes active',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
@@ -4546,7 +4546,7 @@ describe('Mouse interactions', () => {
     'should not be possible to focus a listbox option which is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Listbox value={undefined} onChange={console.log}>
+        <Listbox value={undefined} onChange={(x) => console.log(x)}>
           <Listbox.Button>Trigger</Listbox.Button>
           <Listbox.Options>
             <Listbox.Option value="alice">alice</Listbox.Option>
