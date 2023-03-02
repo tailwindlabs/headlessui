@@ -4,6 +4,7 @@ import React, {
   createRef,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -14,7 +15,6 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
-  useEffect,
 } from 'react'
 import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
