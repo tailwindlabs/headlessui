@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Enable native label behavior for `<Switch>` where possible ([#2265](https://github.com/tailwindlabs/headlessui/pull/2265))
 - Allow root containers from the `Dialog` component in the `FocusTrap` component ([#2322](https://github.com/tailwindlabs/headlessui/pull/2322))
+- Cleanup internal TypeScript types ([#2329](https://github.com/tailwindlabs/headlessui/pull/2329))
 
 ## [1.7.11] - 2023-02-24
 
