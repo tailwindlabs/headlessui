@@ -209,13 +209,18 @@ interface TabsRenderPropArg {
   selectedIndex: number
 }
 
-export type TabGroupProps<TTag extends ElementType> = Props<TTag, TabsRenderPropArg> & {
-  defaultIndex?: number
-  onChange?: (index: number) => void
-  selectedIndex?: number
-  vertical?: boolean
-  manual?: boolean
-}
+export type TabGroupProps<TTag extends ElementType> = Props<
+  TTag,
+  TabsRenderPropArg,
+  never,
+  {
+    defaultIndex?: number
+    onChange?: (index: number) => void
+    selectedIndex?: number
+    vertical?: boolean
+    manual?: boolean
+  }
+>
 
 function GroupFn<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
   props: TabGroupProps<TTag>,
@@ -334,10 +339,11 @@ type ListPropsWeControl = 'aria-orientation' | 'role'
 export type TabListProps<TTag extends ElementType> = Props<
   TTag,
   ListRenderPropArg,
-  ListPropsWeControl
-> & {
-  //
-}
+  ListPropsWeControl,
+  {
+    //
+  }
+>
 
 function ListFn<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
   props: TabListProps<TTag>,
@@ -545,9 +551,9 @@ let PanelRenderFeatures = Features.RenderStrategy | Features.Static
 export type TabPanelProps<TTag extends ElementType> = Props<
   TTag,
   PanelRenderPropArg,
-  PanelPropsWeControl
-> &
-  PropsForFeatures<typeof PanelRenderFeatures>
+  PanelPropsWeControl,
+  PropsForFeatures<typeof PanelRenderFeatures> & { id?: string; tabIndex?: number }
+>
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: TabPanelProps<TTag>,
