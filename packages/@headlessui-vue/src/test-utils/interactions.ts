@@ -1,8 +1,5 @@
 import { fireEvent } from '@testing-library/dom'
-import { disposables } from '../utils/disposables'
 import { pointer } from './fake-pointer'
-
-let d = disposables()
 
 function nextFrame(cb: Function): void {
   setImmediate(() =>

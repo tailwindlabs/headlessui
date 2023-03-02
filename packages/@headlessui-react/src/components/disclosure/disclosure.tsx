@@ -162,7 +162,7 @@ export type DisclosureProps<TTag extends ElementType> = Props<TTag, DisclosureRe
 
 function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   props: DisclosureProps<TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ) {
   let { defaultOpen = false, ...theirProps } = props
   let internalDisclosureRef = useRef<HTMLElement | null>(null)
@@ -247,14 +247,15 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
 }
-type ButtonPropsWeControl =
-  // | 'type' // We allow this to be overridden
-  'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
+type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded'
 
 export type DisclosureButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
-  ButtonPropsWeControl
+  ButtonPropsWeControl,
+  {
+    disabled?: boolean
+  }
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(

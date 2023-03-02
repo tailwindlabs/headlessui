@@ -118,21 +118,21 @@ let DEFAULT_DIALOG_TAG = 'div' as const
 interface DialogRenderPropArg {
   open: boolean
 }
-type DialogPropsWeControl = 'role' | 'aria-modal' | 'aria-describedby' | 'aria-labelledby'
+type DialogPropsWeControl = 'role' | 'aria-describedby' | 'aria-labelledby' | 'aria-modal'
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
 export type DialogProps<TTag extends ElementType> = Props<
   TTag,
   DialogRenderPropArg,
-  DialogPropsWeControl
-> &
+  DialogPropsWeControl,
   PropsForFeatures<typeof DialogRenderFeatures> & {
     open?: boolean
     onClose(value: boolean): void
     initialFocus?: MutableRefObject<HTMLElement | null>
     __demoMode?: boolean
   }
+>
 
 function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   props: DialogProps<TTag>,
@@ -402,7 +402,7 @@ let DEFAULT_OVERLAY_TAG = 'div' as const
 interface OverlayRenderPropArg {
   open: boolean
 }
-type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
+type OverlayPropsWeControl = 'aria-hidden'
 
 export type DialogOverlayProps<TTag extends ElementType> = Props<
   TTag,
@@ -454,7 +454,7 @@ let DEFAULT_BACKDROP_TAG = 'div' as const
 interface BackdropRenderPropArg {
   open: boolean
 }
-type BackdropPropsWeControl = 'aria-hidden' | 'onClick'
+type BackdropPropsWeControl = 'aria-hidden'
 
 export type DialogBackdropProps<TTag extends ElementType> = Props<
   TTag,

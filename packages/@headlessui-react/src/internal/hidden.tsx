@@ -15,9 +15,7 @@ export enum Features {
   Hidden = 1 << 2,
 }
 
-export type HiddenProps<TTag extends ElementType> = Props<TTag> & {
-  features?: Features
-}
+export type HiddenProps<TTag extends ElementType> = Props<TTag, {}, never, { features?: Features }>
 
 function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG>(
   props: HiddenProps<TTag>,

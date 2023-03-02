@@ -385,14 +385,15 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
 }
-type ButtonPropsWeControl =
-  // | 'type' // We allow this to be overridden
-  'aria-expanded' | 'aria-controls' | 'onKeyDown' | 'onClick'
+type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded'
 
 export type PopoverButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
-  ButtonPropsWeControl
+  ButtonPropsWeControl,
+  {
+    disabled?: boolean
+  }
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
@@ -620,7 +621,7 @@ let DEFAULT_OVERLAY_TAG = 'div' as const
 interface OverlayRenderPropArg {
   open: boolean
 }
-type OverlayPropsWeControl = 'aria-hidden' | 'onClick'
+type OverlayPropsWeControl = 'aria-hidden'
 
 let OverlayRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -684,18 +685,19 @@ interface PanelRenderPropArg {
   open: boolean
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
 }
-type PanelPropsWeControl = 'onKeyDown'
 
 let PanelRenderFeatures = Features.RenderStrategy | Features.Static
+
+type PanelPropsWeControl = 'tabIndex'
 
 export type PopoverPanelProps<TTag extends ElementType> = Props<
   TTag,
   PanelRenderPropArg,
-  PanelPropsWeControl
-> &
+  PanelPropsWeControl,
   PropsForFeatures<typeof PanelRenderFeatures> & {
     focus?: boolean
   }
+>
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: PopoverPanelProps<TTag>,

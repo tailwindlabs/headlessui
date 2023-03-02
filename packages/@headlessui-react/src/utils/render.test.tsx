@@ -68,12 +68,12 @@ describe('Default functionality', () => {
   })
 
   it('should be possible to add a ref with a different name', () => {
-    let ref = createRef()
+    let ref = createRef<HTMLDivElement>()
 
     function MyComponent<T extends ElementType = 'div'>({
       innerRef,
       ...props
-    }: Props<T> & { innerRef: Ref<HTMLDivElement> }) {
+    }: Props<T, {}, never, { innerRef?: Ref<HTMLDivElement> }>) {
       return <div ref={innerRef} {...props} />
     }
 

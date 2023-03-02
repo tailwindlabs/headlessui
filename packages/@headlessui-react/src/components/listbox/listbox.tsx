@@ -351,13 +351,13 @@ function ListboxFn<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType
->(props: ListboxProps<TTag, TType, TActualType>, ref: Ref<TTag>) {
+>(props: ListboxProps<TTag, TType, TActualType>, ref: Ref<HTMLElement>) {
   let {
     value: controlledValue,
     defaultValue,
     name,
     onChange: controlledOnChange,
-    by = (a, z) => a === z,
+    by = (a: TActualType, z: TActualType) => a === z,
     disabled = false,
     horizontal = false,
     multiple = false,
@@ -366,7 +366,7 @@ function ListboxFn<
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
-  let [value = multiple ? [] : undefined, theirOnChange] = useControllable(
+  let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
     controlledValue,
     controlledOnChange,
     defaultValue
@@ -397,12 +397,12 @@ function ListboxFn<
       : by
   )
 
-  let isSelected: (value: unknown) => boolean = useCallback(
+  let isSelected: (value: TActualType) => boolean = useCallback(
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () =>
           (value as unknown as EnsureArray<TType>).some((option) => compare(option, compareValue)),
-        [ValueMode.Single]: () => compare(value as TType, compareValue),
+        [ValueMode.Single]: () => compare(value as TActualType, compareValue),
       }),
     [value]
   )
@@ -586,14 +586,11 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  // | 'type' // We allow this to be overridden
-  | 'aria-haspopup'
   | 'aria-controls'
   | 'aria-expanded'
+  | 'aria-haspopup'
   | 'aria-labelledby'
   | 'disabled'
-  | 'onKeyDown'
-  | 'onClick'
 
 export type ListboxButtonProps<TTag extends ElementType> = Props<
   TTag,
@@ -703,13 +700,8 @@ interface LabelRenderPropArg {
   open: boolean
   disabled: boolean
 }
-type LabelPropsWeControl = 'ref' | 'onClick'
 
-export type ListboxLabelProps<TTag extends ElementType> = Props<
-  TTag,
-  LabelRenderPropArg,
-  LabelPropsWeControl
->
+export type ListboxLabelProps<TTag extends ElementType> = Props<TTag, LabelRenderPropArg>
 
 function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: ListboxLabelProps<TTag>,
@@ -749,8 +741,8 @@ interface OptionsRenderPropArg {
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
+  | 'aria-multiselectable'
   | 'aria-orientation'
-  | 'onKeyDown'
   | 'role'
   | 'tabIndex'
 
@@ -906,25 +898,17 @@ interface OptionRenderPropArg {
   selected: boolean
   disabled: boolean
 }
-type ListboxOptionPropsWeControl =
-  | 'role'
-  | 'tabIndex'
-  | 'aria-disabled'
-  | 'aria-selected'
-  | 'onPointerLeave'
-  | 'onMouseLeave'
-  | 'onPointerMove'
-  | 'onMouseMove'
-  | 'onFocus'
+type OptionPropsWeControl = 'aria-disabled' | 'aria-selected' | 'role' | 'tabIndex'
 
 export type ListboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  ListboxOptionPropsWeControl | 'value'
-> & {
-  disabled?: boolean
-  value: TType
-}
+  OptionPropsWeControl,
+  {
+    disabled?: boolean
+    value: TType
+  }
+>
 
 function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,

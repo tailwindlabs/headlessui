@@ -4,6 +4,7 @@ import React, {
   createRef,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -14,7 +15,6 @@ import React, {
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
-  useEffect,
 } from 'react'
 import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
@@ -385,31 +385,31 @@ export type ComboboxProps<
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, true, true, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, true, false, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, false, false, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, false, true, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, boolean | undefined, boolean | undefined, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ) {
   let {
     value: controlledValue,
     defaultValue,
     onChange: controlledOnChange,
     name,
-    by = (a: any, z: any) => a === z,
+    by = (a: TValue, z: TValue) => a === z,
     disabled = false,
     __demoMode = false,
     nullable = false,
@@ -440,16 +440,18 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let buttonRef = useRef<_Data['buttonRef']['current']>(null)
   let optionsRef = useRef<_Data['optionsRef']['current']>(null)
 
+  type TActualValue = true extends typeof multiple ? EnsureArray<TValue>[number] : TValue
   let compare = useEvent(
+    // @ts-expect-error Eventually we'll want to tackle this, but for now this will do.
     typeof by === 'string'
-      ? (a, z) => {
-          let property = by as unknown as keyof TValue
+      ? (a: TActualValue, z: TActualValue) => {
+          let property = by as unknown as keyof TActualValue
           return a?.[property] === z?.[property]
         }
       : by
   )
 
-  let isSelected: (value: unknown) => boolean = useCallback(
+  let isSelected: (value: TValue) => boolean = useCallback(
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () =>
@@ -695,23 +697,24 @@ interface InputRenderPropArg {
   disabled: boolean
 }
 type InputPropsWeControl =
-  | 'role'
-  | 'aria-labelledby'
-  | 'aria-expanded'
   | 'aria-activedescendant'
   | 'aria-autocomplete'
-  | 'onKeyDown'
-  | 'onChange'
-  | 'displayValue'
+  | 'aria-controls'
+  | 'aria-expanded'
+  | 'aria-labelledby'
+  | 'disabled'
+  | 'role'
 
 export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
   TTag,
   InputRenderPropArg,
-  InputPropsWeControl
-> & {
-  displayValue?(item: TType): string
-  onChange?(event: React.ChangeEvent<HTMLInputElement>): void
-}
+  InputPropsWeControl,
+  {
+    defaultValue?: TType
+    displayValue?(item: TType): string
+    onChange?(event: React.ChangeEvent<HTMLInputElement>): void
+  }
+>
 
 function InputFn<
   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
@@ -1010,15 +1013,12 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  // | 'type' // While we do "control" this prop we allow it to be overridden
-  | 'tabIndex'
-  | 'aria-haspopup'
   | 'aria-controls'
   | 'aria-expanded'
+  | 'aria-haspopup'
   | 'aria-labelledby'
   | 'disabled'
-  | 'onClick'
-  | 'onKeyDown'
+  | 'tabIndex'
 
 export type ComboboxButtonProps<TTag extends ElementType> = Props<
   TTag,
@@ -1131,13 +1131,8 @@ interface LabelRenderPropArg {
   open: boolean
   disabled: boolean
 }
-type LabelPropsWeControl = 'ref' | 'onClick'
 
-export type ComboboxLabelProps<TTag extends ElementType> = Props<
-  TTag,
-  LabelRenderPropArg,
-  LabelPropsWeControl
->
+export type ComboboxLabelProps<TTag extends ElementType> = Props<TTag, LabelRenderPropArg>
 
 function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: ComboboxLabelProps<TTag>,
@@ -1175,18 +1170,18 @@ let DEFAULT_OPTIONS_TAG = 'ul' as const
 interface OptionsRenderPropArg {
   open: boolean
 }
-type OptionsPropsWeControl = 'aria-labelledby' | 'hold' | 'onKeyDown' | 'role' | 'tabIndex'
+type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role' | 'tabIndex'
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
 export type ComboboxOptionsProps<TTag extends ElementType> = Props<
   TTag,
   OptionsRenderPropArg,
-  OptionsPropsWeControl
-> &
+  OptionsPropsWeControl,
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
   }
+>
 
 function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   props: ComboboxOptionsProps<TTag>,
@@ -1263,16 +1258,17 @@ interface OptionRenderPropArg {
   selected: boolean
   disabled: boolean
 }
-type ComboboxOptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
+type OptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
 
 export type ComboboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  ComboboxOptionPropsWeControl | 'value'
-> & {
-  disabled?: boolean
-  value: TType
-}
+  OptionPropsWeControl,
+  {
+    disabled?: boolean
+    value: TType
+  }
+>
 
 function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
