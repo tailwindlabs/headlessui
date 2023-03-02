@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow root containers from the `Dialog` component in the `FocusTrap` component ([#2322](https://github.com/tailwindlabs/headlessui/pull/2322))
 - Fix `XYZPropsWeControl` and cleanup internal TypeScript types ([#2329](https://github.com/tailwindlabs/headlessui/pull/2329))
 - Fix invalid warning when using multiple `Popover.Button` components inside a `Popover.Panel` ([#2333](https://github.com/tailwindlabs/headlessui/pull/2333))
+- Fix restore focus to buttons in Safari, when `Dialog` component closes ([#2326](https://github.com/tailwindlabs/headlessui/pull/2326))
 
 ## [1.7.12] - 2023-02-24
 
