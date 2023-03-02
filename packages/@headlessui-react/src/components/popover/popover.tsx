@@ -690,13 +690,11 @@ type PanelPropsWeControl = 'tabIndex'
 export type PopoverPanelProps<TTag extends ElementType> = Props<
   TTag,
   PanelRenderPropArg,
-  | PanelPropsWeControl
-  // Props we gave a new type
-  | 'focus'
-> &
+  PanelPropsWeControl,
   PropsForFeatures<typeof PanelRenderFeatures> & {
     focus?: boolean
   }
+>
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: PopoverPanelProps<TTag>,

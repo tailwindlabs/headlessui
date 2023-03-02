@@ -706,14 +706,12 @@ type InputPropsWeControl =
 export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
   TTag,
   InputRenderPropArg,
-  | InputPropsWeControl
-  // Props we gave a new type
-  | 'displayValue'
-  | 'onChange'
-> & {
-  displayValue?(item: TType): string
-  onChange?(event: React.ChangeEvent<HTMLInputElement>): void
-}
+  InputPropsWeControl,
+  {
+    displayValue?(item: TType): string
+    onChange?(event: React.ChangeEvent<HTMLInputElement>): void
+  }
+>
 
 function InputFn<
   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
@@ -1176,13 +1174,11 @@ let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 export type ComboboxOptionsProps<TTag extends ElementType> = Props<
   TTag,
   OptionsRenderPropArg,
-  | OptionsPropsWeControl
-  // Props we gave a new type
-  | 'hold'
-> &
+  OptionsPropsWeControl,
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
   }
+>
 
 function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   props: ComboboxOptionsProps<TTag>,
@@ -1264,14 +1260,12 @@ type OptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-select
 export type ComboboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  | OptionPropsWeControl
-  // Props we gave a new type
-  | 'disabled'
-  | 'value'
-> & {
-  disabled?: boolean
-  value: TType
-}
+  OptionPropsWeControl,
+  {
+    disabled?: boolean
+    value: TType
+  }
+>
 
 function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,

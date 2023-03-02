@@ -125,19 +125,14 @@ let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 export type DialogProps<TTag extends ElementType> = Props<
   TTag,
   DialogRenderPropArg,
-  | DialogPropsWeControl
-  // Props we gave a new type
-  | 'open'
-  | 'onClose'
-  | 'initialFocus'
-  | '__demoMode'
-> &
+  DialogPropsWeControl,
   PropsForFeatures<typeof DialogRenderFeatures> & {
     open?: boolean
     onClose(value: boolean): void
     initialFocus?: MutableRefObject<HTMLElement | null>
     __demoMode?: boolean
   }
+>
 
 function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   props: DialogProps<TTag>,

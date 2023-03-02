@@ -48,8 +48,12 @@ type ClassNameOverride<TTag extends ReactTag, TSlot = {}> =
 export type Props<
   TTag extends ReactTag,
   TSlot = {},
-  TOmitableProps extends PropertyKey = never
-> = CleanProps<TTag, TOmitableProps> & OurProps<TTag, TSlot> & ClassNameOverride<TTag, TSlot>
+  TOmitableProps extends PropertyKey = never,
+  Overrides = {}
+> = CleanProps<TTag, TOmitableProps | keyof Overrides> &
+  OurProps<TTag, TSlot> &
+  ClassNameOverride<TTag, TSlot> &
+  Overrides
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 export type XOR<T, U> = T | U extends __

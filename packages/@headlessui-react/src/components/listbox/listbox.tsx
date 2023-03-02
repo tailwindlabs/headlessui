@@ -903,14 +903,12 @@ type OptionPropsWeControl = 'aria-disabled' | 'aria-selected' | 'role' | 'tabInd
 export type ListboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  | OptionPropsWeControl
-  // Props we gave a new type
-  | 'disabled'
-  | 'value'
-> & {
-  disabled?: boolean
-  value: TType
-}
+  OptionPropsWeControl,
+  {
+    disabled?: boolean
+    value: TType
+  }
+>
 
 function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,

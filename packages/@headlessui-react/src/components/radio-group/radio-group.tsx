@@ -140,22 +140,16 @@ type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby'
 export type RadioGroupProps<TTag extends ElementType, TType> = Props<
   TTag,
   RadioGroupRenderPropArg<TType>,
-  | RadioGroupPropsWeControl
-  // Props we gave a new type
-  | 'by'
-  | 'defaultValue'
-  | 'disabled'
-  | 'name'
-  | 'onChange'
-  | 'value'
-> & {
-  value?: TType
-  defaultValue?: TType
-  onChange?(value: TType): void
-  by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
-  disabled?: boolean
-  name?: string
-}
+  RadioGroupPropsWeControl,
+  {
+    value?: TType
+    defaultValue?: TType
+    onChange?(value: TType): void
+    by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
+    disabled?: boolean
+    name?: string
+  }
+>
 
 function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
   props: RadioGroupProps<TTag, TType>,
@@ -391,14 +385,12 @@ type OptionPropsWeControl =
 export type RadioOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  | OptionPropsWeControl
-  // Props we gave a new type
-  | 'value'
-  | 'disabled'
-> & {
-  value: TType
-  disabled?: boolean
-}
+  OptionPropsWeControl,
+  {
+    value: TType
+    disabled?: boolean
+  }
+>
 
 function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,

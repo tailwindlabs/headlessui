@@ -105,20 +105,15 @@ type SwitchPropsWeControl =
 export type SwitchProps<TTag extends ElementType> = Props<
   TTag,
   SwitchRenderPropArg,
-  | SwitchPropsWeControl
-  // Props we gave a new type
-  | 'checked'
-  | 'defaultChecked'
-  | 'onChange'
-  | 'name'
-  | 'value'
-> & {
-  checked?: boolean
-  defaultChecked?: boolean
-  onChange?(checked: boolean): void
-  name?: string
-  value?: string
-}
+  SwitchPropsWeControl,
+  {
+    checked?: boolean
+    defaultChecked?: boolean
+    onChange?(checked: boolean): void
+    name?: string
+    value?: string
+  }
+>
 
 function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   props: SwitchProps<TTag>,
