@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { logDOM, fireEvent, screen } from '@testing-library/dom'
-import { DefineComponent, ComponentOptionsWithoutProps, defineComponent } from 'vue'
+import { ComponentOptionsWithoutProps, defineComponent } from 'vue'
 
 let mountedWrappers = new Set()
 
@@ -16,7 +16,7 @@ function resolveContainer(): HTMLElement {
 
 // It's not the most elegant type
 // but Props and Emits need to be typed as any and not `{}`
-type AnyComponent = DefineComponent<any, any, any, any, any, any, any, any>
+type AnyComponent = ReturnType<typeof defineComponent>
 
 export function createRenderTemplate(defaultComponents: Record<string, AnyComponent>) {
   return (input: string | ComponentOptionsWithoutProps) => {
