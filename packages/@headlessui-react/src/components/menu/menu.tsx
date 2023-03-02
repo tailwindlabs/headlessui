@@ -313,7 +313,10 @@ type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded' | 'aria-haspopup'
 export type MenuButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
-  ButtonPropsWeControl
+  ButtonPropsWeControl,
+  {
+    disabled?: boolean
+  }
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
