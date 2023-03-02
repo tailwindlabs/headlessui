@@ -32,9 +32,13 @@ export function disposables() {
 
     style(node: HTMLElement, property: string, value: string) {
       let previous = node.style.getPropertyValue(property)
-      Object.assign(node.style, { [property]: value })
+      property.startsWith('--')
+        ? node.style.setProperty(property, value)
+        : Object.assign(node.style, { [property]: value })
       return this.add(() => {
-        Object.assign(node.style, { [property]: previous })
+        property.startsWith('--')
+          ? node.style.setProperty(property, previous)
+          : Object.assign(node.style, { [property]: previous })
       })
     },
 

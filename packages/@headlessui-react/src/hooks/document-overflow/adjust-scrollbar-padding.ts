@@ -20,6 +20,7 @@ export function adjustScrollbarPadding(): ScrollLockStep {
       let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
 
       d.style(documentElement, 'paddingRight', `${scrollbarWidth}px`)
+      d.style(documentElement, '--html-padding-right', `${scrollbarWidth}px`)
     },
   }
 }
