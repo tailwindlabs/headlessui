@@ -162,7 +162,7 @@ export type DisclosureProps<TTag extends ElementType> = Props<TTag, DisclosureRe
 
 function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   props: DisclosureProps<TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ) {
   let { defaultOpen = false, ...theirProps } = props
   let internalDisclosureRef = useRef<HTMLElement | null>(null)

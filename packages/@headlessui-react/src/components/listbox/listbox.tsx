@@ -351,7 +351,7 @@ function ListboxFn<
   TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
   TType = string,
   TActualType = TType extends (infer U)[] ? U : TType
->(props: ListboxProps<TTag, TType, TActualType>, ref: Ref<TTag>) {
+>(props: ListboxProps<TTag, TType, TActualType>, ref: Ref<HTMLElement>) {
   let {
     value: controlledValue,
     defaultValue,

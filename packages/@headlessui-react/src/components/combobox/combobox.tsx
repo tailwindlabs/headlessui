@@ -385,24 +385,24 @@ export type ComboboxProps<
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, true, true, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, true, false, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, false, false, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, false, true, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ): JSX.Element
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, boolean | undefined, boolean | undefined, TTag>,
-  ref: Ref<TTag>
+  ref: Ref<HTMLElement>
 ) {
   let {
     value: controlledValue,
