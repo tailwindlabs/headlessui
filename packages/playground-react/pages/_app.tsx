@@ -146,8 +146,8 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <div className="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased">
-        <header className="relative z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
+      <div className="flex h-screen flex-col bg-gray-700 font-sans text-gray-900 antialiased">
+        <header className="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8">
           <NextLink href="/">
             <Logo className="h-6" />
           </NextLink>
@@ -155,7 +155,7 @@ function MyApp({ Component, pageProps }) {
 
         <KeyCaster />
 
-        <main className="flex-1 overflow-auto bg-gray-50">
+        <main className="flex-1 bg-gray-50">
           <Component {...pageProps} />
         </main>
       </div>

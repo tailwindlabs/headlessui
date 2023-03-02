@@ -1,9 +1,7 @@
 <template>
-  <div
-    class="flex h-screen flex-col overflow-hidden bg-gray-700 font-sans text-gray-900 antialiased"
-  >
+  <div class="flex h-screen flex-col bg-gray-700 font-sans text-gray-900 antialiased">
     <header
-      class="relative z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8"
+      class="sticky top-0 z-10 flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-gray-700 px-4 py-4 sm:px-6 lg:px-8"
     >
       <router-link to="/">
         <svg class="h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 243 42">
@@ -60,7 +58,7 @@
         </svg>
       </router-link>
     </header>
-    <main class="flex-1 overflow-auto bg-gray-50">
+    <main class="flex-1 bg-gray-50">
       <router-view />
       <KeyCaster />
     </main>
@@ -68,8 +66,6 @@
 </template>
 
 <script>
-import { computed, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
 import KeyCaster from './KeyCaster.vue'
 
 export default {
