@@ -863,7 +863,7 @@ describe('Composition', () => {
             <Popover>
               <PopoverButton>Open Popover</PopoverButton>
               <PopoverPanel>
-                <div id="openDialog" @click="isDialogOpen = true">Open dialog</div>
+                <button id="openDialog" @click="isDialogOpen = true">Open dialog</button>
               </PopoverPanel>
             </Popover>
 
