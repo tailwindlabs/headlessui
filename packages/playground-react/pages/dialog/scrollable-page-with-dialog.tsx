@@ -49,7 +49,7 @@ export default function Home() {
             setIsOpen(false)
           }}
         >
-          <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="fixed inset-y-0 left-0 z-10 w-screen overflow-y-auto">
             <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
               <Transition.Child
                 as={Fragment}
