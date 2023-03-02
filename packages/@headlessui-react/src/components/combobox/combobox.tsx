@@ -708,6 +708,7 @@ export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
   InputRenderPropArg,
   InputPropsWeControl,
   {
+    defaultValue?: TType
     displayValue?(item: TType): string
     onChange?(event: React.ChangeEvent<HTMLInputElement>): void
   }
