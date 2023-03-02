@@ -308,9 +308,7 @@ let DEFAULT_BUTTON_TAG = 'button' as const
 interface ButtonRenderPropArg {
   open: boolean
 }
-type ButtonPropsWeControl =
-  // | 'type' // We allow this to be overridden
-  'aria-haspopup' | 'aria-controls' | 'aria-expanded' | 'onKeyDown' | 'onClick'
+type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded' | 'aria-haspopup'
 
 export type MenuButtonProps<TTag extends ElementType> = Props<
   TTag,
@@ -405,12 +403,7 @@ let DEFAULT_ITEMS_TAG = 'div' as const
 interface ItemsRenderPropArg {
   open: boolean
 }
-type ItemsPropsWeControl =
-  | 'aria-activedescendant'
-  | 'aria-labelledby'
-  | 'onKeyDown'
-  | 'role'
-  | 'tabIndex'
+type ItemsPropsWeControl = 'aria-activedescendant' | 'aria-labelledby' | 'role' | 'tabIndex'
 
 let ItemsRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -586,20 +579,12 @@ interface ItemRenderPropArg {
   disabled: boolean
   close: () => void
 }
-type MenuItemPropsWeControl =
-  | 'role'
-  | 'tabIndex'
-  | 'aria-disabled'
-  | 'onPointerLeave'
-  | 'onPointerMove'
-  | 'onMouseLeave'
-  | 'onMouseMove'
-  | 'onFocus'
+type ItemPropsWeControl = 'aria-disabled' | 'role' | 'tabIndex'
 
 export type MenuItemProps<TTag extends ElementType> = Props<
   TTag,
   ItemRenderPropArg,
-  MenuItemPropsWeControl
+  ItemPropsWeControl
 > & {
   disabled?: boolean
 }

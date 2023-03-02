@@ -695,19 +695,21 @@ interface InputRenderPropArg {
   disabled: boolean
 }
 type InputPropsWeControl =
-  | 'role'
-  | 'aria-labelledby'
-  | 'aria-expanded'
   | 'aria-activedescendant'
   | 'aria-autocomplete'
-  | 'onKeyDown'
-  | 'onChange'
-  | 'displayValue'
+  | 'aria-controls'
+  | 'aria-expanded'
+  | 'aria-labelledby'
+  | 'disabled'
+  | 'role'
 
 export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
   TTag,
   InputRenderPropArg,
-  InputPropsWeControl
+  | InputPropsWeControl
+  // Props we gave a new type
+  | 'displayValue'
+  | 'onChange'
 > & {
   displayValue?(item: TType): string
   onChange?(event: React.ChangeEvent<HTMLInputElement>): void
@@ -1010,15 +1012,12 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  // | 'type' // While we do "control" this prop we allow it to be overridden
-  | 'tabIndex'
-  | 'aria-haspopup'
   | 'aria-controls'
   | 'aria-expanded'
+  | 'aria-haspopup'
   | 'aria-labelledby'
   | 'disabled'
-  | 'onClick'
-  | 'onKeyDown'
+  | 'tabIndex'
 
 export type ComboboxButtonProps<TTag extends ElementType> = Props<
   TTag,
@@ -1131,13 +1130,8 @@ interface LabelRenderPropArg {
   open: boolean
   disabled: boolean
 }
-type LabelPropsWeControl = 'ref' | 'onClick'
 
-export type ComboboxLabelProps<TTag extends ElementType> = Props<
-  TTag,
-  LabelRenderPropArg,
-  LabelPropsWeControl
->
+export type ComboboxLabelProps<TTag extends ElementType> = Props<TTag, LabelRenderPropArg>
 
 function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: ComboboxLabelProps<TTag>,
@@ -1175,14 +1169,16 @@ let DEFAULT_OPTIONS_TAG = 'ul' as const
 interface OptionsRenderPropArg {
   open: boolean
 }
-type OptionsPropsWeControl = 'aria-labelledby' | 'hold' | 'onKeyDown' | 'role' | 'tabIndex'
+type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role' | 'tabIndex'
 
 let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
 
 export type ComboboxOptionsProps<TTag extends ElementType> = Props<
   TTag,
   OptionsRenderPropArg,
-  OptionsPropsWeControl
+  | OptionsPropsWeControl
+  // Props we gave a new type
+  | 'hold'
 > &
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
@@ -1263,12 +1259,15 @@ interface OptionRenderPropArg {
   selected: boolean
   disabled: boolean
 }
-type ComboboxOptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
+type OptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
 
 export type ComboboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  ComboboxOptionPropsWeControl | 'value'
+  | OptionPropsWeControl
+  // Props we gave a new type
+  | 'disabled'
+  | 'value'
 > & {
   disabled?: boolean
   value: TType

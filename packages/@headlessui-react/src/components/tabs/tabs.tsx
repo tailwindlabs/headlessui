@@ -329,7 +329,7 @@ let DEFAULT_LIST_TAG = 'div' as const
 interface ListRenderPropArg {
   selectedIndex: number
 }
-type ListPropsWeControl = 'role' | 'aria-orientation'
+type ListPropsWeControl = 'aria-orientation' | 'role'
 
 export type TabListProps<TTag extends ElementType> = Props<
   TTag,
@@ -370,9 +370,7 @@ let DEFAULT_TAB_TAG = 'button' as const
 interface TabRenderPropArg {
   selected: boolean
 }
-type TabPropsWeControl =
-  // | 'type' // We allow this to be overridden
-  'role' | 'aria-controls' | 'aria-selected' | 'tabIndex'
+type TabPropsWeControl = 'aria-controls' | 'aria-selected' | 'role' | 'tabIndex'
 
 export type TabProps<TTag extends ElementType> = Props<
   TTag,

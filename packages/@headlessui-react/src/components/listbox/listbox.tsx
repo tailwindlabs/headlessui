@@ -586,14 +586,11 @@ interface ButtonRenderPropArg {
   value: any
 }
 type ButtonPropsWeControl =
-  // | 'type' // We allow this to be overridden
-  | 'aria-haspopup'
   | 'aria-controls'
   | 'aria-expanded'
+  | 'aria-haspopup'
   | 'aria-labelledby'
   | 'disabled'
-  | 'onKeyDown'
-  | 'onClick'
 
 export type ListboxButtonProps<TTag extends ElementType> = Props<
   TTag,
@@ -703,13 +700,8 @@ interface LabelRenderPropArg {
   open: boolean
   disabled: boolean
 }
-type LabelPropsWeControl = 'ref' | 'onClick'
 
-export type ListboxLabelProps<TTag extends ElementType> = Props<
-  TTag,
-  LabelRenderPropArg,
-  LabelPropsWeControl
->
+export type ListboxLabelProps<TTag extends ElementType> = Props<TTag, LabelRenderPropArg>
 
 function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
   props: ListboxLabelProps<TTag>,
@@ -749,8 +741,8 @@ interface OptionsRenderPropArg {
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
+  | 'aria-multiselectable'
   | 'aria-orientation'
-  | 'onKeyDown'
   | 'role'
   | 'tabIndex'
 
@@ -906,21 +898,15 @@ interface OptionRenderPropArg {
   selected: boolean
   disabled: boolean
 }
-type ListboxOptionPropsWeControl =
-  | 'role'
-  | 'tabIndex'
-  | 'aria-disabled'
-  | 'aria-selected'
-  | 'onPointerLeave'
-  | 'onMouseLeave'
-  | 'onPointerMove'
-  | 'onMouseMove'
-  | 'onFocus'
+type OptionPropsWeControl = 'aria-disabled' | 'aria-selected' | 'role' | 'tabIndex'
 
 export type ListboxOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  ListboxOptionPropsWeControl | 'value'
+  | OptionPropsWeControl
+  // Props we gave a new type
+  | 'disabled'
+  | 'value'
 > & {
   disabled?: boolean
   value: TType

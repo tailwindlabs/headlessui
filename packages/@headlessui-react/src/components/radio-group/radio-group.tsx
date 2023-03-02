@@ -140,7 +140,14 @@ type RadioGroupPropsWeControl = 'role' | 'aria-labelledby' | 'aria-describedby'
 export type RadioGroupProps<TTag extends ElementType, TType> = Props<
   TTag,
   RadioGroupRenderPropArg<TType>,
-  RadioGroupPropsWeControl | 'value' | 'defaultValue' | 'onChange' | 'disabled' | 'name' | 'by'
+  | RadioGroupPropsWeControl
+  // Props we gave a new type
+  | 'by'
+  | 'defaultValue'
+  | 'disabled'
+  | 'name'
+  | 'onChange'
+  | 'value'
 > & {
   value?: TType
   defaultValue?: TType
@@ -161,7 +168,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     defaultValue,
     name,
     onChange: controlledOnChange,
-    by = (a, z) => a === z,
+    by = (a: TType, z: TType) => a === z,
     disabled = false,
     ...theirProps
   } = props
@@ -374,19 +381,20 @@ interface OptionRenderPropArg {
   active: boolean
   disabled: boolean
 }
-type RadioPropsWeControl =
+type OptionPropsWeControl =
   | 'aria-checked'
-  | 'onBlur'
-  | 'onClick'
-  | 'onFocus'
-  | 'ref'
+  | 'aria-describedby'
+  | 'aria-lablledby'
   | 'role'
   | 'tabIndex'
 
 export type RadioOptionProps<TTag extends ElementType, TType> = Props<
   TTag,
   OptionRenderPropArg,
-  RadioPropsWeControl | 'value' | 'disabled'
+  | OptionPropsWeControl
+  // Props we gave a new type
+  | 'value'
+  | 'disabled'
 > & {
   value: TType
   disabled?: boolean

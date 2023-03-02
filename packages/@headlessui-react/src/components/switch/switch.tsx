@@ -96,19 +96,22 @@ interface SwitchRenderPropArg {
   checked: boolean
 }
 type SwitchPropsWeControl =
+  | 'aria-checked'
+  | 'aria-describedby'
+  | 'aria-labelledby'
   | 'role'
   | 'tabIndex'
-  | 'aria-checked'
-  | 'aria-labelledby'
-  | 'aria-describedby'
-  | 'onClick'
-  | 'onKeyUp'
-  | 'onKeyPress'
 
 export type SwitchProps<TTag extends ElementType> = Props<
   TTag,
   SwitchRenderPropArg,
-  SwitchPropsWeControl | 'checked' | 'defaultChecked' | 'onChange' | 'name' | 'value'
+  | SwitchPropsWeControl
+  // Props we gave a new type
+  | 'checked'
+  | 'defaultChecked'
+  | 'onChange'
+  | 'name'
+  | 'value'
 > & {
   checked?: boolean
   defaultChecked?: boolean
