@@ -252,7 +252,10 @@ type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded'
 export type DisclosureButtonProps<TTag extends ElementType> = Props<
   TTag,
   ButtonRenderPropArg,
-  ButtonPropsWeControl
+  ButtonPropsWeControl,
+  {
+    disabled?: boolean
+  }
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
