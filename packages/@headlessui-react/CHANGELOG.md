@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.13] - 2023-03-03
+
 ### Fixed
 
 - Ensure `Transition` component completes if nothing is transitioning ([#2318](https://github.com/tailwindlabs/headlessui/pull/2318))
@@ -473,7 +477,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.12...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.13...HEAD
+[1.7.13]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.12...@headlessui/react@v1.7.13
 [1.7.12]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.11...@headlessui/react@v1.7.12
 [1.7.11]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.10...@headlessui/react@v1.7.11
 [1.7.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.9...@headlessui/react@v1.7.10
