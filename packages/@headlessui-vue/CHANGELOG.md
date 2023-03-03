@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow root containers from the `Dialog` component in the `FocusTrap` component ([#2322](https://github.com/tailwindlabs/headlessui/pull/2322))
 - Cleanup internal TypeScript types ([#2329](https://github.com/tailwindlabs/headlessui/pull/2329))
 - Fix restore focus to buttons in Safari, when `Dialog` component closes ([#2326](https://github.com/tailwindlabs/headlessui/pull/2326))
+- Ensure hooks in the `FocusTrap` component only apply when mounted ([#2331](https://github.com/tailwindlabs/headlessui/pull/2331))
 
 ## [1.7.11] - 2023-02-24
 
