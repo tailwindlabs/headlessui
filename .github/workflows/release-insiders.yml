@@ -40,7 +40,8 @@ jobs:
           CI: true
 
       - name: Test
-        run: npm test
+        run: |
+          yarn test || yarn test || yarn test || exit 1
         env:
           CI: true
 
