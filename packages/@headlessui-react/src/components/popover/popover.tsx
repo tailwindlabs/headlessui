@@ -358,24 +358,26 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   let ourProps = { ref: popoverRef }
 
   return (
-    <PopoverContext.Provider value={reducerBag}>
-      <PopoverAPIContext.Provider value={api}>
-        <OpenClosedProvider
-          value={match(popoverState, {
-            [PopoverStates.Open]: State.Open,
-            [PopoverStates.Closed]: State.Closed,
-          })}
-        >
-          {render({
-            ourProps,
-            theirProps,
-            slot,
-            defaultTag: DEFAULT_POPOVER_TAG,
-            name: 'Popover',
-          })}
-        </OpenClosedProvider>
-      </PopoverAPIContext.Provider>
-    </PopoverContext.Provider>
+    <PopoverPanelContext.Provider value={null}>
+      <PopoverContext.Provider value={reducerBag}>
+        <PopoverAPIContext.Provider value={api}>
+          <OpenClosedProvider
+            value={match(popoverState, {
+              [PopoverStates.Open]: State.Open,
+              [PopoverStates.Closed]: State.Closed,
+            })}
+          >
+            {render({
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_POPOVER_TAG,
+              name: 'Popover',
+            })}
+          </OpenClosedProvider>
+        </PopoverAPIContext.Provider>
+      </PopoverContext.Provider>
+    </PopoverPanelContext.Provider>
   )
 }
 
@@ -417,7 +419,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   // if a `Popover.Button` is rendered inside a `Popover` which in turn is rendered inside a
   // `Popover.Panel` (aka nested popovers), then we need to make sure that the button is able to
   // open the nested popover.
-  let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
+  //
+  // The `Popover` itself will also render a `PopoverPanelContext` but with a value of `null`. That
+  // way we don't need to keep track of _which_ `Popover.Panel` (if at all) we are in, we can just
+  // check if we are in a `Popover.Panel` or not since this will always point to the nearest one and
+  // won't pierce through `Popover` components themselves.
+  let isWithinPanel = panelContext !== null
 
   useEffect(() => {
     if (isWithinPanel) return

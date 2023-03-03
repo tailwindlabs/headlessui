@@ -1,5 +1,5 @@
 import React, { createElement, useEffect, useRef, Fragment, useState } from 'react'
-import { render } from '@testing-library/react'
+import { render, act as _act } from '@testing-library/react'
 
 import { Popover } from './popover'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
@@ -18,6 +18,8 @@ import { click, press, focus, Keys, MouseButton, shift } from '../../test-utils/
 import { Portal } from '../portal/portal'
 import { Transition } from '../transitions/transition'
 import ReactDOM from 'react-dom'
+
+let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 
 jest.mock('../../hooks/use-id')
 
@@ -776,6 +778,147 @@ describe('Rendering', () => {
         assertActiveElement(getByText('restoreable'))
       })
     )
+  })
+
+  describe('Multiple `Popover.Button` warnings', () => {
+    let spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    beforeEach(() => {
+      spy.mockRestore()
+      spy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    })
+    afterEach(() => {
+      spy.mockRestore()
+    })
+
+    it('should warn when you are using multiple `Popover.Button` components', async () => {
+      render(
+        <Popover>
+          <Popover.Button>Button #1</Popover.Button>
+          <Popover.Button>Button #2</Popover.Button>
+          <Popover.Panel>Popover panel</Popover.Panel>
+        </Popover>
+      )
+
+      // Open Popover
+      await click(getPopoverButton())
+
+      expect(spy).toHaveBeenCalledWith(
+        'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+      )
+    })
+
+    it('should warn when you are using multiple `Popover.Button` components (wrapped in a Transition)', async () => {
+      render(
+        <Popover>
+          <Popover.Button>Button #1</Popover.Button>
+          <Popover.Button>Button #2</Popover.Button>
+          <Transition>
+            <Popover.Panel>Popover panel</Popover.Panel>
+          </Transition>
+        </Popover>
+      )
+
+      // Open Popover
+      await act(() => click(getPopoverButton()))
+
+      expect(spy).toHaveBeenCalledWith(
+        'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+      )
+    })
+
+    it('should not warn when you are using multiple `Popover.Button` components inside the `Popover.Panel`', async () => {
+      render(
+        <Popover>
+          <Popover.Button>Button #1</Popover.Button>
+          <Popover.Panel>
+            <Popover.Button>Close #1</Popover.Button>
+            <Popover.Button>Close #2</Popover.Button>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open Popover
+      await click(getPopoverButton())
+
+      expect(spy).not.toHaveBeenCalledWith(
+        'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+      )
+    })
+
+    it('should not warn when you are using multiple `Popover.Button` components inside the `Popover.Panel` (wrapped in a Transition)', async () => {
+      render(
+        <Popover>
+          <Popover.Button>Button #1</Popover.Button>
+          <Transition>
+            <Popover.Panel>
+              <Popover.Button>Close #1</Popover.Button>
+              <Popover.Button>Close #2</Popover.Button>
+            </Popover.Panel>
+          </Transition>
+        </Popover>
+      )
+
+      // Open Popover
+      await act(() => click(getPopoverButton()))
+
+      expect(spy).not.toHaveBeenCalledWith(
+        'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+      )
+    })
+
+    it('should warn when you are using multiple `Popover.Button` components in a nested `Popover`', async () => {
+      render(
+        <Popover>
+          <Popover.Button>Button #1</Popover.Button>
+          <Popover.Panel>
+            Popover panel #1
+            <Popover>
+              <Popover.Button>Button #2</Popover.Button>
+              <Popover.Button>Button #3</Popover.Button>
+              <Popover.Panel>Popover panel #2</Popover.Panel>
+            </Popover>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open the first Popover
+      await click(getByText('Button #1'))
+
+      // Open the second Popover
+      await click(getByText('Button #2'))
+
+      expect(spy).toHaveBeenCalledWith(
+        'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+      )
+    })
+
+    it('should not warn when you are using multiple `Popover.Button` components in a nested `Popover.Panel`', async () => {
+      render(
+        <Popover>
+          <Popover.Button>Button #1</Popover.Button>
+          <Popover.Panel>
+            Popover panel #1
+            <Popover>
+              <Popover.Button>Button #2</Popover.Button>
+              <Popover.Panel>
+                <Popover.Button>Button #3</Popover.Button>
+                <Popover.Button>Button #4</Popover.Button>
+              </Popover.Panel>
+            </Popover>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open the first Popover
+      await click(getByText('Button #1'))
+
+      // Open the second Popover
+      await click(getByText('Button #2'))
+
+      expect(spy).not.toHaveBeenCalledWith(
+        'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+      )
+    })
   })
 })
 
