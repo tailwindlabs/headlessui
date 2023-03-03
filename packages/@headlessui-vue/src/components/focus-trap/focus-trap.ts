@@ -84,13 +84,17 @@ export let FocusTrap = Object.assign(
 
       let ownerDocument = computed(() => getOwnerDocument(container))
 
+      let mounted = ref(false)
+      onMounted(() => (mounted.value = true))
+      onUnmounted(() => (mounted.value = false))
+
       useRestoreFocus(
         { ownerDocument },
-        computed(() => Boolean(props.features & Features.RestoreFocus))
+        computed(() => mounted.value && Boolean(props.features & Features.RestoreFocus))
       )
       let previousActiveElement = useInitialFocus(
         { ownerDocument, container, initialFocus: computed(() => props.initialFocus) },
-        computed(() => Boolean(props.features & Features.InitialFocus))
+        computed(() => mounted.value && Boolean(props.features & Features.InitialFocus))
       )
       useFocusLock(
         {
@@ -99,7 +103,7 @@ export let FocusTrap = Object.assign(
           containers: props.containers,
           previousActiveElement,
         },
-        computed(() => Boolean(props.features & Features.FocusLock))
+        computed(() => mounted.value && Boolean(props.features & Features.FocusLock))
       )
 
       let direction = useTabDirection()
@@ -132,6 +136,7 @@ export let FocusTrap = Object.assign(
       }
 
       function handleBlur(e: FocusEvent) {
+        if (!mounted.value) return
         let allContainers = resolveContainers(props.containers)
         if (dom(container) instanceof HTMLElement) allContainers.add(dom(container)!)
 
