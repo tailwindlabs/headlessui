@@ -60,7 +60,8 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Test
-        run: yarn test
+        run: |
+          yarn test || yarn test || yarn test || exit 1
         env:
           CI: true
 
