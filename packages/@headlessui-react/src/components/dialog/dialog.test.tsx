@@ -647,9 +647,9 @@ describe('Composition', () => {
             <Popover>
               <Popover.Button>Open Popover</Popover.Button>
               <Popover.Panel>
-                <div id="openDialog" onClick={() => setIsDialogOpen(true)}>
+                <button id="openDialog" onClick={() => setIsDialogOpen(true)}>
                   Open dialog
-                </div>
+                </button>
               </Popover.Panel>
             </Popover>
 

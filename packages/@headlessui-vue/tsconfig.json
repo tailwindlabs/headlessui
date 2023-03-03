@@ -20,7 +20,7 @@
       "*": ["src/*", "node_modules/*"]
     },
     "esModuleInterop": true,
-    "target": "es5",
+    "target": "ESNext",
     "allowJs": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

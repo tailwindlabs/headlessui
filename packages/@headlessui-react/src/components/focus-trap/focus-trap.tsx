@@ -210,31 +210,68 @@ export let FocusTrap = Object.assign(FocusTrapRoot, {
 
 // ---
 
-function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, enabled: boolean) {
-  let restoreElement = useRef<HTMLElement | null>(null)
+let history: HTMLElement[] = []
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  function handle(e: Event) {
+    if (!(e.target instanceof HTMLElement)) return
+    if (e.target === document.body) return
+    if (history[0] === e.target) return
 
-  // Capture the currently focused element, before we try to move the focus inside the FocusTrap.
-  useEventListener(
-    ownerDocument?.defaultView,
-    'focusout',
-    (event) => {
-      if (!enabled) return
-      if (restoreElement.current) return
+    history.unshift(e.target)
 
-      restoreElement.current = event.target as HTMLElement
+    // Filter out DOM Nodes that don't exist anymore
+    history = history.filter((x) => x != null && x.isConnected)
+    history.splice(10) // Only keep the 10 most recent items
+  }
+
+  window.addEventListener('click', handle, { capture: true })
+  window.addEventListener('mousedown', handle, { capture: true })
+  window.addEventListener('focus', handle, { capture: true })
+
+  document.body.addEventListener('click', handle, { capture: true })
+  document.body.addEventListener('mousedown', handle, { capture: true })
+  document.body.addEventListener('focus', handle, { capture: true })
+}
+
+function useRestoreElement(enabled: boolean = true) {
+  let localHistory = useRef<HTMLElement[]>(history.slice())
+
+  useWatch(
+    ([newEnabled], [oldEnabled]) => {
+      // We are disabling the restore element, so we need to clear it.
+      if (oldEnabled === true && newEnabled === false) {
+        // However, let's schedule it in a microTask, so that we can still read the value in the
+        // places where we are restoring the focus.
+        microTask(() => {
+          localHistory.current.splice(0)
+        })
+      }
+
+      // We are enabling the restore element, so we need to set it to the last "focused" element.
+      if (oldEnabled === false && newEnabled === true) {
+        localHistory.current = history.slice()
+      }
     },
-    true
+    [enabled, history, localHistory]
   )
+
+  // We want to return the last element that is still connected to the DOM, so we can restore the
+  // focus to it.
+  return useEvent(() => {
+    return localHistory.current.find((x) => x != null && x.isConnected) ?? null
+  })
+}
+
+function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, enabled: boolean) {
+  let getRestoreElement = useRestoreElement(enabled)
 
   // Restore the focus to the previous element when `enabled` becomes false again
   useWatch(() => {
     if (enabled) return
 
     if (ownerDocument?.activeElement === ownerDocument?.body) {
-      focusElement(restoreElement.current)
+      focusElement(getRestoreElement())
     }
-
-    restoreElement.current = null
   }, [enabled])
 
   // Restore the focus to the previous element when the component is unmounted
@@ -247,8 +284,7 @@ function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, 
       microTask(() => {
         if (!trulyUnmounted.current) return
 
-        focusElement(restoreElement.current)
-        restoreElement.current = null
+        focusElement(getRestoreElement())
       })
     }
   }, [])
