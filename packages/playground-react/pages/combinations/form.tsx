@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Switch, RadioGroup, Listbox, Combobox } from '@headlessui/react'
 import { classNames } from '../../utils/class-names'
+import { Button } from '../../components/button'
 
 function Section({ title, children }) {
   return (
@@ -170,26 +171,24 @@ export default function App() {
                 {({ value }) => (
                   <>
                     <div className="relative">
-                      <span className="inline-block w-full rounded-md shadow-sm">
-                        <Listbox.Button className="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:text-sm sm:leading-5">
-                          <span className="block truncate">{value?.name?.first}</span>
-                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                            <svg
-                              className="h-5 w-5 text-gray-400"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              stroke="currentColor"
-                            >
-                              <path
-                                d="M7 7l3-3 3 3m0 6l-3 3-3-3"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </span>
-                        </Listbox.Button>
-                      </span>
+                      <Listbox.Button as={Button} className="w-full">
+                        <span className="block truncate">{value?.name?.first}</span>
+                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                          <svg
+                            className="h-5 w-5 text-gray-400"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              d="M7 7l3-3 3 3m0 6l-3 3-3-3"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </span>
+                      </Listbox.Button>
 
                       <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
                         <Listbox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">

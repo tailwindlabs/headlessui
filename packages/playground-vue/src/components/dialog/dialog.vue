@@ -72,25 +72,19 @@
                       </p>
                       <div class="relative mt-10 inline-block text-left">
                         <Menu>
-                          <span class="rounded-md shadow-sm">
-                            <MenuButton
-                              ref="trigger"
-                              class="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800"
-                            >
-                              <span>Choose a reason</span>
-                              <svg
-                                class="ml-2 -mr-1 h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </MenuButton>
-                          </span>
+                          <MenuButton
+                            ref="trigger"
+                            class="ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2 flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-none"
+                          >
+                            <span>Choose a reason</span>
+                            <svg class="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path
+                                fillRule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </MenuButton>
 
                           <TransitionRoot
                             enter="transition duration-300 ease-out"
@@ -152,20 +146,8 @@
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button
-                  type="button"
-                  @click="setIsOpen(false)"
-                  class="focus:shadow-outline-red inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Deactivate
-                </button>
-                <button
-                  type="button"
-                  @click="setIsOpen(false)"
-                  class="focus:shadow-outline-indigo mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
+                <Button type="button" @click="setIsOpen(false)"> Deactivate </Button>
+                <Button @click="setIsOpen(false)"> Cancel </Button>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -192,6 +174,7 @@ import {
 } from '@headlessui/vue'
 import Flatpickr from 'vue-flatpickr-component'
 import { usePopper } from '../../playground-utils/hooks/use-popper'
+import Button from '../Button.vue'
 
 import 'flatpickr/dist/themes/light.css'
 
@@ -206,22 +189,6 @@ function resolveClass({ active, disabled }) {
     disabled && 'cursor-not-allowed opacity-50'
   )
 }
-
-let Button = defineComponent({
-  setup(props, { slots }) {
-    return () =>
-      h(
-        'button',
-        {
-          type: 'button',
-          class:
-            'rounded bg-gray-200 px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2',
-          ...props,
-        },
-        slots.default?.()
-      )
-  },
-})
 
 let Nested = defineComponent({
   components: { Dialog, DialogOverlay },
@@ -245,7 +212,7 @@ let Nested = defineComponent({
           },
           [
             h('p', `Level: ${level}`),
-            h('div', { class: 'space-x-4' }, [
+            h('div', { class: 'flex gap-4' }, [
               h(Button, { onClick: () => (showChild.value = true) }, () => `Open ${level + 1} a`),
               h(Button, { onClick: () => (showChild.value = true) }, () => `Open ${level + 1} b`),
               h(Button, { onClick: () => (showChild.value = true) }, () => `Open ${level + 1} c`),
@@ -290,6 +257,7 @@ export default {
     let date = ref(new Date())
 
     return {
+      Button,
       nested,
       date,
       isOpen,

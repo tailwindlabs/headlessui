@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Combobox } from '@headlessui/react'
 
 import { classNames } from '../../utils/class-names'
+import { Button } from '../../components/button'
 
 let everybody = [
   'Wade Cooper',
@@ -64,7 +65,7 @@ export default function Home() {
                   onChange={(e) => setQuery(e.target.value)}
                   className="border-none px-3 py-1 outline-none"
                 />
-                <Combobox.Button className="cursor-default border-l bg-gray-100 px-1 text-indigo-600 focus:outline-none">
+                <Combobox.Button as={Button}>
                   <span className="pointer-events-none flex items-center px-2">
                     <svg
                       className="h-5 w-5 text-gray-400"

@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import Link from 'next/link'
-import { Menu } from '@headlessui/react'
+import { Menu, MenuItemProps } from '@headlessui/react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 import { classNames } from '../../utils/class-names'
+import { Button } from '../../components/button'
 
 export default function Home() {
   return (
@@ -13,7 +14,7 @@ export default function Home() {
           {({ open }) => (
             <>
               <span className="rounded-md shadow-sm">
-                <Menu.Button className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800">
+                <Menu.Button as={Button}>
                   <span>Options</span>
                   <svg className="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path
@@ -67,16 +68,18 @@ export default function Home() {
   )
 }
 
-function NextLink(props: React.ComponentProps<'a'>) {
+let NextLink = forwardRef<HTMLAnchorElement>((props: React.ComponentProps<'a'>, ref) => {
   let { href, children, ...rest } = props
   return (
     <Link href={href}>
-      <a {...rest}>{children}</a>
+      <a ref={ref} {...rest}>
+        {children}
+      </a>
     </Link>
   )
-}
+})
 
-function SignOutButton(props) {
+let SignOutButton = forwardRef<HTMLButtonElement>((props, ref) => {
   return (
     <form
       method="POST"
@@ -87,16 +90,17 @@ function SignOutButton(props) {
       }}
       className="w-full"
     >
-      <button type="submit" {...props}>
+      <button ref={ref} type="submit" {...props}>
         Sign out
       </button>
     </form>
   )
-}
+})
 
-function Item(props) {
+let Item = forwardRef<HTMLAnchorElement, MenuItemProps<any>>((props, ref) => {
   return (
     <Menu.Item
+      ref={ref}
       as="a"
       className={({ active, disabled }) =>
         classNames(
@@ -108,4 +112,4 @@ function Item(props) {
       {...props}
     />
   )
-}
+})
