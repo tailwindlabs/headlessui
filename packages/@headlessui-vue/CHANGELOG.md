@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix focus styles showing up when using the mouse ([#2347](https://github.com/tailwindlabs/headlessui/pull/2347))
 
 ## [1.7.12] - 2023-03-03
 
