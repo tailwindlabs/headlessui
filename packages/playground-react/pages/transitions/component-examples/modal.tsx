@@ -17,10 +17,6 @@ export default function Home() {
 
   return (
     <div>
-      <div
-        data-preload
-        className="translate-y-4 translate-y-0 translate-y-0 translate-y-4 opacity-0 opacity-100 opacity-100 opacity-0 opacity-0 opacity-100 opacity-100 opacity-0 duration-300 duration-200 duration-300 duration-200 ease-out ease-in ease-out ease-in sm:translate-y-0 sm:translate-y-0 sm:scale-95 sm:scale-100 sm:scale-100 sm:scale-95"
-      />
       <div className="flex space-x-4 p-12">
         <div className="inline-block p-12">
           <span className="mt-3 flex w-full rounded-md shadow-sm sm:mt-0 sm:w-auto">

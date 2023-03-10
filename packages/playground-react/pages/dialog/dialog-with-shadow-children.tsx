@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
+import { Button } from '../../components/button'
 
 if (typeof document !== 'undefined') {
   class MyCustomElement extends HTMLElement {
@@ -49,12 +50,7 @@ export default function App() {
 
   return (
     <div>
-      <button
-        className="m-4 rounded border-0 bg-gray-500 px-3 py-1 font-medium text-white hover:bg-gray-600"
-        onClick={() => setOpen(true)}
-      >
-        open
-      </button>
+      <Button onClick={() => setOpen(true)}>open</Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <div className="fixed inset-0 z-50 bg-gray-900/75 backdrop-blur-lg">
           <div>

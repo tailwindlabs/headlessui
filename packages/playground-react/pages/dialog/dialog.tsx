@@ -3,6 +3,7 @@ import Flatpickr from 'react-flatpickr'
 import { Dialog, Menu, Portal, Transition } from '@headlessui/react'
 import { usePopper } from '../../utils/hooks/use-popper'
 import { classNames } from '../../utils/class-names'
+import { Button } from '../../components/button'
 
 import 'flatpickr/dist/themes/light.css'
 
@@ -11,16 +12,6 @@ function resolveClass({ active, disabled }) {
     'flex justify-between w-full px-4 py-2 text-sm leading-5 text-left',
     active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
     disabled && 'cursor-not-allowed opacity-50'
-  )
-}
-
-function Button(props: React.ComponentProps<'button'>) {
-  return (
-    <button
-      type="button"
-      className="rounded bg-gray-200 px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
-      {...props}
-    />
   )
 }
 
@@ -38,7 +29,7 @@ function Nested({ onClose, level = 0 }) {
           }}
         >
           <p>Level: {level}</p>
-          <div className="space-x-4">
+          <div className="flex gap-4">
             <Button onClick={() => setShowChild(true)}>Open (1)</Button>
             <Button onClick={() => setShowChild(true)}>Open (2)</Button>
             <Button onClick={() => setShowChild(true)}>Open (3)</Button>
@@ -69,11 +60,6 @@ export default function Home() {
         <Button onClick={() => setNested(true)}>Show nested</Button>
       </div>
       {nested && <Nested onClose={() => setNested(false)} />}
-
-      <div
-        data-preload
-        className="translate-y-4 translate-y-0 translate-y-0 translate-y-4 scale-95 scale-100 scale-100 scale-95 transform transform transform transform transform transform opacity-0 opacity-75 opacity-75 opacity-0 opacity-75 opacity-0 opacity-100 opacity-100 opacity-0 opacity-0 opacity-100 opacity-100 opacity-0 transition transition duration-1000 duration-300 duration-200 duration-300 duration-200 duration-300 duration-75 ease-out ease-in ease-out ease-in ease-out ease-out sm:translate-y-0 sm:translate-y-0 sm:scale-95 sm:scale-100 sm:scale-100 sm:scale-95"
-      />
 
       <Transition
         data-debug="Dialog"
@@ -161,27 +147,22 @@ export default function Home() {
                             Are you sure you want to deactivate your account? All of your data will
                             be permanently removed. This action cannot be undone.
                           </p>
-                          <div className="relative mt-10 inline-block text-left">
+                          <div className="relative mt-10 inline-flex gap-4 text-left">
                             <Menu>
-                              <span className="rounded-md shadow-sm">
-                                <Menu.Button
-                                  ref={trigger}
-                                  className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800"
+                              <Menu.Button as={Button} ref={trigger}>
+                                <span>Choose a reason</span>
+                                <svg
+                                  className="ml-2 -mr-1 h-5 w-5"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
                                 >
-                                  <span>Choose a reason</span>
-                                  <svg
-                                    className="ml-2 -mr-1 h-5 w-5"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                  >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </Menu.Button>
-                              </span>
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </Menu.Button>
 
                               <Transition
                                 enter="transition duration-300 ease-out"
@@ -242,21 +223,9 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button
-                      type="button"
-                      onClick={() => setIsOpen(false)}
-                      className="focus:shadow-outline-red inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      Deactivate
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsOpen(false)}
-                      className="focus:shadow-outline-indigo mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
-                    >
-                      Cancel
-                    </button>
+                  <div className="flex bg-gray-50 px-4 py-3 sm:flex-row-reverse sm:gap-2">
+                    <Button onClick={() => setIsOpen(false)}>Deactivate</Button>
+                    <Button onClick={() => setIsOpen(false)}>Cancel</Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

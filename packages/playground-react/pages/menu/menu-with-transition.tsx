@@ -1,6 +1,7 @@
 import React from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { classNames } from '../../utils/class-names'
+import { Button } from '../../components/button'
 
 export default function Home() {
   function resolveClass({ active, disabled }) {
@@ -14,13 +15,9 @@ export default function Home() {
   return (
     <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
       <div className="relative inline-block text-left">
-        <div
-          data-preload
-          className="scale-95 scale-100 scale-100 scale-95 transform transform transform transform opacity-0 opacity-100 opacity-100 opacity-0 transition transition duration-1000 duration-1000 ease-out ease-out"
-        />
         <Menu>
           <span className="rounded-md shadow-sm">
-            <Menu.Button className="focus:shadow-outline-blue inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium leading-5 text-gray-700 transition duration-150 ease-in-out hover:text-gray-500 focus:border-blue-300 focus:outline-none active:bg-gray-50 active:text-gray-800">
+            <Menu.Button as={Button}>
               <span>Options</span>
               <svg className="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path

@@ -9,6 +9,7 @@ let css = String.raw
 function run(input: string, config: any, plugin = tailwind) {
   let { currentTestName } = expect.getState()
 
+  // @ts-ignore
   return postcss(plugin(config)).process(input, {
     from: `${path.resolve(__filename)}?test=${currentTestName}`,
   })
@@ -46,6 +47,21 @@ it('should generate the inverse "not" css for an exposed state', async () => {
 
       :where([data-headlessui-state]:not([data-headlessui-state~='open']))
         .ui-not-open\:underline:not([data-headlessui-state]) {
+        text-decoration-line: underline;
+      }
+    `)
+  })
+})
+
+it('should generate the ui-focus-visible variant', async () => {
+  let config = {
+    content: [{ raw: html`<div class="ui-focus-visible:underline"></div>` }],
+    plugins: [hui],
+  }
+
+  return run('@tailwind utilities', config).then((result) => {
+    expect(result.css).toMatchFormattedCss(css`
+      :where([data-headlessui-focus-visible]) .ui-focus-visible\:underline:focus {
         text-decoration-line: underline;
       }
     `)

@@ -31,6 +31,8 @@ export default plugin.withOptions<Options>(({ prefix = 'ui' } = {}) => {
         `&[data-headlessui-state]:not([data-headlessui-state~="${state}"])`,
         `:where([data-headlessui-state]:not([data-headlessui-state~="${state}"])) &:not([data-headlessui-state])`,
       ])
+
+      addVariant(`${prefix}-focus-visible`, ':where([data-headlessui-focus-visible]) &:focus')
     }
   }
 })
