@@ -537,6 +537,7 @@ export let ListboxButton = defineComponent({
         onKeydown: handleKeyDown,
         onKeyup: handleKeyUp,
         onClick: handleClick,
+        role: 'combobox',
       }
 
       return render({

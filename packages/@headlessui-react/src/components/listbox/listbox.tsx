@@ -682,6 +682,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
     onClick: handleClick,
+    role: 'combobox',
   }
 
   return render({
