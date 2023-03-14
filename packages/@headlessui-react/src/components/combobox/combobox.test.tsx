@@ -1,5 +1,5 @@
 import React, { createElement, useState, useEffect } from 'react'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import { Combobox } from './combobox'
 import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
