@@ -132,7 +132,8 @@ export let Combobox = defineComponent({
       >,
       default: undefined,
     },
-    name: { type: String },
+    form: { type: String, optional: true },
+    name: { type: String, optional: true },
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
   },
@@ -466,7 +467,7 @@ export let Combobox = defineComponent({
     })
 
     return () => {
-      let { name, disabled, ...theirProps } = props
+      let { name, disabled, form, ...theirProps } = props
       let slot = {
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
@@ -487,6 +488,7 @@ export let Combobox = defineComponent({
                   type: 'hidden',
                   hidden: true,
                   readOnly: true,
+                  form,
                   name,
                   value,
                 })

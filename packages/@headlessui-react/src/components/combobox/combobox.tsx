@@ -380,6 +380,7 @@ export type ComboboxProps<
 > = ComboboxValueProps<TValue, TNullable, TMultiple, TTag> & {
   disabled?: boolean
   __demoMode?: boolean
+  form?: string
   name?: string
 }
 
@@ -408,6 +409,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     value: controlledValue,
     defaultValue,
     onChange: controlledOnChange,
+    form: formName,
     name,
     by = (a: TValue, z: TValue) => a === z,
     disabled = false,
@@ -671,6 +673,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
                   type: 'hidden',
                   hidden: true,
                   readOnly: true,
+                  form: formName,
                   name,
                   value,
                 })}
