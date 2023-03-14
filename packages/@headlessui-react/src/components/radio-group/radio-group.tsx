@@ -147,6 +147,7 @@ export type RadioGroupProps<TTag extends ElementType, TType> = Props<
     onChange?(value: TType): void
     by?: (keyof TType & string) | ((a: TType, z: TType) => boolean)
     disabled?: boolean
+    form?: string
     name?: string
   }
 >
@@ -160,6 +161,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     id = `headlessui-radiogroup-${internalId}`,
     value: controlledValue,
     defaultValue,
+    form: formName,
     name,
     onChange: controlledOnChange,
     by = (a: TType, z: TType) => a === z,
@@ -343,6 +345,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
                     checked: value != null,
                     hidden: true,
                     readOnly: true,
+                    form: formName,
                     name,
                     value,
                   })}

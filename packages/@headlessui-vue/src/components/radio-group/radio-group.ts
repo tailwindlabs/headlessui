@@ -80,6 +80,7 @@ export let RadioGroup = defineComponent({
     by: { type: [String, Function], default: () => defaultComparator },
     modelValue: { type: [Object, String, Number, Boolean], default: undefined },
     defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
+    form: { type: String, optional: true },
     name: { type: String, optional: true },
     id: { type: String, default: () => `headlessui-radiogroup-${useId()}` },
   },
@@ -239,7 +240,7 @@ export let RadioGroup = defineComponent({
     })
 
     return () => {
-      let { disabled, name, id, ...theirProps } = props
+      let { disabled, name, id, form, ...theirProps } = props
 
       let ourProps = {
         ref: radioGroupRef,
@@ -262,6 +263,7 @@ export let RadioGroup = defineComponent({
                   type: 'hidden',
                   hidden: true,
                   readOnly: true,
+                  form,
                   name,
                   value,
                 })
