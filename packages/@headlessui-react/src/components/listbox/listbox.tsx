@@ -343,6 +343,7 @@ export type ListboxProps<TTag extends ElementType, TType, TActualType> = Props<
   by?: (keyof TActualType & string) | ((a: TActualType, z: TActualType) => boolean)
   disabled?: boolean
   horizontal?: boolean
+  form?: string
   name?: string
   multiple?: boolean
 }
@@ -355,6 +356,7 @@ function ListboxFn<
   let {
     value: controlledValue,
     defaultValue,
+    form: formName,
     name,
     onChange: controlledOnChange,
     by = (a: TActualType, z: TActualType) => a === z,
@@ -565,6 +567,7 @@ function ListboxFn<
                   type: 'hidden',
                   hidden: true,
                   readOnly: true,
+                  form: formName,
                   name,
                   value,
                 })}

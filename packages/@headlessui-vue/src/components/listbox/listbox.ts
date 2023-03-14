@@ -133,6 +133,7 @@ export let Listbox = defineComponent({
       >,
       default: undefined,
     },
+    form: { type: String, optional: true },
     name: { type: String, optional: true },
     multiple: { type: [Boolean], default: false },
   },
@@ -369,7 +370,7 @@ export let Listbox = defineComponent({
     })
 
     return () => {
-      let { name, modelValue, disabled, ...theirProps } = props
+      let { name, modelValue, disabled, form, ...theirProps } = props
 
       let slot = { open: listboxState.value === ListboxStates.Open, disabled, value: value.value }
 
@@ -385,6 +386,7 @@ export let Listbox = defineComponent({
                   type: 'hidden',
                   hidden: true,
                   readOnly: true,
+                  form,
                   name,
                   value,
                 })
