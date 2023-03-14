@@ -77,6 +77,7 @@ export let Switch = defineComponent({
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: undefined },
     defaultChecked: { type: Boolean, optional: true },
+    form: { type: String, optional: true },
     name: { type: String, optional: true },
     value: { type: String, optional: true },
     id: { type: String, default: () => `headlessui-switch-${useId()}` },
@@ -145,7 +146,7 @@ export let Switch = defineComponent({
     })
 
     return () => {
-      let { id, name, value, ...theirProps } = props
+      let { id, name, value, form, ...theirProps } = props
       let slot = { checked: checked.value }
       let ourProps = {
         id,
@@ -172,6 +173,7 @@ export let Switch = defineComponent({
                 hidden: true,
                 readOnly: true,
                 checked: checked.value,
+                form,
                 name,
                 value,
               })

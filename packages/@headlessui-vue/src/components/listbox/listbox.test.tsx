@@ -4897,6 +4897,49 @@ describe('Multi-select', () => {
 })
 
 describe('Form compatibility', () => {
+  it('should be possible to set the `form`, which is forwarded to the hidden inputs', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <div>
+          <Listbox form="my-form" v-model="value" name="delivery">
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="pickup">Pickup</ListboxOption>
+              <ListboxOption value="home-delivery">Home delivery</ListboxOption>
+              <ListboxOption value="dine-in">Dine in</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+          <form id="my-form" @submit="handleSubmit">
+            <button>Submit</button>
+          </form>
+        </div>
+      `,
+      setup: () => {
+        let value = ref(null)
+        return {
+          value,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Open listbox
+    await click(getListboxButton())
+
+    // Choose pickup
+    await click(getByText('Pickup'))
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    expect(submits).lastCalledWith([['delivery', 'pickup']])
+  })
+
   it('should be possible to submit a form with a value', async () => {
     let submits = jest.fn()
 

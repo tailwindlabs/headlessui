@@ -748,6 +748,43 @@ describe('Mouse interactions', () => {
 })
 
 describe('Form compatibility', () => {
+  it('should be possible to set the `form`, which is forwarded to the hidden inputs', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <div>
+          <SwitchGroup>
+            <Switch form="my-form" v-model="checked" name="notifications" />
+            <SwitchLabel>Enable notifications</SwitchLabel>
+          </SwitchGroup>
+          <form id="my-form" @submit="handleSubmit">
+            <button>Submit</button>
+          </form>
+        </div>
+      `,
+      setup() {
+        let checked = ref(false)
+        return {
+          checked,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Toggle
+    await click(getSwitchLabel())
+
+    // Submit the form again
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).lastCalledWith([['notifications', 'on']])
+  })
+
   it('should be possible to submit a form with an boolean value', async () => {
     let submits = jest.fn()
 

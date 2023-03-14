@@ -112,6 +112,7 @@ export type SwitchProps<TTag extends ElementType> = Props<
     onChange?(checked: boolean): void
     name?: string
     value?: string
+    form?: string
   }
 >
 
@@ -127,6 +128,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     onChange: controlledOnChange,
     name,
     value,
+    form,
     ...theirProps
   } = props
   let groupContext = useContext(GroupContext)
@@ -193,6 +195,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
             type: 'checkbox',
             hidden: true,
             readOnly: true,
+            form,
             checked,
             name,
             value,

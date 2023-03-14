@@ -5700,6 +5700,51 @@ describe('Multi-select', () => {
 })
 
 describe('Form compatibility', () => {
+  it('should be possible to set the `form`, which is forwarded to the hidden inputs', async () => {
+    let submits = jest.fn()
+
+    function Example() {
+      let [value, setValue] = useState(null)
+      return (
+        <div>
+          <Combobox form="my-form" value={value} onChange={setValue} name="delivery">
+            <Combobox.Input onChange={NOOP} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Label>Pizza Delivery</Combobox.Label>
+            <Combobox.Options>
+              <Combobox.Option value="pickup">Pickup</Combobox.Option>
+              <Combobox.Option value="home-delivery">Home delivery</Combobox.Option>
+              <Combobox.Option value="dine-in">Dine in</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+
+          <form
+            id="my-form"
+            onSubmit={(event) => {
+              event.preventDefault()
+              submits([...new FormData(event.currentTarget).entries()])
+            }}
+          >
+            <button>Submit</button>
+          </form>
+        </div>
+      )
+    }
+
+    render(<Example />)
+
+    // Open combobox
+    await click(getComboboxButton())
+
+    // Choose pickup
+    await click(getByText('Pickup'))
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    expect(submits).lastCalledWith([['delivery', 'pickup']])
+  })
+
   it('should be possible to submit a form with a value', async () => {
     let submits = jest.fn()
 

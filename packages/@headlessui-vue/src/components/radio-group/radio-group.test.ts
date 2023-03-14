@@ -1531,6 +1531,48 @@ describe('Mouse interactions', () => {
 })
 
 describe('Form compatibility', () => {
+  it(
+    'should be possible to set the `form`, which is forwarded to the hidden inputs',
+    suppressConsoleLogs(async () => {
+      let submits = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <div>
+            <RadioGroup form="my-form" v-model="deliveryMethod" name="delivery">
+              <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+              <RadioGroupOption value="pickup">Pickup</RadioGroupOption>
+              <RadioGroupOption value="home-delivery">Home delivery</RadioGroupOption>
+              <RadioGroupOption value="dine-in">Dine in</RadioGroupOption>
+            </RadioGroup>
+            <form id="my-form" @submit="handleSubmit">
+              <button>Submit</button>
+            </form>
+          </div>
+        `,
+        setup() {
+          let deliveryMethod = ref(null)
+          return {
+            deliveryMethod,
+            handleSubmit(event: SubmitEvent) {
+              event.preventDefault()
+
+              submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+            },
+          }
+        },
+      })
+
+      // Choose pickup
+      await click(getByText('Pickup'))
+
+      // Submit the form
+      await click(getByText('Submit'))
+
+      expect(submits).lastCalledWith([['delivery', 'pickup']])
+    })
+  )
+
   it('should be possible to submit a form with a value', async () => {
     let submits = jest.fn()
 
