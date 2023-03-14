@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `form` prop to form-like components such as `RadioGroup`, `Switch`, `Listbox` and `Combobox` ([#2356](https://github.com/tailwindlabs/headlessui/pull/2356))
+- Add `form` prop to form-like components such as `RadioGroup`, `Switch`, `Listbox`, and `Combobox` ([#2356](https://github.com/tailwindlabs/headlessui/pull/2356))
 
 ## [1.7.12] - 2023-03-03
 
