@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix focus styles showing up when using the mouse ([#2347](https://github.com/tailwindlabs/headlessui/pull/2347))
+- Fix "Can't perform a React state update on an unmounted component." when using the `Transition` component ([#2374](https://github.com/tailwindlabs/headlessui/pull/2374))
 
 ### Added
 
