@@ -935,6 +935,7 @@ export let ComboboxInput = defineComponent({
         tabIndex: 0,
         ref: api.inputRef,
         defaultValue: defaultValue.value,
+        disabled: api.disabled.value === true ? true : undefined,
       }
 
       return render({
