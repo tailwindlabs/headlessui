@@ -200,6 +200,16 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-combobox-button-2' },
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+        // The input should also be disabled
+        assertComboboxInput({
+          state: ComboboxState.InvisibleUnmounted,
+          attributes: { id: 'headlessui-combobox-input-1', disabled: '' },
+        })
+
+        // And even if we try to focus it, it should not open the combobox
+        await focus(getComboboxInput())
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
 
