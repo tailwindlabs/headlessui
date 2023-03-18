@@ -4,13 +4,16 @@
   "description": "A complementary Tailwind CSS plugin",
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
+  "module": "dist/headlessui.esm.js",
   "license": "MIT",
   "files": [
     "README.md",
     "dist"
   ],
   "exports": {
-    "require": "./dist/index.cjs"
+    "import": "./dist/headlessui.esm.js",
+    "require": "./dist/index.cjs",
+    "types": "./dist/index.d.ts"
   },
   "sideEffects": false,
   "engines": {
