@@ -211,7 +211,7 @@ export let FocusTrap = Object.assign(FocusTrapRoot, {
 // ---
 
 let history: HTMLElement[] = []
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+if (typeof window?.addEventListener !== 'undefined' && typeof document?.body?.addEventListener !== 'undefined') {
   function handle(e: Event) {
     if (!(e.target instanceof HTMLElement)) return
     if (e.target === document.body) return
