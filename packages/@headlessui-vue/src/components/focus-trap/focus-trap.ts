@@ -22,7 +22,7 @@ import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { microTask } from '../../utils/micro-task'
-import { onDocumentReady } from 'utils/document-ready'
+import { onDocumentReady } from '../../utils/document-ready'
 
 type Containers =
   // Lazy resolved containers
