@@ -354,7 +354,7 @@ export let TransitionChild = defineComponent({
       let ourProps = { ref: container }
       let theirProps = {
         ...rest,
-        ...(appear && show && env.isServer
+        ...(appear.value && show.value && env.isServer
           ? {
               // Already apply the `enter` and `enterFrom` on the server if required
               class: normalizeClass([
