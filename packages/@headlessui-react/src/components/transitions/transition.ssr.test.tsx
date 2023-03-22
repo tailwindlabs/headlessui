@@ -9,8 +9,34 @@ beforeAll(() => {
 
 describe('Rendering', () => {
   describe('SSR', () => {
+    it('A transition without appear=true does not insert classes during SSR', async () => {
+      let result = await renderSSR(
+        <Transition
+          as={Fragment}
+          show={true}
+          enter="enter"
+          enterFrom="enter-from"
+          enterTo="enter-to"
+        >
+          <div className="inner"></div>
+        </Transition>
+      )
+
+      let div = document.querySelector('.inner')
+
+      expect(div).not.toBeNull()
+      expect(div?.className).toBe('inner')
+
+      await result.hydrate()
+
+      div = document.querySelector('.inner')
+
+      expect(div).not.toBeNull()
+      expect(div?.className).toBe('inner')
+    })
+
     it('should not overwrite className of children when as=Fragment', async () => {
-      await renderSSR(
+      let result = await renderSSR(
         <Transition
           as={Fragment}
           show={true}
@@ -24,6 +50,13 @@ describe('Rendering', () => {
       )
 
       let div = document.querySelector('.inner')
+
+      expect(div).not.toBeNull()
+      expect(div?.className).toBe('inner enter enter-from')
+
+      await result.hydrate()
+
+      div = document.querySelector('.inner')
 
       expect(div).not.toBeNull()
       expect(div?.className).toBe('inner enter enter-from')
