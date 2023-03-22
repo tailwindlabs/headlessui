@@ -1,7 +1,7 @@
-export function onDocumentReady(cb?: () => void) {
+export function onDocumentReady(cb: () => void) {
   function check() {
     if (document.readyState === 'loading') return
-    cb?.()
+    cb()
     document.removeEventListener('DOMContentLoaded', check)
   }
 
