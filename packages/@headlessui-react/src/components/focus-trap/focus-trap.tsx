@@ -24,6 +24,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { microTask } from '../../utils/micro-task'
 import { useWatch } from '../../hooks/use-watch'
 import { useDisposables } from '../../hooks/use-disposables'
+import { onDocumentReady } from '../../utils/document-ready'
 
 type Containers =
   // Lazy resolved containers
@@ -211,7 +212,7 @@ export let FocusTrap = Object.assign(FocusTrapRoot, {
 // ---
 
 let history: HTMLElement[] = []
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+onDocumentReady(() => {
   function handle(e: Event) {
     if (!(e.target instanceof HTMLElement)) return
     if (e.target === document.body) return
@@ -231,7 +232,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   document.body.addEventListener('click', handle, { capture: true })
   document.body.addEventListener('mousedown', handle, { capture: true })
   document.body.addEventListener('focus', handle, { capture: true })
-}
+})
 
 function useRestoreElement(enabled: boolean = true) {
   let localHistory = useRef<HTMLElement[]>(history.slice())

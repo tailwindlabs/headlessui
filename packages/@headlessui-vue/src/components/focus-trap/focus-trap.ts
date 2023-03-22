@@ -22,6 +22,7 @@ import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-
 import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { microTask } from '../../utils/micro-task'
+import { onDocumentReady } from '../../utils/document-ready'
 
 type Containers =
   // Lazy resolved containers
@@ -209,7 +210,7 @@ export let FocusTrap = Object.assign(
 )
 
 let history: HTMLElement[] = []
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+onDocumentReady(() => {
   function handle(e: Event) {
     if (!(e.target instanceof HTMLElement)) return
     if (e.target === document.body) return
@@ -229,7 +230,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   document.body.addEventListener('click', handle, { capture: true })
   document.body.addEventListener('mousedown', handle, { capture: true })
   document.body.addEventListener('focus', handle, { capture: true })
-}
+})
 
 function useRestoreElement(enabled: Ref<boolean>) {
   let localHistory = ref<HTMLElement[]>(history.slice())
