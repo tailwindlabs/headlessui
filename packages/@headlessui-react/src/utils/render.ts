@@ -174,7 +174,13 @@ function _render<TTag extends ElementType, TSlot>(
 
       // Merge class name prop in SSR
       // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
-      let newClassName = classNames(resolvedChildren.props?.className, rest.className)
+      let childProps = resolvedChildren.props as { className: string | (() => string) } | null
+
+      let newClassName =
+        typeof childProps?.className === 'function'
+          ? (...args: any[]) => classNames(childProps?.className(...args), rest.className)
+          : classNames(childProps?.className, rest.className)
+
       let classNameProps = newClassName ? { className: newClassName } : {}
 
       return cloneElement(
