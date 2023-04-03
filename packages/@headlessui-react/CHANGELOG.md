@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix "Can't perform a React state update on an unmounted component." when using the `Transition` component ([#2374](https://github.com/tailwindlabs/headlessui/pull/2374))
 - Add `FocusTrap` event listeners once document has loaded ([#2389](https://github.com/tailwindlabs/headlessui/pull/2389))
 - Fix `className` hydration for `<Transition appear>` ([#2390](https://github.com/tailwindlabs/headlessui/pull/2390))
+- Improve `Combobox` types to improve false positives ([#2411](https://github.com/tailwindlabs/headlessui/pull/2411))
 
 ### Added
 
