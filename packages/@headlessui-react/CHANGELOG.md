@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `FocusTrap` event listeners once document has loaded ([#2389](https://github.com/tailwindlabs/headlessui/pull/2389))
 - Fix `className` hydration for `<Transition appear>` ([#2390](https://github.com/tailwindlabs/headlessui/pull/2390))
 - Improve `Combobox` types to improve false positives ([#2411](https://github.com/tailwindlabs/headlessui/pull/2411))
+- Merge `className` correctly when it’s a function ([#2412](https://github.com/tailwindlabs/headlessui/pull/2412))
 
 ### Added
 
