@@ -5,8 +5,8 @@ import { suppressConsoleLogs } from '../test-utils/suppress-console-logs'
 import { render, Features, PropsForFeatures } from './render'
 import { Props, Expand } from '../types'
 
-function contents() {
-  return prettyDOM(getByTestId(document.body, 'wrapper'), undefined, {
+function contents(id = 'wrapper') {
+  return prettyDOM(getByTestId(document.body, id), undefined, {
     highlight: false,
   })
 }
@@ -29,6 +29,22 @@ describe('Default functionality', () => {
     )
   }
 
+  function DummyWithClassName<TTag extends ElementType = 'div'>(
+    props: Props<TTag> & Partial<{ className: string | (() => string) }>
+  ) {
+    return (
+      <div data-testid="wrapper-with-class">
+        {render({
+          ourProps: {},
+          theirProps: props,
+          slot,
+          defaultTag: 'div',
+          name: 'Dummy',
+        })}
+      </div>
+    )
+  }
+
   it('should be possible to render a dummy component', () => {
     testRender(<Dummy />)
 
@@ -37,6 +53,46 @@ describe('Default functionality', () => {
         data-testid=\\"wrapper\\"
       >
         <div />
+      </div>"
+    `)
+  })
+
+  it('should be possible to merge classes when rendering', () => {
+    testRender(
+      <DummyWithClassName as={Fragment} className="test-outer">
+        <div className="test-inner"></div>
+      </DummyWithClassName>
+    )
+
+    expect(contents('wrapper-with-class')).toMatchInlineSnapshot(`
+      "<div
+        data-testid=\\"wrapper-with-class\\"
+      >
+        <div
+          class=\\"test-inner test-outer\\"
+        />
+      </div>"
+    `)
+  })
+
+  it('should be possible to merge class fns when rendering', () => {
+    testRender(
+      <DummyWithClassName as={Fragment} className="test-outer">
+        <Dummy className={() => 'test-inner'}></Dummy>
+      </DummyWithClassName>
+    )
+
+    expect(contents('wrapper-with-class')).toMatchInlineSnapshot(`
+      "<div
+        data-testid=\\"wrapper-with-class\\"
+      >
+        <div
+          data-testid=\\"wrapper\\"
+        >
+          <div
+            class=\\"test-inner test-outer\\"
+          />
+        </div>
       </div>"
     `)
   })
