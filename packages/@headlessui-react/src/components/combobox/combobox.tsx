@@ -1426,10 +1426,10 @@ interface ComponentCombobox extends HasDisplayName {
     props: ComboboxProps<TValue, true, false, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, false, false, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, false, true, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, false, true, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, false, false, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
 }
 
