@@ -615,6 +615,30 @@ describe('Rendering', () => {
         expect(document.documentElement.style.overflow).toBe('')
       })
     )
+
+    it(
+      'should not have a scroll lock when the transition marked as not shown',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          components: {
+            Dialog,
+            TransitionRoot,
+          },
+          template: `
+            <TransitionRoot as="template" :show="false" :unmount="false">
+              <Dialog as="div">
+                <input type="text" />
+              </Dialog>
+            </TransitionRoot>
+          `,
+        })
+
+        await nextFrame()
+
+        // The overflow should NOT be there
+        expect(document.documentElement.style.overflow).toBe('')
+      })
+    )
   })
 
   describe('DialogOverlay', () => {
