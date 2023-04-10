@@ -193,7 +193,6 @@ export let TransitionChild = defineComponent({
     }
 
     let container = ref<HTMLElement | null>(null)
-    let state = ref(TreeStates.Visible)
     let strategy = computed(() => (props.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden))
 
     expose({ el: container, $el: container })
@@ -201,6 +200,7 @@ export let TransitionChild = defineComponent({
     let { show, appear } = useTransitionContext()
     let { register, unregister } = useParentNesting()
 
+    let state = ref(show.value ? TreeStates.Visible : TreeStates.Hidden)
     let initial = { value: true }
 
     let id = useId()
@@ -228,7 +228,7 @@ export let TransitionChild = defineComponent({
       if (!id) return
 
       // Make sure that we are visible
-      if (show && state.value !== TreeStates.Visible) {
+      if (show.value && state.value !== TreeStates.Visible) {
         state.value = TreeStates.Visible
         return
       }
