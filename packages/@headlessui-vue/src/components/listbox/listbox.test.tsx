@@ -1270,6 +1270,32 @@ describe('Rendering', () => {
       expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
     })
   })
+
+  it(
+    'should be possible to use a custom component using the `as` prop without crashing',
+    suppressConsoleLogs(async () => {
+      let CustomComponent = defineComponent({
+        template: html`<button><slot /></button>`,
+      })
+
+      renderTemplate({
+        template: html`
+          <Listbox name="assignee">
+            <ListboxButton />
+            <ListboxOptions>
+              <ListboxOption :as="CustomComponent" value="alice">Alice</RadioGroupOption>
+              <ListboxOption :as="CustomComponent" value="bob">Bob</RadioGroupOption>
+              <ListboxOption :as="CustomComponent" value="charlie">Charlie</RadioGroupOption>
+            </ListboxOptions>
+          </Listbox>
+        `,
+        setup: () => ({ CustomComponent }),
+      })
+
+      // Open listbox
+      await click(getListboxButton())
+    })
+  )
 })
 
 describe('Rendering composition', () => {

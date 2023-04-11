@@ -818,6 +818,32 @@ describe('Rendering', () => {
     // Verify that the third menu item is active
     assertMenuLinkedWithMenuItem(items[2])
   })
+
+  it(
+    'should be possible to use a custom component using the `as` prop without crashing',
+    suppressConsoleLogs(async () => {
+      let CustomComponent = defineComponent({
+        template: `<button><slot /></button>`,
+      })
+
+      renderTemplate({
+        template: `
+          <Menu>
+            <MenuButton />
+            <MenuOptions>
+              <MenuOption :as="CustomComponent">Alice</RadioGroupOption>
+              <MenuOption :as="CustomComponent">Bob</RadioGroupOption>
+              <MenuOption :as="CustomComponent">Charlie</RadioGroupOption>
+            </MenuOptions>
+          </Menu>
+        `,
+        setup: () => ({ CustomComponent }),
+      })
+
+      // Open menu
+      await click(getMenuButton())
+    })
+  )
 })
 
 describe('Rendering composition', () => {
