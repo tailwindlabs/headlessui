@@ -272,7 +272,7 @@ export let RadioGroup = defineComponent({
           : []),
         render({
           ourProps,
-          theirProps: { ...attrs, ...omit(theirProps, ['modelValue', 'defaultValue']) },
+          theirProps: { ...attrs, ...omit(theirProps, ['modelValue', 'defaultValue', 'by']) },
           slot: {},
           attrs,
           slots,
@@ -309,7 +309,8 @@ export let RadioGroupOption = defineComponent({
 
     expose({ el: optionRef, $el: optionRef })
 
-    onMounted(() => api.registerOption({ id: props.id, element: optionRef, propsRef }))
+    let element = computed(() => dom(optionRef))
+    onMounted(() => api.registerOption({ id: props.id, element, propsRef }))
     onUnmounted(() => api.unregisterOption(props.id))
 
     let isFirstOption = computed(() => api.firstOption.value?.id === props.id)
@@ -326,7 +327,7 @@ export let RadioGroupOption = defineComponent({
       if (!api.change(props.value)) return
 
       state.value |= OptionState.Active
-      optionRef.value?.focus()
+      dom(optionRef)?.focus()
     }
 
     function handleFocus() {

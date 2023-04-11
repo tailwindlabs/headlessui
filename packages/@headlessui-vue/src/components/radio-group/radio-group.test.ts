@@ -1,4 +1,4 @@
-import { nextTick, ref, watch, reactive } from 'vue'
+import { nextTick, ref, watch, reactive, defineComponent, defineExpose } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import { RadioGroup, RadioGroupOption, RadioGroupLabel, RadioGroupDescription } from './radio-group'
@@ -495,6 +495,26 @@ describe('Rendering', () => {
     // Verify that the third radio group option is active
     assertActiveElement(getByText('Option 3'))
   })
+
+  it(
+    'should be possible to use a custom component using the `as` prop without crashing',
+    suppressConsoleLogs(async () => {
+      let CustomComponent = defineComponent({
+        template: html`<button><slot /></button>`,
+      })
+
+      renderTemplate({
+        template: html`
+          <RadioGroup name="assignee">
+            <RadioGroupOption :as="CustomComponent" value="alice">Alice</RadioGroupOption>
+            <RadioGroupOption :as="CustomComponent" value="bob">Bob</RadioGroupOption>
+            <RadioGroupOption :as="CustomComponent" value="charlie">Charlie</RadioGroupOption>
+          </RadioGroup>
+        `,
+        setup: () => ({ CustomComponent }),
+      })
+    })
+  )
 
   describe('Equality', () => {
     let options = [

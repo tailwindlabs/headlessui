@@ -1523,6 +1523,33 @@ describe('Rendering', () => {
       expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
     })
   })
+
+  it(
+    'should be possible to use a custom component using the `as` prop without crashing',
+    suppressConsoleLogs(async () => {
+      let CustomComponent = defineComponent({
+        template: html`<button><slot /></button>`,
+      })
+
+      renderTemplate({
+        template: html`
+          <Combobox name="assignee">
+            <ComboboxInput />
+            <ComboboxButton />
+            <ComboboxOptions>
+              <ComboboxOption :as="CustomComponent" value="alice">Alice</RadioGroupOption>
+              <ComboboxOption :as="CustomComponent" value="bob">Bob</RadioGroupOption>
+              <ComboboxOption :as="CustomComponent" value="charlie">Charlie</RadioGroupOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ CustomComponent }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+    })
+  )
 })
 
 describe('Rendering composition', () => {
