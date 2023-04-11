@@ -272,7 +272,7 @@ export let RadioGroup = defineComponent({
           : []),
         render({
           ourProps,
-          theirProps: { ...attrs, ...omit(theirProps, ['modelValue', 'defaultValue']) },
+          theirProps: { ...attrs, ...omit(theirProps, ['modelValue', 'defaultValue', 'by']) },
           slot: {},
           attrs,
           slots,
