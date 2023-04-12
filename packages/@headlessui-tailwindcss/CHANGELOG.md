@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Add ESM and `types` paths to `package.json` for TailwindCSS plugin ([#2382](https://github.com/tailwindlabs/headlessui/pull/2382))
 
 ## [0.1.2] - 2022-12-06
 
