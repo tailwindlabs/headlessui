@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.13] - 2023-04-12
+
 ### Fixed
 
 - Fix focus styles showing up when using the mouse ([#2347](https://github.com/tailwindlabs/headlessui/pull/2347))
@@ -441,7 +445,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.12...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.13...HEAD
+[1.7.13]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.12...@headlessui/vue@v1.7.13
 [1.7.12]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.11...@headlessui/vue@v1.7.12
 [1.7.11]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.10...@headlessui/vue@v1.7.11
 [1.7.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.9...@headlessui/vue@v1.7.10
