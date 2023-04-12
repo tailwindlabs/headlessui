@@ -953,6 +953,7 @@ function InputFn<
   })
 
   let handleChange = useEvent((event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isComposing.current) return
     actions.openCombobox()
     onChange?.(event)
   })

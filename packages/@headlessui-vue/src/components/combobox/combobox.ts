@@ -891,6 +891,7 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleInput(event: Event & { target: HTMLInputElement }) {
+      if (isComposing.value) return
       api.openCombobox()
       emit('change', event)
     }
