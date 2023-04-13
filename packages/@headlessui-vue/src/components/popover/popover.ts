@@ -380,6 +380,37 @@ export let PopoverButton = defineComponent({
       event.stopPropagation()
     }
 
+    let direction = useTabDirection()
+    function handleFocus() {
+      let el = dom(api.panel) as HTMLElement
+      if (!el) return
+
+      function run() {
+        let result = match(direction.value, {
+          [TabDirection.Forwards]: () => focusIn(el, Focus.First),
+          [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
+        })
+
+        if (result === FocusResult.Error) {
+          focusIn(
+            getFocusableElements().filter((el) => el.dataset.headlessuiFocusGuard !== 'true'),
+            match(direction.value, {
+              [TabDirection.Forwards]: Focus.Next,
+              [TabDirection.Backwards]: Focus.Previous,
+            }),
+            { relativeTo: dom(api.button) }
+          )
+        }
+      }
+
+      // TODO: Cleanup once we are using real browser tests
+      if (process.env.NODE_ENV === 'test') {
+        microTask(run)
+      } else {
+        run()
+      }
+    }
+
     return () => {
       let visible = api.popoverState.value === PopoverStates.Open
       let slot = { open: visible }
@@ -405,37 +436,6 @@ export let PopoverButton = defineComponent({
             onClick: handleClick,
             onMousedown: handleMouseDown,
           }
-
-      let direction = useTabDirection()
-      function handleFocus() {
-        let el = dom(api.panel) as HTMLElement
-        if (!el) return
-
-        function run() {
-          let result = match(direction.value, {
-            [TabDirection.Forwards]: () => focusIn(el, Focus.First),
-            [TabDirection.Backwards]: () => focusIn(el, Focus.Last),
-          })
-
-          if (result === FocusResult.Error) {
-            focusIn(
-              getFocusableElements().filter((el) => el.dataset.headlessuiFocusGuard !== 'true'),
-              match(direction.value, {
-                [TabDirection.Forwards]: Focus.Next,
-                [TabDirection.Backwards]: Focus.Previous,
-              }),
-              { relativeTo: dom(api.button) }
-            )
-          }
-        }
-
-        // TODO: Cleanup once we are using real browser tests
-        if (process.env.NODE_ENV === 'test') {
-          microTask(run)
-        } else {
-          run()
-        }
-      }
 
       return h(Fragment, [
         render({
