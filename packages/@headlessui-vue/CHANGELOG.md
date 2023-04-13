@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix memory leak in `Popover` component ([#2430](https://github.com/tailwindlabs/headlessui/pull/2430))
 
 ## [1.7.13] - 2023-04-12
 
