@@ -776,7 +776,7 @@ export let ComboboxInput = defineComponent({
           emit('change', composedChangeEvent.value)
           composedChangeEvent.value = null
         }
-      })
+      }, 5)
     }
 
     function handleKeyDown(event: KeyboardEvent) {
