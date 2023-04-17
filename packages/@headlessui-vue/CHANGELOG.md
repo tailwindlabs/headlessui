@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `FocusTrap` event listeners once document has loaded ([#2389](https://github.com/tailwindlabs/headlessui/pull/2389))
 - Don't scroll-lock `<Dialog>` when wrapping transition isn't showing ([#2422](https://github.com/tailwindlabs/headlessui/pull/2422))
 - Ensure DOM `ref` is properly handled in the `RadioGroup` component ([#2424](https://github.com/tailwindlabs/headlessui/pull/2424))
+- Correctly handle IME composition in `<Combobox.Input>` ([#2426](https://github.com/tailwindlabs/headlessui/pull/2426))
 
 ### Added
 

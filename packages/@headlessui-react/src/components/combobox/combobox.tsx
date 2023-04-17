@@ -821,12 +821,19 @@ function InputFn<
   )
 
   let isComposing = useRef(false)
+  let composedChangeEvent = useRef<React.ChangeEvent<HTMLInputElement> | null>(null)
   let handleCompositionStart = useEvent(() => {
     isComposing.current = true
   })
   let handleCompositionEnd = useEvent(() => {
-    setTimeout(() => {
+    d.nextFrame(() => {
       isComposing.current = false
+
+      if (composedChangeEvent.current) {
+        actions.openCombobox()
+        onChange?.(composedChangeEvent.current)
+        composedChangeEvent.current = null
+      }
     })
   })
 
@@ -953,6 +960,10 @@ function InputFn<
   })
 
   let handleChange = useEvent((event: React.ChangeEvent<HTMLInputElement>) => {
+    if (isComposing.current) {
+      composedChangeEvent.current = event
+      return
+    }
     actions.openCombobox()
     onChange?.(event)
   })

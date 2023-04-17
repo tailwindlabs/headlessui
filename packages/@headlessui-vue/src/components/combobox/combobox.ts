@@ -37,6 +37,7 @@ import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { isMobile } from '../../utils/platform'
+import { disposables } from '../../utils/disposables'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -763,12 +764,19 @@ export let ComboboxInput = defineComponent({
     })
 
     let isComposing = ref(false)
+    let composedChangeEvent = ref<(Event & { target: HTMLInputElement }) | null>(null)
     function handleCompositionstart() {
       isComposing.value = true
     }
     function handleCompositionend() {
-      setTimeout(() => {
+      disposables().nextFrame(() => {
         isComposing.value = false
+
+        if (composedChangeEvent.value) {
+          api.openCombobox()
+          emit('change', composedChangeEvent.value)
+          composedChangeEvent.value = null
+        }
       })
     }
 
@@ -891,6 +899,10 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleInput(event: Event & { target: HTMLInputElement }) {
+      if (isComposing.value) {
+        composedChangeEvent.value = event
+        return
+      }
       api.openCombobox()
       emit('change', event)
     }
