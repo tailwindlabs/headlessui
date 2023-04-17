@@ -37,6 +37,7 @@ import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { isMobile } from '../../utils/platform'
+import { disposables } from '../../utils/disposables'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -768,7 +769,7 @@ export let ComboboxInput = defineComponent({
       isComposing.value = true
     }
     function handleCompositionend() {
-      setTimeout(() => {
+      disposables().nextFrame(() => {
         isComposing.value = false
 
         if (composedChangeEvent.value) {
@@ -776,7 +777,7 @@ export let ComboboxInput = defineComponent({
           emit('change', composedChangeEvent.value)
           composedChangeEvent.value = null
         }
-      }, 5)
+      })
     }
 
     function handleKeyDown(event: KeyboardEvent) {

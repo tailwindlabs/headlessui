@@ -826,7 +826,7 @@ function InputFn<
     isComposing.current = true
   })
   let handleCompositionEnd = useEvent(() => {
-    setTimeout(() => {
+    d.nextFrame(() => {
       isComposing.current = false
 
       if (composedChangeEvent.current) {
