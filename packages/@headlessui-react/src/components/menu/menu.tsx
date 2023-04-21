@@ -69,6 +69,7 @@ type MenuItemDataRef = MutableRefObject<{
 }>
 
 interface StateDefinition {
+  __demoMode: boolean
   menuState: MenuStates
   buttonRef: MutableRefObject<HTMLButtonElement | null>
   itemsRef: MutableRefObject<HTMLDivElement | null>
@@ -141,7 +142,12 @@ let reducers: {
   },
   [ActionTypes.OpenMenu](state) {
     if (state.menuState === MenuStates.Open) return state
-    return { ...state, menuState: MenuStates.Open }
+    return {
+      ...state,
+      /* We can turn off demo mode once we re-open the `Menu` */
+      __demoMode: false,
+      menuState: MenuStates.Open,
+    }
   },
   [ActionTypes.GoToItem]: (state, action) => {
     let adjustedState = adjustOrderedState(state)
@@ -238,14 +244,23 @@ interface MenuRenderPropArg {
   close: () => void
 }
 
-export type MenuProps<TTag extends ElementType> = Props<TTag, MenuRenderPropArg>
+export type MenuProps<TTag extends ElementType> = Props<
+  TTag,
+  MenuRenderPropArg,
+  never,
+  {
+    __demoMode?: boolean
+  }
+>
 
 function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   props: MenuProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let { __demoMode = false, ...theirProps } = props
   let reducerBag = useReducer(stateReducer, {
-    menuState: MenuStates.Closed,
+    __demoMode,
+    menuState: __demoMode ? MenuStates.Open : MenuStates.Closed,
     buttonRef: createRef(),
     itemsRef: createRef(),
     items: [],
@@ -279,7 +294,6 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     [menuState, close]
   )
 
-  let theirProps = props
   let ourProps = { ref: menuRef }
 
   return (
@@ -604,6 +618,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   let itemRef = useSyncRefs(ref, internalItemRef)
 
   useIsoMorphicEffect(() => {
+    if (state.__demoMode) return
     if (state.menuState !== MenuStates.Open) return
     if (!active) return
     if (state.activationTrigger === ActivationTrigger.Pointer) return
@@ -613,6 +628,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     })
     return d.dispose
   }, [
+    state.__demoMode,
     internalItemRef,
     active,
     state.menuState,
