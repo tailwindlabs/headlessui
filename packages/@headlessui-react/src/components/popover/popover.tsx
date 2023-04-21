@@ -63,6 +63,7 @@ enum PopoverStates {
 }
 
 interface StateDefinition {
+  __demoMode: boolean
   popoverState: PopoverStates
 
   buttons: MutableRefObject<Symbol[]>
@@ -100,13 +101,22 @@ let reducers: {
     action: Extract<Actions, { type: P }>
   ) => StateDefinition
 } = {
-  [ActionTypes.TogglePopover]: (state) => ({
-    ...state,
-    popoverState: match(state.popoverState, {
-      [PopoverStates.Open]: PopoverStates.Closed,
-      [PopoverStates.Closed]: PopoverStates.Open,
-    }),
-  }),
+  [ActionTypes.TogglePopover]: (state) => {
+    let nextState = {
+      ...state,
+      popoverState: match(state.popoverState, {
+        [PopoverStates.Open]: PopoverStates.Closed,
+        [PopoverStates.Closed]: PopoverStates.Open,
+      }),
+    }
+
+    /* We can turn off demo mode once we re-open the `Popover` */
+    if (nextState.popoverState === PopoverStates.Open) {
+      nextState.__demoMode = false
+    }
+
+    return nextState
+  },
   [ActionTypes.ClosePopover](state) {
     if (state.popoverState === PopoverStates.Closed) return state
     return { ...state, popoverState: PopoverStates.Closed }
@@ -198,12 +208,20 @@ interface PopoverRenderPropArg {
   ): void
 }
 
-export type PopoverProps<TTag extends ElementType> = Props<TTag, PopoverRenderPropArg>
+export type PopoverProps<TTag extends ElementType> = Props<
+  TTag,
+  PopoverRenderPropArg,
+  never,
+  {
+    __demoMode?: boolean
+  }
+>
 
 function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   props: PopoverProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let { __demoMode = false, ...theirProps } = props
   let internalPopoverRef = useRef<HTMLElement | null>(null)
   let popoverRef = useSyncRefs(
     ref,
@@ -214,7 +232,8 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   let buttons = useRef([])
   let reducerBag = useReducer(stateReducer, {
-    popoverState: PopoverStates.Closed,
+    __demoMode,
+    popoverState: __demoMode ? PopoverStates.Open : PopoverStates.Closed,
     buttons,
     button: null,
     buttonId: null,
@@ -354,7 +373,6 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     [popoverState, close]
   )
 
-  let theirProps = props
   let ourProps = { ref: popoverRef }
 
   return (
@@ -771,6 +789,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
   // Move focus within panel
   useEffect(() => {
+    if (state.__demoMode) return
     if (!focus) return
     if (state.popoverState !== PopoverStates.Open) return
     if (!internalPanelRef.current) return
@@ -779,7 +798,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     if (internalPanelRef.current.contains(activeElement)) return // Already focused within Dialog
 
     focusIn(internalPanelRef.current, Focus.First)
-  }, [focus, internalPanelRef, state.popoverState])
+  }, [state.__demoMode, focus, internalPanelRef, state.popoverState])
 
   let slot = useMemo<PanelRenderPropArg>(
     () => ({ open: state.popoverState === PopoverStates.Open, close }),
