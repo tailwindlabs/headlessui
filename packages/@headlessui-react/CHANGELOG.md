@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Added
+
+- [internal] add demo mode to `Menu` and `Popover` components ([#2448](https://github.com/tailwindlabs/headlessui/pull/2448))
 
 ## [1.7.14] - 2023-04-12
 
