@@ -20,7 +20,7 @@
 
 # production
 /build
-/packages/**/dist
+/packages/**/build
 /dist
 /packages/**/dist
 
