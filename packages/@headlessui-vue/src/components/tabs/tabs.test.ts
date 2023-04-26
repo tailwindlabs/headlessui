@@ -1,6 +1,7 @@
 import { nextTick, ref } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
+import { Dialog } from '../dialog/dialog'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   assertActiveElement,
@@ -20,7 +21,7 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-const renderTemplate = createRenderTemplate({ TabGroup, TabList, Tab, TabPanels, TabPanel })
+const renderTemplate = createRenderTemplate({ TabGroup, TabList, Tab, TabPanels, TabPanel, Dialog })
 
 describe('safeguards', () => {
   it.each([
@@ -2715,4 +2716,70 @@ it('should trigger the `change` when the tab changes', async () => {
   expect(changes).toHaveBeenNthCalledWith(2, 2)
   expect(changes).toHaveBeenNthCalledWith(3, 1)
   expect(changes).toHaveBeenNthCalledWith(4, 0)
+})
+
+describe('Composition', () => {
+  it(
+    'should be possible to go to the next item containing a Dialog component',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: `
+          <TabGroup>
+            <TabList>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel data-panel="0">Content 1</TabPanel>
+              <TabPanel data-panel="1">
+                <button>open</button>
+                <Dialog :open="false" @close="noop" />
+              </TabPanel>
+              <TabPanel data-panel="2">Content 3</TabPanel>
+            </TabPanels>
+          </TabGroup>
+        `,
+        setup: () => ({
+          noop: console.log,
+        }),
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+      assertTabs({ active: 0 })
+
+      // Navigate to Dialog tab
+      await press(Keys.ArrowRight)
+      assertTabs({ active: 1 })
+
+      // Focus on to the Dialog panel
+      await press(Keys.Tab)
+      assertActiveElement(document.querySelector('[data-panel="1"]'))
+
+      // Focus on to the Dialog trigger button
+      await press(Keys.Tab)
+      assertActiveElement(getByText('open'))
+
+      // Focus back to the panel
+      await press(shift(Keys.Tab))
+      assertActiveElement(document.querySelector('[data-panel="1"]'))
+
+      // Focus back to tabs
+      await press(shift(Keys.Tab))
+      assertTabs({ active: 1 })
+
+      // Navigate to the next tab
+      await press(Keys.ArrowRight)
+      assertTabs({ active: 2 })
+
+      // Focus on to the content panel
+      await press(Keys.Tab)
+      assertActiveElement(document.querySelector('[data-panel="2"]'))
+    })
+  )
 })

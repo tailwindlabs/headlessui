@@ -237,7 +237,6 @@ onDocumentReady(() => {
 
 function useRestoreElement(enabled: boolean = true) {
   let localHistory = useRef<HTMLElement[]>(history.slice())
-  let isPreviouslyActive = useRef<boolean>(enabled)
 
   useWatch(
     ([newEnabled], [oldEnabled]) => {
@@ -254,10 +253,6 @@ function useRestoreElement(enabled: boolean = true) {
       if (oldEnabled === false && newEnabled === true) {
         localHistory.current = history.slice()
       }
-
-      if (oldEnabled !== undefined) {
-        isPreviouslyActive.current = oldEnabled
-      }
     },
     [enabled, history, localHistory]
   )
@@ -265,10 +260,7 @@ function useRestoreElement(enabled: boolean = true) {
   // We want to return the last element that is still connected to the DOM, so we can restore the
   // focus to it.
   return useEvent(() => {
-    return (
-      localHistory.current.find((x) => x != null && x.isConnected && isPreviouslyActive.current) ??
-      null
-    )
+    return localHistory.current.find((x) => x != null && x.isConnected) ?? null
   })
 }
 
@@ -287,6 +279,8 @@ function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, 
   // Restore the focus to the previous element when the component is unmounted
   let trulyUnmounted = useRef(false)
   useEffect(() => {
+    if (!enabled) return
+
     trulyUnmounted.current = false
 
     return () => {
@@ -297,7 +291,7 @@ function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, 
         focusElement(getRestoreElement())
       })
     }
-  }, [])
+  }, [enabled])
 }
 
 function useInitialFocus(
