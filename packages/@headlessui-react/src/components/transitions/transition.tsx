@@ -436,7 +436,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let theirProps = rest
   let ourProps = { ref: transitionRef }
 
-  if (appear && show) {
+  if (appear && show && initial) {
     theirProps = {
       ...theirProps,
       // Already apply the `enter` and `enterFrom` on the server if required
