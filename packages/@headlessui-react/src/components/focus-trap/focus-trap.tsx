@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useRef,
 
   // Types
@@ -25,6 +24,7 @@ import { microTask } from '../../utils/micro-task'
 import { useWatch } from '../../hooks/use-watch'
 import { useDisposables } from '../../hooks/use-disposables'
 import { onDocumentReady } from '../../utils/document-ready'
+import { useOnUnmount } from '../../hooks/use-on-unmount'
 
 type Containers =
   // Lazy resolved containers
@@ -277,20 +277,11 @@ function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, 
   }, [enabled])
 
   // Restore the focus to the previous element when the component is unmounted
-  let trulyUnmounted = useRef(false)
-  useEffect(() => {
-    trulyUnmounted.current = false
+  useOnUnmount(() => {
+    if (!enabled) return
 
-    return () => {
-      if (!enabled) return
-      trulyUnmounted.current = true
-      microTask(() => {
-        if (!trulyUnmounted.current) return
-
-        focusElement(getRestoreElement())
-      })
-    }
-  }, [enabled])
+    focusElement(getRestoreElement())
+  })
 }
 
 function useInitialFocus(
