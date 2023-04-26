@@ -284,6 +284,8 @@ function useRestoreFocus(
 
   // Restore the focus when we unmount the component
   onUnmounted(() => {
+    if (!enabled.value) return
+
     focusElement(getRestoreElement())
   })
 }

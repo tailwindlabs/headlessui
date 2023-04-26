@@ -2,6 +2,7 @@ import React, { createElement, useState } from 'react'
 import { render } from '@testing-library/react'
 
 import { Tab } from './tabs'
+import { Dialog } from '../dialog/dialog'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   assertTabs,
@@ -2877,6 +2878,69 @@ describe('Mouse interactions', () => {
       await click(getByText('Tab 1'))
       // No-op, Tab 2 is still active
       assertTabs({ active: 1 })
+    })
+  )
+})
+
+describe('Composition', () => {
+  it(
+    'should be possible to go to the next item containing a Dialog component',
+    suppressConsoleLogs(async () => {
+      render(
+        <>
+          <Tab.Group>
+            <Tab.List>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel data-panel="0">Content 1</Tab.Panel>
+              <Tab.Panel data-panel="1">
+                <>
+                  <button>open</button>
+                  <Dialog open={false} onClose={console.log} />
+                </>
+              </Tab.Panel>
+              <Tab.Panel data-panel="2">Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </>
+      )
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+      assertTabs({ active: 0 })
+
+      // Navigate to Dialog tab
+      await press(Keys.ArrowRight)
+      assertTabs({ active: 1 })
+
+      // Focus on to the Dialog panel
+      await press(Keys.Tab)
+      assertActiveElement(document.querySelector('[data-panel="1"]'))
+
+      // Focus on to the Dialog trigger button
+      await press(Keys.Tab)
+      assertActiveElement(getByText('open'))
+
+      // Focus back to the panel
+      await press(shift(Keys.Tab))
+      assertActiveElement(document.querySelector('[data-panel="1"]'))
+
+      // Focus back to tabs
+      await press(shift(Keys.Tab))
+      assertTabs({ active: 1 })
+
+      // Navigate to the next tab
+      await press(Keys.ArrowRight)
+      assertTabs({ active: 2 })
+
+      // Focus on to the content panel
+      await press(Keys.Tab)
+      assertActiveElement(document.querySelector('[data-panel="2"]'))
     })
   )
 })
