@@ -1,6 +1,7 @@
 import React, { createElement, useState } from 'react'
 import { render } from '@testing-library/react'
 
+import { Dialog } from '../dialog/dialog'
 import { Tab } from './tabs'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
@@ -2877,6 +2878,74 @@ describe('Mouse interactions', () => {
       await click(getByText('Tab 1'))
       // No-op, Tab 2 is still active
       assertTabs({ active: 1 })
+    })
+  )
+})
+
+describe('Composition', () => {
+  it(
+    'should be possible to go to the next item (activation = `auto`) with a Dialog component',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isDialogOpen, setIsDialogOpen] = useState(false)
+        return (
+          <>
+            <button id="openDialog">Open dialog</button>
+            <Dialog open={isDialogOpen} onClose={console.log}>
+              <Dialog.Panel>
+                <button id="closeDialog" onClick={() => setIsDialogOpen(false)}>
+                  Close Dialog
+                </button>
+              </Dialog.Panel>
+            </Dialog>
+          </>
+        )
+      }
+      render(
+        <>
+          <Tab.Group>
+            <Tab.List>
+              <Tab>Tab 1</Tab>
+              <Tab>Tab 2</Tab>
+              <Tab>Tab 3</Tab>
+            </Tab.List>
+
+            <Tab.Panels>
+              <Tab.Panel>Content 1</Tab.Panel>
+              <Tab.Panel>
+                <Example />
+              </Tab.Panel>
+              <Tab.Panel>Content 3</Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </>
+      )
+
+      assertActiveElement(document.body)
+
+      await press(Keys.Tab)
+      assertTabs({ active: 0 })
+
+      await press(Keys.ArrowRight)
+      assertTabs({ active: 1 })
+
+      await press(Keys.Tab)
+      expect(document.querySelector('#openDialog')).toHaveTextContent('Open dialog')
+
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Open dialog'))
+
+      await press(shift(Keys.Tab))
+      expect(document.querySelector('#openDialog')).toHaveTextContent('Open dialog')
+
+      await press(shift(Keys.Tab))
+      assertTabs({ active: 1 })
+
+      await press(Keys.ArrowRight)
+      assertTabs({ active: 2 })
+
+      await press(Keys.Tab)
+      assertActiveElement(getByText('Content 3'))
     })
   )
 })
