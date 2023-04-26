@@ -279,11 +279,10 @@ function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, 
   // Restore the focus to the previous element when the component is unmounted
   let trulyUnmounted = useRef(false)
   useEffect(() => {
-    if (!enabled) return
-
     trulyUnmounted.current = false
 
     return () => {
+      if (!enabled) return
       trulyUnmounted.current = true
       microTask(() => {
         if (!trulyUnmounted.current) return
