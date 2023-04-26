@@ -1,8 +1,8 @@
 import React, { createElement, useState } from 'react'
 import { render } from '@testing-library/react'
 
-import { Dialog } from '../dialog/dialog'
 import { Tab } from './tabs'
+import { Dialog } from '../dialog/dialog'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   assertTabs,
@@ -2884,23 +2884,8 @@ describe('Mouse interactions', () => {
 
 describe('Composition', () => {
   it(
-    'should be possible to go to the next item (activation = `auto`) with a Dialog component',
+    'should be possible to go to the next item containing a Dialog component',
     suppressConsoleLogs(async () => {
-      function Example() {
-        let [isDialogOpen, setIsDialogOpen] = useState(false)
-        return (
-          <>
-            <button id="openDialog">Open dialog</button>
-            <Dialog open={isDialogOpen} onClose={console.log}>
-              <Dialog.Panel>
-                <button id="closeDialog" onClick={() => setIsDialogOpen(false)}>
-                  Close Dialog
-                </button>
-              </Dialog.Panel>
-            </Dialog>
-          </>
-        )
-      }
       render(
         <>
           <Tab.Group>
@@ -2911,11 +2896,14 @@ describe('Composition', () => {
             </Tab.List>
 
             <Tab.Panels>
-              <Tab.Panel>Content 1</Tab.Panel>
-              <Tab.Panel>
-                <Example />
+              <Tab.Panel data-panel="0">Content 1</Tab.Panel>
+              <Tab.Panel data-panel="1">
+                <>
+                  <button>open</button>
+                  <Dialog open={false} onClose={console.log} />
+                </>
               </Tab.Panel>
-              <Tab.Panel>Content 3</Tab.Panel>
+              <Tab.Panel data-panel="2">Content 3</Tab.Panel>
             </Tab.Panels>
           </Tab.Group>
         </>
@@ -2926,26 +2914,33 @@ describe('Composition', () => {
       await press(Keys.Tab)
       assertTabs({ active: 0 })
 
+      // Navigate to Dialog tab
       await press(Keys.ArrowRight)
       assertTabs({ active: 1 })
 
+      // Focus on to the Dialog panel
       await press(Keys.Tab)
-      expect(document.querySelector('#openDialog')).toHaveTextContent('Open dialog')
+      assertActiveElement(document.querySelector('[data-panel="1"]'))
 
+      // Focus on to the Dialog trigger button
       await press(Keys.Tab)
-      assertActiveElement(getByText('Open dialog'))
+      assertActiveElement(getByText('open'))
 
+      // Focus back to the panel
       await press(shift(Keys.Tab))
-      expect(document.querySelector('#openDialog')).toHaveTextContent('Open dialog')
+      assertActiveElement(document.querySelector('[data-panel="1"]'))
 
+      // Focus back to tabs
       await press(shift(Keys.Tab))
       assertTabs({ active: 1 })
 
+      // Navigate to the next tab
       await press(Keys.ArrowRight)
       assertTabs({ active: 2 })
 
+      // Focus on to the content panel
       await press(Keys.Tab)
-      assertActiveElement(getByText('Content 3'))
+      assertActiveElement(document.querySelector('[data-panel="2"]'))
     })
   )
 })
