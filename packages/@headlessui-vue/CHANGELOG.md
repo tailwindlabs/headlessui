@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix memory leak in `Popover` component ([#2430](https://github.com/tailwindlabs/headlessui/pull/2430))
+- Ensure `FocusTrap` is only active when the given `enabled` value is `true` ([#2456](https://github.com/tailwindlabs/headlessui/pull/2456))
 
 ## [1.7.13] - 2023-04-12
 
