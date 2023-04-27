@@ -544,6 +544,16 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
 
   let sharedProps = { unmount }
 
+  let beforeEnter = useEvent(() => {
+    if (initial) setInitial(false)
+    props.beforeEnter?.()
+  })
+
+  let beforeLeave = useEvent(() => {
+    if (initial) setInitial(false)
+    props.beforeLeave?.()
+  })
+
   return (
     <NestingContext.Provider value={nestingBag}>
       <TransitionContext.Provider value={transitionBag}>
@@ -551,7 +561,15 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
           ourProps: {
             ...sharedProps,
             as: Fragment,
-            children: <TransitionChild ref={transitionRef} {...sharedProps} {...theirProps} />,
+            children: (
+              <TransitionChild
+                ref={transitionRef}
+                {...sharedProps}
+                {...theirProps}
+                beforeEnter={beforeEnter}
+                beforeLeave={beforeLeave}
+              />
+            ),
           },
           theirProps: {},
           defaultTag: Fragment,
