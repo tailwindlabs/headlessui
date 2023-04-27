@@ -19,8 +19,8 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
+import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
-import { microTask } from '../../utils/micro-task'
 import { env } from '../../utils/env'
 
 function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
@@ -90,10 +90,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
 
   let ready = useServerHandoffComplete()
 
-  let trulyUnmounted = useRef(false)
   useIsoMorphicEffect(() => {
-    trulyUnmounted.current = false
-
     if (!target || !element) return
 
     // Element already exists in target, always calling target.appendChild(element) will cause a
@@ -102,24 +99,19 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
       element.setAttribute('data-headlessui-portal', '')
       target.appendChild(element)
     }
-
-    return () => {
-      trulyUnmounted.current = true
-
-      microTask(() => {
-        if (!trulyUnmounted.current) return
-        if (!target || !element) return
-
-        if (element instanceof Node && target.contains(element)) {
-          target.removeChild(element)
-        }
-
-        if (target.childNodes.length <= 0) {
-          target.parentElement?.removeChild(target)
-        }
-      })
-    }
   }, [target, element])
+
+  useOnUnmount(() => {
+    if (!target || !element) return
+
+    if (element instanceof Node && target.contains(element)) {
+      target.removeChild(element)
+    }
+
+    if (target.childNodes.length <= 0) {
+      target.parentElement?.removeChild(target)
+    }
+  })
 
   if (!ready) return null
 
