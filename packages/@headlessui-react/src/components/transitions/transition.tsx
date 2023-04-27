@@ -33,7 +33,6 @@ import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
 import { useDisposables } from '../../hooks/use-disposables'
 import { classNames } from '../../utils/class-names'
-import { env } from '../../utils/env'
 import { useFlags } from '../../hooks/use-flags'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
