@@ -426,8 +426,8 @@ describe('Setup API', () => {
     })
 
     it('should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true', async () => {
-      let { container } = await act(() =>
-        render(
+      function Example() {
+        return (
           <Transition
             show={true}
             appear={true}
@@ -441,7 +441,9 @@ describe('Setup API', () => {
             Children
           </Transition>
         )
-      )
+      }
+
+      let { container } = await act(() => render(<Example />))
 
       expect(container).toBeDefined()
 
