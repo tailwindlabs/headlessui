@@ -4670,6 +4670,75 @@ describe('Keyboard interactions', () => {
       )
     })
   })
+
+  it(
+    'should sync the active index properly',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" v-slot="{ activeIndex }">
+            <ComboboxInput @input="filter" />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <span data-test="idx">{{ activeIndex }}</span>
+            <ComboboxOptions>
+              <ComboboxOption v-for="option in options" :value="option" :key="option"
+                >{{ option }}</ComboboxOption
+              >
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => {
+          let value = ref(null)
+          let options = ref(['Option A', 'Option B', 'Option C', 'Option D'])
+
+          let query = ref('')
+          let filteredOptions = computed(() => {
+            return query.value === ''
+              ? options.value
+              : options.value.filter((option) => option.includes(query.value))
+          })
+
+          function filter(event: Event & { target: HTMLInputElement }) {
+            query.value = event.target.value
+          }
+
+          return { value, options: filteredOptions, filter }
+        },
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      let activeIndexEl = document.querySelector('[data-test="idx"]')
+      function activeIndex() {
+        return Number(activeIndexEl?.innerHTML)
+      }
+
+      expect(activeIndex()).toEqual(0)
+
+      let options: ReturnType<typeof getComboboxOptions>
+
+      await focus(getComboboxInput())
+      await type(word('Option B'))
+
+      // Option B should be active
+      options = getComboboxOptions()
+      expect(options[0]).toHaveTextContent('Option B')
+      assertActiveComboboxOption(options[0])
+
+      expect(activeIndex()).toEqual(0)
+
+      // Reveal all options again
+      await type(word('Option'))
+
+      // Option B should still be active
+      options = getComboboxOptions()
+      expect(options[1]).toHaveTextContent('Option B')
+      assertActiveComboboxOption(options[1])
+
+      expect(activeIndex()).toEqual(1)
+    })
+  )
 })
 
 describe('Mouse interactions', () => {
