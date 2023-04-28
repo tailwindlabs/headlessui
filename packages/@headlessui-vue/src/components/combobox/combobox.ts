@@ -232,7 +232,7 @@ export let Combobox = defineComponent({
         ) {
           let localActiveOptionIndex = options.value.findIndex((option) => !option.dataRef.disabled)
           if (localActiveOptionIndex !== -1) {
-            return localActiveOptionIndex
+            activeOptionIndex.value = localActiveOptionIndex
           }
         }
 
@@ -391,6 +391,15 @@ export let Combobox = defineComponent({
         options.value = adjustedState.options
         activeOptionIndex.value = adjustedState.activeOptionIndex
         activationTrigger.value = ActivationTrigger.Other
+
+        // If some of the DOM elements aren't ready yet, then we can retry in the next tick.
+        if (adjustedState.options.some((option) => !dom(option.dataRef.domRef))) {
+          requestAnimationFrame(() => {
+            let adjustedState = adjustOrderedState()
+            options.value = adjustedState.options
+            activeOptionIndex.value = adjustedState.activeOptionIndex
+          })
+        }
       },
       unregisterOption(id: string) {
         // When we are unregistering the currently active option, then we also have to make sure to
