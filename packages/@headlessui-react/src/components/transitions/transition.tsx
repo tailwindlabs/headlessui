@@ -33,7 +33,6 @@ import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
 import { useDisposables } from '../../hooks/use-disposables'
 import { classNames } from '../../utils/class-names'
-import { env } from '../../utils/env'
 import { useFlags } from '../../hooks/use-flags'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
@@ -436,7 +435,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let theirProps = rest
   let ourProps = { ref: transitionRef }
 
-  if (appear && show) {
+  if (appear && show && initial) {
     theirProps = {
       ...theirProps,
       // Already apply the `enter` and `enterFrom` on the server if required
@@ -544,6 +543,16 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
 
   let sharedProps = { unmount }
 
+  let beforeEnter = useEvent(() => {
+    if (initial) setInitial(false)
+    props.beforeEnter?.()
+  })
+
+  let beforeLeave = useEvent(() => {
+    if (initial) setInitial(false)
+    props.beforeLeave?.()
+  })
+
   return (
     <NestingContext.Provider value={nestingBag}>
       <TransitionContext.Provider value={transitionBag}>
@@ -551,7 +560,15 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
           ourProps: {
             ...sharedProps,
             as: Fragment,
-            children: <TransitionChild ref={transitionRef} {...sharedProps} {...theirProps} />,
+            children: (
+              <TransitionChild
+                ref={transitionRef}
+                {...sharedProps}
+                {...theirProps}
+                beforeEnter={beforeEnter}
+                beforeLeave={beforeLeave}
+              />
+            ),
           },
           theirProps: {},
           defaultTag: Fragment,

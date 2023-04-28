@@ -5,6 +5,7 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from './transition'
 
 import { executeTimeline } from '../../test-utils/execute-timeline'
+import { createSnapshot } from '../../test-utils/snapshot'
 
 let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 
@@ -426,9 +427,14 @@ describe('Setup API', () => {
     })
 
     it('should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true', async () => {
-      let { container } = await act(() =>
-        render(
+      let container = createSnapshot()
+
+      function Example() {
+        let ref = container.use()
+
+        return (
           <Transition
+            ref={ref}
             show={true}
             appear={true}
             enter="enter"
@@ -441,7 +447,9 @@ describe('Setup API', () => {
             Children
           </Transition>
         )
-      )
+      }
+
+      await act(() => render(<Example />))
 
       expect(container).toBeDefined()
 
