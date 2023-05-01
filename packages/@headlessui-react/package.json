@@ -11,9 +11,9 @@
     "dist"
   ],
   "exports": {
+    "types": "./dist/index.d.ts",
     "import": "./dist/headlessui.esm.js",
-    "require": "./dist/index.cjs",
-    "types": "./dist/index.d.ts"
+    "require": "./dist/index.cjs"
   },
   "type": "module",
   "sideEffects": false,
