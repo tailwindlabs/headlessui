@@ -32,6 +32,7 @@ import {
 } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { getTextValue } from '../../utils/get-text-value'
 
 enum MenuStates {
   Open,
@@ -513,13 +514,15 @@ export let MenuItem = defineComponent({
 
     let dataRef = computed<MenuItemData>(() => ({
       disabled: props.disabled,
-      textValue: '',
+      get textValue() {
+        let element = dom(internalItemRef)
+        if (element) {
+          return getTextValue(element).trim().toLowerCase()
+        }
+        return ''
+      },
       domRef: internalItemRef,
     }))
-    onMounted(() => {
-      let textValue = dom(internalItemRef)?.textContent?.toLowerCase().trim()
-      if (textValue !== undefined) dataRef.value.textValue = textValue
-    })
 
     onMounted(() => api.registerItem(props.id, dataRef))
     onUnmounted(() => api.unregisterItem(props.id))
