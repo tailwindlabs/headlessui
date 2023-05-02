@@ -3,7 +3,11 @@ module.exports = function createJestConfig(root, options) {
   return Object.assign(
     {
       rootDir: root,
-      setupFilesAfterEnv: ['<rootDir>../../jest/custom-matchers.ts', ...setupFilesAfterEnv],
+      setupFilesAfterEnv: [
+        '<rootDir>../../jest/custom-matchers.ts',
+        '<rootDir>../../jest/polyfills.ts',
+        ...setupFilesAfterEnv,
+      ],
       transform: {
         '^.+\\.(t|j)sx?$': '@swc/jest',
         ...transform,
