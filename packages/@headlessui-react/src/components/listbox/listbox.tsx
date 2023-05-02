@@ -48,6 +48,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { getTextValue } from '../../utils/get-text-value'
 
 enum ListboxStates {
   Open,
@@ -939,7 +940,11 @@ function OptionFn<
     value,
     domRef: internalOptionRef,
     get textValue() {
-      return internalOptionRef.current?.textContent?.toLowerCase()
+      let element = internalOptionRef.current
+      if (element) {
+        return getTextValue(element).trim().toLowerCase()
+      }
+      return ''
     },
   })
   let optionRef = useSyncRefs(ref, internalOptionRef)
