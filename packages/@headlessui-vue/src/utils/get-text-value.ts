@@ -51,16 +51,27 @@ export function getTextValue(element: HTMLElement): string {
   // Try to use the `aria-labelledby` second
   let labelledby = element.getAttribute('aria-labelledby')
   if (labelledby) {
-    let labelEl = document.getElementById(labelledby)
-    if (labelEl) {
-      let label = labelEl.getAttribute('aria-label')
-      // Try to use the `aria-label` first (of the referenced element)
-      if (typeof label === 'string') return label.trim()
+    // aria-labelledby can be a space-separated list of IDs, so we need to split them up and
+    // combine them into a single string.
+    let labels = labelledby
+      .split(' ')
+      .map((labelledby) => {
+        let labelEl = document.getElementById(labelledby)
+        if (labelEl) {
+          let label = labelEl.getAttribute('aria-label')
+          // Try to use the `aria-label` first (of the referenced element)
+          if (typeof label === 'string') return label.trim()
 
-      // This time, the `aria-labelledby` isn't used anymore (in Safari), so we just have to
-      // look at the contents itself.
-      return getTextContents(labelEl).trim()
-    }
+          // This time, the `aria-labelledby` isn't used anymore (in Safari), so we just have to
+          // look at the contents itself.
+          return getTextContents(labelEl).trim()
+        }
+
+        return null
+      })
+      .filter(Boolean)
+
+    if (labels.length > 0) return labels.join(', ')
   }
 
   // Try to use the text contents of the element itself

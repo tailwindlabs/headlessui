@@ -67,3 +67,29 @@ it('should be possible to get the text value from the element referenced by aria
 
   expect(getTextValue(document.querySelector('#foo')!)).toEqual('Contents of bar')
 })
+
+it('should be possible to get the text value from the element referenced by aria-labelledby (using `aria-label`, multiple)', () => {
+  document.body.innerHTML = html`
+    <div>
+      <div id="foo" aria-labelledby="bar baz">Contents of foo</div>
+      <div id="bar" aria-label="Actual value of bar">Contents of bar</div>
+      <div id="baz" aria-label="Actual value of baz">Contents of baz</div>
+    </div>
+  `
+
+  expect(getTextValue(document.querySelector('#foo')!)).toEqual(
+    'Actual value of bar, Actual value of baz'
+  )
+})
+
+it('should be possible to get the text value from the element referenced by aria-labelledby (using its contents, multiple)', () => {
+  document.body.innerHTML = html`
+    <div>
+      <div id="foo" aria-labelledby="bar baz">Contents of foo</div>
+      <div id="bar">Contents of bar</div>
+      <div id="baz">Contents of baz</div>
+    </div>
+  `
+
+  expect(getTextValue(document.querySelector('#foo')!)).toEqual('Contents of bar, Contents of baz')
+})
