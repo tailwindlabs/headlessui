@@ -32,7 +32,7 @@ import {
 } from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { getTextValue } from '../../utils/get-text-value'
+import { useTextValue } from '../../hooks/use-text-value'
 
 enum MenuStates {
   Open,
@@ -512,14 +512,11 @@ export let MenuItem = defineComponent({
         : false
     })
 
+    let getTextValue = useTextValue(internalItemRef)
     let dataRef = computed<MenuItemData>(() => ({
       disabled: props.disabled,
       get textValue() {
-        let element = dom(internalItemRef)
-        if (element) {
-          return getTextValue(element).trim().toLowerCase()
-        }
-        return ''
+        return getTextValue()
       },
       domRef: internalItemRef,
     }))
