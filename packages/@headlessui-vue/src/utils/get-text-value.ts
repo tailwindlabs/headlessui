@@ -1,3 +1,6 @@
+let emojiRegex =
+  /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g
+
 function getTextContents(element: HTMLElement): string {
   // Using innerText instad of textContent because:
   //
@@ -12,15 +15,8 @@ function getTextContents(element: HTMLElement): string {
 
   // Ideally we can use the much simpler RegEx: /\p{Extended_Pictographic}/u
   // but we can't rely on this yet, so we use the more complex one.
-  if (
-    /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/.test(
-      value
-    )
-  ) {
-    value = value.replace(
-      /([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,
-      ''
-    )
+  if (emojiRegex.test(value)) {
+    value = value.replace(emojiRegex, '')
   }
 
   // Remove all the elements that shouldn't be there.
