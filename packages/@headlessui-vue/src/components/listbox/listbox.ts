@@ -35,6 +35,7 @@ import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useTextValue } from '../../hooks/use-text-value'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -731,16 +732,15 @@ export let ListboxOption = defineComponent({
       })
     })
 
+    let getTextValue = useTextValue(internalOptionRef)
     let dataRef = computed<ListboxOptionData>(() => ({
       disabled: props.disabled,
       value: props.value,
-      textValue: '',
+      get textValue() {
+        return getTextValue()
+      },
       domRef: internalOptionRef,
     }))
-    onMounted(() => {
-      let textValue = dom(internalOptionRef)?.textContent?.toLowerCase().trim()
-      if (textValue !== undefined) dataRef.value.textValue = textValue
-    })
 
     onMounted(() => api.registerOption(props.id, dataRef))
     onUnmounted(() => api.unregisterOption(props.id))

@@ -51,6 +51,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEvent } from '../../hooks/use-event'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useTextValue } from '../../hooks/use-text-value'
 
 enum MenuStates {
   Open,
@@ -636,14 +637,19 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ state.activeItemIndex,
   ])
 
-  let bag = useRef<MenuItemDataRef['current']>({ disabled, domRef: internalItemRef })
+  let getTextValue = useTextValue(internalItemRef)
+
+  let bag = useRef<MenuItemDataRef['current']>({
+    disabled,
+    domRef: internalItemRef,
+    get textValue() {
+      return getTextValue()
+    },
+  })
 
   useIsoMorphicEffect(() => {
     bag.current.disabled = disabled
   }, [bag, disabled])
-  useIsoMorphicEffect(() => {
-    bag.current.textValue = internalItemRef.current?.textContent?.toLowerCase()
-  }, [bag, internalItemRef])
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.RegisterItem, id, dataRef: bag })
