@@ -2,6 +2,7 @@ import { computed, Ref, ComputedRef, ref } from 'vue'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { dom } from '../utils/dom'
 import { useDocumentEvent } from './use-document-event'
+import { useWindowEvent } from './use-window-event'
 
 type Container = Ref<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
@@ -122,7 +123,7 @@ export function useOutsideClick(
   // In this case we care only about the first case so we check to see if the active element is the iframe
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
-  useDocumentEvent(
+  useWindowEvent(
     'blur',
     (event) =>
       handleOutsideClick(event, () =>
