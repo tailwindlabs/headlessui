@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `FocusTrap` is only active when the given `enabled` value is `true` ([#2456](https://github.com/tailwindlabs/headlessui/pull/2456))
 - Stop `<Transition appear>` from overwriting classes on re-render ([#2457](https://github.com/tailwindlabs/headlessui/pull/2457))
 - Improve control over `Menu` and `Listbox` options while searching ([#2471](https://github.com/tailwindlabs/headlessui/pull/2471))
+- Consider clicks inside iframes to be "outside" ([#2485](https://github.com/tailwindlabs/headlessui/pull/2485))
 
 ### Changed
 
