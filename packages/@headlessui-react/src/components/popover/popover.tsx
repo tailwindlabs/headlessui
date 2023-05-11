@@ -54,6 +54,8 @@ import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-
 import { microTask } from '../../utils/micro-task'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useRootContainers } from '../../hooks/use-root-containers'
+import { useNestedPortals } from '../../components/portal/portal'
 
 type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
 
@@ -309,6 +311,9 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   useEffect(() => registerPopover?.(registerBag), [registerPopover, registerBag])
 
+  let { resolveContainers, MainTreeNode } = useRootContainers([button, panel])
+  let [portals, PortalWrapper] = useNestedPortals()
+
   // Handle focus out
   useEventListener(
     ownerDocument?.defaultView,
@@ -319,6 +324,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
       if (!button) return
       if (!panel) return
       if (event.target === window) return
+      if (portals.current.some((portal) => portal.contains(event.target as HTMLElement))) return
       if (beforePanelSentinel.current?.contains?.(event.target as HTMLElement)) return
       if (afterPanelSentinel.current?.contains?.(event.target as HTMLElement)) return
 
@@ -329,7 +335,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   // Handle outside click
   useOutsideClick(
-    [button, panel],
+    resolveContainers,
     (event, target) => {
       dispatch({ type: ActionTypes.ClosePopover })
 
@@ -385,13 +391,16 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
               [PopoverStates.Closed]: State.Closed,
             })}
           >
-            {render({
-              ourProps,
-              theirProps,
-              slot,
-              defaultTag: DEFAULT_POPOVER_TAG,
-              name: 'Popover',
-            })}
+            <PortalWrapper>
+              {render({
+                ourProps,
+                theirProps,
+                slot,
+                defaultTag: DEFAULT_POPOVER_TAG,
+                name: 'Popover',
+              })}
+              <MainTreeNode />
+            </PortalWrapper>
           </OpenClosedProvider>
         </PopoverAPIContext.Provider>
       </PopoverContext.Provider>
