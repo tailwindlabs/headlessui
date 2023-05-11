@@ -6,6 +6,10 @@ import * as HeadlessUI from './index'
  */
 it('should expose the correct components', () => {
   expect(Object.keys(HeadlessUI)).toEqual([
+    // Portal
+    'Portal',
+    'PortalGroup',
+
     // Combobox
     'Combobox',
     'ComboboxLabel',
@@ -49,10 +53,6 @@ it('should expose the correct components', () => {
     'PopoverOverlay',
     'PopoverPanel',
     'PopoverGroup',
-
-    // Portal
-    'Portal',
-    'PortalGroup',
 
     // RadioGroup
     'RadioGroup',
