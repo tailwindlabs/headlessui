@@ -267,7 +267,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasNestedDialogs) return false
     return true
   })()
-  useOutsideClick(() => resolveRootContainers(), close, outsideClickEnabled)
+  useOutsideClick(resolveRootContainers, close, outsideClickEnabled)
 
   // Handle `Escape` to close
   let escapeToCloseEnabled = (() => {

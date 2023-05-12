@@ -312,7 +312,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   useEffect(() => registerPopover?.(registerBag), [registerPopover, registerBag])
 
   let [portals, PortalWrapper] = useNestedPortals()
-  let { resolveContainers, MainTreeNode } = useRootContainers({
+  let root = useRootContainers({
     portals,
     defaultContainers: [button, panel],
   })
@@ -322,15 +322,15 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     ownerDocument?.defaultView,
     'focus',
     (event) => {
+      if (event.target === window) return
+      if (!(event.target instanceof HTMLElement)) return
       if (popoverState !== PopoverStates.Open) return
       if (isFocusWithinPopoverGroup()) return
       if (!button) return
       if (!panel) return
-      if (event.target === window) return
-      if (resolveContainers().some((container) => container.contains(event.target as HTMLElement)))
-        return
-      if (beforePanelSentinel.current?.contains?.(event.target as HTMLElement)) return
-      if (afterPanelSentinel.current?.contains?.(event.target as HTMLElement)) return
+      if (root.contains(event.target)) return
+      if (beforePanelSentinel.current?.contains?.(event.target)) return
+      if (afterPanelSentinel.current?.contains?.(event.target)) return
 
       dispatch({ type: ActionTypes.ClosePopover })
     },
@@ -339,7 +339,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   // Handle outside click
   useOutsideClick(
-    resolveContainers,
+    root.resolveContainers,
     (event, target) => {
       dispatch({ type: ActionTypes.ClosePopover })
 
@@ -403,7 +403,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
                 defaultTag: DEFAULT_POPOVER_TAG,
                 name: 'Popover',
               })}
-              <MainTreeNode />
+              <root.MainTreeNode />
             </PortalWrapper>
           </OpenClosedProvider>
         </PopoverAPIContext.Provider>
