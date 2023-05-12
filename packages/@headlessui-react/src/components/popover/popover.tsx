@@ -311,8 +311,11 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   useEffect(() => registerPopover?.(registerBag), [registerPopover, registerBag])
 
-  let { resolveContainers, MainTreeNode } = useRootContainers([button, panel])
   let [portals, PortalWrapper] = useNestedPortals()
+  let { resolveContainers, MainTreeNode } = useRootContainers({
+    portals,
+    defaultContainers: [button, panel],
+  })
 
   // Handle focus out
   useEventListener(
@@ -324,7 +327,8 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
       if (!button) return
       if (!panel) return
       if (event.target === window) return
-      if (portals.current.some((portal) => portal.contains(event.target as HTMLElement))) return
+      if (resolveContainers().some((container) => container.contains(event.target as HTMLElement)))
+        return
       if (beforePanelSentinel.current?.contains?.(event.target as HTMLElement)) return
       if (afterPanelSentinel.current?.contains?.(event.target as HTMLElement)) return
 

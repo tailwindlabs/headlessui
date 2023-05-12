@@ -33,7 +33,7 @@ import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { Portal } from '../../components/portal/portal'
+import { Portal, useNestedPortals } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { ComponentDescription, Description, useDescriptions } from '../description/description'
 import { useOpenClosed, State } from '../../internal/open-closed'
@@ -209,11 +209,15 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let enabled = ready ? (__demoMode ? false : dialogState === DialogStates.Open) : false
   let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
   let hasParentDialog = useContext(DialogContext) !== null
+  let [portals, PortalWrapper] = useNestedPortals()
   let {
     resolveContainers: resolveRootContainers,
     mainTreeNodeRef,
     MainTreeNode,
-  } = useRootContainers([state.panelRef.current ?? internalDialogRef.current])
+  } = useRootContainers({
+    portals,
+    defaultContainers: [state.panelRef.current ?? internalDialogRef.current],
+  })
 
   // If there are multiple dialogs, then you can be the root, the leaf or one
   // in between. We only care abou whether you are the top most one or not.
@@ -361,15 +365,17 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
                         : FocusTrap.features.None
                     }
                   >
-                    {render({
-                      ourProps,
-                      theirProps,
-                      slot,
-                      defaultTag: DEFAULT_DIALOG_TAG,
-                      features: DialogRenderFeatures,
-                      visible: dialogState === DialogStates.Open,
-                      name: 'Dialog',
-                    })}
+                    <PortalWrapper>
+                      {render({
+                        ourProps,
+                        theirProps,
+                        slot,
+                        defaultTag: DEFAULT_DIALOG_TAG,
+                        features: DialogRenderFeatures,
+                        visible: dialogState === DialogStates.Open,
+                        name: 'Dialog',
+                      })}
+                    </PortalWrapper>
                   </FocusTrap>
                 </DescriptionProvider>
               </ForcePortalRoot>
