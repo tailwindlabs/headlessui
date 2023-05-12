@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure the exposed `activeIndex` is up to date for the `Combobox` component ([#2463](https://github.com/tailwindlabs/headlessui/pull/2463))
 - Improve control over `Menu` and `Listbox` options while searching ([#2471](https://github.com/tailwindlabs/headlessui/pull/2471))
 - Consider clicks inside iframes to be "outside" ([#2485](https://github.com/tailwindlabs/headlessui/pull/2485))
+- Ensure moving focus within a `Portal` component, does not close the `Popover` component ([#2492](https://github.com/tailwindlabs/headlessui/pull/2492))
 
 ### Changed
 
