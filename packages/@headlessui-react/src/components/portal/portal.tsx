@@ -177,24 +177,28 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
 let PortalParentContext = createContext<{
   register: (portal: HTMLElement) => () => void
   unregister: (portal: HTMLElement) => void
+  portals: MutableRefObject<HTMLElement[]>
 } | null>(null)
 
 export function useNestedPortals() {
+  let parent = useContext(PortalParentContext)
   let portals = useRef<HTMLElement[]>([])
 
   let register = useEvent((portal: HTMLElement) => {
     portals.current.push(portal)
+    if (parent) parent.register(portal)
     return () => unregister(portal)
   })
 
   let unregister = useEvent((portal: HTMLElement) => {
     let idx = portals.current.indexOf(portal)
     if (idx !== -1) portals.current.splice(idx, 1)
+    if (parent) parent.unregister(portal)
   })
 
   let api = useMemo<ContextType<typeof PortalParentContext>>(
-    () => ({ register, unregister }),
-    [register, unregister]
+    () => ({ register, unregister, portals }),
+    [register, unregister, portals]
   )
 
   return [
