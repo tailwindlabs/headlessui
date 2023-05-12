@@ -1,46 +1,53 @@
-import React, { useRef, useMemo, Ref } from 'react'
+import React, { useRef, useMemo, Ref, MutableRefObject } from 'react'
 import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
 
-export function useRootContainers(
-  defaultContainers: (HTMLElement | null | Ref<HTMLElement | null>)[] = []
-) {
+export function useRootContainers({
+  defaultContainers = [],
+  portals,
+}: {
+  defaultContainers?: (HTMLElement | null | Ref<HTMLElement | null>)[]
+  portals?: MutableRefObject<HTMLElement[]>
+} = {}) {
   // Reference to a node in the "main" tree, not in the portalled Dialog tree.
   let mainTreeNodeRef = useRef<HTMLDivElement | null>(null)
   let ownerDocument = useOwnerDocument(mainTreeNodeRef)
 
   return {
     resolveContainers: useEvent(() => {
-      let resolvedDefaultContainers: HTMLElement[] = []
+      let containers: HTMLElement[] = []
+
+      // Resolve default containers
       for (let container of defaultContainers) {
         if (container === null) continue
         if (container instanceof HTMLElement) {
-          resolvedDefaultContainers.push(container)
-        }
-        if ('current' in container && container.current instanceof HTMLElement) {
-          resolvedDefaultContainers.push(container.current)
+          containers.push(container)
+        } else if ('current' in container && container.current instanceof HTMLElement) {
+          containers.push(container.current)
         }
       }
 
-      // Third party roots
-      let rootContainers = Array.from(
-        ownerDocument?.querySelectorAll('html > *, body > *, [data-headlessui-portal]') ?? []
-      ).filter((container) => {
-        if (container === document.body) return false // Skip `<body>`
-        if (container === document.head) return false // Skip `<head>`
-        if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-        if (container.contains(mainTreeNodeRef.current)) return false // Skip if it is the main app
-        if (
-          resolvedDefaultContainers.some((defaultContainer) => container.contains(defaultContainer))
-        ) {
-          return false
+      // Resolve portal containers
+      if (portals?.current) {
+        for (let portal of portals.current) {
+          containers.push(portal)
         }
+      }
 
-        return true // Keep
-      })
+      // Resolve third party (root) containers
+      for (let container of ownerDocument?.querySelectorAll('html > *, body > *') ?? []) {
+        if (container === document.body) continue // Skip `<body>`
+        if (container === document.head) continue // Skip `<head>`
+        if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
+        if (container.id === 'headlessui-portal-root') continue // Skip the Headless UI portal root
+        if (container.contains(mainTreeNodeRef.current)) continue // Skip if it is the main app
+        if (containers.some((defaultContainer) => container.contains(defaultContainer))) continue // Skip if the current container is part of a container we've already seen (e.g.: default container / portal)
 
-      return rootContainers.concat(resolvedDefaultContainers) as HTMLElement[]
+        containers.push(container)
+      }
+
+      return containers
     }),
     mainTreeNodeRef,
     MainTreeNode: useMemo(() => {
