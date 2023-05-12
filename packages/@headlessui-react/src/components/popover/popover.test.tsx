@@ -2623,6 +2623,80 @@ describe('Mouse interactions', () => {
       assertActiveElement(getPopoverButton())
     })
   )
+
+  it(
+    'should not close the Popover if the focus is moved outside of the Popover but still in the same React tree using Portals',
+    suppressConsoleLogs(async () => {
+      let clickFn = jest.fn()
+      render(
+        <Popover>
+          <Popover.Button>Toggle</Popover.Button>
+          <Popover.Panel>
+            <Portal>
+              <button onClick={clickFn}>foo</button>
+            </Portal>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Click the button outside the Popover (DOM) but inside (Portal / React tree)
+      await click(getByText('foo'))
+
+      // Verify it is still open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Verify the button was clicked
+      expect(clickFn).toHaveBeenCalled()
+    })
+  )
+
+  it(
+    'should not close the Popover if the focus is moved outside of the Popover but still in the same React tree using nested Portals',
+    suppressConsoleLogs(async () => {
+      let clickFn = jest.fn()
+      render(
+        <Popover>
+          <Popover.Button>Toggle</Popover.Button>
+          <Popover.Panel>
+            Level 0
+            <Portal>
+              Level 1
+              <Portal>
+                Level 2
+                <Portal>
+                  Level 3
+                  <Portal>
+                    Level 4<button onClick={clickFn}>foo</button>
+                  </Portal>
+                </Portal>
+              </Portal>
+            </Portal>
+          </Popover.Panel>
+        </Popover>
+      )
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Click the button outside the Popover (DOM) but inside (Portal / React tree)
+      await click(getByText('foo'))
+
+      // Verify it is still open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Verify the button was clicked
+      expect(clickFn).toHaveBeenCalled()
+    })
+  )
 })
 
 describe('Nested popovers', () => {
