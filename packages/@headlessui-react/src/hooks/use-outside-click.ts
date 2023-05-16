@@ -38,6 +38,15 @@ export function useOutsideClick(
     // behaviour so that only the Menu closes and not the Dialog (yet)
     if (event.defaultPrevented) return
 
+    let target = resolveTarget(event)
+
+    if (target === null) {
+      return
+    }
+
+    // Ignore if the target doesn't exist in the DOM anymore
+    if (!target.getRootNode().contains(target)) return
+
     let _containers = (function resolve(containers): ContainerCollection {
       if (typeof containers === 'function') {
         return resolve(containers())
@@ -53,15 +62,6 @@ export function useOutsideClick(
 
       return [containers]
     })(containers)
-
-    let target = resolveTarget(event)
-
-    if (target === null) {
-      return
-    }
-
-    // Ignore if the target doesn't exist in the DOM anymore
-    if (!target.getRootNode().contains(target)) return
 
     // Ignore if the target exists in one of the containers
     for (let container of _containers) {
