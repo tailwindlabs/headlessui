@@ -123,7 +123,7 @@ export let Dialog = defineComponent({
 
     let hasNestedDialogs = computed(() => nestedDialogCount.value > 1) // 1 is the current dialog
     let hasParentDialog = inject(DialogContext, null) !== null
-    let portals = useNestedPortals()
+    let [portals, PortalWrapper] = useNestedPortals()
     let {
       resolveContainers: resolveRootContainers,
       mainTreeNodeRef,
@@ -310,16 +310,18 @@ export let Dialog = defineComponent({
                     : FocusTrap.features.None,
                 },
                 () =>
-                  render({
-                    ourProps,
-                    theirProps,
-                    slot,
-                    attrs,
-                    slots,
-                    visible: dialogState.value === DialogStates.Open,
-                    features: Features.RenderStrategy | Features.Static,
-                    name: 'Dialog',
-                  })
+                  h(PortalWrapper, {}, () =>
+                    render({
+                      ourProps,
+                      theirProps,
+                      slot,
+                      attrs,
+                      slots,
+                      visible: dialogState.value === DialogStates.Open,
+                      features: Features.RenderStrategy | Features.Static,
+                      name: 'Dialog',
+                    })
+                  )
               )
             )
           )

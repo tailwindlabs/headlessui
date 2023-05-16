@@ -206,7 +206,7 @@ export let Popover = defineComponent({
     let groupContext = usePopoverGroupContext()
     let registerPopover = groupContext?.registerPopover
 
-    let portals = useNestedPortals()
+    let [portals, PortalWrapper] = useNestedPortals()
     let root = useRootContainers({
       portals,
       defaultContainers: [button, panel],
@@ -259,14 +259,16 @@ export let Popover = defineComponent({
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }
-      return render({
-        theirProps: props,
-        ourProps: { ref: internalPopoverRef },
-        slot,
-        slots,
-        attrs,
-        name: 'Popover',
-      })
+      return h(PortalWrapper, {}, () =>
+        render({
+          theirProps: props,
+          ourProps: { ref: internalPopoverRef },
+          slot,
+          slots,
+          attrs,
+          name: 'Popover',
+        })
+      )
     }
   },
 })

@@ -144,9 +144,16 @@ export function useNestedPortals() {
     portals,
   } as ContextType<typeof PortalParentContext>
 
-  provide(PortalParentContext, api)
-
-  return portals
+  return [
+    portals,
+    defineComponent({
+      name: 'PortalWrapper',
+      setup(_, { slots }) {
+        provide(PortalParentContext, api)
+        return () => slots.default?.()
+      },
+    }),
+  ] as const
 }
 
 // ---
