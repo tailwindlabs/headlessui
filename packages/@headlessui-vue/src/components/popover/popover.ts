@@ -37,6 +37,8 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
 import { microTask } from '../../utils/micro-task'
+import { useRootContainers } from '../../hooks/use-root-containers'
+import { useNestedPortals } from '../../components/portal/portal'
 
 enum PopoverStates {
   Open,
@@ -204,6 +206,12 @@ export let Popover = defineComponent({
     let groupContext = usePopoverGroupContext()
     let registerPopover = groupContext?.registerPopover
 
+    let [portals, PortalWrapper] = useNestedPortals()
+    let root = useRootContainers({
+      portals,
+      defaultContainers: [button, panel],
+    })
+
     function isFocusWithinPopoverGroup() {
       return (
         groupContext?.isFocusWithinPopoverGroup() ??
@@ -220,13 +228,15 @@ export let Popover = defineComponent({
       ownerDocument.value?.defaultView,
       'focus',
       (event) => {
+        if (event.target === window) return
+        if (!(event.target instanceof HTMLElement)) return
         if (popoverState.value !== PopoverStates.Open) return
         if (isFocusWithinPopoverGroup()) return
         if (!button) return
         if (!panel) return
-        if (event.target === window) return
-        if (dom(api.beforePanelSentinel)?.contains(event.target as HTMLElement)) return
-        if (dom(api.afterPanelSentinel)?.contains(event.target as HTMLElement)) return
+        if (root.contains(event.target)) return
+        if (dom(api.beforePanelSentinel)?.contains(event.target)) return
+        if (dom(api.afterPanelSentinel)?.contains(event.target)) return
 
         api.closePopover()
       },
@@ -235,7 +245,7 @@ export let Popover = defineComponent({
 
     // Handle outside click
     useOutsideClick(
-      [button, panel],
+      root.resolveContainers,
       (event, target) => {
         api.closePopover()
 
@@ -249,14 +259,16 @@ export let Popover = defineComponent({
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }
-      return render({
-        theirProps: props,
-        ourProps: { ref: internalPopoverRef },
-        slot,
-        slots,
-        attrs,
-        name: 'Popover',
-      })
+      return h(PortalWrapper, {}, () =>
+        render({
+          theirProps: { ...props, ...attrs },
+          ourProps: { ref: internalPopoverRef },
+          slot,
+          slots,
+          attrs,
+          name: 'Popover',
+        })
+      )
     }
   },
 })

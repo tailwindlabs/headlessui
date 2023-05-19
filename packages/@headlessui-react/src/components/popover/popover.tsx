@@ -54,6 +54,8 @@ import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-
 import { microTask } from '../../utils/micro-task'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useRootContainers } from '../../hooks/use-root-containers'
+import { useNestedPortals } from '../../components/portal/portal'
 
 type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
 
@@ -309,18 +311,26 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   useEffect(() => registerPopover?.(registerBag), [registerPopover, registerBag])
 
+  let [portals, PortalWrapper] = useNestedPortals()
+  let root = useRootContainers({
+    portals,
+    defaultContainers: [button, panel],
+  })
+
   // Handle focus out
   useEventListener(
     ownerDocument?.defaultView,
     'focus',
     (event) => {
+      if (event.target === window) return
+      if (!(event.target instanceof HTMLElement)) return
       if (popoverState !== PopoverStates.Open) return
       if (isFocusWithinPopoverGroup()) return
       if (!button) return
       if (!panel) return
-      if (event.target === window) return
-      if (beforePanelSentinel.current?.contains?.(event.target as HTMLElement)) return
-      if (afterPanelSentinel.current?.contains?.(event.target as HTMLElement)) return
+      if (root.contains(event.target)) return
+      if (beforePanelSentinel.current?.contains?.(event.target)) return
+      if (afterPanelSentinel.current?.contains?.(event.target)) return
 
       dispatch({ type: ActionTypes.ClosePopover })
     },
@@ -329,7 +339,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   // Handle outside click
   useOutsideClick(
-    [button, panel],
+    root.resolveContainers,
     (event, target) => {
       dispatch({ type: ActionTypes.ClosePopover })
 
@@ -385,13 +395,16 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
               [PopoverStates.Closed]: State.Closed,
             })}
           >
-            {render({
-              ourProps,
-              theirProps,
-              slot,
-              defaultTag: DEFAULT_POPOVER_TAG,
-              name: 'Popover',
-            })}
+            <PortalWrapper>
+              {render({
+                ourProps,
+                theirProps,
+                slot,
+                defaultTag: DEFAULT_POPOVER_TAG,
+                name: 'Popover',
+              })}
+              <root.MainTreeNode />
+            </PortalWrapper>
           </OpenClosedProvider>
         </PopoverAPIContext.Provider>
       </PopoverContext.Provider>

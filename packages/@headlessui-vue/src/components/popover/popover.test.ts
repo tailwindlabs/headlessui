@@ -28,18 +28,14 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
-function getDefaultComponents() {
-  return {
-    Popover,
-    PopoverGroup,
-    PopoverButton,
-    PopoverPanel,
-    PopoverOverlay,
-    Portal,
-  }
-}
-
-const renderTemplate = createRenderTemplate(getDefaultComponents())
+const renderTemplate = createRenderTemplate({
+  Popover,
+  PopoverGroup,
+  PopoverButton,
+  PopoverPanel,
+  PopoverOverlay,
+  Portal,
+})
 
 describe('Safe guards', () => {
   it.each([
@@ -2571,6 +2567,87 @@ describe('Mouse interactions', () => {
 
       // Verify the button is focused
       assertActiveElement(getPopoverButton())
+    })
+  )
+
+  it(
+    'should not close the Popover if the focus is moved outside of the Popover but still in the same React tree using Portals',
+    suppressConsoleLogs(async () => {
+      let clickFn = jest.fn()
+      renderTemplate({
+        template: html`
+          <Popover>
+            <PopoverButton>Toggle</PopoverButton>
+            <PopoverPanel>
+              <Portal>
+                <button @click="clickFn">foo</button>
+              </Portal>
+            </PopoverPanel>
+          </Popover>
+        `,
+        setup: () => ({ clickFn }),
+      })
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Click the button outside the Popover (DOM) but inside (Portal / React tree)
+      await click(getByText('foo'))
+
+      // Verify it is still open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Verify the button was clicked
+      expect(clickFn).toHaveBeenCalled()
+    })
+  )
+
+  it(
+    'should not close the Popover if the focus is moved outside of the Popover but still in the same React tree using nested Portals',
+    suppressConsoleLogs(async () => {
+      let clickFn = jest.fn()
+      renderTemplate({
+        template: html`
+          <Popover>
+            <PopoverButton>Toggle</PopoverButton>
+            <PopoverPanel>
+              Level 0
+              <Portal>
+                Level 1
+                <Portal>
+                  Level 2
+                  <Portal>
+                    Level 3
+                    <Portal>
+                      Level 4
+                      <button @click="clickFn">foo</button>
+                    </Portal>
+                  </Portal>
+                </Portal>
+              </Portal>
+            </PopoverPanel>
+          </Popover>
+        `,
+        setup: () => ({ clickFn }),
+      })
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Verify it is open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Click the button outside the Popover (DOM) but inside (Portal / React tree)
+      await click(getByText('foo'))
+
+      // Verify it is still open
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Verify the button was clicked
+      expect(clickFn).toHaveBeenCalled()
     })
   )
 })

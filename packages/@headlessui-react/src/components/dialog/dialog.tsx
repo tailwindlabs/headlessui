@@ -33,7 +33,7 @@ import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { Portal } from '../../components/portal/portal'
+import { Portal, useNestedPortals } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { ComponentDescription, Description, useDescriptions } from '../description/description'
 import { useOpenClosed, State } from '../../internal/open-closed'
@@ -42,10 +42,10 @@ import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useEventListener } from '../../hooks/use-event-listener'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useEvent } from '../../hooks/use-event'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
 import { useInert } from '../../hooks/use-inert'
+import { useRootContainers } from '../../hooks/use-root-containers'
 
 enum DialogStates {
   Open,
@@ -158,9 +158,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let internalDialogRef = useRef<HTMLDivElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
-  // Reference to a node in the "main" tree, not in the portalled Dialog tree.
-  let mainTreeNode = useRef<HTMLDivElement | null>(null)
-
   let ownerDocument = useOwnerDocument(internalDialogRef)
 
   // Validations
@@ -212,6 +209,15 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let enabled = ready ? (__demoMode ? false : dialogState === DialogStates.Open) : false
   let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
   let hasParentDialog = useContext(DialogContext) !== null
+  let [portals, PortalWrapper] = useNestedPortals()
+  let {
+    resolveContainers: resolveRootContainers,
+    mainTreeNodeRef,
+    MainTreeNode,
+  } = useRootContainers({
+    portals,
+    defaultContainers: [state.panelRef.current ?? internalDialogRef.current],
+  })
 
   // If there are multiple dialogs, then you can be the root, the leaf or one
   // in between. We only care abou whether you are the top most one or not.
@@ -238,9 +244,9 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
       if (root.id === 'headlessui-portal-root') return false
 
       // Find the root of the main tree node
-      return root.contains(mainTreeNode.current) && root instanceof HTMLElement
+      return root.contains(mainTreeNodeRef.current) && root instanceof HTMLElement
     }) ?? null) as HTMLElement | null
-  }, [mainTreeNode])
+  }, [mainTreeNodeRef])
   useInert(resolveRootOfMainTreeNode, inertOthersEnabled)
 
   // This would mark the parent dialogs as inert
@@ -250,26 +256,10 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })()
   let resolveRootOfParentDialog = useCallback(() => {
     return (Array.from(ownerDocument?.querySelectorAll('[data-headlessui-portal]') ?? []).find(
-      (root) => root.contains(mainTreeNode.current) && root instanceof HTMLElement
+      (root) => root.contains(mainTreeNodeRef.current) && root instanceof HTMLElement
     ) ?? null) as HTMLElement | null
-  }, [mainTreeNode])
+  }, [mainTreeNodeRef])
   useInert(resolveRootOfParentDialog, inertParentDialogs)
-
-  let resolveRootContainers = useEvent(() => {
-    // Third party roots
-    let rootContainers = Array.from(
-      ownerDocument?.querySelectorAll('html > *, body > *, [data-headlessui-portal]') ?? []
-    ).filter((container) => {
-      if (container === document.body) return false // Skip `<body>`
-      if (container === document.head) return false // Skip `<head>`
-      if (!(container instanceof HTMLElement)) return false // Skip non-HTMLElements
-      if (container.contains(mainTreeNode.current)) return false // Skip if it is the main app
-      if (state.panelRef.current && container.contains(state.panelRef.current)) return false
-      return true // Keep
-    })
-
-    return [...rootContainers, state.panelRef.current ?? internalDialogRef.current] as HTMLElement[]
-  })
 
   // Close Dialog on outside click
   let outsideClickEnabled = (() => {
@@ -277,7 +267,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasNestedDialogs) return false
     return true
   })()
-  useOutsideClick(() => resolveRootContainers(), close, outsideClickEnabled)
+  useOutsideClick(resolveRootContainers, close, outsideClickEnabled)
 
   // Handle `Escape` to close
   let escapeToCloseEnabled = (() => {
@@ -375,15 +365,17 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
                         : FocusTrap.features.None
                     }
                   >
-                    {render({
-                      ourProps,
-                      theirProps,
-                      slot,
-                      defaultTag: DEFAULT_DIALOG_TAG,
-                      features: DialogRenderFeatures,
-                      visible: dialogState === DialogStates.Open,
-                      name: 'Dialog',
-                    })}
+                    <PortalWrapper>
+                      {render({
+                        ourProps,
+                        theirProps,
+                        slot,
+                        defaultTag: DEFAULT_DIALOG_TAG,
+                        features: DialogRenderFeatures,
+                        visible: dialogState === DialogStates.Open,
+                        name: 'Dialog',
+                      })}
+                    </PortalWrapper>
                   </FocusTrap>
                 </DescriptionProvider>
               </ForcePortalRoot>
@@ -391,7 +383,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
           </DialogContext.Provider>
         </Portal>
       </ForcePortalRoot>
-      <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNode} />
+      <MainTreeNode />
     </StackProvider>
   )
 }

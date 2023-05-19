@@ -1,8 +1,10 @@
 import {
   Teleport,
+  computed,
   defineComponent,
   h,
   inject,
+  onMounted,
   onUnmounted,
   provide,
   reactive,
@@ -12,11 +14,14 @@ import {
   // Types
   InjectionKey,
   PropType,
-  computed,
+  Ref,
 } from 'vue'
 import { render } from '../../utils/render'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import { getOwnerDocument } from '../../utils/owner'
+import { dom } from '../../utils/dom'
+
+type ContextType<T> = T extends InjectionKey<infer V> ? V : never
 
 // ---
 
@@ -64,6 +69,15 @@ export let Portal = defineComponent({
       myTarget.value = groupContext.resolveTarget()
     })
 
+    let parent = inject(PortalParentContext, null)
+    onMounted(() => {
+      let domElement = dom(element)
+      if (!domElement) return
+      if (!parent) return
+
+      onUnmounted(parent.register(domElement))
+    })
+
     onUnmounted(() => {
       let root = ownerDocument.value?.getElementById('headlessui-portal-root')
       if (!root) return
@@ -99,6 +113,48 @@ export let Portal = defineComponent({
     }
   },
 })
+
+// ---
+
+let PortalParentContext = Symbol('PortalParentContext') as InjectionKey<{
+  register: (portal: HTMLElement) => () => void
+  unregister: (portal: HTMLElement) => void
+  portals: Ref<HTMLElement[]>
+}>
+
+export function useNestedPortals() {
+  let parent = inject(PortalParentContext, null)
+  let portals = ref<HTMLElement[]>([])
+
+  function register(portal: HTMLElement) {
+    portals.value.push(portal)
+    if (parent) parent.register(portal)
+    return () => unregister(portal)
+  }
+
+  function unregister(portal: HTMLElement) {
+    let idx = portals.value.indexOf(portal)
+    if (idx !== -1) portals.value.splice(idx, 1)
+    if (parent) parent.unregister(portal)
+  }
+
+  let api = {
+    register,
+    unregister,
+    portals,
+  } as ContextType<typeof PortalParentContext>
+
+  return [
+    portals,
+    defineComponent({
+      name: 'PortalWrapper',
+      setup(_, { slots }) {
+        provide(PortalParentContext, api)
+        return () => slots.default?.()
+      },
+    }),
+  ] as const
+}
 
 // ---
 

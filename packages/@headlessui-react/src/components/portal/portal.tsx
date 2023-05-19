@@ -10,6 +10,8 @@ import React, {
   ElementType,
   MutableRefObject,
   Ref,
+  useMemo,
+  ContextType,
 } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -22,6 +24,7 @@ import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { env } from '../../utils/env'
+import { useEvent } from '../../hooks/use-event'
 
 function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
   let forceInRoot = usePortalRoot()
@@ -87,7 +90,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   let [element] = useState<HTMLDivElement | null>(() =>
     env.isServer ? null : ownerDocument?.createElement('div') ?? null
   )
-
+  let parent = useContext(PortalParentContext)
   let ready = useServerHandoffComplete()
 
   useIsoMorphicEffect(() => {
@@ -100,6 +103,13 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
       target.appendChild(element)
     }
   }, [target, element])
+
+  useIsoMorphicEffect(() => {
+    if (!element) return
+    if (!parent) return
+
+    return parent.register(element)
+  }, [parent, element])
 
   useOnUnmount(() => {
     if (!target || !element) return
@@ -160,6 +170,45 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
       })}
     </PortalGroupContext.Provider>
   )
+}
+
+// ---
+
+let PortalParentContext = createContext<{
+  register: (portal: HTMLElement) => () => void
+  unregister: (portal: HTMLElement) => void
+  portals: MutableRefObject<HTMLElement[]>
+} | null>(null)
+
+export function useNestedPortals() {
+  let parent = useContext(PortalParentContext)
+  let portals = useRef<HTMLElement[]>([])
+
+  let register = useEvent((portal: HTMLElement) => {
+    portals.current.push(portal)
+    if (parent) parent.register(portal)
+    return () => unregister(portal)
+  })
+
+  let unregister = useEvent((portal: HTMLElement) => {
+    let idx = portals.current.indexOf(portal)
+    if (idx !== -1) portals.current.splice(idx, 1)
+    if (parent) parent.unregister(portal)
+  })
+
+  let api = useMemo<ContextType<typeof PortalParentContext>>(
+    () => ({ register, unregister, portals }),
+    [register, unregister, portals]
+  )
+
+  return [
+    portals,
+    useMemo(() => {
+      return function PortalWrapper({ children }: { children: React.ReactNode }) {
+        return <PortalParentContext.Provider value={api}>{children}</PortalParentContext.Provider>
+      }
+    }, [api]),
+  ] as const
 }
 
 // ---
