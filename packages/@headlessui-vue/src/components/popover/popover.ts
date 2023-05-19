@@ -261,7 +261,7 @@ export let Popover = defineComponent({
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }
       return h(PortalWrapper, {}, () =>
         render({
-          theirProps: props,
+          theirProps: { ...props, ...attrs },
           ourProps: { ref: internalPopoverRef },
           slot,
           slots,

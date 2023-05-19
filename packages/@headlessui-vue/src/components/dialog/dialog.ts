@@ -313,7 +313,7 @@ export let Dialog = defineComponent({
                   h(PortalWrapper, {}, () =>
                     render({
                       ourProps,
-                      theirProps,
+                      theirProps: { ...theirProps, ...attrs },
                       slot,
                       attrs,
                       slots,
