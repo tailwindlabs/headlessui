@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.15] - 2023-06-01
+
 ### Added
 
 - [internal] add demo mode to `Menu` and `Popover` components ([#2448](https://github.com/tailwindlabs/headlessui/pull/2448))
@@ -507,7 +511,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.14...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.15...HEAD
+[1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.14...@headlessui/react@v1.7.15
 [1.7.14]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.13...@headlessui/react@v1.7.14
 [1.7.13]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.12...@headlessui/react@v1.7.13
 [1.7.12]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.11...@headlessui/react@v1.7.12
