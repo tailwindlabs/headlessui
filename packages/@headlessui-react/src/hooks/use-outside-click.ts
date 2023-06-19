@@ -47,6 +47,9 @@ export function useOutsideClick(
     // Ignore if the target doesn't exist in the DOM anymore
     if (!target.getRootNode().contains(target)) return
 
+    // Ignore if the target was removed from the DOM by the time the handler was called
+    if (!target.isConnected) return
+
     let _containers = (function resolve(containers): ContainerCollection {
       if (typeof containers === 'function') {
         return resolve(containers())
