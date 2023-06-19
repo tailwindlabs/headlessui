@@ -383,7 +383,7 @@ export type TabProps<TTag extends ElementType> = Props<
   TabRenderPropArg,
   TabPropsWeControl
 > & {
-  //
+  disabled?: boolean
 }
 
 function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
