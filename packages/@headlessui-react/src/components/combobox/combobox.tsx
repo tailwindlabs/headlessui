@@ -779,11 +779,14 @@ function InputFn<
   useWatch(
     ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
       if (isTyping.current) return
-      if (!data.inputRef.current) return
+      let input = data.inputRef.current
+
+      if (!input) return
+
       if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
-        data.inputRef.current.value = currentDisplayValue
+        input.value = currentDisplayValue
       } else if (currentDisplayValue !== oldCurrentDisplayValue) {
-        data.inputRef.current.value = currentDisplayValue
+        input.value = currentDisplayValue
       }
 
       // Once we synced the input value, we want to make sure the cursor is at the end of the input
@@ -792,10 +795,18 @@ function InputFn<
       // typing.
       requestAnimationFrame(() => {
         if (isTyping.current) return
-        if (!data.inputRef.current) return
+        if (!input) return
 
-        let pos = data.inputRef.current.value.length
-        data.inputRef.current.setSelectionRange(pos, pos)
+        let { selectionStart, selectionEnd } = input
+
+        // A custom selection is used, no need to move the caret
+        if (Math.abs((selectionEnd ?? 0) - (selectionStart ?? 0)) !== 0) return
+
+        // A custom caret position is used, no need to move the caret
+        if (selectionStart !== 0) return
+
+        // Move the caret to the end
+        input.setSelectionRange(input.value.length, input.value.length)
       })
     },
     [currentDisplayValue, data.comboboxState]

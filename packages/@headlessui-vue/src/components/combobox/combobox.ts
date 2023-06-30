@@ -732,7 +732,9 @@ export let ComboboxInput = defineComponent({
         ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
           if (isTyping.value) return
           let input = dom(api.inputRef)
+
           if (!input) return
+
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
             input.value = currentDisplayValue
           } else if (currentDisplayValue !== oldCurrentDisplayValue) {
@@ -745,11 +747,18 @@ export let ComboboxInput = defineComponent({
           // position while typing.
           requestAnimationFrame(() => {
             if (isTyping.value) return
-            let input = dom(api.inputRef)
             if (!input) return
 
-            let pos = input.value.length
-            input.setSelectionRange(pos, pos)
+            let { selectionStart, selectionEnd } = input
+
+            // A custom selection is used, no need to move the caret
+            if (Math.abs((selectionEnd ?? 0) - (selectionStart ?? 0)) !== 0) return
+
+            // A custom caret position is used, no need to move the caret
+            if (selectionStart !== 0) return
+
+            // Move the caret to the end
+            input.setSelectionRange(input.value.length, input.value.length)
           })
         },
         { immediate: true }
