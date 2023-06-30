@@ -785,6 +785,18 @@ function InputFn<
       } else if (currentDisplayValue !== oldCurrentDisplayValue) {
         data.inputRef.current.value = currentDisplayValue
       }
+
+      // Once we synced the input value, we want to make sure the cursor is at the end of the input
+      // field. This makes it easier to continue typing and append to the query. We will bail out if
+      // the user is currently typing, because we don't want to mess with the cursor position while
+      // typing.
+      requestAnimationFrame(() => {
+        if (isTyping.current) return
+        if (!data.inputRef.current) return
+
+        let pos = data.inputRef.current.value.length
+        data.inputRef.current.setSelectionRange(pos, pos)
+      })
     },
     [currentDisplayValue, data.comboboxState]
   )
