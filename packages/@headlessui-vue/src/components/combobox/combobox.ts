@@ -732,12 +732,34 @@ export let ComboboxInput = defineComponent({
         ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
           if (isTyping.value) return
           let input = dom(api.inputRef)
+
           if (!input) return
+
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
             input.value = currentDisplayValue
           } else if (currentDisplayValue !== oldCurrentDisplayValue) {
             input.value = currentDisplayValue
           }
+
+          // Once we synced the input value, we want to make sure the cursor is at the end of the
+          // input field. This makes it easier to continue typing and append to the query. We will
+          // bail out if the user is currently typing, because we don't want to mess with the cursor
+          // position while typing.
+          requestAnimationFrame(() => {
+            if (isTyping.value) return
+            if (!input) return
+
+            let { selectionStart, selectionEnd } = input
+
+            // A custom selection is used, no need to move the caret
+            if (Math.abs((selectionEnd ?? 0) - (selectionStart ?? 0)) !== 0) return
+
+            // A custom caret position is used, no need to move the caret
+            if (selectionStart !== 0) return
+
+            // Move the caret to the end
+            input.setSelectionRange(input.value.length, input.value.length)
+          })
         },
         { immediate: true }
       )

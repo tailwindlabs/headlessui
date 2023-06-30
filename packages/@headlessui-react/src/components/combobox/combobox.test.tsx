@@ -690,6 +690,78 @@ describe('Rendering', () => {
         expect(getComboboxInput()).toHaveValue('charlie - closed')
       })
     )
+
+    it(
+      'should move the caret to the end of the input when syncing the value',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          return (
+            <Combobox>
+              <Combobox.Input />
+              <Combobox.Button />
+
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        // Open the combobox
+        await click(getComboboxButton())
+
+        // Choose charlie
+        await click(getComboboxOptions()[2])
+        expect(getComboboxInput()).toHaveValue('charlie')
+
+        // Ensure the selection is in the correct position
+        expect(getComboboxInput()?.selectionStart).toBe('charlie'.length)
+        expect(getComboboxInput()?.selectionEnd).toBe('charlie'.length)
+      })
+    )
+
+    // Skipped because JSDOM doesn't implement this properly: https://github.com/jsdom/jsdom/issues/3524
+    xit(
+      'should not move the caret to the end of the input when syncing the value if a custom selection is made',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          return (
+            <Combobox>
+              <Combobox.Input
+                onFocus={(e) => {
+                  e.target.select()
+                  e.target.setSelectionRange(0, e.target.value.length)
+                }}
+              />
+              <Combobox.Button />
+
+              <Combobox.Options>
+                <Combobox.Option value="alice">alice</Combobox.Option>
+                <Combobox.Option value="bob">bob</Combobox.Option>
+                <Combobox.Option value="charlie">charlie</Combobox.Option>
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        // Open the combobox
+        await click(getComboboxButton())
+
+        // Choose charlie
+        await click(getComboboxOptions()[2])
+        expect(getComboboxInput()).toHaveValue('charlie')
+
+        // Ensure the selection is in the correct position
+        expect(getComboboxInput()?.selectionStart).toBe(0)
+        expect(getComboboxInput()?.selectionEnd).toBe('charlie'.length)
+      })
+    )
   })
 
   describe('Combobox.Label', () => {
