@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ensure the caret is in a consistent position when syncing the `Combobox.Input` value ([#2568](https://github.com/tailwindlabs/headlessui/pull/2568))
+- Improve "outside click" behaviour in combination with 3rd party libraries ([#2572](https://github.com/tailwindlabs/headlessui/pull/2572))
 
 ## [1.7.15] - 2023-06-01
 
