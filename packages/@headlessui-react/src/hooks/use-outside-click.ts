@@ -103,6 +103,16 @@ export function useOutsideClick(
   let initialClickTarget = useRef<EventTarget | null>(null)
 
   useDocumentEvent(
+    'pointerdown',
+    (event) => {
+      if (enabledRef.current) {
+        initialClickTarget.current = event.composedPath?.()?.[0] || event.target
+      }
+    },
+    true
+  )
+
+  useDocumentEvent(
     'mousedown',
     (event) => {
       if (enabledRef.current) {
