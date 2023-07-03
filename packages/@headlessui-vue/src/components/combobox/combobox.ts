@@ -370,7 +370,11 @@ export let Combobox = defineComponent({
       },
       registerOption(id: string, dataRef: ComboboxOptionData) {
         let option = { id, dataRef }
-        let adjustedState = adjustOrderedState((options) => [...options, option])
+
+        let adjustedState = adjustOrderedState((options) => {
+          options.push(option)
+          return options
+        })
 
         // Check if we have a selected value that we can make active.
         if (activeOptionIndex.value === null) {
