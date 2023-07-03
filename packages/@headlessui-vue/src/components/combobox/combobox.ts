@@ -202,6 +202,8 @@ export let Combobox = defineComponent({
       computed(() => props.defaultValue)
     )
 
+    let orderOptionsRaf: ReturnType<typeof requestAnimationFrame> | null = null
+
     let api = {
       comboboxState,
       value,
@@ -369,6 +371,8 @@ export let Combobox = defineComponent({
         api.goToOption(Focus.Specific, id)
       },
       registerOption(id: string, dataRef: ComboboxOptionData) {
+        if (orderOptionsRaf) cancelAnimationFrame(orderOptionsRaf)
+
         let option = { id, dataRef }
 
         let adjustedState = adjustOrderedState((options) => {
@@ -398,7 +402,7 @@ export let Combobox = defineComponent({
 
         // If some of the DOM elements aren't ready yet, then we can retry in the next tick.
         if (adjustedState.options.some((option) => !dom(option.dataRef.domRef))) {
-          requestAnimationFrame(() => {
+          orderOptionsRaf = requestAnimationFrame(() => {
             let adjustedState = adjustOrderedState()
             options.value = adjustedState.options
             activeOptionIndex.value = adjustedState.activeOptionIndex
