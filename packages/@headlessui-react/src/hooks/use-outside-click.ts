@@ -152,12 +152,13 @@ export function useOutsideClick(
   // and we can consider it an "outside click"
   useWindowEvent(
     'blur',
-    (event) =>
-      handleOutsideClick(event, () =>
-        window.document.activeElement instanceof HTMLIFrameElement
+    (event) => {
+      return handleOutsideClick(event, () => {
+        return window.document.activeElement instanceof HTMLIFrameElement
           ? window.document.activeElement
           : null
-      ),
+      })
+    },
     true
   )
 }
