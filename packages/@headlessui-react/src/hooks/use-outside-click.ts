@@ -9,7 +9,7 @@ type ContainerInput = Container | ContainerCollection
 
 export function useOutsideClick(
   containers: ContainerInput | (() => ContainerInput),
-  cb: (event: MouseEvent | PointerEvent | FocusEvent, target: HTMLElement) => void,
+  cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void,
   enabled: boolean = true
 ) {
   // TODO: remove this once the React bug has been fixed: https://github.com/facebook/react/issues/24657
@@ -27,7 +27,7 @@ export function useOutsideClick(
     [enabled]
   )
 
-  function handleOutsideClick<E extends MouseEvent | PointerEvent | FocusEvent>(
+  function handleOutsideClick<E extends MouseEvent | PointerEvent | FocusEvent | TouchEvent>(
     event: E,
     resolveTarget: (event: E) => HTMLElement | null
   ) {
@@ -134,6 +134,24 @@ export function useOutsideClick(
       })
 
       initialClickTarget.current = null
+    },
+
+    // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
+    // don't "cancel" this outside click check. E.g.: A `Menu` inside a `DialogPanel` if the `Menu`
+    // is open, and you click outside of it in the `DialogPanel` the `Menu` should close. However,
+    // the `DialogPanel` has a `onClick(e) { e.stopPropagation() }` which would cancel this.
+    true
+  )
+
+  useDocumentEvent(
+    'touchend',
+    (event) => {
+      return handleOutsideClick(event, () => {
+        if (event.target instanceof HTMLElement) {
+          return event.target
+        }
+        return null
+      })
     },
 
     // We will use the `capture` phase so that layers in between with `event.stopPropagation()`
