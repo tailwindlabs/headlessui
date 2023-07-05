@@ -202,6 +202,9 @@ export let Combobox = defineComponent({
       computed(() => props.defaultValue)
     )
 
+    let goToOptionRaf: ReturnType<typeof requestAnimationFrame> | null = null
+    let orderOptionsRaf: ReturnType<typeof requestAnimationFrame> | null = null
+
     let api = {
       comboboxState,
       value,
@@ -275,47 +278,53 @@ export let Combobox = defineComponent({
         comboboxState.value = ComboboxStates.Open
       },
       goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
-        defaultToFirstOption.value = false
-
-        if (props.disabled) return
-        if (
-          optionsRef.value &&
-          !optionsPropsRef.value.static &&
-          comboboxState.value === ComboboxStates.Closed
-        ) {
-          return
+        if (goToOptionRaf !== null) {
+          cancelAnimationFrame(goToOptionRaf)
         }
 
-        let adjustedState = adjustOrderedState()
+        goToOptionRaf = requestAnimationFrame(() => {
+          defaultToFirstOption.value = false
 
-        // It's possible that the activeOptionIndex is set to `null` internally, but
-        // this means that we will fallback to the first non-disabled option by default.
-        // We have to take this into account.
-        if (adjustedState.activeOptionIndex === null) {
-          let localActiveOptionIndex = adjustedState.options.findIndex(
-            (option) => !option.dataRef.disabled
+          if (props.disabled) return
+          if (
+            optionsRef.value &&
+            !optionsPropsRef.value.static &&
+            comboboxState.value === ComboboxStates.Closed
+          ) {
+            return
+          }
+
+          let adjustedState = adjustOrderedState()
+
+          // It's possible that the activeOptionIndex is set to `null` internally, but
+          // this means that we will fallback to the first non-disabled option by default.
+          // We have to take this into account.
+          if (adjustedState.activeOptionIndex === null) {
+            let localActiveOptionIndex = adjustedState.options.findIndex(
+              (option) => !option.dataRef.disabled
+            )
+
+            if (localActiveOptionIndex !== -1) {
+              adjustedState.activeOptionIndex = localActiveOptionIndex
+            }
+          }
+
+          let nextActiveOptionIndex = calculateActiveIndex(
+            focus === Focus.Specific
+              ? { focus: Focus.Specific, id: id! }
+              : { focus: focus as Exclude<Focus, Focus.Specific> },
+            {
+              resolveItems: () => adjustedState.options,
+              resolveActiveIndex: () => adjustedState.activeOptionIndex,
+              resolveId: (option) => option.id,
+              resolveDisabled: (option) => option.dataRef.disabled,
+            }
           )
 
-          if (localActiveOptionIndex !== -1) {
-            adjustedState.activeOptionIndex = localActiveOptionIndex
-          }
-        }
-
-        let nextActiveOptionIndex = calculateActiveIndex(
-          focus === Focus.Specific
-            ? { focus: Focus.Specific, id: id! }
-            : { focus: focus as Exclude<Focus, Focus.Specific> },
-          {
-            resolveItems: () => adjustedState.options,
-            resolveActiveIndex: () => adjustedState.activeOptionIndex,
-            resolveId: (option) => option.id,
-            resolveDisabled: (option) => option.dataRef.disabled,
-          }
-        )
-
-        activeOptionIndex.value = nextActiveOptionIndex
-        activationTrigger.value = trigger ?? ActivationTrigger.Other
-        options.value = adjustedState.options
+          activeOptionIndex.value = nextActiveOptionIndex
+          activationTrigger.value = trigger ?? ActivationTrigger.Other
+          options.value = adjustedState.options
+        })
       },
       selectOption(id: string) {
         let option = options.value.find((item) => item.id === id)
@@ -369,8 +378,14 @@ export let Combobox = defineComponent({
         api.goToOption(Focus.Specific, id)
       },
       registerOption(id: string, dataRef: ComboboxOptionData) {
+        if (orderOptionsRaf) cancelAnimationFrame(orderOptionsRaf)
+
         let option = { id, dataRef }
-        let adjustedState = adjustOrderedState((options) => [...options, option])
+
+        let adjustedState = adjustOrderedState((options) => {
+          options.push(option)
+          return options
+        })
 
         // Check if we have a selected value that we can make active.
         if (activeOptionIndex.value === null) {
@@ -394,7 +409,7 @@ export let Combobox = defineComponent({
 
         // If some of the DOM elements aren't ready yet, then we can retry in the next tick.
         if (adjustedState.options.some((option) => !dom(option.dataRef.domRef))) {
-          requestAnimationFrame(() => {
+          orderOptionsRaf = requestAnimationFrame(() => {
             let adjustedState = adjustOrderedState()
             options.value = adjustedState.options
             activeOptionIndex.value = adjustedState.activeOptionIndex
