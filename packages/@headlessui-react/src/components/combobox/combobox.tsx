@@ -778,9 +778,11 @@ function InputFn<
   //     - By clicking `outside` of the Combobox
   useWatch(
     ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
+      // When the user is typing, we want to not touch the `input` at all. Especially when they are
+      // using an IME, we don't want to mess with the input at all.
       if (isTyping.current) return
-      let input = data.inputRef.current
 
+      let input = data.inputRef.current
       if (!input) return
 
       if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
@@ -821,6 +823,10 @@ function InputFn<
   useWatch(
     ([newState], [oldState]) => {
       if (newState === ComboboxState.Open && oldState === ComboboxState.Closed) {
+        // When the user is typing, we want to not touch the `input` at all. Especially when they are
+        // using an IME, we don't want to mess with the input at all.
+        if (isTyping.current) return
+
         let input = data.inputRef.current
         if (!input) return
 
@@ -844,19 +850,12 @@ function InputFn<
   )
 
   let isComposing = useRef(false)
-  let composedChangeEvent = useRef<React.ChangeEvent<HTMLInputElement> | null>(null)
   let handleCompositionStart = useEvent(() => {
     isComposing.current = true
   })
   let handleCompositionEnd = useEvent(() => {
     d.nextFrame(() => {
       isComposing.current = false
-
-      if (composedChangeEvent.current) {
-        actions.openCombobox()
-        onChange?.(composedChangeEvent.current)
-        composedChangeEvent.current = null
-      }
     })
   })
 
@@ -885,6 +884,10 @@ function InputFn<
       case Keys.Enter:
         isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
+
+        // When the user is still in the middle of composing by using an IME, then we don't want to
+        // submit this value and close the Combobox yet. Instead, we will fallback to the default
+        // behaviour which is to "end" the composition.
         if (isComposing.current) return
 
         event.preventDefault()
@@ -983,12 +986,16 @@ function InputFn<
   })
 
   let handleChange = useEvent((event: React.ChangeEvent<HTMLInputElement>) => {
-    if (isComposing.current) {
-      composedChangeEvent.current = event
-      return
-    }
-    actions.openCombobox()
+    // Always call the onChange listener even if the user is still typing using an IME (Input Method
+    // Editor).
+    //
+    // The main issue is Android, where typing always uses the IME APIs. Just waiting until the
+    // compositionend event is fired to trigger an onChange is not enough, because then filtering
+    // options while typing won't work at all because we are still in "composing" mode.
     onChange?.(event)
+
+    // Open the combobox to show the results based on what the user has typed
+    actions.openCombobox()
   })
 
   let handleBlur = useEvent(() => {

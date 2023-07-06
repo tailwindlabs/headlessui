@@ -745,9 +745,11 @@ export let ComboboxInput = defineComponent({
       watch(
         [currentDisplayValue, api.comboboxState],
         ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
+          // When the user is typing, we want to not touch the `input` at all. Especially when they
+          // are using an IME, we don't want to mess with the input at all.
           if (isTyping.value) return
-          let input = dom(api.inputRef)
 
+          let input = dom(api.inputRef)
           if (!input) return
 
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
@@ -788,6 +790,10 @@ export let ComboboxInput = defineComponent({
       // already in an open state.
       watch([api.comboboxState], ([newState], [oldState]) => {
         if (newState === ComboboxStates.Open && oldState === ComboboxStates.Closed) {
+          // When the user is typing, we want to not touch the `input` at all. Especially when they
+          // are using an IME, we don't want to mess with the input at all.
+          if (isTyping.value) return
+
           let input = dom(api.inputRef)
           if (!input) return
 
@@ -810,19 +816,12 @@ export let ComboboxInput = defineComponent({
     })
 
     let isComposing = ref(false)
-    let composedChangeEvent = ref<(Event & { target: HTMLInputElement }) | null>(null)
     function handleCompositionstart() {
       isComposing.value = true
     }
     function handleCompositionend() {
       disposables().nextFrame(() => {
         isComposing.value = false
-
-        if (composedChangeEvent.value) {
-          api.openCombobox()
-          emit('change', composedChangeEvent.value)
-          composedChangeEvent.value = null
-        }
       })
     }
 
@@ -852,6 +851,10 @@ export let ComboboxInput = defineComponent({
         case Keys.Enter:
           isTyping.value = false
           if (api.comboboxState.value !== ComboboxStates.Open) return
+
+          // When the user is still in the middle of composing by using an IME, then we don't want
+          // to submit this value and close the Combobox yet. Instead, we will fallback to the
+          // default behaviour which is to "end" the composition.
           if (isComposing.value) return
 
           event.preventDefault()
@@ -945,12 +948,16 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleInput(event: Event & { target: HTMLInputElement }) {
-      if (isComposing.value) {
-        composedChangeEvent.value = event
-        return
-      }
-      api.openCombobox()
+      // Always call the onChange listener even if the user is still typing using an IME (Input Method
+      // Editor).
+      //
+      // The main issue is Android, where typing always uses the IME APIs. Just waiting until the
+      // compositionend event is fired to trigger an onChange is not enough, because then filtering
+      // options while typing won't work at all because we are still in "composing" mode.
       emit('change', event)
+
+      // Open the combobox to show the results based on what the user has typed
+      api.openCombobox()
     }
 
     function handleBlur() {
