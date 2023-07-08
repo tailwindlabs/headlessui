@@ -1,4 +1,4 @@
-import React, { useState, FocusEvent as ReactFocusEvent } from 'react'
+import React, { useEffect, useRef, useState, FocusEvent as ReactFocusEvent } from 'react'
 
 import { Hidden, Features } from './hidden'
 
@@ -7,7 +7,16 @@ interface FocusSentinelProps {
 }
 
 export function FocusSentinel({ onFocus }: FocusSentinelProps) {
+  let mounted = useRef(false)
   let [enabled, setEnabled] = useState(true)
+
+  useEffect(() => {
+    mounted.current = true
+
+    return () => {
+      mounted.current = false
+    }
+  }, [])
 
   if (!enabled) return null
 
@@ -31,7 +40,10 @@ export function FocusSentinel({ onFocus }: FocusSentinelProps) {
           // Try to move focus to the correct element. This depends on the implementation
           // of `onFocus` of course since it would be different for each place we use it in.
           if (onFocus()) {
-            setEnabled(false)
+            if (mounted.current) {
+              setEnabled(false)
+            }
+
             cancelAnimationFrame(frame)
             return
           }
