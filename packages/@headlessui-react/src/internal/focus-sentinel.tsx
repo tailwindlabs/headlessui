@@ -33,11 +33,10 @@ export function FocusSentinel({ onFocus }: FocusSentinelProps) {
           // Try to move focus to the correct element. This depends on the implementation
           // of `onFocus` of course since it would be different for each place we use it in.
           if (onFocus()) {
-            if (mounted.current) {
-              setEnabled(false)
-            }
-
             cancelAnimationFrame(frame)
+            if (!mounted.current) return
+
+            setEnabled(false)
             return
           }
 
