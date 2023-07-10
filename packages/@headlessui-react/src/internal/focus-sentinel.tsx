@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState, FocusEvent as ReactFocusEvent } from 'react'
+import React, { useState, FocusEvent as ReactFocusEvent } from 'react'
 
+import { useIsMounted } from '../hooks/use-is-mounted'
 import { Hidden, Features } from './hidden'
 
 interface FocusSentinelProps {
@@ -7,16 +8,8 @@ interface FocusSentinelProps {
 }
 
 export function FocusSentinel({ onFocus }: FocusSentinelProps) {
-  let mounted = useRef(false)
   let [enabled, setEnabled] = useState(true)
-
-  useEffect(() => {
-    mounted.current = true
-
-    return () => {
-      mounted.current = false
-    }
-  }, [])
+  let mounted = useIsMounted()
 
   if (!enabled) return null
 
