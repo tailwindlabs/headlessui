@@ -229,9 +229,7 @@ export let DisclosureButton = defineComponent({
             id,
             ref: internalButtonRef,
             type: type.value,
-            'aria-expanded': props.disabled
-              ? undefined
-              : api.disclosureState.value === DisclosureStates.Open,
+            'aria-expanded': api.disclosureState.value === DisclosureStates.Open,
             'aria-controls': dom(api.panel) ? api.panelId.value : undefined,
             disabled: props.disabled ? true : undefined,
             onClick: handleClick,

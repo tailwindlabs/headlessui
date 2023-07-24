@@ -62,20 +62,12 @@ export function assertMenuButton(
 
       case MenuState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       case MenuState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       default:
@@ -352,20 +344,12 @@ export function assertComboboxInput(
 
       case ComboboxState.InvisibleHidden:
         expect(input).toHaveAttribute('aria-controls')
-        if (input.hasAttribute('disabled')) {
-          expect(input).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(input).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(input).toHaveAttribute('aria-expanded', 'false')
         break
 
       case ComboboxState.InvisibleUnmounted:
         expect(input).not.toHaveAttribute('aria-controls')
-        if (input.hasAttribute('disabled')) {
-          expect(input).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(input).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(input).toHaveAttribute('aria-expanded', 'false')
         break
 
       default:
@@ -458,20 +442,12 @@ export function assertComboboxButton(
 
       case ComboboxState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       case ComboboxState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       default:
@@ -798,20 +774,12 @@ export function assertListboxButton(
 
       case ListboxState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       case ListboxState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       default:
@@ -1100,20 +1068,12 @@ export function assertDisclosureButton(
 
       case DisclosureState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       case DisclosureState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       default:
@@ -1232,20 +1192,12 @@ export function assertPopoverButton(
 
       case PopoverState.InvisibleHidden:
         expect(button).toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       case PopoverState.InvisibleUnmounted:
         expect(button).not.toHaveAttribute('aria-controls')
-        if (button.hasAttribute('disabled')) {
-          expect(button).not.toHaveAttribute('aria-expanded')
-        } else {
-          expect(button).toHaveAttribute('aria-expanded', 'false')
-        }
+        expect(button).toHaveAttribute('aria-expanded', 'false')
         break
 
       default:

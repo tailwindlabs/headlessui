@@ -662,9 +662,7 @@ export let ComboboxButton = defineComponent({
         tabindex: '-1',
         'aria-haspopup': 'listbox',
         'aria-controls': dom(api.optionsRef)?.id,
-        'aria-expanded': api.disabled.value
-          ? undefined
-          : api.comboboxState.value === ComboboxStates.Open,
+        'aria-expanded': api.comboboxState.value === ComboboxStates.Open,
         'aria-labelledby': api.labelRef.value ? [dom(api.labelRef)?.id, id].join(' ') : undefined,
         disabled: api.disabled.value === true ? true : undefined,
         onKeydown: handleKeydown,
@@ -980,9 +978,7 @@ export let ComboboxInput = defineComponent({
       let { id, displayValue, onChange: _onChange, ...theirProps } = props
       let ourProps = {
         'aria-controls': api.optionsRef.value?.id,
-        'aria-expanded': api.disabled.value
-          ? undefined
-          : api.comboboxState.value === ComboboxStates.Open,
+        'aria-expanded': api.comboboxState.value === ComboboxStates.Open,
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined
