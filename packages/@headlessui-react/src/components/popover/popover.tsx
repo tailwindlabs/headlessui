@@ -591,7 +591,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         ref: buttonRef,
         id: state.buttonId,
         type,
-        'aria-expanded': props.disabled ? undefined : state.popoverState === PopoverStates.Open,
+        'aria-expanded': state.popoverState === PopoverStates.Open,
         'aria-controls': state.panel ? state.panelId : undefined,
         onKeyDown: handleKeyDown,
         onKeyUp: handleKeyUp,

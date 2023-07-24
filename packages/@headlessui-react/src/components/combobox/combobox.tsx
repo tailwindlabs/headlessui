@@ -1020,7 +1020,7 @@ function InputFn<
     role: 'combobox',
     type,
     'aria-controls': data.optionsRef.current?.id,
-    'aria-expanded': data.disabled ? undefined : data.comboboxState === ComboboxState.Open,
+    'aria-expanded': data.comboboxState === ComboboxState.Open,
     'aria-activedescendant':
       data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
@@ -1152,7 +1152,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     tabIndex: -1,
     'aria-haspopup': 'listbox',
     'aria-controls': data.optionsRef.current?.id,
-    'aria-expanded': data.disabled ? undefined : data.comboboxState === ComboboxState.Open,
+    'aria-expanded': data.comboboxState === ComboboxState.Open,
     'aria-labelledby': labelledby,
     disabled: data.disabled,
     onClick: handleClick,

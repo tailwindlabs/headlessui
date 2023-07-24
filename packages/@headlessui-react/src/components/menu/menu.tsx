@@ -400,7 +400,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     type: useResolveButtonType(props, state.buttonRef),
     'aria-haspopup': 'menu',
     'aria-controls': state.itemsRef.current?.id,
-    'aria-expanded': props.disabled ? undefined : state.menuState === MenuStates.Open,
+    'aria-expanded': state.menuState === MenuStates.Open,
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
     onClick: handleClick,

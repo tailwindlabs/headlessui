@@ -680,7 +680,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     type: useResolveButtonType(props, data.buttonRef),
     'aria-haspopup': 'listbox',
     'aria-controls': data.optionsRef.current?.id,
-    'aria-expanded': data.disabled ? undefined : data.listboxState === ListboxStates.Open,
+    'aria-expanded': data.listboxState === ListboxStates.Open,
     'aria-labelledby': labelledby,
     disabled: data.disabled,
     onKeyDown: handleKeyDown,
