@@ -2820,6 +2820,54 @@ describe('Keyboard interactions', () => {
           expect(submits).toHaveBeenCalledWith([['option', 'b']])
         })
       )
+
+      it(
+        'should submit the form on `Enter` (when no submit button was found)',
+        suppressConsoleLogs(async () => {
+          let submits = jest.fn()
+
+          function Example() {
+            let [value, setValue] = useState<string>('b')
+
+            return (
+              <form
+                onKeyUp={(event) => {
+                  // JSDom doesn't automatically submit the form but if we can
+                  // catch an `Enter` event, we can assume it was a submit.
+                  if (event.key === 'Enter') event.currentTarget.submit()
+                }}
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  submits([...new FormData(event.currentTarget).entries()])
+                }}
+              >
+                <Combobox value={value} onChange={setValue} name="option">
+                  <Combobox.Input onChange={NOOP} />
+                  <Combobox.Button>Trigger</Combobox.Button>
+                  <Combobox.Options>
+                    <Combobox.Option value="a">Option A</Combobox.Option>
+                    <Combobox.Option value="b">Option B</Combobox.Option>
+                    <Combobox.Option value="c">Option C</Combobox.Option>
+                  </Combobox.Options>
+                </Combobox>
+              </form>
+            )
+          }
+
+          render(<Example />)
+
+          // Focus the input field
+          await focus(getComboboxInput())
+          assertActiveElement(getComboboxInput())
+
+          // Press enter (which should submit the form)
+          await press(Keys.Enter)
+
+          // Verify the form was submitted
+          expect(submits).toHaveBeenCalledTimes(1)
+          expect(submits).toHaveBeenCalledWith([['option', 'b']])
+        })
+      )
     })
 
     describe('`Tab` key', () => {

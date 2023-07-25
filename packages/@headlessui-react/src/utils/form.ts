@@ -54,4 +54,9 @@ export function attemptSubmit(element: HTMLElement) {
       return
     }
   }
+
+  // If we get here, then there is no submit button in the form. We can use the
+  // `form.requestSubmit()` function to submit the form instead. We cannot use `form.submit()`
+  // because then the `submit` event won't be fired and `onSubmit` listeners won't be fired.
+  form.requestSubmit()
 }

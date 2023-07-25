@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve performance of `Combobox` component ([#2574](https://github.com/tailwindlabs/headlessui/pull/2574))
 - Ensure IME works on Android devices ([#2580](https://github.com/tailwindlabs/headlessui/pull/2580))
 - Calculate `aria-expanded` purely based on the open/closed state ([#2610](https://github.com/tailwindlabs/headlessui/pull/2610))
+- Submit form on `Enter` even if no submit-like button was found ([#2613](https://github.com/tailwindlabs/headlessui/pull/2613))
 
 ## [1.7.14] - 2023-06-01
 
