@@ -461,6 +461,38 @@ describe('Keyboard interactions', () => {
       expect(submits).toHaveBeenCalledTimes(1)
       expect(submits).toHaveBeenCalledWith([['option', 'on']])
     })
+
+    it('should submit the form on `Enter` (when no submit button was found)', async () => {
+      let submits = jest.fn()
+
+      function Example() {
+        let [value, setValue] = useState(true)
+
+        return (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              submits([...new FormData(event.currentTarget).entries()])
+            }}
+          >
+            <Switch checked={value} onChange={setValue} name="option" />
+          </form>
+        )
+      }
+
+      render(<Example />)
+
+      // Focus the input field
+      await focus(getSwitch())
+      assertActiveElement(getSwitch())
+
+      // Press enter (which should submit the form)
+      await press(Keys.Enter)
+
+      // Verify the form was submitted
+      expect(submits).toHaveBeenCalledTimes(1)
+      expect(submits).toHaveBeenCalledWith([['option', 'on']])
+    })
   })
 
   describe('`Tab` key', () => {
