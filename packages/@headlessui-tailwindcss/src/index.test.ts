@@ -68,6 +68,22 @@ it('should generate the ui-focus-visible variant', async () => {
   })
 })
 
+it('should generate the ui-not-focus-visible variant', async () => {
+  let config = {
+    content: [{ raw: html`<div class="ui-not-focus-visible:underline"></div>` }],
+    plugins: [hui],
+  }
+
+  return run('@tailwind utilities', config).then((result) => {
+    expect(result.css).toMatchFormattedCss(css`
+      .ui-not-focus-visible\:underline:focus:where(:not([data-headlessui-focus-visible]
+            .ui-not-focus-visible\:underline)) {
+        text-decoration-line: underline;
+      }
+    `)
+  })
+})
+
 describe('custom prefix', () => {
   it('should generate css for an exposed state', async () => {
     let config = {
