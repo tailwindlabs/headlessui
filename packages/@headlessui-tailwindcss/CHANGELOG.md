@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `not-focus-visible` variant to Tailwind plugin ([#2618](https://github.com/tailwindlabs/headlessui/pull/2618))
+- Add `ui-focus-visible` variant to Tailwind plugin ([#2347](https://github.com/tailwindlabs/headlessui/pull/2347))
+- Add `ui-not-focus-visible` variant to Tailwind plugin ([#2618](https://github.com/tailwindlabs/headlessui/pull/2618))
 
 ## [0.1.3] - 2023-04-12
 
