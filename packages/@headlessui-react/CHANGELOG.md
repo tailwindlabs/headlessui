@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Allow `type="submit"` on `Switch` component ([#2625](https://github.com/tailwindlabs/headlessui/pull/2625))
 
 ## [1.7.16] - 2023-07-27
 
