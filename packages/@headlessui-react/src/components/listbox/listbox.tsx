@@ -537,9 +537,9 @@ function ListboxFn<
     if (defaultValue === undefined) return
 
     d.addEventListener(form.current, 'reset', () => {
-      onChange(defaultValue)
+      theirOnChange?.(defaultValue)
     })
-  }, [form, onChange /* Explicitly ignoring `defaultValue` */])
+  }, [form, theirOnChange /* Explicitly ignoring `defaultValue` */])
 
   return (
     <ListboxActionsContext.Provider value={actions}>

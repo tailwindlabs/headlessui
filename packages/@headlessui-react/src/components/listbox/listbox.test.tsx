@@ -1125,6 +1125,50 @@ describe('Rendering', () => {
       assertActiveListboxOption(getListboxOptions()[1])
     })
 
+    it('should be possible to reset to the default value in multiple mode', async () => {
+      let handleSubmission = jest.fn()
+      let data = ['alice', 'bob', 'charlie']
+
+      render(
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          }}
+        >
+          <Listbox name="assignee" defaultValue={['bob'] as string[]} multiple>
+            <Listbox.Button>{({ value }) => value.join(', ') || 'Trigger'}</Listbox.Button>
+            <Listbox.Options>
+              {data.map((person) => (
+                <Listbox.Option key={person} value={person}>
+                  {person}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Listbox>
+          <button id="submit">submit</button>
+          <button type="reset" id="reset">
+            reset
+          </button>
+        </form>
+      )
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({
+        'assignee[0]': 'bob',
+      })
+
+      await click(document.getElementById('reset'))
+      await click(document.getElementById('submit'))
+
+      // Bob is still the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({
+        'assignee[0]': 'bob',
+      })
+    })
+
     it('should still call the onChange listeners when choosing new values', async () => {
       let handleChange = jest.fn()
 

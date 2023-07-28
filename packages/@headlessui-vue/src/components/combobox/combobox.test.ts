@@ -1553,6 +1553,52 @@ describe('Rendering', () => {
       })
     )
 
+    it('should be possible to reset to the default value in multiple mode', async () => {
+      let data = ['alice', 'bob', 'charlie']
+      let handleSubmission = jest.fn()
+
+      renderTemplate({
+        template: html`
+          <form @submit="handleSubmit">
+            <Combobox name="assignee" :defaultValue="['bob']" multiple>
+              <ComboboxButton v-slot="{ value }"
+                >{{ value.join(', ') || 'Trigger' }}</ComboboxButton
+              >
+              <ComboboxOptions>
+                <ComboboxOption v-for="person in data" :key="person" :value="person">
+                  {{ person }}
+                </ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+            <button id="submit">submit</button>
+            <button type="reset" id="reset">reset</button>
+          </form>
+        `,
+        setup: () => ({
+          data,
+          handleSubmit(e: SubmitEvent) {
+            e.preventDefault()
+            handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+          },
+        }),
+      })
+
+      await click(document.getElementById('submit'))
+
+      // Bob is the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({
+        'assignee[0]': 'bob',
+      })
+
+      await click(document.getElementById('reset'))
+      await click(document.getElementById('submit'))
+
+      // Bob is still the defaultValue
+      expect(handleSubmission).toHaveBeenLastCalledWith({
+        'assignee[0]': 'bob',
+      })
+    })
+
     it('should still call the onChange listeners when choosing new values', async () => {
       let handleChange = jest.fn()
 

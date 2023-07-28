@@ -642,9 +642,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     if (defaultValue === undefined) return
 
     d.addEventListener(form.current, 'reset', () => {
-      onChange(defaultValue)
+      theirOnChange?.(defaultValue)
     })
-  }, [form, onChange /* Explicitly ignoring `defaultValue` */])
+  }, [form, theirOnChange /* Explicitly ignoring `defaultValue` */])
 
   return (
     <ComboboxActionsContext.Provider value={actions}>
