@@ -36,11 +36,13 @@ function append(entries: Entries, key: string, value: any): void {
   }
 }
 
-export function attemptSubmit(element: HTMLElement) {
-  let form = (element as any)?.form ?? element.closest('form')
+export function attemptSubmit(elementInForm: HTMLElement) {
+  let form = (elementInForm as any)?.form ?? elementInForm.closest('form')
   if (!form) return
 
   for (let element of form.elements) {
+    if (element === elementInForm) continue
+
     if (
       (element.tagName === 'INPUT' && element.type === 'submit') ||
       (element.tagName === 'BUTTON' && element.type === 'submit') ||
@@ -58,5 +60,5 @@ export function attemptSubmit(element: HTMLElement) {
   // If we get here, then there is no submit button in the form. We can use the
   // `form.requestSubmit()` function to submit the form instead. We cannot use `form.submit()`
   // because then the `submit` event won't be fired and `onSubmit` listeners won't be fired.
-  form.requestSubmit()
+  form.requestSubmit?.()
 }
