@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix form elements for uncontrolled `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))
+- Use correct value when resetting `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))
 
 ## [1.7.15] - 2023-07-27
 
