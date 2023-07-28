@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Use correct value when resetting `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))
 
 ## [1.7.16] - 2023-07-27
 

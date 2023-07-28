@@ -189,17 +189,19 @@ export let Combobox = defineComponent({
 
     let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
     let nullable = computed(() => props.nullable)
-    let [value, theirOnChange] = useControllable(
-      computed(() =>
-        props.modelValue === undefined
-          ? match(mode.value, {
-              [ValueMode.Multi]: [],
-              [ValueMode.Single]: undefined,
-            })
-          : props.modelValue
-      ),
+    let [directValue, theirOnChange] = useControllable(
+      computed(() => props.modelValue),
       (value: unknown) => emit('update:modelValue', value),
       computed(() => props.defaultValue)
+    )
+
+    let value = computed(() =>
+      directValue.value === undefined
+        ? match(mode.value, {
+            [ValueMode.Multi]: [],
+            [ValueMode.Single]: undefined,
+          })
+        : directValue.value
     )
 
     let goToOptionRaf: ReturnType<typeof requestAnimationFrame> | null = null
