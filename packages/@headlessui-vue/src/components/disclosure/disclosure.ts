@@ -17,6 +17,7 @@ import { match } from '../../utils/match'
 import { render, Features } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { dom } from '../../utils/dom'
+import { env } from '../../utils/env'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
@@ -76,8 +77,8 @@ export let Disclosure = defineComponent({
     let buttonRef = ref<StateDefinition['button']['value']>(null)
 
     let api = {
-      buttonId: ref(null),
-      panelId: ref(null),
+      buttonId: ref(env.isServer ? `headlessui-disclosure-button-${useId()}` : null),
+      panelId: ref(env.isServer ? `headlessui-disclosure-panel-${useId()}` : null),
       disclosureState,
       panel: panelRef,
       button: buttonRef,
@@ -226,11 +227,14 @@ export let DisclosureButton = defineComponent({
             onKeydown: handleKeyDown,
           }
         : {
-            id,
+            id: api.buttonId.value ?? id,
             ref: internalButtonRef,
             type: type.value,
             'aria-expanded': api.disclosureState.value === DisclosureStates.Open,
-            'aria-controls': dom(api.panel) ? api.panelId.value : undefined,
+            'aria-controls':
+              api.disclosureState.value === DisclosureStates.Open || dom(api.panel)
+                ? api.panelId.value
+                : undefined,
             disabled: props.disabled ? true : undefined,
             onClick: handleClick,
             onKeydown: handleKeyDown,
@@ -285,7 +289,7 @@ export let DisclosurePanel = defineComponent({
     return () => {
       let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
       let { id, ...theirProps } = props
-      let ourProps = { id, ref: api.panel }
+      let ourProps = { id: api.panelId.value ?? id, ref: api.panel }
 
       return render({
         ourProps,
