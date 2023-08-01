@@ -347,12 +347,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     afterLeave,
   })
 
-  useEffect(() => {
-    if (state === TreeStates.Visible && container.current === null) {
-      throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
-    }
-  }, [container, state])
-
   // Skipping initial transition
   let skip = initial && !appear
 

@@ -121,6 +121,10 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     }
   })
 
+  let [isFirstRender, setIsFirstRender] = useState(true)
+  useEffect(() => setIsFirstRender(false), [])
+  if (isFirstRender) return null
+
   let ourProps = { ref: portalRef }
 
   return !target || !element
