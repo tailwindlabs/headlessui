@@ -1,6 +1,5 @@
 import React from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
-import { useServerHandoffComplete } from './use-server-handoff-complete'
 import { env } from '../utils/env'
 
 // We used a "simple" approach first which worked for SSR and rehydration on the client. However we
@@ -23,3 +22,26 @@ export let useId =
 
     return id != null ? '' + id : undefined
   }
+
+// NOTE: Do NOT use this outside of the `useId` hook
+// It is not compatible with `<Suspense>` (which is in React 18 which has its own `useId` hook)
+function useServerHandoffComplete() {
+  let [complete, setComplete] = React.useState(env.isHandoffComplete)
+
+  if (complete && env.isHandoffComplete === false) {
+    // This means we are in a test environment and we need to reset the handoff state
+    // This kinda breaks the rules of React but this is only used for testing purposes
+    // And should theoretically be fine
+    setComplete(false)
+  }
+
+  React.useEffect(() => {
+    if (complete === true) return
+    setComplete(true)
+  }, [complete])
+
+  // Transition from pending to complete (forcing a re-render when server rendering)
+  React.useEffect(() => env.handoff(), [])
+
+  return complete
+}

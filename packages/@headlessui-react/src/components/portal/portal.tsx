@@ -19,7 +19,6 @@ import { Props } from '../../types'
 import { forwardRefWithAs, RefProp, HasDisplayName, render } from '../../utils/render'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { usePortalRoot } from '../../internal/portal-force-root'
-import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
@@ -91,7 +90,6 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     env.isServer ? null : ownerDocument?.createElement('div') ?? null
   )
   let parent = useContext(PortalParentContext)
-  let ready = useServerHandoffComplete()
 
   useIsoMorphicEffect(() => {
     if (!target || !element) return
@@ -122,8 +120,6 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
       target.parentElement?.removeChild(target)
     }
   })
-
-  if (!ready) return null
 
   let ourProps = { ref: portalRef }
 
