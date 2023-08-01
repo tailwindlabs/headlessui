@@ -214,7 +214,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     MainTreeNode,
   } = useRootContainers({
     portals,
-    defaultContainers: [state.panelRef.current ?? internalDialogRef.current],
+    defaultContainers: [() => state.panelRef.current ?? internalDialogRef.current],
   })
 
   // If there are multiple dialogs, then you can be the root, the leaf or one
