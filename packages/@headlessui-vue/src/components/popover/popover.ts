@@ -103,6 +103,7 @@ interface PopoverRegisterBag {
 
 export let Popover = defineComponent({
   name: 'Popover',
+  inheritAttrs: false,
   props: {
     as: { type: [Object, String], default: 'div' },
   },
@@ -259,16 +260,19 @@ export let Popover = defineComponent({
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }
-      return h(PortalWrapper, {}, () =>
-        render({
-          theirProps: { ...props, ...attrs },
-          ourProps: { ref: internalPopoverRef },
-          slot,
-          slots,
-          attrs,
-          name: 'Popover',
-        })
-      )
+      return h(Fragment, [
+        h(PortalWrapper, {}, () =>
+          render({
+            theirProps: { ...props, ...attrs },
+            ourProps: { ref: internalPopoverRef },
+            slot,
+            slots,
+            attrs,
+            name: 'Popover',
+          })
+        ),
+        h(root.MainTreeNode),
+      ])
     }
   },
 })
