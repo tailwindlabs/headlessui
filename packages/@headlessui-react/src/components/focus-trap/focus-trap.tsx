@@ -10,6 +10,7 @@ import React, {
 
 import { Props } from '../../types'
 import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
 import { focusElement, focusIn, Focus, FocusResult } from '../../utils/focus-management'
@@ -80,6 +81,10 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
   let container = useRef<HTMLDivElement | null>(null)
   let focusTrapRef = useSyncRefs(container, ref)
   let { initialFocus, containers, features = Features.All, ...theirProps } = props
+
+  if (!useServerHandoffComplete()) {
+    features = Features.None
+  }
 
   let ownerDocument = useOwnerDocument(container)
 

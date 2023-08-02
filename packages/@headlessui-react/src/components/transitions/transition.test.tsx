@@ -155,6 +155,27 @@ describe('Setup API', () => {
         </span>
       `)
     })
+
+    it(
+      'should yell at us when we forget to forward the ref when using a render prop',
+      suppressConsoleLogs(() => {
+        expect.assertions(1)
+
+        function Dummy(props: any) {
+          return <span {...props}>Children</span>
+        }
+
+        expect(() => {
+          render(
+            <Transition show={true} as={Fragment}>
+              {() => <Dummy />}
+            </Transition>
+          )
+        }).toThrowErrorMatchingInlineSnapshot(
+          `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`
+        )
+      })
+    )
   })
 
   describe('nested', () => {
@@ -328,6 +349,58 @@ describe('Setup API', () => {
         </div>
       `)
     })
+
+    it(
+      'should yell at us when we forgot to forward the ref on one of the Transition.Child components',
+      suppressConsoleLogs(() => {
+        expect.assertions(1)
+
+        function Dummy(props: any) {
+          return <div {...props} />
+        }
+
+        expect(() => {
+          render(
+            <div className="My Page">
+              <Transition show={true}>
+                <Transition.Child as={Fragment}>{() => <Dummy>Sidebar</Dummy>}</Transition.Child>
+                <Transition.Child as={Fragment}>{() => <Dummy>Content</Dummy>}</Transition.Child>
+              </Transition>
+            </div>
+          )
+        }).toThrowErrorMatchingInlineSnapshot(
+          `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`
+        )
+      })
+    )
+
+    it(
+      'should yell at us when we forgot to forward a ref on the Transition component',
+      suppressConsoleLogs(() => {
+        expect.assertions(1)
+
+        function Dummy(props: any) {
+          return <div {...props} />
+        }
+
+        expect(() => {
+          render(
+            <div className="My Page">
+              <Transition show={true} as={Fragment}>
+                {() => (
+                  <Dummy>
+                    <Transition.Child>{() => <aside>Sidebar</aside>}</Transition.Child>
+                    <Transition.Child>{() => <section>Content</section>}</Transition.Child>
+                  </Dummy>
+                )}
+              </Transition>
+            </div>
+          )
+        }).toThrowErrorMatchingInlineSnapshot(
+          `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`
+        )
+      })
+    )
   })
 
   describe('transition classes', () => {

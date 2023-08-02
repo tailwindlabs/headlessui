@@ -37,6 +37,7 @@ import { Portal, useNestedPortals } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { ComponentDescription, Description, useDescriptions } from '../description/description'
 import { useOpenClosed, State } from '../../internal/open-closed'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
@@ -204,7 +205,8 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   let setTitleId = useEvent((id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }))
 
-  let enabled = __demoMode ? false : dialogState === DialogStates.Open
+  let ready = useServerHandoffComplete()
+  let enabled = ready ? (__demoMode ? false : dialogState === DialogStates.Open) : false
   let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
   let hasParentDialog = useContext(DialogContext) !== null
   let [portals, PortalWrapper] = useNestedPortals()
@@ -214,7 +216,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     MainTreeNode,
   } = useRootContainers({
     portals,
-    defaultContainers: [() => state.panelRef.current ?? internalDialogRef.current],
+    defaultContainers: [state.panelRef.current ?? internalDialogRef.current],
   })
 
   // If there are multiple dialogs, then you can be the root, the leaf or one

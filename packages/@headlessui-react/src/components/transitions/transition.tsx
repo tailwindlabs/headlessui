@@ -27,6 +27,7 @@ import { match } from '../../utils/match'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { useEvent } from '../../hooks/use-event'
@@ -347,10 +348,19 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     afterLeave,
   })
 
+  let ready = useServerHandoffComplete()
+
+  useEffect(() => {
+    if (ready && state === TreeStates.Visible && container.current === null) {
+      throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
+    }
+  }, [container, state, ready])
+
   // Skipping initial transition
   let skip = initial && !appear
 
   let transitionDirection = (() => {
+    if (!ready) return 'idle'
     if (skip) return 'idle'
     if (prevShow.current === show) return 'idle'
     return show ? 'enter' : 'leave'
@@ -469,6 +479,9 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   let { show, appear = false, unmount, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
   let transitionRef = useSyncRefs(internalTransitionRef, ref)
+
+  // The TransitionChild will also call this hook, and we have to make sure that we are ready.
+  useServerHandoffComplete()
 
   let usesOpenClosedState = useOpenClosed()
 
