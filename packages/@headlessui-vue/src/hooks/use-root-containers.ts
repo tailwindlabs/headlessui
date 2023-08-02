@@ -1,4 +1,4 @@
-import { ref, h, Ref, computed } from 'vue'
+import { ref, h, Ref } from 'vue'
 import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
 import { getOwnerDocument } from '../utils/owner'
 import { dom } from '../utils/dom'
@@ -58,8 +58,7 @@ export function useRootContainers({
     },
     mainTreeNodeRef,
     MainTreeNode() {
-      let hasPassedInMainTreeNode = (_mainTreeNodeRef?.value ?? null) !== null
-      if (hasPassedInMainTreeNode) return null
+      if (_mainTreeNodeRef != null) return null
       return h(Hidden, { features: HiddenFeatures.Hidden, ref: mainTreeNodeRef })
     },
   }
