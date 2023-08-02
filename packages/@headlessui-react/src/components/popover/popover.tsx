@@ -54,7 +54,7 @@ import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-
 import { microTask } from '../../utils/micro-task'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useRootContainers } from '../../hooks/use-root-containers'
+import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { useNestedPortals } from '../../components/portal/portal'
 
 type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
@@ -177,6 +177,7 @@ let PopoverGroupContext = createContext<{
   unregisterPopover(registerbag: PopoverRegisterBag): void
   isFocusWithinPopoverGroup(): boolean
   closeOthers(buttonId: string): void
+  mainTreeNodeRef: MutableRefObject<HTMLElement | null>
 } | null>(null)
 PopoverGroupContext.displayName = 'PopoverGroupContext'
 
@@ -313,6 +314,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   let [portals, PortalWrapper] = useNestedPortals()
   let root = useRootContainers({
+    mainTreeNodeRef: groupContext?.mainTreeNodeRef,
     portals,
     defaultContainers: [button, panel],
   })
@@ -971,6 +973,7 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let internalGroupRef = useRef<HTMLElement | null>(null)
   let groupRef = useSyncRefs(internalGroupRef, ref)
   let [popovers, setPopovers] = useState<PopoverRegisterBag[]>([])
+  let root = useMainTreeNode()
 
   let unregisterPopover = useEvent((registerbag: PopoverRegisterBag) => {
     setPopovers((existing) => {
@@ -1017,8 +1020,15 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
       unregisterPopover: unregisterPopover,
       isFocusWithinPopoverGroup,
       closeOthers,
+      mainTreeNodeRef: root.mainTreeNodeRef,
     }),
-    [registerPopover, unregisterPopover, isFocusWithinPopoverGroup, closeOthers]
+    [
+      registerPopover,
+      unregisterPopover,
+      isFocusWithinPopoverGroup,
+      closeOthers,
+      root.mainTreeNodeRef,
+    ]
   )
 
   let slot = useMemo<GroupRenderPropArg>(() => ({}), [])
@@ -1035,6 +1045,7 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
         defaultTag: DEFAULT_GROUP_TAG,
         name: 'Popover.Group',
       })}
+      <root.MainTreeNode />
     </PopoverGroupContext.Provider>
   )
 }

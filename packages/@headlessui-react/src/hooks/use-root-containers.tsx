@@ -1,17 +1,20 @@
 import React, { useRef, useMemo, MutableRefObject } from 'react'
 import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
+import { useComputed } from './use-computed'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
 
 export function useRootContainers({
   defaultContainers = [],
   portals,
+  mainTreeNodeRef: _mainTreeNodeRef,
 }: {
   defaultContainers?: (HTMLElement | null | MutableRefObject<HTMLElement | null>)[]
   portals?: MutableRefObject<HTMLElement[]>
+  mainTreeNodeRef?: MutableRefObject<HTMLElement | null>
 } = {}) {
   // Reference to a node in the "main" tree, not in the portalled Dialog tree.
-  let mainTreeNodeRef = useRef<HTMLDivElement | null>(null)
+  let mainTreeNodeRef = useRef<HTMLElement | null>(_mainTreeNodeRef?.current ?? null)
   let ownerDocument = useOwnerDocument(mainTreeNodeRef)
 
   let resolveContainers = useEvent(() => {
@@ -54,6 +57,25 @@ export function useRootContainers({
     contains: useEvent((element: HTMLElement) =>
       resolveContainers().some((container) => container.contains(element))
     ),
+    mainTreeNodeRef,
+    MainTreeNode: useMemo(() => {
+      return function MainTreeNode() {
+        let hasPassedInMainTreeNode = useComputed(
+          () => (_mainTreeNodeRef?.current ?? null) !== null,
+          [_mainTreeNodeRef]
+        )
+        if (hasPassedInMainTreeNode) return null
+
+        return <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNodeRef} />
+      }
+    }, [mainTreeNodeRef]),
+  }
+}
+
+export function useMainTreeNode() {
+  let mainTreeNodeRef = useRef<HTMLElement | null>(null)
+
+  return {
     mainTreeNodeRef,
     MainTreeNode: useMemo(() => {
       return function MainTreeNode() {

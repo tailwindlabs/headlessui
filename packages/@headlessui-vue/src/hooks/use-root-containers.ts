@@ -1,4 +1,4 @@
-import { ref, h, Ref } from 'vue'
+import { ref, h, Ref, computed } from 'vue'
 import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
 import { getOwnerDocument } from '../utils/owner'
 import { dom } from '../utils/dom'
@@ -6,12 +6,14 @@ import { dom } from '../utils/dom'
 export function useRootContainers({
   defaultContainers = [],
   portals,
+  mainTreeNodeRef: _mainTreeNodeRef,
 }: {
   defaultContainers?: (HTMLElement | null | Ref<HTMLElement | null>)[]
   portals?: Ref<HTMLElement[]>
+  mainTreeNodeRef?: Ref<HTMLElement | null>
 } = {}) {
   // Reference to a node in the "main" tree, not in the portalled Dialog tree.
-  let mainTreeNodeRef = ref<HTMLDivElement | null>(null)
+  let mainTreeNodeRef = ref<HTMLElement | null>(null)
   let ownerDocument = getOwnerDocument(mainTreeNodeRef)
 
   function resolveContainers() {
@@ -54,6 +56,19 @@ export function useRootContainers({
     contains(element: HTMLElement) {
       return resolveContainers().some((container) => container.contains(element))
     },
+    mainTreeNodeRef,
+    MainTreeNode() {
+      let hasPassedInMainTreeNode = (_mainTreeNodeRef?.value ?? null) !== null
+      if (hasPassedInMainTreeNode) return null
+      return h(Hidden, { features: HiddenFeatures.Hidden, ref: mainTreeNodeRef })
+    },
+  }
+}
+
+export function useMainTreeNode() {
+  let mainTreeNodeRef = ref<HTMLElement | null>(null)
+
+  return {
     mainTreeNodeRef,
     MainTreeNode() {
       return h(Hidden, { features: HiddenFeatures.Hidden, ref: mainTreeNodeRef })
