@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use correct value when resetting `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))
 - Render `<MainTreeNode />` in `Popover.Group` component only ([#2634](https://github.com/tailwindlabs/headlessui/pull/2634))
+- Fix hydration of components inside `<Suspense>` ([#2633](https://github.com/tailwindlabs/headlessui/pull/2633))
 
 ## [1.7.16] - 2023-07-27
 

@@ -3,12 +3,15 @@ import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
 
+type Container = HTMLElement | null | MutableRefObject<HTMLElement | null>
+type MaybeContainerFn = Container | (() => Container)
+
 export function useRootContainers({
   defaultContainers = [],
   portals,
   mainTreeNodeRef: _mainTreeNodeRef,
 }: {
-  defaultContainers?: (HTMLElement | null | MutableRefObject<HTMLElement | null>)[]
+  defaultContainers?: MaybeContainerFn[]
   portals?: MutableRefObject<HTMLElement[]>
   mainTreeNodeRef?: MutableRefObject<HTMLElement | null>
 } = {}) {
@@ -21,6 +24,10 @@ export function useRootContainers({
 
     // Resolve default containers
     for (let container of defaultContainers) {
+      if (typeof container === 'function') {
+        container = container()
+      }
+
       if (container === null) continue
       if (container instanceof HTMLElement) {
         containers.push(container)
