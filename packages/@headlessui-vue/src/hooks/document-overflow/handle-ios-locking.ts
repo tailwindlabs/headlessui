@@ -1,3 +1,4 @@
+import { disposables } from '../../utils/disposables'
 import { isIOS } from '../../utils/platform'
 import { ScrollLockStep } from './overflow-store'
 
@@ -22,6 +23,21 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
         return meta.containers
           .flatMap((resolve) => resolve())
           .some((container) => container.contains(el))
+      }
+
+      // We need to be able to offset the body with the current scroll position. However, if you
+      // have `scroll-behavior: smooth` set, then changing the scrollTop in any way shape or form
+      // will trigger a "smooth" scroll and the new position would be incorrect.
+      //
+      // This is why we are forcing the `scroll-behaviour: auto` here, and then restoring it later.
+      // We have to be a bit careful, because removing `scroll-behavior: auto` back to
+      // `scroll-behavior: smooth` can start triggering smooth scrolling. Delaying this by a
+      // microTask will guarantee that everything is done such that both enter/exit of the Dialog is
+      // not using smooth scrolling.
+      if (window.getComputedStyle(doc.documentElement).scrollBehavior !== 'auto') {
+        let _d = disposables()
+        _d.style(doc.documentElement, 'scroll-behavior', 'auto')
+        d.add(() => d.microTask(() => _d.dispose()))
       }
 
       d.style(doc.body, 'marginTop', `-${scrollPosition}px`)

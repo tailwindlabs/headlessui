@@ -1,3 +1,5 @@
+import { microTask } from './micro-task'
+
 export type Disposables = ReturnType<typeof disposables>
 
 export function disposables() {
@@ -28,6 +30,18 @@ export function disposables() {
     setTimeout(...args: Parameters<typeof setTimeout>) {
       let timer = setTimeout(...args)
       api.add(() => clearTimeout(timer))
+    },
+
+    microTask(...args: Parameters<typeof microTask>) {
+      let task = { current: true }
+      microTask(() => {
+        if (task.current) {
+          args[0]()
+        }
+      })
+      return api.add(() => {
+        task.current = false
+      })
     },
 
     style(node: HTMLElement, property: string, value: string) {
