@@ -1,6 +1,5 @@
 import React, { useRef, useMemo, MutableRefObject } from 'react'
 import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
-import { useComputed } from './use-computed'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
 
@@ -60,15 +59,10 @@ export function useRootContainers({
     mainTreeNodeRef,
     MainTreeNode: useMemo(() => {
       return function MainTreeNode() {
-        let hasPassedInMainTreeNode = useComputed(
-          () => (_mainTreeNodeRef?.current ?? null) !== null,
-          [_mainTreeNodeRef]
-        )
-        if (hasPassedInMainTreeNode) return null
-
+        if (_mainTreeNodeRef != null) return null
         return <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNodeRef} />
       }
-    }, [mainTreeNodeRef]),
+    }, [mainTreeNodeRef, _mainTreeNodeRef]),
   }
 }
 
