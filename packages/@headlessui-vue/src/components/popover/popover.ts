@@ -37,7 +37,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
 import { microTask } from '../../utils/micro-task'
-import { useRootContainers } from '../../hooks/use-root-containers'
+import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { useNestedPortals } from '../../components/portal/portal'
 
 enum PopoverStates {
@@ -82,6 +82,7 @@ let PopoverGroupContext = Symbol('PopoverGroupContext') as InjectionKey<{
   unregisterPopover(registerbag: PopoverRegisterBag): void
   isFocusWithinPopoverGroup(): boolean
   closeOthers(buttonId: string): void
+  mainTreeNodeRef: Ref<HTMLElement | null>
 } | null>
 
 function usePopoverGroupContext() {
@@ -209,6 +210,7 @@ export let Popover = defineComponent({
 
     let [portals, PortalWrapper] = useNestedPortals()
     let root = useRootContainers({
+      mainTreeNodeRef: groupContext?.mainTreeNodeRef,
       portals,
       defaultContainers: [button, panel],
     })
@@ -749,6 +751,7 @@ export let PopoverPanel = defineComponent({
 
 export let PopoverGroup = defineComponent({
   name: 'PopoverGroup',
+  inheritAttrs: false,
   props: {
     as: { type: [Object, String], default: 'div' },
   },
@@ -756,6 +759,7 @@ export let PopoverGroup = defineComponent({
     let groupRef = ref<HTMLElement | null>(null)
     let popovers = shallowRef<PopoverRegisterBag[]>([])
     let ownerDocument = computed(() => getOwnerDocument(groupRef))
+    let root = useMainTreeNode()
 
     expose({ el: groupRef, $el: groupRef })
 
@@ -798,19 +802,23 @@ export let PopoverGroup = defineComponent({
       unregisterPopover,
       isFocusWithinPopoverGroup,
       closeOthers,
+      mainTreeNodeRef: root.mainTreeNodeRef,
     })
 
     return () => {
       let ourProps = { ref: groupRef }
 
-      return render({
-        ourProps,
-        theirProps: props,
-        slot: {},
-        attrs,
-        slots,
-        name: 'PopoverGroup',
-      })
+      return h(Fragment, [
+        render({
+          ourProps,
+          theirProps: { ...props, ...attrs },
+          slot: {},
+          attrs,
+          slots,
+          name: 'PopoverGroup',
+        }),
+        h(root.MainTreeNode),
+      ])
     }
   },
 })
