@@ -1,4 +1,4 @@
-import { createApp, createSSRApp } from 'vue'
+import { createApp, createSSRApp, nextTick } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { env } from '../utils/env'
 
@@ -14,9 +14,11 @@ export async function renderSSR(component: any, rootProps: any = {}) {
 
   return {
     contents,
-    hydrate() {
+    async hydrate() {
       let app = createApp(component, rootProps)
       app.mount(container)
+
+      await nextTick()
 
       return {
         contents: container.innerHTML,

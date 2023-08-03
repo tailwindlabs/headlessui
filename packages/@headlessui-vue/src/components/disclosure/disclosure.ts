@@ -76,8 +76,8 @@ export let Disclosure = defineComponent({
     let buttonRef = ref<StateDefinition['button']['value']>(null)
 
     let api = {
-      buttonId: ref(null),
-      panelId: ref(null),
+      buttonId: ref(`headlessui-disclosure-button-${useId()}`),
+      panelId: ref(`headlessui-disclosure-panel-${useId()}`),
       disclosureState,
       panel: panelRef,
       button: buttonRef,
@@ -138,22 +138,26 @@ export let DisclosureButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
-    id: { type: String, default: () => `headlessui-disclosure-button-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosureButton')
-
-    onMounted(() => {
-      api.buttonId.value = props.id
-    })
-    onUnmounted(() => {
-      api.buttonId.value = null
-    })
 
     let panelContext = useDisclosurePanelContext()
     let isWithinPanel = computed(() =>
       panelContext === null ? false : panelContext.value === api.panelId.value
     )
+
+    onMounted(() => {
+      if (isWithinPanel.value) return
+      if (props.id !== null) {
+        api.buttonId.value = props.id
+      }
+    })
+    onUnmounted(() => {
+      if (isWithinPanel.value) return
+      api.buttonId.value = null
+    })
 
     let internalButtonRef = ref<HTMLButtonElement | null>(null)
 
@@ -226,11 +230,14 @@ export let DisclosureButton = defineComponent({
             onKeydown: handleKeyDown,
           }
         : {
-            id,
+            id: api.buttonId.value ?? id,
             ref: internalButtonRef,
             type: type.value,
             'aria-expanded': api.disclosureState.value === DisclosureStates.Open,
-            'aria-controls': dom(api.panel) ? api.panelId.value : undefined,
+            'aria-controls':
+              api.disclosureState.value === DisclosureStates.Open || dom(api.panel)
+                ? api.panelId.value
+                : undefined,
             disabled: props.disabled ? true : undefined,
             onClick: handleClick,
             onKeydown: handleKeyDown,
@@ -257,13 +264,15 @@ export let DisclosurePanel = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    id: { type: String, default: () => `headlessui-disclosure-panel-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosurePanel')
 
     onMounted(() => {
-      api.panelId.value = props.id
+      if (props.id !== null) {
+        api.panelId.value = props.id
+      }
     })
     onUnmounted(() => {
       api.panelId.value = null
@@ -285,7 +294,7 @@ export let DisclosurePanel = defineComponent({
     return () => {
       let slot = { open: api.disclosureState.value === DisclosureStates.Open, close: api.close }
       let { id, ...theirProps } = props
-      let ourProps = { id, ref: api.panel }
+      let ourProps = { id: api.panelId.value ?? id, ref: api.panel }
 
       return render({
         ourProps,
