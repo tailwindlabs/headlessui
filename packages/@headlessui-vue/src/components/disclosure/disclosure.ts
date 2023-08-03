@@ -17,7 +17,6 @@ import { match } from '../../utils/match'
 import { render, Features } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
 import { dom } from '../../utils/dom'
-import { env } from '../../utils/env'
 import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 
@@ -77,8 +76,8 @@ export let Disclosure = defineComponent({
     let buttonRef = ref<StateDefinition['button']['value']>(null)
 
     let api = {
-      buttonId: ref(env.isServer ? `headlessui-disclosure-button-${useId()}` : null),
-      panelId: ref(env.isServer ? `headlessui-disclosure-panel-${useId()}` : null),
+      buttonId: ref(`headlessui-disclosure-button-${useId()}`),
+      panelId: ref(`headlessui-disclosure-panel-${useId()}`),
       disclosureState,
       panel: panelRef,
       button: buttonRef,
@@ -139,22 +138,26 @@ export let DisclosureButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
-    id: { type: String, default: () => `headlessui-disclosure-button-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosureButton')
-
-    onMounted(() => {
-      api.buttonId.value = props.id
-    })
-    onUnmounted(() => {
-      api.buttonId.value = null
-    })
 
     let panelContext = useDisclosurePanelContext()
     let isWithinPanel = computed(() =>
       panelContext === null ? false : panelContext.value === api.panelId.value
     )
+
+    onMounted(() => {
+      if (isWithinPanel.value) return
+      if (props.id !== null) {
+        api.buttonId.value = props.id
+      }
+    })
+    onUnmounted(() => {
+      if (isWithinPanel.value) return
+      api.buttonId.value = null
+    })
 
     let internalButtonRef = ref<HTMLButtonElement | null>(null)
 
@@ -261,13 +264,15 @@ export let DisclosurePanel = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    id: { type: String, default: () => `headlessui-disclosure-panel-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
     let api = useDisclosureContext('DisclosurePanel')
 
     onMounted(() => {
-      api.panelId.value = props.id
+      if (props.id !== null) {
+        api.panelId.value = props.id
+      }
     })
     onUnmounted(() => {
       api.panelId.value = null
