@@ -77,6 +77,7 @@ export let Switch = defineComponent({
     as: { type: [Object, String], default: 'button' },
     modelValue: { type: Boolean, default: undefined },
     defaultChecked: { type: Boolean, optional: true },
+    disableToggle: { type: Boolean, optional: true },
     form: { type: String, optional: true },
     name: { type: String, optional: true },
     value: { type: String, optional: true },
@@ -93,6 +94,7 @@ export let Switch = defineComponent({
     )
 
     function toggle() {
+      if (props.disableToggle) return
       theirOnChange(!checked.value)
     }
 

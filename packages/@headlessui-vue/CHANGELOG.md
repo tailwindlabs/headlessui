@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Create disableToggle property on Switch Vue Component ([#2648](https://github.com/tailwindlabs/headlessui/pull/2648))
+
 ### Fixed
 
 - Fix form elements for uncontrolled `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))

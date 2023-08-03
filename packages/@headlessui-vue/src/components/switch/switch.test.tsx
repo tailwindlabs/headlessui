@@ -327,6 +327,25 @@ describe('Rendering', () => {
       expect(handleChange).toHaveBeenNthCalledWith(2, false)
       expect(handleChange).toHaveBeenNthCalledWith(3, true)
     })
+
+    it('should check the onChange listener when choosing new value is zero', async () => {
+      let handleChange = jest.fn()
+
+      renderTemplate({
+        template: html`<Switch
+          name="notifications"
+          :disable-toggle="true"
+          @update:modelValue="handleChange"
+        />`,
+        setup: () => ({ handleChange }),
+      })
+
+      // Toggle
+      await click(getSwitch())
+
+      // Change handler should have been called 3 times
+      expect(handleChange).toBeCalledTimes(0)
+    })
   })
 })
 
