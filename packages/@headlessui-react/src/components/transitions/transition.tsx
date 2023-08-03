@@ -358,6 +358,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   // Skipping initial transition
   let skip = initial && !appear
+  let immediate = appear && show && initial
 
   let transitionDirection = (() => {
     if (!ready) return 'idle'
@@ -404,6 +405,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }, parentNesting)
 
   useTransition({
+    immediate,
     container,
     classes,
     direction: transitionDirection,
@@ -435,7 +437,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let theirProps = rest
   let ourProps = { ref: transitionRef }
 
-  if (appear && show && initial) {
+  if (immediate) {
     theirProps = {
       ...theirProps,
       // Already apply the `enter` and `enterFrom` on the server if required

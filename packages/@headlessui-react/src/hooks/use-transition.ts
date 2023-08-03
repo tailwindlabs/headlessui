@@ -9,6 +9,7 @@ import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { useLatestValue } from './use-latest-value'
 
 interface TransitionArgs {
+  immediate: boolean
   container: MutableRefObject<HTMLElement | null>
   classes: MutableRefObject<{
     enter: string[]
@@ -26,11 +27,24 @@ interface TransitionArgs {
   onStop: MutableRefObject<(direction: TransitionArgs['direction']) => void>
 }
 
-export function useTransition({ container, direction, classes, onStart, onStop }: TransitionArgs) {
+export function useTransition({
+  immediate,
+  container,
+  direction,
+  classes,
+  onStart,
+  onStop,
+}: TransitionArgs) {
   let mounted = useIsMounted()
   let d = useDisposables()
 
   let latestDirection = useLatestValue(direction)
+
+  useIsoMorphicEffect(() => {
+    if (!immediate) return
+
+    latestDirection.current = 'enter'
+  }, [immediate])
 
   useIsoMorphicEffect(() => {
     let dd = disposables()
