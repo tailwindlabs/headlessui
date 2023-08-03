@@ -12,6 +12,8 @@ interface TransitionArgs {
   immediate: boolean
   container: MutableRefObject<HTMLElement | null>
   classes: MutableRefObject<{
+    base: string[]
+
     enter: string[]
     enterFrom: string[]
     enterTo: string[]

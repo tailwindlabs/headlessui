@@ -332,6 +332,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }, [state, container, register, unregister, show, strategy])
 
   let classes = useLatestValue({
+    base: splitClasses(rest.className),
     enter: splitClasses(enter),
     enterFrom: splitClasses(enterFrom),
     enterTo: splitClasses(enterTo),
@@ -441,9 +442,18 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     theirProps = {
       ...theirProps,
       // Already apply the `enter` and `enterFrom` on the server if required
-      className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
+      className: classNames(
+        ...classes.current.base,
+        ...classes.current.enter,
+        ...classes.current.enterFrom
+      ),
     }
+  } else {
+    // delete theirProps['class']
+    // delete theirProps['className']
   }
+
+  console.log('render')
 
   return (
     <NestingContext.Provider value={nesting}>

@@ -77,6 +77,10 @@ function waitForTransition(node: HTMLElement, done: () => void) {
 export function transition(
   node: HTMLElement,
   classes: {
+    // Base coming from `props.className`
+    base: string[]
+
+    // Transition related
     enter: string[]
     enterFrom: string[]
     enterTo: string[]
@@ -127,8 +131,8 @@ export function transition(
   addClasses(node, ...base, ...from)
 
   d.nextFrame(() => {
-    removeClasses(node, ...from)
-    addClasses(node, ...to)
+    removeClasses(node, ...base, ...from)
+    addClasses(node, ...base, ...to)
 
     waitForTransition(node, () => {
       removeClasses(node, ...base)
