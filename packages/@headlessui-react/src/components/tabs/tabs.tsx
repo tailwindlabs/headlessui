@@ -114,12 +114,14 @@ let reducers: {
         return nextState
       }
 
+      let nextSelectedIndex = match(direction, {
+        [Direction.Forwards]: () => tabs.indexOf(focusableTabs[0]),
+        [Direction.Backwards]: () => tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
+      })
+
       return {
         ...nextState,
-        selectedIndex: match(direction, {
-          [Direction.Forwards]: () => tabs.indexOf(focusableTabs[0]),
-          [Direction.Backwards]: () => tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
-        }),
+        selectedIndex: nextSelectedIndex === -1 ? state.selectedIndex : nextSelectedIndex,
       }
     }
 

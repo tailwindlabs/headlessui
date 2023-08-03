@@ -130,10 +130,13 @@ export let TabGroup = defineComponent({
           }
         )
 
-        selectedIndex.value = match(direction, {
+        let nextSelectedIndex = match(direction, {
           [Direction.Forwards]: () => tabs.indexOf(focusableTabs[0]),
           [Direction.Backwards]: () => tabs.indexOf(focusableTabs[focusableTabs.length - 1]),
         })
+        if (nextSelectedIndex !== -1) {
+          selectedIndex.value = nextSelectedIndex
+        }
         api.tabs.value = tabs
         api.panels.value = panels
       }
