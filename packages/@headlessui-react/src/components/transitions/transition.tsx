@@ -443,6 +443,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
       // Already apply the `enter` and `enterFrom` on the server if required
       className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
     }
+  } else {
+    theirProps.className = container.current?.className
   }
 
   return (
