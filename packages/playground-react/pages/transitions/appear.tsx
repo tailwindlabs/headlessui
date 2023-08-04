@@ -17,11 +17,11 @@ export default function AppearExample() {
         show={show}
         appear={appear}
         enter="duration-1000 transition"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
+        enterFrom="opacity-0 scale-95"
+        enterTo="opacity-100 scale-100"
         leave="duration-1000 transition"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-95"
         className="h-96 w-96 rounded-md bg-blue-200 p-4"
       >
         Hello World
