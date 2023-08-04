@@ -43,7 +43,29 @@ export function useTransition({
   useIsoMorphicEffect(() => {
     if (!immediate) return
 
-    latestDirection.current = 'enter'
+    d.nextFrame(() => {
+      latestDirection.current = 'enter'
+
+      let dd = disposables()
+      d.add(dd.dispose)
+
+      let node = container.current
+      if (!node) return // We don't have a DOM node (yet)
+      if (!mounted.current) return
+
+      dd.dispose()
+
+      onStart.current(latestDirection.current)
+
+      dd.add(
+        transition(node, classes.current, latestDirection.current === 'enter', () => {
+          dd.dispose()
+          onStop.current(latestDirection.current)
+        })
+      )
+
+      return dd.dispose
+    })
   }, [immediate])
 
   useIsoMorphicEffect(() => {
