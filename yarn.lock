@@ -2746,6 +2746,11 @@ globals@^11.1.0:
   resolved "https://registry.npmjs.org/globals/-/globals-11.12.0.tgz"
   integrity sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==
 
+goober@^2.1.10:
+  version "2.1.13"
+  resolved "https://registry.yarnpkg.com/goober/-/goober-2.1.13.tgz#e3c06d5578486212a76c9eba860cbc3232ff6d7c"
+  integrity sha512-jFj3BQeleOoy7t93E9rZ2de+ScC4lQICLwiAQmKMg9F6roKGaLSHoCDYKkWlSafg138jejvq/mTdvmnwDQgqoQ==
+
 graceful-fs@^4.1.2, graceful-fs@^4.2.4:
   version "4.2.9"
   resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.9.tgz"
@@ -4718,6 +4723,13 @@ react-flatpickr@^3.10.9:
   dependencies:
     flatpickr "^4.6.2"
     prop-types "^15.5.10"
+
+react-hot-toast@2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-hot-toast/-/react-hot-toast-2.3.0.tgz#70b3d183ac2a4afb6b17cda4a7f4cfe02e730415"
+  integrity sha512-/RxV+bfjld7tSJR1SCLzMAXgFuNW7fCpK6+vbYqfmbGSWcqTMz2rizrvfWKvtcPH5HK0NqxmBaC5SrAy1F42zA==
+  dependencies:
+    goober "^2.1.10"
 
 react-is@^16.13.1:
   version "16.13.1"

@@ -302,7 +302,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
   let transitionRef = useSyncRefs(container, ref)
-  let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
+  let strategy = rest.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
 
@@ -310,7 +310,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   let parentNesting = useParentNesting()
   let { register, unregister } = parentNesting
-  let prevShow = useRef<boolean | null>(null)
 
   useEffect(() => register(container), [register, container])
 
@@ -332,6 +331,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }, [state, container, register, unregister, show, strategy])
 
   let classes = useLatestValue({
+    base: splitClasses(rest.className),
     enter: splitClasses(enter),
     enterFrom: splitClasses(enterFrom),
     enterTo: splitClasses(enterTo),
@@ -358,11 +358,11 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   // Skipping initial transition
   let skip = initial && !appear
+  let immediate = appear && show && initial
 
   let transitionDirection = (() => {
     if (!ready) return 'idle'
     if (skip) return 'idle'
-    if (prevShow.current === show) return 'idle'
     return show ? 'enter' : 'leave'
   })() as TransitionDirection
 
@@ -404,6 +404,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }, parentNesting)
 
   useTransition({
+    immediate,
     container,
     classes,
     direction: transitionDirection,
@@ -422,25 +423,23 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     }),
   })
 
-  useEffect(() => {
-    if (!skip) return
-
-    if (strategy === RenderStrategy.Hidden) {
-      prevShow.current = null
-    } else {
-      prevShow.current = show
-    }
-  }, [show, skip, state])
-
   let theirProps = rest
   let ourProps = { ref: transitionRef }
 
-  if (appear && show && initial) {
+  if (immediate) {
     theirProps = {
       ...theirProps,
       // Already apply the `enter` and `enterFrom` on the server if required
       className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
     }
+  } else {
+    // When we re-render while we are in the middle of the transition, then we should take the
+    // incoming className and the current classes that are applied.
+    //
+    // This is a bit dirty, but we need to make sure React is not applying changes to the class
+    // attribute while we are transitioning.
+    theirProps.className = classNames(rest.className, container.current?.className)
+    if (theirProps.className === '') delete theirProps.className
   }
 
   return (
@@ -476,7 +475,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   ref: Ref<HTMLElement>
 ) {
   // @ts-expect-error
-  let { show, appear = false, unmount, ...theirProps } = props as typeof props
+  let { show, appear = false, unmount = true, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
   let transitionRef = useSyncRefs(internalTransitionRef, ref)
 

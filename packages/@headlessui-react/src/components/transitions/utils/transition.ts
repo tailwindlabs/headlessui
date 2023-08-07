@@ -77,6 +77,7 @@ function waitForTransition(node: HTMLElement, done: () => void) {
 export function transition(
   node: HTMLElement,
   classes: {
+    base: string[]
     enter: string[]
     enterFrom: string[]
     enterTo: string[]
@@ -116,6 +117,7 @@ export function transition(
 
   removeClasses(
     node,
+    ...classes.base,
     ...classes.enter,
     ...classes.enterTo,
     ...classes.enterFrom,
@@ -124,15 +126,15 @@ export function transition(
     ...classes.leaveTo,
     ...classes.entered
   )
-  addClasses(node, ...base, ...from)
+  addClasses(node, ...classes.base, ...base, ...from)
 
   d.nextFrame(() => {
-    removeClasses(node, ...from)
-    addClasses(node, ...to)
+    removeClasses(node, ...classes.base, ...base, ...from)
+    addClasses(node, ...classes.base, ...base, ...to)
 
     waitForTransition(node, () => {
-      removeClasses(node, ...base)
-      addClasses(node, ...classes.entered)
+      removeClasses(node, ...classes.base, ...base)
+      addClasses(node, ...classes.base, ...classes.entered)
 
       return _done()
     })

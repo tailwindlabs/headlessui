@@ -30,6 +30,7 @@ it('should be possible to transition', async () => {
     transition(
       element,
       {
+        base: [],
         enter: ['enter'],
         enterFrom: ['enterFrom'],
         enterTo: ['enterTo'],
@@ -87,6 +88,7 @@ it('should wait the correct amount of time to finish a transition', async () => 
     transition(
       element,
       {
+        base: [],
         enter: ['enter'],
         enterFrom: ['enterFrom'],
         enterTo: ['enterTo'],
@@ -156,6 +158,7 @@ it('should keep the delay time into account', async () => {
     transition(
       element,
       {
+        base: [],
         enter: ['enter'],
         enterFrom: ['enterFrom'],
         enterTo: ['enterTo'],
