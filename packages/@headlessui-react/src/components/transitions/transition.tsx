@@ -310,7 +310,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   let parentNesting = useParentNesting()
   let { register, unregister } = parentNesting
-  let prevShow = useRef<boolean | null>(null)
 
   useEffect(() => register(container), [register, container])
 
@@ -364,7 +363,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let transitionDirection = (() => {
     if (!ready) return 'idle'
     if (skip) return 'idle'
-    if (prevShow.current === show) return 'idle'
     return show ? 'enter' : 'leave'
   })() as TransitionDirection
 
@@ -424,16 +422,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
       }
     }),
   })
-
-  useEffect(() => {
-    if (!skip) return
-
-    if (strategy === RenderStrategy.Hidden) {
-      prevShow.current = null
-    } else {
-      prevShow.current = show
-    }
-  }, [show, skip, state])
 
   let theirProps = rest
   let ourProps = { ref: transitionRef }
