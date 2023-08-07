@@ -302,7 +302,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
   let transitionRef = useSyncRefs(container, ref)
-  let strategy = rest.unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
+  let strategy = rest.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
 
@@ -487,7 +487,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   ref: Ref<HTMLElement>
 ) {
   // @ts-expect-error
-  let { show, appear = false, unmount, ...theirProps } = props as typeof props
+  let { show, appear = false, unmount = true, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
   let transitionRef = useSyncRefs(internalTransitionRef, ref)
 
