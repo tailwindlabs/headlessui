@@ -445,7 +445,13 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
       className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
     }
   } else {
-    theirProps.className = container.current?.className
+    // When we re-render while we are in the middle of the transition, then we should take the
+    // incoming className and the current classes that are applied.
+    //
+    // This is a bit dirty, but we need to make sure React is not applying changes to the class
+    // attribute while we are transitioning.
+    theirProps.className = classNames(rest.className, container.current?.className)
+    if (theirProps.className === '') delete theirProps.className
   }
 
   return (
