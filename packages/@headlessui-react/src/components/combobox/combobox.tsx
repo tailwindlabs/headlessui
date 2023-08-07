@@ -53,6 +53,7 @@ import { useControllable } from '../../hooks/use-controllable'
 import { useWatch } from '../../hooks/use-watch'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { isMobile } from '../../utils/platform'
+import { useOwnerDocument } from '../../hooks/use-owner'
 
 enum ComboboxState {
   Open,
@@ -738,6 +739,7 @@ function InputFn<
   let actions = useActions('Combobox.Input')
 
   let inputRef = useSyncRefs(data.inputRef, ref)
+  let ownerDocument = useOwnerDocument(data.inputRef)
 
   let isTyping = useRef(false)
 
@@ -799,6 +801,11 @@ function InputFn<
         if (isTyping.current) return
         if (!input) return
 
+        // Bail when the input is not the currently focused element. When it is not the focused
+        // element, and we call the `setSelectionRange`, then it will become the focused
+        // element which may be unwanted.
+        if (ownerDocument?.activeElement !== input) return
+
         let { selectionStart, selectionEnd } = input
 
         // A custom selection is used, no need to move the caret
@@ -811,7 +818,7 @@ function InputFn<
         input.setSelectionRange(input.value.length, input.value.length)
       })
     },
-    [currentDisplayValue, data.comboboxState]
+    [currentDisplayValue, data.comboboxState, ownerDocument]
   )
 
   // Trick VoiceOver in behaving a little bit better. Manually "resetting" the input makes VoiceOver

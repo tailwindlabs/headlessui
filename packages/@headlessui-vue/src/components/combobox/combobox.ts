@@ -38,6 +38,7 @@ import { useControllable } from '../../hooks/use-controllable'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { isMobile } from '../../utils/platform'
 import { disposables } from '../../utils/disposables'
+import { getOwnerDocument } from '../../utils/owner'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -700,6 +701,7 @@ export let ComboboxInput = defineComponent({
   },
   setup(props, { emit, attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxInput')
+    let ownerDocument = computed(() => getOwnerDocument(dom(api.inputRef)))
 
     let isTyping = { value: false }
 
@@ -743,7 +745,7 @@ export let ComboboxInput = defineComponent({
       //     - By pressing `escape`
       //     - By clicking `outside` of the Combobox
       watch(
-        [currentDisplayValue, api.comboboxState],
+        [currentDisplayValue, api.comboboxState, ownerDocument],
         ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
           // When the user is typing, we want to not touch the `input` at all. Especially when they
           // are using an IME, we don't want to mess with the input at all.
@@ -765,6 +767,11 @@ export let ComboboxInput = defineComponent({
           requestAnimationFrame(() => {
             if (isTyping.value) return
             if (!input) return
+
+            // Bail when the input is not the currently focused element. When it is not the focused
+            // element, and we call the `setSelectionRange`, then it will become the focused
+            // element which may be unwanted.
+            if (ownerDocument.value?.activeElement !== input) return
 
             let { selectionStart, selectionEnd } = input
 
