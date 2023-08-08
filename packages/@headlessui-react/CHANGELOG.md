@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don't assume `<Tab />` components are available when setting the next index ([#2642](https://github.com/tailwindlabs/headlessui/pull/2642))
 - Fix incorrectly focused `Combobox.Input` component on page load ([#2654](https://github.com/tailwindlabs/headlessui/pull/2654))
 - Ensure `appear` works using the `Transition` component (even when used with SSR) ([#2646](https://github.com/tailwindlabs/headlessui/pull/2646))
+- Improve resetting values when using the `nullable` prop on the `Combobox` component ([#2660](https://github.com/tailwindlabs/headlessui/pull/2660))
 
 ## [1.7.16] - 2023-07-27
 
