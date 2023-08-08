@@ -707,6 +707,15 @@ export let ComboboxInput = defineComponent({
 
     expose({ el: api.inputRef, $el: api.inputRef })
 
+    function clear() {
+      api.change(null)
+      let options = dom(api.optionsRef)
+      if (options) {
+        options.scrollTop = 0
+      }
+      api.goToOption(Focus.Nothing)
+    }
+
     // When a `displayValue` prop is given, we should use it to transform the current selected
     // option(s) so that the format can be chosen by developers implementing this. This is useful if
     // your data is an object and you just want to pick a certain property or want to create a dynamic
@@ -924,6 +933,18 @@ export let ComboboxInput = defineComponent({
           if (api.optionsRef.value && !api.optionsPropsRef.value.static) {
             event.stopPropagation()
           }
+
+          if (api.nullable.value && api.mode.value === ValueMode.Single) {
+            // We want to clear the value when the user presses escape if and only if the current
+            // value is not set (aka, they didn't select anything yet, or they cleared the input which
+            // caused the value to be set to `null`). If the current value is set, then we want to
+            // fallback to that value when we press escape (this part is handled in the watcher that
+            // syncs the value with the input field again).
+            if (api.value.value === null) {
+              clear()
+            }
+          }
+
           api.closeCombobox()
           break
 
@@ -952,12 +973,7 @@ export let ComboboxInput = defineComponent({
       // ctrl/cmd+x.
       if (api.nullable.value && api.mode.value === ValueMode.Single) {
         if (event.target.value === '') {
-          api.change(null)
-          let options = dom(api.optionsRef)
-          if (options) {
-            options.scrollTop = 0
-          }
-          api.goToOption(Focus.Nothing)
+          clear()
         }
       }
 

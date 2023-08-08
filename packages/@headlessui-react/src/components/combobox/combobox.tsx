@@ -745,6 +745,14 @@ function InputFn<
 
   let d = useDisposables()
 
+  let clear = useEvent(() => {
+    actions.onChange(null)
+    if (data.optionsRef.current) {
+      data.optionsRef.current.scrollTop = 0
+    }
+    actions.goToOption(Focus.Nothing)
+  })
+
   // When a `displayValue` prop is given, we should use it to transform the current selected
   // option(s) so that the format can be chosen by developers implementing this. This is useful if
   // your data is an object and you just want to pick a certain property or want to create a dynamic
@@ -964,6 +972,18 @@ function InputFn<
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
           event.stopPropagation()
         }
+
+        if (data.nullable && data.mode === ValueMode.Single) {
+          // We want to clear the value when the user presses escape if and only if the current
+          // value is not set (aka, they didn't select anything yet, or they cleared the input which
+          // caused the value to be set to `null`). If the current value is set, then we want to
+          // fallback to that value when we press escape (this part is handled in the watcher that
+          // syncs the value with the input field again).
+          if (data.value === null) {
+            clear()
+          }
+        }
+
         return actions.closeCombobox()
 
       case Keys.Tab:
@@ -991,11 +1011,7 @@ function InputFn<
     // ctrl/cmd+x.
     if (data.nullable && data.mode === ValueMode.Single) {
       if (event.target.value === '') {
-        actions.onChange(null)
-        if (data.optionsRef.current) {
-          data.optionsRef.current.scrollTop = 0
-        }
-        actions.goToOption(Focus.Nothing)
+        clear()
       }
     }
 
