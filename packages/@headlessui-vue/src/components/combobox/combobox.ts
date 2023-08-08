@@ -281,13 +281,13 @@ export let Combobox = defineComponent({
         comboboxState.value = ComboboxStates.Open
       },
       goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
+        defaultToFirstOption.value = false
+
         if (goToOptionRaf !== null) {
           cancelAnimationFrame(goToOptionRaf)
         }
 
         goToOptionRaf = requestAnimationFrame(() => {
-          defaultToFirstOption.value = false
-
           if (props.disabled) return
           if (
             optionsRef.value &&
