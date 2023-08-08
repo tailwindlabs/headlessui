@@ -155,7 +155,9 @@ let order: Record<
             value: element.value.slice(0, -1),
           }),
         })
-        return fireEvent.keyDown(element, ev)
+
+        fireEvent.keyDown(element, ev)
+        return fireEvent.input(element, ev)
       }
 
       return fireEvent.keyDown(element, event)

@@ -86,7 +86,7 @@ export function transition(
   // then we have some leftovers that should be cleaned.
   d.add(() => removeClasses(node, ...base, ...from, ...to, ...entered))
 
-  // When we get disposed early, than we should also call the done method but switch the reason.
+  // When we get disposed early, then we should also call the done method but switch the reason.
   d.add(() => _done(Reason.Cancelled))
 
   return d.dispose

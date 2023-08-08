@@ -4554,9 +4554,9 @@ describe('Keyboard interactions', () => {
           await press(Keys.Backspace)
           expect(getComboboxInput()?.value).toBe('')
 
-          // Verify that we don't have an active option anymore since we are in `nullable` mode
+          // Verify that we don't have an selected option anymore since we are in `nullable` mode
           assertNotActiveComboboxOption(options[1])
-          assertNoActiveComboboxOption()
+          assertNoSelectedComboboxOption()
 
           // Verify that we saw the `null` change coming in
           expect(handleChange).toHaveBeenCalledTimes(1)

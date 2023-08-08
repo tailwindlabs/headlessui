@@ -745,6 +745,14 @@ function InputFn<
 
   let d = useDisposables()
 
+  let clear = useEvent(() => {
+    actions.onChange(null)
+    if (data.optionsRef.current) {
+      data.optionsRef.current.scrollTop = 0
+    }
+    actions.goToOption(Focus.Nothing)
+  })
+
   // When a `displayValue` prop is given, we should use it to transform the current selected
   // option(s) so that the format can be chosen by developers implementing this. This is useful if
   // your data is an object and you just want to pick a certain property or want to create a dynamic
@@ -871,23 +879,6 @@ function InputFn<
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
-      case Keys.Backspace:
-      case Keys.Delete:
-        if (data.mode !== ValueMode.Single) return
-        if (!data.nullable) return
-
-        let input = event.currentTarget
-        d.requestAnimationFrame(() => {
-          if (input.value === '') {
-            actions.onChange(null)
-            if (data.optionsRef.current) {
-              data.optionsRef.current.scrollTop = 0
-            }
-            actions.goToOption(Focus.Nothing)
-          }
-        })
-        break
-
       case Keys.Enter:
         isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
@@ -981,6 +972,18 @@ function InputFn<
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
           event.stopPropagation()
         }
+
+        if (data.nullable && data.mode === ValueMode.Single) {
+          // We want to clear the value when the user presses escape if and only if the current
+          // value is not set (aka, they didn't select anything yet, or they cleared the input which
+          // caused the value to be set to `null`). If the current value is set, then we want to
+          // fallback to that value when we press escape (this part is handled in the watcher that
+          // syncs the value with the input field again).
+          if (data.value === null) {
+            clear()
+          }
+        }
+
         return actions.closeCombobox()
 
       case Keys.Tab:
@@ -1000,6 +1003,17 @@ function InputFn<
     // compositionend event is fired to trigger an onChange is not enough, because then filtering
     // options while typing won't work at all because we are still in "composing" mode.
     onChange?.(event)
+
+    // When the value becomes empty in a single value mode while being nullable then we want to clear
+    // the option entirely.
+    //
+    // This is can happen when you press backspace, but also when you select all the text and press
+    // ctrl/cmd+x.
+    if (data.nullable && data.mode === ValueMode.Single) {
+      if (event.target.value === '') {
+        clear()
+      }
+    }
 
     // Open the combobox to show the results based on what the user has typed
     actions.openCombobox()
