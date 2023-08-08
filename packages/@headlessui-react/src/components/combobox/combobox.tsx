@@ -871,23 +871,6 @@ function InputFn<
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
-      case Keys.Backspace:
-      case Keys.Delete:
-        if (data.mode !== ValueMode.Single) return
-        if (!data.nullable) return
-
-        let input = event.currentTarget
-        d.requestAnimationFrame(() => {
-          if (input.value === '') {
-            actions.onChange(null)
-            if (data.optionsRef.current) {
-              data.optionsRef.current.scrollTop = 0
-            }
-            actions.goToOption(Focus.Nothing)
-          }
-        })
-        break
-
       case Keys.Enter:
         isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
@@ -1000,6 +983,21 @@ function InputFn<
     // compositionend event is fired to trigger an onChange is not enough, because then filtering
     // options while typing won't work at all because we are still in "composing" mode.
     onChange?.(event)
+
+    // When the value becomes empty in a single value mode while being nullable than we want to clear
+    // the option entirely.
+    //
+    // This is can happen when you press backspace, but also when you select all the text and press
+    // ctrl/cmd+x.
+    if (data.nullable && data.mode === ValueMode.Single) {
+      if (event.target.value === '') {
+        actions.onChange(null)
+        if (data.optionsRef.current) {
+          data.optionsRef.current.scrollTop = 0
+        }
+        actions.goToOption(Focus.Nothing)
+      }
+    }
 
     // Open the combobox to show the results based on what the user has typed
     actions.openCombobox()

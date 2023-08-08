@@ -837,24 +837,6 @@ export let ComboboxInput = defineComponent({
       switch (event.key) {
         // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
-        case Keys.Backspace:
-        case Keys.Delete:
-          if (api.mode.value !== ValueMode.Single) return
-          if (!api.nullable.value) return
-
-          let input = event.currentTarget as HTMLInputElement
-          requestAnimationFrame(() => {
-            if (input.value === '') {
-              api.change(null)
-              let options = dom(api.optionsRef)
-              if (options) {
-                options.scrollTop = 0
-              }
-              api.goToOption(Focus.Nothing)
-            }
-          })
-          break
-
         case Keys.Enter:
           isTyping.value = false
           if (api.comboboxState.value !== ComboboxStates.Open) return
@@ -962,6 +944,22 @@ export let ComboboxInput = defineComponent({
       // compositionend event is fired to trigger an onChange is not enough, because then filtering
       // options while typing won't work at all because we are still in "composing" mode.
       emit('change', event)
+
+      // When the value becomes empty in a single value mode while being nullable than we want to clear
+      // the option entirely.
+      //
+      // This is can happen when you press backspace, but also when you select all the text and press
+      // ctrl/cmd+x.
+      if (api.nullable.value && api.mode.value === ValueMode.Single) {
+        if (event.target.value === '') {
+          api.change(null)
+          let options = dom(api.optionsRef)
+          if (options) {
+            options.scrollTop = 0
+          }
+          api.goToOption(Focus.Nothing)
+        }
+      }
 
       // Open the combobox to show the results based on what the user has typed
       api.openCombobox()
