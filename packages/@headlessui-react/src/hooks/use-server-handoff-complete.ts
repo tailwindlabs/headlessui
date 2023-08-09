@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import * as React from 'react'
 import { env } from '../utils/env'
 
 export function useServerHandoffComplete() {
-  let [complete, setComplete] = useState(env.isHandoffComplete)
+  let [complete, setComplete] = React.useState(env.isHandoffComplete)
 
   if (complete && env.isHandoffComplete === false) {
     // This means we are in a test environment and we need to reset the handoff state
@@ -11,13 +11,13 @@ export function useServerHandoffComplete() {
     setComplete(false)
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (complete === true) return
     setComplete(true)
   }, [complete])
 
   // Transition from pending to complete (forcing a re-render when server rendering)
-  useEffect(() => env.handoff(), [])
+  React.useEffect(() => env.handoff(), [])
 
   return complete
 }
