@@ -16,7 +16,7 @@ let MyComponentLazy = lazy(async () => {
 export default function Index() {
   return (
     <div>
-      <h1>@headlessui/react & Suspense</h1>
+      <h1 className="p-8 text-3xl font-bold">Suspense + Portals</h1>
 
       <Portal>
         <div className="absolute top-24 right-48 z-10 flex h-32 w-32 flex-col items-center justify-center rounded border border-black/5 bg-white bg-clip-padding p-px shadow">
