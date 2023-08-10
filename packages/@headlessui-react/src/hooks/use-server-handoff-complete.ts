@@ -9,10 +9,8 @@ import { env } from '../utils/env'
  *
  * Given that the problem only exists in React 18 we can rely
  * on newer APIs to determine if hydration is happening.
- *
- * @returns
  */
-function useIsHydratingInReact18() {
+function useIsHydratingInReact18(): boolean {
   let isServer = typeof document === 'undefined'
 
   // React < 18 doesn't have any way to figure this out afaik
