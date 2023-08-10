@@ -19,18 +19,50 @@ export default function Index() {
       <h1>@headlessui/react & Suspense</h1>
 
       <Portal>
-        <h2>Portal 1</h2>
+        <div className="absolute top-24 right-48 z-10 flex h-32 w-32 flex-col items-center justify-center rounded border border-black/5 bg-white bg-clip-padding p-px shadow">
+          <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
+            Instant
+          </div>
+          <div className="flex w-full flex-1 items-center justify-center text-3xl font-bold text-gray-400">
+            1
+          </div>
+        </div>
       </Portal>
       <Portal>
-        <h2>Portal 2</h2>
+        <div className="absolute top-24 right-8 z-10 flex h-32 w-32 flex-col items-center justify-center rounded border border-black/5 bg-white bg-clip-padding p-px shadow">
+          <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
+            Instant
+          </div>
+          <div className="flex w-full flex-1 items-center justify-center text-3xl font-bold text-gray-400">
+            2
+          </div>
+        </div>
       </Portal>
 
       <Suspense fallback={<span>Loading ...</span>}>
         <MyComponentLazy>
           {(env) => (
             <div>
-              <Portal>Portal, suspense 1: {env}</Portal>
-              <Portal>Portal, suspense 2: {env}</Portal>
+              <Portal>
+                <div className="absolute top-64 right-48 z-10 flex h-32 w-32 flex-col items-center justify-center rounded border border-black/5 bg-white bg-clip-padding p-px shadow">
+                  <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
+                    Suspense
+                  </div>
+                  <div className="flex w-full flex-1 items-center justify-center text-3xl font-bold text-gray-400">
+                    {env} 1
+                  </div>
+                </div>
+              </Portal>
+              <Portal>
+                <div className="absolute top-64 right-8 z-10 flex h-32 w-32 flex-col items-center justify-center rounded border border-black/5 bg-white bg-clip-padding p-px shadow">
+                  <div className="w-full rounded-t-sm bg-gray-100 p-1 text-center text-gray-700">
+                    Suspense
+                  </div>
+                  <div className="flex w-full flex-1 items-center justify-center text-3xl font-bold text-gray-400">
+                    {env} 2
+                  </div>
+                </div>
+              </Portal>
             </div>
           )}
         </MyComponentLazy>
