@@ -20,6 +20,7 @@
     "@popperjs/core": "^2.6.0",
     "@tailwindcss/forms": "^0.5.2",
     "@tailwindcss/typography": "^0.5.2",
+    "@tanstack/react-virtual": "^3.0.0-beta.54",
     "autoprefixer": "^10.4.7",
     "framer-motion": "^6.0.0",
     "next": "^12.1.4",
