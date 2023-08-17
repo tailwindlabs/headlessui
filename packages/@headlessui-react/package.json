@@ -1,6 +1,6 @@
 {
   "name": "@headlessui/react",
-  "version": "1.7.16",
+  "version": "1.7.17",
   "description": "A set of completely unstyled, fully accessible UI components for React, designed to integrate beautifully with Tailwind CSS.",
   "main": "dist/index.cjs",
   "typings": "dist/index.d.ts",
