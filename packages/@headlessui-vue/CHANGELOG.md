@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.16] - 2023-08-17
+
 ### Fixed
 
 - Fix form elements for uncontrolled `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))
@@ -482,7 +486,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...HEAD
+[1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...v1.7.16
 [1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.14...@headlessui/vue@v1.7.15
 [1.7.14]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.13...@headlessui/vue@v1.7.14
 [1.7.13]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.12...@headlessui/vue@v1.7.13
