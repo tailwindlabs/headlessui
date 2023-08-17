@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `appear` works using the `Transition` component (even when used with SSR) ([#2646](https://github.com/tailwindlabs/headlessui/pull/2646))
 - Improve resetting values when using the `nullable` prop on the `Combobox` component ([#2660](https://github.com/tailwindlabs/headlessui/pull/2660))
 - Fix hydration of components inside `<Suspense>` ([#2663](https://github.com/tailwindlabs/headlessui/pull/2663))
+- Prevent scrolling when focusing a tab ([#2674](https://github.com/tailwindlabs/headlessui/pull/2674))
 
 ## [1.7.16] - 2023-07-27
 
