@@ -405,7 +405,7 @@ export let Tab = defineComponent({
 
       if (props.disabled) return
 
-      dom(internalTabRef)?.focus()
+      dom(internalTabRef)?.focus({ preventScroll: true })
       api.setSelectedIndex(myIndex.value)
 
       microTask(() => {

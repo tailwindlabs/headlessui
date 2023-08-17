@@ -472,7 +472,7 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     if (ready.current) return
     ready.current = true
 
-    internalTabRef.current?.focus()
+    internalTabRef.current?.focus({ preventScroll: true })
     actions.change(myIndex)
 
     microTask(() => {
