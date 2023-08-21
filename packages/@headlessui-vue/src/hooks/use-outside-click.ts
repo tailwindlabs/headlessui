@@ -3,6 +3,7 @@ import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { dom } from '../utils/dom'
 import { useDocumentEvent } from './use-document-event'
 import { useWindowEvent } from './use-window-event'
+import { isMobile } from '../utils/platform'
 
 type Container = Ref<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
@@ -108,6 +109,10 @@ export function useOutsideClick(
   useDocumentEvent(
     'click',
     (event) => {
+      if (isMobile()) {
+        return
+      }
+
       if (!initialClickTarget.value) {
         return
       }
