@@ -72,6 +72,7 @@ type StateDefinition = {
 
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
+  openOnFocus: Ref<boolean>
 
   compare: (a: unknown, z: unknown) => boolean
 
@@ -190,6 +191,7 @@ export let Combobox = defineComponent({
 
     let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
     let nullable = computed(() => props.nullable)
+    let openOnFocus = ref(false)
     let [directValue, theirOnChange] = useControllable(
       computed(() => props.modelValue),
       (value: unknown) => emit('update:modelValue', value),
@@ -221,6 +223,7 @@ export let Combobox = defineComponent({
       },
       defaultValue: computed(() => props.defaultValue),
       nullable,
+      openOnFocus,
       inputRef,
       labelRef,
       buttonRef,
@@ -695,6 +698,7 @@ export let ComboboxInput = defineComponent({
     displayValue: { type: Function as PropType<(item: unknown) => string> },
     defaultValue: { type: String, default: undefined },
     id: { type: String, default: () => `headlessui-combobox-input-${useId()}` },
+    openOnFocus: { type: Boolean, default: false },
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
@@ -706,6 +710,8 @@ export let ComboboxInput = defineComponent({
     let isTyping = { value: false }
 
     expose({ el: api.inputRef, $el: api.inputRef })
+
+    api.openOnFocus.value = props.openOnFocus
 
     function clear() {
       api.change(null)
@@ -1021,6 +1027,15 @@ export let ComboboxInput = defineComponent({
       return api.closeCombobox()
     }
 
+    function handleFocus(event: FocusEvent) {
+      if (event.relatedTarget !== null && !(event.relatedTarget instanceof HTMLBodyElement)) return
+      if (api.disabled.value) return
+      if (!api.openOnFocus.value) return
+      if (api.comboboxState.value === ComboboxStates.Open) return
+
+      api.openCombobox()
+    }
+
     let defaultValue = computed(() => {
       return (
         props.defaultValue ??
@@ -1049,6 +1064,7 @@ export let ComboboxInput = defineComponent({
         onCompositionend: handleCompositionend,
         onKeydown: handleKeyDown,
         onInput: handleInput,
+        onFocus: handleFocus,
         onBlur: handleBlur,
         role: 'combobox',
         type: attrs.type ?? 'text',
@@ -1211,7 +1227,7 @@ export let ComboboxOption = defineComponent({
       // Ideally we can have a better check where we can explicitly check for the virtual keyboard.
       // But right now this is still an experimental feature:
       // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
-      if (!isMobile()) {
+      if (!isMobile() && !api.openOnFocus.value) {
         requestAnimationFrame(() => dom(api.inputRef)?.focus())
       }
     }
