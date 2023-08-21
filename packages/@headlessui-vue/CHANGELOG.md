@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Don't call `<Dialog>`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
 
 ## [1.7.16] - 2023-08-17
 
