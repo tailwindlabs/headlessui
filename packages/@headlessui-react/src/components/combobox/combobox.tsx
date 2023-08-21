@@ -1215,7 +1215,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       actions.openCombobox()
     }
 
-    d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+    if (!data.openOnFocus) {
+      d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+    }
   })
 
   let labelledby = useComputed(() => {

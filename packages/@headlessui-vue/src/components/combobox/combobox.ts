@@ -607,7 +607,9 @@ export let ComboboxButton = defineComponent({
         api.openCombobox()
       }
 
-      nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
+      if (!api.openOnFocus.value) {
+        nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
+      }
     }
 
     function handleKeydown(event: KeyboardEvent) {
