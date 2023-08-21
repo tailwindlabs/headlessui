@@ -97,6 +97,7 @@ export function useOutsideClick(
     ) {
       event.preventDefault()
     }
+
     return cb(event, target)
   }
 
@@ -128,6 +129,7 @@ export function useOutsideClick(
       if (isMobile()) {
         return
       }
+
       if (!initialClickTarget.current) {
         return
       }
