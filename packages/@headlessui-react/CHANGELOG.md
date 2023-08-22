@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Don't call `<Dialog>`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
+- Lazily resolve default containers in `<Dialog>` ([#2697](https://github.com/tailwindlabs/headlessui/pull/2697))
 
 ## [1.7.17] - 2023-08-17
 

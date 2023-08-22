@@ -1525,6 +1525,43 @@ describe('Mouse interactions', () => {
     })
   )
 
+  // NOTE: This test doesn't actually fail in JSDOM when it's supposed to
+  // We're keeping it around for documentation purposes
+  it(
+    'should not close the Dialog if it starts open and we click inside the Dialog when it has only a panel',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(true)
+        return (
+          <>
+            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+              Trigger
+            </button>
+            <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+              <Dialog.Panel>
+                <p id="inside">My content</p>
+                <button>close</button>
+              </Dialog.Panel>
+            </Dialog>
+          </>
+        )
+      }
+
+      render(<Example />)
+
+      // Open the dialog
+      await click(document.getElementById('trigger'))
+
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the p tag inside the dialog
+      await click(document.getElementById('inside'))
+
+      // It should not have closed
+      assertDialog({ state: DialogState.Visible })
+    })
+  )
+
   it(
     'should close the Dialog if we click outside the Dialog.Panel',
     suppressConsoleLogs(async () => {
