@@ -251,6 +251,7 @@ export type MenuProps<TTag extends ElementType> = Props<
   never,
   {
     __demoMode?: boolean
+    refocusButtonOnClose?: boolean
   }
 >
 
@@ -258,7 +259,7 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   props: MenuProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let { __demoMode = false, ...theirProps } = props
+  let { __demoMode = false, refocusButtonOnClose = true, ...theirProps } = props
   let reducerBag = useReducer(stateReducer, {
     __demoMode,
     menuState: __demoMode ? MenuStates.Open : MenuStates.Closed,
@@ -278,7 +279,7 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     (event, target) => {
       dispatch({ type: ActionTypes.CloseMenu })
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
+      if (!isFocusableElement(target, FocusableMode.Loose) && refocusButtonOnClose) {
         event.preventDefault()
         buttonRef.current?.focus()
       }
