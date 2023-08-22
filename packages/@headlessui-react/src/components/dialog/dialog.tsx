@@ -14,6 +14,7 @@ import React, {
   ContextType,
   ElementType,
   MouseEvent as ReactMouseEvent,
+  RefObject,
   MutableRefObject,
   Ref,
 } from 'react'
@@ -210,13 +211,24 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
   let hasParentDialog = useContext(DialogContext) !== null
   let [portals, PortalWrapper] = useNestedPortals()
+
+  // We use this because reading these values during iniital render(s)
+  // can result in `null` rather then the actual elements
+  // This doesn't happen when using certain components like a
+  // `<Dialog.Title>` because they cause the parent to re-render
+  let defaultContainer: RefObject<HTMLElement> = {
+    get current() {
+      return state.panelRef.current ?? internalDialogRef.current
+    },
+  }
+
   let {
     resolveContainers: resolveRootContainers,
     mainTreeNodeRef,
     MainTreeNode,
   } = useRootContainers({
     portals,
-    defaultContainers: [state.panelRef.current ?? internalDialogRef.current],
+    defaultContainers: [defaultContainer],
   })
 
   // If there are multiple dialogs, then you can be the root, the leaf or one
