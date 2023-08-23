@@ -15,6 +15,7 @@ import {
   InjectionKey,
   PropType,
   Ref,
+  watch,
 } from 'vue'
 import { render } from '../../utils/render'
 import { usePortalRoot } from '../../internal/portal-force-root'
@@ -70,12 +71,14 @@ export let Portal = defineComponent({
     })
 
     let parent = inject(PortalParentContext, null)
-    onMounted(() => {
+    let didRegister = false
+    watch(element, () => {
+      if (didRegister) return
+      if (!parent) return
       let domElement = dom(element)
       if (!domElement) return
-      if (!parent) return
-
       onUnmounted(parent.register(domElement))
+      didRegister = true
     })
 
     onUnmounted(() => {
