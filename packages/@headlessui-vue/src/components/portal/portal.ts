@@ -64,6 +64,11 @@ export let Portal = defineComponent({
         : groupContext.resolveTarget()
     )
 
+    let ready = ref(false)
+    onMounted(() => {
+      ready.value = true
+    })
+
     watchEffect(() => {
       if (forcePortalRoot) return
       if (groupContext == null) return
@@ -71,6 +76,10 @@ export let Portal = defineComponent({
     })
 
     let parent = inject(PortalParentContext, null)
+
+    // Since the element is mounted lazily (because of SSR hydration)
+    // We use `watch` on the element rather than `onMounted`
+    // We donly want to register it once so we have a local var to prevent that from changing
     let didRegister = false
     watch(element, () => {
       if (didRegister) return
@@ -92,6 +101,7 @@ export let Portal = defineComponent({
     })
 
     return () => {
+      if (!ready.value) return null
       if (myTarget.value === null) return null
 
       let ourProps = {
