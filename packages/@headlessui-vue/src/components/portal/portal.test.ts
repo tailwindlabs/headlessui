@@ -99,7 +99,7 @@ it('SSR-rendering a Portal should not error', async () => {
   expect(result).toBe(html`<main id="parent"><!----></main>`)
 })
 
-it('should be possible to use a Portal', () => {
+it('should be possible to use a Portal', async () => {
   expect(getPortalRoot()).toBe(null)
 
   renderTemplate(
@@ -111,6 +111,8 @@ it('should be possible to use a Portal', () => {
       </main>
     `
   )
+
+  await nextTick()
 
   let parent = document.getElementById('parent')
   let content = document.getElementById('content')
@@ -125,7 +127,7 @@ it('should be possible to use a Portal', () => {
   expect(content).toHaveTextContent('Contents...')
 })
 
-it('should be possible to use multiple Portal elements', () => {
+it('should be possible to use multiple Portal elements', async () => {
   expect(getPortalRoot()).toBe(null)
 
   renderTemplate(
@@ -141,6 +143,8 @@ it('should be possible to use multiple Portal elements', () => {
       </main>
     `
   )
+
+  await nextTick()
 
   let parent = document.getElementById('parent')
   let content1 = document.getElementById('content1')
@@ -283,6 +287,8 @@ it('should be possible to render multiple portals at the same time', async () =>
       }
     },
   })
+
+  await nextTick()
 
   expect(getPortalRoot()).not.toBe(null)
   expect(getPortalRoot().children).toHaveLength(3)

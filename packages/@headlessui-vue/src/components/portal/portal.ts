@@ -15,6 +15,7 @@ import {
   InjectionKey,
   PropType,
   Ref,
+  watch,
 } from 'vue'
 import { render } from '../../utils/render'
 import { usePortalRoot } from '../../internal/portal-force-root'
@@ -63,6 +64,11 @@ export let Portal = defineComponent({
         : groupContext.resolveTarget()
     )
 
+    let ready = ref(false)
+    onMounted(() => {
+      ready.value = true
+    })
+
     watchEffect(() => {
       if (forcePortalRoot) return
       if (groupContext == null) return
@@ -70,12 +76,18 @@ export let Portal = defineComponent({
     })
 
     let parent = inject(PortalParentContext, null)
-    onMounted(() => {
+
+    // Since the element is mounted lazily (because of SSR hydration)
+    // We use `watch` on `element` + a local var rather than
+    // `onMounted` to ensure registration only happens once
+    let didRegister = false
+    watch(element, () => {
+      if (didRegister) return
+      if (!parent) return
       let domElement = dom(element)
       if (!domElement) return
-      if (!parent) return
-
       onUnmounted(parent.register(domElement))
+      didRegister = true
     })
 
     onUnmounted(() => {
@@ -89,6 +101,7 @@ export let Portal = defineComponent({
     })
 
     return () => {
+      if (!ready.value) return null
       if (myTarget.value === null) return null
 
       let ourProps = {
