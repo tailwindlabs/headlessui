@@ -78,8 +78,8 @@ export let Portal = defineComponent({
     let parent = inject(PortalParentContext, null)
 
     // Since the element is mounted lazily (because of SSR hydration)
-    // We use `watch` on the element rather than `onMounted`
-    // We donly want to register it once so we have a local var to prevent that from changing
+    // We use `watch` on `element` + a local var rather than
+    // `onMounted` to ensure registration only happens once
     let didRegister = false
     watch(element, () => {
       if (didRegister) return
