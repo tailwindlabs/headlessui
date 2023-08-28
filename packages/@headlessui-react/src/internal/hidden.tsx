@@ -24,7 +24,10 @@ function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDE
   let { features = Features.None, ...theirProps } = props
   let ourProps = {
     ref,
-    'aria-hidden': (features & Features.Focusable) === Features.Focusable ? true : undefined,
+    'aria-hidden':
+      (features & Features.Focusable) === Features.Focusable
+        ? true
+        : theirProps['aria-hidden'] ?? undefined,
     style: {
       position: 'fixed',
       top: 1,
