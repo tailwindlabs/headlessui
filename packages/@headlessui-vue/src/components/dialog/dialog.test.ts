@@ -192,6 +192,105 @@ describe('Rendering', () => {
     )
 
     it(
+      'should be able to explicitly choose role=dialog',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="setIsOpen(true)">Trigger</button>
+              <Dialog :open="isOpen" @close="setIsOpen" class="relative bg-blue-500" role="dialog">
+                <TabSentinel />
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+            }
+          },
+        })
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        await click(document.getElementById('trigger'))
+
+        await nextFrame()
+
+        assertDialog({ state: DialogState.Visible, attributes: { role: 'dialog' } })
+      })
+    )
+
+    it(
+      'should be able to explicitly choose role=alertdialog',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="setIsOpen(true)">Trigger</button>
+              <Dialog :open="isOpen" @close="setIsOpen" class="relative bg-blue-500" role="alertdialog">
+                <TabSentinel />
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+            }
+          },
+        })
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        await click(document.getElementById('trigger'))
+
+        await nextFrame()
+
+        assertDialog({ state: DialogState.Visible, attributes: { role: 'alertdialog' } })
+      })
+    )
+
+    it(
+      'should fall back to role=dialog for an invalid role',
+      suppressConsoleLogs(async () => {
+        renderTemplate({
+          template: `
+            <div>
+              <button id="trigger" @click="setIsOpen(true)">Trigger</button>
+              <Dialog :open="isOpen" @close="setIsOpen" class="relative bg-blue-500" role="foobar">
+                <TabSentinel />
+              </Dialog>
+            </div>
+          `,
+          setup() {
+            let isOpen = ref(false)
+            return {
+              isOpen,
+              setIsOpen(value: boolean) {
+                isOpen.value = value
+              },
+            }
+          },
+        })
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        await click(document.getElementById('trigger'))
+
+        await nextFrame()
+
+        assertDialog({ state: DialogState.Visible, attributes: { role: 'dialog' } })
+      })
+    )
+
+    it(
       'should complain when an `open` prop is not a boolean',
       suppressConsoleLogs(async () => {
         expect(() =>
