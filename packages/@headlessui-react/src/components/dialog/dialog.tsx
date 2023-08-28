@@ -152,6 +152,23 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
+  let didWarnOnRole = useRef(false)
+
+  role = (function () {
+    if (role === 'dialog' || role === 'alertdialog') {
+      return role
+    }
+
+    if (!didWarnOnRole.current) {
+      didWarnOnRole.current = true
+      console.warn(
+        `Invalid role [${role}] passed to <Dialog />. Only \`dialog\` and and \`alertdialog\` are supported. Using \`dialog\` instead.`
+      )
+    }
+
+    return 'dialog'
+  })()
+
   let usesOpenClosedState = useOpenClosed()
   if (open === undefined && usesOpenClosedState !== null) {
     // Update the `open` prop based on the open closed state
