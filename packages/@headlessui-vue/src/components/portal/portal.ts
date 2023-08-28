@@ -16,6 +16,7 @@ import {
   PropType,
   Ref,
   watch,
+  getCurrentInstance,
 } from 'vue'
 import { render } from '../../utils/render'
 import { usePortalRoot } from '../../internal/portal-force-root'
@@ -81,12 +82,13 @@ export let Portal = defineComponent({
     // We use `watch` on `element` + a local var rather than
     // `onMounted` to ensure registration only happens once
     let didRegister = false
+    let instance = getCurrentInstance()
     watch(element, () => {
       if (didRegister) return
       if (!parent) return
       let domElement = dom(element)
       if (!domElement) return
-      onUnmounted(parent.register(domElement))
+      onUnmounted(parent.register(domElement), instance)
       didRegister = true
     })
 
