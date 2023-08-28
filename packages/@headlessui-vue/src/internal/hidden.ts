@@ -22,7 +22,11 @@ export let Hidden = defineComponent({
     return () => {
       let { features, ...theirProps } = props
       let ourProps = {
-        'aria-hidden': (features & Features.Focusable) === Features.Focusable ? true : undefined,
+        'aria-hidden':
+          (features & Features.Focusable) === Features.Focusable
+            ? true
+            : // @ts-ignore
+              theirProps['aria-hidden'] ?? undefined,
         style: {
           position: 'fixed',
           top: 1,

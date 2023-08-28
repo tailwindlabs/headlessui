@@ -528,7 +528,7 @@ export let TabPanel = defineComponent({
       }
 
       if (!selected.value && props.unmount && !props.static) {
-        return h(Hidden, { as: 'span', ...ourProps })
+        return h(Hidden, { as: 'span', 'aria-hidden': true, ...ourProps })
       }
 
       return render({

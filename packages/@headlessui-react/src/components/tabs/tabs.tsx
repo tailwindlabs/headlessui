@@ -589,7 +589,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }
 
   if (!selected && (theirProps.unmount ?? true) && !(theirProps.static ?? false)) {
-    return <Hidden as="span" {...ourProps} />
+    return <Hidden as="span" aria-hidden="true" {...ourProps} />
   }
 
   return render({
