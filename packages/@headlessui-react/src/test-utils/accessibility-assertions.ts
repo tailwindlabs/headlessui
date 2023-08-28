@@ -1301,11 +1301,11 @@ export function assertDescriptionValue(element: HTMLElement | null, value: strin
 // ---
 
 export function getDialog(): HTMLElement | null {
-  return document.querySelector('[role="dialog"]')
+  return document.querySelector('[role="dialog"],[role="alertdialog"]')
 }
 
 export function getDialogs(): HTMLElement[] {
-  return Array.from(document.querySelectorAll('[role="dialog"]'))
+  return Array.from(document.querySelectorAll('[role="dialog"],[role="alertdialog"]'))
 }
 
 export function getDialogTitle(): HTMLElement | null {
@@ -1358,7 +1358,7 @@ export function assertDialog(
 
         assertHidden(dialog)
 
-        expect(dialog).toHaveAttribute('role', 'dialog')
+        expect(dialog).toHaveAttribute('role', options.attributes?.['role'] ?? 'dialog')
         expect(dialog).not.toHaveAttribute('aria-modal', 'true')
 
         if (options.textContent) expect(dialog).toHaveTextContent(options.textContent)
@@ -1373,7 +1373,7 @@ export function assertDialog(
 
         assertVisible(dialog)
 
-        expect(dialog).toHaveAttribute('role', 'dialog')
+        expect(dialog).toHaveAttribute('role', options.attributes?.['role'] ?? 'dialog')
         expect(dialog).toHaveAttribute('aria-modal', 'true')
 
         if (options.textContent) expect(dialog).toHaveTextContent(options.textContent)

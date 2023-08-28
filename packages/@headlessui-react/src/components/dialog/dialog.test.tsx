@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom'
 import React, { createElement, useRef, useState, Fragment, useEffect, useCallback } from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import { Dialog } from './dialog'
 import { Popover } from '../popover/popover'
@@ -99,6 +99,98 @@ describe('Rendering', () => {
         )
         expect.hasAssertions()
       })
+    )
+
+    it(
+      'should be able to explicitly choose role=dialog',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen(true)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen} role="dialog">
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        await click(document.getElementById('trigger'))
+
+        await nextFrame()
+
+        assertDialog({ state: DialogState.Visible, attributes: { role: 'dialog' } })
+      })
+    )
+
+    it(
+      'should be able to explicitly choose role=alertdialog',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen(true)}>
+                Trigger
+              </button>
+              <Dialog open={isOpen} onClose={setIsOpen} role="alertdialog">
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        await click(document.getElementById('trigger'))
+
+        await nextFrame()
+
+        assertDialog({ state: DialogState.Visible, attributes: { role: 'alertdialog' } })
+      })
+    )
+
+    it(
+      'should fall back to role=dialog for an invalid role',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen(true)}>
+                Trigger
+              </button>
+              <Dialog
+                open={isOpen}
+                onClose={setIsOpen}
+                // @ts-expect-error: We explicitly type role to only accept valid options — but we still want to verify runtime behaviorr
+                role="foobar"
+              >
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        await click(document.getElementById('trigger'))
+
+        await nextFrame()
+
+        assertDialog({ state: DialogState.Visible, attributes: { role: 'dialog' } })
+      }, 'warn')
     )
 
     it(

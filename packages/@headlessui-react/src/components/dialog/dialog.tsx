@@ -119,7 +119,7 @@ let DEFAULT_DIALOG_TAG = 'div' as const
 interface DialogRenderPropArg {
   open: boolean
 }
-type DialogPropsWeControl = 'role' | 'aria-describedby' | 'aria-labelledby' | 'aria-modal'
+type DialogPropsWeControl = 'aria-describedby' | 'aria-labelledby' | 'aria-modal'
 
 let DialogRenderFeatures = Features.RenderStrategy | Features.Static
 
@@ -131,6 +131,7 @@ export type DialogProps<TTag extends ElementType> = Props<
     open?: boolean
     onClose(value: boolean): void
     initialFocus?: MutableRefObject<HTMLElement | null>
+    role?: 'dialog' | 'alertdialog'
     __demoMode?: boolean
   }
 >
@@ -145,10 +146,28 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     open,
     onClose,
     initialFocus,
+    role = 'dialog',
     __demoMode = false,
     ...theirProps
   } = props
   let [nestedDialogCount, setNestedDialogCount] = useState(0)
+
+  let didWarnOnRole = useRef(false)
+
+  role = (function () {
+    if (role === 'dialog' || role === 'alertdialog') {
+      return role
+    }
+
+    if (!didWarnOnRole.current) {
+      didWarnOnRole.current = true
+      console.warn(
+        `Invalid role [${role}] passed to <Dialog />. Only \`dialog\` and and \`alertdialog\` are supported. Using \`dialog\` instead.`
+      )
+    }
+
+    return 'dialog'
+  })()
 
   let usesOpenClosedState = useOpenClosed()
   if (open === undefined && usesOpenClosedState !== null) {
@@ -339,7 +358,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let ourProps = {
     ref: dialogRef,
     id,
-    role: 'dialog',
+    role,
     'aria-modal': dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,

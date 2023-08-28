@@ -77,12 +77,29 @@ export let Dialog = defineComponent({
     open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
     id: { type: String, default: () => `headlessui-dialog-${useId()}` },
+    role: { type: String as PropType<'dialog' | 'alertdialog'>, default: 'dialog' },
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots, expose }) {
     let ready = ref(false)
     onMounted(() => {
       ready.value = true
+    })
+
+    let didWarnOnRole = false
+    let role = computed(() => {
+      if (props.role === 'dialog' || props.role === 'alertdialog') {
+        return props.role
+      }
+
+      if (!didWarnOnRole) {
+        didWarnOnRole = true
+        console.warn(
+          `Invalid role [${role}] passed to <Dialog />. Only \`dialog\` and and \`alertdialog\` are supported. Using \`dialog\` instead.`
+        )
+      }
+
+      return 'dialog'
     })
 
     let nestedDialogCount = ref(0)
@@ -285,7 +302,7 @@ export let Dialog = defineComponent({
         ...attrs,
         ref: internalDialogRef,
         id,
-        role: 'dialog',
+        role: role.value,
         'aria-modal': dialogState.value === DialogStates.Open ? true : undefined,
         'aria-labelledby': titleId.value,
         'aria-describedby': describedby.value,
