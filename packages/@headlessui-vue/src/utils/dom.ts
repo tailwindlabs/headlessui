@@ -12,7 +12,10 @@ export function dom<T extends HTMLElement | ComponentPublicInstance>(
 
   let el = (ref.value as { $el?: T }).$el ?? ref.value
 
-  if (el instanceof Element) {
+  // In this case we check for `Node` because returning `null` from a
+  // component renders a `Comment` which is a `Node` but not `Element`
+  // The types don't encode this possibility but we handle it here at runtime
+  if (el instanceof Node) {
     return el as AsElement<T>
   }
 
