@@ -1023,8 +1023,9 @@ export let ComboboxInput = defineComponent({
           clear()
         }
 
-        // We do have a value, so let's select the active option
-        else {
+        // We do have a value, so let's select the active option, unless we were just going through
+        // the form and we opened it due to the focus event.
+        else if (api.activationTrigger.value !== ActivationTrigger.Focus) {
           api.selectActiveOption()
         }
       }
