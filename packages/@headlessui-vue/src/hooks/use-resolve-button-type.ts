@@ -1,4 +1,4 @@
-import { ref, onMounted, watchEffect, Ref } from 'vue'
+import { ref, onMounted, watchEffect, Ref, ComponentPublicInstance } from 'vue'
 import { dom } from '../utils/dom'
 
 function resolveType(type: unknown, as: string | object) {
@@ -12,7 +12,7 @@ function resolveType(type: unknown, as: string | object) {
 
 export function useResolveButtonType(
   data: Ref<{ as: string | object; type?: unknown }>,
-  refElement: Ref<HTMLElement | null>
+  refElement: Ref<HTMLElement | ComponentPublicInstance | null>
 ) {
   let type = ref(resolveType(data.value.type, data.value.as))
 

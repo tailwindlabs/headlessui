@@ -14,6 +14,7 @@ import {
   // Types
   InjectionKey,
   Ref,
+  ComponentPublicInstance,
 } from 'vue'
 
 import { match } from '../../utils/match'
@@ -315,12 +316,13 @@ export let PopoverButton = defineComponent({
       panelContext === null ? false : panelContext.value === api.panelId.value
     )
 
-    let elementRef = ref(null)
+    let elementRef = ref<HTMLElement | ComponentPublicInstance | null>(null)
     let sentinelId = `headlessui-focus-sentinel-${useId()}`
 
     if (!isWithinPanel.value) {
       watchEffect(() => {
-        api.button.value = elementRef.value
+        // `elementRef` could be a Vue component in which case we want to grab the DOM element from it
+        api.button.value = dom(elementRef)
       })
     }
 
