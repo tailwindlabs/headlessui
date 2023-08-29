@@ -981,8 +981,44 @@ export let ComboboxInput = defineComponent({
       api.openCombobox()
     }
 
-    function handleBlur() {
+    function handleBlur(event: FocusEvent) {
       isTyping.value = false
+
+      // Focus is moved into the list, we don't want to close yet.
+      if (
+        event.relatedTarget instanceof Node &&
+        dom(api.optionsRef)?.contains(event.relatedTarget)
+      ) {
+        return
+      }
+
+      if (
+        event.relatedTarget instanceof Node &&
+        dom(api.buttonRef)?.contains(event.relatedTarget)
+      ) {
+        return
+      }
+
+      if (api.comboboxState.value !== ComboboxStates.Open) return
+      event.preventDefault()
+
+      if (api.mode.value === ValueMode.Single) {
+        // We want to clear the value when the user presses escape if and only if the current
+        // value is not set (aka, they didn't select anything yet, or they cleared the input which
+        // caused the value to be set to `null`). If the current value is set, then we want to
+        // fallback to that value when we press escape (this part is handled in the watcher that
+        // syncs the value with the input field again).
+        if (api.nullable.value && api.value.value === null) {
+          clear()
+        }
+
+        // We do have a value, so let's select the active option
+        else {
+          api.selectActiveOption()
+        }
+      }
+
+      return api.closeCombobox()
     }
 
     let defaultValue = computed(() => {

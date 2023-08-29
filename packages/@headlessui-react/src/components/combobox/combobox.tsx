@@ -13,6 +13,7 @@ import React, {
   ElementType,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
+  FocusEvent as ReactFocusEvent,
   MutableRefObject,
   Ref,
 } from 'react'
@@ -1019,8 +1020,38 @@ function InputFn<
     actions.openCombobox()
   })
 
-  let handleBlur = useEvent(() => {
+  let handleBlur = useEvent((event: ReactFocusEvent) => {
     isTyping.current = false
+
+    // Focus is moved into the list, we don't want to close yet.
+    if (data.optionsRef.current?.contains(event.relatedTarget)) {
+      return
+    }
+
+    if (data.buttonRef.current?.contains(event.relatedTarget)) {
+      return
+    }
+
+    if (data.comboboxState !== ComboboxState.Open) return
+    event.preventDefault()
+
+    if (data.mode === ValueMode.Single) {
+      // We want to clear the value when the user presses escape if and only if the current
+      // value is not set (aka, they didn't select anything yet, or they cleared the input which
+      // caused the value to be set to `null`). If the current value is set, then we want to
+      // fallback to that value when we press escape (this part is handled in the watcher that
+      // syncs the value with the input field again).
+      if (data.nullable && data.value === null) {
+        clear()
+      }
+
+      // We do have a value, so let's select the active option
+      else {
+        actions.selectActiveOption()
+      }
+    }
+
+    return actions.closeCombobox()
   })
 
   // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present

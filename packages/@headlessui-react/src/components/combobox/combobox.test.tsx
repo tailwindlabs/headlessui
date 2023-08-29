@@ -6,6 +6,7 @@ import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppre
 import {
   click,
   focus,
+  blur,
   mouseMove,
   mouseLeave,
   press,
@@ -447,6 +448,43 @@ describe('Rendering', () => {
             </Combobox.Options>
           </Combobox>
         )
+      })
+    )
+
+    it(
+      'should close the Combobox when the input is blurred',
+      suppressConsoleLogs(async () => {
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        render(
+          <Combobox name="assignee" by="id">
+            <Combobox.Input onChange={NOOP} />
+            <Combobox.Button />
+            <Combobox.Options>
+              {data.map((person) => (
+                <Combobox.Option key={person.id} value={person}>
+                  {person.label}
+                </Combobox.Option>
+              ))}
+            </Combobox.Options>
+          </Combobox>
+        )
+
+        // Open the combobox
+        await click(getComboboxButton())
+
+        // Verify it is open
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        // Close the combobox
+        await blur(getComboboxInput())
+
+        // Verify it is closed
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
   })
