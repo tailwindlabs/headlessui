@@ -12,6 +12,7 @@ import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   click,
   focus,
+  blur,
   mouseMove,
   mouseLeave,
   press,
@@ -498,6 +499,44 @@ describe('Rendering', () => {
           `,
           setup: () => ({ data }),
         })
+      })
+    )
+
+    it(
+      'should close the Combobox when the input is blurred',
+      suppressConsoleLogs(async () => {
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
+            <Combobox name="assignee" by="id">
+              <ComboboxInput />
+              <ComboboxButton />
+              <ComboboxOptions>
+                <ComboboxOption v-for="person in data" :key="person.id" :value="person">
+                  {{ person.label }}
+                </ComboboxOption>
+              <ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => ({ data }),
+        })
+
+        // Open the combobox
+        await click(getComboboxButton())
+
+        // Verify it is open
+        assertComboboxList({ state: ComboboxState.Visible })
+
+        // Close the combobox
+        await blur(getComboboxInput())
+
+        // Verify it is closed
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       })
     )
   })

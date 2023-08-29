@@ -295,6 +295,24 @@ export async function focus(element: Document | Element | Window | Node | null) 
     throw err
   }
 }
+
+export async function blur(element: Document | Element | Window | Node | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    if (element instanceof HTMLElement) {
+      element.blur()
+    } else {
+      fireEvent.blur(element)
+    }
+
+    await new Promise(nextFrame)
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, blur)
+    throw err
+  }
+}
+
 export async function mouseEnter(element: Document | Element | Window | null) {
   try {
     if (element === null) return expect(element).not.toBe(null)
