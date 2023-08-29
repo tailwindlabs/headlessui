@@ -4831,6 +4831,7 @@ describe('Mouse interactions', () => {
       // Verify it is closed
       assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      assertActiveElement(getComboboxInput())
     })
   )
 
@@ -4863,6 +4864,7 @@ describe('Mouse interactions', () => {
       // Verify it is closed
       assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      assertActiveElement(getComboboxInput())
     })
   )
 
