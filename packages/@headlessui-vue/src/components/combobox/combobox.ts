@@ -73,7 +73,6 @@ type StateDefinition = {
 
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
-  openOnFocus: Ref<boolean>
 
   compare: (a: unknown, z: unknown) => boolean
 
@@ -193,7 +192,6 @@ export let Combobox = defineComponent({
 
     let mode = computed(() => (props.multiple ? ValueMode.Multi : ValueMode.Single))
     let nullable = computed(() => props.nullable)
-    let openOnFocus = ref(false)
     let [directValue, theirOnChange] = useControllable(
       computed(() => props.modelValue),
       (value: unknown) => emit('update:modelValue', value),
@@ -225,7 +223,6 @@ export let Combobox = defineComponent({
       },
       defaultValue: computed(() => props.defaultValue),
       nullable,
-      openOnFocus,
       inputRef,
       labelRef,
       buttonRef,
@@ -612,9 +609,7 @@ export let ComboboxButton = defineComponent({
         api.openCombobox()
       }
 
-      if (!api.openOnFocus.value) {
-        nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
-      }
+      nextTick(() => dom(api.inputRef)?.focus({ preventScroll: true }))
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -717,8 +712,6 @@ export let ComboboxInput = defineComponent({
     let isTyping = { value: false }
 
     expose({ el: api.inputRef, $el: api.inputRef })
-
-    api.openOnFocus.value = props.openOnFocus
 
     function clear() {
       api.change(null)
@@ -1040,8 +1033,11 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleFocus(event: FocusEvent) {
+      if (dom(api.buttonRef)?.contains(event.relatedTarget as HTMLElement)) return
+      if (dom(api.optionsRef)?.contains(event.relatedTarget as HTMLElement)) return
       if (api.disabled.value) return
-      if (!api.openOnFocus.value) return
+
+      if (!props.openOnFocus) return
       if (api.comboboxState.value === ComboboxStates.Open) return
 
       api.openCombobox()
@@ -1229,9 +1225,6 @@ export let ComboboxOption = defineComponent({
     function handleClick(event: MouseEvent) {
       if (props.disabled) return event.preventDefault()
       api.selectOption(id)
-      if (api.mode.value === ValueMode.Single) {
-        api.closeCombobox()
-      }
 
       // We want to make sure that we don't accidentally trigger the virtual keyboard.
       //
@@ -1245,8 +1238,12 @@ export let ComboboxOption = defineComponent({
       // Ideally we can have a better check where we can explicitly check for the virtual keyboard.
       // But right now this is still an experimental feature:
       // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
-      if (!isMobile() && !api.openOnFocus.value) {
-        requestAnimationFrame(() => dom(api.inputRef)?.focus())
+      if (!isMobile()) {
+        requestAnimationFrame(() => dom(api.inputRef)?.focus({ preventScroll: true }))
+      }
+
+      if (api.mode.value === ValueMode.Single) {
+        requestAnimationFrame(() => api.closeCombobox())
       }
     }
 

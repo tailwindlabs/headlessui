@@ -88,8 +88,6 @@ interface StateDefinition<T> {
   options: { id: string; dataRef: ComboboxOptionDataRef<T> }[]
   activeOptionIndex: number | null
   activationTrigger: ActivationTrigger
-
-  openOnFocus: boolean
 }
 
 enum ActionTypes {
@@ -104,8 +102,6 @@ enum ActionTypes {
   RegisterLabel,
 
   SetActivationTrigger,
-
-  SetOpenOnFocus,
 }
 
 function adjustOrderedState<T>(
@@ -149,7 +145,6 @@ type Actions<T> =
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef<T> }
   | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
-  | { type: ActionTypes.SetOpenOnFocus; value: boolean }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
 
 let reducers: {
@@ -262,12 +257,6 @@ let reducers: {
       labelId: action.id,
     }
   },
-  [ActionTypes.SetOpenOnFocus]: (state, action) => {
-    return {
-      ...state,
-      openOnFocus: action.value,
-    }
-  },
   [ActionTypes.SetActivationTrigger]: (state, action) => {
     return {
       ...state,
@@ -287,7 +276,6 @@ let ComboboxActionsContext = createContext<{
   selectActiveOption(): void
   setActivationTrigger(trigger: ActivationTrigger): void
   onChange(value: unknown): void
-  setOpenOnFocus(value: boolean): void
 } | null>(null)
 ComboboxActionsContext.displayName = 'ComboboxActionsContext'
 
@@ -456,7 +444,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
     labelId: null,
-    openOnFocus: false,
   } as StateDefinition<TValue>)
 
   let defaultToFirstOption = useRef(false)
@@ -625,10 +612,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     return () => dispatch({ type: ActionTypes.RegisterLabel, id: null })
   })
 
-  let setOpenOnFocus = useEvent((value: boolean) => {
-    dispatch({ type: ActionTypes.SetOpenOnFocus, value })
-  })
-
   let onChange = useEvent((value: unknown) => {
     return match(data.mode, {
       [ValueMode.Single]() {
@@ -664,7 +647,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       setActivationTrigger,
       selectActiveOption,
       selectOption,
-      setOpenOnFocus,
     }),
     []
   )
@@ -789,10 +771,6 @@ function InputFn<
     }
     actions.goToOption(Focus.Nothing)
   })
-
-  useEffect(() => {
-    actions.setOpenOnFocus(openOnFocus)
-  }, [openOnFocus])
 
   // When a `displayValue` prop is given, we should use it to transform the current selected
   // option(s) so that the format can be chosen by developers implementing this. This is useful if
@@ -1062,9 +1040,12 @@ function InputFn<
     actions.openCombobox()
   })
 
-  let handleFocus = useEvent(() => {
+  let handleFocus = useEvent((event: ReactFocusEvent) => {
+    if (data.buttonRef.current?.contains(event.relatedTarget as HTMLElement)) return
+    if (data.optionsRef.current?.contains(event.relatedTarget as HTMLElement)) return
     if (data.disabled) return
-    if (!data.openOnFocus) return
+
+    if (!openOnFocus) return
     if (data.comboboxState === ComboboxState.Open) return
 
     actions.openCombobox()
@@ -1239,9 +1220,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       actions.openCombobox()
     }
 
-    if (!data.openOnFocus) {
-      d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
-    }
+    d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
   })
 
   let labelledby = useComputed(() => {
@@ -1489,9 +1468,6 @@ function OptionFn<
   let handleClick = useEvent((event: { preventDefault: Function }) => {
     if (disabled) return event.preventDefault()
     select()
-    if (data.mode === ValueMode.Single) {
-      actions.closeCombobox()
-    }
 
     // We want to make sure that we don't accidentally trigger the virtual keyboard.
     //
@@ -1505,8 +1481,12 @@ function OptionFn<
     // Ideally we can have a better check where we can explicitly check for the virtual keyboard.
     // But right now this is still an experimental feature:
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
-    if (!isMobile() && !data.openOnFocus) {
-      requestAnimationFrame(() => data.inputRef.current?.focus())
+    if (!isMobile()) {
+      requestAnimationFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+    }
+
+    if (data.mode === ValueMode.Single) {
+      requestAnimationFrame(() => actions.closeCombobox())
     }
   })
 
