@@ -1040,24 +1040,6 @@ function InputFn<
     actions.openCombobox()
   })
 
-  let handleFocus = useEvent((event: ReactFocusEvent) => {
-    if (data.buttonRef.current?.contains(event.relatedTarget as HTMLElement)) return
-    if (data.optionsRef.current?.contains(event.relatedTarget as HTMLElement)) return
-    if (data.disabled) return
-
-    if (!openOnFocus) return
-    if (data.comboboxState === ComboboxState.Open) return
-
-    actions.openCombobox()
-
-    // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
-    // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
-    // selecting the active option when the user tabs away.
-    d.nextFrame(() => {
-      actions.setActivationTrigger(ActivationTrigger.Focus)
-    })
-  })
-
   let handleBlur = useEvent((event: ReactFocusEvent) => {
     isTyping.current = false
 
@@ -1090,6 +1072,24 @@ function InputFn<
     }
 
     return actions.closeCombobox()
+  })
+
+  let handleFocus = useEvent((event: ReactFocusEvent) => {
+    if (data.buttonRef.current?.contains(event.relatedTarget as HTMLElement)) return
+    if (data.optionsRef.current?.contains(event.relatedTarget as HTMLElement)) return
+    if (data.disabled) return
+
+    if (!openOnFocus) return
+    if (data.comboboxState === ComboboxState.Open) return
+
+    actions.openCombobox()
+
+    // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
+    // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
+    // selecting the active option when the user tabs away.
+    d.nextFrame(() => {
+      actions.setActivationTrigger(ActivationTrigger.Focus)
+    })
   })
 
   // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present
