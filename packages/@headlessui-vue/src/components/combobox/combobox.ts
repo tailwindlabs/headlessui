@@ -56,6 +56,7 @@ enum ValueMode {
 
 enum ActivationTrigger {
   Pointer,
+  Focus,
   Other,
 }
 
@@ -91,6 +92,7 @@ type StateDefinition = {
   // State mutators
   closeCombobox(): void
   openCombobox(): void
+  setActivationTrigger(trigger: ActivationTrigger): void
   goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   change(value: unknown): void
   selectOption(id: string): void
@@ -282,6 +284,9 @@ export let Combobox = defineComponent({
         }
 
         comboboxState.value = ComboboxStates.Open
+      },
+      setActivationTrigger(trigger: ActivationTrigger) {
+        activationTrigger.value = trigger
       },
       goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
         defaultToFirstOption.value = false
@@ -959,7 +964,12 @@ export let ComboboxInput = defineComponent({
         case Keys.Tab:
           isTyping.value = false
           if (api.comboboxState.value !== ComboboxStates.Open) return
-          if (api.mode.value === ValueMode.Single) api.selectActiveOption()
+          if (
+            api.mode.value === ValueMode.Single &&
+            api.activationTrigger.value !== ActivationTrigger.Focus
+          ) {
+            api.selectActiveOption()
+          }
           api.closeCombobox()
           break
       }
@@ -1030,12 +1040,18 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleFocus(event: FocusEvent) {
-      if (event.relatedTarget !== null && !(event.relatedTarget instanceof HTMLBodyElement)) return
       if (api.disabled.value) return
       if (!api.openOnFocus.value) return
       if (api.comboboxState.value === ComboboxStates.Open) return
 
       api.openCombobox()
+
+      // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
+      // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
+      // selecting the active option when the user tabs away.
+      disposables().nextFrame(() => {
+        api.setActivationTrigger(ActivationTrigger.Focus)
+      })
     }
 
     let defaultValue = computed(() => {

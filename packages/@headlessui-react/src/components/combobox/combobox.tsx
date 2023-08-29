@@ -68,6 +68,7 @@ enum ValueMode {
 
 enum ActivationTrigger {
   Pointer,
+  Focus,
   Other,
 }
 
@@ -101,6 +102,8 @@ enum ActionTypes {
   UnregisterOption,
 
   RegisterLabel,
+
+  SetActivationTrigger,
 
   SetOpenOnFocus,
 }
@@ -147,6 +150,7 @@ type Actions<T> =
   | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
   | { type: ActionTypes.SetOpenOnFocus; value: boolean }
+  | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
 
 let reducers: {
   [P in ActionTypes]: <T>(
@@ -264,6 +268,12 @@ let reducers: {
       openOnFocus: action.value,
     }
   },
+  [ActionTypes.SetActivationTrigger]: (state, action) => {
+    return {
+      ...state,
+      activationTrigger: action.trigger,
+    }
+  },
 }
 
 let ComboboxActionsContext = createContext<{
@@ -275,6 +285,7 @@ let ComboboxActionsContext = createContext<{
   goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   selectOption(id: string): void
   selectActiveOption(): void
+  setActivationTrigger(trigger: ActivationTrigger): void
   onChange(value: unknown): void
   setOpenOnFocus(value: boolean): void
 } | null>(null)
@@ -638,6 +649,10 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     })
   })
 
+  let setActivationTrigger = useEvent((trigger: ActivationTrigger) => {
+    dispatch({ type: ActionTypes.SetActivationTrigger, trigger })
+  })
+
   let actions = useMemo<_Actions>(
     () => ({
       onChange,
@@ -646,6 +661,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       goToOption,
       closeCombobox,
       openCombobox,
+      setActivationTrigger,
       selectActiveOption,
       selectOption,
       setOpenOnFocus,
@@ -1014,7 +1030,9 @@ function InputFn<
       case Keys.Tab:
         isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
-        if (data.mode === ValueMode.Single) actions.selectActiveOption()
+        if (data.mode === ValueMode.Single && data.activationTrigger !== ActivationTrigger.Focus) {
+          actions.selectActiveOption()
+        }
         actions.closeCombobox()
         break
     }
@@ -1044,13 +1062,19 @@ function InputFn<
     actions.openCombobox()
   })
 
-  let handleFocus = useEvent((event: React.FocusEvent<HTMLElement>) => {
-    if (event.relatedTarget !== null && !(event.relatedTarget instanceof HTMLBodyElement)) return
+  let handleFocus = useEvent(() => {
     if (data.disabled) return
     if (!data.openOnFocus) return
     if (data.comboboxState === ComboboxState.Open) return
 
     actions.openCombobox()
+
+    // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
+    // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
+    // selecting the active option when the user tabs away.
+    d.nextFrame(() => {
+      actions.setActivationTrigger(ActivationTrigger.Focus)
+    })
   })
 
   let handleBlur = useEvent((event: ReactFocusEvent) => {
