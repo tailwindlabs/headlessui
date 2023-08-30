@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Use cached node_modules
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            nodeModules-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        env:
+          CI: true
+
+      - name: Test
+        run: |
+          yarn test || yarn test || yarn test || exit 1
+        env:
+          CI: true
+
+      - name: Calculate environment variables
+        run: |
+          echo "TAG_NAME=${{ github.event.tag_name }}" >> $GITHUB_ENV
+          echo "RELEASE_CHANNEL=$(npm run release-channel $TAG_NAME --silent)" >> $GITHUB_ENV
+          echo "PACKAGE_PATH=$(npm run package-path $TAG_NAME --silent)" >> $GITHUB_ENV
+
+      - name: Publish
+        run: npm publish ${{ env.PACKAGE_PATH }} --tag ${{ env.RELEASE_CHANNEL }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
