@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - '@*'
+      - '**'
 
 env:
   CI: true
