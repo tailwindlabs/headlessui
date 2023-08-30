@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure hidden `TabPanel` components are hidden from the accessibility tree ([#2708](https://github.com/tailwindlabs/headlessui/pull/2708))
 - Add support for `role="alertdialog"` to `<Dialog>` component ([#2709](https://github.com/tailwindlabs/headlessui/pull/2709))
 - Ensure blurring the `ComboboxInput` component closes the `Combobox` ([#2712](https://github.com/tailwindlabs/headlessui/pull/2712))
+- Allow `<button>` to be in nested components in `<PopoverButton>` ([#2715](https://github.com/tailwindlabs/headlessui/pull/2715))
 
 ## [1.7.16] - 2023-08-17
 
