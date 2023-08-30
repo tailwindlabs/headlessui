@@ -1,0 +1,55 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '**'
+
+env:
+  CI: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    permissions:
+      contents: write # for softprops/action-gh-release to create GitHub release
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: git fetch --tags -f
+
+      - name: Resolve version
+        id: vars
+        run: |
+          echo "TAG_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
+
+      - name: Get release notes
+        run: |
+          RELEASE_NOTES=$(npm run release-notes $TAG_NAME --silent)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$RELEASE_NOTES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          tag_name: ${{ env.TAG_NAME }}
+          body: |
+            ${{ env.RELEASE_NOTES }}

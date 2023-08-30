@@ -1,12 +1,18 @@
-name: Release Insiders
+name: Release
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CI: true
 
 jobs:
   build:
@@ -45,15 +51,13 @@ jobs:
         env:
           CI: true
 
-      - name: Resolve version
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-
-      - name: 'Version based on commit: 0.0.0-insiders.${{ steps.vars.outputs.sha_short }}'
-        run: npm version -w packages 0.0.0-insiders.${{ steps.vars.outputs.sha_short }} --force --no-git-tag-version
+      - name: Calculate environment variables
+        run: |
+          echo "TAG_NAME=${{ github.event.tag_name }}" >> $GITHUB_ENV
+          echo "RELEASE_CHANNEL=$(npm run release-channel $TAG_NAME --silent)" >> $GITHUB_ENV
+          echo "PACKAGE_PATH=$(npm run package-path $TAG_NAME --silent)" >> $GITHUB_ENV
 
       - name: Publish
-        run: npm publish -w packages --tag insiders
+        run: npm publish ${{ env.PACKAGE_PATH }} --tag ${{ env.RELEASE_CHANNEL }}
         env:
-          CI: true
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
