@@ -738,6 +738,49 @@ describe('Rendering', () => {
         expect(document.documentElement.style.overflow).toBe('')
       })
     )
+
+    it(
+      'should not have a scroll lock when the transition marked as not shown',
+      suppressConsoleLogs(async () => {
+        let dialogRef = ref(null)
+
+        renderTemplate({
+          components: {
+            Dialog,
+            TransitionRoot,
+          },
+          template: `
+            <button @click="show = !show">toggle</button>
+            <div id="output">{{ hasRef ? "Yes" : "No" }}</div>
+            <TransitionRoot as="template" :show="show">
+              <Dialog as="div" ref="dialogRef">
+                <input type="text" />
+              </Dialog>
+            </TransitionRoot>
+          `,
+          setup() {
+            let show = ref(false)
+
+            return {
+              show,
+              dialogRef,
+            }
+          },
+        })
+
+        expect(dialogRef.value).toBeNull()
+
+        await click(getByText('toggle'))
+        await nextFrame()
+
+        expect(dialogRef.value).not.toBeNull()
+
+        await click(getByText('toggle'))
+        await nextFrame()
+
+        expect(dialogRef.value).toBeNull()
+      })
+    )
   })
 
   describe('DialogOverlay', () => {
