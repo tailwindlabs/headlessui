@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      - '@*'
 
 env:
   CI: true
@@ -31,7 +31,7 @@ jobs:
       - name: Resolve version
         id: vars
         run: |
-          echo "TAG_NAME=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+          echo "TAG_NAME=${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Get release notes
         run: |
