@@ -20,7 +20,10 @@
     "build": "npm-run-all -p 'react build' 'vue build'",
     "test": "./scripts/test.sh",
     "lint": "./scripts/lint.sh",
-    "lint-check": "CI=true ./scripts/lint.sh"
+    "lint-check": "CI=true ./scripts/lint.sh",
+    "release-channel": "node ./scripts/release-channel.js",
+    "release-notes": "node ./scripts/release-notes.js",
+    "package-path": "node ./scripts/package-path.js"
   },
   "husky": {
     "hooks": {
