@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure hidden `Tab.Panel` components are hidden from the accessibility tree ([#2708](https://github.com/tailwindlabs/headlessui/pull/2708))
 - Add support for `role="alertdialog"` to `<Dialog>` component ([#2709](https://github.com/tailwindlabs/headlessui/pull/2709))
 - Ensure blurring the `Combobox.Input` component closes the `Combobox` ([#2712](https://github.com/tailwindlabs/headlessui/pull/2712))
+- Allow changes to the `className` prop when the `<Transition />` component is currently not transitioning ([#2722](https://github.com/tailwindlabs/headlessui/pull/2722))
 
 ### Added
 
