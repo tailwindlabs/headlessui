@@ -119,13 +119,13 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 
 // ---
 
-export interface ComponentLabel extends HasDisplayName {
+export interface _internal_ComponentLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     props: LabelProps<TTag> & RefProp<typeof LabelFn>
   ): JSX.Element
 }
 
-let LabelRoot = forwardRefWithAs(LabelFn) as unknown as ComponentLabel
+let LabelRoot = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentLabel
 
 export let Label = Object.assign(LabelRoot, {
   //

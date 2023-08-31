@@ -726,33 +726,33 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 
 // ---
 
-interface ComponentMenu extends HasDisplayName {
+export interface _internal_ComponentMenu extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     props: MenuProps<TTag> & RefProp<typeof MenuFn>
   ): JSX.Element
 }
 
-interface ComponentMenuButton extends HasDisplayName {
+export interface _internal_ComponentMenuButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: MenuButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
-interface ComponentMenuItems extends HasDisplayName {
+export interface _internal_ComponentMenuItems extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     props: MenuItemsProps<TTag> & RefProp<typeof ItemsFn>
   ): JSX.Element
 }
 
-interface ComponentMenuItem extends HasDisplayName {
+export interface _internal_ComponentMenuItem extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     props: MenuItemProps<TTag> & RefProp<typeof ItemFn>
   ): JSX.Element
 }
 
-let MenuRoot = forwardRefWithAs(MenuFn) as unknown as ComponentMenu
-let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentMenuButton
-let Items = forwardRefWithAs(ItemsFn) as unknown as ComponentMenuItems
-let Item = forwardRefWithAs(ItemFn) as unknown as ComponentMenuItem
+let MenuRoot = forwardRefWithAs(MenuFn) as unknown as _internal_ComponentMenu
+let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentMenuButton
+let Items = forwardRefWithAs(ItemsFn) as unknown as _internal_ComponentMenuItems
+let Item = forwardRefWithAs(ItemFn) as unknown as _internal_ComponentMenuItem
 
 export let Menu = Object.assign(MenuRoot, { Button, Items, Item })

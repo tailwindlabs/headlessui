@@ -425,26 +425,26 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
 // ---
 
-interface ComponentDisclosure extends HasDisplayName {
+export interface _internal_ComponentDisclosure extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
     props: DisclosureProps<TTag> & RefProp<typeof DisclosureFn>
   ): JSX.Element
 }
 
-interface ComponentDisclosureButton extends HasDisplayName {
+export interface _internal_ComponentDisclosureButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: DisclosureButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
-interface ComponentDisclosurePanel extends HasDisplayName {
+export interface _internal_ComponentDisclosurePanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: DisclosurePanelProps<TTag> & RefProp<typeof PanelFn>
   ): JSX.Element
 }
 
-let DisclosureRoot = forwardRefWithAs(DisclosureFn) as unknown as ComponentDisclosure
-let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentDisclosureButton
-let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentDisclosurePanel
+let DisclosureRoot = forwardRefWithAs(DisclosureFn) as unknown as _internal_ComponentDisclosure
+let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentDisclosureButton
+let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDisclosurePanel
 
 export let Disclosure = Object.assign(DisclosureRoot, { Button, Panel })

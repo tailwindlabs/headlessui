@@ -115,13 +115,13 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
 }
 
 // ---
-export interface ComponentDescription extends HasDisplayName {
+export interface _internal_ComponentDescription extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
     props: DescriptionProps<TTag> & RefProp<typeof DescriptionFn>
   ): JSX.Element
 }
 
-let DescriptionRoot = forwardRefWithAs(DescriptionFn) as unknown as ComponentDescription
+let DescriptionRoot = forwardRefWithAs(DescriptionFn) as unknown as _internal_ComponentDescription
 
 export let Description = Object.assign(DescriptionRoot, {
   //

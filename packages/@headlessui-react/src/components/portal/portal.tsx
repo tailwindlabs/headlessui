@@ -213,19 +213,19 @@ export function useNestedPortals() {
 
 // ---
 
-interface ComponentPortal extends HasDisplayName {
+export interface _internal_ComponentPortal extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     props: PortalProps<TTag> & RefProp<typeof PortalFn>
   ): JSX.Element
 }
 
-interface ComponentPortalGroup extends HasDisplayName {
+export interface _internal_ComponentPortalGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
     props: PortalGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 
-let PortalRoot = forwardRefWithAs(PortalFn) as unknown as ComponentPortal
-let Group = forwardRefWithAs(GroupFn) as unknown as ComponentPortalGroup
+let PortalRoot = forwardRefWithAs(PortalFn) as unknown as _internal_ComponentPortal
+let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPortalGroup
 
 export let Portal = Object.assign(PortalRoot, { Group })
