@@ -19,8 +19,12 @@ import { forwardRefWithAs, render, compact, HasDisplayName, RefProp } from '../.
 import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { ComponentLabel, Label, useLabels } from '../label/label'
-import { ComponentDescription, Description, useDescriptions } from '../description/description'
+import { _internal_ComponentLabel, Label, useLabels } from '../label/label'
+import {
+  _internal_ComponentDescription,
+  Description,
+  useDescriptions,
+} from '../description/description'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
@@ -209,26 +213,26 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
 
 // ---
 
-interface ComponentSwitch extends HasDisplayName {
+export interface _internal_ComponentSwitch extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     props: SwitchProps<TTag> & RefProp<typeof SwitchFn>
   ): JSX.Element
 }
 
-interface ComponentSwitchGroup extends HasDisplayName {
+export interface _internal_ComponentSwitchGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
     props: SwitchGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 
-interface ComponentSwitchLabel extends ComponentLabel {}
-interface ComponentSwitchDescription extends ComponentDescription {}
+export interface _internal_ComponentSwitchLabel extends _internal_ComponentLabel {}
+export interface _internal_ComponentSwitchDescription extends _internal_ComponentDescription {}
 
-let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as ComponentSwitch
-let Group = GroupFn as unknown as ComponentSwitchGroup
+let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as _internal_ComponentSwitch
+let Group = GroupFn as unknown as _internal_ComponentSwitchGroup
 
 export let Switch = Object.assign(SwitchRoot, {
   Group,
-  Label: Label as ComponentSwitchLabel,
-  Description: Description as ComponentSwitchDescription,
+  Label: Label as _internal_ComponentSwitchLabel,
+  Description: Description as _internal_ComponentSwitchDescription,
 })

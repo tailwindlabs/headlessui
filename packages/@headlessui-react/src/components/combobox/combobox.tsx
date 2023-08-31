@@ -1559,7 +1559,7 @@ function OptionFn<
 
 // ---
 
-interface ComponentCombobox extends HasDisplayName {
+export interface _internal_ComponentCombobox extends HasDisplayName {
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
     props: ComboboxProps<TValue, true, true, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
@@ -1574,31 +1574,31 @@ interface ComponentCombobox extends HasDisplayName {
   ): JSX.Element
 }
 
-interface ComponentComboboxButton extends HasDisplayName {
+export interface _internal_ComponentComboboxButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: ComboboxButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
-interface ComponentComboboxInput extends HasDisplayName {
+export interface _internal_ComponentComboboxInput extends HasDisplayName {
   <TType, TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
     props: ComboboxInputProps<TTag, TType> & RefProp<typeof InputFn>
   ): JSX.Element
 }
 
-interface ComponentComboboxLabel extends HasDisplayName {
+export interface _internal_ComponentComboboxLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     props: ComboboxLabelProps<TTag> & RefProp<typeof LabelFn>
   ): JSX.Element
 }
 
-interface ComponentComboboxOptions extends HasDisplayName {
+export interface _internal_ComponentComboboxOptions extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     props: ComboboxOptionsProps<TTag> & RefProp<typeof OptionsFn>
   ): JSX.Element
 }
 
-interface ComponentComboboxOption extends HasDisplayName {
+export interface _internal_ComponentComboboxOption extends HasDisplayName {
   <
     TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
     TType = Parameters<typeof ComboboxRoot>[0]['value']
@@ -1607,11 +1607,11 @@ interface ComponentComboboxOption extends HasDisplayName {
   ): JSX.Element
 }
 
-let ComboboxRoot = forwardRefWithAs(ComboboxFn) as unknown as ComponentCombobox
-let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentComboboxButton
-let Input = forwardRefWithAs(InputFn) as unknown as ComponentComboboxInput
-let Label = forwardRefWithAs(LabelFn) as unknown as ComponentComboboxLabel
-let Options = forwardRefWithAs(OptionsFn) as unknown as ComponentComboboxOptions
-let Option = forwardRefWithAs(OptionFn) as unknown as ComponentComboboxOption
+let ComboboxRoot = forwardRefWithAs(ComboboxFn) as unknown as _internal_ComponentCombobox
+let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentComboboxButton
+let Input = forwardRefWithAs(InputFn) as unknown as _internal_ComponentComboboxInput
+let Label = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentComboboxLabel
+let Options = forwardRefWithAs(OptionsFn) as unknown as _internal_ComponentComboboxOptions
+let Option = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentComboboxOption
 
 export let Combobox = Object.assign(ComboboxRoot, { Input, Button, Label, Options, Option })

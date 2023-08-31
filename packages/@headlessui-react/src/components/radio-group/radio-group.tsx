@@ -23,9 +23,9 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { Keys } from '../../components/keyboard'
 import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { useFlags } from '../../hooks/use-flags'
-import { ComponentLabel, Label, useLabels } from '../../components/label/label'
+import { _internal_ComponentLabel, Label, useLabels } from '../../components/label/label'
 import {
-  ComponentDescription,
+  _internal_ComponentDescription,
   Description,
   useDescriptions,
 } from '../../components/description/description'
@@ -484,26 +484,26 @@ function OptionFn<
 
 // ---
 
-interface ComponentRadioGroup extends HasDisplayName {
+export interface _internal_ComponentRadioGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
     props: RadioGroupProps<TTag, TType> & RefProp<typeof RadioGroupFn>
   ): JSX.Element
 }
 
-interface ComponentRadioOption extends HasDisplayName {
+export interface _internal_ComponentRadioOption extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTION_TAG, TType = string>(
     props: RadioOptionProps<TTag, TType> & RefProp<typeof OptionFn>
   ): JSX.Element
 }
 
-interface ComponentRadioLabel extends ComponentLabel {}
-interface ComponentRadioDescription extends ComponentDescription {}
+export interface _internal_ComponentRadioLabel extends _internal_ComponentLabel {}
+export interface _internal_ComponentRadioDescription extends _internal_ComponentDescription {}
 
-let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as ComponentRadioGroup
-let Option = forwardRefWithAs(OptionFn) as unknown as ComponentRadioOption
+let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as _internal_ComponentRadioGroup
+let Option = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentRadioOption
 
 export let RadioGroup = Object.assign(RadioGroupRoot, {
   Option,
-  Label: Label as ComponentRadioLabel,
-  Description: Description as ComponentRadioDescription,
+  Label: Label as _internal_ComponentRadioLabel,
+  Description: Description as _internal_ComponentRadioDescription,
 })

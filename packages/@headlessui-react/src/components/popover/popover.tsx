@@ -1052,40 +1052,40 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
 // ---
 
-interface ComponentPopover extends HasDisplayName {
+export interface _internal_ComponentPopover extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     props: PopoverProps<TTag> & RefProp<typeof PopoverFn>
   ): JSX.Element
 }
 
-interface ComponentPopoverButton extends HasDisplayName {
+export interface _internal_ComponentPopoverButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: PopoverButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
-interface ComponentPopoverOverlay extends HasDisplayName {
+export interface _internal_ComponentPopoverOverlay extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
     props: PopoverOverlayProps<TTag> & RefProp<typeof OverlayFn>
   ): JSX.Element
 }
 
-interface ComponentPopoverPanel extends HasDisplayName {
+export interface _internal_ComponentPopoverPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: PopoverPanelProps<TTag> & RefProp<typeof PanelFn>
   ): JSX.Element
 }
 
-interface ComponentPopoverGroup extends HasDisplayName {
+export interface _internal_ComponentPopoverGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
     props: PopoverGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 
-let PopoverRoot = forwardRefWithAs(PopoverFn) as unknown as ComponentPopover
-let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentPopoverButton
-let Overlay = forwardRefWithAs(OverlayFn) as unknown as ComponentPopoverOverlay
-let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentPopoverPanel
-let Group = forwardRefWithAs(GroupFn) as unknown as ComponentPopoverGroup
+let PopoverRoot = forwardRefWithAs(PopoverFn) as unknown as _internal_ComponentPopover
+let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentPopoverButton
+let Overlay = forwardRefWithAs(OverlayFn) as unknown as _internal_ComponentPopoverOverlay
+let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentPopoverPanel
+let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPopoverGroup
 
 export let Popover = Object.assign(PopoverRoot, { Button, Overlay, Panel, Group })

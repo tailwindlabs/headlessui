@@ -1033,7 +1033,7 @@ function OptionFn<
 
 // ---
 
-interface ComponentListbox extends HasDisplayName {
+export interface _internal_ComponentListbox extends HasDisplayName {
   <
     TTag extends ElementType = typeof DEFAULT_LISTBOX_TAG,
     TType = string,
@@ -1043,25 +1043,25 @@ interface ComponentListbox extends HasDisplayName {
   ): JSX.Element
 }
 
-interface ComponentListboxButton extends HasDisplayName {
+export interface _internal_ComponentListboxButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: ListboxButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
 
-interface ComponentListboxLabel extends HasDisplayName {
+export interface _internal_ComponentListboxLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     props: ListboxLabelProps<TTag> & RefProp<typeof LabelFn>
   ): JSX.Element
 }
 
-interface ComponentListboxOptions extends HasDisplayName {
+export interface _internal_ComponentListboxOptions extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     props: ListboxOptionsProps<TTag> & RefProp<typeof OptionsFn>
   ): JSX.Element
 }
 
-interface ComponentListboxOption extends HasDisplayName {
+export interface _internal_ComponentListboxOption extends HasDisplayName {
   <
     TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
     TType = Parameters<typeof ListboxRoot>[0]['value']
@@ -1070,10 +1070,10 @@ interface ComponentListboxOption extends HasDisplayName {
   ): JSX.Element
 }
 
-let ListboxRoot = forwardRefWithAs(ListboxFn) as unknown as ComponentListbox
-let Button = forwardRefWithAs(ButtonFn) as unknown as ComponentListboxButton
-let Label = forwardRefWithAs(LabelFn) as unknown as ComponentListboxLabel
-let Options = forwardRefWithAs(OptionsFn) as unknown as ComponentListboxOptions
-let Option = forwardRefWithAs(OptionFn) as unknown as ComponentListboxOption
+let ListboxRoot = forwardRefWithAs(ListboxFn) as unknown as _internal_ComponentListbox
+let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentListboxButton
+let Label = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentListboxLabel
+let Options = forwardRefWithAs(OptionsFn) as unknown as _internal_ComponentListboxOptions
+let Option = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentListboxOption
 
 export let Listbox = Object.assign(ListboxRoot, { Button, Label, Options, Option })

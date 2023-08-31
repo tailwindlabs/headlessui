@@ -607,20 +607,24 @@ function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>
   )
 }
 
-interface ComponentTransitionRoot extends HasDisplayName {
+export interface _internal_ComponentTransitionRoot extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
     props: TransitionRootProps<TTag> & RefProp<typeof TransitionRootFn>
   ): JSX.Element
 }
 
-interface ComponentTransitionChild extends HasDisplayName {
+export interface _internal_ComponentTransitionChild extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
     props: TransitionChildProps<TTag> & RefProp<typeof TransitionChildFn>
   ): JSX.Element
 }
 
-let TransitionRoot = forwardRefWithAs(TransitionRootFn) as unknown as ComponentTransitionRoot
-let TransitionChild = forwardRefWithAs(TransitionChildFn) as unknown as ComponentTransitionChild
-let Child = forwardRefWithAs(ChildFn) as unknown as ComponentTransitionChild
+let TransitionRoot = forwardRefWithAs(
+  TransitionRootFn
+) as unknown as _internal_ComponentTransitionRoot
+let TransitionChild = forwardRefWithAs(
+  TransitionChildFn
+) as unknown as _internal_ComponentTransitionChild
+let Child = forwardRefWithAs(ChildFn) as unknown as _internal_ComponentTransitionChild
 
 export let Transition = Object.assign(TransitionRoot, { Child, Root: TransitionRoot })

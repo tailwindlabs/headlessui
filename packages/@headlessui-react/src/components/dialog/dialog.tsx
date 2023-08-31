@@ -36,7 +36,11 @@ import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
 import { Portal, useNestedPortals } from '../../components/portal/portal'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
-import { ComponentDescription, Description, useDescriptions } from '../description/description'
+import {
+  _internal_ComponentDescription,
+  Description,
+  useDescriptions,
+} from '../description/description'
 import { useOpenClosed, State } from '../../internal/open-closed'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { StackProvider, StackMessage } from '../../internal/stack-context'
@@ -614,48 +618,48 @@ function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
 
 // ---
 
-interface ComponentDialog extends HasDisplayName {
+export interface _internal_ComponentDialog extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     props: DialogProps<TTag> & RefProp<typeof DialogFn>
   ): JSX.Element
 }
 
-interface ComponentDialogBackdrop extends HasDisplayName {
+export interface _internal_ComponentDialogBackdrop extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     props: DialogBackdropProps<TTag> & RefProp<typeof BackdropFn>
   ): JSX.Element
 }
 
-interface ComponentDialogPanel extends HasDisplayName {
+export interface _internal_ComponentDialogPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: DialogPanelProps<TTag> & RefProp<typeof PanelFn>
   ): JSX.Element
 }
 
-interface ComponentDialogOverlay extends HasDisplayName {
+export interface _internal_ComponentDialogOverlay extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
     props: DialogOverlayProps<TTag> & RefProp<typeof OverlayFn>
   ): JSX.Element
 }
 
-interface ComponentDialogTitle extends HasDisplayName {
+export interface _internal_ComponentDialogTitle extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     props: DialogTitleProps<TTag> & RefProp<typeof TitleFn>
   ): JSX.Element
 }
 
-interface ComponentDialogDescription extends ComponentDescription {}
+export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription {}
 
-let DialogRoot = forwardRefWithAs(DialogFn) as unknown as ComponentDialog
-let Backdrop = forwardRefWithAs(BackdropFn) as unknown as ComponentDialogBackdrop
-let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentDialogPanel
-let Overlay = forwardRefWithAs(OverlayFn) as unknown as ComponentDialogOverlay
-let Title = forwardRefWithAs(TitleFn) as unknown as ComponentDialogTitle
+let DialogRoot = forwardRefWithAs(DialogFn) as unknown as _internal_ComponentDialog
+let Backdrop = forwardRefWithAs(BackdropFn) as unknown as _internal_ComponentDialogBackdrop
+let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDialogPanel
+let Overlay = forwardRefWithAs(OverlayFn) as unknown as _internal_ComponentDialogOverlay
+let Title = forwardRefWithAs(TitleFn) as unknown as _internal_ComponentDialogTitle
 
 export let Dialog = Object.assign(DialogRoot, {
   Backdrop,
   Panel,
   Overlay,
   Title,
-  Description: Description as ComponentDialogDescription,
+  Description: Description as _internal_ComponentDialogDescription,
 })

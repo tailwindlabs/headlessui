@@ -198,13 +198,13 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
 // ---
 
-interface ComponentFocusTrap extends HasDisplayName {
+export interface _internal_ComponentFocusTrap extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     props: FocusTrapProps<TTag> & RefProp<typeof FocusTrapFn>
   ): JSX.Element
 }
 
-let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as unknown as ComponentFocusTrap
+let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as unknown as _internal_ComponentFocusTrap
 
 export let FocusTrap = Object.assign(FocusTrapRoot, {
   features: Features,

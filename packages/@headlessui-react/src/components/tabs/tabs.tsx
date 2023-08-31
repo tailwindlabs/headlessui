@@ -605,40 +605,40 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
 // ---
 
-interface ComponentTab extends HasDisplayName {
+export interface _internal_ComponentTab extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     props: TabProps<TTag> & RefProp<typeof TabFn>
   ): JSX.Element
 }
 
-interface ComponentTabGroup extends HasDisplayName {
+export interface _internal_ComponentTabGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
     props: TabGroupProps<TTag> & RefProp<typeof GroupFn>
   ): JSX.Element
 }
 
-interface ComponentTabList extends HasDisplayName {
+export interface _internal_ComponentTabList extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
     props: TabListProps<TTag> & RefProp<typeof ListFn>
   ): JSX.Element
 }
 
-interface ComponentTabPanels extends HasDisplayName {
+export interface _internal_ComponentTabPanels extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
     props: TabPanelsProps<TTag> & RefProp<typeof PanelsFn>
   ): JSX.Element
 }
 
-interface ComponentTabPanel extends HasDisplayName {
+export interface _internal_ComponentTabPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: TabPanelProps<TTag> & RefProp<typeof PanelFn>
   ): JSX.Element
 }
 
-let TabRoot = forwardRefWithAs(TabFn) as unknown as ComponentTab
-let Group = forwardRefWithAs(GroupFn) as unknown as ComponentTabGroup
-let List = forwardRefWithAs(ListFn) as unknown as ComponentTabList
-let Panels = forwardRefWithAs(PanelsFn) as unknown as ComponentTabPanels
-let Panel = forwardRefWithAs(PanelFn) as unknown as ComponentTabPanel
+let TabRoot = forwardRefWithAs(TabFn) as unknown as _internal_ComponentTab
+let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentTabGroup
+let List = forwardRefWithAs(ListFn) as unknown as _internal_ComponentTabList
+let Panels = forwardRefWithAs(PanelsFn) as unknown as _internal_ComponentTabPanels
+let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentTabPanel
 
 export let Tab = Object.assign(TabRoot, { Group, List, Panels, Panel })
