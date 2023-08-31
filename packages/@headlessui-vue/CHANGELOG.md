@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow `<button>` to be in nested components in `<PopoverButton>` ([#2715](https://github.com/tailwindlabs/headlessui/pull/2715))
 - Don't overwrite user-defined template refs when rendering ([#2720](https://github.com/tailwindlabs/headlessui/pull/2720))
 
+### Added
+
+- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
+
 ## [1.7.16] - 2023-08-17
 
 ### Fixed

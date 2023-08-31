@@ -5004,6 +5004,194 @@ describe('Mouse interactions', () => {
   )
 
   it(
+    'should be possible to open the combobox by focusing the input with immediate mode enabled',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" as="div" immediate>
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref('test') }),
+      })
+
+      assertComboboxButton({
+        state: ComboboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-combobox-button-2' },
+      })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      // Focus the input
+      await focus(getComboboxInput())
+
+      // Verify it is visible
+      assertComboboxButton({ state: ComboboxState.Visible })
+      assertComboboxList({
+        state: ComboboxState.Visible,
+        attributes: { id: 'headlessui-combobox-options-3' },
+      })
+      assertActiveElement(getComboboxInput())
+      assertComboboxButtonLinkedWithCombobox()
+
+      // Verify we have combobox options
+      let options = getComboboxOptions()
+      expect(options).toHaveLength(3)
+      options.forEach((option) => assertComboboxOption(option))
+
+      // Verify that the first combobox option is active
+      assertActiveComboboxOption(options[0])
+    })
+  )
+
+  it(
+    'should not be possible to open the combobox by focusing the input with immediate mode disabled',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" as="div">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref('test') }),
+      })
+
+      assertComboboxButton({
+        state: ComboboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-combobox-button-2' },
+      })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      // Focus the input
+      await focus(getComboboxInput())
+
+      // Verify it is invisible
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      assertComboboxList({
+        state: ComboboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-combobox-options-3' },
+      })
+    })
+  )
+
+  it(
+    'should not be possible to open the combobox by focusing the input with immediate mode enabled when button is disabled',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" as="div" disabled immediate>
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref('test') }),
+      })
+
+      assertComboboxButton({
+        state: ComboboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-combobox-button-2' },
+      })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+
+      // Focus the input
+      await focus(getComboboxInput())
+
+      // Verify it is invisible
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      assertComboboxList({
+        state: ComboboxState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-combobox-options-3' },
+      })
+    })
+  )
+
+  it(
+    'should be possible to close a combobox on click with immediate mode enabled',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" immediate>
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify it is visible
+      assertComboboxButton({ state: ComboboxState.Visible })
+
+      // Click to close
+      await click(getComboboxButton())
+
+      // Verify it is closed
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      assertActiveElement(getComboboxInput())
+    })
+  )
+
+  it(
+    'should be possible to close a focused combobox on click with immediate mode enabled',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" immediate>
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+
+      // Open combobox by focusing input
+      await focus(getComboboxInput())
+      assertActiveElement(getComboboxInput())
+
+      // Verify it is visible
+      assertComboboxButton({ state: ComboboxState.Visible })
+
+      // Click to close
+      await click(getComboboxButton())
+
+      // Verify it is closed
+      assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      assertActiveElement(getComboboxInput())
+    })
+  )
+
+  it(
     'should be possible to open the combobox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
@@ -5699,6 +5887,38 @@ describe('Mouse interactions', () => {
 
       // Verify the active option is the previously selected one
       assertActiveComboboxOption(getComboboxOptions()[1])
+    })
+  )
+
+  it(
+    'should be possible to click a combobox option, which closes the combobox with immediate mode enabled',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <Combobox v-model="value" immediate>
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        `,
+        setup: () => ({ value: ref(null) }),
+      })
+
+      // Open combobox by focusing input
+      await focus(getComboboxInput())
+      assertActiveElement(getComboboxInput())
+
+      assertComboboxList({ state: ComboboxState.Visible })
+
+      let options = getComboboxOptions()
+
+      // We should be able to click the first option
+      await click(options[1])
+      assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
     })
   )
 

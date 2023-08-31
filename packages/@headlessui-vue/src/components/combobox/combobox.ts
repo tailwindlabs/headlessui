@@ -39,6 +39,7 @@ import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { isMobile } from '../../utils/platform'
 import { disposables } from '../../utils/disposables'
 import { getOwnerDocument } from '../../utils/owner'
+import { history } from '../../utils/active-element-history'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -56,6 +57,7 @@ enum ValueMode {
 
 enum ActivationTrigger {
   Pointer,
+  Focus,
   Other,
 }
 
@@ -72,6 +74,7 @@ type StateDefinition = {
 
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
+  immediate: ComputedRef<boolean>
 
   compare: (a: unknown, z: unknown) => boolean
 
@@ -90,6 +93,7 @@ type StateDefinition = {
   // State mutators
   closeCombobox(): void
   openCombobox(): void
+  setActivationTrigger(trigger: ActivationTrigger): void
   goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   change(value: unknown): void
   selectOption(id: string): void
@@ -138,6 +142,7 @@ export let Combobox = defineComponent({
     name: { type: String, optional: true },
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
+    immediate: { type: [Boolean], default: false },
   },
   inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
@@ -221,6 +226,7 @@ export let Combobox = defineComponent({
       },
       defaultValue: computed(() => props.defaultValue),
       nullable,
+      immediate: computed(() => props.immediate),
       inputRef,
       labelRef,
       buttonRef,
@@ -279,6 +285,9 @@ export let Combobox = defineComponent({
         }
 
         comboboxState.value = ComboboxStates.Open
+      },
+      setActivationTrigger(trigger: ActivationTrigger) {
+        activationTrigger.value = trigger
       },
       goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
         defaultToFirstOption.value = false
@@ -531,6 +540,7 @@ export let Combobox = defineComponent({
               'defaultValue',
               'nullable',
               'multiple',
+              'immediate',
               'onUpdate:modelValue',
               'by',
             ]),
@@ -951,7 +961,12 @@ export let ComboboxInput = defineComponent({
         case Keys.Tab:
           isTyping.value = false
           if (api.comboboxState.value !== ComboboxStates.Open) return
-          if (api.mode.value === ValueMode.Single) api.selectActiveOption()
+          if (
+            api.mode.value === ValueMode.Single &&
+            api.activationTrigger.value !== ActivationTrigger.Focus
+          ) {
+            api.selectActiveOption()
+          }
           api.closeCombobox()
           break
       }
@@ -982,20 +997,16 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleBlur(event: FocusEvent) {
+      let relatedTarget =
+        (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
       isTyping.value = false
 
       // Focus is moved into the list, we don't want to close yet.
-      if (
-        event.relatedTarget instanceof Node &&
-        dom(api.optionsRef)?.contains(event.relatedTarget)
-      ) {
+      if (dom(api.optionsRef)?.contains(relatedTarget)) {
         return
       }
 
-      if (
-        event.relatedTarget instanceof Node &&
-        dom(api.buttonRef)?.contains(event.relatedTarget)
-      ) {
+      if (dom(api.buttonRef)?.contains(relatedTarget)) {
         return
       }
 
@@ -1012,13 +1023,35 @@ export let ComboboxInput = defineComponent({
           clear()
         }
 
-        // We do have a value, so let's select the active option
-        else {
+        // We do have a value, so let's select the active option, unless we were just going through
+        // the form and we opened it due to the focus event.
+        else if (api.activationTrigger.value !== ActivationTrigger.Focus) {
           api.selectActiveOption()
         }
       }
 
       return api.closeCombobox()
+    }
+
+    function handleFocus(event: FocusEvent) {
+      let relatedTarget =
+        (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
+
+      if (dom(api.buttonRef)?.contains(relatedTarget)) return
+      if (dom(api.optionsRef)?.contains(relatedTarget)) return
+      if (api.disabled.value) return
+
+      if (!api.immediate.value) return
+      if (api.comboboxState.value === ComboboxStates.Open) return
+
+      api.openCombobox()
+
+      // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
+      // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
+      // selecting the active option when the user tabs away.
+      disposables().nextFrame(() => {
+        api.setActivationTrigger(ActivationTrigger.Focus)
+      })
     }
 
     let defaultValue = computed(() => {
@@ -1049,6 +1082,7 @@ export let ComboboxInput = defineComponent({
         onCompositionend: handleCompositionend,
         onKeydown: handleKeyDown,
         onInput: handleInput,
+        onFocus: handleFocus,
         onBlur: handleBlur,
         role: 'combobox',
         type: attrs.type ?? 'text',
@@ -1195,9 +1229,6 @@ export let ComboboxOption = defineComponent({
     function handleClick(event: MouseEvent) {
       if (props.disabled) return event.preventDefault()
       api.selectOption(id)
-      if (api.mode.value === ValueMode.Single) {
-        api.closeCombobox()
-      }
 
       // We want to make sure that we don't accidentally trigger the virtual keyboard.
       //
@@ -1212,7 +1243,11 @@ export let ComboboxOption = defineComponent({
       // But right now this is still an experimental feature:
       // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
       if (!isMobile()) {
-        requestAnimationFrame(() => dom(api.inputRef)?.focus())
+        requestAnimationFrame(() => dom(api.inputRef)?.focus({ preventScroll: true }))
+      }
+
+      if (api.mode.value === ValueMode.Single) {
+        requestAnimationFrame(() => api.closeCombobox())
       }
     }
 

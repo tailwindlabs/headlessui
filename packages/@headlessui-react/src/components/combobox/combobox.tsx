@@ -29,6 +29,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { history } from '../../utils/active-element-history'
 
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
@@ -68,6 +69,7 @@ enum ValueMode {
 
 enum ActivationTrigger {
   Pointer,
+  Focus,
   Other,
 }
 
@@ -99,6 +101,8 @@ enum ActionTypes {
   UnregisterOption,
 
   RegisterLabel,
+
+  SetActivationTrigger,
 }
 
 function adjustOrderedState<T>(
@@ -142,6 +146,7 @@ type Actions<T> =
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef<T> }
   | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
+  | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
 
 let reducers: {
   [P in ActionTypes]: <T>(
@@ -253,6 +258,12 @@ let reducers: {
       labelId: action.id,
     }
   },
+  [ActionTypes.SetActivationTrigger]: (state, action) => {
+    return {
+      ...state,
+      activationTrigger: action.trigger,
+    }
+  },
 }
 
 let ComboboxActionsContext = createContext<{
@@ -264,6 +275,7 @@ let ComboboxActionsContext = createContext<{
   goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
   selectOption(id: string): void
   selectActiveOption(): void
+  setActivationTrigger(trigger: ActivationTrigger): void
   onChange(value: unknown): void
 } | null>(null)
 ComboboxActionsContext.displayName = 'ComboboxActionsContext'
@@ -287,6 +299,7 @@ let ComboboxDataContext = createContext<
       mode: ValueMode
       activeOptionIndex: number | null
       nullable: boolean
+      immediate: boolean
       compare(a: unknown, z: unknown): boolean
       isSelected(value: unknown): boolean
       __demoMode: boolean
@@ -384,6 +397,7 @@ export type ComboboxProps<
   __demoMode?: boolean
   form?: string
   name?: string
+  immediate?: boolean
 }
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
@@ -418,6 +432,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     __demoMode = false,
     nullable = false,
     multiple = false,
+    immediate = false,
     ...theirProps
   } = props
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
@@ -468,6 +483,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let data = useMemo<_Data>(
     () => ({
       ...state,
+      immediate,
       optionsPropsRef,
       labelRef,
       inputRef,
@@ -621,6 +637,10 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     })
   })
 
+  let setActivationTrigger = useEvent((trigger: ActivationTrigger) => {
+    dispatch({ type: ActionTypes.SetActivationTrigger, trigger })
+  })
+
   let actions = useMemo<_Actions>(
     () => ({
       onChange,
@@ -629,6 +649,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       goToOption,
       closeCombobox,
       openCombobox,
+      setActivationTrigger,
       selectActiveOption,
       selectOption,
     }),
@@ -990,7 +1011,9 @@ function InputFn<
       case Keys.Tab:
         isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
-        if (data.mode === ValueMode.Single) actions.selectActiveOption()
+        if (data.mode === ValueMode.Single && data.activationTrigger !== ActivationTrigger.Focus) {
+          actions.selectActiveOption()
+        }
         actions.closeCombobox()
         break
     }
@@ -1021,14 +1044,16 @@ function InputFn<
   })
 
   let handleBlur = useEvent((event: ReactFocusEvent) => {
+    let relatedTarget =
+      (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
     isTyping.current = false
 
     // Focus is moved into the list, we don't want to close yet.
-    if (data.optionsRef.current?.contains(event.relatedTarget)) {
+    if (data.optionsRef.current?.contains(relatedTarget)) {
       return
     }
 
-    if (data.buttonRef.current?.contains(event.relatedTarget)) {
+    if (data.buttonRef.current?.contains(relatedTarget)) {
       return
     }
 
@@ -1045,13 +1070,34 @@ function InputFn<
         clear()
       }
 
-      // We do have a value, so let's select the active option
-      else {
+      // We do have a value, so let's select the active option, unless we were just going through
+      // the form and we opened it due to the focus event.
+      else if (data.activationTrigger !== ActivationTrigger.Focus) {
         actions.selectActiveOption()
       }
     }
 
     return actions.closeCombobox()
+  })
+
+  let handleFocus = useEvent((event: ReactFocusEvent) => {
+    let relatedTarget =
+      (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
+    if (data.buttonRef.current?.contains(relatedTarget)) return
+    if (data.optionsRef.current?.contains(relatedTarget)) return
+    if (data.disabled) return
+
+    if (!data.immediate) return
+    if (data.comboboxState === ComboboxState.Open) return
+
+    actions.openCombobox()
+
+    // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
+    // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
+    // selecting the active option when the user tabs away.
+    d.nextFrame(() => {
+      actions.setActivationTrigger(ActivationTrigger.Focus)
+    })
   })
 
   // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present
@@ -1088,6 +1134,7 @@ function InputFn<
     onCompositionEnd: handleCompositionEnd,
     onKeyDown: handleKeyDown,
     onChange: handleChange,
+    onFocus: handleFocus,
     onBlur: handleBlur,
   }
 
@@ -1172,7 +1219,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleClick = useEvent((event: ReactMouseEvent) => {
+  let handleClick = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (data.comboboxState === ComboboxState.Open) {
       actions.closeCombobox()
@@ -1429,9 +1476,6 @@ function OptionFn<
   let handleClick = useEvent((event: { preventDefault: Function }) => {
     if (disabled) return event.preventDefault()
     select()
-    if (data.mode === ValueMode.Single) {
-      actions.closeCombobox()
-    }
 
     // We want to make sure that we don't accidentally trigger the virtual keyboard.
     //
@@ -1446,7 +1490,11 @@ function OptionFn<
     // But right now this is still an experimental feature:
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
     if (!isMobile()) {
-      requestAnimationFrame(() => data.inputRef.current?.focus())
+      requestAnimationFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+    }
+
+    if (data.mode === ValueMode.Single) {
+      requestAnimationFrame(() => actions.closeCombobox())
     }
   })
 
