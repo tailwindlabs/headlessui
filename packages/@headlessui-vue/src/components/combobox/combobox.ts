@@ -39,6 +39,7 @@ import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { isMobile } from '../../utils/platform'
 import { disposables } from '../../utils/disposables'
 import { getOwnerDocument } from '../../utils/owner'
+import { history } from '../../utils/active-element-history'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -996,20 +997,16 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleBlur(event: FocusEvent) {
+      let relatedTarget =
+        (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
       isTyping.value = false
 
       // Focus is moved into the list, we don't want to close yet.
-      if (
-        event.relatedTarget instanceof Node &&
-        dom(api.optionsRef)?.contains(event.relatedTarget)
-      ) {
+      if (dom(api.optionsRef)?.contains(relatedTarget)) {
         return
       }
 
-      if (
-        event.relatedTarget instanceof Node &&
-        dom(api.buttonRef)?.contains(event.relatedTarget)
-      ) {
+      if (dom(api.buttonRef)?.contains(relatedTarget)) {
         return
       }
 
@@ -1037,8 +1034,11 @@ export let ComboboxInput = defineComponent({
     }
 
     function handleFocus(event: FocusEvent) {
-      if (dom(api.buttonRef)?.contains(event.relatedTarget as HTMLElement)) return
-      if (dom(api.optionsRef)?.contains(event.relatedTarget as HTMLElement)) return
+      let relatedTarget =
+        (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
+
+      if (dom(api.buttonRef)?.contains(relatedTarget)) return
+      if (dom(api.optionsRef)?.contains(relatedTarget)) return
       if (api.disabled.value) return
 
       if (!api.immediate.value) return

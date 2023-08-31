@@ -29,6 +29,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { history } from '../../utils/active-element-history'
 
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
@@ -1043,14 +1044,16 @@ function InputFn<
   })
 
   let handleBlur = useEvent((event: ReactFocusEvent) => {
+    let relatedTarget =
+      (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
     isTyping.current = false
 
     // Focus is moved into the list, we don't want to close yet.
-    if (data.optionsRef.current?.contains(event.relatedTarget)) {
+    if (data.optionsRef.current?.contains(relatedTarget)) {
       return
     }
 
-    if (data.buttonRef.current?.contains(event.relatedTarget)) {
+    if (data.buttonRef.current?.contains(relatedTarget)) {
       return
     }
 
@@ -1078,8 +1081,10 @@ function InputFn<
   })
 
   let handleFocus = useEvent((event: ReactFocusEvent) => {
-    if (data.buttonRef.current?.contains(event.relatedTarget as HTMLElement)) return
-    if (data.optionsRef.current?.contains(event.relatedTarget as HTMLElement)) return
+    let relatedTarget =
+      (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
+    if (data.buttonRef.current?.contains(relatedTarget)) return
+    if (data.optionsRef.current?.contains(relatedTarget)) return
     if (data.disabled) return
 
     if (!data.immediate) return
@@ -1214,7 +1219,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleClick = useEvent((event: ReactMouseEvent) => {
+  let handleClick = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (data.comboboxState === ComboboxState.Open) {
       actions.closeCombobox()
