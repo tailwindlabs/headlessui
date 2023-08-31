@@ -403,15 +403,18 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     unregister(container)
   }, parentNesting)
 
+  let isTransitioning = useRef(false)
   useTransition({
     immediate,
     container,
     classes,
     direction: transitionDirection,
     onStart: useLatestValue((direction) => {
+      isTransitioning.current = true
       nesting.onStart(container, direction, beforeEvent)
     }),
     onStop: useLatestValue((direction) => {
+      isTransitioning.current = false
       nesting.onStop(container, direction, afterEvent)
 
       if (direction === 'leave' && !hasChildren(nesting)) {
@@ -432,7 +435,11 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
       // Already apply the `enter` and `enterFrom` on the server if required
       className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
     }
-  } else {
+  }
+
+  // If we are re-rendering while we are transitioning, then we should ensure that the classes are
+  // not mutated by React itself because we are handling the transition ourself.
+  else if (isTransitioning.current) {
     // When we re-render while we are in the middle of the transition, then we should take the
     // incoming className and the current classes that are applied.
     //
