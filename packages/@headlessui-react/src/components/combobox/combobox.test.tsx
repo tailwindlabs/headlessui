@@ -4699,11 +4699,11 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to open the combobox by focusing the input with openOnFocus enabled',
+    'should be possible to open the combobox by focusing the input with immediate mode enabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value="test">
-          <Combobox.Input onChange={NOOP} openOnFocus />
+        <Combobox value="test" immediate>
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4739,7 +4739,7 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should not be possible to open the combobox by focusing the input with openOnFocus disabled',
+    'should not be possible to open the combobox by focusing the input with immediate mode disabled',
     suppressConsoleLogs(async () => {
       render(
         <Combobox value="test">
@@ -4772,11 +4772,11 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should not be possible to open the combobox by focusing the input with openOnFocus enabled when button is disabled',
+    'should not be possible to open the combobox by focusing the input with immediate mode enabled when button is disabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value="test" disabled>
-          <Combobox.Input onChange={NOOP} openOnFocus />
+        <Combobox value="test" disabled immediate>
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4805,11 +4805,11 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to close a combobox on click with openOnFocus enabled',
+    'should be possible to close a combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value="test">
-          <Combobox.Input onChange={NOOP} openOnFocus />
+        <Combobox value="test" immediate>
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -4836,11 +4836,11 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to close a focused combobox on click with openOnFocus enabled',
+    'should be possible to close a focused combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value="test">
-          <Combobox.Input onChange={NOOP} openOnFocus />
+        <Combobox value="test" immediate>
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>
@@ -5529,11 +5529,11 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to click a combobox option, which closes the combobox with openOnFocus enabled',
+    'should be possible to click a combobox option, which closes the combobox with immediate mode enabled',
     suppressConsoleLogs(async () => {
       render(
-        <Combobox value="test">
-          <Combobox.Input onChange={NOOP} openOnFocus />
+        <Combobox value="test" immediate>
+          <Combobox.Input onChange={NOOP} />
           <Combobox.Button>Trigger</Combobox.Button>
           <Combobox.Options>
             <Combobox.Option value="a">Option A</Combobox.Option>

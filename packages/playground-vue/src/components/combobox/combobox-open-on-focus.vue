@@ -67,7 +67,7 @@ export default defineComponent({
         Selected person: {{ activePerson?.name ?? 'Nobody yet' }}
       </div>
       <div class="space-y-1">
-        <Combobox v-model="activePerson" as="div">
+        <Combobox v-model="activePerson" as="div" immediate>
           <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
             Assigned to
           </ComboboxLabel>
@@ -77,7 +77,6 @@ export default defineComponent({
               <ComboboxInput
                 @change="query = $event.target.value"
                 :displayValue="(person) => person?.name ?? ''"
-                :open-on-focus="true"
                 class="border-none px-3 py-1 outline-none"
               />
               <ComboboxButton

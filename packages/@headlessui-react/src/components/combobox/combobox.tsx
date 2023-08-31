@@ -298,6 +298,7 @@ let ComboboxDataContext = createContext<
       mode: ValueMode
       activeOptionIndex: number | null
       nullable: boolean
+      immediate: boolean
       compare(a: unknown, z: unknown): boolean
       isSelected(value: unknown): boolean
       __demoMode: boolean
@@ -395,6 +396,7 @@ export type ComboboxProps<
   __demoMode?: boolean
   form?: string
   name?: string
+  immediate?: boolean
 }
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
@@ -429,6 +431,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     __demoMode = false,
     nullable = false,
     multiple = false,
+    immediate = false,
     ...theirProps
   } = props
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
@@ -479,6 +482,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let data = useMemo<_Data>(
     () => ({
       ...state,
+      immediate,
       optionsPropsRef,
       labelRef,
       inputRef,
@@ -734,7 +738,6 @@ export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
     defaultValue?: TType
     displayValue?(item: TType): string
     onChange?(event: React.ChangeEvent<HTMLInputElement>): void
-    openOnFocus?: boolean
   }
 >
 
@@ -749,7 +752,6 @@ function InputFn<
     id = `headlessui-combobox-input-${internalId}`,
     onChange,
     displayValue,
-    openOnFocus = false,
     // @ts-ignore: We know this MAY NOT exist for a given tag but we only care when it _does_ exist.
     type = 'text',
     ...theirProps
@@ -1080,7 +1082,7 @@ function InputFn<
     if (data.optionsRef.current?.contains(event.relatedTarget as HTMLElement)) return
     if (data.disabled) return
 
-    if (!openOnFocus) return
+    if (!data.immediate) return
     if (data.comboboxState === ComboboxState.Open) return
 
     actions.openCombobox()

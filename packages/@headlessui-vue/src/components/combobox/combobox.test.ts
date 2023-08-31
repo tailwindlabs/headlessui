@@ -5004,12 +5004,12 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to open the combobox by focusing the input with openOnFocus enabled',
+    'should be possible to open the combobox by focusing the input with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value" as="div">
-            <ComboboxInput openOnFocus />
+          <Combobox v-model="value" as="div" immediate>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -5050,7 +5050,7 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should not be possible to open the combobox by focusing the input with openOnFocus disabled',
+    'should not be possible to open the combobox by focusing the input with immediate mode disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
@@ -5086,12 +5086,12 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should not be possible to open the combobox by focusing the input with openOnFocus enabled when button is disabled',
+    'should not be possible to open the combobox by focusing the input with immediate mode enabled when button is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value" as="div" disabled>
-            <ComboboxInput openOnFocus />
+          <Combobox v-model="value" as="div" disabled immediate>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -5122,12 +5122,12 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to close a combobox on click with openOnFocus enabled',
+    'should be possible to close a combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
-            <ComboboxInput openOnFocus />
+          <Combobox v-model="value" immediate>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -5156,12 +5156,12 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to close a focused combobox on click with openOnFocus enabled',
+    'should be possible to close a focused combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
-            <ComboboxInput openOnFocus />
+          <Combobox v-model="value" immediate>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="a">Option A</ComboboxOption>
@@ -5891,12 +5891,12 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to click a combobox option, which closes the combobox with openOnFocus enabled',
+    'should be possible to click a combobox option, which closes the combobox with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox v-model="value">
-            <ComboboxInput openOnFocus />
+          <Combobox v-model="value" immediate>
+            <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
               <ComboboxOption value="alice">alice</ComboboxOption>

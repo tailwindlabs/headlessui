@@ -53,6 +53,7 @@ export default function Home() {
               setActivePerson(value)
               setQuery('')
             }}
+            immediate
             as="div"
           >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
@@ -64,7 +65,6 @@ export default function Home() {
                 <Combobox.Input
                   onChange={(e) => setQuery(e.target.value)}
                   className="border-none px-3 py-1 outline-none"
-                  openOnFocus
                 />
                 <Combobox.Button as={Button}>
                   <span className="pointer-events-none flex items-center px-2">

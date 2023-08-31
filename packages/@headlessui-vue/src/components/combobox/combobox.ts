@@ -73,6 +73,7 @@ type StateDefinition = {
 
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
+  immediate: ComputedRef<boolean>
 
   compare: (a: unknown, z: unknown) => boolean
 
@@ -140,6 +141,7 @@ export let Combobox = defineComponent({
     name: { type: String, optional: true },
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
+    immediate: { type: [Boolean], default: false },
   },
   inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
@@ -223,6 +225,7 @@ export let Combobox = defineComponent({
       },
       defaultValue: computed(() => props.defaultValue),
       nullable,
+      immediate: computed(() => props.immediate),
       inputRef,
       labelRef,
       buttonRef,
@@ -536,6 +539,7 @@ export let Combobox = defineComponent({
               'defaultValue',
               'nullable',
               'multiple',
+              'immediate',
               'onUpdate:modelValue',
               'by',
             ]),
@@ -700,7 +704,6 @@ export let ComboboxInput = defineComponent({
     displayValue: { type: Function as PropType<(item: unknown) => string> },
     defaultValue: { type: String, default: undefined },
     id: { type: String, default: () => `headlessui-combobox-input-${useId()}` },
-    openOnFocus: { type: Boolean, default: false },
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
@@ -1038,7 +1041,7 @@ export let ComboboxInput = defineComponent({
       if (dom(api.optionsRef)?.contains(event.relatedTarget as HTMLElement)) return
       if (api.disabled.value) return
 
-      if (!props.openOnFocus) return
+      if (!api.immediate.value) return
       if (api.comboboxState.value === ComboboxStates.Open) return
 
       api.openCombobox()
