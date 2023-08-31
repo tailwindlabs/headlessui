@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for `role="alertdialog"` to `<Dialog>` component ([#2709](https://github.com/tailwindlabs/headlessui/pull/2709))
 - Ensure blurring the `Combobox.Input` component closes the `Combobox` ([#2712](https://github.com/tailwindlabs/headlessui/pull/2712))
 
+### Added
+
+- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
+
 ## [1.7.17] - 2023-08-17
 
 ### Fixed
