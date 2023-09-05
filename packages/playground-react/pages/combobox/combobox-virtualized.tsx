@@ -1,5 +1,5 @@
-import React, { useState, useEffect, CSSProperties } from 'react'
-import { Combobox, Virtualizer } from '@headlessui/react'
+import React, { useState, useEffect } from 'react'
+import { Combobox } from '@headlessui/react'
 
 import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
