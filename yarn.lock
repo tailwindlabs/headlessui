@@ -948,10 +948,22 @@
   dependencies:
     "@tanstack/virtual-core" "3.0.0-beta.54"
 
+"@tanstack/react-virtual@^3.0.0-beta.59":
+  version "3.0.0-beta.59"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-virtual/-/react-virtual-3.0.0-beta.59.tgz#3608b90a9856a00958d905566854f722d440be14"
+  integrity sha512-6t0813V/yiY/rWSwW5TEHMn97LJPDYv6aW75KVJnt5o14Y3ghqFnbX3nJ3icQXfsqYjPoIgXH4TAr8v/w0cZqA==
+  dependencies:
+    "@tanstack/virtual-core" "3.0.0-beta.59"
+
 "@tanstack/virtual-core@3.0.0-beta.54":
   version "3.0.0-beta.54"
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.0.0-beta.54.tgz#12259d007911ad9fce1388385c54a9141f4ecdc4"
   integrity sha512-jtkwqdP2rY2iCCDVAFuaNBH3fiEi29aTn2RhtIoky8DTTiCdc48plpHHreLwmv1PICJ4AJUUESaq3xa8fZH8+g==
+
+"@tanstack/virtual-core@3.0.0-beta.59":
+  version "3.0.0-beta.59"
+  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.0.0-beta.59.tgz#bbbf1b0b21bbd8be3a3d8c6869a17adf59f153e2"
+  integrity sha512-Z6V6VXk8D4jaRHx8klvL6jUOYWIkWUODTyVQJSfnxAVu8vnuz99FgBXhY/mLZ5qjEX5OPESZZVKRTKqGpMEQKw==
 
 "@testing-library/dom@^7.26.6":
   version "7.31.2"
