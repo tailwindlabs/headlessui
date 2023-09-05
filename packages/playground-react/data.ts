@@ -251,4 +251,4 @@ export let countries = [
 ]
 
 // @ts-expect-error
-export let timezones = Intl.supportedValuesOf('timeZone')
+export let timezones: string[] = Intl.supportedValuesOf('timeZone')
