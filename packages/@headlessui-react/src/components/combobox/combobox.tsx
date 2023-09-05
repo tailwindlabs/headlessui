@@ -453,9 +453,16 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     labelId: null,
   } as StateDefinition<TValue>)
 
+  let firstAvailableOption = state.options.find((option) => option.dataRef.current.domRef.current)
+  let measuredHeight = useMemo(() => {
+    let height =
+      firstAvailableOption?.dataRef.current.domRef.current?.getBoundingClientRect().height
+    return height ?? 40
+  }, [firstAvailableOption])
+
   let virtualizer = useVirtualizer({
     count: state.options.length,
-    estimateSize: useCallback(() => 36, []),
+    estimateSize: useEvent(() => measuredHeight),
     getScrollElement: useCallback(
       () => (state.dataRef.current?.optionsRef.current as HTMLElement | null | undefined) ?? null,
       [state.dataRef.current?.optionsRef]
