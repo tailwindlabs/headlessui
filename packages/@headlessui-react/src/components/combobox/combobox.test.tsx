@@ -46,6 +46,12 @@ import { Transition } from '../transitions/transition'
 
 let NOOP = () => {}
 
+// @ts-expect-error
+global.ResizeObserver = class FakeResizeObserver {
+  observe() {}
+  disconnect() {}
+}
+
 jest.mock('../../hooks/use-id')
 
 beforeAll(() => {

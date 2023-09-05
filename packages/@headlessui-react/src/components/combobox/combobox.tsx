@@ -16,6 +16,7 @@ import React, {
   FocusEvent as ReactFocusEvent,
   MutableRefObject,
   Ref,
+  CSSProperties,
 } from 'react'
 import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
@@ -56,6 +57,7 @@ import { useWatch } from '../../hooks/use-watch'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { isMobile } from '../../utils/platform'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { useVirtualizer, Virtualizer } from '@tanstack/react-virtual'
 
 enum ComboboxState {
   Open,
@@ -74,7 +76,6 @@ enum ActivationTrigger {
 }
 
 type ComboboxOptionDataRef<T> = MutableRefObject<{
-  textValue?: string
   disabled: boolean
   value: T
   domRef: MutableRefObject<HTMLElement | null>
@@ -187,31 +188,29 @@ let reducers: {
       return state
     }
 
-    let adjustedState = adjustOrderedState(state)
-
     // It's possible that the activeOptionIndex is set to `null` internally, but
     // this means that we will fallback to the first non-disabled option by default.
     // We have to take this into account.
-    if (adjustedState.activeOptionIndex === null) {
-      let localActiveOptionIndex = adjustedState.options.findIndex(
+    if (state.activeOptionIndex === null) {
+      let localActiveOptionIndex = state.options.findIndex(
         (option) => !option.dataRef.current.disabled
       )
 
       if (localActiveOptionIndex !== -1) {
-        adjustedState.activeOptionIndex = localActiveOptionIndex
+        state.activeOptionIndex = localActiveOptionIndex
       }
     }
 
     let activeOptionIndex = calculateActiveIndex(action, {
-      resolveItems: () => adjustedState.options,
-      resolveActiveIndex: () => adjustedState.activeOptionIndex,
+      resolveItems: () => state.options,
+      resolveActiveIndex: () => state.activeOptionIndex,
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
     })
 
     return {
       ...state,
-      ...adjustedState,
+      ...state,
       activeOptionIndex,
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
     }
@@ -303,6 +302,8 @@ let ComboboxDataContext = createContext<
       compare(a: unknown, z: unknown): boolean
       isSelected(value: unknown): boolean
       __demoMode: boolean
+
+      virtualizer: Virtualizer<HTMLElement, Element> | null
 
       optionsPropsRef: MutableRefObject<{
         static: boolean
@@ -398,6 +399,7 @@ export type ComboboxProps<
   form?: string
   name?: string
   immediate?: boolean
+  virtual?: boolean
 }
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
@@ -433,6 +435,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     nullable = false,
     multiple = false,
     immediate = false,
+    virtual = false,
     ...theirProps
   } = props
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
@@ -449,6 +452,15 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     activationTrigger: ActivationTrigger.Other,
     labelId: null,
   } as StateDefinition<TValue>)
+
+  let virtualizer = useVirtualizer({
+    count: state.options.length,
+    estimateSize: useCallback(() => 36, []),
+    getScrollElement: useCallback(
+      () => (state.dataRef.current?.optionsRef.current as HTMLElement | null | undefined) ?? null,
+      [state.dataRef.current?.optionsRef]
+    ),
+  })
 
   let defaultToFirstOption = useRef(false)
 
@@ -493,6 +505,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       defaultValue,
       disabled,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
+      virtualizer: virtual ? virtualizer : null,
       get activeOptionIndex() {
         if (
           defaultToFirstOption.current &&
@@ -1190,6 +1203,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         if (data.comboboxState === ComboboxState.Closed) {
           actions.openCombobox()
         }
+
         return d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
 
       case Keys.ArrowUp:
@@ -1334,7 +1348,12 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let { id = `headlessui-combobox-options-${internalId}`, hold = false, ...theirProps } = props
   let data = useData('Combobox.Options')
 
-  let optionsRef = useSyncRefs(data.optionsRef, ref)
+  let optionsRef = useSyncRefs(
+    data.optionsRef,
+    ref,
+    // @ts-expect-error
+    data.virtual?.container ?? null
+  )
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -1382,6 +1401,23 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ref: optionsRef,
   }
 
+  // Map the children in a scrollable container when virtualization is enabled
+  let isVirtualized = data.virtualizer != null
+  if (isVirtualized) {
+    Object.assign(theirProps, {
+      children: (
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: `${data.virtualizer!.getTotalSize()}px`,
+          }}
+        >
+          {theirProps.children}
+        </div>
+      ),
+    })
+  }
   return render({
     ourProps,
     theirProps,
@@ -1438,12 +1474,13 @@ function OptionFn<
     disabled,
     value,
     domRef: internalOptionRef,
-    textValue: internalOptionRef.current?.textContent?.toLowerCase(),
   })
   let optionRef = useSyncRefs(ref, internalOptionRef)
 
   let select = useEvent(() => actions.selectOption(id))
-  useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
+  useIsoMorphicEffect(() => {
+    return actions.registerOption(id, bag)
+  }, [bag, id])
 
   let enableScrollIntoView = useRef(data.__demoMode ? false : true)
   useIsoMorphicEffect(() => {
@@ -1527,6 +1564,22 @@ function OptionFn<
     [active, selected, disabled]
   )
 
+  let isVirtualized = data.virtualizer !== null
+  let virtualIdx = data.virtualizer ? data.options.findIndex((o) => o.id === id) ?? 0 : -1
+  let virtualItems = data.virtualizer?.getVirtualItems() ?? []
+  let virtualItem =
+    virtualIdx === -1 ? undefined : virtualItems.find((item) => item.index === virtualIdx)
+
+  let d = useDisposables()
+  if (data.virtualizer && active && !virtualItem) {
+    data.virtualizer.scrollToIndex(virtualIdx)
+    d.requestAnimationFrame(() => {
+      actions.goToOption(Focus.Specific, id)
+    })
+  }
+
+  if (!virtualItem && isVirtualized) return null
+
   let ourProps = {
     id,
     ref: optionRef,
@@ -1537,6 +1590,8 @@ function OptionFn<
     // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
     // both single and multi-select.
     'aria-selected': selected,
+    'aria-setsize': data.virtualizer ? data.options.length : undefined,
+    'aria-posinset': data.virtualizer && virtualIdx !== -1 ? virtualIdx + 1 : undefined,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
@@ -1546,6 +1601,21 @@ function OptionFn<
     onMouseMove: handleMove,
     onPointerLeave: handleLeave,
     onMouseLeave: handleLeave,
+  }
+
+  if (virtualItem) {
+    let localOurProps = ourProps as typeof ourProps & { style: CSSProperties }
+
+    localOurProps.style = {
+      ...localOurProps.style,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      transform: `translateY(${virtualItem.start}px)`,
+    }
+
+    // Technically unnecessary
+    ourProps = localOurProps
   }
 
   return render({
