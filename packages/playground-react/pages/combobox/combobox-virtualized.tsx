@@ -93,7 +93,7 @@ function Example({ virtual = true }: { virtual?: boolean }) {
                         value={timezone}
                         className={({ active }) => {
                           return classNames(
-                            'w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                            'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
                             active ? 'bg-indigo-600 text-white' : 'text-gray-900'
                           )
                         }}
