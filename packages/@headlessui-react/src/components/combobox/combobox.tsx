@@ -1571,7 +1571,10 @@ function OptionFn<
   )
 
   let isVirtualized = data.virtualizer !== null
-  let virtualIdx = data.virtualizer ? data.options.findIndex((o) => o.id === id) ?? 0 : -1
+  let virtualIdx = useMemo(() => {
+    if (!data.virtualizer) return -1
+    return data.options.findIndex((o) => o.id === id) ?? 0
+  }, [data.virtualizer, data.options, id])
   let virtualItems = data.virtualizer?.getVirtualItems() ?? []
   let virtualItem =
     virtualIdx === -1 ? undefined : virtualItems.find((item) => item.index === virtualIdx)
