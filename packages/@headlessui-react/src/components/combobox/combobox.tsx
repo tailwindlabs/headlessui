@@ -535,7 +535,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       nullable,
       __demoMode,
     }),
-    [value, defaultValue, disabled, multiple, nullable, __demoMode, state]
+    [value, defaultValue, disabled, multiple, nullable, __demoMode, state, virtualizer]
   )
 
   let lastActiveOption = useRef(
