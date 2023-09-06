@@ -14,6 +14,15 @@ function useDebounce<T>(value: T, delay: number) {
   return debouncedValue
 }
 export default function Home() {
+  return (
+    <div className="flex">
+      <Example virtual={true} />
+      <Example virtual={false} />
+    </div>
+  )
+}
+
+function Example({ virtual = true }: { virtual?: boolean }) {
   let [query, setQuery] = useState('')
   let [activeTimezone, setActiveTimezone] = useState(allTimezones[2])
 
@@ -38,7 +47,7 @@ export default function Home() {
         <div className="py-8 font-mono text-xs">Selected timezone: {activeTimezone}</div>
         <div className="space-y-1">
           <Combobox
-            virtual
+            virtual={virtual}
             value={activeTimezone}
             onChange={(value) => {
               setActiveTimezone(value)
@@ -47,7 +56,7 @@ export default function Home() {
             as="div"
           >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
-              Timezone
+              Timezone {virtual ? `(virtual)` : ''}
             </Combobox.Label>
 
             <div className="relative">
