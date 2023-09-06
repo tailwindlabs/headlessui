@@ -463,10 +463,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let virtualizer = useVirtualizer({
     count: state.options.length,
     estimateSize: useEvent(() => measuredHeight),
-    getScrollElement: useCallback(
-      () => (state.dataRef.current?.optionsRef.current as HTMLElement | null | undefined) ?? null,
-      [state.dataRef.current?.optionsRef]
-    ),
+    getScrollElement: () => {
+      return (state.dataRef.current?.optionsRef.current ?? null) as HTMLElement | null
+    },
   })
 
   let defaultToFirstOption = useRef(false)
