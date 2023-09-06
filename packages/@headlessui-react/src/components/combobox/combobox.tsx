@@ -304,6 +304,7 @@ let ComboboxDataContext = createContext<
       __demoMode: boolean
 
       virtualizer: Virtualizer<HTMLElement, Element> | null
+      range: { startIndex: number; endIndex: number }
 
       optionsPropsRef: MutableRefObject<{
         static: boolean
@@ -498,6 +499,10 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     [value]
   )
 
+  // `virtualizer` stays the same instance, but `range` does change. We do want to trigger a change
+  // in the `data` below if the `range` changes, because that means we have to recompute the
+  // rendered options.
+  let range = virtualizer.range
   let data = useMemo<_Data>(
     () => ({
       ...state,
@@ -512,6 +517,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       disabled,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
       virtualizer: virtual ? virtualizer : null,
+      range,
       get activeOptionIndex() {
         if (
           defaultToFirstOption.current &&
@@ -534,7 +540,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       nullable,
       __demoMode,
     }),
-    [value, defaultValue, disabled, multiple, nullable, __demoMode, state, virtualizer]
+    [value, defaultValue, disabled, multiple, nullable, __demoMode, state, virtualizer, range]
   )
 
   let lastActiveOption = useRef(
