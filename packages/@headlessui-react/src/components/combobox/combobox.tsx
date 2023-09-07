@@ -1437,15 +1437,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }
 
   // Map the children in a scrollable container when virtualization is enabled
-  let isVirtualized = virtualizer != null
-  if (isVirtualized) {
+  if (data.virtual) {
     Object.assign(theirProps, {
       children: (
         <div
           style={{
             position: 'relative',
             width: '100%',
-            height: `${virtualizer!.getTotalSize()}px`,
+            height: `${virtualizer.getTotalSize()}px`,
           }}
         >
           {theirProps.children}
@@ -1616,9 +1615,8 @@ function OptionFn<
   )
 
   let virtualizer = useContext(VirtualContext)
-  let isVirtualized = virtualizer !== null
   let virtualIdx = useMemo(() => {
-    if (!virtualizer) return -1
+    if (!data.virtual) return -1
     return data.options.findIndex((o) => o.id === id) ?? 0
   }, [virtualizer, data.options, id])
   let virtualItems = virtualizer?.getVirtualItems() ?? []
@@ -1631,7 +1629,7 @@ function OptionFn<
     d.nextFrame(() => actions.goToOption(Focus.Specific, id))
   }
 
-  if (!virtualItem && isVirtualized) return null
+  if (!virtualItem && data.virtual) return null
 
   let ourProps = {
     id,
