@@ -90,7 +90,7 @@ function Example({ virtual = true }: { virtual?: boolean }) {
                     return (
                       <Combobox.Option
                         key={timezone}
-                        order={idx}
+                        order={virtual ? idx : undefined}
                         value={timezone}
                         className={({ active }) => {
                           return classNames(
