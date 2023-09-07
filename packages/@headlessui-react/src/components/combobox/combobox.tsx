@@ -115,17 +115,13 @@ function adjustOrderedState<T>(
   let currentActiveOption =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex] : null
 
+  let list = adjustment(state.options.slice())
   let sortedOptions =
     // Prefer sorting based on the `order`
-    state.options.length > 0 && state.options[0].dataRef.current.order !== null
-      ? adjustment(state.options.slice()).sort((a, z) => {
-          return a.dataRef.current.order! - z.dataRef.current.order!
-        })
+    list.length > 0 && list[0].dataRef.current.order !== null
+      ? list.sort((a, z) => a.dataRef.current.order! - z.dataRef.current.order!)
       : // Fallback to much slower DOM order
-        sortByDomNode(
-          adjustment(state.options.slice()),
-          (option) => option.dataRef.current.domRef.current
-        )
+        sortByDomNode(list, (option) => option.dataRef.current.domRef.current)
 
   // If we inserted an option before the current active option then the active option index
   // would be wrong. To fix this, we will re-lookup the correct index.
