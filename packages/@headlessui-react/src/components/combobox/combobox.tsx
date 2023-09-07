@@ -1521,7 +1521,12 @@ function OptionFn<
     order,
     onVirtualRangeUpdate: rerender,
   })
-  let optionRef = useSyncRefs(ref, internalOptionRef)
+  let virtualizer = useContext(VirtualContext)
+  let optionRef = useSyncRefs(
+    ref,
+    internalOptionRef,
+    virtualizer ? virtualizer.measureElement : null
+  )
 
   let select = useEvent(() => actions.selectOption(id))
   useIsoMorphicEffect(() => {
@@ -1610,7 +1615,6 @@ function OptionFn<
     [active, selected, disabled]
   )
 
-  let virtualizer = useContext(VirtualContext)
   let virtualIdx = useMemo(() => {
     if (!data.virtual) return -1
     return data.options.findIndex((o) => o.id === id) ?? 0
@@ -1643,6 +1647,7 @@ function OptionFn<
     // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
     // both single and multi-select.
     'aria-selected': selected,
+    'data-index': virtualizer && virtualIdx !== -1 ? virtualIdx : undefined,
     'aria-setsize': virtualizer ? data.options.length : undefined,
     'aria-posinset': virtualizer && virtualIdx !== -1 ? virtualIdx + 1 : undefined,
     disabled: undefined, // Never forward the `disabled` prop
