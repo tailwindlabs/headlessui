@@ -1621,14 +1621,15 @@ function OptionFn<
 
   let shouldBeVisible = virtualizer && active && !virtualItem
   let d = useDisposables()
-  if (shouldBeVisible) {
+  useEffect(() => {
+    if (!shouldBeVisible) return d.dispose
+    if (virtualizer!.isScrolling) return d.dispose
+
     d.nextFrame(() => {
       virtualizer!.scrollToIndex(virtualIdx)
-      d.nextFrame(() => actions.goToOption(Focus.Specific, id))
     })
-  } else {
-    d.dispose()
-  }
+    return d.dispose
+  }, [shouldBeVisible])
 
   if (!virtualItem && data.virtual) return null
 
