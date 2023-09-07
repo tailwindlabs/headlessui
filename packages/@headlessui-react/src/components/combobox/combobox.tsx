@@ -207,12 +207,19 @@ let reducers: {
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
     })
+    let activationTrigger = action.trigger ?? ActivationTrigger.Other
+
+    if (
+      state.activeOptionIndex === activeOptionIndex &&
+      state.activationTrigger === activationTrigger
+    ) {
+      return state
+    }
 
     return {
       ...state,
-      ...state,
       activeOptionIndex,
-      activationTrigger: action.trigger ?? ActivationTrigger.Other,
+      activationTrigger,
     }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
