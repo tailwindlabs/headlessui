@@ -1619,10 +1619,15 @@ function OptionFn<
   let virtualItem =
     virtualIdx === -1 ? undefined : virtualItems.find((item) => item.index === virtualIdx)
 
+  let shouldBeVisible = virtualizer && active && !virtualItem
   let d = useDisposables()
-  if (virtualizer && active && !virtualItem && !virtualizer.isScrolling) {
-    virtualizer?.scrollToIndex(virtualIdx)
-    d.nextFrame(() => actions.goToOption(Focus.Specific, id))
+  if (shouldBeVisible) {
+    d.nextFrame(() => {
+      virtualizer!.scrollToIndex(virtualIdx)
+      d.nextFrame(() => actions.goToOption(Focus.Specific, id))
+    })
+  } else {
+    d.dispose()
   }
 
   if (!virtualItem && data.virtual) return null
