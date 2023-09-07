@@ -17,6 +17,7 @@ import React, {
   MutableRefObject,
   Ref,
   CSSProperties,
+  useState,
 } from 'react'
 import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
@@ -79,6 +80,7 @@ type ComboboxOptionDataRef<T> = MutableRefObject<{
   disabled: boolean
   value: T
   domRef: MutableRefObject<HTMLElement | null>
+  onVirtualSomething: (virtualizer: Virtualizer<any, any>) => void
 }>
 
 interface StateDefinition<T> {
@@ -188,22 +190,24 @@ let reducers: {
       return state
     }
 
+    let adjustedState = adjustOrderedState(state)
+
     // It's possible that the activeOptionIndex is set to `null` internally, but
     // this means that we will fallback to the first non-disabled option by default.
     // We have to take this into account.
-    if (state.activeOptionIndex === null) {
-      let localActiveOptionIndex = state.options.findIndex(
+    if (adjustedState.activeOptionIndex === null) {
+      let localActiveOptionIndex = adjustedState.options.findIndex(
         (option) => !option.dataRef.current.disabled
       )
 
       if (localActiveOptionIndex !== -1) {
-        state.activeOptionIndex = localActiveOptionIndex
+        adjustedState.activeOptionIndex = localActiveOptionIndex
       }
     }
 
     let activeOptionIndex = calculateActiveIndex(action, {
-      resolveItems: () => state.options,
-      resolveActiveIndex: () => state.activeOptionIndex,
+      resolveItems: () => adjustedState.options,
+      resolveActiveIndex: () => adjustedState.activeOptionIndex,
       resolveId: (item) => item.id,
       resolveDisabled: (item) => item.dataRef.current.disabled,
     })
@@ -218,6 +222,7 @@ let reducers: {
 
     return {
       ...state,
+      ...adjustedState,
       activeOptionIndex,
       activationTrigger,
     }
@@ -297,6 +302,10 @@ function useActions(component: string) {
 }
 type _Actions = ReturnType<typeof useActions>
 
+let VirtualContext = createContext<Virtualizer<any, any> | null>(null)
+
+// virtualizer: Virtualizer<HTMLElement, Element> | null
+
 let ComboboxDataContext = createContext<
   | ({
       value: unknown
@@ -310,8 +319,7 @@ let ComboboxDataContext = createContext<
       isSelected(value: unknown): boolean
       __demoMode: boolean
 
-      virtualizer: Virtualizer<HTMLElement, Element> | null
-      range: { startIndex: number; endIndex: number }
+      virtual: boolean
 
       optionsPropsRef: MutableRefObject<{
         static: boolean
@@ -461,21 +469,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     labelId: null,
   } as StateDefinition<TValue>)
 
-  let firstAvailableOption = state.options.find((option) => option.dataRef.current.domRef.current)
-  let measuredHeight = useMemo(() => {
-    let height =
-      firstAvailableOption?.dataRef.current.domRef.current?.getBoundingClientRect().height
-    return height ?? 40
-  }, [firstAvailableOption])
-
-  let virtualizer = useVirtualizer({
-    count: state.options.length,
-    estimateSize: useEvent(() => measuredHeight),
-    getScrollElement: () => {
-      return (state.dataRef.current?.optionsRef.current ?? null) as HTMLElement | null
-    },
-  })
-
   let defaultToFirstOption = useRef(false)
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
@@ -505,11 +498,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       }),
     [value]
   )
-
-  // `virtualizer` stays the same instance, but `range` does change. We do want to trigger a change
-  // in the `data` below if the `range` changes, because that means we have to recompute the
-  // rendered options.
-  let range = virtualizer.range
   let data = useMemo<_Data>(
     () => ({
       ...state,
@@ -523,8 +511,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       defaultValue,
       disabled,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
-      virtualizer: virtual ? virtualizer : null,
-      range,
+      virtual,
       get activeOptionIndex() {
         if (
           defaultToFirstOption.current &&
@@ -547,7 +534,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       nullable,
       __demoMode,
     }),
-    [value, defaultValue, disabled, multiple, nullable, __demoMode, state, virtualizer, range]
+    [value, defaultValue, disabled, multiple, nullable, __demoMode, state, virtual]
   )
 
   let lastActiveOption = useRef(
@@ -1367,12 +1354,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let { id = `headlessui-combobox-options-${internalId}`, hold = false, ...theirProps } = props
   let data = useData('Combobox.Options')
 
-  let optionsRef = useSyncRefs(
-    data.optionsRef,
-    ref,
-    // @ts-expect-error
-    data.virtual?.container ?? null
-  )
+  let optionsRef = useSyncRefs(data.optionsRef, ref)
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -1389,6 +1371,27 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   useIsoMorphicEffect(() => {
     data.optionsPropsRef.current.hold = hold
   }, [data.optionsPropsRef, hold])
+
+  let firstAvailableOption = data.options.find((option) => option.dataRef.current.domRef.current)
+  let measuredHeight = useMemo(() => {
+    let height =
+      firstAvailableOption?.dataRef.current.domRef.current?.getBoundingClientRect().height
+    return height ?? 40
+  }, [firstAvailableOption])
+
+  let virtualizer = useVirtualizer({
+    count: data.options.length,
+    estimateSize: useEvent(() => measuredHeight),
+    getScrollElement: () => {
+      return (data.optionsRef.current ?? null) as HTMLElement | null
+    },
+    overscan: 12,
+    onChange(event) {
+      for (let option of data.options.slice(event.range.startIndex, event.range.endIndex)) {
+        option.dataRef.current.onVirtualSomething(event)
+      }
+    },
+  })
 
   useTreeWalker({
     container: data.optionsRef.current,
@@ -1421,7 +1424,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }
 
   // Map the children in a scrollable container when virtualization is enabled
-  let isVirtualized = data.virtualizer != null
+  let isVirtualized = virtualizer != null
   if (isVirtualized) {
     Object.assign(theirProps, {
       children: (
@@ -1429,7 +1432,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
           style={{
             position: 'relative',
             width: '100%',
-            height: `${data.virtualizer!.getTotalSize()}px`,
+            height: `${virtualizer!.getTotalSize()}px`,
           }}
         >
           {theirProps.children}
@@ -1437,15 +1440,19 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       ),
     })
   }
-  return render({
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_OPTIONS_TAG,
-    features: OptionsRenderFeatures,
-    visible,
-    name: 'Combobox.Options',
-  })
+  return (
+    <VirtualContext.Provider value={data.virtual ? virtualizer : null}>
+      {render({
+        ourProps,
+        theirProps,
+        slot,
+        defaultTag: DEFAULT_OPTIONS_TAG,
+        features: OptionsRenderFeatures,
+        visible,
+        name: 'Combobox.Options',
+      })}
+    </VirtualContext.Provider>
+  )
 }
 
 // ---
@@ -1487,12 +1494,18 @@ function OptionFn<
   let active =
     data.activeOptionIndex !== null ? data.options[data.activeOptionIndex].id === id : false
 
+  let [x, setX] = useState(false)
+  let onVirtualSomething = useEvent((virtualizer: Virtualizer<any, any>) => {
+    setX((v) => !v)
+  })
+
   let selected = data.isSelected(value)
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let bag = useLatestValue<ComboboxOptionDataRef<TType>['current']>({
     disabled,
     value,
     domRef: internalOptionRef,
+    onVirtualSomething,
   })
   let optionRef = useSyncRefs(ref, internalOptionRef)
 
@@ -1583,18 +1596,19 @@ function OptionFn<
     [active, selected, disabled]
   )
 
-  let isVirtualized = data.virtualizer !== null
+  let virtualizer = useContext(VirtualContext)
+  let isVirtualized = virtualizer !== null
   let virtualIdx = useMemo(() => {
-    if (!data.virtualizer) return -1
+    if (!virtualizer) return -1
     return data.options.findIndex((o) => o.id === id) ?? 0
-  }, [data.virtualizer, data.options, id])
-  let virtualItems = data.virtualizer?.getVirtualItems() ?? []
+  }, [virtualizer, data.options, id])
+  let virtualItems = virtualizer?.getVirtualItems() ?? []
   let virtualItem =
     virtualIdx === -1 ? undefined : virtualItems.find((item) => item.index === virtualIdx)
 
   let d = useDisposables()
-  if (data.virtualizer && active && !virtualItem && !data.virtualizer.isScrolling) {
-    data.virtualizer?.scrollToIndex(virtualIdx)
+  if (virtualizer && active && !virtualItem && !virtualizer.isScrolling) {
+    virtualizer?.scrollToIndex(virtualIdx)
     d.nextFrame(() => actions.goToOption(Focus.Specific, id))
   }
 
@@ -1610,8 +1624,8 @@ function OptionFn<
     // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
     // both single and multi-select.
     'aria-selected': selected,
-    'aria-setsize': data.virtualizer ? data.options.length : undefined,
-    'aria-posinset': data.virtualizer && virtualIdx !== -1 ? virtualIdx + 1 : undefined,
+    'aria-setsize': virtualizer ? data.options.length : undefined,
+    'aria-posinset': virtualizer && virtualIdx !== -1 ? virtualIdx + 1 : undefined,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
