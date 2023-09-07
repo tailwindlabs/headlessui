@@ -1635,7 +1635,9 @@ function OptionFn<
       }
 
       d.nextFrame(() => {
-        virtualizer!.scrollToIndex(virtualIdx)
+        virtualizer!.scrollToIndex(virtualIdx, {
+          align: 'start',
+        })
       })
     }
 
