@@ -1625,15 +1625,24 @@ function OptionFn<
 
   let shouldBeVisible = virtualizer && active && !virtualItem
   let d = useDisposables()
-  useEffect(() => {
-    if (!shouldBeVisible) return d.dispose
-    if (virtualizer!.isScrolling) return d.dispose
+  useIsoMorphicEffect(() => {
+    if (!shouldBeVisible) return
 
-    d.nextFrame(() => {
-      virtualizer!.scrollToIndex(virtualIdx)
-    })
+    function tryScrolling() {
+      if (virtualizer!.isScrolling) {
+        d.nextFrame(() => tryScrolling())
+        return
+      }
+
+      d.nextFrame(() => {
+        virtualizer!.scrollToIndex(virtualIdx)
+      })
+    }
+
+    tryScrolling()
+
     return d.dispose
-  }, [shouldBeVisible])
+  }, [shouldBeVisible, d, virtualIdx, virtualizer])
 
   if (!virtualItem && data.virtual) return null
 
