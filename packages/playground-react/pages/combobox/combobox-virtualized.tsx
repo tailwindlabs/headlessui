@@ -86,10 +86,11 @@ function Example({ virtual = true }: { virtual?: boolean }) {
 
               <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
                 <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
-                  {timezones.map((timezone) => {
+                  {timezones.map((timezone, idx) => {
                     return (
                       <Combobox.Option
                         key={timezone}
+                        order={idx}
                         value={timezone}
                         className={({ active }) => {
                           return classNames(

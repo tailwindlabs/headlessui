@@ -17,7 +17,6 @@ import React, {
   MutableRefObject,
   Ref,
   CSSProperties,
-  useState,
 } from 'react'
 import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
@@ -80,7 +79,8 @@ type ComboboxOptionDataRef<T> = MutableRefObject<{
   disabled: boolean
   value: T
   domRef: MutableRefObject<HTMLElement | null>
-  onVirtualSomething: (virtualizer: Virtualizer<any, any>) => void
+  order: number | null
+  onVirtualRangeUpdate: (virtualizer: Virtualizer<any, any>) => void
 }>
 
 interface StateDefinition<T> {
@@ -115,10 +115,17 @@ function adjustOrderedState<T>(
   let currentActiveOption =
     state.activeOptionIndex !== null ? state.options[state.activeOptionIndex] : null
 
-  let sortedOptions = sortByDomNode(
-    adjustment(state.options.slice()),
-    (option) => option.dataRef.current.domRef.current
-  )
+  let sortedOptions =
+    // Prefer sorting based on the `order`
+    state.options.length > 0 && state.options[0].dataRef.current.order !== null
+      ? adjustment(state.options.slice()).sort((a, z) => {
+          return a.dataRef.current.order! - z.dataRef.current.order!
+        })
+      : // Fallback to much slower DOM order
+        sortByDomNode(
+          adjustment(state.options.slice()),
+          (option) => option.dataRef.current.domRef.current
+        )
 
   // If we inserted an option before the current active option then the active option index
   // would be wrong. To fix this, we will re-lookup the correct index.
@@ -1387,8 +1394,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     },
     overscan: 12,
     onChange(event) {
-      for (let option of data.options.slice(event.range.startIndex, event.range.endIndex)) {
-        option.dataRef.current.onVirtualSomething(event)
+      let list = event.getVirtualItems()
+      if (list.length === 0) return
+
+      let min = list[0].index
+      let max = list[list.length - 1].index + 1
+
+      for (let option of data.options.slice(min, max)) {
+        option.dataRef.current.onVirtualRangeUpdate(event)
       }
     },
   })
@@ -1472,6 +1485,7 @@ export type ComboboxOptionProps<TTag extends ElementType, TType> = Props<
   {
     disabled?: boolean
     value: TType
+    order?: number
   }
 >
 
@@ -1486,26 +1500,31 @@ function OptionFn<
     id = `headlessui-combobox-option-${internalId}`,
     disabled = false,
     value,
+    order = null,
     ...theirProps
   } = props
+
   let data = useData('Combobox.Option')
   let actions = useActions('Combobox.Option')
 
   let active =
     data.activeOptionIndex !== null ? data.options[data.activeOptionIndex].id === id : false
 
-  let [x, setX] = useState(false)
-  let onVirtualSomething = useEvent((virtualizer: Virtualizer<any, any>) => {
-    setX((v) => !v)
-  })
+  if (order === null && data.virtual) {
+    throw new Error(
+      `The \`order\` prop on <Combobox.Option /> is required when using <Combobox virtual />.`
+    )
+  }
 
+  let [, rerender] = useReducer((v) => !v, true)
   let selected = data.isSelected(value)
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
   let bag = useLatestValue<ComboboxOptionDataRef<TType>['current']>({
     disabled,
     value,
     domRef: internalOptionRef,
-    onVirtualSomething,
+    order,
+    onVirtualRangeUpdate: rerender,
   })
   let optionRef = useSyncRefs(ref, internalOptionRef)
 
