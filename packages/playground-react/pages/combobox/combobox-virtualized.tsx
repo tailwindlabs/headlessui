@@ -1,18 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Combobox } from '@headlessui/react'
 
 import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
 import { timezones as allTimezones } from '../../data'
 
-function useDebounce<T>(value: T, delay: number) {
-  let [debouncedValue, setDebouncedValue] = useState(value)
-  useEffect(() => {
-    let timer = setTimeout(() => setDebouncedValue(value), delay)
-    return () => clearTimeout(timer)
-  }, [value, delay])
-  return debouncedValue
-}
 export default function Home() {
   return (
     <div className="flex">
@@ -24,22 +16,12 @@ export default function Home() {
 
 function Example({ virtual = true }: { virtual?: boolean }) {
   let [query, setQuery] = useState('')
-  let [activeTimezone, setActiveTimezone] = useState(allTimezones[2])
-
-  // Mimic delayed response from an API
-  let actualQuery = useDebounce(query, 0 /* Change to higher value like 100 for testing purposes */)
-
-  // Choose a random person on mount
-  useEffect(() => {
-    setActiveTimezone(allTimezones[Math.floor(Math.random() * allTimezones.length)])
-  }, [])
+  let [activeTimezone, setActiveTimezone] = useState(allTimezones[0])
 
   let timezones =
-    actualQuery === ''
+    query === ''
       ? allTimezones
-      : allTimezones.filter((timezone) =>
-          timezone.toLowerCase().includes(actualQuery.toLowerCase())
-        )
+      : allTimezones.filter((timezone) => timezone.toLowerCase().includes(query.toLowerCase()))
 
   return (
     <div className="flex h-full w-screen justify-center bg-gray-50 p-12">
