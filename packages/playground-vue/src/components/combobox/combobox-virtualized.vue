@@ -7,7 +7,7 @@
 
 <script setup>
 import { timezones as allTimezones } from '../../data'
-import { ref, defineComponent, computed, watchEffect } from 'vue'
+import { ref, defineComponent, computed } from 'vue'
 import {
   Combobox,
   ComboboxButton,
@@ -33,6 +33,9 @@ let Example = defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+  errorCaptured(err) {
+    console.log(err)
   },
   setup() {
     let query = ref('')
