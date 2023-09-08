@@ -965,6 +965,13 @@
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.0.0-beta.59.tgz#bbbf1b0b21bbd8be3a3d8c6869a17adf59f153e2"
   integrity sha512-Z6V6VXk8D4jaRHx8klvL6jUOYWIkWUODTyVQJSfnxAVu8vnuz99FgBXhY/mLZ5qjEX5OPESZZVKRTKqGpMEQKw==
 
+"@tanstack/vue-virtual@^3.0.0-beta.59":
+  version "3.0.0-beta.59"
+  resolved "https://registry.yarnpkg.com/@tanstack/vue-virtual/-/vue-virtual-3.0.0-beta.59.tgz#ca679194f45d956c9d9641e14ae516c647cf995b"
+  integrity sha512-+NvvfnpUuUuoT4S8fuGZ0D9J9KRuYW1IlRgjt2eCAul2qrqzVkhiWPl+NlrxFlW2h8vVICwb35vmB4DxcS6tiA==
+  dependencies:
+    "@tanstack/virtual-core" "3.0.0-beta.59"
+
 "@testing-library/dom@^7.26.6":
   version "7.31.2"
   resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-7.31.2.tgz"
