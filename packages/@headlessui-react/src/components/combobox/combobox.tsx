@@ -117,9 +117,9 @@ function adjustOrderedState<T>(
 
   let list = adjustment(state.options.slice())
   let sortedOptions =
-    // Prefer sorting based on the `order`
     list.length > 0 && list[0].dataRef.current.order !== null
-      ? list.sort((a, z) => a.dataRef.current.order! - z.dataRef.current.order!)
+      ? // Prefer sorting based on the `order`
+        list.sort((a, z) => a.dataRef.current.order! - z.dataRef.current.order!)
       : // Fallback to much slower DOM order
         sortByDomNode(list, (option) => option.dataRef.current.domRef.current)
 
@@ -306,8 +306,6 @@ function useActions(component: string) {
 type _Actions = ReturnType<typeof useActions>
 
 let VirtualContext = createContext<Virtualizer<any, any> | null>(null)
-
-// virtualizer: Virtualizer<HTMLElement, Element> | null
 
 let ComboboxDataContext = createContext<
   | ({
@@ -1529,9 +1527,7 @@ function OptionFn<
   )
 
   let select = useEvent(() => actions.selectOption(id))
-  useIsoMorphicEffect(() => {
-    return actions.registerOption(id, bag)
-  }, [bag, id])
+  useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
 
   let enableScrollIntoView = useRef(data.__demoMode ? false : true)
   useIsoMorphicEffect(() => {
@@ -1646,7 +1642,9 @@ function OptionFn<
     return d.dispose
   }, [shouldBeVisible, d, virtualIdx, virtualizer])
 
-  if (!virtualItem && data.virtual) return null
+  if (!virtualItem && data.virtual) {
+    return null
+  }
 
   let ourProps = {
     id,
