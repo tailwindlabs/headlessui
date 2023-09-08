@@ -8,17 +8,20 @@ import {
   onMounted,
   onUnmounted,
   provide,
+  reactive,
   ref,
   toRaw,
   watch,
   watchEffect,
 
   // Types
+  CSSProperties,
   ComputedRef,
   InjectionKey,
   PropType,
   Ref,
   UnwrapNestedRefs,
+  UnwrapRef,
 } from 'vue'
 
 import { Features, render, omit, compact } from '../../utils/render'
@@ -40,6 +43,8 @@ import { isMobile } from '../../utils/platform'
 import { disposables } from '../../utils/disposables'
 import { getOwnerDocument } from '../../utils/owner'
 import { history } from '../../utils/active-element-history'
+import type { Virtualizer } from '@tanstack/virtual-core'
+import { useVirtualizer } from '@tanstack/vue-virtual'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -65,6 +70,8 @@ type ComboboxOptionData = {
   disabled: boolean
   value: unknown
   domRef: Ref<HTMLElement | null>
+  order: Ref<number | null>
+  onVirtualRangeUpdate: (virtualizer: Virtualizer<any, any>) => void
 }
 type StateDefinition = {
   // State
@@ -75,6 +82,7 @@ type StateDefinition = {
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
   immediate: ComputedRef<boolean>
+  virtual: ComputedRef<boolean>
 
   compare: (a: unknown, z: unknown) => boolean
 
@@ -119,6 +127,10 @@ function useComboboxContext(component: string) {
 
 // ---
 
+let VirtualContext = Symbol('VirtualContext') as InjectionKey<Ref<Virtualizer<any, any>> | null>
+
+// ---
+
 export let Combobox = defineComponent({
   name: 'Combobox',
   emits: { 'update:modelValue': (_value: any) => true },
@@ -143,6 +155,7 @@ export let Combobox = defineComponent({
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
     immediate: { type: [Boolean], default: false },
+    virtual: { type: [Boolean], default: false },
   },
   inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
@@ -172,9 +185,15 @@ export let Combobox = defineComponent({
       let currentActiveOption =
         activeOptionIndex.value !== null ? options.value[activeOptionIndex.value] : null
 
-      let sortedOptions = sortByDomNode(adjustment(options.value.slice()), (option) =>
-        dom(option.dataRef.domRef)
-      )
+      let list = adjustment(options.value.slice())
+      let sortedOptions =
+        list.length > 0 && list[0].dataRef.order.value !== null
+          ? // Prefer sorting based on the `order`
+            list.sort((a, z) => {
+              return a.dataRef.order.value! - z.dataRef.order.value!
+            })
+          : // Fallback to much slower DOM order
+            sortByDomNode(list, (option) => dom(option.dataRef.domRef))
 
       // If we inserted an option before the current active option then the active option index
       // would be wrong. To fix this, we will re-lookup the correct index.
@@ -227,6 +246,7 @@ export let Combobox = defineComponent({
       defaultValue: computed(() => props.defaultValue),
       nullable,
       immediate: computed(() => props.immediate),
+      virtual: computed(() => props.virtual),
       inputRef,
       labelRef,
       buttonRef,
@@ -392,7 +412,10 @@ export let Combobox = defineComponent({
       registerOption(id: string, dataRef: ComboboxOptionData) {
         if (orderOptionsRaf) cancelAnimationFrame(orderOptionsRaf)
 
-        let option = { id, dataRef }
+        let option = reactive({ id, dataRef }) as unknown as {
+          id: typeof id
+          dataRef: typeof dataRef
+        }
 
         let adjustedState = adjustOrderedState((options) => {
           options.push(option)
@@ -1151,6 +1174,37 @@ export let ComboboxOptions = defineComponent({
       },
     })
 
+    let measuredHeight = computed(() => {
+      let firstAvailableOption = api.options.value.find(
+        (option) => dom(option.dataRef.value.domRef) !== null
+      )
+      let height = dom(firstAvailableOption?.dataRef.value.domRef)?.getBoundingClientRect().height
+      return height ?? 40
+    })
+    let virtualizer = useVirtualizer<HTMLDivElement, HTMLLIElement>(
+      computed(() => {
+        return {
+          count: api.options.value.length,
+          estimateSize: () => measuredHeight.value,
+          getScrollElement: () => dom(api.optionsRef),
+          overscan: 12,
+          onChange(event) {
+            let list = event.getVirtualItems()
+            if (list.length === 0) return
+
+            let min = list[0].index
+            let max = list[list.length - 1].index + 1
+
+            for (let option of api.options.value.slice(min, max)) {
+              let dataRef = option.dataRef as unknown as UnwrapRef<typeof option.dataRef>
+              dataRef.onVirtualRangeUpdate(event)
+            }
+          },
+        }
+      })
+    )
+    provide(VirtualContext, api.virtual.value ? virtualizer : null)
+
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let ourProps = {
@@ -1167,7 +1221,24 @@ export let ComboboxOptions = defineComponent({
         theirProps,
         slot,
         attrs,
-        slots,
+        slots: {
+          ...slots,
+          default: api.virtual.value
+            ? () => [
+                h(
+                  'div',
+                  {
+                    style: {
+                      position: 'relative',
+                      width: '100%',
+                      height: `${virtualizer.value.getTotalSize()}px`,
+                    },
+                  },
+                  slots.default?.()
+                ),
+              ]
+            : slots.default,
+        },
         features: Features.RenderStrategy | Features.Static,
         visible: visible.value,
         name: 'ComboboxOptions',
@@ -1186,6 +1257,7 @@ export let ComboboxOption = defineComponent({
       >,
     },
     disabled: { type: Boolean, default: false },
+    order: { type: [Number], default: null },
   },
   setup(props, { slots, attrs, expose }) {
     let api = useComboboxContext('ComboboxOption')
@@ -1193,6 +1265,14 @@ export let ComboboxOption = defineComponent({
     let internalOptionRef = ref<HTMLElement | null>(null)
 
     expose({ el: internalOptionRef, $el: internalOptionRef })
+
+    watchEffect(() => {
+      if (props.order === null && api.virtual.value) {
+        throw new Error(
+          `The \`order\` prop on <ComboboxOption /> is required when using <Combobox virtual />.`
+        )
+      }
+    })
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
@@ -1210,14 +1290,24 @@ export let ComboboxOption = defineComponent({
       })
     )
 
+    let virtualizer = inject(VirtualContext, null)
+    let rerender = ref(false)
     let dataRef = computed<ComboboxOptionData>(() => ({
       disabled: props.disabled,
       value: props.value,
       domRef: internalOptionRef,
+      order: computed(() => props.order),
+      onVirtualRangeUpdate: () => {
+        rerender.value != rerender.value
+      },
     }))
 
     onMounted(() => api.registerOption(id, dataRef))
     onUnmounted(() => api.unregisterOption(id))
+
+    watchEffect(() => {
+      virtualizer?.value.measureElement(dom(internalOptionRef))
+    })
 
     watchEffect(() => {
       if (api.comboboxState.value !== ComboboxStates.Open) return
@@ -1277,7 +1367,51 @@ export let ComboboxOption = defineComponent({
       api.goToOption(Focus.Nothing)
     }
 
+    let virtualIdx = computed(() => {
+      if (!api.virtual.value) return -1
+      return api.options.value.findIndex((o) => o.id === id) ?? 0
+    })
+
+    let virtualItem = computed(() => {
+      return virtualIdx.value === -1
+        ? undefined
+        : virtualizer?.value.getVirtualItems().find((item) => item.index === virtualIdx.value)
+    })
+
+    let shouldBeVisible = computed(() => {
+      return virtualizer && active.value && !virtualItem.value
+    })
+
+    let d = disposables()
+    onUnmounted(() => d.dispose())
+
+    watchEffect((onCleanup) => {
+      if (!shouldBeVisible.value) return
+
+      function tryScrolling() {
+        if (virtualizer!.value.isScrolling) {
+          // Try again?
+          d.nextFrame(() => tryScrolling())
+          return
+        }
+
+        d.nextFrame(() => {
+          virtualizer!.value.scrollToIndex(virtualIdx.value, {
+            align: 'start',
+          })
+        })
+      }
+
+      tryScrolling()
+
+      onCleanup(d.dispose)
+    })
+
     return () => {
+      if (!virtualItem.value && api.virtual.value) {
+        return null
+      }
+
       let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
       let ourProps = {
@@ -1290,6 +1424,9 @@ export let ComboboxOption = defineComponent({
         // multi-select,but Voice-Over disagrees. So we use aria-selected instead for
         // both single and multi-select.
         'aria-selected': selected.value,
+        'data-index': virtualizer && virtualIdx.value !== -1 ? virtualIdx.value : undefined,
+        'aria-setsize': virtualizer ? api.options.value.length : undefined,
+        'aria-posinset': virtualizer && virtualIdx.value !== -1 ? virtualIdx.value + 1 : undefined,
         disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
         onFocus: handleFocus,
@@ -1301,7 +1438,22 @@ export let ComboboxOption = defineComponent({
         onMouseleave: handleLeave,
       }
 
-      let theirProps = props
+      if (virtualItem.value) {
+        let localOurProps = ourProps as typeof ourProps & { style: CSSProperties }
+
+        localOurProps.style = {
+          ...localOurProps.style,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          transform: `translateY(${virtualItem.value!.start}px)`,
+        }
+
+        // Technically unnecessary
+        ourProps = localOurProps
+      }
+
+      let theirProps = omit(props, ['order'])
 
       return render({
         ourProps,

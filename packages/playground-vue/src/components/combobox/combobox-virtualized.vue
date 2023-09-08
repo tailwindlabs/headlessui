@@ -7,7 +7,7 @@
 
 <script setup>
 import { timezones as allTimezones } from '../../data'
-import { ref, defineComponent, computed } from 'vue'
+import { ref, defineComponent, computed, watchEffect } from 'vue'
 import {
   Combobox,
   ComboboxButton,
@@ -36,7 +36,7 @@ let Example = defineComponent({
   },
   setup() {
     let query = ref('')
-    let activeTimezone = ref(allTimezones[2])
+    let activeTimezone = ref(allTimezones[allTimezones.length - 5])
     let timezones = computed(() => {
       return query.value === ''
         ? allTimezones
@@ -52,7 +52,7 @@ let Example = defineComponent({
       <div class="mx-auto w-full max-w-xs">
         <div class="py-8 font-mono text-xs">Selected timezone: {{ activeTimezone }}</div>
         <div class="space-y-1">
-          <Combobox v-model="activeTimezone" as="div">
+          <Combobox v-model="activeTimezone" as="div" :virtual="virtual">
             <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
               Timezone {{ virtual ? '(virtual)' : ''}}
             </ComboboxLabel>
@@ -96,10 +96,11 @@ let Example = defineComponent({
                     :value="timezone"
                     :order="virtual ? idx : undefined"
                     v-slot="{ active, selected }"
+                    as="template"
                   >
-                    <div
+                    <li
                       :class="[
-                        'relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                        'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
                         active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                       ]"
                     >
@@ -121,7 +122,7 @@ let Example = defineComponent({
                           />
                         </svg>
                       </span>
-                    </div>
+                    </li>
                   </ComboboxOption>
                 </ComboboxOptions>
               </div>
