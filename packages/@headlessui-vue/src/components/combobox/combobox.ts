@@ -1,6 +1,5 @@
 import {
   Fragment,
-  computed,
   defineComponent,
   h,
   inject,
@@ -45,6 +44,17 @@ import { getOwnerDocument } from '../../utils/owner'
 import { history } from '../../utils/active-element-history'
 import type { Virtualizer } from '@tanstack/virtual-core'
 import { useVirtualizer } from '@tanstack/vue-virtual'
+
+function computed<T>(cb: () => T) {
+  let val = ref(cb())
+  watchEffect(() => {
+    let result = cb()
+    if (result !== val.value) {
+      val.value = result as UnwrapRef<T>
+    }
+  })
+  return val as ComputedRef<T>
+}
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z
@@ -1291,15 +1301,12 @@ export let ComboboxOption = defineComponent({
     )
 
     let virtualizer = inject(VirtualContext, null)
-    let rerender = ref(false)
     let dataRef = computed<ComboboxOptionData>(() => ({
       disabled: props.disabled,
       value: props.value,
       domRef: internalOptionRef,
       order: computed(() => props.order),
-      onVirtualRangeUpdate: () => {
-        rerender.value != rerender.value
-      },
+      onVirtualRangeUpdate: () => {},
     }))
 
     onMounted(() => api.registerOption(id, dataRef))
