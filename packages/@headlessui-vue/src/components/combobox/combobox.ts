@@ -21,6 +21,7 @@ import {
   Ref,
   UnwrapNestedRefs,
   UnwrapRef,
+  shallowRef,
 } from 'vue'
 
 import { Features, render, omit, compact } from '../../utils/render'
@@ -51,6 +52,17 @@ function computed<T>(cb: () => T) {
     let result = cb()
     if (result !== val.value) {
       val.value = result as UnwrapRef<T>
+    }
+  })
+  return val as ComputedRef<T>
+}
+
+function shallowComputed<T>(cb: () => T) {
+  let val = shallowRef(cb())
+  watchEffect(() => {
+    let result = cb()
+    if (result !== val.value) {
+      val.value = result
     }
   })
   return val as ComputedRef<T>
@@ -105,6 +117,7 @@ type StateDefinition = {
 
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComputedRef<ComboboxOptionData> }[]>
+  indexes: Ref<Record<string, number>>
   activeOptionIndex: Ref<number | null>
   activationTrigger: Ref<ActivationTrigger>
 
@@ -181,11 +194,18 @@ export let Combobox = defineComponent({
       hold: false,
     }) as StateDefinition['optionsPropsRef']
     let options = ref<StateDefinition['options']['value']>([])
+    let indexes = shallowRef<Record<string, number>>({})
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
     let activationTrigger = ref<StateDefinition['activationTrigger']['value']>(
       ActivationTrigger.Other
     )
     let defaultToFirstOption = ref(false)
+
+    // This is not a "computed" ref because we eventually
+    // want to calculate this only when the length or order can actually change
+    function recalculateIndexes() {
+      indexes.value = Object.fromEntries(options.value.map((v, idx) => [v.id, idx]))
+    }
 
     function adjustOrderedState(
       adjustment: (
@@ -263,6 +283,7 @@ export let Combobox = defineComponent({
       optionsRef,
       disabled: computed(() => props.disabled),
       options,
+      indexes,
       change(value: unknown) {
         theirOnChange(value as typeof props.modelValue)
       },
@@ -366,6 +387,7 @@ export let Combobox = defineComponent({
           activeOptionIndex.value = nextActiveOptionIndex
           activationTrigger.value = trigger ?? ActivationTrigger.Other
           options.value = adjustedState.options
+          recalculateIndexes()
         })
       },
       selectOption(id: string) {
@@ -451,6 +473,7 @@ export let Combobox = defineComponent({
         options.value = adjustedState.options
         activeOptionIndex.value = adjustedState.activeOptionIndex
         activationTrigger.value = ActivationTrigger.Other
+        recalculateIndexes()
 
         // If some of the DOM elements aren't ready yet, then we can retry in the next tick.
         if (adjustedState.options.some((option) => !dom(option.dataRef.domRef))) {
@@ -458,6 +481,7 @@ export let Combobox = defineComponent({
             let adjustedState = adjustOrderedState()
             options.value = adjustedState.options
             activeOptionIndex.value = adjustedState.activeOptionIndex
+            recalculateIndexes()
           })
         }
       },
@@ -487,6 +511,7 @@ export let Combobox = defineComponent({
         options.value = adjustedState.options
         activeOptionIndex.value = adjustedState.activeOptionIndex
         activationTrigger.value = ActivationTrigger.Other
+        recalculateIndexes()
       },
     }
 
@@ -1191,6 +1216,7 @@ export let ComboboxOptions = defineComponent({
       let height = dom(firstAvailableOption?.dataRef.value.domRef)?.getBoundingClientRect().height
       return height ?? 40
     })
+
     let virtualizer = useVirtualizer<HTMLDivElement, HTMLLIElement>(
       computed(() => {
         return {
@@ -1376,6 +1402,7 @@ export let ComboboxOption = defineComponent({
 
     let virtualIdx = computed(() => {
       if (!api.virtual.value) return -1
+      return api.indexes.value[id] ?? 0
       return api.options.value.findIndex((o) => o.id === id) ?? 0
     })
 
