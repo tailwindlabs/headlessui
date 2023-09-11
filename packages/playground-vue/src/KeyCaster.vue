@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pointer-events-none fixed right-4 bottom-4 z-50 cursor-default select-none overflow-hidden rounded-md bg-blue-800 px-4 py-2 text-2xl tracking-wide text-blue-100 shadow"
+    class="pointer-events-none fixed bottom-4 right-4 z-50 cursor-default select-none overflow-hidden rounded-md bg-blue-800 px-4 py-2 text-2xl tracking-wide text-blue-100 shadow"
     v-if="keys.length > 0"
   >
     {{ keys.slice().reverse().join(' ') }}

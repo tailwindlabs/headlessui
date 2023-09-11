@@ -260,7 +260,7 @@ export default function App() {
                       <div className="flex w-full flex-col">
                         <Combobox.Input
                           onChange={(e) => setQuery(e.target.value)}
-                          className="w-full rounded-md rounded border-gray-300 bg-clip-padding px-3 py-1 shadow-sm focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          className="w-full rounded rounded-md border-gray-300 bg-clip-padding px-3 py-1 shadow-sm focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                           placeholder="Search users..."
                         />
                         <div

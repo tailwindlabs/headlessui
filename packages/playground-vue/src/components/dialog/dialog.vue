@@ -9,7 +9,7 @@
     <Dialog @close="setIsOpen">
       <div class="fixed inset-0 z-10 overflow-y-auto">
         <div
-          class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0"
+          class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0"
         >
           <TransitionChild
             as="template"
@@ -39,7 +39,7 @@
             <DialogPanel
               class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
             >
-              <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                   <div
                     class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
@@ -61,7 +61,7 @@
                       />
                     </svg>
                   </div>
-                  <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                     <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                       Deactivate account
                     </DialogTitle>
@@ -77,7 +77,7 @@
                             class="ui-focus-visible:ring-2 ui-focus-visible:ring-offset-2 flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 ring-gray-500 ring-offset-gray-100 focus:outline-none"
                           >
                             <span>Choose a reason</span>
-                            <svg class="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <svg class="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                               <path
                                 fillRule="evenodd"
                                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
