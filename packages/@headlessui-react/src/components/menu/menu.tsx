@@ -1,57 +1,55 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/
 import React, {
-  Fragment,
   createContext,
   createRef,
+  Dispatch,
+  ElementType,
+  Fragment,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  MutableRefObject,
+  Ref,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
-
-  // Types
-  Dispatch,
-  ElementType,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
 } from 'react'
 
+import { useDisposables } from '../../hooks/use-disposables'
+import { useEvent } from '../../hooks/use-event'
+import { useId } from '../../hooks/use-id'
+import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useOwnerDocument } from '../../hooks/use-owner'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useTextValue } from '../../hooks/use-text-value'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { Props } from '../../types'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { disposables } from '../../utils/disposables'
+import {
+  Focus as FocusManagementFocus,
+  FocusableMode,
+  focusFrom,
+  isFocusableElement,
+  restoreFocusIfNecessary,
+  sortByDomNode,
+} from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import {
-  forwardRefWithAs,
-  render,
   Features,
-  PropsForFeatures,
+  forwardRefWithAs,
   HasDisplayName,
+  PropsForFeatures,
   RefProp,
+  render,
 } from '../../utils/render'
-import { disposables } from '../../utils/disposables'
-import { useDisposables } from '../../hooks/use-disposables'
-import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { useId } from '../../hooks/use-id'
 import { Keys } from '../keyboard'
-import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import {
-  isFocusableElement,
-  FocusableMode,
-  sortByDomNode,
-  Focus as FocusManagementFocus,
-  focusFrom,
-  restoreFocusIfNecessary,
-} from '../../utils/focus-management'
-import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useOwnerDocument } from '../../hooks/use-owner'
-import { useEvent } from '../../hooks/use-event'
-import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTextValue } from '../../hooks/use-text-value'
 
 enum MenuStates {
   Open,

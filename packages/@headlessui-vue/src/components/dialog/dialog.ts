@@ -4,36 +4,34 @@ import {
   defineComponent,
   h,
   inject,
+  InjectionKey,
   nextTick,
   onMounted,
   onUnmounted,
+  PropType,
   provide,
   ref,
-  watchEffect,
-
-  // Types
-  InjectionKey,
-  PropType,
   Ref,
+  watchEffect,
 } from 'vue'
 
-import { render, Features } from '../../utils/render'
-import { Keys } from '../../keyboard'
-import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { useInert } from '../../hooks/use-inert'
-import { Portal, PortalGroup, useNestedPortals } from '../portal/portal'
-import { StackMessage, useStackProvider } from '../../internal/stack-context'
-import { match } from '../../utils/match'
-import { ForcePortalRoot } from '../../internal/portal-force-root'
-import { Description, useDescriptions } from '../description/description'
-import { dom } from '../../utils/dom'
-import { useOpenClosed, State } from '../../internal/open-closed'
-import { useOutsideClick } from '../../hooks/use-outside-click'
-import { getOwnerDocument } from '../../utils/owner'
-import { useEventListener } from '../../hooks/use-event-listener'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
+import { useEventListener } from '../../hooks/use-event-listener'
+import { useId } from '../../hooks/use-id'
+import { useInert } from '../../hooks/use-inert'
+import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useRootContainers } from '../../hooks/use-root-containers'
+import { State, useOpenClosed } from '../../internal/open-closed'
+import { ForcePortalRoot } from '../../internal/portal-force-root'
+import { StackMessage, useStackProvider } from '../../internal/stack-context'
+import { Keys } from '../../keyboard'
+import { dom } from '../../utils/dom'
+import { match } from '../../utils/match'
+import { getOwnerDocument } from '../../utils/owner'
+import { Features, render } from '../../utils/render'
+import { Description, useDescriptions } from '../description/description'
+import { Portal, PortalGroup, useNestedPortals } from '../portal/portal'
 
 enum DialogStates {
   Open,

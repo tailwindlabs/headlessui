@@ -1,6 +1,6 @@
 import { ref, Ref } from 'vue'
-import { getTextValue } from '../utils/get-text-value'
 import { dom } from '../utils/dom'
+import { getTextValue } from '../utils/get-text-value'
 
 export function useTextValue(element: Ref<HTMLElement | null>) {
   let cacheKey = ref<string>('')

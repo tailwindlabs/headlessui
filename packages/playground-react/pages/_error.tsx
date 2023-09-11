@@ -1,7 +1,7 @@
-import React from 'react'
 import ErrorPage from 'next/error'
 import Head from 'next/head'
 import Link from 'next/link'
+import React from 'react'
 
 import { ExamplesType, resolveAllExamples } from '../utils/resolve-all-examples'
 

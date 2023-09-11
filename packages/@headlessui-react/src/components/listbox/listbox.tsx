@@ -1,54 +1,52 @@
 import React, {
-  Fragment,
   createContext,
   createRef,
+  ElementType,
+  Fragment,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  MutableRefObject,
+  Ref,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
-
-  // Types
-  ElementType,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
 } from 'react'
 
+import { useComputed } from '../../hooks/use-computed'
+import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
+import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useComputed } from '../../hooks/use-computed'
+import { useLatestValue } from '../../hooks/use-latest-value'
+import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useTextValue } from '../../hooks/use-text-value'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { EnsureArray, Props } from '../../types'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { disposables } from '../../utils/disposables'
+import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
+import { objectToFormEntries } from '../../utils/form'
+import { match } from '../../utils/match'
+import { getOwnerDocument } from '../../utils/owner'
 import {
+  compact,
   Features,
   forwardRefWithAs,
-  PropsForFeatures,
-  render,
-  compact,
   HasDisplayName,
+  PropsForFeatures,
   RefProp,
+  render,
 } from '../../utils/render'
-import { match } from '../../utils/match'
-import { disposables } from '../../utils/disposables'
 import { Keys } from '../keyboard'
-import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { isFocusableElement, FocusableMode, sortByDomNode } from '../../utils/focus-management'
-import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useOutsideClick } from '../../hooks/use-outside-click'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { objectToFormEntries } from '../../utils/form'
-import { getOwnerDocument } from '../../utils/owner'
-import { useEvent } from '../../hooks/use-event'
-import { useControllable } from '../../hooks/use-controllable'
-import { useLatestValue } from '../../hooks/use-latest-value'
-import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTextValue } from '../../hooks/use-text-value'
 
 enum ListboxStates {
   Open,

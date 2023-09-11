@@ -1,38 +1,38 @@
 import {
+  computed,
+  ComputedRef,
   defineComponent,
-  ref,
-  provide,
   inject,
+  InjectionKey,
+  nextTick,
   onMounted,
   onUnmounted,
-  computed,
-  nextTick,
-  InjectionKey,
+  provide,
+  ref,
   Ref,
-  watchEffect,
-  ComputedRef,
   UnwrapNestedRefs,
+  watchEffect,
 } from 'vue'
-import { Features, render } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
-import { Keys } from '../../keyboard'
-import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
-import { dom } from '../../utils/dom'
-import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { match } from '../../utils/match'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import {
-  FocusableMode,
-  isFocusableElement,
-  sortByDomNode,
-  Focus as FocusManagementFocus,
-  focusFrom,
-  restoreFocusIfNecessary,
-} from '../../utils/focus-management'
 import { useOutsideClick } from '../../hooks/use-outside-click'
-import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useTextValue } from '../../hooks/use-text-value'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
+import { Keys } from '../../keyboard'
+import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { dom } from '../../utils/dom'
+import {
+  Focus as FocusManagementFocus,
+  FocusableMode,
+  focusFrom,
+  isFocusableElement,
+  restoreFocusIfNecessary,
+  sortByDomNode,
+} from '../../utils/focus-management'
+import { match } from '../../utils/match'
+import { Features, render } from '../../utils/render'
 
 enum MenuStates {
   Open,

@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { microTask } from '../utils/micro-task'
 import { useEvent } from './use-event'
 

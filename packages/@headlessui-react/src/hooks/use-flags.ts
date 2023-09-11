@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useIsMounted } from './use-is-mounted'
 
 export function useFlags(initialFlags = 0) {

@@ -1,7 +1,5 @@
-import { defineComponent, nextTick, ref, watch, h, reactive } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
-import { Listbox, ListboxLabel, ListboxButton, ListboxOptions, ListboxOption } from './listbox'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
   assertActiveElement,
   assertActiveListboxOption,
@@ -9,35 +7,37 @@ import {
   assertListboxButton,
   assertListboxButtonLinkedWithListbox,
   assertListboxButtonLinkedWithListboxLabel,
-  assertListboxOption,
   assertListboxLabel,
   assertListboxLabelLinkedWithListbox,
+  assertListboxOption,
   assertNoActiveListboxOption,
   assertNoSelectedListboxOption,
+  getByText,
   getListbox,
   getListboxButton,
   getListboxButtons,
   getListboxes,
-  getListboxOptions,
   getListboxLabel,
-  ListboxState,
-  getByText,
+  getListboxOptions,
   ListboxMode,
+  ListboxState,
 } from '../../test-utils/accessibility-assertions'
+import { html } from '../../test-utils/html'
 import {
   click,
   focus,
-  mouseMove,
+  Keys,
+  MouseButton,
   mouseLeave,
+  mouseMove,
   press,
   shift,
   type,
   word,
-  Keys,
-  MouseButton,
 } from '../../test-utils/interactions'
-import { html } from '../../test-utils/html'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from './listbox'
 
 jest.mock('../../hooks/use-id')
 

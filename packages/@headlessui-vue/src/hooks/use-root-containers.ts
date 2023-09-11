@@ -1,7 +1,7 @@
-import { ref, h, Ref } from 'vue'
-import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
-import { getOwnerDocument } from '../utils/owner'
+import { h, ref, Ref } from 'vue'
+import { Features as HiddenFeatures, Hidden } from '../internal/hidden'
 import { dom } from '../utils/dom'
+import { getOwnerDocument } from '../utils/owner'
 
 export function useRootContainers({
   defaultContainers = [],

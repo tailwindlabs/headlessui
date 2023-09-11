@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react'
 import { render } from '@testing-library/react'
+import React, { useRef, useState } from 'react'
 
 import { Portal } from './portal'
 

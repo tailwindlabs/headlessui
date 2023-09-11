@@ -1,4 +1,3 @@
-import React from 'react'
 import { Disclosure, Transition } from '@headlessui/react'
 
 export default function Home() {

@@ -1,8 +1,8 @@
-import { defineComponent, ref, onMounted } from 'vue'
-import { fireEvent, createRenderTemplate } from '../../test-utils/vue-testing-library'
+import { defineComponent, onMounted, ref } from 'vue'
+import { createRenderTemplate, fireEvent } from '../../test-utils/vue-testing-library'
 
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { TransitionRoot, TransitionChild } from './transition'
+import { TransitionChild, TransitionRoot } from './transition'
 
 import { executeTimeline } from '../../test-utils/execute-timeline'
 import { html } from '../../test-utils/html'

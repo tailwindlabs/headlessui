@@ -1,47 +1,47 @@
 import {
-  defineComponent,
-  ref,
-  nextTick,
-  h,
+  computed,
   ConcreteComponent,
+  defineComponent,
+  h,
+  nextTick,
   onMounted,
   PropType,
-  computed,
+  ref,
 } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
 import {
   Dialog,
-  DialogOverlay,
   DialogBackdrop,
+  DialogDescription,
+  DialogOverlay,
   DialogPanel,
   DialogTitle,
-  DialogDescription,
 } from './dialog'
 
-import { Popover, PopoverPanel, PopoverButton } from '../popover/popover'
-import { TransitionRoot } from '../transitions/transition'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { State, useOpenClosedProvider } from '../../internal/open-closed'
 import {
-  DialogState,
-  PopoverState,
+  assertActiveElement,
   assertDialog,
   assertDialogDescription,
   assertDialogOverlay,
   assertDialogTitle,
   assertPopoverPanel,
-  getDialog,
-  getDialogOverlay,
-  getDialogBackdrop,
-  getPopoverButton,
+  DialogState,
   getByText,
-  assertActiveElement,
-  getDialogs,
+  getDialog,
+  getDialogBackdrop,
+  getDialogOverlay,
   getDialogOverlays,
+  getDialogs,
+  getPopoverButton,
+  PopoverState,
 } from '../../test-utils/accessibility-assertions'
-import { click, mouseDrag, press, Keys, shift, focus } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
-import { useOpenClosedProvider, State } from '../../internal/open-closed'
+import { click, focus, Keys, mouseDrag, press, shift } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { Popover, PopoverButton, PopoverPanel } from '../popover/popover'
+import { TransitionRoot } from '../transitions/transition'
 
 // @ts-expect-error
 global.ResizeObserver = class FakeResizeObserver {

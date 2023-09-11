@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Head from 'next/head'
+import React, { useEffect, useState } from 'react'
 
-import 'tailwindcss/tailwind.css'
 import { useRouter } from 'next/router'
+import 'tailwindcss/tailwind.css'
 
 function disposables() {
   let disposables: Function[] = []
@@ -132,7 +131,7 @@ function KeyCaster() {
   if (keys.length <= 0) return null
 
   return (
-    <div className="pointer-events-none fixed right-4 bottom-4 z-50 cursor-default select-none overflow-hidden rounded-md bg-blue-800 px-4 py-2 text-2xl tracking-wide text-blue-100 shadow">
+    <div className="pointer-events-none fixed bottom-4 right-4 z-50 cursor-default select-none overflow-hidden rounded-md bg-blue-800 px-4 py-2 text-2xl tracking-wide text-blue-100 shadow">
       {keys.slice().reverse().join(' ')}
     </div>
   )

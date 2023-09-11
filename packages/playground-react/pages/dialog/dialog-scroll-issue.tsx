@@ -1,5 +1,5 @@
-import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
+import { Fragment, useState } from 'react'
 
 function MyDialog({ open, close }) {
   return (
@@ -15,7 +15,7 @@ function MyDialog({ open, close }) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed left-0 top-0 bottom-0 flex items-center justify-center bg-red-500 p-4">
+            <div className="fixed bottom-0 left-0 top-0 flex items-center justify-center bg-red-500 p-4">
               <Dialog.Panel className="mx-auto w-48 rounded bg-white p-4">
                 <p className="my-2">Gray area should be scrollable</p>
 

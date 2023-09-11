@@ -1,11 +1,11 @@
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
-import { FocusTrap } from './focus-trap'
 import { assertActiveElement, getByText } from '../../test-utils/accessibility-assertions'
+import { html } from '../../test-utils/html'
+import { click, Keys, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { createRenderTemplate } from '../../test-utils/vue-testing-library'
-import { click, press, shift, Keys } from '../../test-utils/interactions'
-import { html } from '../../test-utils/html'
+import { FocusTrap } from './focus-trap'
 
 jest.mock('../../hooks/use-id')
 
@@ -31,13 +31,11 @@ const renderTemplate = createRenderTemplate({
 })
 
 it('should focus the first focusable element inside the FocusTrap', async () => {
-  renderTemplate(
-    html`
-      <FocusTrap>
-        <button>Trigger</button>
-      </FocusTrap>
-    `
-  )
+  renderTemplate(html`
+    <FocusTrap>
+      <button>Trigger</button>
+    </FocusTrap>
+  `)
 
   await nextFrame()
 
@@ -111,13 +109,11 @@ it('should warn when there is no focusable element inside the FocusTrap', async 
   expect.assertions(1)
   let spy = jest.spyOn(console, 'warn').mockImplementation(jest.fn())
 
-  renderTemplate(
-    html`
-      <FocusTrap>
-        <span>Nothing to see here...</span>
-      </FocusTrap>
-    `
-  )
+  renderTemplate(html`
+    <FocusTrap>
+      <span>Nothing to see here...</span>
+    </FocusTrap>
+  `)
 
   await nextFrame()
 
@@ -282,19 +278,17 @@ it('should stay in the FocusTrap when using `shift+tab`, if there is only 1 focu
 })
 
 it('should be possible to tab to the next focusable element within the focus trap', async () => {
-  renderTemplate(
-    html`
-      <div>
-        <button>Before</button>
-        <FocusTrap>
-          <button id="item-a">Item A</button>
-          <button id="item-b">Item B</button>
-          <button id="item-c">Item C</button>
-        </FocusTrap>
-        <button>After</button>
-      </div>
-    `
-  )
+  renderTemplate(html`
+    <div>
+      <button>Before</button>
+      <FocusTrap>
+        <button id="item-a">Item A</button>
+        <button id="item-b">Item B</button>
+        <button id="item-c">Item C</button>
+      </FocusTrap>
+      <button>After</button>
+    </div>
+  `)
 
   await nextFrame()
 
@@ -315,19 +309,17 @@ it('should be possible to tab to the next focusable element within the focus tra
 })
 
 it('should be possible to shift+tab to the previous focusable element within the focus trap', async () => {
-  renderTemplate(
-    html`
-      <div>
-        <button>Before</button>
-        <FocusTrap>
-          <button id="item-a">Item A</button>
-          <button id="item-b">Item B</button>
-          <button id="item-c">Item C</button>
-        </FocusTrap>
-        <button>After</button>
-      </div>
-    `
-  )
+  renderTemplate(html`
+    <div>
+      <button>Before</button>
+      <FocusTrap>
+        <button id="item-a">Item A</button>
+        <button id="item-b">Item B</button>
+        <button id="item-c">Item C</button>
+      </FocusTrap>
+      <button>After</button>
+    </div>
+  `)
 
   await nextFrame()
 
@@ -348,20 +340,18 @@ it('should be possible to shift+tab to the previous focusable element within the
 })
 
 it('should skip the initial "hidden" elements within the focus trap', async () => {
-  renderTemplate(
-    html`
-      <div>
-        <button id="before">Before</button>
-        <FocusTrap>
-          <button id="item-a" style="display:none">Item A</button>
-          <button id="item-b" style="display:none">Item B</button>
-          <button id="item-c">Item C</button>
-          <button id="item-d">Item D</button>
-        </FocusTrap>
-        <button>After</button>
-      </div>
-    `
-  )
+  renderTemplate(html`
+    <div>
+      <button id="before">Before</button>
+      <FocusTrap>
+        <button id="item-a" style="display:none">Item A</button>
+        <button id="item-b" style="display:none">Item B</button>
+        <button id="item-c">Item C</button>
+        <button id="item-d">Item D</button>
+      </FocusTrap>
+      <button>After</button>
+    </div>
+  `)
 
   await nextFrame()
 
@@ -370,20 +360,18 @@ it('should skip the initial "hidden" elements within the focus trap', async () =
 })
 
 it('should be possible skip "hidden" elements within the focus trap', async () => {
-  renderTemplate(
-    html`
-      <div>
-        <button id="before">Before</button>
-        <FocusTrap>
-          <button id="item-a">Item A</button>
-          <button id="item-b">Item B</button>
-          <button id="item-c" style="display:none">Item C</button>
-          <button id="item-d">Item D</button>
-        </FocusTrap>
-        <button>After</button>
-      </div>
-    `
-  )
+  renderTemplate(html`
+    <div>
+      <button id="before">Before</button>
+      <FocusTrap>
+        <button id="item-a">Item A</button>
+        <button id="item-b">Item B</button>
+        <button id="item-c" style="display:none">Item C</button>
+        <button id="item-d">Item D</button>
+      </FocusTrap>
+      <button>After</button>
+    </div>
+  `)
 
   await nextFrame()
 
@@ -406,20 +394,18 @@ it('should be possible skip "hidden" elements within the focus trap', async () =
 })
 
 it('should be possible skip disabled elements within the focus trap', async () => {
-  renderTemplate(
-    html`
-      <div>
-        <button id="before">Before</button>
-        <FocusTrap>
-          <button id="item-a">Item A</button>
-          <button id="item-b">Item B</button>
-          <button id="item-c" disabled>Item C</button>
-          <button id="item-d">Item D</button>
-        </FocusTrap>
-        <button>After</button>
-      </div>
-    `
-  )
+  renderTemplate(html`
+    <div>
+      <button id="before">Before</button>
+      <FocusTrap>
+        <button id="item-a">Item A</button>
+        <button id="item-b">Item B</button>
+        <button id="item-c" disabled>Item C</button>
+        <button id="item-d">Item D</button>
+      </FocusTrap>
+      <button>After</button>
+    </div>
+  `)
 
   await nextFrame()
 
@@ -444,21 +430,19 @@ it('should be possible skip disabled elements within the focus trap', async () =
 it(
   'should not be possible to escape the FocusTrap due to strange tabIndex usage',
   suppressConsoleLogs(async () => {
-    renderTemplate(
-      html`
-        <div>
-          <div :tabindex="-1">
-            <input :tabindex="2" id="a" />
-            <input :tabindex="1" id="b" />
-          </div>
-
-          <FocusTrap>
-            <input :tabindex="1" id="c" />
-            <input id="d" />
-          </FocusTrap>
+    renderTemplate(html`
+      <div>
+        <div :tabindex="-1">
+          <input :tabindex="2" id="a" />
+          <input :tabindex="1" id="b" />
         </div>
-      `
-    )
+
+        <FocusTrap>
+          <input :tabindex="1" id="c" />
+          <input id="d" />
+        </FocusTrap>
+      </div>
+    `)
 
     await nextFrame()
 

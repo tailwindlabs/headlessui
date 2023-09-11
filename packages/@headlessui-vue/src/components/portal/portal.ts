@@ -1,27 +1,25 @@
 import {
-  Teleport,
   computed,
   defineComponent,
+  getCurrentInstance,
   h,
   inject,
+  InjectionKey,
   onMounted,
   onUnmounted,
+  PropType,
   provide,
   reactive,
   ref,
-  watchEffect,
-
-  // Types
-  InjectionKey,
-  PropType,
   Ref,
+  Teleport,
   watch,
-  getCurrentInstance,
+  watchEffect,
 } from 'vue'
-import { render } from '../../utils/render'
 import { usePortalRoot } from '../../internal/portal-force-root'
-import { getOwnerDocument } from '../../utils/owner'
 import { dom } from '../../utils/dom'
+import { getOwnerDocument } from '../../utils/owner'
+import { render } from '../../utils/render'
 
 type ContextType<T> = T extends InjectionKey<infer V> ? V : never
 

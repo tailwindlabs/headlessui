@@ -37,7 +37,11 @@
     "printWidth": 100,
     "semi": false,
     "singleQuote": true,
-    "trailingComma": "es5"
+    "trailingComma": "es5",
+    "plugins": [
+      "prettier-plugin-organize-imports",
+      "prettier-plugin-tailwindcss"
+    ]
   },
   "devDependencies": {
     "@swc/core": "^1.2.131",
@@ -51,7 +55,8 @@
     "lint-staged": "^12.2.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
-    "prettier-plugin-tailwindcss": "^0.1.4",
+    "prettier-plugin-organize-imports": "^3.2.3",
+    "prettier-plugin-tailwindcss": "0.4",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
     "typescript": "^4.9.5"

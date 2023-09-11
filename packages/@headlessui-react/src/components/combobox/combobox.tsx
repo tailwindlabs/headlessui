@@ -1,21 +1,19 @@
 import React, {
-  Fragment,
   createContext,
   createRef,
+  ElementType,
+  FocusEvent as ReactFocusEvent,
+  Fragment,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  MutableRefObject,
+  Ref,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
-
-  // Types
-  ElementType,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  FocusEvent as ReactFocusEvent,
-  MutableRefObject,
-  Ref,
 } from 'react'
 import { ByComparator, EnsureArray, Expand, Props } from '../../types'
 
@@ -31,31 +29,31 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { history } from '../../utils/active-element-history'
 
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
-import {
-  forwardRefWithAs,
-  render,
-  compact,
-  PropsForFeatures,
-  Features,
-  HasDisplayName,
-  RefProp,
-} from '../../utils/render'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { match } from '../../utils/match'
-import { objectToFormEntries } from '../../utils/form'
 import { sortByDomNode } from '../../utils/focus-management'
+import { objectToFormEntries } from '../../utils/form'
+import { match } from '../../utils/match'
+import {
+  compact,
+  Features,
+  forwardRefWithAs,
+  HasDisplayName,
+  PropsForFeatures,
+  RefProp,
+  render,
+} from '../../utils/render'
 
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { useOpenClosed, State, OpenClosedProvider } from '../../internal/open-closed'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 
-import { Keys } from '../keyboard'
 import { useControllable } from '../../hooks/use-controllable'
-import { useWatch } from '../../hooks/use-watch'
-import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { isMobile } from '../../utils/platform'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useWatch } from '../../hooks/use-watch'
+import { isMobile } from '../../utils/platform'
+import { Keys } from '../keyboard'
 
 enum ComboboxState {
   Open,

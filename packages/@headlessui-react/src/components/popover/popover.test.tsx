@@ -1,23 +1,23 @@
-import React, { createElement, useEffect, useRef, Fragment, useState } from 'react'
-import { render, act as _act } from '@testing-library/react'
+import { act as _act, render } from '@testing-library/react'
+import React, { createElement, Fragment, useEffect, useRef, useState } from 'react'
 
-import { Popover } from './popover'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import ReactDOM from 'react-dom'
 import {
-  PopoverState,
-  assertPopoverPanel,
-  assertPopoverButton,
-  getPopoverButton,
-  getPopoverPanel,
-  getByText,
   assertActiveElement,
   assertContainsActiveElement,
+  assertPopoverButton,
+  assertPopoverPanel,
+  getByText,
+  getPopoverButton,
   getPopoverOverlay,
+  getPopoverPanel,
+  PopoverState,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, focus, Keys, MouseButton, shift } from '../../test-utils/interactions'
+import { click, focus, Keys, MouseButton, press, shift } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Portal } from '../portal/portal'
 import { Transition } from '../transitions/transition'
-import ReactDOM from 'react-dom'
+import { Popover } from './popover'
 
 let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 

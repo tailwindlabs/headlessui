@@ -1,19 +1,19 @@
-import { defineComponent, nextTick, ref, watch, h } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
-import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { defineComponent, h, nextTick, ref, watch } from 'vue'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
-  DisclosureState,
-  assertDisclosurePanel,
+  assertActiveElement,
   assertDisclosureButton,
+  assertDisclosurePanel,
+  DisclosureState,
+  getByText,
   getDisclosureButton,
   getDisclosurePanel,
-  getByText,
-  assertActiveElement,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, Keys, MouseButton } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { click, Keys, MouseButton, press } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 
 jest.mock('../../hooks/use-id')
 
@@ -41,14 +41,12 @@ describe('Safe guards', () => {
   it(
     'should be possible to render a Disclosure without crashing',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Disclosure>
-            <DisclosureButton>Trigger</DisclosureButton>
-            <DisclosurePanel>Contents</DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure>
+          <DisclosureButton>Trigger</DisclosureButton>
+          <DisclosurePanel>Contents</DisclosurePanel>
+        </Disclosure>
+      `)
 
       assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
@@ -64,14 +62,12 @@ describe('Rendering', () => {
     it(
       'should be possible to render a Disclosure using a render prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure v-slot="{ open }">
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel>Panel is: {{open ? 'open' : 'closed'}}</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure v-slot="{ open }">
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>Panel is: {{open ? 'open' : 'closed'}}</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -90,14 +86,12 @@ describe('Rendering', () => {
     )
 
     it('should be possible to render a Disclosure in an open state by default', async () => {
-      renderTemplate(
-        html`
-          <Disclosure v-slot="{ open }" defaultOpen>
-            <DisclosureButton>Trigger</DisclosureButton>
-            <DisclosurePanel>Panel is: {{open ? 'open' : 'closed'}}</DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure v-slot="{ open }" defaultOpen>
+          <DisclosureButton>Trigger</DisclosureButton>
+          <DisclosurePanel>Panel is: {{open ? 'open' : 'closed'}}</DisclosurePanel>
+        </Disclosure>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -115,16 +109,14 @@ describe('Rendering', () => {
     it(
       'should expose a close function that closes the disclosure',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure v-slot="{ close }">
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel>
-                <button @click="close()">Close me</button>
-              </DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure v-slot="{ close }">
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>
+              <button @click="close()">Close me</button>
+            </DisclosurePanel>
+          </Disclosure>
+        `)
 
         // Focus the button
         getDisclosureButton()?.focus()
@@ -223,14 +215,12 @@ describe('Rendering', () => {
     it(
       'should be possible to render a DisclosureButton using a render prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton v-slot="slot">{{JSON.stringify(slot)}}</DisclosureButton>
-              <DisclosurePanel></DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton v-slot="slot">{{JSON.stringify(slot)}}</DisclosureButton>
+            <DisclosurePanel></DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -253,16 +243,14 @@ describe('Rendering', () => {
     it(
       'should be possible to render a DisclosureButton using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton as="div" role="button" v-slot="slot">
-                {{JSON.stringify(slot)}}
-              </DisclosureButton>
-              <DisclosurePanel />
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton as="div" role="button" v-slot="slot">
+              {{JSON.stringify(slot)}}
+            </DisclosureButton>
+            <DisclosurePanel />
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -284,25 +272,21 @@ describe('Rendering', () => {
 
     describe('`type` attribute', () => {
       it('should set the `type` to "button" by default', async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton> Trigger </DisclosureButton>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton> Trigger </DisclosureButton>
+          </Disclosure>
+        `)
 
         expect(getDisclosureButton()).toHaveAttribute('type', 'button')
       })
 
       it('should not set the `type` to "button" if it already contains a `type`', async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton type="submit"> Trigger </DisclosureButton>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton type="submit"> Trigger </DisclosureButton>
+          </Disclosure>
+        `)
 
         expect(getDisclosureButton()).toHaveAttribute('type', 'submit')
       })
@@ -330,13 +314,11 @@ describe('Rendering', () => {
       )
 
       it('should not set the type if the "as" prop is not a "button"', async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton as="div"> Trigger </DisclosureButton>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton as="div"> Trigger </DisclosureButton>
+          </Disclosure>
+        `)
 
         expect(getDisclosureButton()).not.toHaveAttribute('type')
       })
@@ -369,14 +351,12 @@ describe('Rendering', () => {
     it(
       'should be possible to render DisclosurePanel using a render prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel v-slot="slot">{{JSON.stringify(slot)}}</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel v-slot="slot">{{JSON.stringify(slot)}}</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -398,14 +378,12 @@ describe('Rendering', () => {
     )
 
     it('should be possible to always render the DisclosurePanel if we provide it a `static` prop', () => {
-      renderTemplate(
-        html`
-          <Disclosure>
-            <DisclosureButton>Trigger</DisclosureButton>
-            <DisclosurePanel static>Contents</DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure>
+          <DisclosureButton>Trigger</DisclosureButton>
+          <DisclosurePanel static>Contents</DisclosurePanel>
+        </Disclosure>
+      `)
 
       // Let's verify that the Disclosure is already there
       expect(getDisclosurePanel()).not.toBe(null)
@@ -443,16 +421,14 @@ describe('Rendering', () => {
     it(
       'should expose a close function that closes the disclosure',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel v-slot="{ close }">
-                <button @click="close()">Close me</button>
-              </DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel v-slot="{ close }">
+              <button @click="close()">Close me</button>
+            </DisclosurePanel>
+          </Disclosure>
+        `)
 
         // Focus the button
         getDisclosureButton()?.focus()
@@ -667,14 +643,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to open the Disclosure with Enter',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel>Contents</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>Contents</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -704,14 +678,12 @@ describe('Keyboard interactions', () => {
     it(
       'should not be possible to open the disclosure with Enter when the button is disabled',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton disabled>Trigger</DisclosureButton>
-              <DisclosurePanel>Content</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton disabled>Trigger</DisclosureButton>
+            <DisclosurePanel>Content</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -737,14 +709,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the disclosure with Enter when the disclosure is open',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel>Contents</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>Contents</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -779,14 +749,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to open the disclosure with Space',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel>Contents</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>Contents</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -812,14 +780,12 @@ describe('Keyboard interactions', () => {
     it(
       'should not be possible to open the disclosure with Space when the button is disabled',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton disabled>Trigger</DisclosureButton>
-              <DisclosurePanel>Contents</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton disabled>Trigger</DisclosureButton>
+            <DisclosurePanel>Contents</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -845,14 +811,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the disclosure with Space when the disclosure is open',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Disclosure>
-              <DisclosureButton>Trigger</DisclosureButton>
-              <DisclosurePanel>Contents</DisclosurePanel>
-            </Disclosure>
-          `
-        )
+        renderTemplate(html`
+          <Disclosure>
+            <DisclosureButton>Trigger</DisclosureButton>
+            <DisclosurePanel>Contents</DisclosurePanel>
+          </Disclosure>
+        `)
 
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
@@ -888,14 +852,12 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to open a disclosure on click',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Disclosure>
-            <DisclosureButton>Trigger</DisclosureButton>
-            <DisclosurePanel>Contents</DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure>
+          <DisclosureButton>Trigger</DisclosureButton>
+          <DisclosurePanel>Contents</DisclosurePanel>
+        </Disclosure>
+      `)
 
       assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
@@ -918,14 +880,12 @@ describe('Mouse interactions', () => {
   it(
     'should not be possible to open a disclosure on right click',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Disclosure>
-            <DisclosureButton>Trigger</DisclosureButton>
-            <DisclosurePanel>Contents</DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure>
+          <DisclosureButton>Trigger</DisclosureButton>
+          <DisclosurePanel>Contents</DisclosurePanel>
+        </Disclosure>
+      `)
 
       assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
@@ -948,14 +908,12 @@ describe('Mouse interactions', () => {
   it(
     'should not be possible to open a disclosure on click when the button is disabled',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Disclosure>
-            <DisclosureButton disabled>Trigger</DisclosureButton>
-            <DisclosurePanel>Contents</DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure>
+          <DisclosureButton disabled>Trigger</DisclosureButton>
+          <DisclosurePanel>Contents</DisclosurePanel>
+        </Disclosure>
+      `)
 
       assertDisclosureButton({
         state: DisclosureState.InvisibleUnmounted,
@@ -978,14 +936,12 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close a disclosure on click',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Disclosure>
-            <DisclosureButton>Trigger</DisclosureButton>
-            <DisclosurePanel>Contents</DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure>
+          <DisclosureButton>Trigger</DisclosureButton>
+          <DisclosurePanel>Contents</DisclosurePanel>
+        </Disclosure>
+      `)
 
       // Open disclosure
       await click(getDisclosureButton())
@@ -1005,16 +961,14 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close the Disclosure by clicking on a DisclosureButton inside a DisclosurePanel',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Disclosure>
-            <DisclosureButton>Open</DisclosureButton>
-            <DisclosurePanel>
-              <DisclosureButton>Close</DisclosureButton>
-            </DisclosurePanel>
-          </Disclosure>
-        `
-      )
+      renderTemplate(html`
+        <Disclosure>
+          <DisclosureButton>Open</DisclosureButton>
+          <DisclosurePanel>
+            <DisclosureButton>Close</DisclosureButton>
+          </DisclosurePanel>
+        </Disclosure>
+      `)
 
       // Open the disclosure
       await click(getDisclosureButton())

@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../components/button'
 
 if (typeof document !== 'undefined') {
@@ -63,7 +62,7 @@ export default function App() {
             <ShadowChildren id="btn_outside_shadow" />
           </div>
         </div>
-        <Dialog.Panel className="fixed top-16 left-16 z-50 h-64 w-64 rounded-lg border border-black/10 bg-white bg-clip-padding p-12 shadow-lg">
+        <Dialog.Panel className="fixed left-16 top-16 z-50 h-64 w-64 rounded-lg border border-black/10 bg-white bg-clip-padding p-12 shadow-lg">
           <div>
             <button
               className="m-4 rounded border-0 bg-gray-500 px-3 py-1 font-medium text-white hover:bg-gray-600"

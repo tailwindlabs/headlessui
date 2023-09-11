@@ -1,33 +1,31 @@
 import {
-  Fragment,
   computed,
   defineComponent,
+  Fragment,
   h,
   inject,
+  InjectionKey,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  toRaw,
-  watch,
-
-  // Types
-  InjectionKey,
   Ref,
+  toRaw,
   UnwrapRef,
+  watch,
 } from 'vue'
-import { dom } from '../../utils/dom'
-import { Keys } from '../../keyboard'
-import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { useControllable } from '../../hooks/use-controllable'
 import { useId } from '../../hooks/use-id'
-import { compact, omit, render } from '../../utils/render'
-import { Label, useLabels } from '../label/label'
-import { Description, useDescriptions } from '../description/description'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Keys } from '../../keyboard'
+import { dom } from '../../utils/dom'
+import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
-import { useControllable } from '../../hooks/use-controllable'
+import { compact, omit, render } from '../../utils/render'
+import { Description, useDescriptions } from '../description/description'
+import { Label, useLabels } from '../label/label'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z

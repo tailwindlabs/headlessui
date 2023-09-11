@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
-import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 import { html } from '../../test-utils/html'
 import { renderHydrate, renderSSR } from '../../test-utils/ssr'
+import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 
 jest.mock('../../hooks/use-id')
 

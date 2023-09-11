@@ -1,4 +1,4 @@
-import { watchEffect, ComputedRef } from 'vue'
+import { ComputedRef, watchEffect } from 'vue'
 import { getOwnerDocument } from '../utils/owner'
 
 type AcceptNode = (

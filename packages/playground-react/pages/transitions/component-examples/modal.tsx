@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
 import { Transition } from '@headlessui/react'
+import { useRef, useState } from 'react'
 
 export default function Home() {
   let [isOpen, setIsOpen] = useState(false)
@@ -58,7 +58,7 @@ export default function Home() {
           setEmail('')
         }}
       >
-        <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div className="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
           <Transition.Child
             enter="ease-out duration-300"
             enterFrom="opacity-0"
@@ -93,7 +93,7 @@ export default function Home() {
             beforeLeave={() => addEvent('[Panel] Before leave')}
             afterLeave={() => addEvent('[Panel] After leave')}
           >
-            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
               <div className="sm:flex sm:items-start">
                 <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                   {/* Heroicon name: exclamation */}
@@ -112,7 +112,7 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <h3 className="text-lg font-medium leading-6 text-gray-900" id="modal-headline">
                     Deactivate account
                   </h3>

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
-import { Transition } from './transition'
 import { renderSSR } from '../../test-utils/ssr'
+import { Transition } from './transition'
 
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)

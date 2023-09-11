@@ -1,61 +1,59 @@
 import React, {
+  ContextType,
   createContext,
   createRef,
+  Dispatch,
+  ElementType,
+  FocusEvent as ReactFocusEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  MouseEventHandler,
+  MutableRefObject,
+  Ref,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
   useState,
-
-  // Types
-  ContextType,
-  Dispatch,
-  ElementType,
-  FocusEvent as ReactFocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
-  MouseEventHandler,
 } from 'react'
 
-import { Props } from '../../types'
-import { match } from '../../utils/match'
-import {
-  forwardRefWithAs,
-  render,
-  Features,
-  PropsForFeatures,
-  HasDisplayName,
-  RefProp,
-} from '../../utils/render'
-import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
+import { useNestedPortals } from '../../components/portal/portal'
+import { useEvent } from '../../hooks/use-event'
+import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
-import { Keys } from '../keyboard'
+import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useLatestValue } from '../../hooks/use-latest-value'
+import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useOwnerDocument } from '../../hooks/use-owner'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
+import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
+import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import {
-  getFocusableElements,
   Focus,
-  focusIn,
-  isFocusableElement,
   FocusableMode,
+  focusIn,
   FocusResult,
+  getFocusableElements,
+  isFocusableElement,
 } from '../../utils/focus-management'
-import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useOutsideClick } from '../../hooks/use-outside-click'
-import { getOwnerDocument } from '../../utils/owner'
-import { useOwnerDocument } from '../../hooks/use-owner'
-import { useEventListener } from '../../hooks/use-event-listener'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { useEvent } from '../../hooks/use-event'
-import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
+import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
-import { useLatestValue } from '../../hooks/use-latest-value'
-import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
-import { useNestedPortals } from '../../components/portal/portal'
+import { getOwnerDocument } from '../../utils/owner'
+import {
+  Features,
+  forwardRefWithAs,
+  HasDisplayName,
+  PropsForFeatures,
+  RefProp,
+  render,
+} from '../../utils/render'
+import { Keys } from '../keyboard'
 
 type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
 

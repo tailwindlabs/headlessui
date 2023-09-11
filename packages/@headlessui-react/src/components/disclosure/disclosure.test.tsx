@@ -1,19 +1,19 @@
-import React, { createElement, Suspense, useEffect, useRef } from 'react'
 import { render } from '@testing-library/react'
+import React, { createElement, Suspense, useEffect, useRef } from 'react'
 
-import { Disclosure } from './disclosure'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
-  DisclosureState,
-  assertDisclosurePanel,
+  assertActiveElement,
   assertDisclosureButton,
+  assertDisclosurePanel,
+  DisclosureState,
+  getByText,
   getDisclosureButton,
   getDisclosurePanel,
-  assertActiveElement,
-  getByText,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, focus, Keys, MouseButton } from '../../test-utils/interactions'
+import { click, focus, Keys, MouseButton, press } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transitions/transition'
+import { Disclosure } from './disclosure'
 
 jest.mock('../../hooks/use-id')
 

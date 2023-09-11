@@ -1,28 +1,26 @@
 import {
   computed,
   defineComponent,
+  Fragment,
   h,
   onMounted,
   onUnmounted,
-  ref,
-  watch,
-
-  // Types
-  Fragment,
   PropType,
+  ref,
   Ref,
+  watch,
   watchEffect,
 } from 'vue'
-import { render } from '../../utils/render'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { dom } from '../../utils/dom'
-import { focusIn, Focus, focusElement, FocusResult } from '../../utils/focus-management'
-import { match } from '../../utils/match'
-import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
-import { getOwnerDocument } from '../../utils/owner'
 import { useEventListener } from '../../hooks/use-event-listener'
-import { microTask } from '../../utils/micro-task'
+import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
 import { history } from '../../utils/active-element-history'
+import { dom } from '../../utils/dom'
+import { Focus, focusElement, focusIn, FocusResult } from '../../utils/focus-management'
+import { match } from '../../utils/match'
+import { microTask } from '../../utils/micro-task'
+import { getOwnerDocument } from '../../utils/owner'
+import { render } from '../../utils/render'
 
 type Containers =
   // Lazy resolved containers

@@ -1,6 +1,6 @@
-import { once } from '../../../utils/once'
 import { disposables } from '../../../utils/disposables'
 import { match } from '../../../utils/match'
+import { once } from '../../../utils/once'
 
 function addClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.add(...classes)

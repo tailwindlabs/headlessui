@@ -1,6 +1,6 @@
-import { h, ref, defineComponent } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 
-import { Hidden, Features } from './hidden'
+import { Features, Hidden } from './hidden'
 
 export let FocusSentinel = defineComponent({
   props: {

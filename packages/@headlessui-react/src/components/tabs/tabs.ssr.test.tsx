@@ -1,6 +1,6 @@
 import React from 'react'
+import { renderHydrate, renderSSR } from '../../test-utils/ssr'
 import { Tab } from './tabs'
-import { renderSSR, renderHydrate } from '../../test-utils/ssr'
 
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)

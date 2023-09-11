@@ -1,37 +1,35 @@
 import React, {
-  Fragment,
   createContext,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-
-  // Types
   ElementType,
+  Fragment,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   Ref,
+  useContext,
   useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
 
-import { Props } from '../../types'
-import { forwardRefWithAs, render, compact, HasDisplayName, RefProp } from '../../utils/render'
-import { useId } from '../../hooks/use-id'
-import { Keys } from '../keyboard'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { _internal_ComponentLabel, Label, useLabels } from '../label/label'
-import {
-  _internal_ComponentDescription,
-  Description,
-  useDescriptions,
-} from '../description/description'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { attemptSubmit } from '../../utils/form'
-import { useEvent } from '../../hooks/use-event'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
+import { useEvent } from '../../hooks/use-event'
+import { useId } from '../../hooks/use-id'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Props } from '../../types'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { attemptSubmit } from '../../utils/form'
+import { compact, forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import {
+  Description,
+  useDescriptions,
+  _internal_ComponentDescription,
+} from '../description/description'
+import { Keys } from '../keyboard'
+import { Label, useLabels, _internal_ComponentLabel } from '../label/label'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null

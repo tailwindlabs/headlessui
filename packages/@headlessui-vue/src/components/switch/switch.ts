@@ -1,29 +1,27 @@
 import {
-  Fragment,
   computed,
   defineComponent,
+  Fragment,
   h,
   inject,
+  InjectionKey,
+  onMounted,
   provide,
   ref,
-  watch,
-
-  // Types
-  InjectionKey,
   Ref,
-  onMounted,
+  watch,
 } from 'vue'
 
-import { render, compact, omit } from '../../utils/render'
-import { useId } from '../../hooks/use-id'
-import { Keys } from '../../keyboard'
-import { Label, useLabels } from '../label/label'
-import { Description, useDescriptions } from '../description/description'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { attemptSubmit } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
+import { useId } from '../../hooks/use-id'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
+import { attemptSubmit } from '../../utils/form'
+import { compact, omit, render } from '../../utils/render'
+import { Description, useDescriptions } from '../description/description'
+import { Label, useLabels } from '../label/label'
 
 type StateDefinition = {
   // State

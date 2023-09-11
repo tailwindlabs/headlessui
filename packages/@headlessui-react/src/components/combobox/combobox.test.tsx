@@ -1,48 +1,48 @@
-import React, { createElement, useState, useEffect } from 'react'
 import { render } from '@testing-library/react'
+import React, { createElement, useEffect, useState } from 'react'
 
-import { Combobox } from './combobox'
-import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
+  assertActiveComboboxOption,
+  assertActiveElement,
+  assertCombobox,
+  assertComboboxButton,
+  assertComboboxButtonLinkedWithCombobox,
+  assertComboboxButtonLinkedWithComboboxLabel,
+  assertComboboxInput,
+  assertComboboxLabel,
+  assertComboboxLabelLinkedWithCombobox,
+  assertComboboxList,
+  assertComboboxOption,
+  assertNoActiveComboboxOption,
+  assertNoSelectedComboboxOption,
+  assertNotActiveComboboxOption,
+  ComboboxMode,
+  ComboboxState,
+  getByText,
+  getComboboxButton,
+  getComboboxButtons,
+  getComboboxes,
+  getComboboxInput,
+  getComboboxInputs,
+  getComboboxLabel,
+  getComboboxOptions,
+} from '../../test-utils/accessibility-assertions'
+import {
+  blur,
   click,
   focus,
-  blur,
-  mouseMove,
+  Keys,
+  MouseButton,
   mouseLeave,
+  mouseMove,
   press,
   shift,
   type,
   word,
-  Keys,
-  MouseButton,
 } from '../../test-utils/interactions'
-import {
-  assertActiveElement,
-  assertActiveComboboxOption,
-  assertComboboxList,
-  assertComboboxButton,
-  assertComboboxButtonLinkedWithCombobox,
-  assertComboboxButtonLinkedWithComboboxLabel,
-  assertComboboxOption,
-  assertComboboxLabel,
-  assertComboboxLabelLinkedWithCombobox,
-  assertNoActiveComboboxOption,
-  assertNoSelectedComboboxOption,
-  getComboboxInput,
-  getComboboxButton,
-  getComboboxButtons,
-  getComboboxInputs,
-  getComboboxOptions,
-  getComboboxLabel,
-  ComboboxState,
-  getByText,
-  getComboboxes,
-  assertCombobox,
-  ComboboxMode,
-  assertNotActiveComboboxOption,
-  assertComboboxInput,
-} from '../../test-utils/accessibility-assertions'
+import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transitions/transition'
+import { Combobox } from './combobox'
 
 let NOOP = () => {}
 

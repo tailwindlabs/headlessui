@@ -1,7 +1,6 @@
-import React from 'react'
 import { Menu } from '@headlessui/react'
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
 
 export default function Home() {
   return (
@@ -37,7 +36,7 @@ function Dropdown() {
         <span className="inline-flex rounded-md shadow-sm">
           <Menu.Button as={Button}>
             <span>Options</span>
-            <svg className="ml-2 -mr-1 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <svg className="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path
                 fillRule="evenodd"
                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"

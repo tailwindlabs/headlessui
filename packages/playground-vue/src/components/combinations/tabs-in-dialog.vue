@@ -5,7 +5,7 @@
     <div
       class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
     >
-      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+      <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
         <TabGroup>
           <TabList>
             <Tab class="px-3 py-2">Tab 1</Tab>

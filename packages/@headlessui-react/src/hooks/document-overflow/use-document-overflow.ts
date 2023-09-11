@@ -1,5 +1,5 @@
-import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
 import { useStore } from '../../hooks/use-store'
+import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
 import { overflows } from './overflow-store'
 
 export function useDocumentOverflowLockedEffect(

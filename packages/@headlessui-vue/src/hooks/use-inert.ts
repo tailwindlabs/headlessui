@@ -1,10 +1,4 @@
-import {
-  ref,
-  watchEffect,
-
-  // Types
-  Ref,
-} from 'vue'
+import { ref, Ref, watchEffect } from 'vue'
 import { dom } from '../utils/dom'
 
 let originals = new Map<HTMLElement, { 'aria-hidden': string | null; inert: boolean }>()

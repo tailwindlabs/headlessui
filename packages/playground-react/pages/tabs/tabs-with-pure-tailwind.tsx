@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Tab, Switch } from '@headlessui/react'
+import { Switch, Tab } from '@headlessui/react'
+import { useState } from 'react'
 
 import { classNames } from '../../utils/class-names'
 
@@ -57,7 +57,7 @@ export default function Home() {
                   tabIdx === 0 ? 'rounded-l-lg' : '',
                   tabIdx === tabs.length - 1 ? 'rounded-r-lg' : '',
                   tab.disabled && 'opacity-50',
-                  'group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10'
+                  'group relative min-w-0 flex-1 overflow-hidden bg-white px-4 py-4 text-center text-sm font-medium hover:bg-gray-50 focus:z-10'
                 )
               }
             >

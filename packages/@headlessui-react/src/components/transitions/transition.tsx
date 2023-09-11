@@ -1,39 +1,37 @@
 import React, {
-  Fragment,
   createContext,
+  ElementType,
+  Fragment,
+  MutableRefObject,
+  Ref,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
-
-  // Types
-  ElementType,
-  MutableRefObject,
-  Ref,
 } from 'react'
-import { Props, ReactTag } from '../../types'
-import {
-  Features,
-  forwardRefWithAs,
-  HasDisplayName,
-  PropsForFeatures,
-  render,
-  RenderStrategy,
-  RefProp,
-} from '../../utils/render'
-import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { match } from '../../utils/match'
+import { useDisposables } from '../../hooks/use-disposables'
+import { useEvent } from '../../hooks/use-event'
+import { useFlags } from '../../hooks/use-flags'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
-import { useEvent } from '../../hooks/use-event'
-import { useDisposables } from '../../hooks/use-disposables'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { Props, ReactTag } from '../../types'
 import { classNames } from '../../utils/class-names'
-import { useFlags } from '../../hooks/use-flags'
+import { match } from '../../utils/match'
+import {
+  Features,
+  forwardRefWithAs,
+  HasDisplayName,
+  PropsForFeatures,
+  RefProp,
+  render,
+  RenderStrategy,
+} from '../../utils/render'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
 

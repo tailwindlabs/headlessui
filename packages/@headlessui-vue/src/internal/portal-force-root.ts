@@ -1,11 +1,4 @@
-import {
-  defineComponent,
-  inject,
-  provide,
-
-  // Types
-  InjectionKey,
-} from 'vue'
+import { defineComponent, inject, InjectionKey, provide } from 'vue'
 import { render } from '../utils/render'
 
 let ForcePortalRootContext = Symbol('ForcePortalRootContext') as InjectionKey<Boolean>

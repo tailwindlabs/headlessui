@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
 import { html } from '../../test-utils/html'
 import { renderHydrate, renderSSR } from '../../test-utils/ssr'
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs'
 
 jest.mock('../../hooks/use-id')
 

@@ -1,32 +1,30 @@
 import {
-  Fragment,
   computed,
   defineComponent,
+  Fragment,
   h,
   inject,
+  InjectionKey,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  watchEffect,
-
-  // Types
-  InjectionKey,
   Ref,
   watch,
+  watchEffect,
 } from 'vue'
 
-import { Features, render, omit } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
-import { Keys } from '../../keyboard'
-import { dom } from '../../utils/dom'
-import { match } from '../../utils/match'
-import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusSentinel } from '../../internal/focus-sentinel'
-import { microTask } from '../../utils/micro-task'
 import { Hidden } from '../../internal/hidden'
+import { Keys } from '../../keyboard'
+import { dom } from '../../utils/dom'
+import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { match } from '../../utils/match'
+import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'
+import { Features, omit, render } from '../../utils/render'
 
 enum Direction {
   Forwards,

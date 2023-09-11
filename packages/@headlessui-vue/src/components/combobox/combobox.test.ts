@@ -1,55 +1,55 @@
-import { defineComponent, nextTick, ref, watch, h, reactive, computed, PropType } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { computed, defineComponent, h, nextTick, PropType, reactive, ref, watch } from 'vue'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
-  Combobox,
-  ComboboxInput,
-  ComboboxLabel,
-  ComboboxButton,
-  ComboboxOptions,
-  ComboboxOption,
-} from './combobox'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+  assertActiveComboboxOption,
+  assertActiveElement,
+  assertCombobox,
+  assertComboboxButton,
+  assertComboboxButtonLinkedWithCombobox,
+  assertComboboxButtonLinkedWithComboboxLabel,
+  assertComboboxInput,
+  assertComboboxLabel,
+  assertComboboxLabelLinkedWithCombobox,
+  assertComboboxList,
+  assertComboboxOption,
+  assertNoActiveComboboxOption,
+  assertNoSelectedComboboxOption,
+  assertNotActiveComboboxOption,
+  ComboboxMode,
+  ComboboxState,
+  getByText,
+  getComboboxButton,
+  getComboboxButtons,
+  getComboboxes,
+  getComboboxInput,
+  getComboboxInputs,
+  getComboboxLabel,
+  getComboboxOptions,
+} from '../../test-utils/accessibility-assertions'
+import { html } from '../../test-utils/html'
 import {
+  blur,
   click,
   focus,
-  blur,
-  mouseMove,
+  Keys,
+  MouseButton,
   mouseLeave,
+  mouseMove,
   press,
   shift,
   type,
   word,
-  Keys,
-  MouseButton,
 } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import {
-  assertActiveElement,
-  assertActiveComboboxOption,
-  assertComboboxList,
-  assertComboboxButton,
-  assertComboboxButtonLinkedWithCombobox,
-  assertComboboxButtonLinkedWithComboboxLabel,
-  assertComboboxOption,
-  assertComboboxLabel,
-  assertComboboxLabelLinkedWithCombobox,
-  assertNoActiveComboboxOption,
-  assertNoSelectedComboboxOption,
-  getComboboxInput,
-  getComboboxButton,
-  getComboboxButtons,
-  getComboboxInputs,
-  getComboboxOptions,
-  getComboboxLabel,
-  ComboboxState,
-  getByText,
-  getComboboxes,
-  assertCombobox,
-  ComboboxMode,
-  assertNotActiveComboboxOption,
-  assertComboboxInput,
-} from '../../test-utils/accessibility-assertions'
-import { html } from '../../test-utils/html'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxLabel,
+  ComboboxOption,
+  ComboboxOptions,
+} from './combobox'
 
 jest.mock('../../hooks/use-id')
 

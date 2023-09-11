@@ -1,45 +1,43 @@
 import {
-  Fragment,
   computed,
+  ComputedRef,
   defineComponent,
+  Fragment,
   h,
   inject,
+  InjectionKey,
   nextTick,
   onMounted,
   onUnmounted,
+  PropType,
   provide,
   ref,
+  Ref,
   toRaw,
+  UnwrapNestedRefs,
   watch,
   watchEffect,
-
-  // Types
-  ComputedRef,
-  InjectionKey,
-  PropType,
-  Ref,
-  UnwrapNestedRefs,
 } from 'vue'
 
-import { Features, render, omit, compact } from '../../utils/render'
-import { useId } from '../../hooks/use-id'
-import { Keys } from '../../keyboard'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
-import { dom } from '../../utils/dom'
-import { useOpenClosed, State, useOpenClosedProvider } from '../../internal/open-closed'
-import { match } from '../../utils/match'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { sortByDomNode } from '../../utils/focus-management'
-import { useOutsideClick } from '../../hooks/use-outside-click'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { objectToFormEntries } from '../../utils/form'
 import { useControllable } from '../../hooks/use-controllable'
+import { useId } from '../../hooks/use-id'
+import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { isMobile } from '../../utils/platform'
-import { disposables } from '../../utils/disposables'
-import { getOwnerDocument } from '../../utils/owner'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
+import { Keys } from '../../keyboard'
 import { history } from '../../utils/active-element-history'
+import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { disposables } from '../../utils/disposables'
+import { dom } from '../../utils/dom'
+import { sortByDomNode } from '../../utils/focus-management'
+import { objectToFormEntries } from '../../utils/form'
+import { match } from '../../utils/match'
+import { getOwnerDocument } from '../../utils/owner'
+import { isMobile } from '../../utils/platform'
+import { compact, Features, omit, render } from '../../utils/render'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z

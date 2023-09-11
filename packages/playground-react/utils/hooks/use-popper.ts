@@ -1,5 +1,5 @@
-import { RefCallback, useRef, useCallback, useMemo } from 'react'
 import { createPopper, Options } from '@popperjs/core'
+import { RefCallback, useCallback, useMemo, useRef } from 'react'
 
 /**
  * Example implementation to use Popper: https://popper.js.org/
