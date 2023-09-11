@@ -458,7 +458,7 @@ describe('Transitions', () => {
         "Render 1:
             -  <!---->
             +  <div
-            +    class=\\"enter from\\"
+            +    class="enter from"
             +  >
             +    <span>
             +      Hello!
@@ -466,12 +466,12 @@ describe('Transitions', () => {
             +  </div>
 
         Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
+            -  class="enter from"
+            +  class="enter to"
 
         Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
+            -  class="enter to"
+            +  class="""
       `)
     })
 
@@ -511,7 +511,7 @@ describe('Transitions', () => {
         "Render 1:
             -  <!---->
             +  <div
-            +    class=\\"enter from\\"
+            +    class="enter from"
             +  >
             +    <span>
             +      Hello!
@@ -519,12 +519,12 @@ describe('Transitions', () => {
             +  </div>
 
         Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
+            -  class="enter from"
+            +  class="enter to"
 
         Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
+            -  class="enter to"
+            +  class="""
       `)
     })
 
@@ -562,17 +562,17 @@ describe('Transitions', () => {
 
       expect(timeline).toMatchInlineSnapshot(`
         "Render 1:
-            -  hidden=\\"\\"
-            -  style=\\"display: none;\\"
-            +  class=\\"enter from\\"
+            -  hidden=""
+            -  style="display: none;"
+            +  class="enter from"
 
         Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
+            -  class="enter from"
+            +  class="enter to"
 
         Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
+            -  class="enter to"
+            +  class="""
       `)
     })
 
@@ -612,7 +612,7 @@ describe('Transitions', () => {
         "Render 1:
             -  <!---->
             +  <div
-            +    class=\\"enter from\\"
+            +    class="enter from"
             +  >
             +    <span>
             +      Hello!
@@ -620,12 +620,12 @@ describe('Transitions', () => {
             +  </div>
 
         Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
+            -  class="enter from"
+            +  class="enter to"
 
         Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
+            -  class="enter to"
+            +  class="""
       `)
     })
 
@@ -667,16 +667,16 @@ describe('Transitions', () => {
           "Render 1:
               -  <div>
               +  <div
-              +    class=\\"leave from\\"
+              +    class="leave from"
               +  >
 
           Render 2:
-              -  class=\\"leave from\\"
-              +  class=\\"leave to\\"
+              -  class="leave from"
+              +  class="leave to"
 
           Render 3: Transition took at least 50ms (yes)
               -  <div
-              -    class=\\"leave to\\"
+              -    class="leave to"
               -  >
               -    <span>
               -      Hello!
@@ -731,18 +731,18 @@ describe('Transitions', () => {
           "Render 1:
               -  <div>
               +  <div
-              +    class=\\"leave from\\"
+              +    class="leave from"
               +  >
 
           Render 2:
-              -  class=\\"leave from\\"
-              +  class=\\"leave to\\"
+              -  class="leave from"
+              +  class="leave to"
 
           Render 3: Transition took at least 50ms (yes)
-              -  class=\\"leave to\\"
-              +  class=\\"\\"
-              +  hidden=\\"\\"
-              +  style=\\"display: none;\\""
+              -  class="leave to"
+              +  class=""
+              +  hidden=""
+              +  style="display: none;""
         `)
       })
     )
@@ -804,7 +804,7 @@ describe('Transitions', () => {
           "Render 1:
               -  <!---->
               +  <div
-              +    class=\\"enter enter-from\\"
+              +    class="enter enter-from"
               +  >
               +    <span>
               +      Hello!
@@ -812,24 +812,24 @@ describe('Transitions', () => {
               +  </div>
 
           Render 2:
-              -  class=\\"enter enter-from\\"
-              +  class=\\"enter enter-to\\"
+              -  class="enter enter-from"
+              +  class="enter enter-to"
 
           Render 3: Transition took at least 50ms (yes)
-              -  class=\\"enter enter-to\\"
-              +  class=\\"\\"
+              -  class="enter enter-to"
+              +  class=""
 
           Render 4:
-              -  class=\\"\\"
-              +  class=\\"leave leave-from\\"
+              -  class=""
+              +  class="leave leave-from"
 
           Render 5:
-              -  class=\\"leave leave-from\\"
-              +  class=\\"leave leave-to\\"
+              -  class="leave leave-from"
+              +  class="leave leave-to"
 
           Render 6: Transition took at least 75ms (yes)
               -  <div
-              -    class=\\"leave leave-to\\"
+              -    class="leave leave-to"
               -  >
               -    <span>
               -      Hello!
@@ -902,45 +902,45 @@ describe('Transitions', () => {
 
         expect(timeline).toMatchInlineSnapshot(`
           "Render 1:
-              -  hidden=\\"\\"
-              -  style=\\"display: none;\\"
-              +  class=\\"enter enter-from\\"
+              -  hidden=""
+              -  style="display: none;"
+              +  class="enter enter-from"
 
           Render 2:
-              -  class=\\"enter enter-from\\"
-              +  class=\\"enter enter-to\\"
+              -  class="enter enter-from"
+              +  class="enter enter-to"
 
           Render 3: Transition took at least 50ms (yes)
-              -  class=\\"enter enter-to\\"
-              +  class=\\"\\"
+              -  class="enter enter-to"
+              +  class=""
 
           Render 4:
-              -  class=\\"\\"
-              +  class=\\"leave leave-from\\"
+              -  class=""
+              +  class="leave leave-from"
 
           Render 5:
-              -  class=\\"leave leave-from\\"
-              +  class=\\"leave leave-to\\"
+              -  class="leave leave-from"
+              +  class="leave leave-to"
 
           Render 6: Transition took at least 75ms (yes)
-              -  class=\\"leave leave-to\\"
-              +  class=\\"\\"
-              +  hidden=\\"\\"
-              +  style=\\"display: none;\\"
+              -  class="leave leave-to"
+              +  class=""
+              +  hidden=""
+              +  style="display: none;"
 
           Render 7:
-              -  class=\\"\\"
-              -  hidden=\\"\\"
-              -  style=\\"display: none;\\"
-              +  class=\\"enter enter-from\\"
+              -  class=""
+              -  hidden=""
+              -  style="display: none;"
+              +  class="enter enter-from"
 
           Render 8:
-              -  class=\\"enter enter-from\\"
-              +  class=\\"enter enter-to\\"
+              -  class="enter enter-from"
+              +  class="enter enter-to"
 
           Render 9: Transition took at least 75ms (yes)
-              -  class=\\"enter enter-to\\"
-              +  class=\\"\\""
+              -  class="enter enter-to"
+              +  class="""
         `)
       })
     )
@@ -998,24 +998,24 @@ describe('Transitions', () => {
           "Render 1:
               -  <div>
               +  <div
-              +    class=\\"leave-fast leave-from\\"
+              +    class="leave-fast leave-from"
               +  >
               ---
               -  <div>
               +  <div
-              +    class=\\"leave-slow leave-from\\"
+              +    class="leave-slow leave-from"
               +  >
 
           Render 2:
-              -  class=\\"leave-fast leave-from\\"
-              +  class=\\"leave-fast leave-to\\"
+              -  class="leave-fast leave-from"
+              +  class="leave-fast leave-to"
               ---
-              -  class=\\"leave-slow leave-from\\"
-              +  class=\\"leave-slow leave-to\\"
+              -  class="leave-slow leave-from"
+              +  class="leave-slow leave-to"
 
           Render 3: Transition took at least 50ms (yes)
               -  <div
-              -    class=\\"leave-fast leave-to\\"
+              -    class="leave-fast leave-to"
               -  >
               -     I am fast 
               -  </div>
@@ -1025,7 +1025,7 @@ describe('Transitions', () => {
               -  <div>
               ---
               -    <div
-              -      class=\\"leave-slow leave-to\\"
+              -      class="leave-slow leave-to"
               -    >
               -       I am slow 
               -    </div>
@@ -1088,35 +1088,35 @@ describe('Transitions', () => {
           "Render 1:
               -  <div>
               +  <div
-              +    class=\\"leave-fast leave-from\\"
+              +    class="leave-fast leave-from"
               +  >
               ---
               -    <div>
               +    <div
-              +      class=\\"leave-slow\\"
+              +      class="leave-slow"
               +    >
               ---
               -  <div>
               +  <div
-              +    class=\\"leave-slow leave-from\\"
+              +    class="leave-slow leave-from"
               +  >
 
           Render 2:
-              -  class=\\"leave-fast leave-from\\"
-              +  class=\\"leave-fast leave-to\\"
+              -  class="leave-fast leave-from"
+              +  class="leave-fast leave-to"
               ---
-              -  class=\\"leave-slow leave-from\\"
-              +  class=\\"leave-slow leave-to\\"
+              -  class="leave-slow leave-from"
+              +  class="leave-slow leave-to"
 
           Render 3: Transition took at least 50ms (yes)
               -  <div
-              -    class=\\"leave-fast leave-to\\"
+              -    class="leave-fast leave-to"
               -  >
               -    <span>
               -      I am fast
               -    </span>
               -    <div
-              -      class=\\"leave-slow\\"
+              -      class="leave-slow"
               -    >
               -       I am my own root component and I don't talk to the parent 
               -    </div>
@@ -1127,7 +1127,7 @@ describe('Transitions', () => {
               -  <div>
               ---
               -    <div
-              -      class=\\"leave-slow leave-to\\"
+              -      class="leave-slow leave-to"
               -    >
               -       I am slow 
               -    </div>
@@ -1204,7 +1204,7 @@ describe('Events', () => {
         "Render 1:
             -  <!---->
             +  <div
-            +    class=\\"enter enter-from\\"
+            +    class="enter enter-from"
             +  >
             +    <span>
             +      Hello!
@@ -1212,24 +1212,24 @@ describe('Events', () => {
             +  </div>
 
         Render 2:
-            -  class=\\"enter enter-from\\"
-            +  class=\\"enter enter-to\\"
+            -  class="enter enter-from"
+            +  class="enter enter-to"
 
         Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter enter-to\\"
-            +  class=\\"\\"
+            -  class="enter enter-to"
+            +  class=""
 
         Render 4:
-            -  class=\\"\\"
-            +  class=\\"leave leave-from\\"
+            -  class=""
+            +  class="leave leave-from"
 
         Render 5:
-            -  class=\\"leave leave-from\\"
-            +  class=\\"leave leave-to\\"
+            -  class="leave leave-from"
+            +  class="leave leave-to"
 
         Render 6: Transition took at least 75ms (yes)
             -  <div
-            -    class=\\"leave leave-to\\"
+            -    class="leave leave-to"
             -  >
             -    <span>
             -      Hello!
