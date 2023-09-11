@@ -14,5 +14,37 @@ Object.defineProperty(HTMLElement.prototype, 'innerText', {
   },
 })
 
-globalThis.setImmediate = setTimeout
-globalThis.clearImmediate = clearTimeout
+function microTask(cb: Parameters<typeof queueMicrotask>[0]) {
+  if (typeof queueMicrotask === 'function') {
+    queueMicrotask(cb)
+  } else {
+    Promise.resolve()
+      .then(cb)
+      .catch((e) =>
+        setTimeout(() => {
+          throw e
+        })
+      )
+  }
+}
+
+let state = {
+  id: 0,
+  tasks: new Map(),
+}
+
+global.setImmediate = function setImmediate(cb) {
+  let id = state.id++
+  state.tasks.set(id, cb)
+  microTask(() => {
+    if (state.tasks.has(id)) {
+      state.tasks.get(id)()
+      state.tasks.delete(id)
+    }
+  })
+  return id
+}
+
+global.clearImmediate = function clearImmediate(id) {
+  state.tasks.delete(id)
+}

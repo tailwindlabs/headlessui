@@ -7,6 +7,8 @@ beforeAll(() => {
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
 })
 
+afterAll(() => jest.restoreAllMocks())
+
 let spy: jest.SpyInstance<void, Parameters<typeof console.error>>
 beforeEach(() => (spy = jest.spyOn(console, 'error').mockImplementation(() => {})))
 afterEach(() => spy.mockRestore())

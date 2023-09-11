@@ -8,6 +8,8 @@ beforeAll(() => {
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
 })
 
+afterAll(() => jest.restoreAllMocks())
+
 describe('Rendering', () => {
   describe('SSR', () => {
     it('A transition without appear=true does not insert classes during SSR', async () => {

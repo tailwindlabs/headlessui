@@ -169,7 +169,7 @@ let order: Record<
 }
 
 export async function type(events: Partial<KeyboardEvent>[], element = document.activeElement) {
-  jest.useFakeTimers()
+  jest.useFakeTimers('legacy')
 
   try {
     if (element === null) return expect(element).not.toBe(null)

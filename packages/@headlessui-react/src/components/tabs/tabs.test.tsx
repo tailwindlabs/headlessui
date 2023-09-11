@@ -18,6 +18,8 @@ beforeAll(() => {
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
 })
 
+afterAll(() => jest.restoreAllMocks())
+
 describe('safeguards', () => {
   it.each([
     ['Tab.List', Tab.List],
