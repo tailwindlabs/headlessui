@@ -14,40 +14,24 @@ Object.defineProperty(HTMLElement.prototype, 'innerText', {
   },
 })
 
+import * as timers from "timers"
 import { TextEncoder } from "util"
 global.TextEncoder = TextEncoder
-
-function microTask(cb: Parameters<typeof queueMicrotask>[0]) {
-  if (typeof queueMicrotask === 'function') {
-    queueMicrotask(cb)
-  } else {
-    Promise.resolve()
-      .then(cb)
-      .catch((e) =>
-        setTimeout(() => {
-          throw e
-        })
-      )
-  }
-}
 
 let state = {
   id: 0,
   tasks: new Map(),
 }
 
+// @ts-ignore
 global.setImmediate = function setImmediate(cb) {
   let id = state.id++
-  state.tasks.set(id, cb)
-  microTask(() => {
-    if (state.tasks.has(id)) {
-      state.tasks.get(id)()
-      state.tasks.delete(id)
-    }
-  })
+  let timer = timers.setImmediate(() => cb())
+  state.tasks.set(id, timer)
   return id
 }
 
 global.clearImmediate = function clearImmediate(id) {
-  state.tasks.delete(id)
+  let timer = state.tasks.get(id)
+  timer && timers.clearImmediate(timer)
 }
