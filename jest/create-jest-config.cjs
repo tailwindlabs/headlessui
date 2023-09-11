@@ -3,6 +3,7 @@ module.exports = function createJestConfig(root, options) {
   return Object.assign(
     {
       rootDir: root,
+      testEnvironment: 'jsdom',
       setupFilesAfterEnv: [
         '<rootDir>../../jest/custom-matchers.ts',
         '<rootDir>../../jest/polyfills.ts',
