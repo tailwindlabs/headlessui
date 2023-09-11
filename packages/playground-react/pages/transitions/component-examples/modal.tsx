@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react'
 import { Transition } from '@headlessui/react'
+import { useRef, useState } from 'react'
 
 export default function Home() {
   let [isOpen, setIsOpen] = useState(false)

@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '../../components/button'
 
 if (typeof document !== 'undefined') {

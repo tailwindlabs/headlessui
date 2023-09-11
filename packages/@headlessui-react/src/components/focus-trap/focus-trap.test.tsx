@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react'
 import { render, screen } from '@testing-library/react'
+import React, { useRef, useState } from 'react'
 
-import { FocusTrap } from './focus-trap'
 import { assertActiveElement } from '../../test-utils/accessibility-assertions'
+import { click, Keys, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { click, press, shift, Keys } from '../../test-utils/interactions'
+import { FocusTrap } from './focus-trap'
 
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)

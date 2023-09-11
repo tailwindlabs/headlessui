@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
 import { Listbox } from '@headlessui/react'
+import { useEffect, useState } from 'react'
 import { classNames } from '../../utils/class-names'
 
 let people = [

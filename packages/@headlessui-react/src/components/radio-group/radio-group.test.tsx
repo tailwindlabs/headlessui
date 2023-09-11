@@ -4,16 +4,16 @@ import { render } from '@testing-library/react'
 
 import { RadioGroup } from './radio-group'
 
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { press, focus, Keys, shift, click } from '../../test-utils/interactions'
 import {
-  getByText,
-  assertRadioGroupLabel,
-  getRadioGroupOptions,
+  assertActiveElement,
   assertFocusable,
   assertNotFocusable,
-  assertActiveElement,
+  assertRadioGroupLabel,
+  getByText,
+  getRadioGroupOptions,
 } from '../../test-utils/accessibility-assertions'
+import { click, focus, Keys, press, shift } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 
 jest.mock('../../hooks/use-id')
 

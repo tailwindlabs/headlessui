@@ -1,10 +1,10 @@
-import React, { ReactNode, useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { Menu } from '@headlessui/react'
+import { ReactNode, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
-import { usePopper } from '../../utils/hooks/use-popper'
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
+import { usePopper } from '../../utils/hooks/use-popper'
 
 export default function Home() {
   let [trigger, container] = usePopper({

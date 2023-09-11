@@ -1,31 +1,31 @@
+import { render } from '@testing-library/react'
+import React, { createElement, Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import React, { createElement, useRef, useState, Fragment, useEffect, useCallback } from 'react'
-import { render, screen } from '@testing-library/react'
 
-import { Dialog } from './dialog'
-import { Popover } from '../popover/popover'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { OpenClosedProvider, State } from '../../internal/open-closed'
 import {
-  DialogState,
-  PopoverState,
+  assertActiveElement,
   assertDialog,
   assertDialogDescription,
   assertDialogOverlay,
   assertDialogTitle,
   assertPopoverPanel,
-  getDialog,
-  getDialogOverlay,
-  getDialogBackdrop,
-  getPopoverButton,
+  DialogState,
   getByText,
-  assertActiveElement,
-  getDialogs,
+  getDialog,
+  getDialogBackdrop,
+  getDialogOverlay,
   getDialogOverlays,
+  getDialogs,
+  getPopoverButton,
+  PopoverState,
 } from '../../test-utils/accessibility-assertions'
-import { click, mouseDrag, press, Keys, shift, focus } from '../../test-utils/interactions'
+import { click, focus, Keys, mouseDrag, press, shift } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { PropsOf } from '../../types'
+import { Popover } from '../popover/popover'
 import { Transition } from '../transitions/transition'
-import { OpenClosedProvider, State } from '../../internal/open-closed'
+import { Dialog } from './dialog'
 
 jest.mock('../../hooks/use-id')
 

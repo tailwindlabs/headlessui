@@ -1,8 +1,8 @@
 import { MutableRefObject, useEffect, useRef } from 'react'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
+import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
 import { useWindowEvent } from './use-window-event'
-import { isMobile } from '../utils/platform'
 
 type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>

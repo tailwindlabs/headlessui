@@ -1,42 +1,40 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
 import React, {
-  Fragment,
+  ContextType,
   createContext,
+  Dispatch,
+  ElementType,
+  Fragment,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  MutableRefObject,
+  Ref,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
-
-  // Types
-  ContextType,
-  Dispatch,
-  ElementType,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
 } from 'react'
 
-import { Props } from '../../types'
-import { match } from '../../utils/match'
-import {
-  forwardRefWithAs,
-  render,
-  Features,
-  PropsForFeatures,
-  HasDisplayName,
-  RefProp,
-} from '../../utils/render'
-import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
-import { useId } from '../../hooks/use-id'
-import { Keys } from '../keyboard'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { getOwnerDocument } from '../../utils/owner'
 import { useEvent } from '../../hooks/use-event'
+import { useId } from '../../hooks/use-id'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { Props } from '../../types'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { match } from '../../utils/match'
+import { getOwnerDocument } from '../../utils/owner'
+import {
+  Features,
+  forwardRefWithAs,
+  HasDisplayName,
+  PropsForFeatures,
+  RefProp,
+  render,
+} from '../../utils/render'
 import { startTransition } from '../../utils/start-transition'
+import { Keys } from '../keyboard'
 
 enum DisclosureStates {
   Open,

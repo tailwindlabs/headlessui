@@ -1,7 +1,6 @@
-import React from 'react'
 import { Menu, Transition } from '@headlessui/react'
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
 
 export default function Home() {
   function resolveClass({ active, disabled }) {

@@ -1,45 +1,43 @@
 import {
-  Fragment,
+  ComponentPublicInstance,
   computed,
   defineComponent,
+  Fragment,
   h,
   inject,
-  provide,
-  ref,
-  shallowRef,
-  watchEffect,
+  InjectionKey,
   onMounted,
   onUnmounted,
-
-  // Types
-  InjectionKey,
+  provide,
+  ref,
   Ref,
-  ComponentPublicInstance,
+  shallowRef,
+  watchEffect,
 } from 'vue'
 
-import { match } from '../../utils/match'
-import { render, Features } from '../../utils/render'
-import { useId } from '../../hooks/use-id'
-import { Keys } from '../../keyboard'
-import {
-  getFocusableElements,
-  Focus,
-  focusIn,
-  isFocusableElement,
-  FocusableMode,
-  FocusResult,
-} from '../../utils/focus-management'
-import { dom } from '../../utils/dom'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useOutsideClick } from '../../hooks/use-outside-click'
-import { getOwnerDocument } from '../../utils/owner'
-import { useEventListener } from '../../hooks/use-event-listener'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
-import { microTask } from '../../utils/micro-task'
-import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { useNestedPortals } from '../../components/portal/portal'
+import { useEventListener } from '../../hooks/use-event-listener'
+import { useId } from '../../hooks/use-id'
+import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
+import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
+import { Keys } from '../../keyboard'
+import { dom } from '../../utils/dom'
+import {
+  Focus,
+  FocusableMode,
+  focusIn,
+  FocusResult,
+  getFocusableElements,
+  isFocusableElement,
+} from '../../utils/focus-management'
+import { match } from '../../utils/match'
+import { microTask } from '../../utils/micro-task'
+import { getOwnerDocument } from '../../utils/owner'
+import { Features, render } from '../../utils/render'
 
 enum PopoverStates {
   Open,

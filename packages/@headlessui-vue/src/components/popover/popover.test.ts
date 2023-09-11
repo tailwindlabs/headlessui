@@ -1,23 +1,23 @@
-import { defineComponent, nextTick, ref, watch, h, onMounted } from 'vue'
+import { defineComponent, h, nextTick, onMounted, ref, watch } from 'vue'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 
-import { Popover, PopoverGroup, PopoverButton, PopoverPanel, PopoverOverlay } from './popover'
-import { Portal } from '../portal/portal'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
-  PopoverState,
-  assertPopoverPanel,
-  assertPopoverButton,
-  getPopoverButton,
-  getPopoverPanel,
-  getByText,
   assertActiveElement,
   assertContainsActiveElement,
+  assertPopoverButton,
+  assertPopoverPanel,
+  getByText,
+  getPopoverButton,
   getPopoverOverlay,
+  getPopoverPanel,
+  PopoverState,
 } from '../../test-utils/accessibility-assertions'
-import { click, focus, press, Keys, MouseButton, shift } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { click, focus, Keys, MouseButton, press, shift } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { Portal } from '../portal/portal'
+import { Popover, PopoverButton, PopoverGroup, PopoverOverlay, PopoverPanel } from './popover'
 
 jest.mock('../../hooks/use-id')
 
@@ -54,14 +54,12 @@ describe('Safe guards', () => {
   it(
     'should be possible to render a Popover without crashing',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel>Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
 
       assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
@@ -77,20 +75,18 @@ describe('Rendering', () => {
     it(
       'should be possible to render a PopoverGroup with multiple Popover components',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton data-trigger="1">Trigger 1</PopoverButton>
-                <PopoverPanel data-panel="1">Panel 1</PopoverPanel>
-              </Popover>
-              <Popover>
-                <PopoverButton data-trigger="2">Trigger 2</PopoverButton>
-                <PopoverPanel data-panel="2">Panel 2</PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton data-trigger="1">Trigger 1</PopoverButton>
+              <PopoverPanel data-panel="1">Panel 1</PopoverPanel>
+            </Popover>
+            <Popover>
+              <PopoverButton data-trigger="2">Trigger 2</PopoverButton>
+              <PopoverPanel data-panel="2">Panel 2</PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         function getTrigger(number: number) {
           return document.querySelector(`[data-trigger="${number}"]`)! as HTMLElement
@@ -129,14 +125,12 @@ describe('Rendering', () => {
     it(
       'should be possible to render a Popover using a render prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover v-slot="{ open }">
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Panel is: {{open ? 'open' : 'closed'}}</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover v-slot="{ open }">
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Panel is: {{open ? 'open' : 'closed'}}</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -157,16 +151,14 @@ describe('Rendering', () => {
     it(
       'should expose a close function that closes the popover',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover v-slot="{ close }">
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>
-                <button @click="close()">Close me</button>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover v-slot="{ close }">
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>
+              <button @click="close()">Close me</button>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -263,14 +255,12 @@ describe('Rendering', () => {
     it(
       'should be possible to render a PopoverButton using a render prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton v-slot="slot">{{JSON.stringify(slot)}}</PopoverButton>
-              <PopoverPanel></PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton v-slot="slot">{{JSON.stringify(slot)}}</PopoverButton>
+            <PopoverPanel></PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -293,16 +283,14 @@ describe('Rendering', () => {
     it(
       'should be possible to render a PopoverButton using a render prop and an `as` prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton as="div" role="button" v-slot="slot">
-                {{JSON.stringify(slot)}}
-              </PopoverButton>
-              <PopoverPanel />
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton as="div" role="button" v-slot="slot">
+              {{JSON.stringify(slot)}}
+            </PopoverButton>
+            <PopoverPanel />
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -324,25 +312,21 @@ describe('Rendering', () => {
 
     describe('`type` attribute', () => {
       it('should set the `type` to "button" by default', async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+          </Popover>
+        `)
 
         expect(getPopoverButton()).toHaveAttribute('type', 'button')
       })
 
       it('should not set the `type` to "button" if it already contains a `type`', async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton type="submit"> Trigger </PopoverButton>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton type="submit"> Trigger </PopoverButton>
+          </Popover>
+        `)
 
         expect(getPopoverButton()).toHaveAttribute('type', 'submit')
       })
@@ -370,13 +354,11 @@ describe('Rendering', () => {
       )
 
       it('should not set the type if the "as" prop is not a "button"', async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton as="div"> Trigger </PopoverButton>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton as="div"> Trigger </PopoverButton>
+          </Popover>
+        `)
 
         expect(getPopoverButton()).not.toHaveAttribute('type')
       })
@@ -409,14 +391,12 @@ describe('Rendering', () => {
     it(
       'should be possible to render PopoverPanel using a render prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel v-slot="slot">{{JSON.stringify(slot)}}</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel v-slot="slot">{{JSON.stringify(slot)}}</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -438,28 +418,24 @@ describe('Rendering', () => {
     )
 
     it('should be possible to always render the PopoverPanel if we provide it a `static` prop', () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel static>Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel static>Contents</PopoverPanel>
+        </Popover>
+      `)
 
       // Let's verify that the Popover is already there
       expect(getPopoverPanel()).not.toBe(null)
     })
 
     it('should be possible to use a different render strategy for the PopoverPanel', async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel :unmount="false">Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel :unmount="false">Contents</PopoverPanel>
+        </Popover>
+      `)
 
       getPopoverButton()?.focus()
 
@@ -485,16 +461,14 @@ describe('Rendering', () => {
     it(
       'should be possible to move the focus inside the panel to the first focusable element (very first link)',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel focus>
-                <a href="/">Link 1</a>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel focus>
+              <a href="/">Link 1</a>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -514,16 +488,14 @@ describe('Rendering', () => {
     it(
       'should close the Popover, when PopoverPanel has the focus prop and you focus the open button',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel focus>
-                <a href="/">Link 1</a>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel focus>
+              <a href="/">Link 1</a>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -550,17 +522,15 @@ describe('Rendering', () => {
     it(
       'should be possible to move the focus inside the panel to the first focusable element (skip hidden link)',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel focus>
-                <a href="/" style="display:none"> Link 1 </a>
-                <a href="/">Link 2</a>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel focus>
+              <a href="/" style="display:none"> Link 1 </a>
+              <a href="/">Link 2</a>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -580,16 +550,14 @@ describe('Rendering', () => {
     it(
       'should be possible to move the focus inside the panel to the first focusable element (very first link) when the hidden render strategy is used',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel focus :unmount="false">
-                <a href="/">Link 1</a>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel focus :unmount="false">
+              <a href="/">Link 1</a>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -609,16 +577,14 @@ describe('Rendering', () => {
     it(
       'should expose a close function that closes the popover',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel v-slot="{ close }">
-                <button @click="close()">Close me</button>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel v-slot="{ close }">
+              <button @click="close()">Close me</button>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -833,14 +799,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to open the Popover with Enter',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -870,14 +834,12 @@ describe('Keyboard interactions', () => {
     it(
       'should not be possible to open the popover with Enter when the button is disabled',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton disabled>Trigger</PopoverButton>
-              <PopoverPanel>Content</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton disabled>Trigger</PopoverButton>
+            <PopoverPanel>Content</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -903,14 +865,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the popover with Enter when the popover is open',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -943,20 +903,18 @@ describe('Keyboard interactions', () => {
     it(
       'should close other popover menus when we open a new one',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>Panel 1</PopoverPanel>
-              </Popover>
-              <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>Panel 2</PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>Panel 1</PopoverPanel>
+            </Popover>
+            <Popover>
+              <PopoverButton>Trigger 2</PopoverButton>
+              <PopoverPanel>Panel 2</PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         // Open the first Popover
         await click(getByText('Trigger 1'))
@@ -984,16 +942,14 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover by pressing `Enter` on a PopoverButton inside a PopoverPanel',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Open</PopoverButton>
-              <PopoverPanel>
-                <PopoverButton>Close</PopoverButton>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Open</PopoverButton>
+            <PopoverPanel>
+              <PopoverButton>Close</PopoverButton>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -1020,14 +976,12 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover menu, when pressing escape on the PopoverButton',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -1055,16 +1009,14 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover menu, when pressing escape on the PopoverPanel',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>
-                <a href="/">Link</a>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>
+              <a href="/">Link</a>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Focus the button
         getPopoverButton()?.focus()
@@ -1098,21 +1050,19 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close a sibling Popover when pressing escape on a sibling PopoverButton',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton data-trigger="1">Trigger 1</PopoverButton>
-                <PopoverPanel data-panel="1">Panel 1</PopoverPanel>
-              </Popover>
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton data-trigger="1">Trigger 1</PopoverButton>
+              <PopoverPanel data-panel="1">Panel 1</PopoverPanel>
+            </Popover>
 
-              <Popover>
-                <PopoverButton data-trigger="2">Trigger 2</PopoverButton>
-                <PopoverPanel data-panel="2">Panel 2</PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+            <Popover>
+              <PopoverButton data-trigger="2">Trigger 2</PopoverButton>
+              <PopoverPanel data-panel="2">Panel 2</PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         function getTrigger(number: number) {
           return document.querySelector(`[data-trigger="${number}"]`)! as HTMLElement
@@ -1159,24 +1109,22 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to Tab through the panel contents onto the next PopoverButton',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Popover>
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Popover>
 
-              <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>Panel 2</PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+            <Popover>
+              <PopoverButton>Trigger 2</PopoverButton>
+              <PopoverPanel>Panel 2</PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         // Focus the button of the first Popover
         getByText('Trigger 1')?.focus()
@@ -1207,26 +1155,24 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to place a focusable item in the PopoverGroup, and keep the Popover open when we focus the focusable element',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Popover>
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Popover>
 
-              <a href="/">Link in between</a>
+            <a href="/">Link in between</a>
 
-              <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>Panel 2</PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+            <Popover>
+              <PopoverButton>Trigger 2</PopoverButton>
+              <PopoverPanel>Panel 2</PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         // Focus the button of the first Popover
         getByText('Trigger 1')?.focus()
@@ -1257,31 +1203,29 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover menu once we Tab out of the PopoverGroup',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <PopoverGroup>
-                <Popover>
-                  <PopoverButton>Trigger 1</PopoverButton>
-                  <PopoverPanel>
-                    <a href="/">Link 1</a>
-                    <a href="/">Link 2</a>
-                  </PopoverPanel>
-                </Popover>
+        renderTemplate(html`
+          <div>
+            <PopoverGroup>
+              <Popover>
+                <PopoverButton>Trigger 1</PopoverButton>
+                <PopoverPanel>
+                  <a href="/">Link 1</a>
+                  <a href="/">Link 2</a>
+                </PopoverPanel>
+              </Popover>
 
-                <Popover>
-                  <PopoverButton>Trigger 2</PopoverButton>
-                  <PopoverPanel>
-                    <a href="/">Link 3</a>
-                    <a href="/">Link 4</a>
-                  </PopoverPanel>
-                </Popover>
-              </PopoverGroup>
+              <Popover>
+                <PopoverButton>Trigger 2</PopoverButton>
+                <PopoverPanel>
+                  <a href="/">Link 3</a>
+                  <a href="/">Link 4</a>
+                </PopoverPanel>
+              </Popover>
+            </PopoverGroup>
 
-              <a href="/">Next</a>
-            </div>
-          `
-        )
+            <a href="/">Next</a>
+          </div>
+        `)
 
         // Focus the button of the first Popover
         getByText('Trigger 1')?.focus()
@@ -1323,21 +1267,19 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover menu once we Tab out of the Popover',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Popover>
+        renderTemplate(html`
+          <div>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Popover>
 
-              <a href="/">Next</a>
-            </div>
-          `
-        )
+            <a href="/">Next</a>
+          </div>
+        `)
 
         // Focus the button of the first Popover
         getByText('Trigger 1')?.focus()
@@ -1368,18 +1310,16 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover menu once we Tab out of a Popover without focusable elements',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>No focusable elements here</PopoverPanel>
-              </Popover>
+        renderTemplate(html`
+          <div>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>No focusable elements here</PopoverPanel>
+            </Popover>
 
-              <a href="/">Next</a>
-            </div>
-          `
-        )
+            <a href="/">Next</a>
+          </div>
+        `)
 
         // Focus the button of the Popover
         await focus(getPopoverButton())
@@ -1402,21 +1342,19 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover when the PopoverPanel has a focus prop',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <a href="/">Previous</a>
-              <Popover>
-                <PopoverButton>Trigger</PopoverButton>
-                <PopoverPanel focus>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Popover>
-              <a href="/">Next</a>
-            </div>
-          `
-        )
+        renderTemplate(html`
+          <div>
+            <a href="/">Previous</a>
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel focus>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Popover>
+            <a href="/">Next</a>
+          </div>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -1439,23 +1377,21 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover when the PopoverPanel has a focus prop (PopoverPanel uses a Portal)',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <a href="/">Previous</a>
-              <Popover>
-                <PopoverButton>Trigger</PopoverButton>
-                <Portal>
-                  <PopoverPanel focus>
-                    <a href="/">Link 1</a>
-                    <a href="/">Link 2</a>
-                  </PopoverPanel>
-                </Portal>
-              </Popover>
-              <a href="/">Next</a>
-            </div>
-          `
-        )
+        renderTemplate(html`
+          <div>
+            <a href="/">Previous</a>
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+              <Portal>
+                <PopoverPanel focus>
+                  <a href="/">Link 1</a>
+                  <a href="/">Link 2</a>
+                </PopoverPanel>
+              </Portal>
+            </Popover>
+            <a href="/">Next</a>
+          </div>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -1486,22 +1422,20 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover when the PopoverPanel has a focus prop (PopoverPanel uses a Portal), and focus the next focusable item in line',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <a href="/">Previous</a>
-              <Popover>
-                <PopoverButton>Trigger</PopoverButton>
-                <Portal>
-                  <PopoverPanel focus>
-                    <a href="/">Link 1</a>
-                    <a href="/">Link 2</a>
-                  </PopoverPanel>
-                </Portal>
-              </Popover>
-            </div>
-          `
-        )
+        renderTemplate(html`
+          <div>
+            <a href="/">Previous</a>
+            <Popover>
+              <PopoverButton>Trigger</PopoverButton>
+              <Portal>
+                <PopoverPanel focus>
+                  <a href="/">Link 1</a>
+                  <a href="/">Link 2</a>
+                </PopoverPanel>
+              </Portal>
+            </Popover>
+          </div>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -1534,31 +1468,29 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover menu once we Tab out of the PopoverGroup',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <a href="/">Previous</a>
+        renderTemplate(html`
+          <div>
+            <a href="/">Previous</a>
 
-              <PopoverGroup>
-                <Popover>
-                  <PopoverButton>Trigger 1</PopoverButton>
-                  <PopoverPanel>
-                    <a href="/">Link 1</a>
-                    <a href="/">Link 2</a>
-                  </PopoverPanel>
-                </Popover>
+            <PopoverGroup>
+              <Popover>
+                <PopoverButton>Trigger 1</PopoverButton>
+                <PopoverPanel>
+                  <a href="/">Link 1</a>
+                  <a href="/">Link 2</a>
+                </PopoverPanel>
+              </Popover>
 
-                <Popover>
-                  <PopoverButton>Trigger 2</PopoverButton>
-                  <PopoverPanel>
-                    <a href="/">Link 3</a>
-                    <a href="/">Link 4</a>
-                  </PopoverPanel>
-                </Popover>
-              </PopoverGroup>
-            </div>
-          `
-        )
+              <Popover>
+                <PopoverButton>Trigger 2</PopoverButton>
+                <PopoverPanel>
+                  <a href="/">Link 3</a>
+                  <a href="/">Link 4</a>
+                </PopoverPanel>
+              </Popover>
+            </PopoverGroup>
+          </div>
+        `)
 
         // Focus the button of the second Popover
         getByText('Trigger 2')?.focus()
@@ -1585,21 +1517,19 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover menu once we Tab out of the Popover',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <div>
-              <a href="/">Previous</a>
+        renderTemplate(html`
+          <div>
+            <a href="/">Previous</a>
 
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Popover>
-            </div>
-          `
-        )
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Popover>
+          </div>
+        `)
 
         // Focus the button of the Popover
         getPopoverButton()?.focus()
@@ -1622,27 +1552,25 @@ describe('Keyboard interactions', () => {
     it(
       'should focus the previous PopoverButton when Shift+Tab on the second PopoverButton',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Popover>
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Popover>
 
-              <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 3</a>
-                  <a href="/">Link 4</a>
-                </PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+            <Popover>
+              <PopoverButton>Trigger 2</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 3</a>
+                <a href="/">Link 4</a>
+              </PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         // Open the second popover
         await click(getByText('Trigger 2'))
@@ -1671,17 +1599,15 @@ describe('Keyboard interactions', () => {
     it(
       'should focus the PopoverButton when pressing Shift+Tab when we focus inside the PopoverPanel',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger 1</PopoverButton>
-              <PopoverPanel focus>
-                <a href="/">Link 1</a>
-                <a href="/">Link 2</a>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger 1</PopoverButton>
+            <PopoverPanel focus>
+              <a href="/">Link 1</a>
+              <a href="/">Link 2</a>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -1707,19 +1633,17 @@ describe('Keyboard interactions', () => {
     it(
       'should focus the PopoverButton when pressing Shift+Tab when we focus inside the PopoverPanel (inside a Portal)',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger 1</PopoverButton>
-              <Portal>
-                <PopoverPanel focus>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Portal>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger 1</PopoverButton>
+            <Portal>
+              <PopoverPanel focus>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Portal>
+          </Popover>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -1793,27 +1717,25 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to focus the last item in the PopoverPanel when pressing Shift+Tab on the next PopoverButton',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 1</a>
-                  <a href="/">Link 2</a>
-                </PopoverPanel>
-              </Popover>
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 1</a>
+                <a href="/">Link 2</a>
+              </PopoverPanel>
+            </Popover>
 
-              <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>
-                  <a href="/">Link 3</a>
-                  <a href="/">Link 4</a>
-                </PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+            <Popover>
+              <PopoverButton>Trigger 2</PopoverButton>
+              <PopoverPanel>
+                <a href="/">Link 3</a>
+                <a href="/">Link 4</a>
+              </PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         // Open the popover
         await click(getByText('Trigger 1'))
@@ -1842,31 +1764,29 @@ describe('Keyboard interactions', () => {
     it(
       "should be possible to focus the last item in the PopoverPanel when pressing Shift+Tab on the next PopoverButton (using Portal's)",
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <Portal>
-                  <PopoverPanel>
-                    <a href="/">Link 1</a>
-                    <a href="/">Link 2</a>
-                  </PopoverPanel>
-                </Portal>
-              </Popover>
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <Portal>
+                <PopoverPanel>
+                  <a href="/">Link 1</a>
+                  <a href="/">Link 2</a>
+                </PopoverPanel>
+              </Portal>
+            </Popover>
 
-              <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <Portal>
-                  <PopoverPanel>
-                    <a href="/">Link 3</a>
-                    <a href="/">Link 4</a>
-                  </PopoverPanel>
-                </Portal>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+            <Popover>
+              <PopoverButton>Trigger 2</PopoverButton>
+              <Portal>
+                <PopoverPanel>
+                  <a href="/">Link 3</a>
+                  <a href="/">Link 4</a>
+                </PopoverPanel>
+              </Portal>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         // Open the popover
         await click(getByText('Trigger 1'))
@@ -1897,14 +1817,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to open the popover with Space',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -1930,14 +1848,12 @@ describe('Keyboard interactions', () => {
     it(
       'should not be possible to open the popover with Space when the button is disabled',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton disabled>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton disabled>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -1963,14 +1879,12 @@ describe('Keyboard interactions', () => {
     it(
       'should be possible to close the popover with Space when the popover is open',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
+        `)
 
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
@@ -2003,20 +1917,18 @@ describe('Keyboard interactions', () => {
     it(
       'should close other popover menus when we open a new one',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <PopoverGroup>
-              <Popover>
-                <PopoverButton>Trigger 1</PopoverButton>
-                <PopoverPanel>Panel 1</PopoverPanel>
-              </Popover>
-              <Popover>
-                <PopoverButton>Trigger 2</PopoverButton>
-                <PopoverPanel>Panel 2</PopoverPanel>
-              </Popover>
-            </PopoverGroup>
-          `
-        )
+        renderTemplate(html`
+          <PopoverGroup>
+            <Popover>
+              <PopoverButton>Trigger 1</PopoverButton>
+              <PopoverPanel>Panel 1</PopoverPanel>
+            </Popover>
+            <Popover>
+              <PopoverButton>Trigger 2</PopoverButton>
+              <PopoverPanel>Panel 2</PopoverPanel>
+            </Popover>
+          </PopoverGroup>
+        `)
 
         // Open the first Popover
         await click(getByText('Trigger 1'))
@@ -2044,16 +1956,14 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover by pressing `Space` on a PopoverButton inside a PopoverPanel',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Open</PopoverButton>
-              <PopoverPanel>
-                <PopoverButton>Close</PopoverButton>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Open</PopoverButton>
+            <PopoverPanel>
+              <PopoverButton>Close</PopoverButton>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -2078,18 +1988,16 @@ describe('Keyboard interactions', () => {
     it(
       'should close the Popover by pressing `Enter` on a PopoverButton and go to the href of the `a` inside a PopoverPanel',
       suppressConsoleLogs(async () => {
-        renderTemplate(
-          html`
-            <Popover>
-              <PopoverButton>Open</PopoverButton>
-              <PopoverPanel>
-                <PopoverButton as="template">
-                  <a href="#closed">Close</a>
-                </PopoverButton>
-              </PopoverPanel>
-            </Popover>
-          `
-        )
+        renderTemplate(html`
+          <Popover>
+            <PopoverButton>Open</PopoverButton>
+            <PopoverPanel>
+              <PopoverButton as="template">
+                <a href="#closed">Close</a>
+              </PopoverButton>
+            </PopoverPanel>
+          </Popover>
+        `)
 
         // Open the popover
         await click(getPopoverButton())
@@ -2120,14 +2028,12 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to open a popover on click',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel>Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
 
       assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
@@ -2150,14 +2056,12 @@ describe('Mouse interactions', () => {
   it(
     'should not be possible to open a popover on right click',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel>Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
 
       assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
@@ -2180,14 +2084,12 @@ describe('Mouse interactions', () => {
   it(
     'should not be possible to open a popover on click when the button is disabled',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton disabled>Trigger</PopoverButton>
-            <PopoverPanel>Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton disabled>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
 
       assertPopoverButton({
         state: PopoverState.InvisibleUnmounted,
@@ -2210,14 +2112,12 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close a popover on click',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel>Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
 
       getPopoverButton()?.focus()
 
@@ -2239,15 +2139,13 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close a Popover using a click on the PopoverOverlay',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel>Contents</PopoverPanel>
-            <PopoverOverlay />
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+          <PopoverOverlay />
+        </Popover>
+      `)
 
       // Open popover
       await click(getPopoverButton())
@@ -2266,14 +2164,12 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close the popover, and re-focus the button when we click outside on the body element',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Trigger</PopoverButton>
-            <PopoverPanel>Contents</PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Trigger</PopoverButton>
+          <PopoverPanel>Contents</PopoverPanel>
+        </Popover>
+      `)
 
       // Open popover
       await click(getPopoverButton())
@@ -2295,18 +2191,16 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close the popover, and re-focus the button when we click outside on a non-focusable element',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <div>
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
+      renderTemplate(html`
+        <div>
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
 
-            <span>I am just text</span>
-          </div>
-        `
-      )
+          <span>I am just text</span>
+        </div>
+      `)
 
       // Open popover
       await click(getPopoverButton())
@@ -2328,18 +2222,16 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close the popover, by clicking outside the popover on another focusable element',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <div>
-            <Popover>
-              <PopoverButton>Trigger</PopoverButton>
-              <PopoverPanel>Contents</PopoverPanel>
-            </Popover>
+      renderTemplate(html`
+        <div>
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel>Contents</PopoverPanel>
+          </Popover>
 
-            <button>Different button</button>
-          </div>
-        `
-      )
+          <button>Different button</button>
+        </div>
+      `)
 
       // Open popover
       await click(getPopoverButton())
@@ -2404,16 +2296,14 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to close the Popover by clicking on a PopoverButton inside a PopoverPanel',
     suppressConsoleLogs(async () => {
-      renderTemplate(
-        html`
-          <Popover>
-            <PopoverButton>Open</PopoverButton>
-            <PopoverPanel>
-              <PopoverButton>Close</PopoverButton>
-            </PopoverPanel>
-          </Popover>
-        `
-      )
+      renderTemplate(html`
+        <Popover>
+          <PopoverButton>Open</PopoverButton>
+          <PopoverPanel>
+            <PopoverButton>Close</PopoverButton>
+          </PopoverPanel>
+        </Popover>
+      `)
 
       // Open the popover
       await click(getPopoverButton())

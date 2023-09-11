@@ -1,16 +1,16 @@
 import { nextTick, ref } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
-import { TabGroup, TabList, Tab, TabPanels, TabPanel } from './tabs'
-import { Dialog } from '../dialog/dialog'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
   assertActiveElement,
   assertTabs,
   getByText,
   getTabs,
 } from '../../test-utils/accessibility-assertions'
-import { click, press, shift, Keys } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { click, Keys, press, shift } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { Dialog } from '../dialog/dialog'
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs'
 
 jest.mock('../../hooks/use-id')
 
@@ -39,23 +39,21 @@ describe('safeguards', () => {
   )
 
   it('should be possible to render TabGroup without crashing', async () => {
-    renderTemplate(
-      html`
-        <TabGroup>
-          <TabList>
-            <Tab>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup>
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
-      `
-    )
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -65,23 +63,21 @@ describe('safeguards', () => {
 
 describe('Rendering', () => {
   it('should be possible to render the TabPanels first, then the TabList', async () => {
-    renderTemplate(
-      html`
-        <TabGroup>
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
+    renderTemplate(html`
+      <TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
 
-          <TabList>
-            <Tab>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
-        </TabGroup>
-      `
-    )
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
+      </TabGroup>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -345,25 +341,23 @@ describe('Rendering', () => {
 
   describe('`renderProps`', () => {
     it('should expose the `selectedIndex` on the `Tabs` component', async () => {
-      renderTemplate(
-        html`
-          <TabGroup v-slot="data">
-            <pre id="exposed">{{JSON.stringify(data)}}</pre>
+      renderTemplate(html`
+        <TabGroup v-slot="data">
+          <pre id="exposed">{{JSON.stringify(data)}}</pre>
 
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
-        `
-      )
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -379,24 +373,22 @@ describe('Rendering', () => {
     })
 
     it('should expose the `selectedIndex` on the `TabList` component', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList v-slot="data">
-              <pre id="exposed">{{JSON.stringify(data)}}</pre>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList v-slot="data">
+            <pre id="exposed">{{JSON.stringify(data)}}</pre>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
-        `
-      )
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -412,24 +404,22 @@ describe('Rendering', () => {
     })
 
     it('should expose the `selectedIndex` on the `TabPanels` component', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels v-slot="data">
-              <pre id="exposed">{{JSON.stringify(data)}}</pre>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
-        `
-      )
+          <TabPanels v-slot="data">
+            <pre id="exposed">{{JSON.stringify(data)}}</pre>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -445,32 +435,30 @@ describe('Rendering', () => {
     })
 
     it('should expose the `selected` state on the `Tab` components', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab v-slot="data">
-                <pre data-tab="0">{{JSON.stringify(data)}}</pre>
-                <span>Tab 1</span>
-              </Tab>
-              <Tab v-slot="data">
-                <pre data-tab="1">{{JSON.stringify(data)}}</pre>
-                <span>Tab 2</span>
-              </Tab>
-              <Tab v-slot="data">
-                <pre data-tab="2">{{JSON.stringify(data)}}</pre>
-                <span>Tab 3</span>
-              </Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab v-slot="data">
+              <pre data-tab="0">{{JSON.stringify(data)}}</pre>
+              <span>Tab 1</span>
+            </Tab>
+            <Tab v-slot="data">
+              <pre data-tab="1">{{JSON.stringify(data)}}</pre>
+              <span>Tab 2</span>
+            </Tab>
+            <Tab v-slot="data">
+              <pre data-tab="2">{{JSON.stringify(data)}}</pre>
+              <span>Tab 3</span>
+            </Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
-        `
-      )
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -498,32 +486,30 @@ describe('Rendering', () => {
     })
 
     it('should expose the `selected` state on the `TabPanel` components', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel :unmount="false" v-slot="data">
-                <pre data-panel="0">{{JSON.stringify(data)}}</pre>
-                <span>Content 1</span>
-              </TabPanel>
-              <TabPanel :unmount="false" v-slot="data">
-                <pre data-panel="1">{{JSON.stringify(data)}}</pre>
-                <span>Content 2</span>
-              </TabPanel>
-              <TabPanel :unmount="false" v-slot="data">
-                <pre data-panel="2">{{JSON.stringify(data)}}</pre>
-                <span>Content 3</span>
-              </TabPanel>
-            </TabPanels>
-          </TabGroup>
-        `
-      )
+          <TabPanels>
+            <TabPanel :unmount="false" v-slot="data">
+              <pre data-panel="0">{{JSON.stringify(data)}}</pre>
+              <span>Content 1</span>
+            </TabPanel>
+            <TabPanel :unmount="false" v-slot="data">
+              <pre data-panel="1">{{JSON.stringify(data)}}</pre>
+              <span>Content 2</span>
+            </TabPanel>
+            <TabPanel :unmount="false" v-slot="data">
+              <pre data-panel="2">{{JSON.stringify(data)}}</pre>
+              <span>Content 3</span>
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -553,25 +539,23 @@ describe('Rendering', () => {
 
   describe('`defaultIndex`', () => {
     it('should jump to the nearest tab when the defaultIndex is out of bounds (-2)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="-2">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="-2">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -584,25 +568,23 @@ describe('Rendering', () => {
     })
 
     it('should jump to the nearest tab when the defaultIndex is out of bounds (+5)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="5">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="5">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -615,25 +597,23 @@ describe('Rendering', () => {
     })
 
     it('should jump to the next available tab when the defaultIndex is a disabled tab', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="0">
-            <TabList>
-              <Tab disabled>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="0">
+          <TabList>
+            <Tab disabled>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -646,25 +626,23 @@ describe('Rendering', () => {
     })
 
     it('should jump to the next available tab when the defaultIndex is a disabled tab and wrap around', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab disabled>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab disabled>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -980,25 +958,23 @@ describe('`selectedIndex`', () => {
   })
 
   it('should jump to the nearest tab when the selectedIndex is out of bounds (-2)', async () => {
-    renderTemplate(
-      html`
-        <TabGroup :selectedIndex="-2">
-          <TabList>
-            <Tab>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup :selectedIndex="-2">
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
-        <button>after</button>
-      `
-    )
+      <button>after</button>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -1011,25 +987,23 @@ describe('`selectedIndex`', () => {
   })
 
   it('should jump to the nearest tab when the selectedIndex is out of bounds (+5)', async () => {
-    renderTemplate(
-      html`
-        <TabGroup :selectedIndex="5">
-          <TabList>
-            <Tab>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup :selectedIndex="5">
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
-        <button>after</button>
-      `
-    )
+      <button>after</button>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -1042,25 +1016,23 @@ describe('`selectedIndex`', () => {
   })
 
   it('should jump to the next available tab when the selectedIndex is a disabled tab', async () => {
-    renderTemplate(
-      html`
-        <TabGroup :selectedIndex="0">
-          <TabList>
-            <Tab disabled>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup :selectedIndex="0">
+        <TabList>
+          <Tab disabled>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
-        <button>after</button>
-      `
-    )
+      <button>after</button>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -1073,25 +1045,23 @@ describe('`selectedIndex`', () => {
   })
 
   it('should jump to the next available tab when the selectedIndex is a disabled tab and wrap around', async () => {
-    renderTemplate(
-      html`
-        <TabGroup :selectedIndex="2">
-          <TabList>
-            <Tab>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab disabled>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup :selectedIndex="2">
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab disabled>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
-        <button>after</button>
-      `
-    )
+      <button>after</button>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -1104,25 +1074,23 @@ describe('`selectedIndex`', () => {
   })
 
   it('should prefer selectedIndex over defaultIndex', async () => {
-    renderTemplate(
-      html`
-        <TabGroup :selectedIndex="0" :defaultIndex="2">
-          <TabList>
-            <Tab>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup :selectedIndex="0" :defaultIndex="2">
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
-        <button>after</button>
-      `
-    )
+      <button>after</button>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -1238,25 +1206,23 @@ describe('`selectedIndex`', () => {
 describe('Keyboard interactions', () => {
   describe('`Tab` key', () => {
     it('should be possible to tab to the default initial first tab', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1281,25 +1247,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to tab to the default index tab', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1326,25 +1290,23 @@ describe('Keyboard interactions', () => {
 
   describe('`ArrowRight` key', () => {
     it('should be possible to go to the next item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1361,25 +1323,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the next item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1400,25 +1360,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the end (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1441,25 +1399,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the end (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1490,25 +1446,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go right when in vertical mode (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1523,25 +1477,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go right when in vertical mode (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1560,25 +1512,23 @@ describe('Keyboard interactions', () => {
 
   describe('`ArrowLeft` key', () => {
     it('should be possible to go to the previous item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1595,25 +1545,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the previous item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2" manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2" manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1634,25 +1582,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the beginning (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1675,25 +1621,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the beginning (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2" manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2" manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1724,25 +1668,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go left when in vertical mode (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1757,25 +1699,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go left when in vertical mode (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1795,25 +1735,23 @@ describe('Keyboard interactions', () => {
 
   describe('`ArrowDown` key', () => {
     it('should be possible to go to the next item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1830,25 +1768,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the next item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1869,25 +1805,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the end (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1910,25 +1844,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the end (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup vertical manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup vertical manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1959,25 +1891,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go down when in horizontal mode (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -1992,25 +1922,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go down when in horizontal mode (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2030,25 +1958,23 @@ describe('Keyboard interactions', () => {
 
   describe('`ArrowUp` key', () => {
     it('should be possible to go to the previous item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2" vertical>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2" vertical>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2065,25 +1991,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the previous item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2" vertical manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2" vertical manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2104,25 +2028,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the beginning (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2" vertical>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2" vertical>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2145,25 +2067,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should wrap around at the beginning (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="2" vertical manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="2" vertical manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2194,25 +2114,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go left when in vertical mode (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2227,25 +2145,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should not be possible to go left when in vertical mode (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2265,25 +2181,23 @@ describe('Keyboard interactions', () => {
 
   describe('`Home` key', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2297,25 +2211,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1" manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1" manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2333,25 +2245,23 @@ describe('Keyboard interactions', () => {
 
   describe('`PageUp` key', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2365,25 +2275,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1" manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1" manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2401,25 +2309,23 @@ describe('Keyboard interactions', () => {
 
   describe('`End` key', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2433,25 +2339,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1" manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1" manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2469,25 +2373,23 @@ describe('Keyboard interactions', () => {
 
   describe('`PageDown` key', () => {
     it('should be possible to go to the first focusable item (activation = `auto`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1">
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1">
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2501,25 +2403,23 @@ describe('Keyboard interactions', () => {
     })
 
     it('should be possible to go to the first focusable item (activation = `manual`)', async () => {
-      renderTemplate(
-        html`
-          <TabGroup :defaultIndex="1" manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup :defaultIndex="1" manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2537,25 +2437,23 @@ describe('Keyboard interactions', () => {
 
   describe('`Enter` key', () => {
     it('should be possible to activate the focused tab', async () => {
-      renderTemplate(
-        html`
-          <TabGroup manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2573,25 +2471,23 @@ describe('Keyboard interactions', () => {
 
   describe('`Space` key', () => {
     it('should be possible to activate the focused tab', async () => {
-      renderTemplate(
-        html`
-          <TabGroup manual>
-            <TabList>
-              <Tab>Tab 1</Tab>
-              <Tab>Tab 2</Tab>
-              <Tab>Tab 3</Tab>
-            </TabList>
+      renderTemplate(html`
+        <TabGroup manual>
+          <TabList>
+            <Tab>Tab 1</Tab>
+            <Tab>Tab 2</Tab>
+            <Tab>Tab 3</Tab>
+          </TabList>
 
-            <TabPanels>
-              <TabPanel>Content 1</TabPanel>
-              <TabPanel>Content 2</TabPanel>
-              <TabPanel>Content 3</TabPanel>
-            </TabPanels>
-          </TabGroup>
+          <TabPanels>
+            <TabPanel>Content 1</TabPanel>
+            <TabPanel>Content 2</TabPanel>
+            <TabPanel>Content 3</TabPanel>
+          </TabPanels>
+        </TabGroup>
 
-          <button>after</button>
-        `
-      )
+        <button>after</button>
+      `)
 
       await new Promise<void>(nextTick)
 
@@ -2610,25 +2506,23 @@ describe('Keyboard interactions', () => {
 
 describe('Mouse interactions', () => {
   it('should be possible to click on a tab to focus it', async () => {
-    renderTemplate(
-      html`
-        <TabGroup :defaultIndex="1">
-          <TabList>
-            <Tab>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup :defaultIndex="1">
+        <TabList>
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
-        <button>after</button>
-      `
-    )
+      <button>after</button>
+    `)
 
     await new Promise<void>(nextTick)
 
@@ -2647,25 +2541,23 @@ describe('Mouse interactions', () => {
   })
 
   it('should be a no-op when clicking on a disabled tab', async () => {
-    renderTemplate(
-      html`
-        <TabGroup :defaultIndex="1">
-          <TabList>
-            <Tab disabled>Tab 1</Tab>
-            <Tab>Tab 2</Tab>
-            <Tab>Tab 3</Tab>
-          </TabList>
+    renderTemplate(html`
+      <TabGroup :defaultIndex="1">
+        <TabList>
+          <Tab disabled>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+          <Tab>Tab 3</Tab>
+        </TabList>
 
-          <TabPanels>
-            <TabPanel>Content 1</TabPanel>
-            <TabPanel>Content 2</TabPanel>
-            <TabPanel>Content 3</TabPanel>
-          </TabPanels>
-        </TabGroup>
+        <TabPanels>
+          <TabPanel>Content 1</TabPanel>
+          <TabPanel>Content 2</TabPanel>
+          <TabPanel>Content 3</TabPanel>
+        </TabPanels>
+      </TabGroup>
 
-        <button>after</button>
-      `
-    )
+      <button>after</button>
+    `)
 
     await new Promise<void>(nextTick)
 

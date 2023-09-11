@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react'
-import { useIsoMorphicEffect } from './use-iso-morphic-effect'
+import { useEffect, useRef } from 'react'
 import { getOwnerDocument } from '../utils/owner'
+import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 type AcceptNode = (
   node: HTMLElement

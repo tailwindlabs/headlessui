@@ -1,7 +1,7 @@
+import { Combobox, Listbox, RadioGroup, Switch } from '@headlessui/react'
 import { useState } from 'react'
-import { Switch, RadioGroup, Listbox, Combobox } from '@headlessui/react'
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
 
 function Section({ title, children }) {
   return (

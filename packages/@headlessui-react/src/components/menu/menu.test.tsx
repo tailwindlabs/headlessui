@@ -1,37 +1,37 @@
-import React, { createElement, useEffect } from 'react'
 import { render } from '@testing-library/react'
+import React, { createElement, useEffect } from 'react'
 
-import { Menu } from './menu'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
-  MenuState,
+  assertActiveElement,
   assertMenu,
   assertMenuButton,
   assertMenuButtonLinkedWithMenu,
   assertMenuItem,
   assertMenuLinkedWithMenuItem,
-  assertActiveElement,
   assertNoActiveMenuItem,
+  getByText,
+  getMenu,
   getMenuButton,
   getMenuButtons,
-  getMenu,
-  getMenus,
   getMenuItems,
-  getByText,
+  getMenus,
+  MenuState,
 } from '../../test-utils/accessibility-assertions'
 import {
   click,
   focus,
-  mouseMove,
+  Keys,
+  MouseButton,
   mouseLeave,
+  mouseMove,
   press,
   shift,
   type,
   word,
-  Keys,
-  MouseButton,
 } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transitions/transition'
+import { Menu } from './menu'
 
 jest.mock('../../hooks/use-id')
 

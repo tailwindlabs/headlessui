@@ -1,10 +1,10 @@
-import React, { ReactNode, useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
+import { offset, useFloating } from '@floating-ui/react'
 import { Menu } from '@headlessui/react'
-import { useFloating, offset } from '@floating-ui/react'
+import { ReactNode, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
 
 export default function Home() {
   let { refs, floatingStyles } = useFloating({

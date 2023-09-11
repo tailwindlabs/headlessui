@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Tab, Switch } from '@headlessui/react'
+import { Switch, Tab } from '@headlessui/react'
+import { useState } from 'react'
 
 import { classNames } from '../../utils/class-names'
 

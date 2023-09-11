@@ -1,16 +1,14 @@
 import {
-  Fragment,
   cloneElement,
   createElement,
-  forwardRef,
-  isValidElement,
-
-  // Types
   ElementType,
+  forwardRef,
+  Fragment,
+  isValidElement,
   ReactElement,
   Ref,
 } from 'react'
-import { Props, XOR, __, Expand } from '../types'
+import { Expand, Props, XOR, __ } from '../types'
 import { classNames } from './class-names'
 import { match } from './match'
 

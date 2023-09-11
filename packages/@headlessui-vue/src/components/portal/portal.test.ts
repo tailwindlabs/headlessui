@@ -1,10 +1,10 @@
-import { h, defineComponent, ref, nextTick, ComponentOptionsWithoutProps, createSSRApp } from 'vue'
+import { ComponentOptionsWithoutProps, createSSRApp, defineComponent, h, nextTick, ref } from 'vue'
 
-import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 import { renderToString } from 'vue/server-renderer'
-import { Portal, PortalGroup } from './portal'
-import { click } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { click } from '../../test-utils/interactions'
+import { createRenderTemplate } from '../../test-utils/vue-testing-library'
+import { Portal, PortalGroup } from './portal'
 
 function getPortalRoot() {
   return document.getElementById('headlessui-portal-root')!
@@ -83,15 +83,13 @@ it('SSR-rendering a Portal should not error', async () => {
   expect(getPortalRoot()).toBe(null)
 
   let result = await withoutBrowserGlobals(() =>
-    ssrRenderTemplate(
-      html`
-        <main id="parent">
-          <Portal>
-            <p id="content">Contents...</p>
-          </Portal>
-        </main>
-      `
-    )
+    ssrRenderTemplate(html`
+      <main id="parent">
+        <Portal>
+          <p id="content">Contents...</p>
+        </Portal>
+      </main>
+    `)
   )
 
   expect(getPortalRoot()).toBe(null)
@@ -102,15 +100,13 @@ it('SSR-rendering a Portal should not error', async () => {
 it('should be possible to use a Portal', async () => {
   expect(getPortalRoot()).toBe(null)
 
-  renderTemplate(
-    html`
-      <main id="parent">
-        <Portal>
-          <p id="content">Contents...</p>
-        </Portal>
-      </main>
-    `
-  )
+  renderTemplate(html`
+    <main id="parent">
+      <Portal>
+        <p id="content">Contents...</p>
+      </Portal>
+    </main>
+  `)
 
   await nextTick()
 
@@ -130,19 +126,17 @@ it('should be possible to use a Portal', async () => {
 it('should be possible to use multiple Portal elements', async () => {
   expect(getPortalRoot()).toBe(null)
 
-  renderTemplate(
-    html`
-      <main id="parent">
-        <Portal>
-          <p id="content1">Contents 1 ...</p>
-        </Portal>
-        <hr />
-        <Portal>
-          <p id="content2">Contents 2 ...</p>
-        </Portal>
-      </main>
-    `
-  )
+  renderTemplate(html`
+    <main id="parent">
+      <Portal>
+        <p id="content1">Contents 1 ...</p>
+      </Portal>
+      <hr />
+      <Portal>
+        <p id="content2">Contents 2 ...</p>
+      </Portal>
+    </main>
+  `)
 
   await nextTick()
 

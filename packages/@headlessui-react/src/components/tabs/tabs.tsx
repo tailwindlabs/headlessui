@@ -1,41 +1,39 @@
 import React, {
-  Fragment,
   createContext,
-  useContext,
-  useMemo,
-  useReducer,
-  useRef,
-
-  // Types
   ElementType,
+  Fragment,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  useContext,
+  useMemo,
+  useReducer,
+  useRef,
 } from 'react'
 
-import { Props } from '../../types'
-import {
-  render,
-  Features,
-  PropsForFeatures,
-  forwardRefWithAs,
-  RefProp,
-  HasDisplayName,
-} from '../../utils/render'
-import { useId } from '../../hooks/use-id'
-import { match } from '../../utils/match'
 import { Keys } from '../../components/keyboard'
-import { focusIn, Focus, sortByDomNode, FocusResult } from '../../utils/focus-management'
-import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useLatestValue } from '../../hooks/use-latest-value'
-import { FocusSentinel } from '../../internal/focus-sentinel'
 import { useEvent } from '../../hooks/use-event'
-import { microTask } from '../../utils/micro-task'
+import { useId } from '../../hooks/use-id'
+import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useLatestValue } from '../../hooks/use-latest-value'
+import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { FocusSentinel } from '../../internal/focus-sentinel'
 import { Hidden } from '../../internal/hidden'
+import { Props } from '../../types'
+import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { match } from '../../utils/match'
+import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'
+import {
+  Features,
+  forwardRefWithAs,
+  HasDisplayName,
+  PropsForFeatures,
+  RefProp,
+  render,
+} from '../../utils/render'
 import { StableCollection, useStableCollectionIndex } from '../../utils/stable-collection'
 
 enum Direction {

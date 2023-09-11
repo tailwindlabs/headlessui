@@ -1,5 +1,5 @@
-import { ref, onMounted, watchEffect } from 'vue'
 import { createPopper } from '@popperjs/core'
+import { onMounted, ref, watchEffect } from 'vue'
 
 export function usePopper(options) {
   let reference = ref(null)

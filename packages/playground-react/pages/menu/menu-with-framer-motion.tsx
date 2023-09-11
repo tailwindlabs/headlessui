@@ -1,10 +1,10 @@
-import React, { forwardRef } from 'react'
-import Link from 'next/link'
 import { Menu, MenuItemProps } from '@headlessui/react'
 import { AnimatePresence, motion } from 'framer-motion'
+import Link from 'next/link'
+import React, { forwardRef } from 'react'
 
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
 
 export default function Home() {
   return (

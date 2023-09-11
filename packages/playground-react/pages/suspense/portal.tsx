@@ -1,7 +1,7 @@
 'use client'
 
 import { Portal } from '@headlessui/react'
-import { Suspense, lazy } from 'react'
+import { lazy, Suspense } from 'react'
 
 function MyComponent({ children }: { children(message: string): JSX.Element }) {
   return <>{children('test')}</>

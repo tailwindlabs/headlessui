@@ -1,11 +1,11 @@
-import { defineComponent, ref, nextTick, computed, ComponentOptionsWithoutProps } from 'vue'
+import { ComponentOptionsWithoutProps, computed, defineComponent, nextTick, ref } from 'vue'
 
-import { render } from '../test-utils/vue-testing-library'
-import { useInert } from './use-inert'
-import { getByText, assertInert, assertNotInert } from '../test-utils/accessibility-assertions'
-import { click } from '../test-utils/interactions'
+import { assertInert, assertNotInert, getByText } from '../test-utils/accessibility-assertions'
 import { html } from '../test-utils/html'
+import { click } from '../test-utils/interactions'
+import { render } from '../test-utils/vue-testing-library'
 import { dom } from '../utils/dom'
+import { useInert } from './use-inert'
 
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)

@@ -1,4 +1,4 @@
-import { ReactNode, ReactElement, JSXElementConstructor } from 'react'
+import { JSXElementConstructor, ReactElement, ReactNode } from 'react'
 
 export type ReactTag = keyof JSX.IntrinsicElements | JSXElementConstructor<any>
 

@@ -1,38 +1,38 @@
 import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
-import { Menu, MenuButton, MenuItems, MenuItem } from './menu'
-import { TransitionChild } from '../transitions/transition'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
-  MenuState,
+  assertActiveElement,
   assertMenu,
   assertMenuButton,
   assertMenuButtonLinkedWithMenu,
   assertMenuItem,
   assertMenuLinkedWithMenuItem,
-  assertActiveElement,
   assertNoActiveMenuItem,
   getByText,
-  getMenuButton,
   getMenu,
-  getMenuItems,
+  getMenuButton,
   getMenuButtons,
+  getMenuItems,
   getMenus,
+  MenuState,
 } from '../../test-utils/accessibility-assertions'
+import { jsx } from '../../test-utils/html'
 import {
   click,
   focus,
-  mouseMove,
+  Keys,
+  MouseButton,
   mouseLeave,
+  mouseMove,
   press,
   shift,
   type,
-  Keys,
   word,
-  MouseButton,
 } from '../../test-utils/interactions'
-import { jsx } from '../../test-utils/html'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
+import { TransitionChild } from '../transitions/transition'
+import { Menu, MenuButton, MenuItem, MenuItems } from './menu'
 
 jest.mock('../../hooks/use-id')
 

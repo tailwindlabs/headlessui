@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
 import { Combobox } from '@headlessui/react'
+import { useEffect, useState } from 'react'
 
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
 import { countries as allCountries } from '../../data'
+import { classNames } from '../../utils/class-names'
 
 function useDebounce<T>(value: T, delay: number) {
   let [debouncedValue, setDebouncedValue] = useState(value)

@@ -1,16 +1,16 @@
-import React, { createElement, useState } from 'react'
 import { render } from '@testing-library/react'
+import React, { createElement, useState } from 'react'
 
-import { Tab } from './tabs'
-import { Dialog } from '../dialog/dialog'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import {
-  assertTabs,
   assertActiveElement,
+  assertTabs,
   getByText,
   getTabs,
 } from '../../test-utils/accessibility-assertions'
-import { press, Keys, shift, click } from '../../test-utils/interactions'
+import { click, Keys, press, shift } from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { Dialog } from '../dialog/dialog'
+import { Tab } from './tabs'
 
 jest.mock('../../hooks/use-id')
 

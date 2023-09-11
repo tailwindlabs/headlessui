@@ -1,9 +1,9 @@
-import React, { useState, Fragment } from 'react'
-import Flatpickr from 'react-flatpickr'
 import { Dialog, Menu, Portal, Transition } from '@headlessui/react'
-import { usePopper } from '../../utils/hooks/use-popper'
-import { classNames } from '../../utils/class-names'
+import { Fragment, useState } from 'react'
+import Flatpickr from 'react-flatpickr'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
+import { usePopper } from '../../utils/hooks/use-popper'
 
 import 'flatpickr/dist/themes/light.css'
 

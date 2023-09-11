@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import Head from 'next/head'
 import { Transition } from '@headlessui/react'
+import Head from 'next/head'
+import { useEffect, useState } from 'react'
 
 export default function App() {
   let [mobileOpen, setMobileOpen] = useState(false)

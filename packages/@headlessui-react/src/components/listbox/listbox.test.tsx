@@ -1,20 +1,6 @@
-import React, { createElement, useState, useEffect } from 'react'
 import { render } from '@testing-library/react'
+import React, { createElement, useEffect, useState } from 'react'
 
-import { Listbox } from './listbox'
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import {
-  click,
-  focus,
-  mouseMove,
-  mouseLeave,
-  press,
-  shift,
-  type,
-  word,
-  Keys,
-  MouseButton,
-} from '../../test-utils/interactions'
 import {
   assertActiveElement,
   assertActiveListboxOption,
@@ -22,22 +8,36 @@ import {
   assertListboxButton,
   assertListboxButtonLinkedWithListbox,
   assertListboxButtonLinkedWithListboxLabel,
-  assertListboxOption,
   assertListboxLabel,
   assertListboxLabelLinkedWithListbox,
+  assertListboxOption,
   assertNoActiveListboxOption,
   assertNoSelectedListboxOption,
+  getByText,
   getListbox,
   getListboxButton,
   getListboxButtons,
   getListboxes,
-  getListboxOptions,
   getListboxLabel,
-  ListboxState,
-  getByText,
+  getListboxOptions,
   ListboxMode,
+  ListboxState,
 } from '../../test-utils/accessibility-assertions'
+import {
+  click,
+  focus,
+  Keys,
+  MouseButton,
+  mouseLeave,
+  mouseMove,
+  press,
+  shift,
+  type,
+  word,
+} from '../../test-utils/interactions'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transitions/transition'
+import { Listbox } from './listbox'
 
 jest.mock('../../hooks/use-id')
 

@@ -1,30 +1,28 @@
 import React, {
-  Fragment,
+  ContextType,
   createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-
-  // Types
   ElementType,
+  Fragment,
   MutableRefObject,
   Ref,
+  useContext,
+  useEffect,
   useMemo,
-  ContextType,
+  useRef,
+  useState,
 } from 'react'
 import { createPortal } from 'react-dom'
 
-import { Props } from '../../types'
-import { forwardRefWithAs, RefProp, HasDisplayName, render } from '../../utils/render'
+import { useEvent } from '../../hooks/use-event'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { usePortalRoot } from '../../internal/portal-force-root'
-import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
-import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
+import { usePortalRoot } from '../../internal/portal-force-root'
+import { Props } from '../../types'
 import { env } from '../../utils/env'
-import { useEvent } from '../../hooks/use-event'
+import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 
 function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
   let forceInRoot = usePortalRoot()

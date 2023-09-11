@@ -1,7 +1,7 @@
-import * as Transition from './transition'
-import { renderSSR } from '../../test-utils/ssr'
 import { defineComponent } from 'vue'
 import { html } from '../../test-utils/html'
+import { renderSSR } from '../../test-utils/ssr'
+import * as Transition from './transition'
 
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)

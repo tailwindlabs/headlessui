@@ -1,13 +1,6 @@
-import React, {
-  createContext,
-  useContext,
-
-  // Types
-  MutableRefObject,
-  ReactNode,
-} from 'react'
-import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect'
+import React, { createContext, MutableRefObject, ReactNode, useContext } from 'react'
 import { useEvent } from '../hooks/use-event'
+import { useIsoMorphicEffect } from '../hooks/use-iso-morphic-effect'
 
 type OnUpdate = (
   message: StackMessage,

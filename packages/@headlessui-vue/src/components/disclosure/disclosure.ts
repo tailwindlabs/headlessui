@@ -1,24 +1,24 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
 import {
+  computed,
   defineComponent,
-  ref,
-  provide,
   inject,
   InjectionKey,
-  Ref,
-  computed,
-  watchEffect,
   onMounted,
   onUnmounted,
+  provide,
+  ref,
+  Ref,
+  watchEffect,
 } from 'vue'
 
-import { Keys } from '../../keyboard'
-import { match } from '../../utils/match'
-import { render, Features } from '../../utils/render'
 import { useId } from '../../hooks/use-id'
-import { dom } from '../../utils/dom'
-import { useOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
+import { Keys } from '../../keyboard'
+import { dom } from '../../utils/dom'
+import { match } from '../../utils/match'
+import { Features, render } from '../../utils/render'
 
 enum DisclosureStates {
   Open,

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Head from 'next/head'
+import React, { useEffect, useState } from 'react'
 
-import 'tailwindcss/tailwind.css'
 import { useRouter } from 'next/router'
+import 'tailwindcss/tailwind.css'
 
 function disposables() {
   let disposables: Function[] = []

@@ -1,30 +1,28 @@
 import React, {
-  useRef,
-
-  // Types
   ElementType,
+  FocusEvent as ReactFocusEvent,
   MutableRefObject,
   Ref,
-  FocusEvent as ReactFocusEvent,
+  useRef,
 } from 'react'
 
-import { Props } from '../../types'
-import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import { useDisposables } from '../../hooks/use-disposables'
+import { useEvent } from '../../hooks/use-event'
+import { useEventListener } from '../../hooks/use-event-listener'
+import { useIsMounted } from '../../hooks/use-is-mounted'
+import { useOnUnmount } from '../../hooks/use-on-unmount'
+import { useOwnerDocument } from '../../hooks/use-owner'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
-import { focusElement, focusIn, Focus, FocusResult } from '../../utils/focus-management'
-import { match } from '../../utils/match'
-import { useEvent } from '../../hooks/use-event'
-import { useTabDirection, Direction as TabDirection } from '../../hooks/use-tab-direction'
-import { useIsMounted } from '../../hooks/use-is-mounted'
-import { useOwnerDocument } from '../../hooks/use-owner'
-import { useEventListener } from '../../hooks/use-event-listener'
-import { microTask } from '../../utils/micro-task'
+import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { useWatch } from '../../hooks/use-watch'
-import { useDisposables } from '../../hooks/use-disposables'
-import { useOnUnmount } from '../../hooks/use-on-unmount'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Props } from '../../types'
 import { history } from '../../utils/active-element-history'
+import { Focus, focusElement, focusIn, FocusResult } from '../../utils/focus-management'
+import { match } from '../../utils/match'
+import { microTask } from '../../utils/micro-task'
+import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 
 type Containers =
   // Lazy resolved containers

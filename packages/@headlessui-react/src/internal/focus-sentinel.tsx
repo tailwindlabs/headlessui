@@ -1,7 +1,7 @@
-import React, { useState, FocusEvent as ReactFocusEvent } from 'react'
+import React, { FocusEvent as ReactFocusEvent, useState } from 'react'
 
 import { useIsMounted } from '../hooks/use-is-mounted'
-import { Hidden, Features } from './hidden'
+import { Features, Hidden } from './hidden'
 
 interface FocusSentinelProps {
   onFocus(): boolean

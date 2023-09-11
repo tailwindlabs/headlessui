@@ -1,4 +1,4 @@
-import { useState, MutableRefObject } from 'react'
+import { MutableRefObject, useState } from 'react'
 
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 

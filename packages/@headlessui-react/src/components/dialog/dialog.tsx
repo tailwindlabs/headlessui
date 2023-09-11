@@ -1,7 +1,13 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/
 import React, {
+  ContextType,
   createContext,
   createRef,
+  ElementType,
+  MouseEvent as ReactMouseEvent,
+  MutableRefObject,
+  Ref,
+  RefObject,
   useCallback,
   useContext,
   useEffect,
@@ -9,48 +15,40 @@ import React, {
   useReducer,
   useRef,
   useState,
-
-  // Types
-  ContextType,
-  ElementType,
-  MouseEvent as ReactMouseEvent,
-  RefObject,
-  MutableRefObject,
-  Ref,
 } from 'react'
 
-import { Props } from '../../types'
-import { match } from '../../utils/match'
-import {
-  forwardRefWithAs,
-  render,
-  Features,
-  PropsForFeatures,
-  HasDisplayName,
-  RefProp,
-} from '../../utils/render'
-import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { Keys } from '../keyboard'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { useId } from '../../hooks/use-id'
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
 import { Portal, useNestedPortals } from '../../components/portal/portal'
-import { ForcePortalRoot } from '../../internal/portal-force-root'
-import {
-  _internal_ComponentDescription,
-  Description,
-  useDescriptions,
-} from '../description/description'
-import { useOpenClosed, State } from '../../internal/open-closed'
-import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
-import { StackProvider, StackMessage } from '../../internal/stack-context'
+import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
+import { useEvent } from '../../hooks/use-event'
+import { useEventListener } from '../../hooks/use-event-listener'
+import { useId } from '../../hooks/use-id'
+import { useInert } from '../../hooks/use-inert'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
-import { useEventListener } from '../../hooks/use-event-listener'
-import { useEvent } from '../../hooks/use-event'
-import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
-import { useInert } from '../../hooks/use-inert'
 import { useRootContainers } from '../../hooks/use-root-containers'
+import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { State, useOpenClosed } from '../../internal/open-closed'
+import { ForcePortalRoot } from '../../internal/portal-force-root'
+import { StackMessage, StackProvider } from '../../internal/stack-context'
+import { Props } from '../../types'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { match } from '../../utils/match'
+import {
+  Features,
+  forwardRefWithAs,
+  HasDisplayName,
+  PropsForFeatures,
+  RefProp,
+  render,
+} from '../../utils/render'
+import {
+  Description,
+  useDescriptions,
+  _internal_ComponentDescription,
+} from '../description/description'
+import { Keys } from '../keyboard'
 
 enum DialogStates {
   Open,

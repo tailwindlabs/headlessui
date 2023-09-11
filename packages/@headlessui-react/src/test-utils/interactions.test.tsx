@@ -1,7 +1,7 @@
-import React from 'react'
 import { render } from '@testing-library/react'
+import React from 'react'
 
-import { type, shift, Keys } from './interactions'
+import { Keys, shift, type } from './interactions'
 
 type Events = 'onKeyDown' | 'onKeyUp' | 'onKeyPress' | 'onClick' | 'onBlur' | 'onFocus'
 let events: Events[] = ['onKeyDown', 'onKeyUp', 'onKeyPress', 'onClick', 'onBlur', 'onFocus']

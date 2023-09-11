@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-
-  // Types
-  ReactNode,
-} from 'react'
+import React, { createContext, ReactNode, useContext } from 'react'
 
 let ForcePortalRootContext = createContext(false)
 

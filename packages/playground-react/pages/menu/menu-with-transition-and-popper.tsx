@@ -1,9 +1,8 @@
-import React from 'react'
 import { Menu, Transition } from '@headlessui/react'
 
-import { usePopper } from '../../utils/hooks/use-popper'
-import { classNames } from '../../utils/class-names'
 import { Button } from '../../components/button'
+import { classNames } from '../../utils/class-names'
+import { usePopper } from '../../utils/hooks/use-popper'
 
 export default function Home() {
   let [trigger, container] = usePopper({

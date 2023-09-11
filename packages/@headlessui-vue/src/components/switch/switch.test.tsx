@@ -1,18 +1,18 @@
-import { defineComponent, ref, watch, h } from 'vue'
+import { defineComponent, h, ref, watch } from 'vue'
 import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 
-import { Switch, SwitchLabel, SwitchDescription, SwitchGroup } from './switch'
 import {
-  SwitchState,
-  assertSwitch,
-  getSwitch,
   assertActiveElement,
-  getSwitchLabel,
+  assertSwitch,
   getByText,
+  getSwitch,
+  getSwitchLabel,
+  SwitchState,
 } from '../../test-utils/accessibility-assertions'
-import { press, click, Keys, mouseEnter } from '../../test-utils/interactions'
 import { html } from '../../test-utils/html'
+import { click, Keys, mouseEnter, press } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch'
 
 jest.mock('../../hooks/use-id')
 

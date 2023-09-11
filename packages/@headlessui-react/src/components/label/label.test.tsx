@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
-import { Label, useLabels } from './label'
 import React, { ReactNode } from 'react'
+import { Label, useLabels } from './label'
 
 jest.mock('../../hooks/use-id')
 

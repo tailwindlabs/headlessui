@@ -1,5 +1,5 @@
-import snapshotDiff from 'snapshot-diff'
 import { render } from '@testing-library/react'
+import snapshotDiff from 'snapshot-diff'
 
 import { disposables } from '../utils/disposables'
 import { reportChanges } from './report-dom-node-changes'

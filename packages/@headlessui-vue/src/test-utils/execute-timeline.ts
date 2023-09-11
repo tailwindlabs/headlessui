@@ -1,5 +1,5 @@
-import { defineComponent } from 'vue'
 import snapshotDiff from 'snapshot-diff'
+import { defineComponent } from 'vue'
 import { render } from './vue-testing-library'
 
 import { disposables } from '../utils/disposables'

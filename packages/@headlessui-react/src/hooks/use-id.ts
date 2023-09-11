@@ -1,7 +1,7 @@
 import React from 'react'
+import { env } from '../utils/env'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 import { useServerHandoffComplete } from './use-server-handoff-complete'
-import { env } from '../utils/env'
 
 // We used a "simple" approach first which worked for SSR and rehydration on the client. However we
 // didn't take care of the Suspense case. To fix this we used the approach the @reach-ui/auto-id

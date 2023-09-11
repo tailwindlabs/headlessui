@@ -1,4 +1,4 @@
-import { useRef, MutableRefObject } from 'react'
+import { MutableRefObject, useRef } from 'react'
 import { getTextValue } from '../utils/get-text-value'
 import { useEvent } from './use-event'
 

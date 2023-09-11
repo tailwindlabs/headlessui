@@ -1,44 +1,42 @@
 import React, {
   createContext,
-  useContext,
-  useMemo,
-  useReducer,
-  useRef,
-
-  // Types
   ElementType,
   FocusEvent as ReactFocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   MutableRefObject,
   Ref,
+  useContext,
   useEffect,
+  useMemo,
+  useReducer,
+  useRef,
 } from 'react'
 
-import { Props, Expand } from '../../types'
-import { forwardRefWithAs, render, compact, RefProp, HasDisplayName } from '../../utils/render'
-import { useId } from '../../hooks/use-id'
-import { match } from '../../utils/match'
-import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
-import { Keys } from '../../components/keyboard'
-import { focusIn, Focus, FocusResult, sortByDomNode } from '../../utils/focus-management'
-import { useFlags } from '../../hooks/use-flags'
-import { _internal_ComponentLabel, Label, useLabels } from '../../components/label/label'
 import {
-  _internal_ComponentDescription,
   Description,
   useDescriptions,
+  _internal_ComponentDescription,
 } from '../../components/description/description'
-import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
-import { attemptSubmit, objectToFormEntries } from '../../utils/form'
-import { getOwnerDocument } from '../../utils/owner'
-import { useEvent } from '../../hooks/use-event'
+import { Keys } from '../../components/keyboard'
+import { Label, useLabels, _internal_ComponentLabel } from '../../components/label/label'
 import { useControllable } from '../../hooks/use-controllable'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { useLatestValue } from '../../hooks/use-latest-value'
 import { useDisposables } from '../../hooks/use-disposables'
+import { useEvent } from '../../hooks/use-event'
+import { useFlags } from '../../hooks/use-flags'
+import { useId } from '../../hooks/use-id'
+import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useLatestValue } from '../../hooks/use-latest-value'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Expand, Props } from '../../types'
+import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { attemptSubmit, objectToFormEntries } from '../../utils/form'
+import { match } from '../../utils/match'
+import { getOwnerDocument } from '../../utils/owner'
+import { compact, forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
 
 interface Option<T = unknown> {
   id: string

@@ -1,16 +1,16 @@
-import React, { useState } from 'react'
 import { render } from '@testing-library/react'
+import React, { useState } from 'react'
 
-import { Switch } from './switch'
 import {
-  SwitchState,
-  assertSwitch,
-  getSwitch,
   assertActiveElement,
-  getSwitchLabel,
+  assertSwitch,
   getByText,
+  getSwitch,
+  getSwitchLabel,
+  SwitchState,
 } from '../../test-utils/accessibility-assertions'
-import { press, click, focus, Keys, mouseEnter } from '../../test-utils/interactions'
+import { click, focus, Keys, mouseEnter, press } from '../../test-utils/interactions'
+import { Switch } from './switch'
 
 jest.mock('../../hooks/use-id')
 

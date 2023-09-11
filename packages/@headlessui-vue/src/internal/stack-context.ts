@@ -1,14 +1,4 @@
-import {
-  inject,
-  provide,
-  onMounted,
-  onUnmounted,
-
-  // Types
-  InjectionKey,
-  Ref,
-  watch,
-} from 'vue'
+import { inject, InjectionKey, onMounted, onUnmounted, provide, Ref, watch } from 'vue'
 
 type OnUpdate = (message: StackMessage, type: string, element: Ref<HTMLElement | null>) => void
 

@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter, RouterView } from 'vue-router'
+import { createRouter, createWebHistory, RouterView } from 'vue-router'
 
 type Component = import('vue').Component
 

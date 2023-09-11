@@ -1,9 +1,9 @@
-import { computed, Ref, ComputedRef, ref } from 'vue'
-import { FocusableMode, isFocusableElement } from '../utils/focus-management'
+import { computed, ComputedRef, Ref, ref } from 'vue'
 import { dom } from '../utils/dom'
+import { FocusableMode, isFocusableElement } from '../utils/focus-management'
+import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
 import { useWindowEvent } from './use-window-event'
-import { isMobile } from '../utils/platform'
 
 type Container = Ref<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>

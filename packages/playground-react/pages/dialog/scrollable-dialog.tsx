@@ -1,6 +1,6 @@
-import { Fragment, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon } from '@heroicons/react/outline'
+import { Fragment, useRef, useState } from 'react'
 
 export default function Example() {
   const [open, setOpen] = useState(false)
