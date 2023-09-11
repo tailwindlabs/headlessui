@@ -169,7 +169,7 @@ let order: Record<
 }
 
 export async function type(events: Partial<KeyboardEvent>[], element = document.activeElement) {
-  jest.useFakeTimers('legacy')
+  jest.useFakeTimers()
 
   try {
     if (element === null) return expect(element).not.toBe(null)
@@ -204,7 +204,9 @@ export async function type(events: Partial<KeyboardEvent>[], element = document.
     // We don't want to actually wait in our tests, so let's advance
     jest.runAllTimers()
 
-    await new Promise(nextFrame)
+    let p = new Promise(nextFrame)
+    jest.runAllTimers()
+    await p
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, type)
     throw err
