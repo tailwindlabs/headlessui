@@ -14,6 +14,9 @@ Object.defineProperty(HTMLElement.prototype, 'innerText', {
   },
 })
 
+import { TextEncoder } from "util"
+global.TextEncoder = TextEncoder
+
 function microTask(cb: Parameters<typeof queueMicrotask>[0]) {
   if (typeof queueMicrotask === 'function') {
     queueMicrotask(cb)
