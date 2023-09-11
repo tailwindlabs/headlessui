@@ -49,7 +49,7 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <div />
       </div>"
@@ -65,10 +65,10 @@ describe('Default functionality', () => {
 
     expect(contents('wrapper-with-class')).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper-with-class\\"
+        data-testid="wrapper-with-class"
       >
         <div
-          class=\\"test-inner test-outer\\"
+          class="test-inner test-outer"
         />
       </div>"
     `)
@@ -83,13 +83,13 @@ describe('Default functionality', () => {
 
     expect(contents('wrapper-with-class')).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper-with-class\\"
+        data-testid="wrapper-with-class"
       >
         <div
-          data-testid=\\"wrapper\\"
+          data-testid="wrapper"
         >
           <div
-            class=\\"test-inner test-outer\\"
+            class="test-inner test-outer"
           />
         </div>
       </div>"
@@ -111,7 +111,7 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <div>
           <span>
@@ -154,10 +154,10 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <div
-          potato=\\"[object Object]\\"
+          potato="[object Object]"
         >
           Contents
         </div>
@@ -170,12 +170,12 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <div
-          a=\\"1\\"
-          b=\\"2\\"
-          c=\\"3\\"
+          a="1"
+          b="2"
+          c="3"
         />
       </div>"
     `)
@@ -186,7 +186,7 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <button />
       </div>"
@@ -198,7 +198,7 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <button>
           <span>
@@ -214,7 +214,7 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         Contents
       </div>"
@@ -230,11 +230,11 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <span
-          a=\\"1\\"
-          b=\\"1\\"
+          a="1"
+          b="1"
         >
           Contents
         </span>
@@ -283,7 +283,7 @@ describe('Default functionality', () => {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <span>
           Contents A
@@ -338,7 +338,7 @@ function testStaticFeature(Dummy: Function) {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <div>
           Contents
@@ -356,7 +356,7 @@ function testStaticFeature(Dummy: Function) {
 
     expect(contents()).toMatchInlineSnapshot(`
       "<div
-        data-testid=\\"wrapper\\"
+        data-testid="wrapper"
       >
         <div>
           Contents
@@ -408,7 +408,7 @@ function testRenderStrategyFeature(Dummy: Function) {
 
       expect(contents()).toMatchInlineSnapshot(`
         "<div
-          data-testid=\\"wrapper\\"
+          data-testid="wrapper"
         >
           <div>
             Contents
@@ -427,7 +427,7 @@ function testRenderStrategyFeature(Dummy: Function) {
       // No contents, because we unmounted!
       expect(contents()).toMatchInlineSnapshot(`
         "<div
-          data-testid=\\"wrapper\\"
+          data-testid="wrapper"
         />"
       `)
     })
@@ -443,7 +443,7 @@ function testRenderStrategyFeature(Dummy: Function) {
 
       expect(contents()).toMatchInlineSnapshot(`
         "<div
-          data-testid=\\"wrapper\\"
+          data-testid="wrapper"
         >
           <div>
             Contents
@@ -462,11 +462,11 @@ function testRenderStrategyFeature(Dummy: Function) {
       // We do have contents, but it is marked as hidden!
       expect(contents()).toMatchInlineSnapshot(`
         "<div
-          data-testid=\\"wrapper\\"
+          data-testid="wrapper"
         >
           <div
-            hidden=\\"\\"
-            style=\\"display: none;\\"
+            hidden=""
+            style="display: none;"
           >
             Contents
           </div>
