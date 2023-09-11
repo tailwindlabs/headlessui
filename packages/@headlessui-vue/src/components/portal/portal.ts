@@ -4,17 +4,17 @@ import {
   getCurrentInstance,
   h,
   inject,
-  InjectionKey,
   onMounted,
   onUnmounted,
-  PropType,
   provide,
   reactive,
   ref,
-  Ref,
   Teleport,
   watch,
   watchEffect,
+  type InjectionKey,
+  type PropType,
+  type Ref,
 } from 'vue'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import { dom } from '../../utils/dom'

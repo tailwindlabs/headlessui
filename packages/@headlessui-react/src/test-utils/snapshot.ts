@@ -1,4 +1,4 @@
-import { MutableRefObject, useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, type MutableRefObject } from 'react'
 
 export function createSnapshot() {
   let snapshots: HTMLElement[] = []

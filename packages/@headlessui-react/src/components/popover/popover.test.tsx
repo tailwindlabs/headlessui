@@ -1,6 +1,5 @@
 import { act as _act, render } from '@testing-library/react'
 import React, { createElement, Fragment, useEffect, useRef, useState } from 'react'
-
 import ReactDOM from 'react-dom'
 import {
   assertActiveElement,

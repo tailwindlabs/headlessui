@@ -1,6 +1,4 @@
 import { defineComponent, h, ref, watch } from 'vue'
-import { createRenderTemplate } from '../../test-utils/vue-testing-library'
-
 import {
   assertActiveElement,
   assertSwitch,
@@ -12,6 +10,7 @@ import {
 import { html } from '../../test-utils/html'
 import { click, Keys, mouseEnter, press } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch'
 
 jest.mock('../../hooks/use-id')

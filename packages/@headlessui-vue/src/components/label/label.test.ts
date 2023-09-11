@@ -1,12 +1,10 @@
 import prettier from 'prettier'
 import { defineComponent, h, nextTick, ref } from 'vue'
-
-import { render } from '../../test-utils/vue-testing-library'
-import { Label, useLabels } from './label'
-
 import { getByText } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
 import { click } from '../../test-utils/interactions'
+import { render } from '../../test-utils/vue-testing-library'
+import { Label, useLabels } from './label'
 
 function format(input: Element | null | string) {
   if (input === null) throw new Error('input is null')

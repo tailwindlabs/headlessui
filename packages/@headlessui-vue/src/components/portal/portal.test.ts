@@ -1,5 +1,4 @@
 import { ComponentOptionsWithoutProps, createSSRApp, defineComponent, h, nextTick, ref } from 'vue'
-
 import { renderToString } from 'vue/server-renderer'
 import { html } from '../../test-utils/html'
 import { click } from '../../test-utils/interactions'

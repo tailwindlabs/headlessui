@@ -1,4 +1,4 @@
-import React, { createContext, ReactElement, ReactNode, useContext } from 'react'
+import React, { createContext, useContext, type ReactElement, type ReactNode } from 'react'
 
 let Context = createContext<State | null>(null)
 Context.displayName = 'OpenClosedContext'

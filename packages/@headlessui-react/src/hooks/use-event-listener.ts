@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-
 import { useLatestValue } from './use-latest-value'
 
 export function useEventListener<TType extends keyof WindowEventMap>(

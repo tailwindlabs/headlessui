@@ -4,17 +4,16 @@ import {
   defineComponent,
   h,
   inject,
-  InjectionKey,
   nextTick,
   onMounted,
   onUnmounted,
-  PropType,
   provide,
   ref,
-  Ref,
   watchEffect,
+  type InjectionKey,
+  type PropType,
+  type Ref,
 } from 'vue'
-
 import { FocusTrap } from '../../components/focus-trap/focus-trap'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
 import { useEventListener } from '../../hooks/use-event-listener'

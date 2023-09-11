@@ -1,11 +1,9 @@
 import { act as _act, fireEvent, render } from '@testing-library/react'
 import React, { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
-
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { Transition } from './transition'
-
 import { executeTimeline } from '../../test-utils/execute-timeline'
 import { createSnapshot } from '../../test-utils/snapshot'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { Transition } from './transition'
 
 let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 

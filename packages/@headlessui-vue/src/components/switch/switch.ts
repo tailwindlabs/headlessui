@@ -4,14 +4,13 @@ import {
   Fragment,
   h,
   inject,
-  InjectionKey,
   onMounted,
   provide,
   ref,
-  Ref,
   watch,
+  type InjectionKey,
+  type Ref,
 } from 'vue'
-
 import { useControllable } from '../../hooks/use-controllable'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'

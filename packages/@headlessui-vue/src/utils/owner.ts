@@ -1,4 +1,4 @@
-import { Ref } from 'vue'
+import { type Ref } from 'vue'
 import { dom } from './dom'
 import { env } from './env'
 

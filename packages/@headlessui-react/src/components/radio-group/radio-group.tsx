@@ -1,16 +1,16 @@
 import React, {
   createContext,
-  ElementType,
-  FocusEvent as ReactFocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
+  type ElementType,
+  type FocusEvent as ReactFocusEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
 
 import {
@@ -30,13 +30,19 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
-import { Expand, Props } from '../../types'
+import type { Expand, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
-import { compact, forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import {
+  compact,
+  forwardRefWithAs,
+  render,
+  type HasDisplayName,
+  type RefProp,
+} from '../../utils/render'
 
 interface Option<T = unknown> {
   id: string

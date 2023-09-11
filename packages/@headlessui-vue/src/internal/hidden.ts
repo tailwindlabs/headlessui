@@ -1,4 +1,4 @@
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, type PropType } from 'vue'
 import { render } from '../utils/render'
 
 export enum Features {

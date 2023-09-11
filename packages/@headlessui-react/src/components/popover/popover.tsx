@@ -1,21 +1,21 @@
 import React, {
-  ContextType,
   createContext,
   createRef,
-  Dispatch,
-  ElementType,
-  FocusEvent as ReactFocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MouseEventHandler,
-  MutableRefObject,
-  Ref,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
   useState,
+  type ContextType,
+  type Dispatch,
+  type ElementType,
+  type FocusEvent as ReactFocusEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type MouseEventHandler,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
 
 import { useNestedPortals } from '../../components/portal/portal'
@@ -32,7 +32,7 @@ import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { Props } from '../../types'
+import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import {
   Focus,
@@ -48,10 +48,10 @@ import { getOwnerDocument } from '../../utils/owner'
 import {
   Features,
   forwardRefWithAs,
-  HasDisplayName,
-  PropsForFeatures,
-  RefProp,
   render,
+  type HasDisplayName,
+  type PropsForFeatures,
+  type RefProp,
 } from '../../utils/render'
 import { Keys } from '../keyboard'
 

@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 import React, { useRef, useState } from 'react'
-
 import { assertActiveElement } from '../../test-utils/accessibility-assertions'
 import { click, Keys, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'

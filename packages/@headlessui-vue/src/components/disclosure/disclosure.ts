@@ -3,15 +3,14 @@ import {
   computed,
   defineComponent,
   inject,
-  InjectionKey,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  Ref,
   watchEffect,
+  type InjectionKey,
+  type Ref,
 } from 'vue'
-
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'

@@ -1,17 +1,16 @@
 import React, {
   createContext,
-  ElementType,
   Fragment,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
   useContext,
   useMemo,
   useReducer,
   useRef,
+  type ElementType,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
-
 import { Keys } from '../../components/keyboard'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
@@ -21,7 +20,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { Hidden } from '../../internal/hidden'
-import { Props } from '../../types'
+import type { Props } from '../../types'
 import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
@@ -29,10 +28,10 @@ import { getOwnerDocument } from '../../utils/owner'
 import {
   Features,
   forwardRefWithAs,
-  HasDisplayName,
-  PropsForFeatures,
-  RefProp,
   render,
+  type HasDisplayName,
+  type PropsForFeatures,
+  type RefProp,
 } from '../../utils/render'
 import { StableCollection, useStableCollectionIndex } from '../../utils/stable-collection'
 

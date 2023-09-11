@@ -1,24 +1,20 @@
 import {
   computed,
-  ConcreteComponent,
   defineComponent,
   h,
   inject,
-  InjectionKey,
   normalizeClass,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  Ref,
   watch,
   watchEffect,
+  type ConcreteComponent,
+  type InjectionKey,
+  type Ref,
 } from 'vue'
-
 import { useId } from '../../hooks/use-id'
-import { env } from '../../utils/env'
-import { match } from '../../utils/match'
-
 import {
   hasOpenClosed,
   State,
@@ -26,6 +22,8 @@ import {
   useOpenClosedProvider,
 } from '../../internal/open-closed'
 import { dom } from '../../utils/dom'
+import { env } from '../../utils/env'
+import { match } from '../../utils/match'
 import { Features, omit, render, RenderStrategy } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 

@@ -1,5 +1,4 @@
-import { MutableRefObject, useState } from 'react'
-
+import { useState, type MutableRefObject } from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 function resolveType<TTag>(props: { type?: string; as?: TTag }) {

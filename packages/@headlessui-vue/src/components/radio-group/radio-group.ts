@@ -4,15 +4,15 @@ import {
   Fragment,
   h,
   inject,
-  InjectionKey,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  Ref,
   toRaw,
-  UnwrapRef,
   watch,
+  type InjectionKey,
+  type Ref,
+  type UnwrapRef,
 } from 'vue'
 import { useControllable } from '../../hooks/use-controllable'
 import { useId } from '../../hooks/use-id'

@@ -1,17 +1,17 @@
 import {
   computed,
-  ComputedRef,
   defineComponent,
   inject,
-  InjectionKey,
   nextTick,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  Ref,
-  UnwrapNestedRefs,
   watchEffect,
+  type ComputedRef,
+  type InjectionKey,
+  type Ref,
+  type UnwrapNestedRefs,
 } from 'vue'
 import { useId } from '../../hooks/use-id'
 import { useOutsideClick } from '../../hooks/use-outside-click'

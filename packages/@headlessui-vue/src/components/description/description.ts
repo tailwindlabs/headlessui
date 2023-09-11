@@ -1,17 +1,16 @@
 import {
   computed,
-  ComputedRef,
   defineComponent,
   inject,
-  InjectionKey,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  Ref,
   unref,
+  type ComputedRef,
+  type InjectionKey,
+  type Ref,
 } from 'vue'
-
 import { useId } from '../../hooks/use-id'
 import { render } from '../../utils/render'
 

@@ -2,20 +2,19 @@
 import React, {
   createContext,
   createRef,
-  Dispatch,
-  ElementType,
   Fragment,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
+  type Dispatch,
+  type ElementType,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
-
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
@@ -28,7 +27,7 @@ import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { Props } from '../../types'
+import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
@@ -44,10 +43,10 @@ import { match } from '../../utils/match'
 import {
   Features,
   forwardRefWithAs,
-  HasDisplayName,
-  PropsForFeatures,
-  RefProp,
   render,
+  type HasDisplayName,
+  type PropsForFeatures,
+  type RefProp,
 } from '../../utils/render'
 import { Keys } from '../keyboard'
 

@@ -1,9 +1,5 @@
-import React, { createElement, useState } from 'react'
-
 import { render } from '@testing-library/react'
-
-import { RadioGroup } from './radio-group'
-
+import React, { createElement, useState } from 'react'
 import {
   assertActiveElement,
   assertFocusable,
@@ -14,6 +10,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, focus, Keys, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { RadioGroup } from './radio-group'
 
 jest.mock('../../hooks/use-id')
 

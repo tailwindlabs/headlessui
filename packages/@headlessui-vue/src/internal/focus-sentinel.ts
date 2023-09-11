@@ -1,5 +1,4 @@
 import { defineComponent, h, ref } from 'vue'
-
 import { Features, Hidden } from './hidden'
 
 export let FocusSentinel = defineComponent({

@@ -1,7 +1,6 @@
 import { defineComponent } from 'vue'
-import { createRenderTemplate } from '../test-utils/vue-testing-library'
-
 import { html } from '../test-utils/html'
+import { createRenderTemplate } from '../test-utils/vue-testing-library'
 import { render } from './render'
 
 let Dummy = defineComponent({

@@ -1,4 +1,4 @@
-import { computed, ComputedRef, Ref, ref } from 'vue'
+import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import { dom } from '../utils/dom'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'

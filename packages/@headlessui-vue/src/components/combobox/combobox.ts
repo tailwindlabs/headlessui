@@ -1,24 +1,23 @@
 import {
   computed,
-  ComputedRef,
   defineComponent,
   Fragment,
   h,
   inject,
-  InjectionKey,
   nextTick,
   onMounted,
   onUnmounted,
-  PropType,
   provide,
   ref,
-  Ref,
   toRaw,
-  UnwrapNestedRefs,
   watch,
   watchEffect,
+  type ComputedRef,
+  type InjectionKey,
+  type PropType,
+  type Ref,
+  type UnwrapNestedRefs,
 } from 'vue'
-
 import { useControllable } from '../../hooks/use-controllable'
 import { useId } from '../../hooks/use-id'
 import { useOutsideClick } from '../../hooks/use-outside-click'

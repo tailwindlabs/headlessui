@@ -1,5 +1,4 @@
 import { onMounted, ref } from 'vue'
-
 import { assertActiveElement, getByText } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
 import { click, Keys, press, shift } from '../../test-utils/interactions'

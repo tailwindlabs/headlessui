@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react'
 import React, { createElement, Suspense, useEffect, useRef } from 'react'
-
 import {
   assertActiveElement,
   assertDisclosureButton,

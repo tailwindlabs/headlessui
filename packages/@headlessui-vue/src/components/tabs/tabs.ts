@@ -4,16 +4,15 @@ import {
   Fragment,
   h,
   inject,
-  InjectionKey,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  Ref,
   watch,
   watchEffect,
+  type InjectionKey,
+  type Ref,
 } from 'vue'
-
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { FocusSentinel } from '../../internal/focus-sentinel'

@@ -1,5 +1,11 @@
-import { cleanup, render, RenderOptions, RenderResult, screen } from '@testing-library/react'
-import React, { ReactElement } from 'react'
+import {
+  cleanup,
+  render,
+  screen,
+  type RenderOptions,
+  type RenderResult,
+} from '@testing-library/react'
+import React, { type ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import { env } from '../utils/env'
 

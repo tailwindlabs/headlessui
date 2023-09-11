@@ -1,17 +1,16 @@
 import React, {
   createContext,
-  ElementType,
   Fragment,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  Ref,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type ElementType,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type Ref,
 } from 'react'
-
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
@@ -19,10 +18,16 @@ import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
-import { Props } from '../../types'
+import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { attemptSubmit } from '../../utils/form'
-import { compact, forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import {
+  compact,
+  forwardRefWithAs,
+  render,
+  type HasDisplayName,
+  type RefProp,
+} from '../../utils/render'
 import {
   Description,
   useDescriptions,

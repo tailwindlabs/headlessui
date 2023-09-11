@@ -1,37 +1,36 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
 import React, {
-  ContextType,
   createContext,
-  Dispatch,
-  ElementType,
   Fragment,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
+  type ContextType,
+  type Dispatch,
+  type ElementType,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
-
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { Props } from '../../types'
+import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import {
   Features,
   forwardRefWithAs,
-  HasDisplayName,
-  PropsForFeatures,
-  RefProp,
   render,
+  type HasDisplayName,
+  type PropsForFeatures,
+  type RefProp,
 } from '../../utils/render'
 import { startTransition } from '../../utils/start-transition'
 import { Keys } from '../keyboard'

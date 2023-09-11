@@ -1,6 +1,6 @@
-import { ElementType, Ref } from 'react'
-import { Props } from '../types'
-import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../utils/render'
+import type { ElementType, Ref } from 'react'
+import type { Props } from '../types'
+import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../utils/render'
 
 let DEFAULT_VISUALLY_HIDDEN_TAG = 'div' as const
 

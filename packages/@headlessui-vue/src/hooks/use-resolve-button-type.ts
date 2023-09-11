@@ -1,4 +1,4 @@
-import { ComponentPublicInstance, onMounted, ref, Ref, watchEffect } from 'vue'
+import { onMounted, ref, watchEffect, type ComponentPublicInstance, type Ref } from 'vue'
 import { dom } from '../utils/dom'
 
 function resolveType(type: unknown, as: string | object) {

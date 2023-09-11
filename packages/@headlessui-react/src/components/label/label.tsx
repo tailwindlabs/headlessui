@@ -1,19 +1,18 @@
 import React, {
   createContext,
-  ElementType,
-  ReactNode,
-  Ref,
   useContext,
   useMemo,
   useState,
+  type ElementType,
+  type ReactNode,
+  type Ref,
 } from 'react'
-
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { Props } from '../../types'
-import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import type { Props } from '../../types'
+import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
 
 // ---
 

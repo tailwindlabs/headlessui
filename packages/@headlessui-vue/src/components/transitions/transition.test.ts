@@ -1,11 +1,9 @@
 import { defineComponent, onMounted, ref } from 'vue'
-import { createRenderTemplate, fireEvent } from '../../test-utils/vue-testing-library'
-
-import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { TransitionChild, TransitionRoot } from './transition'
-
 import { executeTimeline } from '../../test-utils/execute-timeline'
 import { html } from '../../test-utils/html'
+import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, fireEvent } from '../../test-utils/vue-testing-library'
+import { TransitionChild, TransitionRoot } from './transition'
 
 jest.mock('../../hooks/use-id')
 

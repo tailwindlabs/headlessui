@@ -1,6 +1,6 @@
 import { fireEvent, logDOM, screen } from '@testing-library/dom'
 import { mount } from '@vue/test-utils'
-import { ComponentOptionsWithoutProps, defineComponent } from 'vue'
+import { defineComponent, type ComponentOptionsWithoutProps } from 'vue'
 
 let mountedWrappers = new Set()
 

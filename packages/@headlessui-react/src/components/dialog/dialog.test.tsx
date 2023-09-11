@@ -1,7 +1,6 @@
 import { render } from '@testing-library/react'
 import React, { createElement, Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-
 import { OpenClosedProvider, State } from '../../internal/open-closed'
 import {
   assertActiveElement,
@@ -22,7 +21,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, focus, Keys, mouseDrag, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { PropsOf } from '../../types'
+import type { PropsOf } from '../../types'
 import { Popover } from '../popover/popover'
 import { Transition } from '../transitions/transition'
 import { Dialog } from './dialog'

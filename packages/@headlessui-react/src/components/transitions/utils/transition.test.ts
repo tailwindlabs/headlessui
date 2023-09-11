@@ -1,7 +1,6 @@
-import { transition } from './transition'
-
 import { reportChanges } from '../../../test-utils/report-dom-node-changes'
 import { disposables } from '../../../utils/disposables'
+import { transition } from './transition'
 
 beforeEach(() => {
   document.body.innerHTML = ''

@@ -1,5 +1,4 @@
-import React, { FocusEvent as ReactFocusEvent, useState } from 'react'
-
+import React, { useState, type FocusEvent as ReactFocusEvent } from 'react'
 import { useIsMounted } from '../hooks/use-is-mounted'
 import { Features, Hidden } from './hidden'
 

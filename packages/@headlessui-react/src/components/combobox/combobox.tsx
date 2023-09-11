@@ -1,58 +1,55 @@
 import React, {
   createContext,
   createRef,
-  ElementType,
-  FocusEvent as ReactFocusEvent,
   Fragment,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  MutableRefObject,
-  Ref,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
+  type ElementType,
+  type FocusEvent as ReactFocusEvent,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
-import { ByComparator, EnsureArray, Expand, Props } from '../../types'
-
 import { useComputed } from '../../hooks/use-computed'
+import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useOwnerDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { useWatch } from '../../hooks/use-watch'
+import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import type { ByComparator, EnsureArray, Expand, Props } from '../../types'
 import { history } from '../../utils/active-element-history'
-
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import { sortByDomNode } from '../../utils/focus-management'
 import { objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
+import { isMobile } from '../../utils/platform'
 import {
   compact,
   Features,
   forwardRefWithAs,
-  HasDisplayName,
-  PropsForFeatures,
-  RefProp,
   render,
+  type HasDisplayName,
+  type PropsForFeatures,
+  type RefProp,
 } from '../../utils/render'
 
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
-import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-
-import { useControllable } from '../../hooks/use-controllable'
-import { useOwnerDocument } from '../../hooks/use-owner'
-import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useWatch } from '../../hooks/use-watch'
-import { isMobile } from '../../utils/platform'
 import { Keys } from '../keyboard'
 
 enum ComboboxState {

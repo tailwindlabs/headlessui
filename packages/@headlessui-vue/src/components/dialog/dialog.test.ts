@@ -1,24 +1,13 @@
 import {
   computed,
-  ConcreteComponent,
   defineComponent,
   h,
   nextTick,
   onMounted,
-  PropType,
   ref,
+  type ConcreteComponent,
+  type PropType,
 } from 'vue'
-import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
-
-import {
-  Dialog,
-  DialogBackdrop,
-  DialogDescription,
-  DialogOverlay,
-  DialogPanel,
-  DialogTitle,
-} from './dialog'
-
 import { State, useOpenClosedProvider } from '../../internal/open-closed'
 import {
   assertActiveElement,
@@ -40,8 +29,17 @@ import {
 import { html } from '../../test-utils/html'
 import { click, focus, Keys, mouseDrag, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
+import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { Popover, PopoverButton, PopoverPanel } from '../popover/popover'
 import { TransitionRoot } from '../transitions/transition'
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogDescription,
+  DialogOverlay,
+  DialogPanel,
+  DialogTitle,
+} from './dialog'
 
 // @ts-expect-error
 global.ResizeObserver = class FakeResizeObserver {

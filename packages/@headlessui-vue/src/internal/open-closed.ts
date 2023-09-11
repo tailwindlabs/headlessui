@@ -1,4 +1,4 @@
-import { inject, InjectionKey, provide, Ref } from 'vue'
+import { inject, provide, type InjectionKey, type Ref } from 'vue'
 
 let Context = Symbol('Context') as InjectionKey<Ref<State>>
 

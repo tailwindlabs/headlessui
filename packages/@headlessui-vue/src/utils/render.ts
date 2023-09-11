@@ -1,4 +1,4 @@
-import { cloneVNode, Fragment, h, Slots, VNode } from 'vue'
+import { cloneVNode, Fragment, h, type Slots, type VNode } from 'vue'
 import { match } from './match'
 
 export enum Features {

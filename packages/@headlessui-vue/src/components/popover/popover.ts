@@ -1,20 +1,19 @@
 import {
-  ComponentPublicInstance,
   computed,
   defineComponent,
   Fragment,
   h,
   inject,
-  InjectionKey,
   onMounted,
   onUnmounted,
   provide,
   ref,
-  Ref,
   shallowRef,
   watchEffect,
+  type ComponentPublicInstance,
+  type InjectionKey,
+  type Ref,
 } from 'vue'
-
 import { useNestedPortals } from '../../components/portal/portal'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'

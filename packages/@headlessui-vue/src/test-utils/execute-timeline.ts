@@ -1,9 +1,8 @@
 import snapshotDiff from 'snapshot-diff'
 import { defineComponent } from 'vue'
-import { render } from './vue-testing-library'
-
 import { disposables } from '../utils/disposables'
 import { reportChanges } from './report-dom-node-changes'
+import { render } from './vue-testing-library'
 
 function redentSnapshot(input: string) {
   let minSpaces = Infinity

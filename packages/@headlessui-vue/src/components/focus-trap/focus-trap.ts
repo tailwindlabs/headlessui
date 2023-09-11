@@ -5,11 +5,11 @@ import {
   h,
   onMounted,
   onUnmounted,
-  PropType,
   ref,
-  Ref,
   watch,
   watchEffect,
+  type PropType,
+  type Ref,
 } from 'vue'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'

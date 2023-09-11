@@ -1,14 +1,14 @@
 import React, {
   createContext,
-  ElementType,
   Fragment,
-  MutableRefObject,
-  Ref,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type ElementType,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
@@ -20,17 +20,17 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import { Props, ReactTag } from '../../types'
+import type { Props, ReactTag } from '../../types'
 import { classNames } from '../../utils/class-names'
 import { match } from '../../utils/match'
 import {
   Features,
   forwardRefWithAs,
-  HasDisplayName,
-  PropsForFeatures,
-  RefProp,
   render,
   RenderStrategy,
+  type HasDisplayName,
+  type PropsForFeatures,
+  type RefProp,
 } from '../../utils/render'
 
 type ContainerElement = MutableRefObject<HTMLElement | null>

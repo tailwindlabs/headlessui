@@ -1,8 +1,6 @@
-import { MutableRefObject } from 'react'
-
+import { type MutableRefObject } from 'react'
 import { transition } from '../components/transitions/utils/transition'
 import { disposables } from '../utils/disposables'
-
 import { useDisposables } from './use-disposables'
 import { useIsMounted } from './use-is-mounted'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'

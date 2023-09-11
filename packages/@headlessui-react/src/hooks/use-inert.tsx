@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react'
+import { type MutableRefObject } from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 let originals = new Map<HTMLElement, { 'aria-hidden': string | null; inert: boolean }>()

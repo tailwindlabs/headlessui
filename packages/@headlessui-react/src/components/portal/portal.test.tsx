@@ -1,9 +1,7 @@
 import { render } from '@testing-library/react'
 import React, { useRef, useState } from 'react'
-
-import { Portal } from './portal'
-
 import { click } from '../../test-utils/interactions'
+import { Portal } from './portal'
 
 function getPortalRoot() {
   return document.getElementById('headlessui-portal-root')!

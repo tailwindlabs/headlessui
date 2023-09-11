@@ -1,11 +1,10 @@
 import React, {
-  ElementType,
-  FocusEvent as ReactFocusEvent,
-  MutableRefObject,
-  Ref,
   useRef,
+  type ElementType,
+  type FocusEvent as ReactFocusEvent,
+  type MutableRefObject,
+  type Ref,
 } from 'react'
-
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
@@ -17,12 +16,12 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { useWatch } from '../../hooks/use-watch'
 import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
-import { Props } from '../../types'
+import type { Props } from '../../types'
 import { history } from '../../utils/active-element-history'
 import { Focus, focusElement, focusIn, FocusResult } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
-import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
 
 type Containers =
   // Lazy resolved containers

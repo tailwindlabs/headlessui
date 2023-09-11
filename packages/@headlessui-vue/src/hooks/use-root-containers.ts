@@ -1,4 +1,4 @@
-import { h, ref, Ref } from 'vue'
+import { h, ref, type Ref } from 'vue'
 import { Features as HiddenFeatures, Hidden } from '../internal/hidden'
 import { dom } from '../utils/dom'
 import { getOwnerDocument } from '../utils/owner'
