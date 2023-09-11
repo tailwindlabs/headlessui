@@ -1,4 +1,4 @@
-let prettier = require('prettier')
+import prettier from 'prettier'
 
 function format(input) {
   return prettier.format(input.replace(/\n/g, ''), {
