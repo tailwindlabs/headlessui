@@ -13,3 +13,6 @@ Object.defineProperty(HTMLElement.prototype, 'innerText', {
     this.textContent = value
   },
 })
+
+globalThis.setImmediate = setTimeout
+globalThis.clearImmediate = clearTimeout
