@@ -30,6 +30,7 @@ import {
   mouseLeave,
   mouseMove,
   press,
+  rawClick,
   shift,
   type,
   word,
@@ -1353,7 +1354,7 @@ describe('Composition', () => {
       })
       assertListbox({ state: ListboxState.InvisibleUnmounted })
 
-      await click(getListboxButton())
+      await rawClick(getListboxButton())
 
       assertListboxButton({
         state: ListboxState.Visible,
@@ -1364,7 +1365,7 @@ describe('Composition', () => {
         textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
       })
 
-      await click(getListboxButton())
+      await rawClick(getListboxButton())
 
       // Verify that we tracked the `mounts` and `unmounts` in the correct order
       expect(orderFn.mock.calls).toEqual([
