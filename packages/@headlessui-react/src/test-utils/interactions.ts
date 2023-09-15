@@ -1,4 +1,4 @@
-import { fireEvent } from '@testing-library/react'
+import { act, fireEvent } from '@testing-library/react'
 import { pointer } from './fake-pointer'
 
 function nextFrame(cb: Function): void {
@@ -225,6 +225,13 @@ export enum MouseButton {
 }
 
 export async function click(
+  element: Document | Element | Window | Node | null,
+  button = MouseButton.Left
+) {
+  return act(() => rawClick(element, button))
+}
+
+export async function rawClick(
   element: Document | Element | Window | Node | null,
   button = MouseButton.Left
 ) {

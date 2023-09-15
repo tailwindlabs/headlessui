@@ -24,6 +24,7 @@ import {
   mouseLeave,
   mouseMove,
   press,
+  rawClick,
   shift,
   type,
   word,
@@ -646,7 +647,7 @@ describe('Composition', () => {
       })
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
-      await click(getMenuButton())
+      await rawClick(getMenuButton())
 
       assertMenuButton({
         state: MenuState.Visible,
@@ -657,7 +658,7 @@ describe('Composition', () => {
         textContent: JSON.stringify({ active: false, disabled: false }),
       })
 
-      await click(getMenuButton())
+      await rawClick(getMenuButton())
 
       // Verify that we tracked the `mounts` and `unmounts` in the correct order
       expect(orderFn.mock.calls).toEqual([
@@ -700,7 +701,7 @@ describe('Composition', () => {
       })
       assertMenu({ state: MenuState.InvisibleUnmounted })
 
-      await click(getMenuButton())
+      await rawClick(getMenuButton())
 
       assertMenuButton({
         state: MenuState.Visible,
@@ -711,7 +712,7 @@ describe('Composition', () => {
         textContent: JSON.stringify({ active: false, disabled: false }),
       })
 
-      await click(getMenuButton())
+      await rawClick(getMenuButton())
 
       // Verify that we tracked the `mounts` and `unmounts` in the correct order
       expect(orderFn.mock.calls).toEqual([
