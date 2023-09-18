@@ -53,6 +53,20 @@ import {
 } from '../../utils/render'
 import { Keys } from '../keyboard'
 
+function useBatch<T>(cb: (data: T[]) => void) {
+  let batch = useDisposables()
+  let data = useRef<T[]>([])
+
+  return useEvent((value: T) => {
+    batch.dispose()
+    data.current.push(value)
+    batch.microTask(() => {
+      console.log('Batching', data.current.length)
+      cb(data.current.splice(0))
+    })
+  })
+}
+
 enum ComboboxState {
   Open,
   Closed,
@@ -97,6 +111,7 @@ enum ActionTypes {
   RegisterOption,
   RegisterOptions,
   UnregisterOption,
+  UnregisterOptions,
 
   RegisterLabel,
 
@@ -151,6 +166,7 @@ type Actions<T> =
     }
   | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
+  | { type: ActionTypes.UnregisterOptions; ids: string[] }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
 
 let reducers: {
@@ -286,6 +302,22 @@ let reducers: {
     }
 
     return nextState
+  },
+  [ActionTypes.UnregisterOptions]: (state, action) => {
+    let adjustedState = adjustOrderedState(state, (options) => {
+      for (let idx = options.length - 1; idx >= 0; --idx) {
+        if (action.ids.includes(options[idx].id)) {
+          options.splice(idx, 1)
+        }
+      }
+      return options
+    })
+
+    return {
+      ...state,
+      ...adjustedState,
+      activationTrigger: ActivationTrigger.Other,
+    }
   },
   [ActionTypes.UnregisterOption]: (state, action) => {
     let adjustedState = adjustOrderedState(state, (options) => {
@@ -707,16 +739,12 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     return dispatch({ type: ActionTypes.GoToOption, focus, trigger })
   })
 
-  let batch = useDisposables()
-  let batchedOptions = useRef<StateDefinition<unknown>['options']>([])
-  let batchRegisterOption = useEvent((option: StateDefinition<unknown>['options'][number]) => {
-    batch.dispose()
+  let batchRegisterOption = useBatch<StateDefinition<unknown>['options'][number]>((options) => {
+    dispatch({ type: ActionTypes.RegisterOptions, options })
+  })
 
-    batchedOptions.current.push(option)
-
-    batch.microTask(() => {
-      dispatch({ type: ActionTypes.RegisterOptions, options: batchedOptions.current.splice(0) })
-    })
+  let batchUnregisterOption = useBatch<string>((ids) => {
+    dispatch({ type: ActionTypes.UnregisterOptions, ids })
   })
 
   let registerOption = useEvent((id, dataRef) => {
@@ -735,7 +763,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
         defaultToFirstOption.current = true
       }
 
-      dispatch({ type: ActionTypes.UnregisterOption, id })
+      batchUnregisterOption(id)
     }
   })
 
