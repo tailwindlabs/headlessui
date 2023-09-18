@@ -150,6 +150,7 @@ function MyApp({ Component, pageProps }) {
           <NextLink href="/">
             <Logo className="h-6" />
           </NextLink>
+          <span className="font-bold text-white">(React)</span>
         </header>
 
         <KeyCaster />

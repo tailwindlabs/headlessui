@@ -59,6 +59,7 @@
           </defs>
         </svg>
       </router-link>
+      <span class="font-bold text-white">(Vue)</span>
     </header>
     <main class="flex-1 overflow-auto bg-gray-50">
       <slot></slot>
