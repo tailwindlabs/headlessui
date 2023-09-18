@@ -42,6 +42,7 @@ export default function Home() {
   )
 }
 
+let nf = new Intl.NumberFormat('en-US')
 function Example({ virtual = true, initial }: { virtual?: boolean; initial: string }) {
   let [query, setQuery] = useState('')
   let [activeTimezone, setActiveTimezone] = useState(initial)
@@ -67,7 +68,10 @@ function Example({ virtual = true, initial }: { virtual?: boolean; initial: stri
             as="div"
           >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
-              Timezone {virtual ? `(virtual ${timezones.length})` : `(${timezones.length})`}
+              Timezone{' '}
+              {virtual
+                ? `(virtual ${nf.format(timezones.length)})`
+                : `(${nf.format(timezones.length)})`}
             </Combobox.Label>
 
             <div className="relative">
