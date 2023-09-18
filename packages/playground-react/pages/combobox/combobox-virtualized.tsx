@@ -15,7 +15,22 @@ let allTimezones = _allTimezones.concat(
   _allTimezones.map((t) => `${t} #7`),
   _allTimezones.map((t) => `${t} #8`),
   _allTimezones.map((t) => `${t} #9`),
-  _allTimezones.map((t) => `${t} #10`)
+  _allTimezones.map((t) => `${t} #10`),
+  _allTimezones.map((t) => `${t} #11`),
+  _allTimezones.map((t) => `${t} #12`),
+  _allTimezones.map((t) => `${t} #13`),
+  _allTimezones.map((t) => `${t} #14`),
+  _allTimezones.map((t) => `${t} #15`),
+  _allTimezones.map((t) => `${t} #16`),
+  _allTimezones.map((t) => `${t} #17`),
+  _allTimezones.map((t) => `${t} #18`),
+  _allTimezones.map((t) => `${t} #19`),
+  _allTimezones.map((t) => `${t} #20`),
+  _allTimezones.map((t) => `${t} #21`),
+  _allTimezones.map((t) => `${t} #22`),
+  _allTimezones.map((t) => `${t} #23`),
+  _allTimezones.map((t) => `${t} #24`),
+  _allTimezones.map((t) => `${t} #25`)
 )
 
 export default function Home() {
