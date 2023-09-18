@@ -39,7 +39,7 @@ function Example({ virtual = true, initial }: { virtual?: boolean; initial: stri
             as="div"
           >
             <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
-              Timezone {virtual ? `(virtual)` : ''}
+              Timezone {virtual ? `(virtual ${timezones.length})` : `(${timezones.length})`}
             </Combobox.Label>
 
             <div className="relative">
