@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { timezones as allTimezones } from '../../data'
+import { timezones as _allTimezones } from '../../data'
 import { ref, computed } from 'vue'
 import {
   Combobox,
@@ -108,4 +108,17 @@ let timezones = computed(() => {
     ? allTimezones
     : allTimezones.filter((timezone) => timezone.toLowerCase().includes(query.value.toLowerCase()))
 })
+
+let allTimezones = _allTimezones.concat(
+  _allTimezones.map((t) => `${t} #1`),
+  _allTimezones.map((t) => `${t} #2`),
+  _allTimezones.map((t) => `${t} #3`),
+  _allTimezones.map((t) => `${t} #4`),
+  _allTimezones.map((t) => `${t} #5`),
+  _allTimezones.map((t) => `${t} #6`),
+  _allTimezones.map((t) => `${t} #7`),
+  _allTimezones.map((t) => `${t} #8`),
+  _allTimezones.map((t) => `${t} #9`),
+  _allTimezones.map((t) => `${t} #10`)
+)
 </script>
