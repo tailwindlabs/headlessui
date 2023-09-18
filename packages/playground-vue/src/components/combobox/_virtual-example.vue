@@ -5,7 +5,7 @@
       <div class="space-y-1">
         <Combobox nullable v-model="activeTimezone" as="div" :virtual="virtual">
           <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
-            Timezone {{ virtual ? '(virtual)' : '' }}
+            Timezone {{ virtual ? `(virtual ${timezones.length})` : `(${timezones.length})` }}
           </ComboboxLabel>
 
           <div class="relative">
