@@ -95,6 +95,7 @@ enum ActionTypes {
   GoToOption,
 
   RegisterOption,
+  RegisterOptions,
   UnregisterOption,
 
   RegisterLabel,
@@ -144,6 +145,10 @@ type Actions<T> =
       trigger?: ActivationTrigger
     }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ComboboxOptionDataRef<T> }
+  | {
+      type: ActionTypes.RegisterOptions
+      options: { id: string; dataRef: ComboboxOptionDataRef<T> }[]
+    }
   | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
@@ -223,6 +228,37 @@ let reducers: {
       activeOptionIndex,
       activationTrigger,
     }
+  },
+  [ActionTypes.RegisterOptions]: (state, action) => {
+    console.log('RegisterOptions', action.options.length)
+    let adjustedState = adjustOrderedState(state, (options) => {
+      for (let option of action.options) {
+        options.push(option)
+      }
+      return options
+    })
+
+    // Check if we need to make one of the newly registered option active.
+    if (state.activeOptionIndex === null) {
+      let activeOptionIndex = adjustedState.options.findIndex((option) =>
+        state.dataRef.current?.isSelected(option.dataRef.current.value)
+      )
+      if (activeOptionIndex !== -1) {
+        adjustedState.activeOptionIndex = activeOptionIndex
+      }
+    }
+
+    let nextState = {
+      ...state,
+      ...adjustedState,
+      activationTrigger: ActivationTrigger.Other,
+    }
+
+    if (state.dataRef.current?.__demoMode && state.dataRef.current.value === undefined) {
+      nextState.activeOptionIndex = 0
+    }
+
+    return nextState
   },
   [ActionTypes.RegisterOption]: (state, action) => {
     let option = { id: action.id, dataRef: action.dataRef }
@@ -671,8 +707,20 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     return dispatch({ type: ActionTypes.GoToOption, focus, trigger })
   })
 
+  let batch = useDisposables()
+  let batchedOptions = useRef<StateDefinition<unknown>['options']>([])
+  let batchRegisterOption = useEvent((option: StateDefinition<unknown>['options'][number]) => {
+    batch.dispose()
+
+    batchedOptions.current.push(option)
+
+    batch.microTask(() => {
+      dispatch({ type: ActionTypes.RegisterOptions, options: batchedOptions.current.splice(0) })
+    })
+  })
+
   let registerOption = useEvent((id, dataRef) => {
-    dispatch({ type: ActionTypes.RegisterOption, id, dataRef })
+    batchRegisterOption({ id, dataRef })
     return () => {
       // When we are unregistering the currently active option, then we also have to make sure to
       // reset the `defaultToFirstOption` flag, so that visually something is selected and the next
