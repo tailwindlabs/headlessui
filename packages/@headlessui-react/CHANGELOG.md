@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure blurring the `Combobox.Input` component closes the `Combobox` ([#2712](https://github.com/tailwindlabs/headlessui/pull/2712))
 - Allow changes to the `className` prop when the `<Transition />` component is currently not transitioning ([#2722](https://github.com/tailwindlabs/headlessui/pull/2722))
 - Export (internal-only) component interfaces for TypeScript compiler ([#2313](https://github.com/tailwindlabs/headlessui/pull/2313))
+- Fix infinite render-loop for `<Disclosure.Panel>` and `<Popover.Panel>` when `as={Fragment}` ([#2760](https://github.com/tailwindlabs/headlessui/pull/2760))
 
 ### Added
 
