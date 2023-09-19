@@ -217,6 +217,19 @@ function _render<TTag extends ElementType, TSlot>(
   )
 }
 
+/**
+ * This is a singleton hook. **You can ONLY call the returned
+ * function *once* to produce expected results.** If you need
+ * to call `mergeRefs()` multiple times you need to create a
+ * separate function for each invocation. This happens as we
+ * store the list of `refs` to update and always return the
+ * same function that refers to that list of refs.
+ *
+ * You shouldn't normally read refs during render but this
+ * should actually be okay because React itself is calling
+ * the `function` that updates these refs and can only do
+ * so once the ref that contains the list is updated.
+ */
 export function useMergeRefsFn() {
   type MaybeRef<T> = MutableRefObject<T> | ((value: T) => void) | null | undefined
   let currentRefs = useRef<MaybeRef<any>[]>([])
