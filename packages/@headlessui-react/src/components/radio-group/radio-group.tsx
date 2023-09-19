@@ -426,7 +426,7 @@ function OptionFn<
 
   useIsoMorphicEffect(
     () => actions.registerOption({ id, element: internalOptionRef, propsRef }),
-    [id, actions, internalOptionRef, props]
+    [id, actions, internalOptionRef, propsRef]
   )
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
