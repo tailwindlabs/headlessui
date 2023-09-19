@@ -49,6 +49,7 @@ import {
   Features,
   forwardRefWithAs,
   render,
+  useMergeRefsFn,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -755,6 +756,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     dispatch({ type: ActionTypes.SetPanel, panel })
   })
   let ownerDocument = useOwnerDocument(internalPanelRef)
+  let mergeRefs = useMergeRefsFn()
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.SetPanelId, panelId: id })
@@ -934,6 +936,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
         />
       )}
       {render({
+        mergeRefs,
         ourProps,
         theirProps,
         slot,
