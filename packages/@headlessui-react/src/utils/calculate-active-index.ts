@@ -27,8 +27,8 @@ export function calculateActiveIndex<TItem>(
   resolvers: {
     resolveItems(): TItem[]
     resolveActiveIndex(): number | null
-    resolveId(item: TItem): string
-    resolveDisabled(item: TItem): boolean
+    resolveId(item: TItem, index: number, items: TItem[]): string
+    resolveDisabled(item: TItem, index: number, items: TItem[]): boolean
   }
 ) {
   let items = resolvers.resolveItems()
@@ -40,7 +40,7 @@ export function calculateActiveIndex<TItem>(
   switch (action.focus) {
     case Focus.First: {
       for (let i = 0; i < items.length; ++i) {
-        if (!resolvers.resolveDisabled(items[i])) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
           return i
         }
       }
@@ -49,7 +49,7 @@ export function calculateActiveIndex<TItem>(
 
     case Focus.Previous: {
       for (let i = activeIndex - 1; i >= 0; --i) {
-        if (!resolvers.resolveDisabled(items[i])) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
           return i
         }
       }
@@ -58,7 +58,7 @@ export function calculateActiveIndex<TItem>(
 
     case Focus.Next: {
       for (let i = activeIndex + 1; i < items.length; ++i) {
-        if (!resolvers.resolveDisabled(items[i])) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
           return i
         }
       }
@@ -67,7 +67,7 @@ export function calculateActiveIndex<TItem>(
 
     case Focus.Last: {
       for (let i = items.length - 1; i >= 0; --i) {
-        if (!resolvers.resolveDisabled(items[i])) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
           return i
         }
       }
@@ -76,7 +76,7 @@ export function calculateActiveIndex<TItem>(
 
     case Focus.Specific: {
       for (let i = 0; i < items.length; ++i) {
-        if (resolvers.resolveId(items[i]) === action.id) {
+        if (resolvers.resolveId(items[i], i, items) === action.id) {
           return i
         }
       }
