@@ -4,6 +4,9 @@ import {
   forwardRef,
   Fragment,
   isValidElement,
+  MutableRefObject,
+  useCallback,
+  useRef,
   type ElementType,
   type ReactElement,
   type Ref,
@@ -54,6 +57,7 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
   features,
   visible = true,
   name,
+  mergeRefs,
 }: {
   ourProps: Expand<Props<TTag, TSlot, any> & PropsForFeatures<TFeature>> & {
     ref?: Ref<HTMLElement | ElementType>
@@ -64,11 +68,14 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
   features?: TFeature
   visible?: boolean
   name: string
+  mergeRefs?: ReturnType<typeof useMergeRefsFn>
 }) {
+  mergeRefs = mergeRefs ?? defaultMergeRefs
+
   let props = mergeProps(theirProps, ourProps)
 
   // Visible always render
-  if (visible) return _render(props, slot, defaultTag, name)
+  if (visible) return _render(props, slot, defaultTag, name, mergeRefs)
 
   let featureFlags = features ?? Features.None
 
@@ -76,7 +83,7 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
     let { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
 
     // When the `static` prop is passed as `true`, then the user is in control, thus we don't care about anything else
-    if (isStatic) return _render(rest, slot, defaultTag, name)
+    if (isStatic) return _render(rest, slot, defaultTag, name, mergeRefs)
   }
 
   if (featureFlags & Features.RenderStrategy) {
@@ -92,21 +99,23 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
           { ...rest, ...{ hidden: true, style: { display: 'none' } } },
           slot,
           defaultTag,
-          name
+          name,
+          mergeRefs!
         )
       },
     })
   }
 
   // No features enabled, just render
-  return _render(props, slot, defaultTag, name)
+  return _render(props, slot, defaultTag, name, mergeRefs)
 }
 
 function _render<TTag extends ElementType, TSlot>(
   props: Props<TTag, TSlot> & { ref?: unknown },
   slot: TSlot = {} as TSlot,
   tag: ElementType,
-  name: string
+  name: string,
+  mergeRefs: ReturnType<typeof useMergeRefsFn>
 ) {
   let {
     as: Component = tag,
@@ -189,7 +198,7 @@ function _render<TTag extends ElementType, TSlot>(
           mergeProps(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
           dataAttributes,
           refRelatedProps,
-          mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref),
+          { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
           classNameProps
         )
       )
@@ -208,18 +217,55 @@ function _render<TTag extends ElementType, TSlot>(
   )
 }
 
-function mergeRefs(...refs: any[]) {
-  return {
-    ref: refs.every((ref) => ref == null)
-      ? undefined
-      : (value: any) => {
-          for (let ref of refs) {
-            if (ref == null) continue
-            if (typeof ref === 'function') ref(value)
-            else ref.current = value
-          }
-        },
+/**
+ * This is a singleton hook. **You can ONLY call the returned
+ * function *once* to produce expected results.** If you need
+ * to call `mergeRefs()` multiple times you need to create a
+ * separate function for each invocation. This happens as we
+ * store the list of `refs` to update and always return the
+ * same function that refers to that list of refs.
+ *
+ * You shouldn't normally read refs during render but this
+ * should actually be okay because React itself is calling
+ * the `function` that updates these refs and can only do
+ * so once the ref that contains the list is updated.
+ */
+export function useMergeRefsFn() {
+  type MaybeRef<T> = MutableRefObject<T> | ((value: T) => void) | null | undefined
+  let currentRefs = useRef<MaybeRef<any>[]>([])
+  let mergedRef = useCallback((value) => {
+    for (let ref of currentRefs.current) {
+      if (ref == null) continue
+      if (typeof ref === 'function') ref(value)
+      else ref.current = value
+    }
+  }, [])
+
+  return (...refs: any[]) => {
+    if (refs.every((ref) => ref == null)) {
+      return undefined
+    }
+
+    currentRefs.current = refs
+    return mergedRef
   }
+}
+
+// This does not produce a stable function to use as a ref
+// But we only use it in the case of as={Fragment}
+// And it should really only re-render if setting the ref causes the parent to re-render unconditionally
+// which then causes the child to re-render resulting in a render loop
+// TODO: Add tests for this somehow
+function defaultMergeRefs(...refs: any[]) {
+  return refs.every((ref) => ref == null)
+    ? undefined
+    : (value: any) => {
+        for (let ref of refs) {
+          if (ref == null) continue
+          if (typeof ref === 'function') ref(value)
+          else ref.current = value
+        }
+      }
 }
 
 function mergeProps(...listOfProps: Props<any, any>[]) {

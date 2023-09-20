@@ -28,6 +28,7 @@ import {
   Features,
   forwardRefWithAs,
   render,
+  useMergeRefsFn,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -267,6 +268,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
   let buttonRef = useSyncRefs(internalButtonRef, ref, !isWithinPanel ? state.buttonRef : null)
+  let mergeRefs = useMergeRefsFn()
 
   useEffect(() => {
     if (isWithinPanel) return
@@ -345,6 +347,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       }
 
   return render({
+    mergeRefs,
     ourProps,
     theirProps,
     slot,
@@ -374,6 +377,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let { id = `headlessui-disclosure-panel-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
+  let mergeRefs = useMergeRefsFn()
 
   let panelRef = useSyncRefs(ref, state.panelRef, (el) => {
     startTransition(() => dispatch({ type: el ? ActionTypes.LinkPanel : ActionTypes.UnlinkPanel }))
@@ -408,6 +412,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   return (
     <DisclosurePanelContext.Provider value={state.panelId}>
       {render({
+        mergeRefs,
         ourProps,
         theirProps,
         slot,
