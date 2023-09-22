@@ -459,7 +459,8 @@ function VirtualProvider(props: {
               return
             }
 
-            if (data.activeOptionIndex !== null && data.list.length >= data.activeOptionIndex) {
+            if (data.activeOptionIndex !== null && data.list.length > data.activeOptionIndex) {
+              console.log(el, data.activeOptionIndex, data.list)
               virtualizer.scrollToIndex(data.activeOptionIndex)
             }
           }
