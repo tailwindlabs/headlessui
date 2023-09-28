@@ -63,8 +63,7 @@ function Example({ virtual = true, data, initial }: { virtual?: boolean; data; i
         <div className="py-8 font-mono text-xs">Selected timezone: {activeTimezone}</div>
         <div className="space-y-1">
           <Combobox
-            virtual={virtual}
-            list={timezones}
+            virtual={virtual ? { options: timezones } : undefined}
             value={activeTimezone}
             nullable
             onChange={(value) => {

@@ -80,7 +80,7 @@ interface StateDefinition<T> {
   dataRef: MutableRefObject<_Data | null>
   labelId: string | null
 
-  list: T[]
+  virtual: { options: T[]; disabled: (value: unknown) => boolean } | null
 
   comboboxState: ComboboxState
 
@@ -102,7 +102,7 @@ enum ActionTypes {
 
   SetActivationTrigger,
 
-  UpdateList,
+  UpdateVirtualOptions,
 }
 
 function adjustOrderedState<T>(
@@ -158,7 +158,7 @@ type Actions<T> =
   | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
-  | { type: ActionTypes.UpdateList; list: T[] }
+  | { type: ActionTypes.UpdateVirtualOptions; options: T[] }
 
 let reducers: {
   [P in ActionTypes]: <T>(
@@ -200,19 +200,17 @@ let reducers: {
       return state
     }
 
-    if (state.dataRef.current?.virtual) {
+    if (state.virtual) {
       let activeOptionIndex =
         action.focus === Focus.Specific
           ? action.idx
           : calculateActiveIndex(action, {
-              resolveItems: () => state.dataRef?.current?.list ?? [],
+              resolveItems: () => state.virtual!.options,
               resolveActiveIndex: () =>
                 state.activeOptionIndex ??
-                state.dataRef.current?.list.findIndex(
-                  (option) => !state.dataRef.current?.isDisabled(option)
-                ) ??
+                state.virtual!.options.findIndex((option) => !state.virtual!.disabled(option)) ??
                 null,
-              resolveDisabled: state.dataRef.current.isDisabled,
+              resolveDisabled: state.virtual!.disabled,
               resolveId() {
                 throw new Error('Function not implemented.')
               },
@@ -314,12 +312,12 @@ let reducers: {
       return {
         ...state,
         activationTrigger: ActivationTrigger.Other,
-        options: state.options.filter((a) => a.id !== action.id),
+        options: state.options.filter((option) => option.id !== action.id),
       }
     }
 
     let adjustedState = adjustOrderedState(state, (options) => {
-      let idx = options.findIndex((a) => a.id === action.id)
+      let idx = options.findIndex((option) => option.id === action.id)
       if (idx !== -1) options.splice(idx, 1)
       return options
     })
@@ -350,14 +348,14 @@ let reducers: {
       activationTrigger: action.trigger,
     }
   },
-  [ActionTypes.UpdateList]: (state, action) => {
-    if (state.list === action.list) {
+  [ActionTypes.UpdateVirtualOptions]: (state, action) => {
+    if (state.virtual?.options === action.options) {
       return state
     }
 
     let adjustedActiveOptionIndex = state.activeOptionIndex
     if (state.activeOptionIndex !== null) {
-      let idx = action.list.indexOf(state.list[state.activeOptionIndex])
+      let idx = action.options.indexOf(state.virtual!.options[state.activeOptionIndex])
       if (idx !== -1) {
         adjustedActiveOptionIndex = idx
       } else {
@@ -368,7 +366,10 @@ let reducers: {
     return {
       ...state,
       activeOptionIndex: adjustedActiveOptionIndex,
-      list: action.list,
+      virtual: {
+        ...state.virtual,
+        options: action.options,
+      },
     }
   },
 }
@@ -419,7 +420,7 @@ function VirtualProvider(props: {
   let virtualizer = useVirtualizer({
     scrollPaddingStart: paddingStart,
     scrollPaddingEnd: paddingEnd,
-    count: data.list.length,
+    count: data.virtual!.options.length,
     estimateSize() {
       return 40
     },
@@ -432,7 +433,7 @@ function VirtualProvider(props: {
   let [baseKey, setBaseKey] = useState(0)
   useIsoMorphicEffect(() => {
     setBaseKey((v) => v + 1)
-  }, [data.list])
+  }, [data.virtual?.options])
 
   return (
     <VirtualContext.Provider value={virtualizer}>
@@ -459,8 +460,10 @@ function VirtualProvider(props: {
               return
             }
 
-            if (data.activeOptionIndex !== null && data.list.length > data.activeOptionIndex) {
-              console.log(el, data.activeOptionIndex, data.list)
+            if (
+              data.activeOptionIndex !== null &&
+              data.virtual!.options.length > data.activeOptionIndex
+            ) {
               virtualizer.scrollToIndex(data.activeOptionIndex)
             }
           }
@@ -471,13 +474,13 @@ function VirtualProvider(props: {
             <Fragment key={item.key}>
               {React.cloneElement(
                 props.children?.({
-                  option: data.list[item.index],
+                  option: data.virtual!.options[item.index],
                   idx: item.index,
                 }),
                 {
                   key: `${baseKey}-${item.key}`,
                   'data-index': item.index,
-                  'aria-setsize': data.list.length,
+                  'aria-setsize': data.virtual!.options.length,
                   'aria-posinset': item.index + 1,
                   style: {
                     position: 'absolute',
@@ -506,10 +509,9 @@ let ComboboxDataContext = createContext<
       nullable: boolean
       immediate: boolean
 
-      virtual: boolean
+      virtual: { options: unknown[]; disabled: (value: unknown) => boolean } | null
       calculateIndex(value: unknown): number
       compare(a: unknown, z: unknown): boolean
-      isDisabled(value: unknown): boolean
       isSelected(value: unknown): boolean
       isActive(value: unknown): boolean
 
@@ -609,9 +611,10 @@ export type ComboboxProps<
   form?: string
   name?: string
   immediate?: boolean
-  virtual?: boolean
-  list?: TValue[]
-  isDisabled?(value: TValue): boolean
+  virtual?: {
+    options: TValue[]
+    disabled?: (value: TValue) => boolean
+  } | null
 }
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
@@ -647,9 +650,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     nullable = false,
     multiple = false,
     immediate = false,
-    virtual = false,
-    list = [], // Only makes sense when in `virtual` mode
-    isDisabled = () => false, // Only makes sense when in `virtual` mode
+    virtual = null,
     ...theirProps
   } = props
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
@@ -662,7 +663,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     dataRef: createRef(),
     comboboxState: __demoMode ? ComboboxState.Open : ComboboxState.Closed,
     options: [],
-    list,
+    virtual: virtual
+      ? { options: virtual.options, disabled: virtual.disabled ?? (() => false) }
+      : null,
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
     labelId: null,
@@ -691,9 +694,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let calculateIndex = useEvent((value: TValue) => {
     if (virtual) {
       if (by === null) {
-        return list.indexOf(value)
+        return virtual.options.indexOf(value)
       } else {
-        return list.findIndex((other) => compare(other, value))
+        return virtual.options.findIndex((other) => compare(other, value))
       }
     } else {
       // @ts-expect-error
@@ -728,16 +731,17 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       defaultValue,
       disabled,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
-      virtual,
-      list,
+      virtual: state.virtual,
       get activeOptionIndex() {
         if (
           defaultToFirstOption.current &&
           state.activeOptionIndex === null &&
-          (virtual ? data.list.length > 0 : state.options.length > 0)
+          (virtual ? virtual.options.length > 0 : state.options.length > 0)
         ) {
           if (virtual) {
-            let localActiveOptionIndex = list.findIndex((option) => !isDisabled(option))
+            let localActiveOptionIndex = virtual.options.findIndex(
+              (option) => !(virtual?.disabled?.(option) ?? false)
+            )
 
             if (localActiveOptionIndex !== -1) {
               return localActiveOptionIndex
@@ -759,28 +763,16 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       compare,
       isSelected,
       isActive,
-      isDisabled,
       nullable,
       __demoMode,
     }),
-    [
-      value,
-      defaultValue,
-      disabled,
-      multiple,
-      nullable,
-      __demoMode,
-      state,
-      virtual,
-      list,
-      isDisabled,
-    ]
+    [value, defaultValue, disabled, multiple, nullable, __demoMode, state, virtual]
   )
 
   useIsoMorphicEffect(() => {
     if (!virtual) return
-    dispatch({ type: ActionTypes.UpdateList, list })
-  }, [virtual, list])
+    dispatch({ type: ActionTypes.UpdateVirtualOptions, options: virtual.options })
+  }, [virtual, virtual?.options])
 
   useIsoMorphicEffect(() => {
     state.dataRef.current = data
@@ -802,7 +794,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
         data.activeOptionIndex === null
           ? null
           : data.virtual
-          ? data.list[data.activeOptionIndex ?? 0]
+          ? data.virtual.options[data.activeOptionIndex ?? 0]
           : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
       value,
     }),
@@ -810,18 +802,18 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   )
 
   let selectActiveOption = useEvent(() => {
-    if (data.activeOptionIndex !== null) {
-      if (data.virtual) {
-        onChange(data.list[data.activeOptionIndex])
-      } else {
-        let { dataRef } = data.options[data.activeOptionIndex]
-        onChange(dataRef.current.value)
-      }
+    if (data.activeOptionIndex === null) return
 
-      // It could happen that the `activeOptionIndex` stored in state is actually null,
-      // but we are getting the fallback active option back instead.
-      actions.goToOption(Focus.Specific, data.activeOptionIndex)
+    if (data.virtual) {
+      onChange(data.virtual.options[data.activeOptionIndex])
+    } else {
+      let { dataRef } = data.options[data.activeOptionIndex]
+      onChange(dataRef.current.value)
     }
+
+    // It could happen that the `activeOptionIndex` stored in state is actually null, but we are
+    // getting the fallback active option back instead.
+    actions.goToOption(Focus.Specific, data.activeOptionIndex)
   })
 
   let openCombobox = useEvent(() => {
@@ -1180,12 +1172,8 @@ function InputFn<
         event.preventDefault()
         event.stopPropagation()
         return match(data.comboboxState, {
-          [ComboboxState.Open]: () => {
-            actions.goToOption(Focus.Next)
-          },
-          [ComboboxState.Closed]: () => {
-            actions.openCombobox()
-          },
+          [ComboboxState.Open]: () => actions.goToOption(Focus.Next),
+          [ComboboxState.Closed]: () => actions.openCombobox(),
         })
 
       case Keys.ArrowUp:
@@ -1193,9 +1181,7 @@ function InputFn<
         event.preventDefault()
         event.stopPropagation()
         return match(data.comboboxState, {
-          [ComboboxState.Open]: () => {
-            actions.goToOption(Focus.Previous)
-          },
+          [ComboboxState.Open]: () => actions.goToOption(Focus.Previous),
           [ComboboxState.Closed]: () => {
             actions.openCombobox()
             d.nextFrame(() => {
@@ -1376,8 +1362,11 @@ function InputFn<
         : data.virtual
         ? data.options.find(
             (option) =>
-              !data.isDisabled(option.dataRef.current.value) &&
-              data.compare(option.dataRef.current.value, data.list[data.activeOptionIndex!])
+              !data.virtual?.disabled(option.dataRef.current.value) &&
+              data.compare(
+                option.dataRef.current.value,
+                data.virtual!.options[data.activeOptionIndex!]
+              )
           )?.id
         : data.options[data.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
@@ -1645,7 +1634,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   // Map the children in a scrollable container when virtualization is enabled
   if (data.virtual && data.comboboxState === ComboboxState.Open) {
     Object.assign(theirProps, {
-      // @ts-expect-error TODO
+      // @ts-expect-error The `children` prop now is a callback function that receives `{ option }`.
       children: <VirtualProvider>{theirProps.children}</VirtualProvider>,
     })
   }
@@ -1756,7 +1745,7 @@ function OptionFn<
   ])
 
   let handleClick = useEvent((event: { preventDefault: Function }) => {
-    if (disabled || data.isDisabled(value)) return event.preventDefault()
+    if (disabled || data.virtual?.disabled(value)) return event.preventDefault()
     select()
 
     // We want to make sure that we don't accidentally trigger the virtual keyboard.
@@ -1781,7 +1770,9 @@ function OptionFn<
   })
 
   let handleFocus = useEvent(() => {
-    if (disabled || data.isDisabled(value)) return actions.goToOption(Focus.Nothing)
+    if (disabled || data.virtual?.disabled(value)) {
+      return actions.goToOption(Focus.Nothing)
+    }
     let idx = data.calculateIndex(value)
     actions.goToOption(Focus.Specific, idx)
   })
@@ -1792,7 +1783,7 @@ function OptionFn<
 
   let handleMove = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
-    if (disabled || data.isDisabled(value)) return
+    if (disabled || data.virtual?.disabled(value)) return
     if (active) return
     let idx = data.calculateIndex(value)
     actions.goToOption(Focus.Specific, idx, ActivationTrigger.Pointer)
@@ -1800,7 +1791,7 @@ function OptionFn<
 
   let handleLeave = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
-    if (disabled || data.isDisabled(value)) return
+    if (disabled || data.virtual?.disabled(value)) return
     if (!active) return
     if (data.optionsPropsRef.current.hold) return
     actions.goToOption(Focus.Nothing)

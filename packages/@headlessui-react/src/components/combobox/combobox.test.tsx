@@ -1861,9 +1861,10 @@ describe.each([{ virtual: true }, { virtual: false }])(
       if (virtual) {
         return (
           <Combobox
-            virtual
-            list={options}
-            isDisabled={isDisabled}
+            virtual={{
+              options,
+              disabled: isDisabled,
+            }}
             value="test"
             onChange={NOOP}
             {...comboboxProps}
@@ -2641,93 +2642,6 @@ describe.each([{ virtual: true }, { virtual: false }])(
           })
         )
       })
-    })
-
-    describe('`Backspace` key', () => {
-      it(
-        'should reset the value when the last character is removed, when in `nullable` mode',
-        suppressConsoleLogs(async () => {
-          let handleChange = jest.fn()
-          function Example() {
-            let [value, setValue] = useState<string | null>('bob')
-            let [, setQuery] = useState<string>('')
-
-            //             <MyCombobox options={[
-            //   {value:'alice',children:'Alice'},
-            //   {value:'bob',children:'Bob'},
-            //   {value:'charlie',children:'Charlie'},
-            // ]} comboboxProps={{
-            //   value,onChange:(value) => {
-            //     setValue(value)
-            //     handleChange(value)
-            //   },nullable:true
-            // }} inputProps={{
-            //   onChange:(event) => setQuery(event.target.value)
-            // }}/>
-            //
-            return (
-              <Combobox
-                value={value}
-                onChange={(value) => {
-                  setValue(value)
-                  handleChange(value)
-                }}
-                nullable
-              >
-                <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
-                <Combobox.Button>Trigger</Combobox.Button>
-                <Combobox.Options>
-                  <Combobox.Option order={virtual ? 1 : undefined} value="alice">
-                    Alice
-                  </Combobox.Option>
-                  <Combobox.Option order={virtual ? 1 : undefined} value="bob">
-                    Bob
-                  </Combobox.Option>
-                  <Combobox.Option order={virtual ? 1 : undefined} value="charlie">
-                    Charlie
-                  </Combobox.Option>
-                </Combobox.Options>
-              </Combobox>
-            )
-          }
-
-          render(<Example />)
-
-          // Open combobox
-          await click(getComboboxButton())
-
-          let options: ReturnType<typeof getComboboxOptions>
-
-          // Bob should be active
-          options = getComboboxOptions()
-          expect(getComboboxInput()).toHaveValue('bob')
-          assertActiveComboboxOption(options[1])
-
-          assertActiveElement(getComboboxInput())
-
-          // Delete a character
-          await press(Keys.Backspace)
-          expect(getComboboxInput()?.value).toBe('bo')
-          assertActiveComboboxOption(options[1])
-
-          // Delete a character
-          await press(Keys.Backspace)
-          expect(getComboboxInput()?.value).toBe('b')
-          assertActiveComboboxOption(options[1])
-
-          // Delete a character
-          await press(Keys.Backspace)
-          expect(getComboboxInput()?.value).toBe('')
-
-          // Verify that we don't have an selected option anymore since we are in `nullable` mode
-          assertNotActiveComboboxOption(options[1])
-          assertNoSelectedComboboxOption()
-
-          // Verify that we saw the `null` change coming in
-          expect(handleChange).toHaveBeenCalledTimes(1)
-          expect(handleChange).toHaveBeenCalledWith(null)
-        })
-      )
     })
 
     describe('Input', () => {
@@ -4034,6 +3948,101 @@ describe.each([{ virtual: true }, { virtual: false }])(
         )
       })
 
+      describe('`Backspace` key', () => {
+        it(
+          'should reset the value when the last character is removed, when in `nullable` mode',
+          suppressConsoleLogs(async () => {
+            let handleChange = jest.fn()
+            function Example() {
+              let [value, setValue] = useState<string | null>('bob')
+              let [, setQuery] = useState<string>('')
+
+              // return (
+              //   <MyCombobox
+              //     options={[
+              //       { value: 'alice', children: 'Alice' },
+              //       { value: 'bob', children: 'Bob' },
+              //       { value: 'charlie', children: 'Charlie' },
+              //     ]}
+              //     comboboxProps={{
+              //       value,
+              //       onChange: (value: any) => {
+              //         setValue(value)
+              //         handleChange(value)
+              //       },
+              //       nullable: true,
+              //     }}
+              //     inputProps={{
+              //       onChange: (event: any) => setQuery(event.target.value),
+              //     }}
+              //   />
+              // )
+
+              return (
+                <Combobox
+                  value={value}
+                  onChange={(value) => {
+                    setValue(value)
+                    handleChange(value)
+                  }}
+                  nullable
+                >
+                  <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
+                  <Combobox.Button>Trigger</Combobox.Button>
+                  <Combobox.Options>
+                    <Combobox.Option order={virtual ? 1 : undefined} value="alice">
+                      Alice
+                    </Combobox.Option>
+                    <Combobox.Option order={virtual ? 1 : undefined} value="bob">
+                      Bob
+                    </Combobox.Option>
+                    <Combobox.Option order={virtual ? 1 : undefined} value="charlie">
+                      Charlie
+                    </Combobox.Option>
+                  </Combobox.Options>
+                </Combobox>
+              )
+            }
+
+            render(<Example />)
+
+            // Open combobox
+            await click(getComboboxButton())
+
+            let options: ReturnType<typeof getComboboxOptions>
+
+            // Bob should be active
+            options = getComboboxOptions()
+            expect(getComboboxInput()).toHaveValue('bob')
+            assertActiveComboboxOption(options[1])
+
+            assertActiveElement(getComboboxInput())
+
+            // Delete a character
+            await press(Keys.Backspace)
+            expect(getComboboxInput()?.value).toBe('bo')
+            assertActiveComboboxOption(options[1])
+
+            // Delete a character
+            await press(Keys.Backspace)
+            expect(getComboboxInput()?.value).toBe('b')
+            assertActiveComboboxOption(options[1])
+
+            // Delete a character
+            await press(Keys.Backspace)
+            expect(getComboboxInput()?.value).toBe('')
+
+            // Verify that we don't have an selected option anymore since we are in `nullable` mode
+            assertNotActiveComboboxOption(options[1])
+            assertNoSelectedComboboxOption()
+
+            // Verify that we saw the `null` change coming in
+            expect(handleChange).toHaveBeenCalledTimes(1)
+            expect(handleChange).toHaveBeenCalledWith(null)
+          })
+        )
+      })
+
       describe('`Any` key aka search', () => {
         function Example(props: { people: { value: string; name: string; disabled: boolean }[] }) {
           let [value, setValue] = useState<string | undefined>(undefined)
@@ -4048,9 +4057,10 @@ describe.each([{ virtual: true }, { virtual: false }])(
           if (virtual) {
             return (
               <Combobox
-                virtual
-                list={filteredPeople}
-                isDisabled={(person) => person?.disabled ?? false}
+                virtual={{
+                  options: filteredPeople,
+                  disabled: (person) => person?.disabled ?? false,
+                }}
                 value={value}
                 by="value"
                 onChange={setValue}
@@ -4323,9 +4333,10 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     if (virtual) {
       return (
         <Combobox
-          virtual
-          list={options}
-          isDisabled={isDisabled}
+          virtual={{
+            options,
+            disabled: isDisabled,
+          }}
           value="test"
           onChange={NOOP}
           {...comboboxProps}
@@ -5188,7 +5199,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should sync the input field correctly and reset it when resetting the value from outside (to null)',
     suppressConsoleLogs(async () => {
       function Example() {
-        let [value, setValue] = useState<string | null>('bob')
+        let [value, setValue] = useState<string | null>('Option B')
 
         return (
           <>
@@ -5204,7 +5215,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getComboboxButton())
 
       // Verify the input has the selected value
-      expect(getComboboxInput()?.value).toBe('bob')
+      expect(getComboboxInput()?.value).toBe('Option B')
 
       // Override the input by typing something
       await type(word('test'), getComboboxInput())
