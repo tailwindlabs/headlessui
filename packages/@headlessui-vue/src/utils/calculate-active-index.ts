@@ -27,8 +27,8 @@ export function calculateActiveIndex<TItem>(
   resolvers: {
     resolveItems(): TItem[]
     resolveActiveIndex(): number | null
-    resolveId(item: TItem): string
-    resolveDisabled(item: TItem): boolean
+    resolveId(item: TItem, index: number, items: TItem[]): string
+    resolveDisabled(item: TItem, index: number, items: TItem[]): boolean
   }
 ) {
   let items = resolvers.resolveItems()
@@ -37,48 +37,56 @@ export function calculateActiveIndex<TItem>(
   let currentActiveIndex = resolvers.resolveActiveIndex()
   let activeIndex = currentActiveIndex ?? -1
 
-  let nextActiveIndex = (() => {
-    switch (action.focus) {
-      case Focus.First:
-        return items.findIndex((item) => !resolvers.resolveDisabled(item))
-
-      case Focus.Previous: {
-        let idx = items
-          .slice()
-          .reverse()
-          .findIndex((item, idx, all) => {
-            if (activeIndex !== -1 && all.length - idx - 1 >= activeIndex) return false
-            return !resolvers.resolveDisabled(item)
-          })
-        if (idx === -1) return idx
-        return items.length - 1 - idx
+  switch (action.focus) {
+    case Focus.First: {
+      for (let i = 0; i < items.length; ++i) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
+          return i
+        }
       }
-
-      case Focus.Next:
-        return items.findIndex((item, idx) => {
-          if (idx <= activeIndex) return false
-          return !resolvers.resolveDisabled(item)
-        })
-
-      case Focus.Last: {
-        let idx = items
-          .slice()
-          .reverse()
-          .findIndex((item) => !resolvers.resolveDisabled(item))
-        if (idx === -1) return idx
-        return items.length - 1 - idx
-      }
-
-      case Focus.Specific:
-        return items.findIndex((item) => resolvers.resolveId(item) === action.id)
-
-      case Focus.Nothing:
-        return null
-
-      default:
-        assertNever(action)
+      return currentActiveIndex
     }
-  })()
 
-  return nextActiveIndex === -1 ? currentActiveIndex : nextActiveIndex
+    case Focus.Previous: {
+      for (let i = activeIndex - 1; i >= 0; --i) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
+          return i
+        }
+      }
+      return currentActiveIndex
+    }
+
+    case Focus.Next: {
+      for (let i = activeIndex + 1; i < items.length; ++i) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
+          return i
+        }
+      }
+      return currentActiveIndex
+    }
+
+    case Focus.Last: {
+      for (let i = items.length - 1; i >= 0; --i) {
+        if (!resolvers.resolveDisabled(items[i], i, items)) {
+          return i
+        }
+      }
+      return currentActiveIndex
+    }
+
+    case Focus.Specific: {
+      for (let i = 0; i < items.length; ++i) {
+        if (resolvers.resolveId(items[i], i, items) === action.id) {
+          return i
+        }
+      }
+      return currentActiveIndex
+    }
+
+    case Focus.Nothing:
+      return null
+
+    default:
+      assertNever(action)
+  }
 }
