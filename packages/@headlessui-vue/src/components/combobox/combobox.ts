@@ -587,7 +587,6 @@ export let Combobox = defineComponent({
         }
 
         if (api.virtual.value) {
-          activationTrigger.value = ActivationTrigger.Other
           options.value.push(option)
           return
         }
@@ -639,7 +638,6 @@ export let Combobox = defineComponent({
         }
 
         if (api.virtual.value) {
-          activationTrigger.value = ActivationTrigger.Other
           options.value = options.value.filter((option) => option.id !== id)
           return
         }

@@ -276,7 +276,6 @@ let reducers: {
     if (state.dataRef.current?.virtual) {
       return {
         ...state,
-        activationTrigger: ActivationTrigger.Other,
         options: [...state.options, action.payload],
       }
     }
@@ -311,7 +310,6 @@ let reducers: {
     if (state.dataRef.current?.virtual) {
       return {
         ...state,
-        activationTrigger: ActivationTrigger.Other,
         options: state.options.filter((option) => option.id !== action.id),
       }
     }
