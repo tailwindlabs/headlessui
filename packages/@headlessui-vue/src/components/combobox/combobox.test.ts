@@ -1967,31 +1967,79 @@ describe('Composition', () => {
 describe.each([{ virtual: true }, { virtual: false }])(
   'Keyboard interactions %s',
   ({ virtual }) => {
+    let data = ['Option A', 'Option B', 'Option C']
+    let MyCombobox = defineComponent({
+      components: getDefaultComponents(),
+      template: html`
+        <Combobox v-if="virtual !== null" :virtual="virtual" v-model="value" v-bind="comboboxProps">
+          <ComboboxInput v-bind="inputProps" />
+          <ComboboxButton v-bind="buttonProps">Trigger</ComboboxButton>
+          <ComboboxOptions v-if="useComboboxOptions" v-slot="{ option }">
+            <ComboboxOption v-bind="optionProps" :value="option">
+              {{ option?.children ?? option }}
+            </ComboboxOption>
+          </ComboboxOptions>
+        </Combobox>
+
+        <Combobox v-if="virtual === null" v-model="value" v-bind="comboboxProps">
+          <ComboboxInput v-bind="inputProps" />
+          <ComboboxButton v-bind="buttonProps">Trigger</ComboboxButton>
+          <ComboboxOptions v-if="useComboboxOptions">
+            <ComboboxOption
+              v-for="(option, idx) in options"
+              :key="idx"
+              :disabled="isDisabled(option)"
+              v-bind="optionProps"
+              :value="option"
+            >
+              {{ option?.children ?? option }}
+            </ComboboxOption>
+          </ComboboxOptions>
+        </Combobox>
+      `,
+
+      props: {
+        options: { default: data.slice() },
+        useComboboxOptions: { default: true },
+        comboboxProps: {},
+        inputProps: { default: {} },
+        buttonProps: { default: {} },
+        optionProps: { default: {} },
+      },
+
+      setup(props) {
+        // @ts-expect-error
+        let { value = 'test', update, ...comboboxProps } = props.comboboxProps ?? {}
+        function isDisabled(option: any) {
+          return typeof option === 'string'
+            ? false
+            : typeof option === 'object' && option !== null && 'disabled' in option
+            ? option?.disabled ?? false
+            : false
+        }
+
+        let model = ref(value)
+        watch([model], () => update?.(model.value))
+
+        return {
+          value: model,
+          comboboxProps,
+          isDisabled,
+          virtual: computed(() => {
+            return virtual ? { options: props.options, disabled: isDisabled } : null
+          }),
+        }
+      },
+    })
+
     describe('Button', () => {
       describe('`Enter` key', () => {
         it(
           'should be possible to open the Combobox with Enter',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
-              h,
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
@@ -2032,24 +2080,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to open the combobox with Enter when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value" disabled>
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ disabled: true }" />`,
             })
 
             assertComboboxButton({
@@ -2077,24 +2109,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with Enter, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('b'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
@@ -2138,19 +2154,13 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             renderTemplate({
               template: html`
-                <Combobox :virtual="virtual" v-model="value">
+                <Combobox v-model="value">
                   <ComboboxInput />
                   <ComboboxButton>Trigger</ComboboxButton>
                   <ComboboxOptions :unmount="false">
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
+                    <ComboboxOption value="a">Option A</ComboboxOption>
+                    <ComboboxOption value="b">Option B</ComboboxOption>
+                    <ComboboxOption value="c">Option C</ComboboxOption>
                   </ComboboxOptions>
                 </Combobox>
               `,
@@ -2213,31 +2223,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with Enter, and focus the selected option (with a list of objects)',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption
-                      :order="virtual ? 1 : undefined"
-                      v-for="option in options"
-                      key="option.id"
-                      :value="option"
-                      >{{ option.name }}</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => {
-                let options = [
-                  { id: 'a', name: 'Option A' },
-                  { id: 'b', name: 'Option B' },
-                  { id: 'c', name: 'Option C' },
-                ]
-                let value = ref(options[1])
-
-                return { value, options, virtual }
-              },
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
@@ -2278,14 +2265,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions />
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="[]" />`,
             })
 
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -2312,24 +2293,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with Space',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
@@ -2368,24 +2333,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to open the combobox with Space when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value" disabled>
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null, disabled: true }" />`,
             })
 
             assertComboboxButton({
@@ -2413,24 +2362,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with Space, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('b'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
@@ -2470,14 +2403,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions />
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="[]" />`,
             })
 
             assertComboboxList({
@@ -2500,24 +2427,15 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option upon Space key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'alice', children: 'alice', disabled: true },
+                  { value: 'bob', children: 'bob', disabled: true },
+                  { value: 'charlie', children: 'charlie', disabled: true },
+                ],
+              }),
             })
 
             assertComboboxButton({
@@ -2544,24 +2462,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to close an open combobox with Escape',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             // Open combobox
@@ -2597,24 +2499,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             let handleKeyDown = jest.fn()
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             window.addEventListener('keydown', handleKeyDown)
@@ -2637,24 +2523,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             let handleKeyDown = jest.fn()
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             window.addEventListener('keydown', handleKeyDown)
@@ -2678,24 +2548,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowDown',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('test'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
@@ -2733,24 +2587,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to open the combobox with ArrowDown when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value" disabled>
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{disabled:true}" />`,
             })
 
             assertComboboxButton({
@@ -2778,24 +2616,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowDown, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('b'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
@@ -2833,14 +2655,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions />
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="[]" />`,
             })
 
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -2863,24 +2679,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowUp and the last option should be active',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
@@ -2918,24 +2718,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to open the combobox with ArrowUp and the last option should be active when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value" disabled>
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ disabled: true }" />`,
             })
 
             assertComboboxButton({
@@ -2963,24 +2747,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowUp, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('b'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
@@ -3018,14 +2786,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions />
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="[]" />`,
             })
 
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -3046,24 +2808,15 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'alice', children: 'alice', disabled: false },
+                  { value: 'bob', children: 'bob', disabled: true },
+                  { value: 'charlie', children: 'charlie', disabled: true },
+                ],
+              }),
             })
 
             assertComboboxButton({
@@ -3095,27 +2848,17 @@ describe.each([{ virtual: true }, { virtual: false }])(
           suppressConsoleLogs(async () => {
             let handleChange = jest.fn()
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup() {
-                let value = ref(null)
-                watch([value], () => handleChange(value.value))
-                return { value, virtual }
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value, update }" />`,
+              setup: () => {
+                let model = ref(null)
+                return {
+                  value: model,
+                  update: (value: any) => {
+                    model.value = value
+                    handleChange(value)
+                  },
+                }
               },
             })
 
@@ -3144,7 +2887,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify we got the change event
             expect(handleChange).toHaveBeenCalledTimes(1)
-            expect(handleChange).toHaveBeenCalledWith('a')
+            expect(handleChange).toHaveBeenCalledWith('Option A')
 
             // Verify the button is focused again
             assertActiveElement(getComboboxInput())
@@ -3163,24 +2906,10 @@ describe.each([{ virtual: true }, { virtual: false }])(
             let submits = jest.fn()
 
             renderTemplate({
+              components: { MyCombobox },
               template: html`
                 <form @submit="handleSubmit" @keyup="handleKeyUp">
-                  <Combobox :virtual="virtual" v-model="value" name="option">
-                    <ComboboxInput />
-                    <ComboboxButton>Trigger</ComboboxButton>
-                    <ComboboxOptions>
-                      <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                        >Option A</ComboboxOption
-                      >
-                      <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                        >Option B</ComboboxOption
-                      >
-                      <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                        >Option C</ComboboxOption
-                      >
-                    </ComboboxOptions>
-                  </Combobox>
-
+                  <MyCombobox :comboboxProps="{ value, update, name: 'option' }" />
                   <button>Submit</button>
                 </form>
               `,
@@ -3188,6 +2917,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
                 let value = ref('b')
                 return {
                   value,
+                  update(newValue: any) {
+                    value.value = newValue
+                  },
                   handleKeyUp(event: KeyboardEvent) {
                     // JSDom doesn't automatically submit the form but if we can
                     // catch an `Enter` event, we can assume it was a submit.
@@ -3221,29 +2953,19 @@ describe.each([{ virtual: true }, { virtual: false }])(
             let submits = jest.fn()
 
             renderTemplate({
+              components: { MyCombobox },
               template: html`
                 <form @submit="handleSubmit" @keyup="handleKeyUp">
-                  <Combobox :virtual="virtual" v-model="value" name="option">
-                    <ComboboxInput />
-                    <ComboboxButton>Trigger</ComboboxButton>
-                    <ComboboxOptions>
-                      <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                        >Option A</ComboboxOption
-                      >
-                      <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                        >Option B</ComboboxOption
-                      >
-                      <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                        >Option C</ComboboxOption
-                      >
-                    </ComboboxOptions>
-                  </Combobox>
+                  <MyCombobox :comboboxProps="{ value, update, name: 'option' }" />
                 </form>
               `,
               setup() {
                 let value = ref('b')
                 return {
                   value,
+                  update(newValue: any) {
+                    value.value = newValue
+                  },
                   handleKeyUp(event: KeyboardEvent) {
                     // JSDom doesn't automatically submit the form but if we can
                     // catch an `Enter` event, we can assume it was a submit.
@@ -3277,26 +2999,21 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'pressing Tab should select the active item and move to the next DOM node',
           suppressConsoleLogs(async () => {
             renderTemplate({
+              components: { MyCombobox },
               template: html`
                 <input id="before-combobox" />
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
+                <MyCombobox :comboboxProps="{ value, update }" />
                 <input id="after-combobox" />
               `,
-              setup: () => ({ value: ref(null), virtual }),
+              setup: () => {
+                let value = ref(null)
+                return {
+                  value,
+                  update(newValue: any) {
+                    value.value = newValue
+                  },
+                }
+              },
             })
 
             assertComboboxButton({
@@ -3319,7 +3036,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // That the selected value was the highlighted one
-            expect(getComboboxInput()?.value).toBe('b')
+            expect(getComboboxInput()?.value).toBe('Option B')
 
             // And focus has moved to the next element
             assertActiveElement(document.querySelector('#after-combobox'))
@@ -3330,26 +3047,21 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'pressing Shift+Tab should select the active item and move to the previous DOM node',
           suppressConsoleLogs(async () => {
             renderTemplate({
+              components: { MyCombobox },
               template: html`
                 <input id="before-combobox" />
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
+                <MyCombobox :comboboxProps="{ value, update }" />
                 <input id="after-combobox" />
               `,
-              setup: () => ({ value: ref(null), virtual }),
+              setup: () => {
+                let value = ref(null)
+                return {
+                  value,
+                  update(newValue: any) {
+                    value.value = newValue
+                  },
+                }
+              },
             })
 
             assertComboboxButton({
@@ -3372,7 +3084,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
             // That the selected value was the highlighted one
-            expect(getComboboxInput()?.value).toBe('b')
+            expect(getComboboxInput()?.value).toBe('Option B')
 
             // And focus has moved to the next element
             assertActiveElement(document.querySelector('#before-combobox'))
@@ -3385,24 +3097,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to close an open combobox with Escape',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             // Open combobox
@@ -3436,19 +3132,13 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             renderTemplate({
               template: html`
-                <Combobox :virtual="virtual" v-model="value">
+                <Combobox v-model="value">
                   <ComboboxInput />
                   <ComboboxButton>Trigger</ComboboxButton>
                   <ComboboxOptions static>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
+                    <ComboboxOption value="a">Option A</ComboboxOption>
+                    <ComboboxOption value="b">Option B</ComboboxOption>
+                    <ComboboxOption value="c">Option C</ComboboxOption>
                   </ComboboxOptions>
                 </Combobox>
               `,
@@ -3495,13 +3185,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should bubble escape when not using Combobox.Options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :useComboboxOptions="false" />`,
             })
 
             let spy = jest.fn()
@@ -3544,31 +3229,15 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should sync the input field correctly and reset it when pressing Escape',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="option-a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="option-b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="option-c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('option-b'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             // Open combobox
             await click(getComboboxButton())
 
             // Verify the input has the selected value
-            expect(getComboboxInput()?.value).toBe('option-b')
+            expect(getComboboxInput()?.value).toBe('Option B')
 
             // Override the input by typing something
             await type(word('test'), getComboboxInput())
@@ -3578,7 +3247,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.Escape)
 
             // Verify the input is reset correctly
-            expect(getComboboxInput()?.value).toBe('option-b')
+            expect(getComboboxInput()?.value).toBe('Option B')
           })
         )
       })
@@ -3588,24 +3257,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowDown',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('test'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
@@ -3643,24 +3296,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to open the combobox with ArrowDown when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value" disabled>
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null, disabled: true }" />`,
             })
 
             assertComboboxButton({
@@ -3688,24 +3325,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowDown, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('b'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
@@ -3743,14 +3364,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions />
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="[]" />`,
             })
 
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -3771,24 +3386,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use ArrowDown to navigate the combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             assertComboboxButton({
@@ -3825,25 +3424,18 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use ArrowDown to navigate the combobox options and skip the first disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: false },
+                  { value: 'c', children: 'Option C', disabled: false },
+                ],
+              }),
             })
+
+            render
 
             assertComboboxButton({
               state: ComboboxState.InvisibleUnmounted,
@@ -3870,24 +3462,15 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use ArrowDown to navigate the combobox options and jump to the first non-disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
+                ],
+              }),
             })
 
             assertComboboxButton({
@@ -3915,24 +3498,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to go to the next item if no value is set',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
@@ -3963,24 +3530,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowUp and the last option should be active',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
@@ -4018,24 +3569,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to open the combobox with ArrowUp and the last option should be active when the button is disabled',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value" disabled>
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ disabled: true }" />`,
             })
 
             assertComboboxButton({
@@ -4063,24 +3598,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to open the combobox with ArrowUp, and focus the selected option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref('b'), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" />`,
             })
 
             assertComboboxButton({
@@ -4118,14 +3637,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option when there are no combobox options at all',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions />
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="[]" />`,
             })
 
             assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -4146,24 +3659,15 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use ArrowUp to navigate the combobox options and jump to the first non-disabled one',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                ],
+              }),
             })
 
             assertComboboxButton({
@@ -4190,24 +3694,15 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to navigate up or down if there is only a single non-disabled option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
+                ],
+              }),
             })
 
             assertComboboxButton({
@@ -4242,24 +3737,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use ArrowUp to navigate the combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             assertComboboxButton({
@@ -4309,24 +3788,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the End key to go to the last combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             // Open combobox
@@ -4347,27 +3810,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the End key to go to the last non disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: false },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4388,27 +3840,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the End key to go to the first combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4430,27 +3871,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option upon End key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4472,24 +3902,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the PageDown key to go to the last combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox />`,
             })
 
             // Open combobox
@@ -4510,27 +3924,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the PageDown key to go to the last non disabled Combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: false },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4554,27 +3957,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the PageDown key to go to the first combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: false },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4596,27 +3988,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option upon PageDown key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4638,24 +4019,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the Home key to go to the first combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             // Focus the input
@@ -4679,27 +4044,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the Home key to go to the first non disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="d"
-                      >Option D</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
+                  { value: 'd', children: 'Option D', disabled: false },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4722,27 +4076,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the Home key to go to the last combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="d"
-                      >Option D</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: false },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4764,27 +4107,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option upon Home key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4806,24 +4138,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the PageUp key to go to the first combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="a"
-                      >Option A</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="b"
-                      >Option B</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
             })
 
             // Focus the input
@@ -4847,27 +4163,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the PageUp key to go to the first non disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="c"
-                      >Option C</ComboboxOption
-                    >
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="d"
-                      >Option D</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: false },
+                  { value: 'd', children: 'Option D', disabled: false },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4889,27 +4194,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to use the PageUp key to go to the last combobox option if that is the only non-disabled combobox option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" value="d"
-                      >Option D</ComboboxOption
-                    >
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: false },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4931,27 +4225,16 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should have no active combobox option upon PageUp key press, when there are no non-disabled combobox options',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              template: html`
-                <Combobox :virtual="virtual" v-model="value">
-                  <ComboboxInput />
-                  <ComboboxButton>Trigger</ComboboxButton>
-                  <ComboboxOptions>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="a">
-                      Option A
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="b">
-                      Option B
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="c">
-                      Option C
-                    </ComboboxOption>
-                    <ComboboxOption :order="virtual ? 1 : undefined" disabled value="d">
-                      Option D
-                    </ComboboxOption>
-                  </ComboboxOptions>
-                </Combobox>
-              `,
-              setup: () => ({ value: ref(null), virtual }),
+              components: { MyCombobox },
+              template: html`<MyCombobox :options="options" />`,
+              setup: () => ({
+                options: [
+                  { value: 'a', children: 'Option A', disabled: true },
+                  { value: 'b', children: 'Option B', disabled: true },
+                  { value: 'c', children: 'Option C', disabled: true },
+                  { value: 'd', children: 'Option D', disabled: true },
+                ],
+              }),
             })
 
             // Open combobox
@@ -4975,7 +4258,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             let handleChange = jest.fn()
             renderTemplate({
               template: html`
-                <Combobox :virtual="virtual" v-model="value" nullable>
+                <Combobox v-model="value" nullable>
                   <ComboboxInput />
                   <ComboboxButton>Trigger</ComboboxButton>
                   <ComboboxOptions>
@@ -5036,23 +4319,29 @@ describe.each([{ virtual: true }, { virtual: false }])(
       })
 
       describe('`Any` key aka search', () => {
-        let Example = defineComponent({
+        let MyCombobox = defineComponent({
           components: getDefaultComponents(),
 
           template: html`
-            <Combobox :virtual="virtual" v-model="value">
+            <Combobox v-if="!virtual" v-model="value" by="value">
               <ComboboxInput @change="setQuery" />
               <ComboboxButton>Trigger</ComboboxButton>
               <ComboboxOptions>
                 <ComboboxOption
                   v-for="(person, idx) in filteredPeople"
-                  :order="virtual ? idx : undefined"
                   :key="person.value"
-                  :value="person.value"
-                  :disabled="person.disabled"
+                  v-bind="person"
+                  :value="person"
                 >
                   {{ person.name }}
                 </ComboboxOption>
+              </ComboboxOptions>
+            </Combobox>
+            <Combobox v-if="virtual" :virtual="virtual" v-model="value" by="value">
+              <ComboboxInput @change="setQuery" />
+              <ComboboxButton>Trigger</ComboboxButton>
+              <ComboboxOptions v-slot="{ option: person }">
+                <ComboboxOption v-bind="person" :value="person">{{ person.name }}</ComboboxOption>
               </ComboboxOptions>
             </Combobox>
           `,
@@ -5082,7 +4371,15 @@ describe.each([{ virtual: true }, { virtual: false }])(
               setQuery: (event: Event & { target: HTMLInputElement }) => {
                 query.value = event.target.value
               },
-              virtual,
+              virtual: computed(() => {
+                return virtual
+                  ? {
+                      options: filteredPeople.value,
+                      disabled: (person: { value: string; name: string; disabled: boolean }) =>
+                        person?.disabled ?? false,
+                    }
+                  : null
+              }),
             }
           },
         })
@@ -5091,9 +4388,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to type a full word that has a perfect match',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: { Example },
+              components: { MyCombobox },
               template: html`
-                <Example
+                <MyCombobox
                   :people="[
                     { value: 'alice', name: 'alice', disabled: false },
                     { value: 'bob', name: 'bob', disabled: false },
@@ -5143,9 +4440,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to type a partial of a word',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: { Example },
+              components: { MyCombobox },
               template: html`
-                <Example
+                <MyCombobox
                   :people="[
                     { value: 'alice', name: 'alice', disabled: false },
                     { value: 'bob', name: 'bob', disabled: false },
@@ -5190,9 +4487,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to type words with spaces',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: { Example },
+              components: { MyCombobox },
               template: html`
-                <Example
+                <MyCombobox
                   :people="[
                     { value: 'alice', name: 'alice jones', disabled: false },
                     { value: 'bob', name: 'bob the builder', disabled: false },
@@ -5237,9 +4534,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should not be possible to search and activate a disabled option',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: { Example },
+              components: { MyCombobox },
               template: html`
-                <Example
+                <MyCombobox
                   :people="[
                     { value: 'alice', name: 'alice', disabled: false },
                     { value: 'bob', name: 'bob', disabled: true },
@@ -5265,9 +4562,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should maintain activeIndex and activeOption when filtering',
           suppressConsoleLogs(async () => {
             renderTemplate({
-              components: { Example },
+              components: { MyCombobox },
               template: html`
-                <Example
+                <MyCombobox
                   :people="[
                     { value: 'a', name: 'person a', disabled: false },
                     { value: 'b', name: 'person b', disabled: false },
@@ -5281,6 +4578,10 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await click(getComboboxButton())
 
             let options: ReturnType<typeof getComboboxOptions>
+
+            options = getComboboxOptions()
+            expect(options[0]).toHaveTextContent('person a')
+            assertActiveComboboxOption(options[0])
 
             await press(Keys.ArrowDown)
 
@@ -5310,16 +4611,12 @@ describe.each([{ virtual: true }, { virtual: false }])(
       suppressConsoleLogs(async () => {
         renderTemplate({
           template: html`
-            <Combobox :virtual="virtual" v-model="value" v-slot="{ activeIndex }">
+            <Combobox v-model="value" v-slot="{ activeIndex }">
               <ComboboxInput @input="filter" />
               <ComboboxButton>Trigger</ComboboxButton>
               <span data-test="idx">{{ activeIndex }}</span>
               <ComboboxOptions>
-                <ComboboxOption
-                  v-for="(option, idx) in options"
-                  :order="virtual ? idx : undefined"
-                  :value="option"
-                  :key="option"
+                <ComboboxOption v-for="(option, idx) in options" :value="option" :key="option"
                   >{{ option }}</ComboboxOption
                 >
               </ComboboxOptions>
@@ -5378,23 +4675,87 @@ describe.each([{ virtual: true }, { virtual: false }])(
 )
 
 describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', ({ virtual }) => {
+  let data = ['Option A', 'Option B', 'Option C']
+  let MyCombobox = defineComponent({
+    components: getDefaultComponents(),
+    template: html`
+      <Combobox
+        :nullable
+        v-if="virtual !== null"
+        :virtual="virtual"
+        v-model="value"
+        v-bind="comboboxProps"
+      >
+        <ComboboxLabel v-if="label">Label</ComboboxLabel>
+        <ComboboxInput v-bind="inputProps" />
+        <ComboboxButton v-bind="buttonProps">Trigger</ComboboxButton>
+        <ComboboxOptions v-if="useComboboxOptions" v-bind="optionsProps" v-slot="{ option }">
+          <ComboboxOption v-bind="optionProps" :value="option">
+            {{ option?.children ?? option }}
+          </ComboboxOption>
+        </ComboboxOptions>
+      </Combobox>
+
+      <Combobox v-if="virtual === null" v-model="value" v-bind="comboboxProps">
+        <ComboboxLabel v-if="label">Label</ComboboxLabel>
+        <ComboboxInput v-bind="inputProps" />
+        <ComboboxButton v-bind="buttonProps">Trigger</ComboboxButton>
+        <ComboboxOptions v-if="useComboboxOptions" v-bind="optionsProps">
+          <ComboboxOption
+            v-for="(option, idx) in options"
+            :key="idx"
+            :disabled="isDisabled(option)"
+            v-bind="optionProps"
+            :value="option"
+          >
+            {{ option?.children ?? option }}
+          </ComboboxOption>
+        </ComboboxOptions>
+      </Combobox>
+    `,
+
+    props: {
+      options: { default: data.slice() },
+      label: { default: true },
+      useComboboxOptions: { default: true },
+      comboboxProps: {},
+      inputProps: { default: {} },
+      buttonProps: { default: {} },
+      optionProps: { default: {} },
+      optionsProps: { default: {} },
+    },
+
+    setup(props) {
+      // @ts-expect-error
+      let { value = 'test', update, ...comboboxProps } = props.comboboxProps ?? {}
+      function isDisabled(option: any) {
+        return typeof option === 'string'
+          ? false
+          : typeof option === 'object' && option !== null && 'disabled' in option
+          ? option?.disabled ?? false
+          : false
+      }
+
+      let model = ref(value)
+      watch([model], () => update?.(model.value))
+
+      return {
+        value: model,
+        comboboxProps,
+        isDisabled,
+        virtual: computed(() => {
+          return virtual ? { options: props.options, disabled: isDisabled } : null
+        }),
+      }
+    },
+  })
+
   it(
     'should focus the ComboboxButton when we click the ComboboxLabel',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxLabel>Label</ComboboxLabel>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
       })
 
       // Ensure the button is not focused yet
@@ -5412,19 +4773,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should not focus the ComboboxInput when we right click the ComboboxLabel',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxLabel>Label</ComboboxLabel>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ value: null }" />`,
       })
 
       // Ensure the button is not focused yet
@@ -5442,18 +4792,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to open the combobox by focusing the input with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value" as="div" immediate>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref('test'), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :label="false" :comboboxProps="{ immediate: true }" />`,
       })
 
       assertComboboxButton({
@@ -5478,9 +4818,6 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       let options = getComboboxOptions()
       expect(options).toHaveLength(3)
       options.forEach((option) => assertComboboxOption(option))
-
-      // Verify that the first combobox option is active
-      assertActiveComboboxOption(options[0])
     })
   )
 
@@ -5488,23 +4825,13 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should not be possible to open the combobox by focusing the input with immediate mode disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value" as="div">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref('test'), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
+        attributes: { id: 'headlessui-combobox-button-3' },
       })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -5524,23 +4851,13 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should not be possible to open the combobox by focusing the input with immediate mode enabled when button is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value" as="div" disabled immediate>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref('test'), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ immediate: true, disabled: true }" />`,
       })
 
       assertComboboxButton({
         state: ComboboxState.InvisibleUnmounted,
-        attributes: { id: 'headlessui-combobox-button-2' },
+        attributes: { id: 'headlessui-combobox-button-3' },
       })
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -5560,18 +4877,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to close a combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value" immediate>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ immediate: true }" />`,
       })
 
       // Open combobox
@@ -5594,18 +4901,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to close a focused combobox on click with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value" immediate>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ immediate: true }" />`,
       })
       assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
 
@@ -5630,18 +4927,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to open the combobox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :label="false" />`,
       })
 
       assertComboboxButton({
@@ -5673,18 +4960,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should not be possible to open the combobox on right click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :label="false" />`,
       })
 
       assertComboboxButton({
@@ -5705,18 +4982,11 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should not be possible to open the combobox on click when the button is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value" disabled>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox
+          :comboboxProps="{ value: null, disabled: true }"
+          :label="false"
+        />`,
       })
 
       assertComboboxButton({
@@ -5741,18 +5011,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to open the combobox on click, and focus the selected option',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref('b'), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ value: 'Option B' }" :label="false" />`,
       })
 
       assertComboboxButton({
@@ -5787,18 +5047,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to close a combobox on click',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       // Open combobox
@@ -5820,20 +5070,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be a no-op when we click outside of a closed combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       // Verify that the window is closed
@@ -5853,21 +5091,11 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to click outside of the combobox which should close the combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
+        components: { MyCombobox },
         template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-          <div tabindex="-1">after</div>
+          <MyCombobox />
+          <div tabindex="-1" data-test-focusable>after</div>
         `,
-        setup: () => ({ value: ref(null), virtual }),
       })
 
       // Open combobox
@@ -5890,38 +5118,13 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to click outside of the combobox on another combobox button which should close the current combobox and open the new combobox',
     suppressConsoleLogs(async () => {
       renderTemplate({
+        components: { MyCombobox },
         template: html`
           <div>
-            <Combobox :virtual="virtual" v-model="value">
-              <ComboboxInput />
-              <ComboboxButton>Trigger</ComboboxButton>
-              <ComboboxOptions>
-                <ComboboxOption :order="virtual ? 1 : undefined" value="alice"
-                  >alice</ComboboxOption
-                >
-                <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-                <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                  >charlie</ComboboxOption
-                >
-              </ComboboxOptions>
-            </Combobox>
-
-            <Combobox :virtual="virtual" v-model="value">
-              <ComboboxInput />
-              <ComboboxButton>Trigger</ComboboxButton>
-              <ComboboxOptions>
-                <ComboboxOption :order="virtual ? 1 : undefined" value="alice"
-                  >alice</ComboboxOption
-                >
-                <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-                <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                  >charlie</ComboboxOption
-                >
-              </ComboboxOptions>
-            </Combobox>
+            <MyCombobox />
+            <MyCombobox />
           </div>
         `,
-        setup: () => ({ value: ref(null), virtual }),
       })
 
       let [button1, button2] = getComboboxButtons()
@@ -5947,20 +5150,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to click outside of the combobox which should close the combobox (even if we press the combobox button)',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       // Open combobox
@@ -5984,28 +5175,18 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       let focusFn = jest.fn()
       renderTemplate({
+        components: { MyCombobox },
         template: html`
           <div>
-            <Combobox :virtual="virtual" v-model="value">
-              <ComboboxInput @focus="focusFn" />
-              <ComboboxButton>Trigger</ComboboxButton>
-              <ComboboxOptions>
-                <ComboboxOption :order="virtual ? 1 : undefined" value="alice"
-                  >alice</ComboboxOption
-                >
-                <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-                <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                  >charlie</ComboboxOption
-                >
-              </ComboboxOptions>
-            </Combobox>
-
+            <MyCombobox :inputProps="{ onFocus }" />
             <button id="btn">
               <span>Next</span>
             </button>
           </div>
         `,
-        setup: () => ({ value: ref('test'), focusFn, virtual }),
+        setup: () => ({
+          onFocus: focusFn,
+        }),
       })
 
       // Click the combobox button
@@ -6032,20 +5213,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to hover an option and make it active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       // Open combobox
@@ -6073,15 +5242,13 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
 
       renderTemplate({
         template: html`
-          <Combobox :virtual="virtual" v-model="value">
+          <Combobox v-model="value">
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions static>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 2 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 3 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
             </ComboboxOptions>
           </Combobox>
         `,
@@ -6110,20 +5277,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should make a combobox option active when you move the mouse over it',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       // Open combobox
@@ -6140,20 +5295,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be a no-op when we move the mouse and the combobox option is already active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       // Open combobox
@@ -6176,22 +5319,15 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be a no-op when we move the mouse and the combobox option is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" disabled value="bob">
-                bob
-              </ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :options="options" />`,
+        setup: () => ({
+          options: [
+            { value: 'alice', children: 'alice', disabled: false },
+            { value: 'bob', children: 'bob', disabled: true },
+            { value: 'charlie', children: 'charlie', disabled: false },
+          ],
+        }),
       })
 
       // Open combobox
@@ -6208,22 +5344,15 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should not be possible to hover an option that is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" disabled value="bob">
-                bob
-              </ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :options="options" />`,
+        setup: () => ({
+          options: [
+            { value: 'alice', children: 'alice', disabled: false },
+            { value: 'bob', children: 'bob', disabled: true },
+            { value: 'charlie', children: 'charlie', disabled: false },
+          ],
+        }),
       })
 
       // Open combobox
@@ -6243,20 +5372,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to mouse leave an option and make it inactive',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref('bob'), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox />`,
       })
 
       // Open combobox
@@ -6291,22 +5408,15 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to mouse leave a disabled option and be a no-op',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" disabled value="bob">
-                bob
-              </ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :options="options" />`,
+        setup: () => ({
+          options: [
+            { value: 'alice', children: 'alice', disabled: false },
+            { value: 'bob', children: 'bob', disabled: true },
+            { value: 'charlie', children: 'charlie', disabled: false },
+          ],
+        }),
       })
 
       // Open combobox
@@ -6328,23 +5438,17 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup() {
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ value, update }" />`,
+        setup: () => {
           let value = ref(null)
-          watch([value], () => handleChange(value.value))
-          return { value, virtual }
+          return {
+            value,
+            update(newValue: any) {
+              value.value = newValue
+              handleChange(newValue)
+            },
+          }
         },
       })
 
@@ -6359,7 +5463,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(options[1])
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
       expect(handleChange).toHaveBeenCalledTimes(1)
-      expect(handleChange).toHaveBeenCalledWith('bob')
+      expect(handleChange).toHaveBeenCalledWith('Option B')
 
       // Verify the input is focused again
       assertActiveElement(getComboboxInput())
@@ -6376,20 +5480,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to click a combobox option, which closes the combobox with immediate mode enabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value" immediate>
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ immediate: true }" />`,
       })
 
       // Open combobox by focusing input
@@ -6411,25 +5503,22 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       let handleChange = jest.fn()
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" disabled value="bob">
-                bob
-              </ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup() {
+        components: { MyCombobox },
+        template: html`<MyCombobox :options="options" :comboboxProps="{ value, update }" />`,
+        setup: () => {
           let value = ref(null)
-          watch([value], () => handleChange(value.value))
-          return { value, virtual }
+          return {
+            value,
+            options: [
+              { value: 'alice', children: 'Alice', disabled: false },
+              { value: 'bob', children: 'Bob', disabled: true },
+              { value: 'charile', children: 'Charlie', disabled: false },
+            ],
+            update(newValue: any) {
+              value.value = newValue
+              handleChange(newValue)
+            },
+          }
         },
       })
 
@@ -6464,20 +5553,17 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible focus a combobox option, so that it becomes active',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :comboboxProps="{ value, update }" />`,
+        setup: () => {
+          let value = ref(null)
+          return {
+            value,
+            update(newValue: any) {
+              value.value = newValue
+            },
+          }
+        },
       })
 
       // Open combobox
@@ -6500,22 +5586,15 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should not be possible to focus a combobox option which is disabled',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" disabled value="bob"
-                >bob</ComboboxOption
-              >
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :options="options" />`,
+        setup: () => ({
+          options: [
+            { value: 'alice', disabled: false, children: 'alice' },
+            { value: 'bob', disabled: true, children: 'bob' },
+            { value: 'charlie', disabled: false, children: 'charlie' },
+          ],
+        }),
       })
 
       // Open combobox
@@ -6535,18 +5614,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     'should be possible to hold the last active option',
     suppressConsoleLogs(async () => {
       renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
-            <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions hold>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="a">Option A</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="b">Option B</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="c">Option C</ComboboxOption>
-            </ComboboxOptions>
-          </Combobox>
-        `,
-        setup: () => ({ value: ref(null), virtual }),
+        components: { MyCombobox },
+        template: html`<MyCombobox :optionsProps="{ hold: true }" :label="false" />`,
       })
 
       assertComboboxButton({
@@ -6591,20 +5660,28 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox :virtual="virtual" v-model="value">
+          <Combobox v-if="!virtual" v-model="value">
             <ComboboxInput />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
+              <ComboboxOption value="alice">alice</ComboboxOption>
+              <ComboboxOption value="bob">bob</ComboboxOption>
+              <ComboboxOption value="charlie">charlie</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+          <Combobox v-if="virtual" :virtual="virtual" v-model="value">
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions v-slot="{ option }">
+              <ComboboxOption :value="option">{{ option }}</ComboboxOption>
             </ComboboxOptions>
           </Combobox>
           <button @click="value = null">reset</button>
         `,
-        setup: () => ({ value: ref('bob'), virtual }),
+        setup: () => ({
+          value: ref('bob'),
+          virtual: computed(() => (virtual ? { options: ['alice', 'bob', 'charlie'] } : null)),
+        }),
       })
 
       // Open combobox
@@ -6630,59 +5707,18 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
     suppressConsoleLogs(async () => {
       renderTemplate({
         template: html`
-          <Combobox :virtual="virtual" v-model="value">
-            <ComboboxInput />
+          <Combobox v-if="virtual" :virtual="virtual" v-model="value">
+            <ComboboxInput :displayValue="person => person?.name" />
             <ComboboxButton>Trigger</ComboboxButton>
-            <ComboboxOptions>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="alice">alice</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="bob">bob</ComboboxOption>
-              <ComboboxOption :order="virtual ? 1 : undefined" value="charlie"
-                >charlie</ComboboxOption
-              >
+            <ComboboxOptions v-slot="{ option: person }">
+              <ComboboxOption :value="person">{{ person.name }}</ComboboxOption>
             </ComboboxOptions>
           </Combobox>
-          <button @click="value = undefined">reset</button>
-        `,
-        setup: () => ({ value: ref('bob'), virtual }),
-      })
-
-      // Open combobox
-      await click(getComboboxButton())
-
-      // Verify the input has the selected value
-      expect(getComboboxInput()?.value).toBe('bob')
-
-      // Override the input by typing something
-      await type(word('alice'), getComboboxInput())
-      expect(getComboboxInput()?.value).toBe('alice')
-
-      // Select the option
-      await press(Keys.ArrowUp)
-      await press(Keys.Enter)
-      expect(getComboboxInput()?.value).toBe('alice')
-
-      // Reset from outside
-      await click(getByText('reset'))
-
-      // Verify the input is reset correctly
-      expect(getComboboxInput()?.value).toBe('')
-    })
-  )
-
-  it(
-    'should sync the input field correctly and reset it when resetting the value from outside (when using displayValue)',
-    suppressConsoleLogs(async () => {
-      renderTemplate({
-        template: html`
-          <Combobox :virtual="virtual" v-model="value">
+          <Combobox v-if="!virtual" v-model="value">
             <ComboboxInput :displayValue="person => person?.name" />
             <ComboboxButton>Trigger</ComboboxButton>
             <ComboboxOptions>
-              <ComboboxOption
-                v-for="(person, idx) in people"
-                :order="virtual ? idx : undefined"
-                :key="person.id"
-                :value="person"
+              <ComboboxOption v-for="(person, idx) in people" :key="person.id" :value="person"
                 >{{ person.name }}</ComboboxOption
               >
             </ComboboxOptions>
@@ -6699,7 +5735,53 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
           return {
             people,
             value: ref(people[1]),
-            virtual,
+            virtual: computed(() => (virtual ? { options: people } : null)),
+          }
+        },
+      })
+      // Open combobox
+      await click(getComboboxButton())
+
+      // Verify the input has the selected value
+      expect(getComboboxInput()?.value).toBe('Bob')
+
+      // Override the input by typing something
+      await type(word('test'), getComboboxInput())
+      expect(getComboboxInput()?.value).toBe('test')
+
+      // Reset from outside
+      await click(getByText('reset'))
+
+      // Verify the input is reset correctly
+      expect(getComboboxInput()?.value).toBe('')
+    })
+  )
+
+  it(
+    'should sync the input field correctly and reset it when resetting the value from outside (when using displayValue)',
+    suppressConsoleLogs(async () => {
+      let people = [
+        { id: 1, name: 'Alice' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Charlie' },
+      ]
+      renderTemplate({
+        components: { MyCombobox },
+        template: html`
+          <MyCombobox
+            :options="people"
+            :comboboxProps="{ value, update }"
+            :inputProps="{displayValue: (person) => person?.name}"
+          />
+          <button @click="value = null">reset</button>
+        `,
+        setup: () => {
+          let value = ref(people[1])
+          return {
+            value,
+            update(newValue: any) {
+              value.value = newValue
+            },
           }
         },
       })
