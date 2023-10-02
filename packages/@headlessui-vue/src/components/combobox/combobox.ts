@@ -1,6 +1,7 @@
 import type { Virtualizer } from '@tanstack/virtual-core'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import {
+  cloneVNode,
   computed,
   defineComponent,
   Fragment,
@@ -12,18 +13,14 @@ import {
   provide,
   reactive,
   ref,
-  shallowRef,
   toRaw,
   watch,
   watchEffect,
-  watchPostEffect,
   type ComputedRef,
-  type CSSProperties,
   type InjectionKey,
   type PropType,
   type Ref,
   type UnwrapNestedRefs,
-  type UnwrapRef,
 } from 'vue'
 import { useControllable } from '../../hooks/use-controllable'
 import { useId } from '../../hooks/use-id'
@@ -70,7 +67,6 @@ type ComboboxOptionData = {
   value: unknown
   domRef: Ref<HTMLElement | null>
   order: Ref<number | null>
-  onVirtualRangeUpdate: (virtualizer: Virtualizer<any, any>) => void
 }
 type StateDefinition = {
   // State
@@ -81,7 +77,14 @@ type StateDefinition = {
   mode: ComputedRef<ValueMode>
   nullable: ComputedRef<boolean>
   immediate: ComputedRef<boolean>
-  virtual: ComputedRef<boolean>
+
+  virtual: ComputedRef<{
+    options: unknown[]
+    disabled: (value: unknown) => boolean
+  } | null>
+  calculateIndex(value: unknown): number
+  isSelected(value: unknown): boolean
+  isActive(value: unknown): boolean
 
   compare: (a: unknown, z: unknown) => boolean
 
@@ -94,7 +97,6 @@ type StateDefinition = {
 
   disabled: Ref<boolean>
   options: Ref<{ id: string; dataRef: ComputedRef<ComboboxOptionData> }[]>
-  indexes: Ref<Record<string, number>>
   activeOptionIndex: Ref<number | null>
   activationTrigger: Ref<ActivationTrigger>
 
@@ -102,12 +104,12 @@ type StateDefinition = {
   closeCombobox(): void
   openCombobox(): void
   setActivationTrigger(trigger: ActivationTrigger): void
-  goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
+  goToOption(focus: Focus, idx?: number, trigger?: ActivationTrigger): void
   change(value: unknown): void
   selectOption(id: string): void
   selectActiveOption(): void
   registerOption(id: string, dataRef: ComputedRef<ComboboxOptionData>): void
-  unregisterOption(id: string): void
+  unregisterOption(id: string, active: boolean): void
   select(value: unknown): void
 }
 
@@ -134,14 +136,6 @@ let VirtualProvider = defineComponent({
   setup(_, { slots }) {
     let api = useComboboxContext('VirtualProvider')
 
-    let measuredHeight = computed(() => {
-      let firstAvailableOption = api.options.value.find(
-        (option) => dom(option.dataRef.value.domRef) !== null
-      )
-      let height = dom(firstAvailableOption?.dataRef.value.domRef)?.getBoundingClientRect().height
-      return height ?? 40
-    })
-
     let padding = computed(() => {
       let el = dom(api.optionsRef)
       if (!el) return { start: 0, end: 0 }
@@ -159,45 +153,86 @@ let VirtualProvider = defineComponent({
         return {
           scrollPaddingStart: padding.value.start,
           scrollPaddingEnd: padding.value.end,
-          count: api.options.value.length,
+          count: api.virtual.value!.options.length,
           estimateSize() {
-            return measuredHeight.value
+            return 40
           },
           getScrollElement() {
             return dom(api.optionsRef)
           },
           overscan: 12,
-          onChange(event) {
-            let list = event.getVirtualItems()
-            if (list.length === 0) return
-
-            let min = list[0].index
-            let max = list[list.length - 1].index + 1
-
-            for (let option of api.options.value.slice(min, max)) {
-              let dataRef = option.dataRef as unknown as UnwrapRef<typeof option.dataRef>
-              dataRef.onVirtualRangeUpdate(event)
-            }
-          },
         }
       })
     )
 
+    let options = computed(() => api.virtual.value?.options)
+    let baseKey = ref(0)
+    watch([options], () => {
+      baseKey.value += 1
+    })
+
     provide(VirtualContext, api.virtual.value ? virtualizer : null)
 
-    return () => [
-      h(
-        'div',
-        {
-          style: {
-            position: 'relative',
-            width: '100%',
-            height: `${virtualizer.value.getTotalSize()}px`,
+    return () => {
+      return [
+        h(
+          'div',
+          {
+            style: {
+              position: 'relative',
+              width: '100%',
+              height: `${virtualizer.value.getTotalSize()}px`,
+            },
+            ref: (el) => {
+              if (!el) {
+                return
+              }
+
+              // Scroll to the active index
+              {
+                // Ignore this when we are in a test environment
+                if (typeof process !== 'undefined' && process.env.JEST_WORKER_ID !== undefined) {
+                  return
+                }
+
+                // Do not scroll when the mouse/pointer is being used
+                if (api.activationTrigger.value === ActivationTrigger.Pointer) {
+                  return
+                }
+
+                if (
+                  api.activeOptionIndex.value !== null &&
+                  api.virtual.value!.options.length > api.activeOptionIndex.value
+                ) {
+                  virtualizer.value.scrollToIndex(api.activeOptionIndex.value)
+                }
+              }
+            },
           },
-        },
-        slots.default?.()
-      ),
-    ]
+          virtualizer.value.getVirtualItems().map((item) => {
+            return cloneVNode(
+              slots.default!({
+                option: api.virtual.value!.options[item.index],
+                open: api.comboboxState.value === ComboboxStates.Open,
+              })![0],
+              {
+                key: `${baseKey.value}-${item.index}`,
+                'data-index': item.index,
+                'aria-setsize': api.virtual.value!.options.length,
+                'aria-posinset': item.index + 1,
+                style: {
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  transform: `translateY(${item.start}px)`,
+                  overflowAnchor: 'none',
+                },
+              }
+            )
+          })
+        ),
+      ]
+    }
   },
 })
 
@@ -209,7 +244,7 @@ export let Combobox = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: [Boolean], default: false },
-    by: { type: [String, Function], default: () => defaultComparator },
+    by: { type: [String, Function], nullable: true, default: null },
     modelValue: {
       type: [Object, String, Number, Boolean] as PropType<
         object | string | number | boolean | null
@@ -227,7 +262,13 @@ export let Combobox = defineComponent({
     nullable: { type: Boolean, default: false },
     multiple: { type: [Boolean], default: false },
     immediate: { type: [Boolean], default: false },
-    virtual: { type: [Boolean], default: false },
+    virtual: {
+      type: Object as PropType<null | {
+        options: unknown[]
+        disabled?: (value: unknown) => boolean
+      }>,
+      default: null,
+    },
   },
   inheritAttrs: false,
   setup(props, { slots, attrs, emit }) {
@@ -243,18 +284,11 @@ export let Combobox = defineComponent({
       hold: false,
     }) as StateDefinition['optionsPropsRef']
     let options = ref<StateDefinition['options']['value']>([])
-    let indexes = shallowRef<Record<string, number>>({})
     let activeOptionIndex = ref<StateDefinition['activeOptionIndex']['value']>(null)
     let activationTrigger = ref<StateDefinition['activationTrigger']['value']>(
       ActivationTrigger.Other
     )
     let defaultToFirstOption = ref(false)
-
-    // This is not a "computed" ref because we eventually
-    // want to calculate this only when the length or order can actually change
-    function recalculateIndexes() {
-      indexes.value = Object.fromEntries(options.value.map((v, idx) => [v.id, idx]))
-    }
 
     function adjustOrderedState(
       adjustment: (
@@ -310,7 +344,44 @@ export let Combobox = defineComponent({
     let goToOptionRaf: ReturnType<typeof requestAnimationFrame> | null = null
     let orderOptionsRaf: ReturnType<typeof requestAnimationFrame> | null = null
 
-    let api = {
+    function onChange(value: unknown) {
+      return match(mode.value, {
+        [ValueMode.Single]() {
+          return theirOnChange?.(value)
+        },
+        [ValueMode.Multi]: () => {
+          let copy = toRaw(api.value.value as unknown[]).slice()
+          let raw = toRaw(value)
+
+          let idx = copy.findIndex((value) => api.compare(raw, toRaw(value)))
+          if (idx === -1) {
+            copy.push(raw)
+          } else {
+            copy.splice(idx, 1)
+          }
+
+          return theirOnChange?.(copy)
+        },
+      })
+    }
+
+    let virtualOptions = computed(() => props.virtual?.options)
+    watch([virtualOptions], ([newOptions], [oldOptions]) => {
+      if (!api.virtual.value) return
+      if (!newOptions) return
+      if (!oldOptions) return
+
+      if (activeOptionIndex.value !== null) {
+        let idx = newOptions.indexOf(oldOptions[activeOptionIndex.value])
+        if (idx !== -1) {
+          activeOptionIndex.value = idx
+        } else {
+          activeOptionIndex.value = null
+        }
+      }
+    })
+
+    let api: StateDefinition = {
       comboboxState,
       value,
       mode,
@@ -319,19 +390,42 @@ export let Combobox = defineComponent({
           let property = props.by as unknown as any
           return a?.[property] === z?.[property]
         }
+
+        if (props.by === null) {
+          return defaultComparator(a, z)
+        }
+
         return props.by(a, z)
+      },
+      calculateIndex(value: any) {
+        if (api.virtual.value) {
+          if (props.by === null) {
+            return api.virtual.value!.options.indexOf(value)
+          } else {
+            return api.virtual.value!.options.findIndex((other) => api.compare(other, value))
+          }
+        } else {
+          return options.value.findIndex((other) => api.compare(other.dataRef.value, value))
+        }
       },
       defaultValue: computed(() => props.defaultValue),
       nullable,
       immediate: computed(() => props.immediate),
-      virtual: computed(() => props.virtual),
+      virtual: computed(() => {
+        return props.virtual
+          ? {
+              options: props.virtual.options,
+              disabled: props.virtual.disabled ?? (() => false),
+            }
+          : null
+      }),
       inputRef,
       labelRef,
       buttonRef,
       optionsRef,
       disabled: computed(() => props.disabled),
+      // @ts-expect-error dateRef types are incorrect due to unwrapped or wrapped refs
       options,
-      indexes,
       change(value: unknown) {
         theirOnChange(value as typeof props.modelValue)
       },
@@ -339,8 +433,18 @@ export let Combobox = defineComponent({
         if (
           defaultToFirstOption.value &&
           activeOptionIndex.value === null &&
-          options.value.length > 0
+          (api.virtual.value ? api.virtual.value.options.length > 0 : options.value.length > 0)
         ) {
+          if (api.virtual.value) {
+            let localActiveOptionIndex = api.virtual.value.options.findIndex(
+              (option) => !api.virtual.value?.disabled(option)
+            )
+
+            if (localActiveOptionIndex !== -1) {
+              return localActiveOptionIndex
+            }
+          }
+
           let localActiveOptionIndex = options.value.findIndex((option) => !option.dataRef.disabled)
           if (localActiveOptionIndex !== -1) {
             return localActiveOptionIndex
@@ -365,22 +469,12 @@ export let Combobox = defineComponent({
         if (props.disabled) return
         if (comboboxState.value === ComboboxStates.Open) return
 
-        // Check if we have a selected value that we can make active.
-        let optionIdx = options.value.findIndex((option) => {
-          let optionValue = toRaw(option.dataRef.value)
-          let selected = match(mode.value, {
-            [ValueMode.Single]: () => api.compare(toRaw(api.value.value), toRaw(optionValue)),
-            [ValueMode.Multi]: () =>
-              (toRaw(api.value.value) as unknown[]).some((value) =>
-                api.compare(toRaw(value), toRaw(optionValue))
-              ),
-          })
-
-          return selected
-        })
-
-        if (optionIdx !== -1) {
-          activeOptionIndex.value = optionIdx
+        // Check if we have a selected value that we can make active
+        if (api.value.value) {
+          let idx = api.calculateIndex(api.value.value)
+          if (idx !== -1) {
+            activeOptionIndex.value = idx
+          }
         }
 
         comboboxState.value = ComboboxStates.Open
@@ -388,7 +482,7 @@ export let Combobox = defineComponent({
       setActivationTrigger(trigger: ActivationTrigger) {
         activationTrigger.value = trigger
       },
-      goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger) {
+      goToOption(focus: Focus, idx?: number, trigger?: ActivationTrigger) {
         defaultToFirstOption.value = false
 
         if (goToOptionRaf !== null) {
@@ -402,6 +496,33 @@ export let Combobox = defineComponent({
             !optionsPropsRef.value.static &&
             comboboxState.value === ComboboxStates.Closed
           ) {
+            return
+          }
+
+          if (api.virtual.value) {
+            activeOptionIndex.value =
+              focus === Focus.Specific
+                ? idx!
+                : calculateActiveIndex(
+                    { focus: focus as Exclude<Focus, Focus.Specific> },
+                    {
+                      resolveItems: () => api.virtual.value!.options,
+                      resolveActiveIndex: () => {
+                        return (
+                          api.activeOptionIndex.value ??
+                          api.virtual.value!.options.findIndex(
+                            (option) => !api.virtual.value?.disabled(option)
+                          ) ??
+                          null
+                        )
+                      },
+                      resolveDisabled: (item) => api.virtual.value!.disabled(item),
+                      resolveId() {
+                        throw new Error('Function not implemented.')
+                      },
+                    }
+                  )
+            activationTrigger.value = trigger ?? ActivationTrigger.Other
             return
           }
 
@@ -420,22 +541,22 @@ export let Combobox = defineComponent({
             }
           }
 
-          let nextActiveOptionIndex = calculateActiveIndex(
+          let nextActiveOptionIndex =
             focus === Focus.Specific
-              ? { focus: Focus.Specific, id: id! }
-              : { focus: focus as Exclude<Focus, Focus.Specific> },
-            {
-              resolveItems: () => adjustedState.options,
-              resolveActiveIndex: () => adjustedState.activeOptionIndex,
-              resolveId: (option) => option.id,
-              resolveDisabled: (option) => option.dataRef.disabled,
-            }
-          )
+              ? idx!
+              : calculateActiveIndex(
+                  { focus: focus as Exclude<Focus, Focus.Specific> },
+                  {
+                    resolveItems: () => adjustedState.options,
+                    resolveActiveIndex: () => adjustedState.activeOptionIndex,
+                    resolveId: (option) => option.id,
+                    resolveDisabled: (option) => option.dataRef.disabled,
+                  }
+                )
 
           activeOptionIndex.value = nextActiveOptionIndex
           activationTrigger.value = trigger ?? ActivationTrigger.Other
           options.value = adjustedState.options
-          recalculateIndexes()
         })
       },
       selectOption(id: string) {
@@ -443,77 +564,44 @@ export let Combobox = defineComponent({
         if (!option) return
 
         let { dataRef } = option
-        theirOnChange(
-          match(mode.value, {
-            [ValueMode.Single]: () => dataRef.value,
-            [ValueMode.Multi]: () => {
-              let copy = toRaw(api.value.value as unknown[]).slice()
-              let raw = toRaw(dataRef.value)
 
-              let idx = copy.findIndex((value) => api.compare(raw, toRaw(value)))
-              if (idx === -1) {
-                copy.push(raw)
-              } else {
-                copy.splice(idx, 1)
-              }
-
-              return copy
-            },
-          })
-        )
+        onChange(dataRef.value)
       },
       selectActiveOption() {
         if (api.activeOptionIndex.value === null) return
 
-        let { dataRef, id } = options.value[api.activeOptionIndex.value]
-        theirOnChange(
-          match(mode.value, {
-            [ValueMode.Single]: () => dataRef.value,
-            [ValueMode.Multi]: () => {
-              let copy = toRaw(api.value.value as unknown[]).slice()
-              let raw = toRaw(dataRef.value)
-
-              let idx = copy.findIndex((value) => api.compare(raw, toRaw(value)))
-              if (idx === -1) {
-                copy.push(raw)
-              } else {
-                copy.splice(idx, 1)
-              }
-
-              return copy
-            },
-          })
-        )
+        if (api.virtual.value) {
+          onChange(api.virtual.value.options[api.activeOptionIndex.value])
+        } else {
+          let { dataRef } = options.value[api.activeOptionIndex.value]
+          onChange(dataRef.value)
+        }
 
         // It could happen that the `activeOptionIndex` stored in state is actually null,
         // but we are getting the fallback active option back instead.
-        api.goToOption(Focus.Specific, id)
+        api.goToOption(Focus.Specific, api.activeOptionIndex.value)
       },
-      registerOption(id: string, dataRef: ComboboxOptionData) {
-        if (orderOptionsRaf) cancelAnimationFrame(orderOptionsRaf)
-
+      registerOption(id: string, dataRef: ComputedRef<ComboboxOptionData>) {
         let option = reactive({ id, dataRef }) as unknown as {
           id: typeof id
-          dataRef: typeof dataRef
+          dataRef: typeof dataRef['value']
         }
+
+        if (api.virtual.value) {
+          options.value.push(option)
+          return
+        }
+
+        if (orderOptionsRaf) cancelAnimationFrame(orderOptionsRaf)
 
         let adjustedState = adjustOrderedState((options) => {
           options.push(option)
           return options
         })
 
-        // Check if we have a selected value that we can make active.
+        // Check if we need to make the newly registered option active.
         if (activeOptionIndex.value === null) {
-          let optionValue = (dataRef.value as any).value
-          let selected = match(mode.value, {
-            [ValueMode.Single]: () => api.compare(toRaw(api.value.value), toRaw(optionValue)),
-            [ValueMode.Multi]: () =>
-              (toRaw(api.value.value) as unknown[]).some((value) =>
-                api.compare(toRaw(value), toRaw(optionValue))
-              ),
-          })
-
-          if (selected) {
+          if (api.isSelected(dataRef.value.value)) {
             adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
           }
         }
@@ -521,7 +609,6 @@ export let Combobox = defineComponent({
         options.value = adjustedState.options
         activeOptionIndex.value = adjustedState.activeOptionIndex
         activationTrigger.value = ActivationTrigger.Other
-        recalculateIndexes()
 
         // If some of the DOM elements aren't ready yet, then we can retry in the next tick.
         if (adjustedState.options.some((option) => !dom(option.dataRef.domRef))) {
@@ -530,11 +617,14 @@ export let Combobox = defineComponent({
             options.value = adjustedState.options
 
             activeOptionIndex.value = adjustedState.activeOptionIndex
-            recalculateIndexes()
           })
         }
       },
-      unregisterOption(id: string) {
+      unregisterOption(id: string, active: boolean) {
+        if (goToOptionRaf !== null) {
+          cancelAnimationFrame(goToOptionRaf)
+        }
+
         // When we are unregistering the currently active option, then we also have to make sure to
         // reset the `defaultToFirstOption` flag, so that visually something is selected and the
         // next time you press a key on your keyboard it will go to the proper next or previous
@@ -544,15 +634,17 @@ export let Combobox = defineComponent({
         // to the very first option seems like a fine default. We _could_ be smarter about this by
         // going to the previous / next item in list if we know the direction of the keyboard
         // navigation, but that might be too complex/confusing from an end users perspective.
-        if (
-          api.activeOptionIndex.value !== null &&
-          api.options.value[api.activeOptionIndex.value]?.id === id
-        ) {
+        if (active) {
           defaultToFirstOption.value = true
         }
 
+        if (api.virtual.value) {
+          options.value = options.value.filter((option) => option.id !== id)
+          return
+        }
+
         let adjustedState = adjustOrderedState((options) => {
-          let idx = options.findIndex((a) => a.id === id)
+          let idx = options.findIndex((option) => option.id === id)
           if (idx !== -1) options.splice(idx, 1)
           return options
         })
@@ -560,7 +652,18 @@ export let Combobox = defineComponent({
         options.value = adjustedState.options
         activeOptionIndex.value = adjustedState.activeOptionIndex
         activationTrigger.value = ActivationTrigger.Other
-        recalculateIndexes()
+      },
+      isSelected(other) {
+        return match(mode.value, {
+          [ValueMode.Single]: () => api.compare(toRaw(api.value.value), toRaw(other)),
+          [ValueMode.Multi]: () =>
+            (toRaw(api.value.value) as unknown[]).some((option) =>
+              api.compare(toRaw(option), toRaw(other))
+            ),
+        })
+      },
+      isActive(other) {
+        return activeOptionIndex.value === api.calculateIndex(other)
       },
     }
 
@@ -571,8 +674,8 @@ export let Combobox = defineComponent({
       computed(() => comboboxState.value === ComboboxStates.Open)
     )
 
-    // @ts-expect-error Types of property 'dataRef' are incompatible.
     provide(ComboboxContext, api)
+
     useOpenClosedProvider(
       computed(() =>
         match(comboboxState.value, {
@@ -580,12 +683,6 @@ export let Combobox = defineComponent({
           [ComboboxStates.Closed]: State.Closed,
         })
       )
-    )
-
-    let activeOption = computed(() =>
-      api.activeOptionIndex.value === null
-        ? null
-        : (options.value[api.activeOptionIndex.value].dataRef.value as any)
     )
 
     let form = computed(() => dom(inputRef)?.closest('form'))
@@ -616,7 +713,12 @@ export let Combobox = defineComponent({
         open: comboboxState.value === ComboboxStates.Open,
         disabled,
         activeIndex: api.activeOptionIndex.value,
-        activeOption: activeOption.value,
+        activeOption:
+          api.activeOptionIndex.value === null
+            ? null
+            : api.virtual.value
+            ? api.virtual.value.options[api.activeOptionIndex.value ?? 0]
+            : api.options.value[api.activeOptionIndex.value]?.dataRef.value.value ?? null,
         value: value.value,
       }
 
@@ -1182,6 +1284,16 @@ export let ComboboxInput = defineComponent({
         'aria-activedescendant':
           api.activeOptionIndex.value === null
             ? undefined
+            : api.virtual.value
+            ? api.options.value.find((option) => {
+                return (
+                  !api.virtual.value!.disabled(option.dataRef.value) &&
+                  api.compare(
+                    option.dataRef.value,
+                    api.virtual.value!.options[api.activeOptionIndex.value!]
+                  )
+                )
+              })?.id
             : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         'aria-autocomplete': 'list',
@@ -1309,29 +1421,15 @@ export let ComboboxOption = defineComponent({
 
     expose({ el: internalOptionRef, $el: internalOptionRef })
 
-    watchEffect(() => {
-      if (props.order === null && api.virtual.value) {
-        throw new Error(
-          `The \`order\` prop on <ComboboxOption /> is required when using <Combobox virtual />.`
-        )
-      }
-    })
-
     let active = computed(() => {
-      return api.activeOptionIndex.value !== null
-        ? api.options.value[api.activeOptionIndex.value].id === id
-        : false
+      return api.virtual.value
+        ? api.activeOptionIndex.value === api.calculateIndex(props.value)
+        : api.activeOptionIndex.value === null
+        ? false
+        : api.options.value[api.activeOptionIndex.value]?.id === id
     })
 
-    let selected = computed(() =>
-      match(api.mode.value, {
-        [ValueMode.Single]: () => api.compare(toRaw(api.value.value), toRaw(props.value)),
-        [ValueMode.Multi]: () =>
-          (toRaw(api.value.value) as unknown[]).some((value) =>
-            api.compare(toRaw(value), toRaw(props.value))
-          ),
-      })
-    )
+    let selected = computed(() => api.isSelected(props.value))
 
     let virtualizer = inject(VirtualContext, null)
     let dataRef = computed<ComboboxOptionData>(() => ({
@@ -1339,11 +1437,10 @@ export let ComboboxOption = defineComponent({
       value: props.value,
       domRef: internalOptionRef,
       order: computed(() => props.order),
-      onVirtualRangeUpdate: () => {},
     }))
 
     onMounted(() => api.registerOption(id, dataRef))
-    onUnmounted(() => api.unregisterOption(id))
+    onUnmounted(() => api.unregisterOption(id, active.value))
 
     watchEffect(() => {
       let el = dom(internalOptionRef)
@@ -1361,7 +1458,7 @@ export let ComboboxOption = defineComponent({
     })
 
     function handleClick(event: MouseEvent) {
-      if (props.disabled) return event.preventDefault()
+      if (props.disabled || api.virtual.value?.disabled(props.value)) return event.preventDefault()
       api.selectOption(id)
 
       // We want to make sure that we don't accidentally trigger the virtual keyboard.
@@ -1386,8 +1483,11 @@ export let ComboboxOption = defineComponent({
     }
 
     function handleFocus() {
-      if (props.disabled) return api.goToOption(Focus.Nothing)
-      api.goToOption(Focus.Specific, id)
+      if (props.disabled || api.virtual.value?.disabled(props.value)) {
+        return api.goToOption(Focus.Nothing)
+      }
+      let idx = api.calculateIndex(props.value)
+      api.goToOption(Focus.Specific, idx)
     }
 
     let pointer = useTrackedPointer()
@@ -1398,66 +1498,21 @@ export let ComboboxOption = defineComponent({
 
     function handleMove(evt: PointerEvent) {
       if (!pointer.wasMoved(evt)) return
-      if (props.disabled) return
+      if (props.disabled || api.virtual.value?.disabled(props.value)) return
       if (active.value) return
-      api.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
+      let idx = api.calculateIndex(props.value)
+      api.goToOption(Focus.Specific, idx, ActivationTrigger.Pointer)
     }
 
     function handleLeave(evt: PointerEvent) {
       if (!pointer.wasMoved(evt)) return
-      if (props.disabled) return
+      if (props.disabled || api.virtual.value?.disabled(props.value)) return
       if (!active.value) return
       if (api.optionsPropsRef.value.hold) return
       api.goToOption(Focus.Nothing)
     }
 
-    let virtualIdx = computed(() => {
-      if (!api.virtual.value) return -1
-      return api.indexes.value[id] ?? 0
-    })
-
-    let virtualItem = computed(() => {
-      return virtualIdx.value === -1
-        ? undefined
-        : virtualizer?.value.getVirtualItems().find((item) => item.index === virtualIdx.value)
-    })
-
-    let d = disposables()
-    onUnmounted(() => d.dispose())
-
-    let shouldScroll = computed(() => {
-      return (
-        virtualizer?.value &&
-        api.activationTrigger.value !== ActivationTrigger.Pointer &&
-        api.virtual.value &&
-        active.value
-      )
-    })
-
-    watchPostEffect((onCleanup) => {
-      if (!shouldScroll.value) return
-
-      // Try scrolling to the item
-      virtualizer!.value.scrollToIndex(virtualIdx.value)
-
-      // Ensure we scrolled to the correct location
-      ;(function ensureScrolledCorrectly() {
-        if (virtualizer?.value.isScrolling) {
-          d.requestAnimationFrame(ensureScrolledCorrectly)
-          return
-        }
-
-        virtualizer!.value.scrollToIndex(virtualIdx.value)
-      })()
-
-      onCleanup(d.dispose)
-    })
-
     return () => {
-      if (api.virtual.value && !virtualItem.value) {
-        return null
-      }
-
       let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
       let ourProps = {
@@ -1470,9 +1525,6 @@ export let ComboboxOption = defineComponent({
         // multi-select,but Voice-Over disagrees. So we use aria-selected instead for
         // both single and multi-select.
         'aria-selected': selected.value,
-        'data-index': virtualizer && virtualIdx.value !== -1 ? virtualIdx.value : undefined,
-        'aria-setsize': virtualizer ? api.options.value.length : undefined,
-        'aria-posinset': virtualizer && virtualIdx.value !== -1 ? virtualIdx.value + 1 : undefined,
         disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
         onFocus: handleFocus,
@@ -1484,22 +1536,7 @@ export let ComboboxOption = defineComponent({
         onMouseleave: handleLeave,
       }
 
-      if (virtualItem.value) {
-        let localOurProps = ourProps as typeof ourProps & { style: CSSProperties }
-
-        localOurProps.style = {
-          ...localOurProps.style,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          transform: `translateY(${virtualItem.value!.start}px)`,
-        }
-
-        // Technically unnecessary
-        ourProps = localOurProps
-      }
-
-      let theirProps = omit(props, ['order'])
+      let theirProps = omit(props, ['order', 'value'])
 
       return render({
         ourProps,
