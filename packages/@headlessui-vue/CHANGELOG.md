@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure blurring the `ComboboxInput` component closes the `Combobox` ([#2712](https://github.com/tailwindlabs/headlessui/pull/2712))
 - Allow `<button>` to be in nested components in `<PopoverButton>` ([#2715](https://github.com/tailwindlabs/headlessui/pull/2715))
 - Don't overwrite user-defined template refs when rendering ([#2720](https://github.com/tailwindlabs/headlessui/pull/2720))
+- Fix missing `data-headlessui-state` attribute when `as="template"` ([#2787](https://github.com/tailwindlabs/headlessui/pull/2787))
 
 ### Added
 
