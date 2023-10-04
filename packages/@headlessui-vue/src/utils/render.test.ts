@@ -148,4 +148,22 @@ describe('State Data Attributes', () => {
       'active selected'
     )
   })
+
+  it('as=template', () => {
+    renderTemplate({
+      template: html`
+        <Dummy as="template" class="abc" :slot="{active: true, selected: true}">
+          <div id="result">test</div>
+        </Dummy>
+      `,
+    })
+
+    expect(document.getElementById('result')).toHaveClass('abc')
+
+    // NOTE: Removing class="abc" causes this assertion to fail
+    expect(document.getElementById('result')).toHaveAttribute(
+      'data-headlessui-state',
+      'active selected'
+    )
+  })
 })

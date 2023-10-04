@@ -139,7 +139,7 @@ function _render({
         )
       }
 
-      let mergedProps = mergeProps(firstChild.props ?? {}, incomingProps)
+      let mergedProps = mergeProps(firstChild.props ?? {}, incomingProps, dataAttributes)
       let cloned = cloneVNode(firstChild, mergedProps, true)
       // Explicitly override props starting with `on`. This is for event handlers, but there are
       // scenario's where we set them to `undefined` explicitly (when `aria-disabled="true"` is
@@ -155,6 +155,7 @@ function _render({
     }
 
     if (Array.isArray(children) && children.length === 1) {
+      // TODO: Do we need to cloneVNode + dataAttributes here?
       return children[0]
     }
 
