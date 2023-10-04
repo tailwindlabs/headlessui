@@ -6,9 +6,21 @@ import { render } from './render'
 let Dummy = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
+    slot: { type: Object, default: () => ({}) },
   },
   setup(props, { attrs, slots }) {
-    return () => render({ theirProps: props, ourProps: {}, slots, attrs, slot: {}, name: 'Dummy' })
+    return () => {
+      let { slot, ...rest } = props
+
+      return render({
+        theirProps: rest,
+        ourProps: {},
+        slots,
+        attrs,
+        slot,
+        name: 'Dummy',
+      })
+    }
   },
 })
 
@@ -118,5 +130,40 @@ describe('Validation', () => {
 
     // TODO: Is this the expected behavior? Should it actually be `345`?
     expect(document.getElementById('result')).toHaveAttribute('data-test', '123')
+  })
+})
+
+describe('State Data Attributes', () => {
+  it('as=element', () => {
+    renderTemplate({
+      template: html`
+        <Dummy id="result" as="div" :slot="{active: true, selected: true}">
+          <div>test</div>
+        </Dummy>
+      `,
+    })
+
+    expect(document.getElementById('result')).toHaveAttribute(
+      'data-headlessui-state',
+      'active selected'
+    )
+  })
+
+  it('as=template', () => {
+    renderTemplate({
+      template: html`
+        <Dummy as="template" class="abc" :slot="{active: true, selected: true}">
+          <div id="result">test</div>
+        </Dummy>
+      `,
+    })
+
+    expect(document.getElementById('result')).toHaveClass('abc')
+
+    // NOTE: Removing class="abc" causes this assertion to fail
+    expect(document.getElementById('result')).toHaveAttribute(
+      'data-headlessui-state',
+      'active selected'
+    )
   })
 })
