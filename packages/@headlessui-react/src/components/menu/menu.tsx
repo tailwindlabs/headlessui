@@ -80,7 +80,6 @@ interface StateDefinition {
 enum ActionTypes {
   OpenMenu,
   CloseMenu,
-
   GoToItem,
   Search,
   ClearSearch,
