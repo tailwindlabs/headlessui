@@ -663,7 +663,7 @@ export let ListboxOptions = defineComponent({
             ? undefined
             : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
-        'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
+        'aria-labelledby': dom(api.buttonRef)?.id,
         'aria-orientation': api.orientation.value,
         id,
         onKeydown: handleKeyDown,

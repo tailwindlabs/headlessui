@@ -8,7 +8,6 @@ import {
   assertListboxButtonLinkedWithListbox,
   assertListboxButtonLinkedWithListboxLabel,
   assertListboxLabel,
-  assertListboxLabelLinkedWithListbox,
   assertListboxOption,
   assertNoActiveListboxOption,
   assertNoSelectedListboxOption,
@@ -560,7 +559,6 @@ describe('Rendering', () => {
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
-        assertListboxLabelLinkedWithListbox()
         assertListboxButtonLinkedWithListboxLabel()
       })
     )

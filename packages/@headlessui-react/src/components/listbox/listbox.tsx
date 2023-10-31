@@ -857,11 +857,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     }
   })
 
-  let labelledby = useComputed(
-    () => data.labelRef.current?.id ?? data.buttonRef.current?.id,
-    [data.labelRef.current, data.buttonRef.current]
-  )
-
+  let labelledby = useComputed(() => data.buttonRef.current?.id, [data.buttonRef.current])
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: data.listboxState === ListboxStates.Open }),
     [data]
