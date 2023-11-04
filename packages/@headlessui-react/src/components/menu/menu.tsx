@@ -500,11 +500,21 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
+        // TODO: Ensure it is the last non-disabled item
+        let isLastItem = state.items.length - 1 === state.activeItemIndex
+        if (!event.repeat && isLastItem) {
+          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
+        }
         return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Next })
 
       case Keys.ArrowUp:
         event.preventDefault()
         event.stopPropagation()
+        // TODO: Ensure it is the first non-disabled item
+        let isFirstItem = state.activeItemIndex === 0
+        if (!event.repeat && isFirstItem) {
+          return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
+        }
         return dispatch({ type: ActionTypes.GoToItem, focus: Focus.Previous })
 
       case Keys.Home:
