@@ -40,7 +40,7 @@ let list = ref([
 let emptyOption = { name: 'No results', disabled: true, empty: true }
 
 let query = ref('')
-let selectedPerson = ref<Option | null>(list[0])
+let selectedPerson = ref<Option | null>(list.value[0])
 let optionsRef = ref<HTMLUListElement | null>(null)
 
 let filtered = computed(() => {
@@ -48,12 +48,6 @@ let filtered = computed(() => {
     ? list.value
     : list.value.filter((item) => item.name.toLowerCase().includes(query.value.toLowerCase()))
 })
-
-function addPerson() {
-  let person = { name: query.value, disabled: false }
-  list.value.push(person)
-  selectedPerson.value = person
-}
 
 </script>
 <template>
@@ -64,12 +58,9 @@ function addPerson() {
         options: filtered.length > 0 ? filtered : [emptyOption],
         disabled: (option) => option.disabled || option.empty,
       }"
-      :value="selectedPerson"
+      v-model="selectedPerson"
+      @update:modelValue="() => query = ''"
       nullable
-      @change="(value) => {
-        selectedPerson = value
-        query = ''
-      }"
       as="div"
     >
       <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
