@@ -3,6 +3,7 @@ import { useRef, useState } from 'react'
 import { classNames } from '../../utils/class-names'
 
 import { Button } from '../../components/button'
+import { flushSync } from 'react-dom'
 
 type Option = {
   name: string
@@ -67,6 +68,17 @@ export default function Home() {
           setQuery('')
         }}
         as="div"
+
+        // Don't do this lol — it's not supported
+        // It's just so we can tab to the "Add" button for the demo
+        // The combobox doesn't actually support this behavior
+        onKeyDownCapture={(event: KeyboardEvent) => {
+          let addButton = document.querySelector('#add_person')
+          if (event.key === 'Tab' && addButton && filtered.length === 0) {
+            event.preventDefault()
+            setTimeout(() => addButton.focus(), 0)
+          }
+        }}
       >
         <Combobox.Label className="block text-sm font-medium leading-5 text-gray-700">
           Person
@@ -100,6 +112,11 @@ export default function Home() {
 
           <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
             <Combobox.Options
+              // This is a hack to make keep the options list around when it's empty
+              // It comes with some caveats:
+              // like the option callback being called with a null option (which is probably a bug)
+              static={filtered.length === 0}
+
               ref={optionsRef}
               className={classNames(
                 "shadow-xs max-h-60 rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5",
@@ -108,13 +125,13 @@ export default function Home() {
             >
               {
                 ({ option }: { option: Option }) => {
-                  if (option.empty) {
+                  if (!option || option.empty) {
                     return (
                       <Combobox.Option
                         // TODO: `disabled` being required is a bug
                         disabled
                         // Note: Do NOT use `null` for the `value`
-                        value={option}
+                        value={option ?? emptyOption.current}
                         className="relative w-full cursor-default select-none py-2 px-3 focus:outline-none text-center"
                       >
                         <div className="grid grid-cols-1 grid-rows-1 h-full relative">
@@ -124,7 +141,19 @@ export default function Home() {
                             </svg>
                           </div>
                           <div className="z-20 col-start-1 row-start-1 col-span-full row-span-full p-8 flex flex-col justify-center items-center">
-                            <h3 className="mx-2 text-xl text-gray-400 font-semibold">No people found</h3>
+                            <h3 className="mx-2 text-xl mb-4 text-gray-400 font-semibold">No people found</h3>
+                            <button
+                              id="add_person"
+                              type="button"
+                              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:outline-none"
+                              onClick={() => {
+                                let person = { name: query, disabled: false }
+                                setList(list => [...list, person])
+                                setSelectedPerson(person)
+                              }}
+                            >
+                              Add "{query}"
+                            </button>
                           </div>
                         </div>
                       </Combobox.Option>
