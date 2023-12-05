@@ -43,6 +43,7 @@ export function useRootContainers({
       if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
       if (container.id === 'headlessui-portal-root') continue // Skip the Headless UI portal root
       if (container.contains(dom(mainTreeNodeRef))) continue // Skip if it is the main app
+      if (container.contains((dom(mainTreeNodeRef)?.getRootNode() as ShadowRoot)?.host)) continue // Skip if it is the main app (and the component is inside a shadow root)
       if (containers.some((defaultContainer) => container.contains(defaultContainer))) continue // Skip if the current container is part of a container we've already seen (e.g.: default container / portal)
 
       containers.push(container)
