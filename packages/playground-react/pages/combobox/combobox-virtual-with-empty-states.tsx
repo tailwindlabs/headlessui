@@ -70,7 +70,7 @@ export default function Home() {
         // It's just so we can tab to the "Add" button for the demo
         // The combobox doesn't actually support this behavior
         onKeyDownCapture={(event: KeyboardEvent) => {
-          let addButton = document.querySelector('#add_person')
+          let addButton = document.querySelector('#add_person') as HTMLElement | null
           if (event.key === 'Tab' && addButton && filtered.length === 0) {
             event.preventDefault()
             setTimeout(() => addButton.focus(), 0)
