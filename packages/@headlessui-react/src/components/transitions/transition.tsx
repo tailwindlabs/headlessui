@@ -329,7 +329,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }, [state, container, register, unregister, show, strategy])
 
   let classes = useLatestValue({
-    base: splitClasses(rest.className),
+    base: Array.from(rest.classList),
     enter: splitClasses(enter),
     enterFrom: splitClasses(enterFrom),
     enterTo: splitClasses(enterTo),
