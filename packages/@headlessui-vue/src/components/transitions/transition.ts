@@ -32,7 +32,7 @@ type ID = ReturnType<typeof useId>
 /**
  * Split class lists by whitespace
  *
- * We can't check for just spaces as all whitespace characters is
+ * We can't check for just spaces as all whitespace characters are
  * invalid in a class name, so we have to split on ANY whitespace.
  */
 function splitClasses(classes: string = '') {
