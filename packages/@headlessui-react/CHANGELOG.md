@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix infinite render-loop for `<Disclosure.Panel>` and `<Popover.Panel>` when `as={Fragment}` ([#2760](https://github.com/tailwindlabs/headlessui/pull/2760))
 - Fix VoiceOver bug for `Listbox` component in Chrome ([#2824](https://github.com/tailwindlabs/headlessui/pull/2824))
 - Fix outside click detection when component is mounted in the Shadow DOM ([#2866](https://github.com/tailwindlabs/headlessui/pull/2866))
+- Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
 
 ### Added
 
