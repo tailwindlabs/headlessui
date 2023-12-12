@@ -1,11 +1,11 @@
 import { act as _act, fireEvent, render } from '@testing-library/react'
 import React, { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { getByText } from '../../test-utils/accessibility-assertions'
 import { executeTimeline } from '../../test-utils/execute-timeline'
+import { click } from '../../test-utils/interactions'
 import { createSnapshot } from '../../test-utils/snapshot'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from './transition'
-import { click } from '../../test-utils/interactions'
-import { getByText } from '../../test-utils/accessibility-assertions'
 
 let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 
