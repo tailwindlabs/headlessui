@@ -11,7 +11,10 @@
     "dist"
   ],
   "exports": {
-    "types": "./dist/index.d.ts",
+    "types": {
+      "import": "./dist/index.d.ts",
+      "require": "./dist/index.d.cts"
+    },
     "import": "./dist/headlessui.esm.js",
     "require": "./dist/index.cjs"
   },

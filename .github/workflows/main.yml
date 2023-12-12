@@ -48,22 +48,6 @@ jobs:
         env:
           CI: true
 
-  check-types:
-    runs-on: ubuntu-latest
-    needs: [install]
-
-    steps:
-      - name: Begin CI...
-        uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Check Types
-        run: yarn attw -P
-        env:
-          CI: true
-
   test:
     runs-on: ubuntu-latest
     needs: [install]
@@ -94,5 +78,21 @@ jobs:
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Build
         run: yarn build
+        env:
+          CI: true
+
+  check-types:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - name: Begin CI...
+        uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Check Types
+        run: yarn lint-types
         env:
           CI: true

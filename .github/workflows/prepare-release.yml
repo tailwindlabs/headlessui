@@ -27,7 +27,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Check Types
-        run: yarn attw -P
+        run: |
+          yarn build
+          yarn lint-types
         env:
           CI: true
 

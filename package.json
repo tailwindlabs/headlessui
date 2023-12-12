@@ -21,6 +21,7 @@
     "test": "./scripts/test.sh",
     "lint": "./scripts/lint.sh",
     "lint-check": "CI=true ./scripts/lint.sh",
+    "lint-types": "CI=true yarn workspaces run attw -P",
     "release-channel": "node ./scripts/release-channel.js",
     "release-notes": "node ./scripts/release-notes.js",
     "package-path": "node ./scripts/package-path.js"
