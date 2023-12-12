@@ -16,7 +16,7 @@ export function useOutsideClick(
   // TODO: remove this once the React bug has been fixed: https://github.com/facebook/react/issues/24657
   let enabledRef = useRef(false)
   useEffect(
-    process.env.NODE_ENV === 'test'
+    typeof process !== 'undefined' && process.env.JEST_WORKER_ID !== undefined
       ? () => {
           enabledRef.current = enabled
         }
