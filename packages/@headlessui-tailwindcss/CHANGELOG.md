@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix ESM types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
 
 ## [0.2.0] - 2023-07-27
 
