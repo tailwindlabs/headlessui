@@ -37,8 +37,14 @@ type ContainerElement = MutableRefObject<HTMLElement | null>
 
 type TransitionDirection = 'enter' | 'leave' | 'idle'
 
+/**
+ * Split class lists by whitespace
+ *
+ * We can't check for just spaces as all whitespace characters are
+ * invalid in a class name, so we have to split on ANY whitespace.
+ */
 function splitClasses(classes: string = '') {
-  return classes.split(' ').filter((className) => className.trim().length > 1)
+  return classes.split(/\s+/).filter((className) => className.length > 1)
 }
 
 interface TransitionContextValues {

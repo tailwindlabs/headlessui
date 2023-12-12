@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix missing `data-headlessui-state` attribute when `as="template"` ([#2787](https://github.com/tailwindlabs/headlessui/pull/2787))
 - Fix VoiceOver bug for `Listbox` component in Chrome ([#2824](https://github.com/tailwindlabs/headlessui/pull/2824))
 - Fix outside click detection when component is mounted in the Shadow DOM ([6846231](https://github.com/tailwindlabs/headlessui/commit/684623131b99d9e75dfc1c1f6d27244c334a95d9))
+- Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
 
 ### Added
 
