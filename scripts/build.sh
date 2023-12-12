@@ -31,12 +31,16 @@ INPUT_FILES=$($resolver ${resolverOptions[@]})
 NODE_ENV=production  $esbuild $INPUT_FILES --format=esm --outdir=$DST               --outbase=$SRC --minify --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="false" ${sharedOptions[@]} &
 NODE_ENV=production  $esbuild $input       --format=esm --outfile=$DST/$name.esm.js --outbase=$SRC --minify --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="false" ${sharedOptions[@]} &
 
+# Generate ESM types
+tsc --emitDeclarationOnly --outDir $DST &
+
 # Common JS
 NODE_ENV=production  $esbuild $input --format=cjs --outfile=$DST/$name.prod.cjs --minify --bundle --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="false" ${sharedOptions[@]} $@ &
 NODE_ENV=development $esbuild $input --format=cjs --outfile=$DST/$name.dev.cjs           --bundle --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="true" ${sharedOptions[@]} $@ &
 
-# Generate types
-tsc --emitDeclarationOnly --outDir $DST &
+# Generate CJS types
+# This is a bit of a hack, but it works because the same output works for both
+cp $DST/index.d.ts $DST/index.d.cts
 
 # Copy build files over
 cp -rf ./build/ $DST
