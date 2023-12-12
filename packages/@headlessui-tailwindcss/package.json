@@ -36,6 +36,7 @@
     "watch": "../../scripts/watch.sh --external:tailwindcss",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
+    "lint-types": "yarn run attw -P",
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {

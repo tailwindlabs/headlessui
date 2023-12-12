@@ -37,6 +37,7 @@
     "watch": "../../scripts/watch.sh --external:vue",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
+    "lint-types": "yarn run attw -P",
     "playground": "yarn workspace playground-vue dev",
     "clean": "rimraf ./dist"
   },
