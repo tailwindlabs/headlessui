@@ -45,7 +45,7 @@ wait
 cp $DST/index.d.ts $DST/index.d.cts
 
 # Copy build files over
-cp -rf ./build/ $DST
+cp -rf ./build/* $DST/
 
 # Wait for all the scripts to finish
 wait
