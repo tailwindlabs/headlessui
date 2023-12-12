@@ -38,6 +38,8 @@ tsc --emitDeclarationOnly --outDir $DST &
 NODE_ENV=production  $esbuild $input --format=cjs --outfile=$DST/$name.prod.cjs --minify --bundle --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="false" ${sharedOptions[@]} $@ &
 NODE_ENV=development $esbuild $input --format=cjs --outfile=$DST/$name.dev.cjs           --bundle --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="true" ${sharedOptions[@]} $@ &
 
+wait
+
 # Generate CJS types
 # This is a bit of a hack, but it works because the same output works for both
 cp $DST/index.d.ts $DST/index.d.cts
