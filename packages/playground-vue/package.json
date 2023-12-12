@@ -6,7 +6,7 @@
     "example": "examples"
   },
   "scripts": {
-    "prebuild": "yarn workspace @headlessui/vue build && yarn workspace @headlessui/tailwindcss build",
+    "prebuild": "yarn workspace @headlessui/vue build && yarn workspace @headlessui/tailwindcss build && ls /vercel/path0/node_modules/@headlessui/tailwindcss",
     "predev": "yarn workspace @headlessui/vue build && yarn workspace @headlessui/tailwindcss build",
     "dev:tailwindcss": "yarn workspace @headlessui/tailwindcss watch",
     "dev:headlessui": "yarn workspace @headlessui/vue watch",
