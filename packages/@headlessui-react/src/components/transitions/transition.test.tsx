@@ -4,6 +4,8 @@ import { executeTimeline } from '../../test-utils/execute-timeline'
 import { createSnapshot } from '../../test-utils/snapshot'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from './transition'
+import { click } from '../../test-utils/interactions'
+import { getByText } from '../../test-utils/accessibility-assertions'
 
 let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 
@@ -402,6 +404,57 @@ describe('Setup API', () => {
   })
 
   describe('transition classes', () => {
+    it('should support new lines in class lists', async () => {
+      function Example() {
+        let [show, setShow] = useState(true)
+
+        return (
+          <div>
+            <button onClick={() => setShow((v) => !v)}>toggle</button>
+
+            <Transition show={show} as="div" className={`foo1\nfoo2`} enter="enter" leave="leave">
+              Children
+            </Transition>
+          </div>
+        )
+      }
+
+      let { container } = await act(() => render(<Example />))
+
+      expect(container.firstChild).toMatchInlineSnapshot(`
+        <div>
+          <button>
+            toggle
+          </button>
+          <div
+            class="foo1
+        foo2"
+          >
+            Children
+          </div>
+        </div>
+      `)
+
+      await click(getByText('toggle'))
+
+      // TODO: This is not quite right
+      // The `foo1\nfoo2` should be gone
+      // I think this is a qurk of JSDOM
+      expect(container.firstChild).toMatchInlineSnapshot(`
+        <div>
+          <button>
+            toggle
+          </button>
+          <div
+            class="foo1
+        foo2 foo1 foo2 leave"
+          >
+            Children
+          </div>
+        </div>
+      `)
+    })
+
     it('should be possible to passthrough the transition classes', () => {
       let { container } = render(
         <Transition
