@@ -26,6 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Check Types
+        run: yarn attw -P
+        env:
+          CI: true
+
       - run: git fetch --tags -f
 
       - name: Resolve version
