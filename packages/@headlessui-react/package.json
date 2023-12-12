@@ -11,7 +11,10 @@
     "dist"
   ],
   "exports": {
-    "types": "./dist/index.d.ts",
+    "types": {
+      "import": "./dist/index.d.ts",
+      "require": "./dist/index.d.cts"
+    },
     "import": "./dist/headlessui.esm.js",
     "require": "./dist/index.cjs"
   },
@@ -34,6 +37,7 @@
     "watch": "../../scripts/watch.sh --external:react --external:react-dom",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
+    "lint-types": "yarn run attw -P",
     "playground": "yarn workspace playground-react dev",
     "clean": "rimraf ./dist"
   },

@@ -11,6 +11,7 @@
     "dev": "npm-run-all -p dev:*",
     "build": "next build",
     "start": "next start",
+    "lint-types": "echo",
     "clean": "rimraf ./.next"
   },
   "dependencies": {

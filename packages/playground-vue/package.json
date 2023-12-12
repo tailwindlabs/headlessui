@@ -13,6 +13,7 @@
     "dev:next": "vite serve",
     "dev": "npm-run-all -p dev:*",
     "build": "NODE_ENV=production vite build",
+    "lint-types": "echo",
     "clean": "rimraf ./dist"
   },
   "dependencies": {

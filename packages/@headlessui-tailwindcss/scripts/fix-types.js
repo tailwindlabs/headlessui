@@ -12,12 +12,13 @@ let path = require('path')
  * CommonJs environment.
  **/
 
-let types = path.resolve(__dirname, '..', 'dist', 'index.d.ts')
+let esmTypes = path.resolve(__dirname, '..', 'dist', 'index.d.ts')
+let cjsTypes = path.resolve(__dirname, '..', 'dist', 'index.d.cts')
 
 async function run() {
-  let contents = await fs.readFile(types, 'utf8')
+  let contents = await fs.readFile(esmTypes, 'utf8')
   contents = contents.replace('export default', 'export =')
-  await fs.writeFile(types, contents, 'utf8')
+  await fs.writeFile(cjsTypes, contents, 'utf8')
 }
 
 run()

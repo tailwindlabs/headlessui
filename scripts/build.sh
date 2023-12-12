@@ -35,11 +35,17 @@ NODE_ENV=production  $esbuild $input       --format=esm --outfile=$DST/$name.esm
 NODE_ENV=production  $esbuild $input --format=cjs --outfile=$DST/$name.prod.cjs --minify --bundle --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="false" ${sharedOptions[@]} $@ &
 NODE_ENV=development $esbuild $input --format=cjs --outfile=$DST/$name.dev.cjs           --bundle --pure:React.createElement --define:process.env.TEST_BYPASS_TRACKED_POINTER="false" --define:__DEV__="true" ${sharedOptions[@]} $@ &
 
-# Generate types
+# Generate ESM types
 tsc --emitDeclarationOnly --outDir $DST &
 
+wait
+
+# Generate CJS types
+# This is a bit of a hack, but it works because the same output works for both
+cp $DST/index.d.ts $DST/index.d.cts
+
 # Copy build files over
-cp -rf ./build/ $DST
+cp -rf ./build/* $DST/
 
 # Wait for all the scripts to finish
 wait
