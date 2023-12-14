@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
 - Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
 
+### Fixed
+
+- Make sure panels re-register when IDs are calculated in React < 18 ([#2883](https://github.com/tailwindlabs/headlessui/pull/2883))
+
 ## [1.7.18] - 2024-01-08
 
 ### Fixed
