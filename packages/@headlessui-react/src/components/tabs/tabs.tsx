@@ -566,7 +566,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let internalPanelRef = useRef<HTMLElement | null>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref)
 
-  useIsoMorphicEffect(() => actions.registerPanel(internalPanelRef), [actions, internalPanelRef])
+  useIsoMorphicEffect(
+    () => actions.registerPanel(internalPanelRef),
+    [actions, internalPanelRef, id]
+  )
 
   let mySSRIndex = useStableCollectionIndex('panels')
 
