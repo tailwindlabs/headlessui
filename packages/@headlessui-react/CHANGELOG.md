@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix outside click detection when component is mounted in the Shadow DOM ([#2866](https://github.com/tailwindlabs/headlessui/pull/2866))
 - Fix CJS types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
 - Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
+- Make sure panels re-register when IDs are calculated in React < 18 ([#2883](https://github.com/tailwindlabs/headlessui/pull/2883))
 
 ### Added
 
