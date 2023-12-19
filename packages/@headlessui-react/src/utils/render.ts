@@ -15,7 +15,7 @@ import type { Expand, Props, XOR, __ } from '../types'
 import { classNames } from './class-names'
 import { match } from './match'
 
-export enum Features {
+export enum RenderFeatures {
   /** No features at all */
   None = 0,
 
@@ -40,16 +40,20 @@ export enum RenderStrategy {
   Hidden,
 }
 
-type PropsForFeature<TPassedInFeatures extends Features, TForFeature extends Features, TProps> = {
+type PropsForFeature<
+  TPassedInFeatures extends RenderFeatures,
+  TForFeature extends RenderFeatures,
+  TProps,
+> = {
   [P in TPassedInFeatures]: P extends TForFeature ? TProps : __
 }[TPassedInFeatures]
 
-export type PropsForFeatures<T extends Features> = XOR<
-  PropsForFeature<T, Features.Static, { static?: boolean }>,
-  PropsForFeature<T, Features.RenderStrategy, { unmount?: boolean }>
+export type PropsForFeatures<T extends RenderFeatures> = XOR<
+  PropsForFeature<T, RenderFeatures.Static, { static?: boolean }>,
+  PropsForFeature<T, RenderFeatures.RenderStrategy, { unmount?: boolean }>
 >
 
-export function render<TFeature extends Features, TTag extends ElementType, TSlot>({
+export function render<TFeature extends RenderFeatures, TTag extends ElementType, TSlot>({
   ourProps,
   theirProps,
   slot,
@@ -77,17 +81,17 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
   // Visible always render
   if (visible) return _render(props, slot, defaultTag, name, mergeRefs)
 
-  let featureFlags = features ?? Features.None
+  let featureFlags = features ?? RenderFeatures.None
 
-  if (featureFlags & Features.Static) {
-    let { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
+  if (featureFlags & RenderFeatures.Static) {
+    let { static: isStatic = false, ...rest } = props as PropsForFeatures<RenderFeatures.Static>
 
     // When the `static` prop is passed as `true`, then the user is in control, thus we don't care about anything else
     if (isStatic) return _render(rest, slot, defaultTag, name, mergeRefs)
   }
 
-  if (featureFlags & Features.RenderStrategy) {
-    let { unmount = true, ...rest } = props as PropsForFeatures<Features.RenderStrategy>
+  if (featureFlags & RenderFeatures.RenderStrategy) {
+    let { unmount = true, ...rest } = props as PropsForFeatures<RenderFeatures.RenderStrategy>
     let strategy = unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
     return match(strategy, {

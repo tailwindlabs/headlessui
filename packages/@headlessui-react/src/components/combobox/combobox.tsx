@@ -44,7 +44,7 @@ import { match } from '../../utils/match'
 import { isMobile } from '../../utils/platform'
 import {
   compact,
-  Features,
+  RenderFeatures,
   forwardRefWithAs,
   render,
   type HasDisplayName,
@@ -1552,7 +1552,7 @@ interface OptionsRenderPropArg {
 }
 type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role' | 'tabIndex'
 
-let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
+let OptionsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
 export type ComboboxOptionsProps<TTag extends ElementType> = Props<
   TTag,

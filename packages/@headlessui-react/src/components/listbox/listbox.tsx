@@ -37,8 +37,8 @@ import { objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import {
-  Features,
   compact,
+  RenderFeatures,
   forwardRefWithAs,
   render,
   type HasDisplayName,
@@ -747,7 +747,7 @@ type OptionsPropsWeControl =
   | 'role'
   | 'tabIndex'
 
-let OptionsRenderFeatures = Features.RenderStrategy | Features.Static
+let OptionsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
 export type ListboxOptionsProps<TTag extends ElementType> = Props<
   TTag,

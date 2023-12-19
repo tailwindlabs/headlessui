@@ -46,7 +46,7 @@ import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'
 import {
-  Features,
+  RenderFeatures,
   forwardRefWithAs,
   render,
   useMergeRefsFn,
@@ -662,7 +662,7 @@ interface OverlayRenderPropArg {
 }
 type OverlayPropsWeControl = 'aria-hidden'
 
-let OverlayRenderFeatures = Features.RenderStrategy | Features.Static
+let OverlayRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
 export type PopoverOverlayProps<TTag extends ElementType> = Props<
   TTag,
@@ -725,7 +725,7 @@ interface PanelRenderPropArg {
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
 }
 
-let PanelRenderFeatures = Features.RenderStrategy | Features.Static
+let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
 type PanelPropsWeControl = 'tabIndex'
 

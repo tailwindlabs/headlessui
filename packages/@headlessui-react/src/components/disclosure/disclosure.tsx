@@ -25,7 +25,7 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import {
-  Features,
+  RenderFeatures,
   forwardRefWithAs,
   render,
   useMergeRefsFn,

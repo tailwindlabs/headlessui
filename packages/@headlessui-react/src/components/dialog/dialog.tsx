@@ -35,7 +35,7 @@ import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
 import {
-  Features,
+  RenderFeatures,
   forwardRefWithAs,
   render,
   type HasDisplayName,
@@ -122,7 +122,7 @@ interface DialogRenderPropArg {
 }
 type DialogPropsWeControl = 'aria-describedby' | 'aria-labelledby' | 'aria-modal'
 
-let DialogRenderFeatures = Features.RenderStrategy | Features.Static
+let DialogRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
 export type DialogProps<TTag extends ElementType> = Props<
   TTag,
