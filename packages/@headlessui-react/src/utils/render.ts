@@ -257,7 +257,7 @@ function _render<TTag extends ElementType, TSlot>(
 export function useMergeRefsFn() {
   type MaybeRef<T> = MutableRefObject<T> | ((value: T) => void) | null | undefined
   let currentRefs = useRef<MaybeRef<any>[]>([])
-  let mergedRef = useCallback((value) => {
+  let mergedRef = useCallback((value: any) => {
     for (let ref of currentRefs.current) {
       if (ref == null) continue
       if (typeof ref === 'function') ref(value)
