@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.13.3",
+    "@swc-node/register": "^1.6.8",
     "@swc/core": "^1.2.131",
     "@swc/jest": "^0.2.17",
     "@testing-library/jest-dom": "^5.16.4",
