@@ -199,10 +199,15 @@ function _render<TTag extends ElementType, TSlot>(
       // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
       let childProps = resolvedChildren.props as { className: string | (() => string) } | null
 
+      let childPropsClassName = childProps?.className
       let newClassName =
-        typeof childProps?.className === 'function'
-          ? (...args: any[]) => classNames(childProps?.className(...args), rest.className)
-          : classNames(childProps?.className, rest.className)
+        typeof childPropsClassName === 'function'
+          ? (...args: any[]) =>
+              classNames(
+                (childPropsClassName as Function)(...args),
+                (rest as { className?: string }).className
+              )
+          : classNames(childPropsClassName, (rest as { className?: string }).className)
 
       let classNameProps = newClassName ? { className: newClassName } : {}
 
