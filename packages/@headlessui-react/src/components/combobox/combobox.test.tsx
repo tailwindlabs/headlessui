@@ -5264,7 +5264,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to controlled'))
 
       // Make sure we get a warning
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
       expect(spy.mock.calls.map((args) => args[0])).toEqual([
         'A component is changing from uncontrolled to controlled. This may be caused by the value changing from undefined to a defined value, which should not happen.',
       ])
@@ -5276,7 +5276,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to controlled'))
 
       // We shouldn't have gotten another warning as we do not want to warn on every render
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   )
 
@@ -5301,7 +5301,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to uncontrolled'))
 
       // Make sure we get a warning
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
       expect(spy.mock.calls.map((args) => args[0])).toEqual([
         'A component is changing from controlled to uncontrolled. This may be caused by the value changing from a defined value to undefined, which should not happen.',
       ])
@@ -5313,7 +5313,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to uncontrolled'))
 
       // We shouldn't have gotten another warning as we do not want to warn on every render
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   )
 
@@ -5723,7 +5723,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([
+    expect(submits).toHaveBeenLastCalledWith([
       ['delivery[id]', '1'],
       ['delivery[value]', 'pickup'],
       ['delivery[label]', 'Pickup'],
@@ -5740,7 +5740,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([
+    expect(submits).toHaveBeenLastCalledWith([
       ['delivery[id]', '2'],
       ['delivery[value]', 'home-delivery'],
       ['delivery[label]', 'Home delivery'],
@@ -5757,7 +5757,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([
+    expect(submits).toHaveBeenLastCalledWith([
       ['delivery[id]', '1'],
       ['delivery[value]', 'pickup'],
       ['delivery[label]', 'Pickup'],

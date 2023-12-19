@@ -689,7 +689,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([['notifications', 'on']])
+    expect(submits).toHaveBeenLastCalledWith([['notifications', 'on']])
   })
 
   it('should be possible to submit a form with an boolean value', async () => {
@@ -719,7 +719,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([]) // no data
+    expect(submits).toHaveBeenLastCalledWith([]) // no data
 
     // Toggle
     await click(getSwitchLabel())
@@ -728,7 +728,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([['notifications', 'on']])
+    expect(submits).toHaveBeenLastCalledWith([['notifications', 'on']])
   })
 
   it('should be possible to submit a form with a provided string value', async () => {
@@ -758,7 +758,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([]) // no data
+    expect(submits).toHaveBeenLastCalledWith([]) // no data
 
     // Toggle
     await click(getSwitchLabel())
@@ -767,6 +767,6 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([['fruit', 'apple']])
+    expect(submits).toHaveBeenLastCalledWith([['fruit', 'apple']])
   })
 })

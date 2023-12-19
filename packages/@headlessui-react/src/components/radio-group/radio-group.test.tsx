@@ -1428,7 +1428,7 @@ describe('Form compatibility', () => {
       // Submit the form
       await click(getByText('Submit'))
 
-      expect(submits).lastCalledWith([['delivery', 'pickup']])
+      expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
     })
   )
 
@@ -1463,7 +1463,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([]) // no data
+      expect(submits).toHaveBeenLastCalledWith([]) // no data
 
       // Choose home delivery
       await click(getByText('Home delivery'))
@@ -1472,7 +1472,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([['delivery', 'home-delivery']])
+      expect(submits).toHaveBeenLastCalledWith([['delivery', 'home-delivery']])
 
       // Choose pickup
       await click(getByText('Pickup'))
@@ -1481,7 +1481,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([['delivery', 'pickup']])
+      expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
     })
   )
 
@@ -1539,7 +1539,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([
+      expect(submits).toHaveBeenLastCalledWith([
         ['delivery[id]', '1'],
         ['delivery[value]', 'pickup'],
         ['delivery[label]', 'Pickup'],
@@ -1553,7 +1553,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([
+      expect(submits).toHaveBeenLastCalledWith([
         ['delivery[id]', '2'],
         ['delivery[value]', 'home-delivery'],
         ['delivery[label]', 'Home delivery'],
@@ -1567,7 +1567,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([
+      expect(submits).toHaveBeenLastCalledWith([
         ['delivery[id]', '1'],
         ['delivery[value]', 'pickup'],
         ['delivery[label]', 'Pickup'],
