@@ -8,7 +8,7 @@ let events: Events[] = ['onKeyDown', 'onKeyUp', 'onKeyPress', 'onClick', 'onBlur
 type Args = [
   string | Partial<KeyboardEvent>,
   (string | Partial<KeyboardEvent | MouseEvent>)[],
-  Set<Events>
+  Set<Events>,
 ]
 
 function key(input: string | Partial<KeyboardEvent>): Partial<KeyboardEvent> {

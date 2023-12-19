@@ -2014,8 +2014,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           return typeof option === 'string'
             ? false
             : typeof option === 'object' && option !== null && 'disabled' in option
-            ? option?.disabled ?? false
-            : false
+              ? option?.disabled ?? false
+              : false
         }
 
         let model = ref(value)
@@ -4732,8 +4732,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
         return typeof option === 'string'
           ? false
           : typeof option === 'object' && option !== null && 'disabled' in option
-          ? option?.disabled ?? false
-          : false
+            ? option?.disabled ?? false
+            : false
       }
 
       let model = ref(value)

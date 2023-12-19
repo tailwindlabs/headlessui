@@ -44,7 +44,7 @@ interface DescriptionProviderProps extends SharedData {
 
 export function useDescriptions(): [
   string | undefined,
-  (props: DescriptionProviderProps) => JSX.Element
+  (props: DescriptionProviderProps) => JSX.Element,
 ] {
   let [descriptionIds, setDescriptionIds] = useState<string[]>([])
 

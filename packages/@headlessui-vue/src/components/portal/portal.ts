@@ -59,8 +59,8 @@ export let Portal = defineComponent({
       forcePortalRoot === true
         ? getPortalRoot(element.value)
         : groupContext == null
-        ? getPortalRoot(element.value)
-        : groupContext.resolveTarget()
+          ? getPortalRoot(element.value)
+          : groupContext.resolveTarget()
     )
 
     let ready = ref(false)

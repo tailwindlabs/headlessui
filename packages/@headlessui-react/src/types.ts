@@ -32,8 +32,8 @@ type OurProps<TTag extends ReactTag, TSlot> = {
 type HasProperty<T extends object, K extends PropertyKey> = T extends never
   ? never
   : K extends keyof T
-  ? true
-  : never
+    ? true
+    : never
 
 // Conditionally override the `className`, to also allow for a function
 // if and only if the PropsOf<TTag> already defines `className`.
@@ -59,12 +59,12 @@ type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 export type XOR<T, U> = T | U extends __
   ? never
   : T extends __
-  ? U
-  : U extends __
-  ? T
-  : T | U extends object
-  ? (Without<T, U> & U) | (Without<U, T> & T)
-  : T | U
+    ? U
+    : U extends __
+      ? T
+      : T | U extends object
+        ? (Without<T, U> & U) | (Without<U, T> & T)
+        : T | U
 
 export type ByComparator<T> =
   | (T extends null ? string : keyof T & string)

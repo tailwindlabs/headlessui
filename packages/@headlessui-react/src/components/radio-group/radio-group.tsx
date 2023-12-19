@@ -403,7 +403,7 @@ function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in RadioGroup itself.
   // But today is not that day..
-  TType = Parameters<typeof RadioGroupRoot>[0]['value']
+  TType = Parameters<typeof RadioGroupRoot>[0]['value'],
 >(props: RadioOptionProps<TTag, TType>, ref: Ref<HTMLElement>) {
   let internalId = useId()
   let {

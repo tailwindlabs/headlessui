@@ -77,7 +77,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
-    optionalRef<typeof internalPortalRootRef['current']>((ref) => {
+    optionalRef<(typeof internalPortalRootRef)['current']>((ref) => {
       internalPortalRootRef.current = ref
     }),
     ref

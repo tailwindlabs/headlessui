@@ -584,7 +584,7 @@ export let Combobox = defineComponent({
       registerOption(id: string, dataRef: ComputedRef<ComboboxOptionData>) {
         let option = reactive({ id, dataRef }) as unknown as {
           id: typeof id
-          dataRef: typeof dataRef['value']
+          dataRef: (typeof dataRef)['value']
         }
 
         if (api.virtual.value) {
@@ -717,8 +717,8 @@ export let Combobox = defineComponent({
           api.activeOptionIndex.value === null
             ? null
             : api.virtual.value
-            ? api.virtual.value.options[api.activeOptionIndex.value ?? 0]
-            : api.options.value[api.activeOptionIndex.value]?.dataRef.value.value ?? null,
+              ? api.virtual.value.options[api.activeOptionIndex.value ?? 0]
+              : api.options.value[api.activeOptionIndex.value]?.dataRef.value.value ?? null,
         value: value.value,
       }
 
@@ -1285,16 +1285,16 @@ export let ComboboxInput = defineComponent({
           api.activeOptionIndex.value === null
             ? undefined
             : api.virtual.value
-            ? api.options.value.find((option) => {
-                return (
-                  !api.virtual.value!.disabled(option.dataRef.value) &&
-                  api.compare(
-                    option.dataRef.value,
-                    api.virtual.value!.options[api.activeOptionIndex.value!]
+              ? api.options.value.find((option) => {
+                  return (
+                    !api.virtual.value!.disabled(option.dataRef.value) &&
+                    api.compare(
+                      option.dataRef.value,
+                      api.virtual.value!.options[api.activeOptionIndex.value!]
+                    )
                   )
-                )
-              })?.id
-            : api.options.value[api.activeOptionIndex.value]?.id,
+                })?.id
+              : api.options.value[api.activeOptionIndex.value]?.id,
         'aria-labelledby': dom(api.labelRef)?.id ?? dom(api.buttonRef)?.id,
         'aria-autocomplete': 'list',
         id,
@@ -1425,8 +1425,8 @@ export let ComboboxOption = defineComponent({
       return api.virtual.value
         ? api.activeOptionIndex.value === api.calculateIndex(props.value)
         : api.activeOptionIndex.value === null
-        ? false
-        : api.options.value[api.activeOptionIndex.value]?.id === id
+          ? false
+          : api.options.value[api.activeOptionIndex.value]?.id === id
     })
 
     let selected = computed(() => api.isSelected(props.value))

@@ -1498,7 +1498,10 @@ describe('Rendering', () => {
         >
           <Combobox name="assignee" defaultValue={{ id: 2, name: 'bob', label: 'Bob' }} by="id">
             <Combobox.Button>{({ value }) => value?.name ?? 'Trigger'}</Combobox.Button>
-            <Combobox.Input onChange={NOOP} displayValue={(value: typeof data[0]) => value.name} />
+            <Combobox.Input
+              onChange={NOOP}
+              displayValue={(value: (typeof data)[0]) => value.name}
+            />
             <Combobox.Options>
               {data.map((person) => (
                 <Combobox.Option key={person.id} value={person}>
@@ -1855,11 +1858,11 @@ describe.each([{ virtual: true }, { virtual: false }])(
         return typeof option === 'string'
           ? false
           : typeof option === 'object' &&
-            option !== null &&
-            'disabled' in option &&
-            typeof option.disabled === 'boolean'
-          ? option?.disabled ?? false
-          : false
+              option !== null &&
+              'disabled' in option &&
+              typeof option.disabled === 'boolean'
+            ? option?.disabled ?? false
+            : false
       }
       if (virtual) {
         return (
@@ -4332,8 +4335,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       return typeof option === 'string'
         ? false
         : typeof option === 'object' && option !== null && 'disabled' in option
-        ? (option?.disabled as unknown as boolean | undefined) ?? false
-        : false
+          ? (option?.disabled as unknown as boolean | undefined) ?? false
+          : false
     }
     if (virtual) {
       return (
@@ -5318,7 +5321,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       ]
 
       function Example() {
-        let [value, setValue] = useState<typeof people[number] | null>(people[1])
+        let [value, setValue] = useState<(typeof people)[number] | null>(people[1])
 
         return (
           <>
@@ -5326,7 +5329,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
               options={people}
               comboboxProps={{ value, onChange: setValue }}
               inputProps={{
-                displayValue: (person: typeof people[number]) => person?.name,
+                displayValue: (person: (typeof people)[number]) => person?.name,
               }}
             />
             <button onClick={() => setValue(null)}>reset</button>

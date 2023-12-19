@@ -76,8 +76,9 @@ it('should generate the ui-not-focus-visible variant', async () => {
 
   return run('@tailwind utilities', config).then((result) => {
     expect(result.css).toMatchFormattedCss(css`
-      .ui-not-focus-visible\:underline:focus:where(:not([data-headlessui-focus-visible]
-            .ui-not-focus-visible\:underline)) {
+      .ui-not-focus-visible\:underline:focus:where(
+          :not([data-headlessui-focus-visible] .ui-not-focus-visible\:underline)
+        ) {
         text-decoration-line: underline;
       }
     `)

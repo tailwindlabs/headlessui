@@ -558,7 +558,7 @@ type ComboboxValueProps<
   TValue,
   TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
-  TTag extends ElementType
+  TTag extends ElementType,
 > = Extract<
   | ({
       value?: EnsureArray<TValue>
@@ -599,7 +599,7 @@ export type ComboboxProps<
   TValue,
   TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
-  TTag extends ElementType
+  TTag extends ElementType,
 > = ComboboxValueProps<TValue, TNullable, TMultiple, TTag> & {
   disabled?: boolean
   __demoMode?: boolean
@@ -789,8 +789,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
         data.activeOptionIndex === null
           ? null
           : data.virtual
-          ? data.virtual.options[data.activeOptionIndex ?? 0]
-          : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
+            ? data.virtual.options[data.activeOptionIndex ?? 0]
+            : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
       value,
     }),
     [data, disabled, value]
@@ -984,7 +984,7 @@ function InputFn<
   TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
-  TType = Parameters<typeof ComboboxRoot>[0]['value']
+  TType = Parameters<typeof ComboboxRoot>[0]['value'],
 >(props: ComboboxInputProps<TTag, TType>, ref: Ref<HTMLInputElement>) {
   let internalId = useId()
   let {
@@ -1355,15 +1355,15 @@ function InputFn<
       data.activeOptionIndex === null
         ? undefined
         : data.virtual
-        ? data.options.find(
-            (option) =>
-              !data.virtual?.disabled(option.dataRef.current.value) &&
-              data.compare(
-                option.dataRef.current.value,
-                data.virtual!.options[data.activeOptionIndex!]
-              )
-          )?.id
-        : data.options[data.activeOptionIndex]?.id,
+          ? data.options.find(
+              (option) =>
+                !data.virtual?.disabled(option.dataRef.current.value) &&
+                data.compare(
+                  option.dataRef.current.value,
+                  data.virtual!.options[data.activeOptionIndex!]
+                )
+            )?.id
+          : data.options[data.activeOptionIndex]?.id,
     'aria-labelledby': labelledby,
     'aria-autocomplete': 'list',
     defaultValue:
@@ -1671,7 +1671,7 @@ function OptionFn<
   TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
-  TType = Parameters<typeof ComboboxRoot>[0]['value']
+  TType = Parameters<typeof ComboboxRoot>[0]['value'],
 >(props: ComboboxOptionProps<TTag, TType>, ref: Ref<HTMLLIElement>) {
   let internalId = useId()
   let {
@@ -1688,8 +1688,8 @@ function OptionFn<
   let active = data.virtual
     ? data.activeOptionIndex === data.calculateIndex(value)
     : data.activeOptionIndex === null
-    ? false
-    : data.options[data.activeOptionIndex]?.id === id
+      ? false
+      : data.options[data.activeOptionIndex]?.id === id
 
   let selected = data.isSelected(value)
   let internalOptionRef = useRef<HTMLLIElement | null>(null)
@@ -1872,7 +1872,7 @@ export interface _internal_ComponentComboboxOptions extends HasDisplayName {
 export interface _internal_ComponentComboboxOption extends HasDisplayName {
   <
     TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
-    TType = Parameters<typeof ComboboxRoot>[0]['value']
+    TType = Parameters<typeof ComboboxRoot>[0]['value'],
   >(
     props: ComboboxOptionProps<TTag, TType> & RefProp<typeof OptionFn>
   ): JSX.Element

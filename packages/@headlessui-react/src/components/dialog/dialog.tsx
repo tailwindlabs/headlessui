@@ -84,7 +84,7 @@ let DialogContext = createContext<
         close(): void
         setTitleId(id: string | null): void
       },
-      StateDefinition
+      StateDefinition,
     ]
   | null
 >(null)

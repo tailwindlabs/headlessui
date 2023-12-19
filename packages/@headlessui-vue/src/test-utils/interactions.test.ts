@@ -24,7 +24,7 @@ function renderTemplate(input: string | ComponentOptionsWithoutProps) {
 type Args = [
   string | Partial<KeyboardEvent>,
   (string | Partial<KeyboardEvent | MouseEvent>)[],
-  Set<Events>
+  Set<Events>,
 ]
 
 function key(input: string | Partial<KeyboardEvent>): Partial<KeyboardEvent> {

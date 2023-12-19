@@ -2,7 +2,10 @@ export class FakePointer {
   private x: number = 0
   private y: number = 0
 
-  constructor(private width: number, private height: number) {
+  constructor(
+    private width: number,
+    private height: number
+  ) {
     this.width = width
     this.height = height
   }
