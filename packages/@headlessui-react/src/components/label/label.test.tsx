@@ -20,11 +20,7 @@ it('should be possible to use a LabelProvider without using a Label', async () =
   }
 
   let { container } = render(<Example />)
-  expect(container.firstChild).toMatchInlineSnapshot(`
-    <div>
-      No label
-    </div>
-  `)
+  expect(container.firstChild).toMatchSnapshot()
 })
 
 it('should be possible to use a LabelProvider and a single Label, and have them linked', async () => {
@@ -48,20 +44,7 @@ it('should be possible to use a LabelProvider and a single Label, and have them 
   }
 
   let { container } = render(<Example />)
-  expect(container.firstChild).toMatchInlineSnapshot(`
-    <div
-      aria-labelledby="headlessui-label-1"
-    >
-      <label
-        id="headlessui-label-1"
-      >
-        I am a label
-      </label>
-      <span>
-        Contents
-      </span>
-    </div>
-  `)
+  expect(container.firstChild).toMatchSnapshot()
 })
 
 it('should be possible to use a LabelProvider and multiple Label components, and have them linked', async () => {
@@ -86,23 +69,5 @@ it('should be possible to use a LabelProvider and multiple Label components, and
   }
 
   let { container } = render(<Example />)
-  expect(container.firstChild).toMatchInlineSnapshot(`
-    <div
-      aria-labelledby="headlessui-label-1 headlessui-label-2"
-    >
-      <label
-        id="headlessui-label-1"
-      >
-        I am a label
-      </label>
-      <span>
-        Contents
-      </span>
-      <label
-        id="headlessui-label-2"
-      >
-        I am also a label
-      </label>
-    </div>
-  `)
+  expect(container.firstChild).toMatchSnapshot()
 })
