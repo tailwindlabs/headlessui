@@ -15,7 +15,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
   return {
     before() {
-      scrollPosition = window.pageYOffset
+      scrollPosition = window.scrollY ?? window.pageYOffset
     },
 
     after({ doc, d, meta }) {
@@ -101,7 +101,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
           //
           // (Since the value of window.pageYOffset is 0 in the first case, we should be able to
           // always sum these values)
-          window.scrollTo(0, window.pageYOffset + scrollPosition)
+          window.scrollTo(0, (window.scrollY ?? window.pageYOffset) + scrollPosition)
 
           // If we captured an element that should be scrolled to, then we can try to do that if the
           // element is still connected (aka, still in the DOM).
