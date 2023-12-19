@@ -30,7 +30,7 @@ import {
   word,
 } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Menu } from './menu'
 
 jest.mock('../../hooks/use-id')

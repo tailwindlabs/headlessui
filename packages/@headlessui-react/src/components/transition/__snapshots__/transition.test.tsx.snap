@@ -1,0 +1,144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Setup API nested should be possible to change the underlying DOM tag of the Transition component and Transition.Child components 1`] = `
+<div
+  class="My Page"
+>
+  <article>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </article>
+</div>
+`;
+
+exports[`Setup API nested should be possible to change the underlying DOM tag of the Transition.Child components 1`] = `
+<div
+  class="My Page"
+>
+  <div>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </div>
+</div>
+`;
+
+exports[`Setup API nested should be possible to nest transition components 1`] = `
+<div
+  class="My Page"
+>
+  <div>
+    <div>
+      Sidebar
+    </div>
+    <div>
+      Content
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Setup API nested should be possible to use render props on the Transition and Transition.Child components 1`] = `
+<div
+  class="My Page"
+>
+  <article>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </article>
+</div>
+`;
+
+exports[`Setup API nested should be possible to use render props on the Transition.Child components 1`] = `
+<div
+  class="My Page"
+>
+  <div>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </div>
+</div>
+`;
+
+exports[`Setup API nested should yell at us when we forget to wrap the \`<Transition.Child />\` in a parent <Transition /> component 1`] = `"A <Transition.Child /> is used but it is missing a parent <Transition /> or <Transition.Root />."`;
+
+exports[`Setup API nested should yell at us when we forgot to forward a ref on the Transition component 1`] = `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`;
+
+exports[`Setup API nested should yell at us when we forgot to forward the ref on one of the Transition.Child components 1`] = `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`;
+
+exports[`Setup API shallow should be possible to change the underlying DOM tag 1`] = `
+<span>
+  Children
+</span>
+`;
+
+exports[`Setup API shallow should be possible to use a render prop 1`] = `
+<span>
+  Children
+</span>
+`;
+
+exports[`Setup API shallow should passthrough all the props (that we do not use internally) 1`] = `
+<div
+  class="text-blue-400"
+  id="root"
+>
+  Children
+</div>
+`;
+
+exports[`Setup API shallow should passthrough all the props (that we do not use internally) even when using an \`as\` prop 1`] = `
+<a
+  class="text-blue-400"
+  href="/"
+>
+  Children
+</a>
+`;
+
+exports[`Setup API shallow should render a div and its children by default 1`] = `
+<div>
+  Children
+</div>
+`;
+
+exports[`Setup API shallow should render another component if the \`as\` prop is used and its children by default 1`] = `
+<a>
+  Children
+</a>
+`;
+
+exports[`Setup API shallow should render nothing when the show prop is false 1`] = `null`;
+
+exports[`Setup API shallow should yell at us when we forget to forward the ref when using a render prop 1`] = `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`;
+
+exports[`Setup API transition classes should be possible to passthrough the transition classes 1`] = `
+<div>
+  Children
+</div>
+`;
+
+exports[`Setup API transition classes should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true 1`] = `
+<div
+  class="enter enter-from"
+>
+  Children
+</div>
+`;
+
+exports[`should yell at us when we forget the required show prop 1`] = `"A <Transition /> is used but it is missing a \`show={true | false}\` prop."`;

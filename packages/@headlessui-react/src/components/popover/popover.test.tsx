@@ -15,7 +15,7 @@ import {
 import { Keys, MouseButton, click, focus, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Portal } from '../portal/portal'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Popover } from './popover'
 
 let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>

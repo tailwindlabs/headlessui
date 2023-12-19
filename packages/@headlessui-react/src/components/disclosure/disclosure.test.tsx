@@ -11,7 +11,7 @@ import {
 } from '../../test-utils/accessibility-assertions'
 import { click, focus, Keys, MouseButton, press } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Disclosure } from './disclosure'
 
 jest.mock('../../hooks/use-id')

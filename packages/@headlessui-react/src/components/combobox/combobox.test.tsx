@@ -41,7 +41,7 @@ import {
   word,
 } from '../../test-utils/interactions'
 import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Combobox } from './combobox'
 
 let NOOP = () => {}

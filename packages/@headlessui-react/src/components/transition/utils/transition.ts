@@ -39,10 +39,10 @@ function waitForTransition(node: HTMLElement, done: () => void) {
         dispose()
       }, totalDuration)
     } else {
-      d.group((d) => {
+      let disposeGroup = d.group((d) => {
         // Mark the transition as done when the timeout is reached. This is a fallback in case the
         // transitionrun event is not fired.
-        d.setTimeout(() => {
+        let cancelTimeout = d.setTimeout(() => {
           done()
           d.dispose()
         }, totalDuration)
@@ -52,14 +52,20 @@ function waitForTransition(node: HTMLElement, done: () => void) {
         // transitioning.
         d.addEventListener(node, 'transitionrun', (event) => {
           if (event.target !== event.currentTarget) return
-          d.dispose()
+          cancelTimeout()
+
+          d.addEventListener(node, 'transitioncancel', (event) => {
+            if (event.target !== event.currentTarget) return
+            done()
+            disposeGroup()
+          })
         })
       })
 
-      let dispose = d.addEventListener(node, 'transitionend', (event) => {
+      d.addEventListener(node, 'transitionend', (event) => {
         if (event.target !== event.currentTarget) return
         done()
-        dispose()
+        d.dispose()
       })
     }
   } else {

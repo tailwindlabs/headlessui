@@ -23,7 +23,7 @@ import { click, focus, Keys, mouseDrag, press, shift } from '../../test-utils/in
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import type { PropsOf } from '../../types'
 import { Popover } from '../popover/popover'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Dialog } from './dialog'
 
 jest.mock('../../hooks/use-id')

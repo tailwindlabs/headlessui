@@ -35,7 +35,7 @@ import {
   word,
 } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Listbox } from './listbox'
 
 jest.mock('../../hooks/use-id')
