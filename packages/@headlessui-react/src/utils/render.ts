@@ -140,6 +140,12 @@ function _render<TTag extends ElementType, TSlot>(
     rest.className = rest.className(slot)
   }
 
+  // Drop `aria-labelledby` if it only references the current element. If the `aria-labelledby`
+  // references itself but also another element then we can keep it.
+  if (rest['aria-labelledby'] && rest['aria-labelledby'] === rest.id) {
+    rest['aria-labelledby'] = undefined
+  }
+
   let dataAttributes: Record<string, string> = {}
   if (slot) {
     let exposeState = false
