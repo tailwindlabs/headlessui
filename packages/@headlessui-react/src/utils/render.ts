@@ -154,8 +154,9 @@ function _render<TTag extends ElementType, TSlot>(
       if (typeof v === 'boolean') {
         exposeState = true
       }
+
       if (v === true) {
-        states.push(k)
+        states.push(k.replace(/([A-Z])/g, (m) => `-${m.toLowerCase()}`))
       }
     }
 
