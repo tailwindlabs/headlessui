@@ -52,7 +52,9 @@ import {
   type PropsForFeatures,
   type RefProp,
 } from '../../utils/render'
+import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
+import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
 
 enum ComboboxState {
   Open,
@@ -79,7 +81,6 @@ type ComboboxOptionDataRef<T> = MutableRefObject<{
 
 interface StateDefinition<T> {
   dataRef: MutableRefObject<_Data | null>
-  labelId: string | null
 
   virtual: { options: T[]; disabled: (value: unknown) => boolean } | null
 
@@ -98,8 +99,6 @@ enum ActionTypes {
 
   RegisterOption,
   UnregisterOption,
-
-  RegisterLabel,
 
   SetActivationTrigger,
 
@@ -156,7 +155,6 @@ type Actions<T> =
       type: ActionTypes.RegisterOption
       payload: { id: string; dataRef: ComboboxOptionDataRef<T> }
     }
-  | { type: ActionTypes.RegisterLabel; id: string | null }
   | { type: ActionTypes.UnregisterOption; id: string }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
   | { type: ActionTypes.UpdateVirtualOptions; options: T[] }
@@ -327,16 +325,6 @@ let reducers: {
       activationTrigger: ActivationTrigger.Other,
     }
   },
-  [ActionTypes.RegisterLabel]: (state, action) => {
-    if (state.labelId === action.id) {
-      return state
-    }
-
-    return {
-      ...state,
-      labelId: action.id,
-    }
-  },
   [ActionTypes.SetActivationTrigger]: (state, action) => {
     if (state.activationTrigger === action.trigger) {
       return state
@@ -374,7 +362,6 @@ let ComboboxActionsContext = createContext<{
   openCombobox(): void
   closeCombobox(): void
   registerOption(id: string, dataRef: ComboboxOptionDataRef<unknown>): () => void
-  registerLabel(id: string): () => void
   goToOption(focus: Focus.Specific, idx: number, trigger?: ActivationTrigger): void
   goToOption(focus: Focus, idx?: number, trigger?: ActivationTrigger): void
   selectActiveOption(): void
@@ -518,7 +505,6 @@ let ComboboxDataContext = createContext<
         hold: boolean
       }>
 
-      labelRef: MutableRefObject<HTMLLabelElement | null>
       inputRef: MutableRefObject<HTMLInputElement | null>
       buttonRef: MutableRefObject<HTMLButtonElement | null>
       optionsRef: MutableRefObject<HTMLUListElement | null>
@@ -664,14 +650,12 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       : null,
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
-    labelId: null,
   } as StateDefinition<TValue>)
 
   let defaultToFirstOption = useRef(false)
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
-  let labelRef = useRef<_Data['labelRef']['current']>(null)
   let inputRef = useRef<_Data['inputRef']['current']>(null)
   let buttonRef = useRef<_Data['buttonRef']['current']>(null)
   let optionsRef = useRef<_Data['optionsRef']['current']>(null)
@@ -711,7 +695,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       ...state,
       immediate,
       optionsPropsRef,
-      labelRef,
       inputRef,
       buttonRef,
       optionsRef,
@@ -844,11 +827,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     }
   })
 
-  let registerLabel = useEvent((id) => {
-    dispatch({ type: ActionTypes.RegisterLabel, id })
-    return () => dispatch({ type: ActionTypes.RegisterLabel, id: null })
-  })
-
   let onChange = useEvent((value: unknown) => {
     return match(data.mode, {
       [ValueMode.Single]() {
@@ -877,7 +855,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     () => ({
       onChange,
       registerOption,
-      registerLabel,
       goToOption,
       closeCombobox,
       openCombobox,
@@ -886,6 +863,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     }),
     []
   )
+
+  let [labelledby, LabelProvider] = useLabels()
 
   let ourProps = ref === null ? {} : { ref }
 
@@ -1325,12 +1304,8 @@ function InputFn<
     })
   })
 
-  // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present
-  // Otherwise it's the ID of the non-label element
-  let labelledby = useComputed(() => {
-    if (!data.labelId) return undefined
-    return [data.labelId].join(' ')
-  }, [data.labelId])
+  let labelledBy = useLabelledBy()
+  let describedBy = useDescribedBy()
 
   let slot = useMemo<InputRenderPropArg>(
     () => ({ open: data.comboboxState === ComboboxState.Open, disabled: data.disabled }),
@@ -1603,17 +1578,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     },
   })
 
-  let labelledby = useComputed(
-    () => data.labelId ?? data.buttonRef.current?.id,
-    [data.labelId, data.buttonRef.current]
-  )
+  let labelledBy = useLabelledBy([data.buttonRef.current?.id])
 
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: data.comboboxState === ComboboxState.Open, option: undefined }),
     [data]
   )
   let ourProps = {
-    'aria-labelledby': labelledby,
+    'aria-labelledby': labelledBy,
     role: 'listbox',
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     id,
