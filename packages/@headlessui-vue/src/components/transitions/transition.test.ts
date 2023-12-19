@@ -76,11 +76,7 @@ describe('Setup API', () => {
         template: html`<TransitionRoot :show="true">Children</TransitionRoot>`,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div>
-          Children
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should passthrough all the props (that we do not use internally)', () => {
@@ -90,14 +86,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div
-          class="text-blue-400"
-          id="root"
-        >
-           Children 
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should render another component if the `as` prop is used and its children by default', () => {
@@ -105,11 +94,7 @@ describe('Setup API', () => {
         template: html` <TransitionRoot :show="true" as="a"> Children </TransitionRoot> `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <a>
-           Children 
-        </a>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should passthrough all the props (that we do not use internally) even when using an `as` prop', () => {
@@ -121,14 +106,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <a
-          class="text-blue-400"
-          href="/"
-        >
-           Children 
-        </a>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should render nothing when the show prop is false', () => {
@@ -136,7 +114,7 @@ describe('Setup API', () => {
         template: html` <TransitionRoot :show="false">Children</TransitionRoot> `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`<!---->`)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should be possible to change the underlying DOM tag', () => {
@@ -144,11 +122,7 @@ describe('Setup API', () => {
         template: html` <TransitionRoot :show="true" as="a"> Children </TransitionRoot> `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <a>
-           Children 
-        </a>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
   })
 
@@ -199,20 +173,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div
-          class="My Page"
-        >
-          <div>
-            <div>
-              Sidebar
-            </div>
-            <div>
-              Content
-            </div>
-          </div>
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should be possible to change the underlying DOM tag of the TransitionChild components', () => {
@@ -227,20 +188,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div
-          class="My Page"
-        >
-          <div>
-            <aside>
-              Sidebar
-            </aside>
-            <section>
-              Content
-            </section>
-          </div>
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should be possible to change the underlying DOM tag of the Transition component and TransitionChild components', () => {
@@ -255,20 +203,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div
-          class="My Page"
-        >
-          <article>
-            <aside>
-              Sidebar
-            </aside>
-            <section>
-              Content
-            </section>
-          </article>
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should be possible to use render props on the TransitionChild components', () => {
@@ -283,20 +218,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div
-          class="My Page"
-        >
-          <div>
-            <aside>
-              Sidebar
-            </aside>
-            <section>
-              Content
-            </section>
-          </div>
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should be possible to use render props on the Transition and TransitionChild components', () => {
@@ -317,20 +239,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div
-          class="My Page"
-        >
-          <article>
-            <aside>
-              Sidebar
-            </aside>
-            <section>
-              Content
-            </section>
-          </article>
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it(
@@ -384,11 +293,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div>
-           Children 
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
 
     it('should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true', () => {
@@ -409,13 +314,7 @@ describe('Setup API', () => {
         `,
       })
 
-      expect(container.firstChild).toMatchInlineSnapshot(`
-        <div
-          class="enter enter-from"
-        >
-           Children 
-        </div>
-      `)
+      expect(container.firstChild).toMatchSnapshot()
     })
   })
 })
@@ -454,25 +353,7 @@ describe('Transitions', () => {
         },
       ])
 
-      expect(timeline).toMatchInlineSnapshot(`
-        "Render 1:
-            -  <!---->
-            +  <div
-            +    class=\\"enter from\\"
-            +  >
-            +    <span>
-            +      Hello!
-            +    </span>
-            +  </div>
-
-        Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
-
-        Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
-      `)
+      expect(timeline).toMatchSnapshot()
     })
 
     it('should transition in completely (duration defined in seconds)', async () => {
@@ -507,25 +388,7 @@ describe('Transitions', () => {
         },
       ])
 
-      expect(timeline).toMatchInlineSnapshot(`
-        "Render 1:
-            -  <!---->
-            +  <div
-            +    class=\\"enter from\\"
-            +  >
-            +    <span>
-            +      Hello!
-            +    </span>
-            +  </div>
-
-        Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
-
-        Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
-      `)
+      expect(timeline).toMatchSnapshot()
     })
 
     it('should transition in completely (duration defined in seconds) in (render strategy = hidden)', async () => {
@@ -560,20 +423,7 @@ describe('Transitions', () => {
         },
       ])
 
-      expect(timeline).toMatchInlineSnapshot(`
-        "Render 1:
-            -  hidden=\\"\\"
-            -  style=\\"display: none;\\"
-            +  class=\\"enter from\\"
-
-        Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
-
-        Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
-      `)
+      expect(timeline).toMatchSnapshot()
     })
 
     it('should transition in completely', async () => {
@@ -608,25 +458,7 @@ describe('Transitions', () => {
         },
       ])
 
-      expect(timeline).toMatchInlineSnapshot(`
-        "Render 1:
-            -  <!---->
-            +  <div
-            +    class=\\"enter from\\"
-            +  >
-            +    <span>
-            +      Hello!
-            +    </span>
-            +  </div>
-
-        Render 2:
-            -  class=\\"enter from\\"
-            +  class=\\"enter to\\"
-
-        Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter to\\"
-            +  class=\\"\\""
-      `)
+      expect(timeline).toMatchSnapshot()
     })
 
     it(
@@ -663,27 +495,7 @@ describe('Transitions', () => {
           },
         ])
 
-        expect(timeline).toMatchInlineSnapshot(`
-          "Render 1:
-              -  <div>
-              +  <div
-              +    class=\\"leave from\\"
-              +  >
-
-          Render 2:
-              -  class=\\"leave from\\"
-              +  class=\\"leave to\\"
-
-          Render 3: Transition took at least 50ms (yes)
-              -  <div
-              -    class=\\"leave to\\"
-              -  >
-              -    <span>
-              -      Hello!
-              -    </span>
-              -  </div>
-              +  <!---->"
-        `)
+        expect(timeline).toMatchSnapshot()
       })
     )
 
@@ -727,23 +539,7 @@ describe('Transitions', () => {
           },
         ])
 
-        expect(timeline).toMatchInlineSnapshot(`
-          "Render 1:
-              -  <div>
-              +  <div
-              +    class=\\"leave from\\"
-              +  >
-
-          Render 2:
-              -  class=\\"leave from\\"
-              +  class=\\"leave to\\"
-
-          Render 3: Transition took at least 50ms (yes)
-              -  class=\\"leave to\\"
-              +  class=\\"\\"
-              +  hidden=\\"\\"
-              +  style=\\"display: none;\\""
-        `)
+        expect(timeline).toMatchSnapshot()
       })
     )
 
@@ -800,43 +596,7 @@ describe('Transitions', () => {
           },
         ])
 
-        expect(timeline).toMatchInlineSnapshot(`
-          "Render 1:
-              -  <!---->
-              +  <div
-              +    class=\\"enter enter-from\\"
-              +  >
-              +    <span>
-              +      Hello!
-              +    </span>
-              +  </div>
-
-          Render 2:
-              -  class=\\"enter enter-from\\"
-              +  class=\\"enter enter-to\\"
-
-          Render 3: Transition took at least 50ms (yes)
-              -  class=\\"enter enter-to\\"
-              +  class=\\"\\"
-
-          Render 4:
-              -  class=\\"\\"
-              +  class=\\"leave leave-from\\"
-
-          Render 5:
-              -  class=\\"leave leave-from\\"
-              +  class=\\"leave leave-to\\"
-
-          Render 6: Transition took at least 75ms (yes)
-              -  <div
-              -    class=\\"leave leave-to\\"
-              -  >
-              -    <span>
-              -      Hello!
-              -    </span>
-              -  </div>
-              +  <!---->"
-        `)
+        expect(timeline).toMatchSnapshot()
       })
     )
 
@@ -900,48 +660,7 @@ describe('Transitions', () => {
           },
         ])
 
-        expect(timeline).toMatchInlineSnapshot(`
-          "Render 1:
-              -  hidden=\\"\\"
-              -  style=\\"display: none;\\"
-              +  class=\\"enter enter-from\\"
-
-          Render 2:
-              -  class=\\"enter enter-from\\"
-              +  class=\\"enter enter-to\\"
-
-          Render 3: Transition took at least 50ms (yes)
-              -  class=\\"enter enter-to\\"
-              +  class=\\"\\"
-
-          Render 4:
-              -  class=\\"\\"
-              +  class=\\"leave leave-from\\"
-
-          Render 5:
-              -  class=\\"leave leave-from\\"
-              +  class=\\"leave leave-to\\"
-
-          Render 6: Transition took at least 75ms (yes)
-              -  class=\\"leave leave-to\\"
-              +  class=\\"\\"
-              +  hidden=\\"\\"
-              +  style=\\"display: none;\\"
-
-          Render 7:
-              -  class=\\"\\"
-              -  hidden=\\"\\"
-              -  style=\\"display: none;\\"
-              +  class=\\"enter enter-from\\"
-
-          Render 8:
-              -  class=\\"enter enter-from\\"
-              +  class=\\"enter enter-to\\"
-
-          Render 9: Transition took at least 75ms (yes)
-              -  class=\\"enter enter-to\\"
-              +  class=\\"\\""
-        `)
+        expect(timeline).toMatchSnapshot()
       })
     )
   })
@@ -994,43 +713,7 @@ describe('Transitions', () => {
           },
         ])
 
-        expect(timeline).toMatchInlineSnapshot(`
-          "Render 1:
-              -  <div>
-              +  <div
-              +    class=\\"leave-fast leave-from\\"
-              +  >
-              ---
-              -  <div>
-              +  <div
-              +    class=\\"leave-slow leave-from\\"
-              +  >
-
-          Render 2:
-              -  class=\\"leave-fast leave-from\\"
-              +  class=\\"leave-fast leave-to\\"
-              ---
-              -  class=\\"leave-slow leave-from\\"
-              +  class=\\"leave-slow leave-to\\"
-
-          Render 3: Transition took at least 50ms (yes)
-              -  <div
-              -    class=\\"leave-fast leave-to\\"
-              -  >
-              -     I am fast 
-              -  </div>
-              +  <!---->
-
-          Render 4: Transition took at least 100ms (yes)
-              -  <div>
-              ---
-              -    <div
-              -      class=\\"leave-slow leave-to\\"
-              -    >
-              -       I am slow 
-              -    </div>
-              -  </div>"
-        `)
+        expect(timeline).toMatchSnapshot()
       })
     )
 
@@ -1084,55 +767,7 @@ describe('Transitions', () => {
           },
         ])
 
-        expect(timeline).toMatchInlineSnapshot(`
-          "Render 1:
-              -  <div>
-              +  <div
-              +    class=\\"leave-fast leave-from\\"
-              +  >
-              ---
-              -    <div>
-              +    <div
-              +      class=\\"leave-slow\\"
-              +    >
-              ---
-              -  <div>
-              +  <div
-              +    class=\\"leave-slow leave-from\\"
-              +  >
-
-          Render 2:
-              -  class=\\"leave-fast leave-from\\"
-              +  class=\\"leave-fast leave-to\\"
-              ---
-              -  class=\\"leave-slow leave-from\\"
-              +  class=\\"leave-slow leave-to\\"
-
-          Render 3: Transition took at least 50ms (yes)
-              -  <div
-              -    class=\\"leave-fast leave-to\\"
-              -  >
-              -    <span>
-              -      I am fast
-              -    </span>
-              -    <div
-              -      class=\\"leave-slow\\"
-              -    >
-              -       I am my own root component and I don't talk to the parent 
-              -    </div>
-              -  </div>
-              +  <!---->
-
-          Render 4: Transition took at least 100ms (yes)
-              -  <div>
-              ---
-              -    <div
-              -      class=\\"leave-slow leave-to\\"
-              -    >
-              -       I am slow 
-              -    </div>
-              -  </div>"
-        `)
+        expect(timeline).toMatchSnapshot()
       })
     )
   })
@@ -1200,43 +835,7 @@ describe('Events', () => {
         },
       ])
 
-      expect(timeline).toMatchInlineSnapshot(`
-        "Render 1:
-            -  <!---->
-            +  <div
-            +    class=\\"enter enter-from\\"
-            +  >
-            +    <span>
-            +      Hello!
-            +    </span>
-            +  </div>
-
-        Render 2:
-            -  class=\\"enter enter-from\\"
-            +  class=\\"enter enter-to\\"
-
-        Render 3: Transition took at least 50ms (yes)
-            -  class=\\"enter enter-to\\"
-            +  class=\\"\\"
-
-        Render 4:
-            -  class=\\"\\"
-            +  class=\\"leave leave-from\\"
-
-        Render 5:
-            -  class=\\"leave leave-from\\"
-            +  class=\\"leave leave-to\\"
-
-        Render 6: Transition took at least 75ms (yes)
-            -  <div
-            -    class=\\"leave leave-to\\"
-            -  >
-            -    <span>
-            -      Hello!
-            -    </span>
-            -  </div>
-            +  <!---->"
-      `)
+      expect(timeline).toMatchSnapshot()
 
       expect(eventHandler).toHaveBeenCalledTimes(4)
       expect(eventHandler.mock.calls.map(([name]) => name)).toEqual([

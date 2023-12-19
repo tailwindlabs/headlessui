@@ -1,0 +1,450 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Events should fire events for all the stages 1`] = `
+"Render 1:
+    -  <!---->
+    +  <div
+    +    class=\\"enter enter-from\\"
+    +  >
+    +    <span>
+    +      Hello!
+    +    </span>
+    +  </div>
+
+Render 2:
+    -  class=\\"enter enter-from\\"
+    +  class=\\"enter enter-to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"enter enter-to\\"
+    +  class=\\"\\"
+
+Render 4:
+    -  class=\\"\\"
+    +  class=\\"leave leave-from\\"
+
+Render 5:
+    -  class=\\"leave leave-from\\"
+    +  class=\\"leave leave-to\\"
+
+Render 6: Transition took at least 75ms (yes)
+    -  <div
+    -    class=\\"leave leave-to\\"
+    -  >
+    -    <span>
+    -      Hello!
+    -    </span>
+    -  </div>
+    +  <!---->"
+`;
+
+exports[`Setup API nested should be possible to change the underlying DOM tag of the Transition component and TransitionChild components 1`] = `
+<div
+  class="My Page"
+>
+  <article>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </article>
+</div>
+`;
+
+exports[`Setup API nested should be possible to change the underlying DOM tag of the TransitionChild components 1`] = `
+<div
+  class="My Page"
+>
+  <div>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </div>
+</div>
+`;
+
+exports[`Setup API nested should be possible to nest transition components 1`] = `
+<div
+  class="My Page"
+>
+  <div>
+    <div>
+      Sidebar
+    </div>
+    <div>
+      Content
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Setup API nested should be possible to use render props on the Transition and TransitionChild components 1`] = `
+<div
+  class="My Page"
+>
+  <article>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </article>
+</div>
+`;
+
+exports[`Setup API nested should be possible to use render props on the TransitionChild components 1`] = `
+<div
+  class="My Page"
+>
+  <div>
+    <aside>
+      Sidebar
+    </aside>
+    <section>
+      Content
+    </section>
+  </div>
+</div>
+`;
+
+exports[`Setup API shallow should be possible to change the underlying DOM tag 1`] = `
+<a>
+   Children 
+</a>
+`;
+
+exports[`Setup API shallow should passthrough all the props (that we do not use internally) 1`] = `
+<div
+  class="text-blue-400"
+  id="root"
+>
+   Children 
+</div>
+`;
+
+exports[`Setup API shallow should passthrough all the props (that we do not use internally) even when using an \`as\` prop 1`] = `
+<a
+  class="text-blue-400"
+  href="/"
+>
+   Children 
+</a>
+`;
+
+exports[`Setup API shallow should render a div and its children by default 1`] = `
+<div>
+  Children
+</div>
+`;
+
+exports[`Setup API shallow should render another component if the \`as\` prop is used and its children by default 1`] = `
+<a>
+   Children 
+</a>
+`;
+
+exports[`Setup API shallow should render nothing when the show prop is false 1`] = `<!---->`;
+
+exports[`Setup API transition classes should be possible to passthrough the transition classes 1`] = `
+<div>
+   Children 
+</div>
+`;
+
+exports[`Setup API transition classes should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true 1`] = `
+<div
+  class="enter enter-from"
+>
+   Children 
+</div>
+`;
+
+exports[`Transitions nested transitions should not unmount the whole tree when some children are still transitioning 1`] = `
+"Render 1:
+    -  <div>
+    +  <div
+    +    class=\\"leave-fast leave-from\\"
+    +  >
+    ---
+    -  <div>
+    +  <div
+    +    class=\\"leave-slow leave-from\\"
+    +  >
+
+Render 2:
+    -  class=\\"leave-fast leave-from\\"
+    +  class=\\"leave-fast leave-to\\"
+    ---
+    -  class=\\"leave-slow leave-from\\"
+    +  class=\\"leave-slow leave-to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  <div
+    -    class=\\"leave-fast leave-to\\"
+    -  >
+    -     I am fast 
+    -  </div>
+    +  <!---->
+
+Render 4: Transition took at least 100ms (yes)
+    -  <div>
+    ---
+    -    <div
+    -      class=\\"leave-slow leave-to\\"
+    -    >
+    -       I am slow 
+    -    </div>
+    -  </div>"
+`;
+
+exports[`Transitions nested transitions should not unmount the whole tree when some children are still transitioning 2`] = `
+"Render 1:
+    -  <div>
+    +  <div
+    +    class=\\"leave-fast leave-from\\"
+    +  >
+    ---
+    -    <div>
+    +    <div
+    +      class=\\"leave-slow\\"
+    +    >
+    ---
+    -  <div>
+    +  <div
+    +    class=\\"leave-slow leave-from\\"
+    +  >
+
+Render 2:
+    -  class=\\"leave-fast leave-from\\"
+    +  class=\\"leave-fast leave-to\\"
+    ---
+    -  class=\\"leave-slow leave-from\\"
+    +  class=\\"leave-slow leave-to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  <div
+    -    class=\\"leave-fast leave-to\\"
+    -  >
+    -    <span>
+    -      I am fast
+    -    </span>
+    -    <div
+    -      class=\\"leave-slow\\"
+    -    >
+    -       I am my own root component and I don't talk to the parent 
+    -    </div>
+    -  </div>
+    +  <!---->
+
+Render 4: Transition took at least 100ms (yes)
+    -  <div>
+    ---
+    -    <div
+    -      class=\\"leave-slow leave-to\\"
+    -    >
+    -       I am slow 
+    -    </div>
+    -  </div>"
+`;
+
+exports[`Transitions shallow transitions should transition in and out completely (render strategy = hidden) 1`] = `
+"Render 1:
+    -  hidden=\\"\\"
+    -  style=\\"display: none;\\"
+    +  class=\\"enter enter-from\\"
+
+Render 2:
+    -  class=\\"enter enter-from\\"
+    +  class=\\"enter enter-to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"enter enter-to\\"
+    +  class=\\"\\"
+
+Render 4:
+    -  class=\\"\\"
+    +  class=\\"leave leave-from\\"
+
+Render 5:
+    -  class=\\"leave leave-from\\"
+    +  class=\\"leave leave-to\\"
+
+Render 6: Transition took at least 75ms (yes)
+    -  class=\\"leave leave-to\\"
+    +  class=\\"\\"
+    +  hidden=\\"\\"
+    +  style=\\"display: none;\\"
+
+Render 7:
+    -  class=\\"\\"
+    -  hidden=\\"\\"
+    -  style=\\"display: none;\\"
+    +  class=\\"enter enter-from\\"
+
+Render 8:
+    -  class=\\"enter enter-from\\"
+    +  class=\\"enter enter-to\\"
+
+Render 9: Transition took at least 75ms (yes)
+    -  class=\\"enter enter-to\\"
+    +  class=\\"\\""
+`;
+
+exports[`Transitions shallow transitions should transition in and out completely 1`] = `
+"Render 1:
+    -  <!---->
+    +  <div
+    +    class=\\"enter enter-from\\"
+    +  >
+    +    <span>
+    +      Hello!
+    +    </span>
+    +  </div>
+
+Render 2:
+    -  class=\\"enter enter-from\\"
+    +  class=\\"enter enter-to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"enter enter-to\\"
+    +  class=\\"\\"
+
+Render 4:
+    -  class=\\"\\"
+    +  class=\\"leave leave-from\\"
+
+Render 5:
+    -  class=\\"leave leave-from\\"
+    +  class=\\"leave leave-to\\"
+
+Render 6: Transition took at least 75ms (yes)
+    -  <div
+    -    class=\\"leave leave-to\\"
+    -  >
+    -    <span>
+    -      Hello!
+    -    </span>
+    -  </div>
+    +  <!---->"
+`;
+
+exports[`Transitions shallow transitions should transition in completely (duration defined in milliseconds) 1`] = `
+"Render 1:
+    -  <!---->
+    +  <div
+    +    class=\\"enter from\\"
+    +  >
+    +    <span>
+    +      Hello!
+    +    </span>
+    +  </div>
+
+Render 2:
+    -  class=\\"enter from\\"
+    +  class=\\"enter to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"enter to\\"
+    +  class=\\"\\""
+`;
+
+exports[`Transitions shallow transitions should transition in completely (duration defined in seconds) 1`] = `
+"Render 1:
+    -  <!---->
+    +  <div
+    +    class=\\"enter from\\"
+    +  >
+    +    <span>
+    +      Hello!
+    +    </span>
+    +  </div>
+
+Render 2:
+    -  class=\\"enter from\\"
+    +  class=\\"enter to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"enter to\\"
+    +  class=\\"\\""
+`;
+
+exports[`Transitions shallow transitions should transition in completely (duration defined in seconds) in (render strategy = hidden) 1`] = `
+"Render 1:
+    -  hidden=\\"\\"
+    -  style=\\"display: none;\\"
+    +  class=\\"enter from\\"
+
+Render 2:
+    -  class=\\"enter from\\"
+    +  class=\\"enter to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"enter to\\"
+    +  class=\\"\\""
+`;
+
+exports[`Transitions shallow transitions should transition in completely 1`] = `
+"Render 1:
+    -  <!---->
+    +  <div
+    +    class=\\"enter from\\"
+    +  >
+    +    <span>
+    +      Hello!
+    +    </span>
+    +  </div>
+
+Render 2:
+    -  class=\\"enter from\\"
+    +  class=\\"enter to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"enter to\\"
+    +  class=\\"\\""
+`;
+
+exports[`Transitions shallow transitions should transition out completely (render strategy = hidden) 1`] = `
+"Render 1:
+    -  <div>
+    +  <div
+    +    class=\\"leave from\\"
+    +  >
+
+Render 2:
+    -  class=\\"leave from\\"
+    +  class=\\"leave to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  class=\\"leave to\\"
+    +  class=\\"\\"
+    +  hidden=\\"\\"
+    +  style=\\"display: none;\\""
+`;
+
+exports[`Transitions shallow transitions should transition out completely 1`] = `
+"Render 1:
+    -  <div>
+    +  <div
+    +    class=\\"leave from\\"
+    +  >
+
+Render 2:
+    -  class=\\"leave from\\"
+    +  class=\\"leave to\\"
+
+Render 3: Transition took at least 50ms (yes)
+    -  <div
+    -    class=\\"leave to\\"
+    -  >
+    -    <span>
+    -      Hello!
+    -    </span>
+    -  </div>
+    +  <!---->"
+`;
