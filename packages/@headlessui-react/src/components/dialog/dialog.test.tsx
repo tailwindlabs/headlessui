@@ -59,7 +59,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Dialog />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement(Component))).toThrowError(
+      expect(() => render(createElement(Component))).toThrow(
         `<${name} /> is missing a parent <Dialog /> component.`
       )
       expect.hasAssertions()
@@ -92,8 +92,10 @@ describe('Rendering', () => {
     it(
       'should complain when the `open` and `onClose` prop are missing',
       suppressConsoleLogs(async () => {
-        // @ts-expect-error
-        expect(() => render(<Dialog as="div" />)).toThrowErrorMatchingInlineSnapshot(
+        expect(() =>
+          // @ts-expect-error
+          render(<Dialog autoFocus={false} as="div" />)
+        ).toThrowErrorMatchingInlineSnapshot(
           `"You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component."`
         )
         expect.hasAssertions()
@@ -195,8 +197,10 @@ describe('Rendering', () => {
     it(
       'should complain when an `open` prop is provided without an `onClose` prop',
       suppressConsoleLogs(async () => {
-        // @ts-expect-error
-        expect(() => render(<Dialog as="div" open={false} />)).toThrowErrorMatchingInlineSnapshot(
+        expect(() =>
+          // @ts-expect-error
+          render(<Dialog autoFocus={false} as="div" open={false} />)
+        ).toThrowErrorMatchingInlineSnapshot(
           `"You provided an \`open\` prop to the \`Dialog\`, but forgot an \`onClose\` prop."`
         )
         expect.hasAssertions()
@@ -703,7 +707,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Dialog open={true} onClose={console.log}>
-            <Dialog.Title>{JSON.stringify}</Dialog.Title>
+            <Dialog.Title>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Title>
             <TabSentinel />
           </Dialog>
         )
@@ -728,7 +732,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Dialog open={true} onClose={console.log}>
-            <Dialog.Description>{JSON.stringify}</Dialog.Description>
+            <Dialog.Description>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Description>
             <TabSentinel />
           </Dialog>
         )
@@ -818,7 +822,7 @@ describe('Composition', () => {
       render(
         <Transition show={true}>
           <Dialog onClose={console.log}>
-            <Dialog.Description>{JSON.stringify}</Dialog.Description>
+            <Dialog.Description>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Description>
             <TabSentinel />
           </Dialog>
         </Transition>
@@ -840,7 +844,7 @@ describe('Composition', () => {
       render(
         <Transition show={false}>
           <Dialog onClose={console.log}>
-            <Dialog.Description>{JSON.stringify}</Dialog.Description>
+            <Dialog.Description>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Description>
             <TabSentinel />
           </Dialog>
         </Transition>

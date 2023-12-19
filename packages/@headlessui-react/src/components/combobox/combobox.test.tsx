@@ -70,10 +70,17 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Combobox />',
     suppressConsoleLogs((name, Component) => {
-      // @ts-expect-error This is fine
-      expect(() => render(createElement(Component))).toThrowError(
-        `<${name} /> is missing a parent <Combobox /> component.`
-      )
+      if (name === 'Combobox.Label') {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          'You used a <Label /> component, but it is not inside a relevant parent.'
+        )
+      } else {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          `<${name} /> is missing a parent <Combobox /> component.`
+        )
+      }
     })
   )
 
@@ -814,7 +821,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={(x) => console.log(x)}>
-            <Combobox.Label>{JSON.stringify}</Combobox.Label>
+            <Combobox.Label>{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Label>
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -868,7 +875,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={(x) => console.log(x)}>
-            <Combobox.Label as="p">{JSON.stringify}</Combobox.Label>
+            <Combobox.Label as="p">{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Label>
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -904,7 +911,7 @@ describe('Rendering', () => {
         render(
           <Combobox value="test" onChange={(x) => console.log(x)}>
             <Combobox.Input onChange={NOOP} />
-            <Combobox.Button>{JSON.stringify}</Combobox.Button>
+            <Combobox.Button>{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
               <Combobox.Option value="b">Option B</Combobox.Option>
@@ -938,7 +945,7 @@ describe('Rendering', () => {
           <Combobox value="test" onChange={(x) => console.log(x)}>
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button as="div" role="button">
-              {JSON.stringify}
+              {(slot) => <>{JSON.stringify(slot)}</>}
             </Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -1146,7 +1153,7 @@ describe('Rendering', () => {
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
-              <Combobox.Option value="a">{JSON.stringify}</Combobox.Option>
+              <Combobox.Option value="a">{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Option>
             </Combobox.Options>
           </Combobox>
         )
@@ -4050,10 +4057,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
       })
 
       describe('`Any` key aka search', () => {
+        type Option = { value: string; name: string; disabled: boolean }
         function Example(props: { people: { value: string; name: string; disabled: boolean }[] }) {
-          let [value, setValue] = useState<
-            { value: string; name: string; disabled: boolean } | undefined
-          >(undefined)
+          let [value, setValue] = useState<Option | undefined>(undefined)
           let [query, setQuery] = useState<string>('')
           let filteredPeople =
             query === ''
@@ -4076,10 +4082,10 @@ describe.each([{ virtual: true }, { virtual: false }])(
                 <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
-                  {({ option }: { option: NonNullable<typeof value> }) => {
+                  {({ option }) => {
                     return (
-                      <Combobox.Option {...option} value={option}>
-                        {option.name}
+                      <Combobox.Option {...(option as Option)} value={option}>
+                        {(option as Option).name}
                       </Combobox.Option>
                     )
                   }}

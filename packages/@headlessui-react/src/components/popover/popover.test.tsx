@@ -42,7 +42,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Popover />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement<typeof Component>(Component))).toThrowError(
+      expect(() => render(createElement(Component as any))).toThrow(
         `<${name} /> is missing a parent <Popover /> component.`
       )
     })
@@ -370,7 +370,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Popover>
-            <Popover.Button>{JSON.stringify}</Popover.Button>
+            <Popover.Button>{(slot) => <>{JSON.stringify(slot)}</>}</Popover.Button>
             <Popover.Panel></Popover.Panel>
           </Popover>
         )
@@ -399,7 +399,7 @@ describe('Rendering', () => {
         render(
           <Popover>
             <Popover.Button as="div" role="button">
-              {JSON.stringify}
+              {(slot) => <>{JSON.stringify(slot)}</>}
             </Popover.Button>
             <Popover.Panel />
           </Popover>
@@ -491,7 +491,7 @@ describe('Rendering', () => {
         render(
           <Popover>
             <Popover.Button>Trigger</Popover.Button>
-            <Popover.Panel>{JSON.stringify}</Popover.Panel>
+            <Popover.Panel>{(slot) => <>{JSON.stringify(slot)}</>}</Popover.Panel>
           </Popover>
         )
 

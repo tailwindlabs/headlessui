@@ -27,7 +27,7 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Tab.Group /> component',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement(Component))).toThrowError(
+      expect(() => render(createElement(Component as any))).toThrow(
         `<${name} /> is missing a parent <Tab.Group /> component.`
       )
     })

@@ -35,7 +35,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Disclosure />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement<typeof Component>(Component))).toThrowError(
+      expect(() => render(createElement(Component as any))).toThrow(
         `<${name} /> is missing a parent <Disclosure /> component.`
       )
     })
@@ -256,7 +256,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Disclosure>
-            <Disclosure.Button>{JSON.stringify}</Disclosure.Button>
+            <Disclosure.Button>{(slot) => <>{JSON.stringify(slot)}</>}</Disclosure.Button>
             <Disclosure.Panel></Disclosure.Panel>
           </Disclosure>
         )
@@ -285,7 +285,7 @@ describe('Rendering', () => {
         render(
           <Disclosure>
             <Disclosure.Button as="div" role="button">
-              {JSON.stringify}
+              {(slot) => <>{JSON.stringify(slot)}</>}
             </Disclosure.Button>
             <Disclosure.Panel />
           </Disclosure>
@@ -377,7 +377,7 @@ describe('Rendering', () => {
         render(
           <Disclosure>
             <Disclosure.Button>Trigger</Disclosure.Button>
-            <Disclosure.Panel>{JSON.stringify}</Disclosure.Panel>
+            <Disclosure.Panel>{(slot) => <>{JSON.stringify(slot)}</>}</Disclosure.Panel>
           </Disclosure>
         )
 

@@ -50,7 +50,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Menu />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement<typeof Component>(Component))).toThrowError(
+      expect(() => render(createElement(Component as any))).toThrow(
         `<${name} /> is missing a parent <Menu /> component.`
       )
     })
@@ -363,7 +363,7 @@ describe('Rendering', () => {
           <Menu>
             <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
-              <Menu.Item as="a">{JSON.stringify}</Menu.Item>
+              <Menu.Item as="a">{(slot) => <>{JSON.stringify(slot)}</>}</Menu.Item>
             </Menu.Items>
           </Menu>
         )

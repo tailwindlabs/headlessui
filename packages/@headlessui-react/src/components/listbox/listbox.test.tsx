@@ -56,10 +56,17 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Listbox />',
     suppressConsoleLogs((name, Component) => {
-      // @ts-expect-error This is fine
-      expect(() => render(createElement(Component))).toThrowError(
-        `<${name} /> is missing a parent <Listbox /> component.`
-      )
+      if (name === 'Listbox.Label') {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          'You used a <Label /> component, but it is not inside a relevant parent.'
+        )
+      } else {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          `<${name} /> is missing a parent <Listbox /> component.`
+        )
+      }
     })
   )
 
@@ -487,7 +494,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Label>{JSON.stringify}</Listbox.Label>
+            <Listbox.Label>{(slot) => <>{JSON.stringify(slot)}</>}</Listbox.Label>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -557,7 +564,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>{JSON.stringify}</Listbox.Button>
+            <Listbox.Button>{(slot) => <>{JSON.stringify(slot)}</>}</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
               <Listbox.Option value="b">Option B</Listbox.Option>
@@ -788,7 +795,7 @@ describe('Rendering', () => {
           <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
-              <Listbox.Option value="a">{JSON.stringify}</Listbox.Option>
+              <Listbox.Option value="a">{(slot) => <>{JSON.stringify(slot)}</>}</Listbox.Option>
             </Listbox.Options>
           </Listbox>
         )

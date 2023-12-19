@@ -25,7 +25,7 @@ describe('Safe guards', () => {
   it.each([['RadioGroup.Option', RadioGroup.Option]])(
     'should error when we are using a <%s /> without a parent <RadioGroup />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement(Component))).toThrowError(
+      expect(() => render(createElement(Component))).toThrow(
         `<${name} /> is missing a parent <RadioGroup /> component.`
       )
     })
@@ -164,7 +164,7 @@ describe('Rendering', () => {
               <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
               <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
               <RadioGroup.Option value="render-prop" data-value="render-prop">
-                {JSON.stringify}
+                {(slot) => <>{JSON.stringify(slot)}</>}
               </RadioGroup.Option>
             </RadioGroup>
           </>
@@ -230,7 +230,7 @@ describe('Rendering', () => {
               <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
               <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
               <RadioGroup.Option value="render-prop" disabled={disabled} data-value="render-prop">
-                {JSON.stringify}
+                {(slot) => <>{JSON.stringify(slot)}</>}
               </RadioGroup.Option>
             </RadioGroup>
           </>
