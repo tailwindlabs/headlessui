@@ -15,7 +15,7 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { useWatch } from '../../hooks/use-watch'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
+import { Hidden, HiddenFeatures } from '../../internal/hidden'
 import type { Props } from '../../types'
 import { history } from '../../utils/active-element-history'
 import { Focus, FocusResult, focusElement, focusIn } from '../../utils/focus-management'

@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, type MutableRefObject } from 'react'
-import { Hidden, Features as HiddenFeatures } from '../internal/hidden'
+import { Hidden, HiddenFeatures } from '../internal/hidden'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
 

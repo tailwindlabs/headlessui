@@ -1,6 +1,6 @@
 import React, { useState, type FocusEvent as ReactFocusEvent } from 'react'
 import { useIsMounted } from '../hooks/use-is-mounted'
-import { Features, Hidden } from './hidden'
+import { Hidden, HiddenFeatures } from './hidden'
 
 interface FocusSentinelProps {
   onFocus(): boolean
@@ -16,7 +16,7 @@ export function FocusSentinel({ onFocus }: FocusSentinelProps) {
     <Hidden
       as="button"
       type="button"
-      features={Features.Focusable}
+      features={HiddenFeatures.Focusable}
       onFocus={(event: ReactFocusEvent) => {
         event.preventDefault()
         let frame: ReturnType<typeof requestAnimationFrame>
