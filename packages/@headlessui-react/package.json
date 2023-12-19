@@ -56,7 +56,6 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.2",
-    "@tanstack/react-virtual": "^3.0.0-beta.60",
-    "client-only": "^0.0.1"
+    "@tanstack/react-virtual": "^3.0.0-beta.60"
   }
 }

@@ -1,5 +1,3 @@
-import 'client-only'
-
 export * from './components/combobox/combobox'
 export * from './components/dialog/dialog'
 export * from './components/disclosure/disclosure'
