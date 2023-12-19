@@ -20,11 +20,7 @@ it('should be possible to use a DescriptionProvider without using a Description'
   }
 
   let { container } = render(<Example />)
-  expect(container.firstChild).toMatchInlineSnapshot(`
-    <div>
-      No description
-    </div>
-  `)
+  expect(container.firstChild).toMatchSnapshot()
 })
 
 it('should be possible to use a DescriptionProvider and a single Description, and have them linked', async () => {
@@ -48,20 +44,7 @@ it('should be possible to use a DescriptionProvider and a single Description, an
   }
 
   let { container } = render(<Example />)
-  expect(container.firstChild).toMatchInlineSnapshot(`
-    <div
-      aria-describedby="headlessui-description-1"
-    >
-      <p
-        id="headlessui-description-1"
-      >
-        I am a description
-      </p>
-      <span>
-        Contents
-      </span>
-    </div>
-  `)
+  expect(container.firstChild).toMatchSnapshot()
 })
 
 it('should be possible to use a DescriptionProvider and multiple Description components, and have them linked', async () => {
@@ -86,23 +69,5 @@ it('should be possible to use a DescriptionProvider and multiple Description com
   }
 
   let { container } = render(<Example />)
-  expect(container.firstChild).toMatchInlineSnapshot(`
-    <div
-      aria-describedby="headlessui-description-1 headlessui-description-2"
-    >
-      <p
-        id="headlessui-description-1"
-      >
-        I am a description
-      </p>
-      <span>
-        Contents
-      </span>
-      <p
-        id="headlessui-description-2"
-      >
-        I am also a description
-      </p>
-    </div>
-  `)
+  expect(container.firstChild).toMatchSnapshot()
 })
