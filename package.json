@@ -56,9 +56,9 @@
     "jest": "26",
     "lint-staged": "^12.2.1",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.6.2",
-    "prettier-plugin-organize-imports": "^3.2.3",
-    "prettier-plugin-tailwindcss": "0.4",
+    "prettier": "^3.1.0",
+    "prettier-plugin-organize-imports": "^3.2.4",
+    "prettier-plugin-tailwindcss": "^0.5.7",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
     "typescript": "^4.9.5"
