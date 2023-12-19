@@ -361,6 +361,44 @@ export type RefProp<T extends Function> = T extends (props: any, ref: Ref<infer 
   ? { ref?: Ref<RefType> }
   : never
 
+// TODO: add proper return type, but this is not exposed as public API so it's fine for now
+export function mergeProps<T extends Props<any, any>[]>(...listOfProps: T) {
+  if (listOfProps.length === 0) return {}
+  if (listOfProps.length === 1) return listOfProps[0]
+
+  let target: Props<any, any> = {}
+
+  let eventHandlers: Record<string, ((...args: any[]) => void | undefined)[]> = {}
+
+  for (let props of listOfProps) {
+    for (let prop in props) {
+      // Merge event listeners
+      if (prop.startsWith('on') && typeof props[prop] === 'function') {
+        eventHandlers[prop] ??= []
+        eventHandlers[prop].push(props[prop])
+      } else {
+        // Override incoming prop
+        target[prop] = props[prop]
+      }
+    }
+  }
+
+  // Merge event handlers
+  for (let eventName in eventHandlers) {
+    Object.assign(target, {
+      [eventName](...args: any[]) {
+        let handlers = eventHandlers[eventName]
+
+        for (let handler of handlers) {
+          handler?.(...args)
+        }
+      },
+    })
+  }
+
+  return target
+}
+
 /**
  * This is a hack, but basically we want to keep the full 'API' of the component, but we do want to
  * wrap it in a forwardRef so that we _can_ passthrough the ref
