@@ -47,13 +47,7 @@ describe('Default functionality', () => {
   it('should be possible to render a dummy component', () => {
     testRender(<Dummy />)
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <div />
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should be possible to merge classes when rendering', () => {
@@ -63,15 +57,7 @@ describe('Default functionality', () => {
       </DummyWithClassName>
     )
 
-    expect(contents('wrapper-with-class')).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper-with-class\\"
-      >
-        <div
-          class=\\"test-inner test-outer\\"
-        />
-      </div>"
-    `)
+    expect(contents('wrapper-with-class')).toMatchSnapshot()
   })
 
   it('should be possible to merge class fns when rendering', () => {
@@ -81,19 +67,7 @@ describe('Default functionality', () => {
       </DummyWithClassName>
     )
 
-    expect(contents('wrapper-with-class')).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper-with-class\\"
-      >
-        <div
-          data-testid=\\"wrapper\\"
-        >
-          <div
-            class=\\"test-inner test-outer\\"
-          />
-        </div>
-      </div>"
-    `)
+    expect(contents('wrapper-with-class')).toMatchSnapshot()
   })
 
   it('should be possible to render a dummy component with some children as a callback', () => {
@@ -109,17 +83,7 @@ describe('Default functionality', () => {
       </Dummy>
     )
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <div>
-          <span>
-            Contents
-          </span>
-        </div>
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should be possible to add a ref with a different name', () => {
@@ -152,73 +116,31 @@ describe('Default functionality', () => {
       </OtherDummy>
     )
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <div
-          potato=\\"[object Object]\\"
-        >
-          Contents
-        </div>
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should be possible to passthrough props to a dummy component', () => {
     testRender(<Dummy a={1} b={2} c={3} />)
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <div
-          a=\\"1\\"
-          b=\\"2\\"
-          c=\\"3\\"
-        />
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should be possible to change the underlying DOM node using the `as` prop', () => {
     testRender(<Dummy as="button" />)
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <button />
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should be possible to change the underlying DOM node using the `as` prop and still have a function as children', () => {
     testRender(<Dummy as="button">{() => <span>Contents</span>}</Dummy>)
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <button>
-          <span>
-            Contents
-          </span>
-        </button>
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should be possible to render the children only when the `as` prop is set to Fragment', () => {
     testRender(<Dummy as={Fragment}>Contents</Dummy>)
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        Contents
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should forward all the props to the first child when using an as={Fragment}', () => {
@@ -228,18 +150,7 @@ describe('Default functionality', () => {
       </Dummy>
     )
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <span
-          a=\\"1\\"
-          b=\\"1\\"
-        >
-          Contents
-        </span>
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it(
@@ -255,7 +166,7 @@ describe('Default functionality', () => {
             <span>Contents B</span>
           </Dummy>
         )
-      }).toThrowError(
+      }).toThrow(
         new Error(
           [
             'Passing props on "Fragment"!',
@@ -281,18 +192,7 @@ describe('Default functionality', () => {
       </Dummy>
     )
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <span>
-          Contents A
-        </span>
-        <span>
-          Contents B
-        </span>
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it(
@@ -307,7 +207,7 @@ describe('Default functionality', () => {
             Contents
           </Dummy>
         )
-      }).toThrowError(
+      }).toThrow(
         new Error(
           [
             'Passing props on "Fragment"!',
@@ -328,7 +228,7 @@ describe('Default functionality', () => {
 
 // ---
 
-function testStaticFeature(Dummy: Function) {
+function testStaticFeature(Dummy: (props: any) => JSX.Element) {
   it('should be possible to render a `static` dummy component (show = true)', () => {
     testRender(
       <Dummy show={true} static>
@@ -336,15 +236,7 @@ function testStaticFeature(Dummy: Function) {
       </Dummy>
     )
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <div>
-          Contents
-        </div>
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 
   it('should be possible to render a `static` dummy component (show = false)', () => {
@@ -354,15 +246,7 @@ function testStaticFeature(Dummy: Function) {
       </Dummy>
     )
 
-    expect(contents()).toMatchInlineSnapshot(`
-      "<div
-        data-testid=\\"wrapper\\"
-      >
-        <div>
-          Contents
-        </div>
-      </div>"
-    `)
+    expect(contents()).toMatchSnapshot()
   })
 }
 
@@ -372,7 +256,7 @@ function testStaticFeature(Dummy: Function) {
 // showing/hiding based on the `show` prop AND the state of the transition.
 describe('Features.Static', () => {
   let slot = {}
-  let EnabledFeatures = Features.Static
+  let EnabledFeatures = RenderFeatures.Static
   function Dummy<TTag extends ElementType = 'div'>(
     props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
@@ -397,7 +281,7 @@ describe('Features.Static', () => {
 
 // ---
 
-function testRenderStrategyFeature(Dummy: Function) {
+function testRenderStrategyFeature(Dummy: (props: any) => JSX.Element) {
   describe('Unmount render strategy', () => {
     it('should be possible to render an `unmount` dummy component (show = true)', () => {
       testRender(
@@ -406,15 +290,7 @@ function testRenderStrategyFeature(Dummy: Function) {
         </Dummy>
       )
 
-      expect(contents()).toMatchInlineSnapshot(`
-        "<div
-          data-testid=\\"wrapper\\"
-        >
-          <div>
-            Contents
-          </div>
-        </div>"
-      `)
+      expect(contents()).toMatchSnapshot()
     })
 
     it('should be possible to render an `unmount` dummy component (show = false)', () => {
@@ -425,11 +301,7 @@ function testRenderStrategyFeature(Dummy: Function) {
       )
 
       // No contents, because we unmounted!
-      expect(contents()).toMatchInlineSnapshot(`
-        "<div
-          data-testid=\\"wrapper\\"
-        />"
-      `)
+      expect(contents()).toMatchSnapshot()
     })
   })
 
@@ -441,15 +313,7 @@ function testRenderStrategyFeature(Dummy: Function) {
         </Dummy>
       )
 
-      expect(contents()).toMatchInlineSnapshot(`
-        "<div
-          data-testid=\\"wrapper\\"
-        >
-          <div>
-            Contents
-          </div>
-        </div>"
-      `)
+      expect(contents()).toMatchSnapshot()
     })
 
     it('should be possible to render an `unmount={false}` dummy component (show = false)', () => {
@@ -460,25 +324,14 @@ function testRenderStrategyFeature(Dummy: Function) {
       )
 
       // We do have contents, but it is marked as hidden!
-      expect(contents()).toMatchInlineSnapshot(`
-        "<div
-          data-testid=\\"wrapper\\"
-        >
-          <div
-            hidden=\\"\\"
-            style=\\"display: none;\\"
-          >
-            Contents
-          </div>
-        </div>"
-      `)
+      expect(contents()).toMatchSnapshot()
     })
   })
 }
 
 describe('Features.RenderStrategy', () => {
   let slot = {}
-  let EnabledFeatures = Features.RenderStrategy
+  let EnabledFeatures = RenderFeatures.RenderStrategy
   function Dummy<TTag extends ElementType = 'div'>(
     props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
@@ -506,7 +359,7 @@ describe('Features.RenderStrategy', () => {
 // This should enable the `static` and `unmount` features. However they can't be used together!
 describe('Features.Static | Features.RenderStrategy', () => {
   let slot = {}
-  let EnabledFeatures = Features.Static | Features.RenderStrategy
+  let EnabledFeatures = RenderFeatures.Static | RenderFeatures.RenderStrategy
   function Dummy<TTag extends ElementType = 'div'>(
     props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
