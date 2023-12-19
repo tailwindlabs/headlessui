@@ -160,7 +160,12 @@ function _render<TTag extends ElementType, TSlot>(
       }
     }
 
-    if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
+    if (exposeState) {
+      dataAttributes['data-headlessui-state'] = states.join(' ')
+      for (let state of states) {
+        dataAttributes[`data-${state}`] = ''
+      }
+    }
   }
 
   if (Component === Fragment) {
