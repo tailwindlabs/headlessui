@@ -17,7 +17,7 @@ import React, {
   type MouseEvent as ReactMouseEvent,
   type Ref,
 } from 'react'
-import { useComputed } from '../../hooks/use-computed'
+import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
@@ -33,7 +33,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useWatch } from '../../hooks/use-watch'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import type { ByComparator, EnsureArray, Expand, Props } from '../../types'
+import type { EnsureArray, Expand, Props } from '../../types'
 import { history } from '../../utils/active-element-history'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
@@ -639,7 +639,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     onChange: controlledOnChange,
     form: formName,
     name,
-    by = null,
+    by,
     disabled = false,
     __demoMode = false,
     nullable = false,
@@ -676,15 +676,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let optionsRef = useRef<_Data['optionsRef']['current']>(null)
 
   type TActualValue = true extends typeof multiple ? EnsureArray<TValue>[number] : TValue
-  let compare = useEvent(
-    // @ts-expect-error Eventually we'll want to tackle this, but for now this will do.
-    typeof by === 'string'
-      ? (a: TActualValue, z: TActualValue) => {
-          let property = by as unknown as keyof TActualValue
-          return a?.[property] === z?.[property]
-        }
-      : by ?? ((a: TValue, z: TValue) => a === z)
-  )
+  // @ts-expect-error Eventually we'll want to tackle this, but for now this will do.
+  let compare = useByComparator<TActualValue>(by)
 
   let calculateIndex = useEvent((value: TValue) => {
     if (virtual) {
@@ -694,7 +687,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
         return virtual.options.findIndex((other) => compare(other, value))
       }
     } else {
-      // @ts-expect-error
       return state.options.findIndex((other) => compare(other.dataRef.current.value, value))
     }
   })

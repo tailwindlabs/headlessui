@@ -66,7 +66,4 @@ export type XOR<T, U> = T | U extends __
         ? (Without<T, U> & U) | (Without<U, T> & T)
         : T | U
 
-export type ByComparator<T> =
-  | (T extends null ? string : keyof T & string)
-  | ((a: T, b: T) => boolean)
 export type EnsureArray<T> = T extends any[] ? T : Expand<T>[]
