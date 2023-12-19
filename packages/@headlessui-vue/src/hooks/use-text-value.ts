@@ -1,4 +1,4 @@
-import { ref, Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { dom } from '../utils/dom'
 import { getTextValue } from '../utils/get-text-value'
 
