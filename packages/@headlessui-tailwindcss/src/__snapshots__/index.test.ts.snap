@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`custom prefix should generate css for an exposed state 1`] = `
+".hui-open\\\\:underline[data-headlessui-state~=\\"open\\"] {
+    text-decoration-line: underline
+}
+:where([data-headlessui-state~=\\"open\\"]) .hui-open\\\\:underline {
+    text-decoration-line: underline
+}"
+`;
+
+exports[`custom prefix should generate the inverse "not" css for an exposed state 1`] = `
+".hui-not-open\\\\:underline[data-headlessui-state]:not([data-headlessui-state~=\\"open\\"]) {
+    text-decoration-line: underline
+}
+:where([data-headlessui-state]:not([data-headlessui-state~=\\"open\\"])) .hui-not-open\\\\:underline:not([data-headlessui-state]) {
+    text-decoration-line: underline
+}"
+`;
+
+exports[`should generate css for an exposed state 1`] = `
+".ui-open\\\\:underline[data-headlessui-state~=\\"open\\"] {
+    text-decoration-line: underline
+}
+:where([data-headlessui-state~=\\"open\\"]) .ui-open\\\\:underline {
+    text-decoration-line: underline
+}"
+`;
+
+exports[`should generate the inverse "not" css for an exposed state 1`] = `
+".ui-not-open\\\\:underline[data-headlessui-state]:not([data-headlessui-state~=\\"open\\"]) {
+    text-decoration-line: underline
+}
+:where([data-headlessui-state]:not([data-headlessui-state~=\\"open\\"])) .ui-not-open\\\\:underline:not([data-headlessui-state]) {
+    text-decoration-line: underline
+}"
+`;
+
+exports[`should generate the ui-focus-visible variant 1`] = `
+":where([data-headlessui-focus-visible]) .ui-focus-visible\\\\:underline:focus {
+    text-decoration-line: underline
+}"
+`;
+
+exports[`should generate the ui-not-focus-visible variant 1`] = `
+".ui-not-focus-visible\\\\:underline:focus:where(:not([data-headlessui-focus-visible] .ui-not-focus-visible\\\\:underline)) {
+    text-decoration-line: underline
+}"
+`;
