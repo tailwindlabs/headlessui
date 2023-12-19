@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react'
 import React, { createElement, useEffect, useState } from 'react'
 import {
+  ComboboxMode,
+  ComboboxState,
   assertActiveComboboxOption,
   assertActiveElement,
   assertCombobox,
@@ -15,23 +17,21 @@ import {
   assertNoActiveComboboxOption,
   assertNoSelectedComboboxOption,
   assertNotActiveComboboxOption,
-  ComboboxMode,
-  ComboboxState,
   getByText,
   getComboboxButton,
   getComboboxButtons,
-  getComboboxes,
   getComboboxInput,
   getComboboxInputs,
   getComboboxLabel,
   getComboboxOptions,
+  getComboboxes,
 } from '../../test-utils/accessibility-assertions'
 import {
+  Keys,
+  MouseButton,
   blur,
   click,
   focus,
-  Keys,
-  MouseButton,
   mouseLeave,
   mouseMove,
   press,

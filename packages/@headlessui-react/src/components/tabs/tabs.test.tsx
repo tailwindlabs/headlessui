@@ -6,7 +6,7 @@ import {
   getByText,
   getTabs,
 } from '../../test-utils/accessibility-assertions'
-import { click, Keys, press, shift } from '../../test-utils/interactions'
+import { Keys, click, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Dialog } from '../dialog/dialog'
 import { Tab } from './tabs'

@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react'
 import React, { createElement, useEffect, useState } from 'react'
 import {
+  ListboxMode,
+  ListboxState,
   assertActiveElement,
   assertActiveListboxOption,
   assertListbox,
@@ -15,17 +17,15 @@ import {
   getListbox,
   getListboxButton,
   getListboxButtons,
-  getListboxes,
   getListboxLabel,
   getListboxOptions,
-  ListboxMode,
-  ListboxState,
+  getListboxes,
 } from '../../test-utils/accessibility-assertions'
 import {
-  click,
-  focus,
   Keys,
   MouseButton,
+  click,
+  focus,
   mouseLeave,
   mouseMove,
   press,

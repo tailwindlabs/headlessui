@@ -1,6 +1,6 @@
 import React, {
-  createContext,
   Fragment,
+  createContext,
   useContext,
   useEffect,
   useMemo,
@@ -17,7 +17,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { attemptSubmit } from '../../utils/form'
@@ -30,11 +30,11 @@ import {
 } from '../../utils/render'
 import {
   Description,
-  useDescriptions,
   _internal_ComponentDescription,
+  useDescriptions,
 } from '../description/description'
 import { Keys } from '../keyboard'
-import { Label, useLabels, _internal_ComponentLabel } from '../label/label'
+import { Label, _internal_ComponentLabel, useLabels } from '../label/label'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null

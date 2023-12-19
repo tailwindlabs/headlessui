@@ -1,7 +1,7 @@
 import { onMounted, ref } from 'vue'
 import { assertActiveElement, getByText } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
-import { click, Keys, press, shift } from '../../test-utils/interactions'
+import { Keys, click, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 import { FocusTrap } from './focus-trap'

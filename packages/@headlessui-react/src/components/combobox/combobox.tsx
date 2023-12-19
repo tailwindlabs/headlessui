@@ -11,10 +11,10 @@ import React, {
   useRef,
   useState,
   type ElementType,
+  type MutableRefObject,
   type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MutableRefObject,
   type Ref,
 } from 'react'
 import { useComputed } from '../../hooks/use-computed'
@@ -31,7 +31,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useWatch } from '../../hooks/use-watch'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { ByComparator, EnsureArray, Expand, Props } from '../../types'
 import { history } from '../../utils/active-element-history'

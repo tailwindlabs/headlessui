@@ -1,8 +1,8 @@
 import React, {
   useRef,
   type ElementType,
-  type FocusEvent as ReactFocusEvent,
   type MutableRefObject,
+  type FocusEvent as ReactFocusEvent,
   type Ref,
 } from 'react'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -15,10 +15,10 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { useWatch } from '../../hooks/use-watch'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import type { Props } from '../../types'
 import { history } from '../../utils/active-element-history'
-import { Focus, focusElement, focusIn, FocusResult } from '../../utils/focus-management'
+import { Focus, FocusResult, focusElement, focusIn } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'

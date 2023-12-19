@@ -1,7 +1,7 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/
 import React, {
-  createContext,
   Fragment,
+  createContext,
   useContext,
   useEffect,
   useMemo,
@@ -10,9 +10,9 @@ import React, {
   type ContextType,
   type Dispatch,
   type ElementType,
+  type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MutableRefObject,
   type Ref,
 } from 'react'
 import { useEvent } from '../../hooks/use-event'

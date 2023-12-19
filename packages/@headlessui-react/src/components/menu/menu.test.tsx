@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 import React, { createElement, useEffect } from 'react'
 import {
+  MenuState,
   assertActiveElement,
   assertMenu,
   assertMenuButton,
@@ -14,13 +15,12 @@ import {
   getMenuButtons,
   getMenuItems,
   getMenus,
-  MenuState,
 } from '../../test-utils/accessibility-assertions'
 import {
-  click,
-  focus,
   Keys,
   MouseButton,
+  click,
+  focus,
   mouseLeave,
   mouseMove,
   press,

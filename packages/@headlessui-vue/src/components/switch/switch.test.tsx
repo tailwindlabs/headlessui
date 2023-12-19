@@ -1,14 +1,14 @@
 import { defineComponent, h, ref, watch } from 'vue'
 import {
+  SwitchState,
   assertActiveElement,
   assertSwitch,
   getByText,
   getSwitch,
   getSwitchLabel,
-  SwitchState,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
-import { click, Keys, mouseEnter, press } from '../../test-utils/interactions'
+import { Keys, click, mouseEnter, press } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { createRenderTemplate } from '../../test-utils/vue-testing-library'
 import { Switch, SwitchDescription, SwitchGroup, SwitchLabel } from './switch'

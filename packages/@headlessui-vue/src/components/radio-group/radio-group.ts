@@ -1,7 +1,7 @@
 import {
+  Fragment,
   computed,
   defineComponent,
-  Fragment,
   h,
   inject,
   onMounted,
@@ -17,10 +17,10 @@ import {
 import { useControllable } from '../../hooks/use-controllable'
 import { useId } from '../../hooks/use-id'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
-import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { getOwnerDocument } from '../../utils/owner'
 import { compact, omit, render } from '../../utils/render'

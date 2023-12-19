@@ -8,7 +8,7 @@ import {
   getRadioGroupOptions,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
-import { click, Keys, press, shift } from '../../test-utils/interactions'
+import { Keys, click, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption } from './radio-group'

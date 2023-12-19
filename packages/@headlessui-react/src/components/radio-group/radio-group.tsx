@@ -6,20 +6,20 @@ import React, {
   useReducer,
   useRef,
   type ElementType,
+  type MutableRefObject,
   type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MutableRefObject,
   type Ref,
 } from 'react'
 
 import {
   Description,
-  useDescriptions,
   _internal_ComponentDescription,
+  useDescriptions,
 } from '../../components/description/description'
 import { Keys } from '../../components/keyboard'
-import { Label, useLabels, _internal_ComponentLabel } from '../../components/label/label'
+import { Label, _internal_ComponentLabel, useLabels } from '../../components/label/label'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
@@ -29,10 +29,10 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import type { Expand, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management'
 import { attemptSubmit, objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'

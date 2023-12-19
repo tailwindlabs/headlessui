@@ -1,7 +1,7 @@
 import {
+  Fragment,
   computed,
   defineComponent,
-  Fragment,
   h,
   inject,
   onMounted,
@@ -19,7 +19,7 @@ import { FocusSentinel } from '../../internal/focus-sentinel'
 import { Hidden } from '../../internal/hidden'
 import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
-import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'

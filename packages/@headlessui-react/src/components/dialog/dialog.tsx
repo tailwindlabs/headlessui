@@ -11,8 +11,8 @@ import React, {
   useState,
   type ContextType,
   type ElementType,
-  type MouseEvent as ReactMouseEvent,
   type MutableRefObject,
+  type MouseEvent as ReactMouseEvent,
   type Ref,
   type RefObject,
 } from 'react'
@@ -44,8 +44,8 @@ import {
 } from '../../utils/render'
 import {
   Description,
-  useDescriptions,
   _internal_ComponentDescription,
+  useDescriptions,
 } from '../description/description'
 import { Keys } from '../keyboard'
 

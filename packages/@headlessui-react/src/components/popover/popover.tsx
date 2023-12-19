@@ -10,11 +10,11 @@ import React, {
   type ContextType,
   type Dispatch,
   type ElementType,
+  type MouseEventHandler,
+  type MutableRefObject,
   type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MouseEventHandler,
-  type MutableRefObject,
   type Ref,
 } from 'react'
 
@@ -30,15 +30,15 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import {
   Focus,
+  FocusResult,
   FocusableMode,
   focusIn,
-  FocusResult,
   getFocusableElements,
   isFocusableElement,
 } from '../../utils/focus-management'

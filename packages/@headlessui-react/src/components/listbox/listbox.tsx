@@ -1,7 +1,7 @@
 import React, {
+  Fragment,
   createContext,
   createRef,
-  Fragment,
   useCallback,
   useContext,
   useEffect,
@@ -9,9 +9,9 @@ import React, {
   useReducer,
   useRef,
   type ElementType,
+  type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MutableRefObject,
   type Ref,
 } from 'react'
 import { useComputed } from '../../hooks/use-computed'
@@ -26,19 +26,19 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { EnsureArray, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import {
-  compact,
   Features,
+  compact,
   forwardRefWithAs,
   render,
   type HasDisplayName,

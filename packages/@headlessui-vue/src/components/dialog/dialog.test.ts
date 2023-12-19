@@ -10,13 +10,14 @@ import {
 } from 'vue'
 import { State, useOpenClosedProvider } from '../../internal/open-closed'
 import {
+  DialogState,
+  PopoverState,
   assertActiveElement,
   assertDialog,
   assertDialogDescription,
   assertDialogOverlay,
   assertDialogTitle,
   assertPopoverPanel,
-  DialogState,
   getByText,
   getDialog,
   getDialogBackdrop,
@@ -24,10 +25,9 @@ import {
   getDialogOverlays,
   getDialogs,
   getPopoverButton,
-  PopoverState,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
-import { click, focus, Keys, mouseDrag, press, shift } from '../../test-utils/interactions'
+import { Keys, click, focus, mouseDrag, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { Popover, PopoverButton, PopoverPanel } from '../popover/popover'

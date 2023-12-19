@@ -1,6 +1,6 @@
 import React, {
-  createContext,
   Fragment,
+  createContext,
   useContext,
   useEffect,
   useMemo,
@@ -25,9 +25,9 @@ import { classNames } from '../../utils/class-names'
 import { match } from '../../utils/match'
 import {
   Features,
+  RenderStrategy,
   forwardRefWithAs,
   render,
-  RenderStrategy,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,

@@ -1,6 +1,8 @@
 import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
+  ListboxMode,
+  ListboxState,
   assertActiveElement,
   assertActiveListboxOption,
   assertListbox,
@@ -15,18 +17,16 @@ import {
   getListbox,
   getListboxButton,
   getListboxButtons,
-  getListboxes,
   getListboxLabel,
   getListboxOptions,
-  ListboxMode,
-  ListboxState,
+  getListboxes,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
 import {
-  click,
-  focus,
   Keys,
   MouseButton,
+  click,
+  focus,
   mouseLeave,
   mouseMove,
   press,

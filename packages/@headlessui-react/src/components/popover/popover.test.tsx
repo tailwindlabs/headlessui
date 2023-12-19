@@ -1,7 +1,8 @@
 import { act as _act, render } from '@testing-library/react'
-import React, { createElement, Fragment, useEffect, useRef, useState } from 'react'
+import React, { Fragment, createElement, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import {
+  PopoverState,
   assertActiveElement,
   assertContainsActiveElement,
   assertPopoverButton,
@@ -10,9 +11,8 @@ import {
   getPopoverButton,
   getPopoverOverlay,
   getPopoverPanel,
-  PopoverState,
 } from '../../test-utils/accessibility-assertions'
-import { click, focus, Keys, MouseButton, press, shift } from '../../test-utils/interactions'
+import { Keys, MouseButton, click, focus, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Portal } from '../portal/portal'
 import { Transition } from '../transitions/transition'

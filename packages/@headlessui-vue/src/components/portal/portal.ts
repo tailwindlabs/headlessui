@@ -1,4 +1,5 @@
 import {
+  Teleport,
   computed,
   defineComponent,
   getCurrentInstance,
@@ -9,7 +10,6 @@ import {
   provide,
   reactive,
   ref,
-  Teleport,
   watch,
   watchEffect,
   type InjectionKey,

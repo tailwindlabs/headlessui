@@ -1,10 +1,10 @@
 import type { Virtualizer } from '@tanstack/virtual-core'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import {
+  Fragment,
   cloneVNode,
   computed,
   defineComponent,
-  Fragment,
   h,
   inject,
   nextTick,
@@ -28,11 +28,11 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import { Keys } from '../../keyboard'
 import { history } from '../../utils/active-element-history'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import { dom } from '../../utils/dom'
 import { sortByDomNode } from '../../utils/focus-management'
@@ -40,7 +40,7 @@ import { objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import { isMobile } from '../../utils/platform'
-import { compact, Features, omit, render } from '../../utils/render'
+import { Features, compact, omit, render } from '../../utils/render'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z

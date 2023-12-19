@@ -1,7 +1,7 @@
 import {
+  Fragment,
   computed,
   defineComponent,
-  Fragment,
   h,
   inject,
   nextTick,
@@ -24,15 +24,15 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import { Keys } from '../../keyboard'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { dom } from '../../utils/dom'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
 import { objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
-import { compact, Features, omit, render } from '../../utils/render'
+import { Features, compact, omit, render } from '../../utils/render'
 
 function defaultComparator<T>(a: T, z: T): boolean {
   return a === z

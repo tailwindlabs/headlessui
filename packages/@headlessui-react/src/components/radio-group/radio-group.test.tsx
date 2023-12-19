@@ -8,7 +8,7 @@ import {
   getByText,
   getRadioGroupOptions,
 } from '../../test-utils/accessibility-assertions'
-import { click, focus, Keys, press, shift } from '../../test-utils/interactions'
+import { Keys, click, focus, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { RadioGroup } from './radio-group'
 

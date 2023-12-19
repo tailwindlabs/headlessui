@@ -1,8 +1,8 @@
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/
 import React, {
+  Fragment,
   createContext,
   createRef,
-  Fragment,
   useContext,
   useEffect,
   useMemo,
@@ -10,9 +10,9 @@ import React, {
   useRef,
   type Dispatch,
   type ElementType,
+  type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MutableRefObject,
   type Ref,
 } from 'react'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -29,7 +29,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import {
   Focus as FocusManagementFocus,
