@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should be possible to update a prop from the parent and it should reflect in the Description component 1`] = `"<div><div aria-describedby=\\"headlessui-description-1\\"><p data-count=\\"0\\" id=\\"headlessui-description-1\\">I am a description</p><button>+1</button></div></div>"`;
+
+exports[`should be possible to update a prop from the parent and it should reflect in the Description component 2`] = `"<div><div aria-describedby=\\"headlessui-description-1\\"><p data-count=\\"1\\" id=\\"headlessui-description-1\\">I am a description</p><button>+1</button></div></div>"`;
+
+exports[`should be possible to use useDescriptions and a single Description, and have them linked 1`] = `"<div><div aria-describedby=\\"headlessui-description-1\\"><p id=\\"headlessui-description-1\\">I am a description</p><span>Contents</span></div></div>"`;
+
+exports[`should be possible to use useDescriptions and multiple Description components, and have them linked 1`] = `"<div><div aria-describedby=\\"headlessui-description-1 headlessui-description-2\\"><p id=\\"headlessui-description-1\\">I am a description</p><span>Contents</span><p id=\\"headlessui-description-2\\">I am also a description</p></div></div>"`;
+
+exports[`should be possible to use useDescriptions without using a Description 1`] = `"<div><div>No description</div></div>"`;

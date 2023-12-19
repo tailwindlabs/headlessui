@@ -1,7 +1,5 @@
-import prettier from 'prettier'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { getByText } from '../../test-utils/accessibility-assertions'
-import { html } from '../../test-utils/html'
 import { click } from '../../test-utils/interactions'
 import { render } from '../../test-utils/vue-testing-library'
 import { Description, useDescriptions } from './description'
@@ -9,7 +7,7 @@ import { Description, useDescriptions } from './description'
 function format(input: Element | null | string) {
   if (input === null) throw new Error('input is null')
   let contents = (typeof input === 'string' ? input : (input as HTMLElement).outerHTML).trim()
-  return prettier.format(contents, { parser: 'babel' })
+  return contents
 }
 
 jest.mock('../../hooks/use-id')
@@ -34,13 +32,7 @@ it('should be possible to use useDescriptions without using a Description', asyn
     })
   )
 
-  expect(format(container.firstElementChild)).toEqual(
-    format(html`
-      <div>
-        <div>No description</div>
-      </div>
-    `)
-  )
+  expect(format(container.firstElementChild)).toMatchSnapshot()
 })
 
 it('should be possible to use useDescriptions and a single Description, and have them linked', async () => {
@@ -63,16 +55,7 @@ it('should be possible to use useDescriptions and a single Description, and have
 
   await new Promise<void>(nextTick)
 
-  expect(format(container.firstElementChild)).toEqual(
-    format(html`
-      <div>
-        <div aria-describedby="headlessui-description-1">
-          <p id="headlessui-description-1">I am a description</p>
-          <span>Contents</span>
-        </div>
-      </div>
-    `)
-  )
+  expect(format(container.firstElementChild)).toMatchSnapshot()
 })
 
 it('should be possible to use useDescriptions and multiple Description components, and have them linked', async () => {
@@ -96,17 +79,7 @@ it('should be possible to use useDescriptions and multiple Description component
 
   await new Promise<void>(nextTick)
 
-  expect(format(container.firstElementChild)).toEqual(
-    format(html`
-      <div>
-        <div aria-describedby="headlessui-description-1 headlessui-description-2">
-          <p id="headlessui-description-1">I am a description</p>
-          <span>Contents</span>
-          <p id="headlessui-description-2">I am also a description</p>
-        </div>
-      </div>
-    `)
-  )
+  expect(format(container.firstElementChild)).toMatchSnapshot()
 })
 
 it('should be possible to update a prop from the parent and it should reflect in the Description component', async () => {
@@ -131,27 +104,9 @@ it('should be possible to update a prop from the parent and it should reflect in
 
   await new Promise<void>(nextTick)
 
-  expect(format(container.firstElementChild)).toEqual(
-    format(html`
-      <div>
-        <div aria-describedby="headlessui-description-1">
-          <p data-count="0" id="headlessui-description-1">I am a description</p>
-          <button>+1</button>
-        </div>
-      </div>
-    `)
-  )
+  expect(format(container.firstElementChild)).toMatchSnapshot()
 
   await click(getByText('+1'))
 
-  expect(format(container.firstElementChild)).toEqual(
-    format(html`
-      <div>
-        <div aria-describedby="headlessui-description-1">
-          <p data-count="1" id="headlessui-description-1">I am a description</p>
-          <button>+1</button>
-        </div>
-      </div>
-    `)
-  )
+  expect(format(container.firstElementChild)).toMatchSnapshot()
 })
