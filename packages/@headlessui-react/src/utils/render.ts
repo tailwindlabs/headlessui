@@ -169,60 +169,63 @@ function _render<TTag extends ElementType, TSlot>(
   }
 
   if (Component === Fragment) {
-    if (Object.keys(compact(rest)).length > 0) {
+    if (Object.keys(compact(rest)).length > 0 || Object.keys(compact(dataAttributes)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
         (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
       ) {
-        throw new Error(
-          [
-            'Passing props on "Fragment"!',
-            '',
-            `The current component <${name} /> is rendering a "Fragment".`,
-            `However we need to passthrough the following props:`,
-            Object.keys(rest)
-              .map((line) => `  - ${line}`)
-              .join('\n'),
-            '',
-            'You can apply a few solutions:',
+        if (Object.keys(compact(rest)).length > 0) {
+          throw new Error(
             [
-              'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
-              'Render a single element as the child so that we can forward the props onto that element.',
-            ]
-              .map((line) => `  - ${line}`)
-              .join('\n'),
-          ].join('\n')
+              'Passing props on "Fragment"!',
+              '',
+              `The current component <${name} /> is rendering a "Fragment".`,
+              `However we need to passthrough the following props:`,
+              Object.keys(compact(rest))
+                .concat(Object.keys(compact(dataAttributes)))
+                .map((line) => `  - ${line}`)
+                .join('\n'),
+              '',
+              'You can apply a few solutions:',
+              [
+                'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+                'Render a single element as the child so that we can forward the props onto that element.',
+              ]
+                .map((line) => `  - ${line}`)
+                .join('\n'),
+            ].join('\n')
+          )
+        }
+      } else {
+        // Merge class name prop in SSR
+        // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
+        let childProps = resolvedChildren.props as { className: string | (() => string) } | null
+
+        let childPropsClassName = childProps?.className
+        let newClassName =
+          typeof childPropsClassName === 'function'
+            ? (...args: any[]) =>
+                classNames(
+                  (childPropsClassName as Function)(...args),
+                  (rest as { className?: string }).className
+                )
+            : classNames(childPropsClassName, (rest as { className?: string }).className)
+
+        let classNameProps = newClassName ? { className: newClassName } : {}
+
+        return cloneElement(
+          resolvedChildren,
+          Object.assign(
+            {},
+            // Filter out undefined values so that they don't override the existing values
+            mergePropsAdvanced(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
+            dataAttributes,
+            refRelatedProps,
+            { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
+            classNameProps
+          )
         )
       }
-
-      // Merge class name prop in SSR
-      // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
-      let childProps = resolvedChildren.props as { className: string | (() => string) } | null
-
-      let childPropsClassName = childProps?.className
-      let newClassName =
-        typeof childPropsClassName === 'function'
-          ? (...args: any[]) =>
-              classNames(
-                (childPropsClassName as Function)(...args),
-                (rest as { className?: string }).className
-              )
-          : classNames(childPropsClassName, (rest as { className?: string }).className)
-
-      let classNameProps = newClassName ? { className: newClassName } : {}
-
-      return cloneElement(
-        resolvedChildren,
-        Object.assign(
-          {},
-          // Filter out undefined values so that they don't override the existing values
-          mergePropsAdvanced(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
-          dataAttributes,
-          refRelatedProps,
-          { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
-          classNameProps
-        )
-      )
     }
   }
 
