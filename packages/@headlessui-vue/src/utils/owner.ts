@@ -2,7 +2,7 @@ import { type Ref } from 'vue'
 import { dom } from './dom'
 import { env } from './env'
 
-export function getOwnerDocument<T extends Element | Ref<Element | null>>(
+export function getOwnerDocument<T extends HTMLElement | Ref<HTMLElement | null>>(
   element: T | null | undefined
 ) {
   if (env.isServer) return null

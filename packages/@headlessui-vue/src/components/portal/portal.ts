@@ -25,7 +25,7 @@ type ContextType<T> = T extends InjectionKey<infer V> ? V : never
 
 // ---
 
-function getPortalRoot(contextElement?: Element | null) {
+function getPortalRoot(contextElement?: HTMLElement | null) {
   let ownerDocument = getOwnerDocument(contextElement)
   if (!ownerDocument) {
     if (contextElement === null) {
