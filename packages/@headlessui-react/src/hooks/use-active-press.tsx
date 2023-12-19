@@ -1,11 +1,7 @@
 import { useRef, useState } from 'react'
 import { getOwnerDocument } from '../utils/owner'
-import { isIOS } from '../utils/platform'
-import { useDocumentOverflowLockedEffect } from './document-overflow/use-document-overflow'
 import { useDisposables } from './use-disposables'
 import { useEvent } from './use-event'
-import { useIsTouchDevice } from './use-is-touch-device'
-import { useOwnerDocument } from './use-owner'
 
 // Only the necessary props from a DOMRect
 type Rect = { left: number; right: number; top: number; bottom: number }
@@ -39,17 +35,15 @@ function areRectsOverlapping(a: Rect | null, b: Rect | null) {
   return true
 }
 
-export function useActivePress() {
+export function useActivePress({ disabled = false }: Partial<{ disabled: boolean }> = {}) {
   let target = useRef<HTMLElement | null>(null)
   let [pressed, setPressed] = useState(false)
-  let [shouldScrollLock, setShouldScrollLock] = useState(false)
 
   let d = useDisposables()
 
   let reset = useEvent(() => {
     target.current = null
     setPressed(false)
-    setShouldScrollLock(false)
     d.dispose()
   })
 
@@ -91,44 +85,14 @@ export function useActivePress() {
     }
   })
 
-  let handleTouchStart = useEvent(() => {
-    if (!pressed) return
-    if (target.current === null) return
-
-    // Prevent text selection on mobile when holding down the button to prevent the visual
-    // selection styles + little popup with copy/lookup/...
-    {
-      d.style(target.current, 'user-select', 'none')
-      if (isIOS()) {
-        d.style(target.current, '-webkit-user-select', 'none')
-      }
-    }
-  })
-
-  let handleTouchMove = useEvent(() => {
-    if (shouldScrollLock) return
-
-    // Schedule the scroll locking, if we do it immediately and you are just tapping/clicking on the
-    // button then we would very briefly prevent scrolling which looks janky. By delaying it slighly
-    // we avoid this.
-    d.setTimeout(() => setShouldScrollLock(true), 100)
-  })
-
-  // Prevent scrolling the page when pressing the button on mobile (touch devices) otherwise moving
-  // your finger around on mobile would start scrolling the page.
-  let owner = useOwnerDocument(target)
-  let isTouchDevice = useIsTouchDevice()
-  let scrollLockingEnabled = shouldScrollLock && isTouchDevice
-  useDocumentOverflowLockedEffect(owner, scrollLockingEnabled)
-
   return {
     pressed,
-    pressProps: {
-      onPointerDown: handlePointerDown,
-      onPointerUp: reset,
-      onTouchStart: handleTouchStart,
-      onTouchMove: isTouchDevice ? handleTouchMove : undefined,
-      onClick: reset,
-    },
+    pressProps: disabled
+      ? {}
+      : {
+          onPointerDown: handlePointerDown,
+          onPointerUp: reset,
+          onClick: reset,
+        },
   }
 }

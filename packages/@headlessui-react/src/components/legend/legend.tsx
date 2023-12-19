@@ -1,7 +1,7 @@
 'use client'
 
 import React, { type ElementType, type Ref } from 'react'
-import { type Props } from '../../types'
+import type { Props } from '../../types'
 import { forwardRefWithAs, type HasDisplayName } from '../../utils/render'
 import { Label } from '../label/label'
 

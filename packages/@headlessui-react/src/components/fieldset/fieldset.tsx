@@ -2,7 +2,7 @@
 
 import React, { useMemo, type ElementType, type Ref } from 'react'
 import { DisabledProvider, useDisabled } from '../../internal/disabled'
-import { type Props } from '../../types'
+import type { Props } from '../../types'
 import { forwardRefWithAs, render, type HasDisplayName } from '../../utils/render'
 import { useLabels } from '../label/label'
 

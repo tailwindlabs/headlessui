@@ -40,6 +40,12 @@ import { Listbox } from './listbox'
 
 jest.mock('../../hooks/use-id')
 
+// @ts-expect-error
+global.ResizeObserver = class FakeResizeObserver {
+  observe() {}
+  disconnect() {}
+}
+
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
@@ -224,7 +230,13 @@ describe('Rendering', () => {
           let bob = getListboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: true,
+              disabled: false,
+              selectedOption: false,
+            })
           )
         })
       )
@@ -254,7 +266,13 @@ describe('Rendering', () => {
           let bob = getListboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: true,
+              disabled: false,
+              selectedOption: false,
+            })
           )
         })
       )
@@ -288,7 +306,13 @@ describe('Rendering', () => {
           let bob = getListboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: true,
+              disabled: false,
+              selectedOption: false,
+            })
           )
         })
       )
@@ -509,7 +533,7 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-listbox-button-2' },
         })
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
@@ -517,7 +541,7 @@ describe('Rendering', () => {
         await click(getListboxButton())
 
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
@@ -530,7 +554,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Label as="p">{JSON.stringify}</Listbox.Label>
+            <Listbox.Label as="p">{(slot) => <>{JSON.stringify(slot)}</>}</Listbox.Label>
             <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -541,7 +565,7 @@ describe('Rendering', () => {
         )
 
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
@@ -549,7 +573,7 @@ describe('Rendering', () => {
 
         await click(getListboxButton())
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
@@ -576,7 +600,15 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, disabled: false }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            disabled: false,
+            invalid: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -585,7 +617,15 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, disabled: false }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            disabled: false,
+            invalid: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -597,7 +637,7 @@ describe('Rendering', () => {
         render(
           <Listbox value={undefined} onChange={(x) => console.log(x)}>
             <Listbox.Button as="div" role="button">
-              {JSON.stringify}
+              {(slot) => <>{JSON.stringify(slot)}</>}
             </Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="a">Option A</Listbox.Option>
@@ -610,7 +650,15 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: false, disabled: false }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            disabled: false,
+            invalid: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
 
@@ -619,7 +667,15 @@ describe('Rendering', () => {
         assertListboxButton({
           state: ListboxState.Visible,
           attributes: { id: 'headlessui-listbox-button-1' },
-          textContent: JSON.stringify({ open: true, disabled: false }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            disabled: false,
+            invalid: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertListbox({ state: ListboxState.Visible })
       })
@@ -814,7 +870,13 @@ describe('Rendering', () => {
         })
         assertListbox({
           state: ListboxState.Visible,
-          textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
+          textContent: JSON.stringify({
+            active: false,
+            focus: false,
+            selected: false,
+            disabled: false,
+            selectedOption: false,
+          }),
         })
       })
     )
@@ -1241,10 +1303,22 @@ describe('Rendering composition', () => {
 
       // Verify correct classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: false })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: false,
+          selectedOption: false,
+        })
       )
       expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: true,
+          selectedOption: false,
+        })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
@@ -1256,10 +1330,22 @@ describe('Rendering composition', () => {
 
       // Verify the classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: true, selected: false, disabled: false })
+        JSON.stringify({
+          active: true,
+          focus: true,
+          selected: false,
+          disabled: false,
+          selectedOption: false,
+        })
       )
       expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: true,
+          selectedOption: false,
+        })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
@@ -1271,10 +1357,22 @@ describe('Rendering composition', () => {
 
       // Verify the classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: false })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: false,
+          selectedOption: false,
+        })
       )
       expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: true,
+          selectedOption: false,
+        })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
@@ -1367,7 +1465,13 @@ describe('Composition', () => {
       })
       assertListbox({
         state: ListboxState.Visible,
-        textContent: JSON.stringify({ active: false, selected: false, disabled: false }),
+        textContent: JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: false,
+          selectedOption: false,
+        }),
       })
 
       await rawClick(getListboxButton())

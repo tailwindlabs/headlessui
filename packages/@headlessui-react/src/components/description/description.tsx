@@ -13,6 +13,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { useDisabled } from '../../internal/disabled'
 import type { Props } from '../../types'
 import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
 
@@ -25,8 +26,9 @@ interface SharedData {
 }
 
 let DescriptionContext = createContext<
-  ({ register(value: string): () => void } & SharedData) | null
+  ({ value: string | undefined; register(value: string): () => void } & SharedData) | null
 >(null)
+DescriptionContext.displayName = 'DescriptionContext'
 
 function useDescriptionContext() {
   let context = useContext(DescriptionContext)
@@ -40,8 +42,13 @@ function useDescriptionContext() {
   return context
 }
 
+export function useDescribedBy() {
+  return useContext(DescriptionContext)?.value ?? undefined
+}
+
 interface DescriptionProviderProps extends SharedData {
   children: ReactNode
+  value?: string | undefined
 }
 
 export function useDescriptions(): [
@@ -60,18 +67,25 @@ export function useDescriptions(): [
         let register = useEvent((value: string) => {
           setDescriptionIds((existing) => [...existing, value])
 
-          return () =>
-            setDescriptionIds((existing) => {
+          return () => {
+            return setDescriptionIds((existing) => {
               let clone = existing.slice()
               let idx = clone.indexOf(value)
               if (idx !== -1) clone.splice(idx, 1)
               return clone
             })
+          }
         })
 
         let contextBag = useMemo(
-          () => ({ register, slot: props.slot, name: props.name, props: props.props }),
-          [register, props.slot, props.name, props.props]
+          () => ({
+            register,
+            slot: props.slot,
+            name: props.name,
+            props: props.props,
+            value: props.value,
+          }),
+          [register, props.slot, props.name, props.props, props.value]
         )
 
         return (
@@ -96,18 +110,21 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
   ref: Ref<HTMLParagraphElement>
 ) {
   let internalId = useId()
+  let providedDisabled = useDisabled()
   let { id = `headlessui-description-${internalId}`, ...theirProps } = props
   let context = useDescriptionContext()
   let descriptionRef = useSyncRefs(ref)
 
   useIsoMorphicEffect(() => context.register(id), [id, context.register])
 
+  let disabled = providedDisabled || false
+  let slot = useMemo(() => ({ ...context.slot, disabled }), [context.slot, disabled])
   let ourProps = { ref: descriptionRef, ...context.props, id }
 
   return render({
     ourProps,
     theirProps,
-    slot: context.slot || {},
+    slot,
     defaultTag: DEFAULT_DESCRIPTION_TAG,
     name: context.name || 'Description',
   })

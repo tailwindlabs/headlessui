@@ -538,25 +538,61 @@ describe('Rendering', () => {
         )
 
         expect(document.querySelector('[data-tab="0"]')).toHaveTextContent(
-          JSON.stringify({ selected: true })
+          JSON.stringify({
+            selected: true,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="1"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="2"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
 
         await click(getTabs()[1])
 
         expect(document.querySelector('[data-tab="0"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="1"]')).toHaveTextContent(
-          JSON.stringify({ selected: true })
+          JSON.stringify({
+            selected: true,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="2"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )

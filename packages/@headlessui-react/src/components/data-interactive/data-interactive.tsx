@@ -31,14 +31,18 @@ function DataInteractiveFn<TTag extends ElementType = typeof DEFAULT_DATA_INTERA
 ) {
   let { ...theirProps } = props
 
+  // Ideally we can use a `disabled` prop, but that would depend on the props of the child element
+  // and we don't have access to that in this component.
+
+  let disabled = false
+
   let { isFocusVisible: focus, focusProps } = useFocusRing()
   let { isHovered: hover, hoverProps } = useHover({
-    // Ideally we can use a `disabled` prop, but that would depend on the props of the child element
-    // and we don't have access to that in this component.
-    isDisabled: false,
+    isDisabled: disabled,
   })
-
-  let { pressed: active, pressProps } = useActivePress()
+  let { pressed: active, pressProps } = useActivePress({
+    disabled,
+  })
 
   let ourProps = mergeProps({ ref }, focusProps, hoverProps, pressProps)
 

@@ -1,5 +1,7 @@
 'use client'
 
+import { useFocusRing } from '@react-aria/focus'
+import { useHover } from '@react-aria/interactions'
 import React, {
   Fragment,
   createContext,
@@ -13,7 +15,7 @@ import React, {
   type MouseEvent as ReactMouseEvent,
   type Ref,
 } from 'react'
-import { Keys } from '../../components/keyboard'
+import { useActivePress } from '../../hooks/use-active-press'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -28,14 +30,16 @@ import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'
 import {
-  Features,
+  RenderFeatures,
   forwardRefWithAs,
+  mergeProps,
   render,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
 } from '../../utils/render'
 import { StableCollection, useStableCollectionIndex } from '../../utils/stable-collection'
+import { Keys } from '../keyboard'
 
 enum Direction {
   Forwards,
@@ -206,14 +210,15 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 let DEFAULT_TABS_TAG = Fragment
-interface TabsRenderPropArg {
+type TabsRenderPropArg = {
   selectedIndex: number
 }
+type TabsPropsWeControl = never
 
-export type TabGroupProps<TTag extends ElementType> = Props<
+export type TabGroupProps<TTag extends ElementType = typeof DEFAULT_TABS_TAG> = Props<
   TTag,
   TabsRenderPropArg,
-  never,
+  TabsPropsWeControl,
   {
     defaultIndex?: number
     onChange?: (index: number) => void
@@ -246,7 +251,10 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
     tabs: [],
     panels: [],
   })
-  let slot = useMemo(() => ({ selectedIndex: state.selectedIndex }), [state.selectedIndex])
+  let slot = useMemo(
+    () => ({ selectedIndex: state.selectedIndex }) satisfies TabsRenderPropArg,
+    [state.selectedIndex]
+  )
   let onChangeRef = useLatestValue(onChange || (() => {}))
   let stableTabsRef = useLatestValue(state.tabs)
 
@@ -332,12 +340,12 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
 // ---
 
 let DEFAULT_LIST_TAG = 'div' as const
-interface ListRenderPropArg {
+type ListRenderPropArg = {
   selectedIndex: number
 }
 type ListPropsWeControl = 'aria-orientation' | 'role'
 
-export type TabListProps<TTag extends ElementType> = Props<
+export type TabListProps<TTag extends ElementType = typeof DEFAULT_LIST_TAG> = Props<
   TTag,
   ListRenderPropArg,
   ListPropsWeControl,
@@ -353,7 +361,7 @@ function ListFn<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
   let { orientation, selectedIndex } = useData('Tab.List')
   let listRef = useSyncRefs(ref)
 
-  let slot = { selectedIndex }
+  let slot = useMemo(() => ({ selectedIndex }) satisfies ListRenderPropArg, [selectedIndex])
 
   let theirProps = props
   let ourProps = {
@@ -374,18 +382,24 @@ function ListFn<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
 // ---
 
 let DEFAULT_TAB_TAG = 'button' as const
-interface TabRenderPropArg {
+type TabRenderPropArg = {
+  hover: boolean
+  focus: boolean
+  active: boolean
+  autofocus: boolean
   selected: boolean
 }
 type TabPropsWeControl = 'aria-controls' | 'aria-selected' | 'role' | 'tabIndex'
 
-export type TabProps<TTag extends ElementType> = Props<
+export type TabProps<TTag extends ElementType = typeof DEFAULT_TAB_TAG> = Props<
   TTag,
   TabRenderPropArg,
-  TabPropsWeControl
-> & {
-  //
-}
+  TabPropsWeControl,
+  {
+    autoFocus?: boolean
+    disabled?: boolean
+  }
+>
 
 function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   props: TabProps<TTag>,
@@ -486,20 +500,39 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     event.preventDefault()
   })
 
-  let slot = useMemo(() => ({ selected }), [selected])
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
+  let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
 
-  let ourProps = {
-    ref: tabRef,
-    onKeyDown: handleKeyDown,
-    onMouseDown: handleMouseDown,
-    onClick: handleSelection,
-    id,
-    role: 'tab',
-    type: useResolveButtonType(props, internalTabRef),
-    'aria-controls': panels[myIndex]?.current?.id,
-    'aria-selected': selected,
-    tabIndex: selected ? 0 : -1,
-  }
+  let slot = useMemo(
+    () =>
+      ({
+        selected,
+        hover,
+        active,
+        focus,
+        autofocus: props.autoFocus ?? false,
+      }) satisfies TabRenderPropArg,
+    [selected, hover, focus, active, props.autoFocus]
+  )
+
+  let ourProps = mergeProps(
+    {
+      ref: tabRef,
+      onKeyDown: handleKeyDown,
+      onMouseDown: handleMouseDown,
+      onClick: handleSelection,
+      id,
+      role: 'tab',
+      type: useResolveButtonType(props, internalTabRef),
+      'aria-controls': panels[myIndex]?.current?.id,
+      'aria-selected': selected,
+      tabIndex: selected ? 0 : -1,
+    },
+    focusProps,
+    hoverProps,
+    pressProps
+  )
 
   return render({
     ourProps,
@@ -513,11 +546,14 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
 // ---
 
 let DEFAULT_PANELS_TAG = 'div' as const
-interface PanelsRenderPropArg {
+type PanelsRenderPropArg = {
   selectedIndex: number
 }
 
-export type TabPanelsProps<TTag extends ElementType> = Props<TTag, PanelsRenderPropArg>
+export type TabPanelsProps<TTag extends ElementType = typeof DEFAULT_PANELS_TAG> = Props<
+  TTag,
+  PanelsRenderPropArg
+>
 
 function PanelsFn<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
   props: TabPanelsProps<TTag>,
@@ -543,13 +579,13 @@ function PanelsFn<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
 // ---
 
 let DEFAULT_PANEL_TAG = 'div' as const
-interface PanelRenderPropArg {
+type PanelRenderPropArg = {
   selected: boolean
 }
 type PanelPropsWeControl = 'role' | 'aria-labelledby'
-let PanelRenderFeatures = Features.RenderStrategy | Features.Static
+let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
-export type TabPanelProps<TTag extends ElementType> = Props<
+export type TabPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TAG> = Props<
   TTag,
   PanelRenderPropArg,
   PanelPropsWeControl,
@@ -635,9 +671,14 @@ export interface _internal_ComponentTabPanel extends HasDisplayName {
 }
 
 let TabRoot = forwardRefWithAs(TabFn) as unknown as _internal_ComponentTab
-let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentTabGroup
-let List = forwardRefWithAs(ListFn) as unknown as _internal_ComponentTabList
-let Panels = forwardRefWithAs(PanelsFn) as unknown as _internal_ComponentTabPanels
-let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentTabPanel
+export let TabGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentTabGroup
+export let TabList = forwardRefWithAs(ListFn) as unknown as _internal_ComponentTabList
+export let TabPanels = forwardRefWithAs(PanelsFn) as unknown as _internal_ComponentTabPanels
+export let TabPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentTabPanel
 
-export let Tab = Object.assign(TabRoot, { Group, List, Panels, Panel })
+export let Tab = Object.assign(TabRoot, {
+  Group: TabGroup,
+  List: TabList,
+  Panels: TabPanels,
+  Panel: TabPanel,
+})

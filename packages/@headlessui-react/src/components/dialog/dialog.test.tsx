@@ -70,7 +70,7 @@ describe('Safe guards', () => {
     'should be possible to render a Dialog without crashing',
     suppressConsoleLogs(async () => {
       render(
-        <Dialog open={false} onClose={console.log}>
+        <Dialog autoFocus={false} open={false} onClose={console.log}>
           <button>Trigger</button>
           <Dialog.Overlay />
           <Dialog.Title />
@@ -113,7 +113,7 @@ describe('Rendering', () => {
               <button id="trigger" onClick={() => setIsOpen(true)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen} role="dialog">
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen} role="dialog">
                 <TabSentinel />
               </Dialog>
             </>
@@ -142,7 +142,7 @@ describe('Rendering', () => {
               <button id="trigger" onClick={() => setIsOpen(true)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen} role="alertdialog">
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen} role="alertdialog">
                 <TabSentinel />
               </Dialog>
             </>
@@ -211,7 +211,7 @@ describe('Rendering', () => {
       'should complain when an `onClose` prop is provided without an `open` prop',
       suppressConsoleLogs(async () => {
         expect(() =>
-          render(<Dialog as="div" onClose={() => {}} />)
+          render(<Dialog autoFocus={false} as="div" onClose={() => {}} />)
         ).toThrowErrorMatchingInlineSnapshot(
           `"You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop."`
         )
@@ -224,7 +224,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         expect(() =>
           // @ts-expect-error
-          render(<Dialog as="div" open={null} onClose={console.log} />)
+          render(<Dialog autoFocus={false} as="div" open={null} onClose={console.log} />)
         ).toThrowErrorMatchingInlineSnapshot(
           `"You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: null"`
         )
@@ -237,7 +237,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         expect(() =>
           // @ts-expect-error
-          render(<Dialog as="div" open={false} onClose={null} />)
+          render(<Dialog autoFocus={false} as="div" open={false} onClose={null} />)
         ).toThrowErrorMatchingInlineSnapshot(
           `"You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: null"`
         )
@@ -256,7 +256,7 @@ describe('Rendering', () => {
               <button id="trigger" onClick={() => setIsOpen(true)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 {(data) => (
                   <>
                     <pre>{JSON.stringify(data)}</pre>
@@ -282,7 +282,7 @@ describe('Rendering', () => {
       render(
         <>
           <button>Trigger</button>
-          <Dialog open={true} onClose={console.log} static>
+          <Dialog autoFocus={false} open={true} onClose={console.log} static>
             <p>Contents</p>
             <TabSentinel onFocus={focusCounter} />
           </Dialog>
@@ -301,7 +301,7 @@ describe('Rendering', () => {
       render(
         <>
           <button>Trigger</button>
-          <Dialog open={false} onClose={console.log} static>
+          <Dialog autoFocus={false} open={false} onClose={console.log} static>
             <p>Contents</p>
             <TabSentinel onFocus={focusCounter} />
           </Dialog>
@@ -322,7 +322,7 @@ describe('Rendering', () => {
             <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <Dialog open={isOpen} onClose={setIsOpen} unmount={false}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen} unmount={false}>
               <input />
             </Dialog>
           </>
@@ -358,7 +358,7 @@ describe('Rendering', () => {
                 Trigger
               </button>
 
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 <input id="a" type="text" />
                 <input id="b" type="text" />
                 <input id="c" type="text" />
@@ -395,7 +395,7 @@ describe('Rendering', () => {
               </button>
 
               <Transition as={Fragment} show={isOpen} unmount={false}>
-                <Dialog onClose={() => setIsOpen(false)} unmount={false}>
+                <Dialog autoFocus={false} onClose={() => setIsOpen(false)} unmount={false}>
                   <input id="a" type="text" />
                   <input id="b" type="text" />
                   <input id="c" type="text" />
@@ -465,7 +465,7 @@ describe('Rendering', () => {
                 Open {id}
               </button>
               <Transition as={Fragment} show={dialogs.includes(id)}>
-                <Dialog onClose={() => toggle(id, 'close')}>
+                <Dialog autoFocus={false} onClose={() => toggle(id, 'close')}>
                   <button id={`close_${id}`} onClick={() => toggle(id, 'close')}>
                     Close {id}
                   </button>
@@ -514,7 +514,7 @@ describe('Rendering', () => {
         function Example({ value = State.Open }) {
           return (
             <OpenClosedProvider value={value}>
-              <Dialog open={true} onClose={() => {}}>
+              <Dialog autoFocus={false} open={true} onClose={() => {}}>
                 <input id="a" type="text" />
                 <input id="b" type="text" />
                 <input id="c" type="text" />
@@ -542,7 +542,7 @@ describe('Rendering', () => {
         function Example() {
           return (
             <Transition as={Fragment} show={false} unmount={false}>
-              <Dialog as="div" onClose={() => {}}>
+              <Dialog autoFocus={false} as="div" onClose={() => {}}>
                 <input type="text" />
               </Dialog>
             </Transition>
@@ -571,7 +571,7 @@ describe('Rendering', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 <Dialog.Overlay>{overlay}</Dialog.Overlay>
                 <TabSentinel />
               </Dialog>
@@ -608,7 +608,7 @@ describe('Rendering', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 <Dialog.Backdrop />
                 <TabSentinel />
               </Dialog>
@@ -640,7 +640,7 @@ describe('Rendering', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 <Dialog.Backdrop />
                 <Dialog.Panel>
                   <TabSentinel />
@@ -666,7 +666,7 @@ describe('Rendering', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 <Dialog.Backdrop />
                 <Dialog.Panel>
                   <TabSentinel />
@@ -706,7 +706,7 @@ describe('Rendering', () => {
       'should be possible to render Dialog.Title using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Dialog open={true} onClose={console.log}>
+          <Dialog autoFocus={false} open={true} onClose={console.log}>
             <Dialog.Title>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Title>
             <TabSentinel />
           </Dialog>
@@ -731,7 +731,7 @@ describe('Rendering', () => {
       'should be possible to render Dialog.Description using a render prop',
       suppressConsoleLogs(async () => {
         render(
-          <Dialog open={true} onClose={console.log}>
+          <Dialog autoFocus={false} open={true} onClose={console.log}>
             <Dialog.Description>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Description>
             <TabSentinel />
           </Dialog>
@@ -745,7 +745,7 @@ describe('Rendering', () => {
         })
         assertDialogDescription({
           state: DialogState.Visible,
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({ open: true, disabled: false }),
         })
       })
     )
@@ -770,7 +770,7 @@ describe('Composition', () => {
               </Popover.Panel>
             </Popover>
 
-            <Dialog open={isDialogOpen} onClose={console.log}>
+            <Dialog autoFocus={false} open={isDialogOpen} onClose={console.log}>
               <Dialog.Panel>
                 <button id="closeDialog" onClick={() => setIsDialogOpen(false)}>
                   Close Dialog
@@ -821,7 +821,7 @@ describe('Composition', () => {
     suppressConsoleLogs(async () => {
       render(
         <Transition show={true}>
-          <Dialog onClose={console.log}>
+          <Dialog autoFocus={false} onClose={console.log}>
             <Dialog.Description>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Description>
             <TabSentinel />
           </Dialog>
@@ -833,7 +833,7 @@ describe('Composition', () => {
       assertDialog({ state: DialogState.Visible })
       assertDialogDescription({
         state: DialogState.Visible,
-        textContent: JSON.stringify({ open: true }),
+        textContent: JSON.stringify({ open: true, disabled: false }),
       })
     })
   )
@@ -843,7 +843,7 @@ describe('Composition', () => {
     suppressConsoleLogs(async () => {
       render(
         <Transition show={false}>
-          <Dialog onClose={console.log}>
+          <Dialog autoFocus={false} onClose={console.log}>
             <Dialog.Description>{(slot) => <>{JSON.stringify(slot)}</>}</Dialog.Description>
             <TabSentinel />
           </Dialog>
@@ -869,7 +869,7 @@ describe('Keyboard interactions', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 Contents
                 <TabSentinel />
               </Dialog>
@@ -907,7 +907,7 @@ describe('Keyboard interactions', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 Contents
                 <input id="name" />
                 <TabSentinel />
@@ -946,7 +946,7 @@ describe('Keyboard interactions', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 Contents
                 <input
                   id="name"
@@ -994,7 +994,12 @@ describe('Keyboard interactions', () => {
               <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
                 Trigger
               </button>
-              <Dialog open={isOpen} onClose={setIsOpen} initialFocus={initialFocusRef}>
+              <Dialog
+                autoFocus={false}
+                open={isOpen}
+                onClose={setIsOpen}
+                initialFocus={initialFocusRef}
+              >
                 Contents
                 <TabSentinel id="a" />
                 <input type="text" id="b" ref={initialFocusRef} />
@@ -1043,7 +1048,7 @@ describe('Keyboard interactions', () => {
                 Trigger
               </button>
               <button>Before</button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 <Dialog.Panel>
                   <input type="text" id="a" />
                 </Dialog.Panel>
@@ -1093,7 +1098,7 @@ describe('Keyboard interactions', () => {
                 Trigger
               </button>
               <button>Before</button>
-              <Dialog open={isOpen} onClose={setIsOpen}>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
                 <Dialog.Panel>
                   <input type="text" id="a" />
                 </Dialog.Panel>
@@ -1145,7 +1150,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Overlay />
               Contents
               <TabSentinel />
@@ -1179,7 +1184,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Overlay>
                 <button>hi</button>
               </Dialog.Overlay>
@@ -1213,7 +1218,7 @@ describe('Mouse interactions', () => {
         return (
           <>
             <button onClick={() => setIsOpen((v) => !v)}>Trigger</button>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               Contents
               <TabSentinel />
             </Dialog>
@@ -1248,7 +1253,7 @@ describe('Mouse interactions', () => {
           <>
             <button>Hello</button>
             <button onClick={() => setIsOpen((v) => !v)}>Trigger</button>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               Contents
               <TabSentinel />
             </Dialog>
@@ -1282,7 +1287,7 @@ describe('Mouse interactions', () => {
         let [isOpen, setIsOpen] = useState(true)
         return (
           <div onClick={wrapperFn}>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               Contents
               <Dialog.Overlay />
               <TabSentinel />
@@ -1319,7 +1324,7 @@ describe('Mouse interactions', () => {
       function Example() {
         let [isOpen, setIsOpen] = useState(true)
         return (
-          <Dialog open={isOpen} onClose={setIsOpen}>
+          <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
             <form onSubmit={submitFn}>
               <input type="hidden" value="abc" />
               <button type="submit">Submit</button>
@@ -1352,7 +1357,7 @@ describe('Mouse interactions', () => {
         let [isOpen, setIsOpen] = useState(true)
         return (
           <div onClick={wrapperFn}>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Panel>
                 Contents
                 <button onClick={() => setIsOpen(false)}>Inside</button>
@@ -1392,7 +1397,7 @@ describe('Mouse interactions', () => {
         let wrapper = useRef<HTMLDivElement | null>(null)
 
         return (
-          <Dialog open={isOpen} onClose={setIsOpen}>
+          <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
             <div ref={wrapper}>
               Contents
               <button
@@ -1445,7 +1450,7 @@ describe('Mouse interactions', () => {
         return (
           <div>
             <span>Main app</span>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <div>
                 Contents
                 <TabSentinel />
@@ -1497,7 +1502,7 @@ describe('Mouse interactions', () => {
         return (
           <div>
             <span>Main app</span>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <div>
                 Contents
                 <TabSentinel onFocus={handleFocus} />
@@ -1559,7 +1564,7 @@ describe('Mouse interactions', () => {
         return (
           <div>
             <button onClick={() => setIsOpen(true)}>open</button>
-            <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog autoFocus={false} open={isOpen} onClose={() => setIsOpen(false)}>
               <div>
                 <button id="btn_outside_light" onClick={fn}>
                   Button
@@ -1632,7 +1637,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+            <Dialog autoFocus={false} open={isOpen} onClose={() => setIsOpen(false)}>
               <Dialog.Panel>
                 <p id="inside">My content</p>
                 <button>close</button>
@@ -1667,7 +1672,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Backdrop />
               <Dialog.Panel>
                 <TabSentinel />
@@ -1700,7 +1705,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Backdrop />
               <Dialog.Panel>
                 <button id="inside">Inside</button>
@@ -1733,7 +1738,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" onMouseUpCapture={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Backdrop />
               <Dialog.Panel>
                 <button id="inside">Inside</button>
@@ -1767,7 +1772,7 @@ describe('Mouse interactions', () => {
               Trigger
             </button>
             <div id="imoutside">this thing</div>
-            <Dialog open={isOpen} onClose={setIsOpen}>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Backdrop />
               <Dialog.Panel>
                 <button id="inside">Inside</button>
@@ -1816,7 +1821,7 @@ describe('Nesting', () => {
     let [showChild, setShowChild] = useState(false)
 
     return (
-      <Dialog open={open} onClose={onClose}>
+      <Dialog autoFocus={false} open={open} onClose={onClose}>
         <Dialog.Overlay />
 
         <div>

@@ -26,7 +26,7 @@ import {
   type AnchorProps,
 } from '../../internal/floating'
 import { State, useOpenClosed } from '../../internal/open-closed'
-import { type Props } from '../../types'
+import type { Props } from '../../types'
 import { match } from '../../utils/match'
 import {
   RenderFeatures,

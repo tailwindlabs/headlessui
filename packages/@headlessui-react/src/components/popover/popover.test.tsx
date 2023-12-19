@@ -378,7 +378,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
@@ -387,7 +393,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.Visible })
       })
@@ -408,7 +420,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
@@ -417,7 +435,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.Visible })
       })

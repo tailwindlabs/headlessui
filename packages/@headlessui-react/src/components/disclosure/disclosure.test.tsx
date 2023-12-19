@@ -264,7 +264,13 @@ describe('Rendering', () => {
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({
+            open: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
@@ -273,7 +279,13 @@ describe('Rendering', () => {
         assertDisclosureButton({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({
+            open: true,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertDisclosurePanel({ state: DisclosureState.Visible })
       })
@@ -294,7 +306,13 @@ describe('Rendering', () => {
         assertDisclosureButton({
           state: DisclosureState.InvisibleUnmounted,
           attributes: { id: 'headlessui-disclosure-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({
+            open: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
@@ -303,7 +321,13 @@ describe('Rendering', () => {
         assertDisclosureButton({
           state: DisclosureState.Visible,
           attributes: { id: 'headlessui-disclosure-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({
+            open: true,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertDisclosurePanel({ state: DisclosureState.Visible })
       })

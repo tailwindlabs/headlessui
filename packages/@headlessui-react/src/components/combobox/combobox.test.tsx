@@ -251,7 +251,7 @@ describe('Rendering', () => {
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({ active: true, focus: true, selected: true, disabled: false })
           )
         })
       )
@@ -281,15 +281,30 @@ describe('Rendering', () => {
           let [alice, bob, charlie] = getComboboxOptions()
           expect(alice).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: false, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: false,
+              disabled: false,
+            })
           )
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: false, selected: false, disabled: false })
+            JSON.stringify({
+              active: false,
+              focus: false,
+              selected: false,
+              disabled: false,
+            })
           )
           expect(charlie).toHaveAttribute(
             'class',
-            JSON.stringify({ active: false, selected: false, disabled: false })
+            JSON.stringify({
+              active: false,
+              focus: false,
+              selected: false,
+              disabled: false,
+            })
           )
         })
       )
@@ -319,7 +334,12 @@ describe('Rendering', () => {
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: true,
+              disabled: false,
+            })
           )
         })
       )
@@ -353,7 +373,12 @@ describe('Rendering', () => {
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: true,
+              disabled: false,
+            })
           )
         })
       )
@@ -837,7 +862,7 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-combobox-button-3' },
         })
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -845,7 +870,7 @@ describe('Rendering', () => {
         await click(getComboboxButton())
 
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
@@ -887,7 +912,7 @@ describe('Rendering', () => {
         )
 
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
@@ -895,7 +920,7 @@ describe('Rendering', () => {
 
         await click(getComboboxButton())
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
@@ -923,7 +948,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: false, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -932,7 +964,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: true, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
       })
@@ -958,7 +997,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: false, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -967,7 +1013,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: true, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
       })
@@ -1172,7 +1225,12 @@ describe('Rendering', () => {
         })
         assertComboboxList({
           state: ComboboxState.Visible,
-          textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
+          textContent: JSON.stringify({
+            active: true,
+            focus: true,
+            selected: false,
+            disabled: false,
+          }),
         })
       })
     )
@@ -1669,10 +1727,20 @@ describe('Rendering composition', () => {
 
       // Verify correct classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: true, selected: false, disabled: false })
+        JSON.stringify({
+          active: true,
+          focus: true,
+          selected: false,
+          disabled: false,
+        })
       )
       expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: true,
+        })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
@@ -1681,10 +1749,20 @@ describe('Rendering composition', () => {
 
       // Verify the classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: false })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: false,
+        })
       )
       expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: true,
+        })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
@@ -1825,7 +1903,12 @@ describe('Composition', () => {
       })
       assertComboboxList({
         state: ComboboxState.Visible,
-        textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
+        textContent: JSON.stringify({
+          active: true,
+          focus: true,
+          selected: false,
+          disabled: false,
+        }),
       })
 
       await rawClick(getComboboxButton())
@@ -5598,7 +5681,7 @@ describe('Form compatibility', () => {
     // Submit the form
     await click(getByText('Submit'))
 
-    expect(submits).lastCalledWith([['delivery', 'pickup']])
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
   })
 
   it('should be possible to submit a form with a value', async () => {
@@ -5637,7 +5720,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([]) // no data
+    expect(submits).toHaveBeenLastCalledWith([]) // no data
 
     // Open combobox again
     await click(getComboboxButton())
@@ -5649,7 +5732,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([['delivery', 'home-delivery']])
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'home-delivery']])
 
     // Open combobox again
     await click(getComboboxButton())
@@ -5661,7 +5744,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([['delivery', 'pickup']])
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
   })
 
   it('should be possible to submit a form with a complex value object', async () => {

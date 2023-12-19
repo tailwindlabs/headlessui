@@ -183,6 +183,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: true,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -203,6 +206,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: false,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -248,6 +254,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: true,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -274,6 +283,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: false,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -347,7 +359,7 @@ describe('Rendering', () => {
       await press(Keys.Tab)
 
       // The first one should be active, but not checked yet
-      expect(options[0]).toHaveAttribute('data-headlessui-state', 'active')
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'active focus')
       expect(options[1]).toHaveAttribute('data-headlessui-state', '')
       expect(options[2]).toHaveAttribute('data-headlessui-state', '')
 
@@ -355,7 +367,7 @@ describe('Rendering', () => {
       await press(Keys.Space)
 
       // The first one should be active and checked
-      expect(options[0]).toHaveAttribute('data-headlessui-state', 'checked active')
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'checked active focus')
       expect(options[1]).toHaveAttribute('data-headlessui-state', '')
       expect(options[2]).toHaveAttribute('data-headlessui-state', '')
 
@@ -364,7 +376,7 @@ describe('Rendering', () => {
 
       // The second one should be active and checked
       expect(options[0]).toHaveAttribute('data-headlessui-state', '')
-      expect(options[1]).toHaveAttribute('data-headlessui-state', 'checked active')
+      expect(options[1]).toHaveAttribute('data-headlessui-state', 'checked active focus')
       expect(options[2]).toHaveAttribute('data-headlessui-state', '')
     })
   )
@@ -396,7 +408,14 @@ describe('Rendering', () => {
         let bob = getRadioGroupOptions()[1]
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: true, disabled: false, active: false })
+          JSON.stringify({
+            checked: true,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )
@@ -421,15 +440,36 @@ describe('Rendering', () => {
         let [alice, bob, charlie] = getRadioGroupOptions()
         expect(alice).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: false, disabled: false, active: false })
+          JSON.stringify({
+            checked: false,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: false, disabled: false, active: false })
+          JSON.stringify({
+            checked: false,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(charlie).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: false, disabled: false, active: false })
+          JSON.stringify({
+            checked: false,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )
@@ -454,7 +494,14 @@ describe('Rendering', () => {
         let bob = getRadioGroupOptions()[1]
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: true, disabled: false, active: false })
+          JSON.stringify({
+            checked: true,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )
@@ -483,7 +530,14 @@ describe('Rendering', () => {
         let bob = getRadioGroupOptions()[1]
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: true, disabled: false, active: false })
+          JSON.stringify({
+            checked: true,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )

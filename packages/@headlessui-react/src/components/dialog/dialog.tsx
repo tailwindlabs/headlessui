@@ -18,18 +18,18 @@ import React, {
   type Ref,
   type RefObject,
 } from 'react'
-import { FocusTrap } from '../../components/focus-trap/focus-trap'
-import { Portal, useNestedPortals } from '../../components/portal/portal'
 import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
 import { useInert } from '../../hooks/use-inert'
+import { useIsTouchDevice } from '../../hooks/use-is-touch-device'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useRootContainers } from '../../hooks/use-root-containers'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { HoistFormFields } from '../../internal/form-fields'
 import { State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { StackMessage, StackProvider } from '../../internal/stack-context'
@@ -49,7 +49,9 @@ import {
   useDescriptions,
   type _internal_ComponentDescription,
 } from '../description/description'
+import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap'
 import { Keys } from '../keyboard'
+import { Portal, useNestedPortals } from '../portal/portal'
 
 enum DialogStates {
   Open,
@@ -119,14 +121,14 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 let DEFAULT_DIALOG_TAG = 'div' as const
-interface DialogRenderPropArg {
+type DialogRenderPropArg = {
   open: boolean
 }
 type DialogPropsWeControl = 'aria-describedby' | 'aria-labelledby' | 'aria-modal'
 
 let DialogRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
-export type DialogProps<TTag extends ElementType> = Props<
+export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = Props<
   TTag,
   DialogRenderPropArg,
   DialogPropsWeControl,
@@ -135,6 +137,7 @@ export type DialogProps<TTag extends ElementType> = Props<
     onClose(value: boolean): void
     initialFocus?: MutableRefObject<HTMLElement | null>
     role?: 'dialog' | 'alertdialog'
+    autoFocus?: boolean
     __demoMode?: boolean
   }
 >
@@ -150,6 +153,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     onClose,
     initialFocus,
     role = 'dialog',
+    autoFocus = true,
     __demoMode = false,
     ...theirProps
   } = props
@@ -353,8 +357,8 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     [dialogState, state, close, setTitleId]
   )
 
-  let slot = useMemo<DialogRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
+  let slot = useMemo(
+    () => ({ open: dialogState === DialogStates.Open }) satisfies DialogRenderPropArg,
     [dialogState]
   )
 
@@ -362,9 +366,29 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     ref: dialogRef,
     id,
     role,
+    tabIndex: -1,
     'aria-modal': dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,
+  }
+
+  let shouldAutoFocus = !useIsTouchDevice()
+
+  let focusTrapFeatures = enabled
+    ? match(position, {
+        parent: FocusTrapFeatures.RestoreFocus,
+        leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
+      })
+    : FocusTrapFeatures.None
+
+  // Enable AutoFocus feature
+  if (autoFocus) {
+    focusTrapFeatures |= FocusTrapFeatures.AutoFocus
+  }
+
+  // Remove initialFocus when we should not auto focus at all
+  if (!shouldAutoFocus) {
+    focusTrapFeatures &= ~FocusTrapFeatures.InitialFocus
   }
 
   return (
@@ -387,19 +411,13 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
             <Portal.Group target={internalDialogRef}>
               <ForcePortalRoot force={false}>
                 <DescriptionProvider slot={slot} name="Dialog.Description">
-                  <FocusTrap
-                    initialFocus={initialFocus}
-                    containers={resolveRootContainers}
-                    features={
-                      enabled
-                        ? match(position, {
-                            parent: FocusTrap.features.RestoreFocus,
-                            leaf: FocusTrap.features.All & ~FocusTrap.features.FocusLock,
-                          })
-                        : FocusTrap.features.None
-                    }
-                  >
-                    <PortalWrapper>
+                  <PortalWrapper>
+                    <FocusTrap
+                      initialFocus={initialFocus}
+                      initialFocusFallback={internalDialogRef}
+                      containers={resolveRootContainers}
+                      features={focusTrapFeatures}
+                    >
                       {render({
                         ourProps,
                         theirProps,
@@ -409,15 +427,17 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
                         visible: dialogState === DialogStates.Open,
                         name: 'Dialog',
                       })}
-                    </PortalWrapper>
-                  </FocusTrap>
+                    </FocusTrap>
+                  </PortalWrapper>
                 </DescriptionProvider>
               </ForcePortalRoot>
             </Portal.Group>
           </DialogContext.Provider>
         </Portal>
       </ForcePortalRoot>
-      <MainTreeNode />
+      <HoistFormFields>
+        <MainTreeNode />
+      </HoistFormFields>
     </StackProvider>
   )
 }
@@ -425,12 +445,12 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 // ---
 
 let DEFAULT_OVERLAY_TAG = 'div' as const
-interface OverlayRenderPropArg {
+type OverlayRenderPropArg = {
   open: boolean
 }
 type OverlayPropsWeControl = 'aria-hidden'
 
-export type DialogOverlayProps<TTag extends ElementType> = Props<
+export type DialogOverlayProps<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG> = Props<
   TTag,
   OverlayRenderPropArg,
   OverlayPropsWeControl
@@ -453,8 +473,8 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
     close()
   })
 
-  let slot = useMemo<OverlayRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
+  let slot = useMemo(
+    () => ({ open: dialogState === DialogStates.Open }) satisfies OverlayRenderPropArg,
     [dialogState]
   )
 
@@ -477,12 +497,12 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
 // ---
 
 let DEFAULT_BACKDROP_TAG = 'div' as const
-interface BackdropRenderPropArg {
+type BackdropRenderPropArg = {
   open: boolean
 }
 type BackdropPropsWeControl = 'aria-hidden'
 
-export type DialogBackdropProps<TTag extends ElementType> = Props<
+export type DialogBackdropProps<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG> = Props<
   TTag,
   BackdropRenderPropArg,
   BackdropPropsWeControl
@@ -505,8 +525,8 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     }
   }, [state.panelRef])
 
-  let slot = useMemo<BackdropRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
+  let slot = useMemo(
+    () => ({ open: dialogState === DialogStates.Open }) satisfies BackdropRenderPropArg,
     [dialogState]
   )
 
@@ -534,11 +554,14 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
 // ---
 
 let DEFAULT_PANEL_TAG = 'div' as const
-interface PanelRenderPropArg {
+type PanelRenderPropArg = {
   open: boolean
 }
 
-export type DialogPanelProps<TTag extends ElementType> = Props<TTag, PanelRenderPropArg>
+export type DialogPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TAG> = Props<
+  TTag,
+  PanelRenderPropArg
+>
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: DialogPanelProps<TTag>,
@@ -549,8 +572,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let [{ dialogState }, state] = useDialogContext('Dialog.Panel')
   let panelRef = useSyncRefs(ref, state.panelRef)
 
-  let slot = useMemo<PanelRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
+  let slot = useMemo(
+    () => ({ open: dialogState === DialogStates.Open }) satisfies PanelRenderPropArg,
     [dialogState]
   )
 
@@ -578,11 +601,14 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 // ---
 
 let DEFAULT_TITLE_TAG = 'h2' as const
-interface TitleRenderPropArg {
+type TitleRenderPropArg = {
   open: boolean
 }
 
-export type DialogTitleProps<TTag extends ElementType> = Props<TTag, TitleRenderPropArg>
+export type DialogTitleProps<TTag extends ElementType = typeof DEFAULT_TITLE_TAG> = Props<
+  TTag,
+  TitleRenderPropArg
+>
 
 function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   props: DialogTitleProps<TTag>,
@@ -599,8 +625,8 @@ function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     return () => setTitleId(null)
   }, [id, setTitleId])
 
-  let slot = useMemo<TitleRenderPropArg>(
-    () => ({ open: dialogState === DialogStates.Open }),
+  let slot = useMemo(
+    () => ({ open: dialogState === DialogStates.Open }) satisfies TitleRenderPropArg,
     [dialogState]
   )
 
@@ -650,15 +676,22 @@ export interface _internal_ComponentDialogTitle extends HasDisplayName {
 export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription {}
 
 let DialogRoot = forwardRefWithAs(DialogFn) as unknown as _internal_ComponentDialog
-let Backdrop = forwardRefWithAs(BackdropFn) as unknown as _internal_ComponentDialogBackdrop
-let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDialogPanel
-let Overlay = forwardRefWithAs(OverlayFn) as unknown as _internal_ComponentDialogOverlay
-let Title = forwardRefWithAs(TitleFn) as unknown as _internal_ComponentDialogTitle
+export let DialogBackdrop = forwardRefWithAs(
+  BackdropFn
+) as unknown as _internal_ComponentDialogBackdrop
+export let DialogPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDialogPanel
+export let DialogOverlay = forwardRefWithAs(
+  OverlayFn
+) as unknown as _internal_ComponentDialogOverlay
+export let DialogTitle = forwardRefWithAs(TitleFn) as unknown as _internal_ComponentDialogTitle
+/** @deprecated use `<Description>` instead of `<DialogDescription>` */
+export let DialogDescription = Description as _internal_ComponentDialogDescription
 
 export let Dialog = Object.assign(DialogRoot, {
-  Backdrop,
-  Panel,
-  Overlay,
-  Title,
+  Backdrop: DialogBackdrop,
+  Panel: DialogPanel,
+  Overlay: DialogOverlay,
+  Title: DialogTitle,
+  /** @deprecated use `<Description>` instead of `<Dialog.Description>` */
   Description: Description as _internal_ComponentDialogDescription,
 })

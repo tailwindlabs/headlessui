@@ -1,12 +1,14 @@
 'use client'
 
+import { useFocusRing } from '@react-aria/focus'
+import { useHover } from '@react-aria/interactions'
+import { Virtualizer, useVirtualizer } from '@tanstack/react-virtual'
 import React, {
   Fragment,
   createContext,
   createRef,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -18,6 +20,7 @@ import React, {
   type MouseEvent as ReactMouseEvent,
   type Ref,
 } from 'react'
+import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -32,21 +35,28 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useWatch } from '../../hooks/use-watch'
-import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
+import { useDisabled } from '../../internal/disabled'
+import {
+  FloatingProvider,
+  useFloatingPanel,
+  useFloatingReference,
+  type AnchorProps,
+} from '../../internal/floating'
+import { FormFields } from '../../internal/form-fields'
+import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { EnsureArray, Expand, Props } from '../../types'
 import { history } from '../../utils/active-element-history'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import { sortByDomNode } from '../../utils/focus-management'
-import { objectToFormEntries } from '../../utils/form'
 import { match } from '../../utils/match'
 import { isMobile } from '../../utils/platform'
 import {
-  compact,
   RenderFeatures,
   forwardRefWithAs,
+  mergeProps,
   render,
   type HasDisplayName,
   type PropsForFeatures,
@@ -531,7 +541,7 @@ function stateReducer<T>(state: StateDefinition<T>, action: Actions<T>) {
 // ---
 
 let DEFAULT_COMBOBOX_TAG = Fragment
-interface ComboboxRenderPropArg<TValue, TActive = TValue> {
+type ComboboxRenderPropArg<TValue, TActive = TValue> = {
   open: boolean
   disabled: boolean
   activeIndex: number | null
@@ -545,7 +555,7 @@ type ComboboxValueProps<
   TValue,
   TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
-  TTag extends ElementType,
+  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
 > = Extract<
   | ({
       value?: EnsureArray<TValue>
@@ -586,7 +596,7 @@ export type ComboboxProps<
   TValue,
   TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
-  TTag extends ElementType,
+  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
 > = ComboboxValueProps<TValue, TNullable, TMultiple, TTag> & {
   disabled?: boolean
   __demoMode?: boolean
@@ -620,14 +630,15 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   props: ComboboxProps<TValue, boolean | undefined, boolean | undefined, TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let providedDisabled = useDisabled()
   let {
     value: controlledValue,
     defaultValue,
     onChange: controlledOnChange,
-    form: formName,
+    form,
     name,
     by,
-    disabled = false,
+    disabled = providedDisabled || false,
     __demoMode = false,
     nullable = false,
     multiple = false,
@@ -756,19 +767,20 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     data.comboboxState === ComboboxState.Open
   )
 
-  let slot = useMemo<ComboboxRenderPropArg<unknown>>(
-    () => ({
-      open: data.comboboxState === ComboboxState.Open,
-      disabled,
-      activeIndex: data.activeOptionIndex,
-      activeOption:
-        data.activeOptionIndex === null
-          ? null
-          : data.virtual
-            ? data.virtual.options[data.activeOptionIndex ?? 0]
-            : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
-      value,
-    }),
+  let slot = useMemo(
+    () =>
+      ({
+        open: data.comboboxState === ComboboxState.Open,
+        disabled,
+        activeIndex: data.activeOptionIndex,
+        activeOption:
+          data.activeOptionIndex === null
+            ? null
+            : data.virtual
+              ? data.virtual.options[data.activeOptionIndex ?? 0]
+              : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
+        value,
+      }) satisfies ComboboxRenderPropArg<unknown>,
     [data, disabled, value]
   )
 
@@ -868,69 +880,61 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   let ourProps = ref === null ? {} : { ref }
 
-  let form = useRef<HTMLFormElement | null>(null)
-  let d = useDisposables()
-  useEffect(() => {
-    if (!form.current) return
-    if (defaultValue === undefined) return
-
-    d.addEventListener(form.current, 'reset', () => {
-      theirOnChange?.(defaultValue)
-    })
-  }, [form, theirOnChange /* Explicitly ignoring `defaultValue` */])
+  let reset = useCallback(() => {
+    return theirOnChange?.(defaultValue)
+  }, [theirOnChange /* Explicitly ignoring `defaultValue` */])
 
   return (
-    <ComboboxActionsContext.Provider value={actions}>
-      <ComboboxDataContext.Provider value={data}>
-        <OpenClosedProvider
-          value={match(data.comboboxState, {
-            [ComboboxState.Open]: State.Open,
-            [ComboboxState.Closed]: State.Closed,
-          })}
-        >
-          {name != null &&
-            value != null &&
-            objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
-              <Hidden
-                features={HiddenFeatures.Hidden}
-                ref={
-                  idx === 0
-                    ? (element: HTMLInputElement | null) => {
-                        form.current = element?.closest('form') ?? null
-                      }
-                    : undefined
-                }
-                {...compact({
-                  key: name,
-                  as: 'input',
-                  type: 'hidden',
-                  hidden: true,
-                  readOnly: true,
-                  form: formName,
-                  name,
-                  value,
-                })}
-              />
-            ))}
-          {render({
-            ourProps,
-            theirProps,
-            slot,
-            defaultTag: DEFAULT_COMBOBOX_TAG,
-            name: 'Combobox',
-          })}
-        </OpenClosedProvider>
-      </ComboboxDataContext.Provider>
-    </ComboboxActionsContext.Provider>
+    <LabelProvider
+      value={labelledby}
+      props={{
+        htmlFor: data.inputRef.current?.id,
+      }}
+      slot={{
+        open: data.comboboxState === ComboboxState.Open,
+        disabled,
+      }}
+    >
+      <FloatingProvider>
+        <ComboboxActionsContext.Provider value={actions}>
+          <ComboboxDataContext.Provider value={data}>
+            <OpenClosedProvider
+              value={match(data.comboboxState, {
+                [ComboboxState.Open]: State.Open,
+                [ComboboxState.Closed]: State.Closed,
+              })}
+            >
+              {name != null && (
+                <FormFields
+                  data={value != null ? { [name]: value } : {}}
+                  form={form}
+                  onReset={reset}
+                />
+              )}
+              {render({
+                ourProps,
+                theirProps,
+                slot,
+                defaultTag: DEFAULT_COMBOBOX_TAG,
+                name: 'Combobox',
+              })}
+            </OpenClosedProvider>
+          </ComboboxDataContext.Provider>
+        </ComboboxActionsContext.Provider>
+      </FloatingProvider>
+    </LabelProvider>
   )
 }
 
 // ---
 
 let DEFAULT_INPUT_TAG = 'input' as const
-interface InputRenderPropArg {
+type InputRenderPropArg = {
   open: boolean
   disabled: boolean
+  hover: boolean
+  focus: boolean
+  autofocus: boolean
 }
 type InputPropsWeControl =
   | 'aria-activedescendant'
@@ -941,7 +945,10 @@ type InputPropsWeControl =
   | 'disabled'
   | 'role'
 
-export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
+export type ComboboxInputProps<
+  TTag extends ElementType = typeof DEFAULT_INPUT_TAG,
+  TType = string,
+> = Props<
   TTag,
   InputRenderPropArg,
   InputPropsWeControl,
@@ -949,6 +956,7 @@ export type ComboboxInputProps<TTag extends ElementType, TType> = Props<
     defaultValue?: TType
     displayValue?(item: TType): string
     onChange?(event: React.ChangeEvent<HTMLInputElement>): void
+    autoFocus?: boolean
   }
 >
 
@@ -959,8 +967,9 @@ function InputFn<
   TType = Parameters<typeof ComboboxRoot>[0]['value'],
 >(props: ComboboxInputProps<TTag, TType>, ref: Ref<HTMLInputElement>) {
   let internalId = useId()
+  let providedId = useProvidedId()
   let {
-    id = `headlessui-combobox-input-${internalId}`,
+    id = providedId || `headlessui-combobox-input-${internalId}`,
     onChange,
     displayValue,
     // @ts-ignore: We know this MAY NOT exist for a given tag but we only care when it _does_ exist.
@@ -970,7 +979,7 @@ function InputFn<
   let data = useData('Combobox.Input')
   let actions = useActions('Combobox.Input')
 
-  let inputRef = useSyncRefs(data.inputRef, ref)
+  let inputRef = useSyncRefs(data.inputRef, ref, useFloatingReference())
   let ownerDocument = useOwnerDocument(data.inputRef)
 
   let isTyping = useRef(false)
@@ -1307,47 +1316,68 @@ function InputFn<
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
 
-  let slot = useMemo<InputRenderPropArg>(
-    () => ({ open: data.comboboxState === ComboboxState.Open, disabled: data.disabled }),
-    [data]
+  let { isFocusVisible: focus, focusProps } = useFocusRing({
+    isTextInput: true,
+    autoFocus: props.autoFocus ?? false,
+  })
+
+  let { isHovered: hover, hoverProps } = useHover({
+    isDisabled: data.disabled ?? false,
+  })
+
+  let slot = useMemo(
+    () =>
+      ({
+        open: data.comboboxState === ComboboxState.Open,
+        disabled: data.disabled,
+        hover,
+        focus,
+        autofocus: props.autoFocus ?? false,
+      }) satisfies InputRenderPropArg,
+    [data, hover, focus, props.autoFocus]
   )
 
-  let ourProps = {
-    ref: inputRef,
-    id,
-    role: 'combobox',
-    type,
-    'aria-controls': data.optionsRef.current?.id,
-    'aria-expanded': data.comboboxState === ComboboxState.Open,
-    'aria-activedescendant':
-      data.activeOptionIndex === null
-        ? undefined
-        : data.virtual
-          ? data.options.find(
-              (option) =>
-                !data.virtual?.disabled(option.dataRef.current.value) &&
-                data.compare(
-                  option.dataRef.current.value,
-                  data.virtual!.options[data.activeOptionIndex!]
-                )
-            )?.id
-          : data.options[data.activeOptionIndex]?.id,
-    'aria-labelledby': labelledby,
-    'aria-autocomplete': 'list',
-    defaultValue:
-      props.defaultValue ??
-      (data.defaultValue !== undefined
-        ? displayValue?.(data.defaultValue as unknown as TType)
-        : null) ??
-      data.defaultValue,
-    disabled: data.disabled,
-    onCompositionStart: handleCompositionStart,
-    onCompositionEnd: handleCompositionEnd,
-    onKeyDown: handleKeyDown,
-    onChange: handleChange,
-    onFocus: handleFocus,
-    onBlur: handleBlur,
-  }
+  let ourProps = mergeProps(
+    {
+      ref: inputRef,
+      id,
+      role: 'combobox',
+      type,
+      'aria-controls': data.optionsRef.current?.id,
+      'aria-expanded': data.comboboxState === ComboboxState.Open,
+      'aria-activedescendant':
+        data.activeOptionIndex === null
+          ? undefined
+          : data.virtual
+            ? data.options.find(
+                (option) =>
+                  !data.virtual?.disabled(option.dataRef.current.value) &&
+                  data.compare(
+                    option.dataRef.current.value,
+                    data.virtual!.options[data.activeOptionIndex!]
+                  )
+              )?.id
+            : data.options[data.activeOptionIndex]?.id,
+      'aria-labelledby': labelledBy,
+      'aria-describedby': describedBy,
+      'aria-autocomplete': 'list',
+      defaultValue:
+        props.defaultValue ??
+        (data.defaultValue !== undefined
+          ? displayValue?.(data.defaultValue as unknown as TType)
+          : null) ??
+        data.defaultValue,
+      disabled: data.disabled,
+      onCompositionStart: handleCompositionStart,
+      onCompositionEnd: handleCompositionEnd,
+      onKeyDown: handleKeyDown,
+      onChange: handleChange,
+      onFocus: handleFocus,
+      onBlur: handleBlur,
+    },
+    focusProps,
+    hoverProps
+  )
 
   return render({
     ourProps,
@@ -1361,10 +1391,13 @@ function InputFn<
 // ---
 
 let DEFAULT_BUTTON_TAG = 'button' as const
-interface ButtonRenderPropArg {
+type ButtonRenderPropArg = {
   open: boolean
+  active: boolean
   disabled: boolean
   value: any
+  focus: boolean
+  hover: boolean
 }
 type ButtonPropsWeControl =
   | 'aria-controls'
@@ -1374,10 +1407,13 @@ type ButtonPropsWeControl =
   | 'disabled'
   | 'tabIndex'
 
-export type ComboboxButtonProps<TTag extends ElementType> = Props<
+export type ComboboxButtonProps<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG> = Props<
   TTag,
   ButtonRenderPropArg,
-  ButtonPropsWeControl
+  ButtonPropsWeControl,
+  {
+    autoFocus?: boolean
+  }
 >
 
 function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
@@ -1443,32 +1479,45 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
   })
 
-  let labelledby = useComputed(() => {
-    if (!data.labelId) return undefined
-    return [data.labelId, id].join(' ')
-  }, [data.labelId, id])
+  let labelledBy = useLabelledBy([id])
 
-  let slot = useMemo<ButtonRenderPropArg>(
-    () => ({
-      open: data.comboboxState === ComboboxState.Open,
-      disabled: data.disabled,
-      value: data.value,
-    }),
-    [data]
+  let { isFocusVisible: focus, focusProps } = useFocusRing({
+    isTextInput: true,
+    autoFocus: props.autoFocus ?? false,
+  })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: data.disabled ?? false })
+  let { pressed: active, pressProps } = useActivePress({ disabled: data.disabled ?? false })
+
+  let slot = useMemo(
+    () =>
+      ({
+        open: data.comboboxState === ComboboxState.Open,
+        active: active || data.comboboxState === ComboboxState.Open,
+        disabled: data.disabled,
+        value: data.value,
+        hover,
+        focus,
+      }) satisfies ButtonRenderPropArg,
+    [data, hover, focus, active]
   )
-  let ourProps = {
-    ref: buttonRef,
-    id,
-    type: useResolveButtonType(props, data.buttonRef),
-    tabIndex: -1,
-    'aria-haspopup': 'listbox',
-    'aria-controls': data.optionsRef.current?.id,
-    'aria-expanded': data.comboboxState === ComboboxState.Open,
-    'aria-labelledby': labelledby,
-    disabled: data.disabled,
-    onClick: handleClick,
-    onKeyDown: handleKeyDown,
-  }
+  let ourProps = mergeProps(
+    {
+      ref: buttonRef,
+      id,
+      type: useResolveButtonType(props, data.buttonRef),
+      tabIndex: -1,
+      'aria-haspopup': 'listbox',
+      'aria-controls': data.optionsRef.current?.id,
+      'aria-expanded': data.comboboxState === ComboboxState.Open,
+      'aria-labelledby': labelledBy,
+      disabled: data.disabled,
+      onClick: handleClick,
+      onKeyDown: handleKeyDown,
+    },
+    focusProps,
+    hoverProps,
+    pressProps
+  )
 
   return render({
     ourProps,
@@ -1481,48 +1530,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
 // ---
 
-let DEFAULT_LABEL_TAG = 'label' as const
-interface LabelRenderPropArg {
-  open: boolean
-  disabled: boolean
-}
-
-export type ComboboxLabelProps<TTag extends ElementType> = Props<TTag, LabelRenderPropArg>
-
-function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-  props: ComboboxLabelProps<TTag>,
-  ref: Ref<HTMLLabelElement>
-) {
-  let internalId = useId()
-  let { id = `headlessui-combobox-label-${internalId}`, ...theirProps } = props
-  let data = useData('Combobox.Label')
-  let actions = useActions('Combobox.Label')
-  let labelRef = useSyncRefs(data.labelRef, ref)
-
-  useIsoMorphicEffect(() => actions.registerLabel(id), [id])
-
-  let handleClick = useEvent(() => data.inputRef.current?.focus({ preventScroll: true }))
-
-  let slot = useMemo<LabelRenderPropArg>(
-    () => ({ open: data.comboboxState === ComboboxState.Open, disabled: data.disabled }),
-    [data]
-  )
-
-  let ourProps = { ref: labelRef, id, onClick: handleClick }
-
-  return render({
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_LABEL_TAG,
-    name: 'Combobox.Label',
-  })
-}
-
-// ---
-
 let DEFAULT_OPTIONS_TAG = 'ul' as const
-interface OptionsRenderPropArg {
+type OptionsRenderPropArg = {
   open: boolean
   option: unknown
 }
@@ -1530,12 +1539,13 @@ type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role'
 
 let OptionsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
-export type ComboboxOptionsProps<TTag extends ElementType> = Props<
+export type ComboboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG> = Props<
   TTag,
   OptionsRenderPropArg,
   OptionsPropsWeControl,
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
+    anchor?: AnchorProps
   }
 >
 
@@ -1544,10 +1554,16 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   ref: Ref<HTMLUListElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-combobox-options-${internalId}`, hold = false, ...theirProps } = props
+  let {
+    id = `headlessui-combobox-options-${internalId}`,
+    hold = false,
+    anchor,
+    ...theirProps
+  } = props
   let data = useData('Combobox.Options')
 
-  let optionsRef = useSyncRefs(data.optionsRef, ref)
+  let [floatingRef, style] = useFloatingPanel(anchor)
+  let optionsRef = useSyncRefs(data.optionsRef, ref, floatingRef)
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -1580,8 +1596,12 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let labelledBy = useLabelledBy([data.buttonRef.current?.id])
 
-  let slot = useMemo<OptionsRenderPropArg>(
-    () => ({ open: data.comboboxState === ComboboxState.Open, option: undefined }),
+  let slot = useMemo(
+    () =>
+      ({
+        open: data.comboboxState === ComboboxState.Open,
+        option: undefined,
+      }) satisfies OptionsRenderPropArg,
     [data]
   )
   let ourProps = {
@@ -1590,6 +1610,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     id,
     ref: optionsRef,
+    ...(style ? { style } : {}),
   }
 
   // Map the children in a scrollable container when virtualization is enabled
@@ -1614,14 +1635,19 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 // ---
 
 let DEFAULT_OPTION_TAG = 'li' as const
-interface OptionRenderPropArg {
+type OptionRenderPropArg = {
+  focus: boolean
+  /** @deprecated use `focus` instead */
   active: boolean
   selected: boolean
   disabled: boolean
 }
 type OptionPropsWeControl = 'role' | 'tabIndex' | 'aria-disabled' | 'aria-selected'
 
-export type ComboboxOptionProps<TTag extends ElementType, TType> = Props<
+export type ComboboxOptionProps<
+  TTag extends ElementType = typeof DEFAULT_OPTION_TAG,
+  TType = string,
+> = Props<
   TTag,
   OptionRenderPropArg,
   OptionPropsWeControl,
@@ -1758,8 +1784,8 @@ function OptionFn<
     actions.goToOption(Focus.Nothing)
   })
 
-  let slot = useMemo<OptionRenderPropArg>(
-    () => ({ active, selected, disabled }),
+  let slot = useMemo(
+    () => ({ active, focus: active, selected, disabled }) satisfies OptionRenderPropArg,
     [active, selected, disabled]
   )
 
@@ -1822,11 +1848,7 @@ export interface _internal_ComponentComboboxInput extends HasDisplayName {
   ): JSX.Element
 }
 
-export interface _internal_ComponentComboboxLabel extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-    props: ComboboxLabelProps<TTag> & RefProp<typeof LabelFn>
-  ): JSX.Element
-}
+export interface _internal_ComponentComboboxLabel extends _internal_ComponentLabel {}
 
 export interface _internal_ComponentComboboxOptions extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
@@ -1844,10 +1866,24 @@ export interface _internal_ComponentComboboxOption extends HasDisplayName {
 }
 
 let ComboboxRoot = forwardRefWithAs(ComboboxFn) as unknown as _internal_ComponentCombobox
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentComboboxButton
-let Input = forwardRefWithAs(InputFn) as unknown as _internal_ComponentComboboxInput
-let Label = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentComboboxLabel
-let Options = forwardRefWithAs(OptionsFn) as unknown as _internal_ComponentComboboxOptions
-let Option = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentComboboxOption
+export let ComboboxButton = forwardRefWithAs(
+  ButtonFn
+) as unknown as _internal_ComponentComboboxButton
+export let ComboboxInput = forwardRefWithAs(InputFn) as unknown as _internal_ComponentComboboxInput
+/** @deprecated use `<Label>` instead of `<ComboboxLabel>` */
+export let ComboboxLabel = Label as _internal_ComponentComboboxLabel
+export let ComboboxOptions = forwardRefWithAs(
+  OptionsFn
+) as unknown as _internal_ComponentComboboxOptions
+export let ComboboxOption = forwardRefWithAs(
+  OptionFn
+) as unknown as _internal_ComponentComboboxOption
 
-export let Combobox = Object.assign(ComboboxRoot, { Input, Button, Label, Options, Option })
+export let Combobox = Object.assign(ComboboxRoot, {
+  Input: ComboboxInput,
+  Button: ComboboxButton,
+  /** @deprecated use `<Label>` instead of `<Combobox.Label>` */
+  Label: ComboboxLabel,
+  Options: ComboboxOptions,
+  Option: ComboboxOption,
+})

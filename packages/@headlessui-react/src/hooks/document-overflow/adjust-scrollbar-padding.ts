@@ -1,4 +1,4 @@
-import { type ScrollLockStep } from './overflow-store'
+import type { ScrollLockStep } from './overflow-store'
 
 export function adjustScrollbarPadding(): ScrollLockStep {
   let scrollbarWidthBefore: number

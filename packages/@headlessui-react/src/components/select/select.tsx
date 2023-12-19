@@ -7,7 +7,7 @@ import { useActivePress } from '../../hooks/use-active-press'
 import { useId } from '../../hooks/use-id'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
-import { type Props } from '../../types'
+import type { Props } from '../../types'
 import { forwardRefWithAs, mergeProps, render, type HasDisplayName } from '../../utils/render'
 import { useDescribedBy } from '../description/description'
 import { useLabelledBy } from '../label/label'
@@ -60,7 +60,7 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
     isDisabled: disabled ?? false,
   })
 
-  let { pressed: active, pressProps } = useActivePress()
+  let { pressed: active, pressProps } = useActivePress({ disabled: disabled ?? false })
 
   let ourProps = mergeProps(
     {

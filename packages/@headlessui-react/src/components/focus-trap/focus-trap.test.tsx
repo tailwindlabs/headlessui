@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React, { useRef, useState } from 'react'
 import { assertActiveElement } from '../../test-utils/accessibility-assertions'
-import { Keys, click, press, shift } from '../../test-utils/interactions'
+import { Keys, click, focus, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { FocusTrap } from './focus-trap'
 
@@ -138,7 +138,7 @@ it(
     assertActiveElement(b)
 
     // Try to move focus
-    a?.focus()
+    await focus(a)
 
     // Ensure that input-b is still the active element
     assertActiveElement(b)
@@ -184,7 +184,7 @@ it(
     assertActiveElement(c)
 
     // Try to move focus
-    a?.focus()
+    await focus(a)
 
     // Ensure that input-c is still the active element
     assertActiveElement(c)
@@ -196,19 +196,19 @@ it(
     assertActiveElement(b)
 
     // Try to move focus again
-    a?.focus()
+    await focus(a)
 
     // Ensure that input-b is still the active element
     assertActiveElement(b)
 
     // Focus on an element within the FocusTrap
-    d?.focus()
+    await focus(d)
 
     // Ensure that input-d is the active element
     assertActiveElement(d)
 
     // Try to move focus again
-    a?.focus()
+    await focus(a)
 
     // Ensure that input-d is still the active element
     assertActiveElement(d)
@@ -498,7 +498,7 @@ it(
     assertActiveElement(c)
 
     // Try to move focus
-    a?.focus()
+    await focus(a)
 
     // Ensure that input-c is still the active element
     assertActiveElement(c)
@@ -510,19 +510,19 @@ it(
     assertActiveElement(b)
 
     // Try to move focus again
-    a?.focus()
+    await focus(a)
 
     // Ensure that input-b is still the active element
     assertActiveElement(b)
 
     // Focus on an element within the FocusTrap
-    d?.focus()
+    await focus(d)
 
     // Ensure that input-d is the active element
     assertActiveElement(d)
 
     // Try to move focus again
-    a?.focus()
+    await focus(a)
 
     // Ensure that input-d is still the active element
     assertActiveElement(d)

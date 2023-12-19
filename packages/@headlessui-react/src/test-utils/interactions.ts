@@ -40,7 +40,7 @@ export function word(input: string): Partial<KeyboardEvent>[] {
 
   let element = document.activeElement
 
-  if (element instanceof HTMLInputElement) {
+  if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
     fireEvent.change(element, {
       target: Object.assign({}, element, { value: input }),
     })
