@@ -76,7 +76,7 @@ export function render<TFeature extends RenderFeatures, TTag extends ElementType
 }) {
   mergeRefs = mergeRefs ?? defaultMergeRefs
 
-  let props = mergeProps(theirProps, ourProps)
+  let props = mergePropsAdvanced(theirProps, ourProps)
 
   // Visible always render
   if (visible) return _render(props, slot, defaultTag, name, mergeRefs)
@@ -199,7 +199,7 @@ function _render<TTag extends ElementType, TSlot>(
         Object.assign(
           {},
           // Filter out undefined values so that they don't override the existing values
-          mergeProps(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
+          mergePropsAdvanced(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
           dataAttributes,
           refRelatedProps,
           { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
@@ -272,7 +272,9 @@ function defaultMergeRefs(...refs: any[]) {
       }
 }
 
-function mergeProps(...listOfProps: Props<any, any>[]) {
+// A more complex example fo the `mergeProps` function, this one also cancels subsequent event
+// listeners if the event has already been `preventDefault`ed.
+function mergePropsAdvanced(...listOfProps: Props<any, any>[]) {
   if (listOfProps.length === 0) return {}
   if (listOfProps.length === 1) return listOfProps[0]
 
