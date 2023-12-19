@@ -30,11 +30,11 @@ import {
 } from '../../utils/render'
 import {
   Description,
-  _internal_ComponentDescription,
   useDescriptions,
+  type _internal_ComponentDescription,
 } from '../description/description'
 import { Keys } from '../keyboard'
-import { Label, _internal_ComponentLabel, useLabels } from '../label/label'
+import { Label, useLabels, type _internal_ComponentLabel } from '../label/label'
 
 interface StateDefinition {
   switch: HTMLButtonElement | null

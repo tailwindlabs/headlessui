@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef } from 'react'
+import { useEffect, useRef, type MutableRefObject } from 'react'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'

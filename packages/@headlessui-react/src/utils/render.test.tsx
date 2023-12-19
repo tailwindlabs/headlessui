@@ -2,7 +2,7 @@ import { getByTestId, prettyDOM, render as testRender } from '@testing-library/r
 import React, { Fragment, createRef, type ElementType, type Ref } from 'react'
 import { suppressConsoleLogs } from '../test-utils/suppress-console-logs'
 import type { Expand, Props } from '../types'
-import { Features, PropsForFeatures, render } from './render'
+import { Features, render, type PropsForFeatures } from './render'
 
 function contents(id = 'wrapper') {
   return prettyDOM(getByTestId(document.body, id), undefined, {

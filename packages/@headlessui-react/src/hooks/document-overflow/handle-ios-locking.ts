@@ -1,6 +1,6 @@
 import { disposables } from '../../utils/disposables'
 import { isIOS } from '../../utils/platform'
-import { ScrollLockStep } from './overflow-store'
+import type { ScrollLockStep } from './overflow-store'
 
 interface ContainerMetadata {
   containers: (() => HTMLElement[])[]

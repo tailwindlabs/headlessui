@@ -1,6 +1,5 @@
 import {
   Fragment,
-  MutableRefObject,
   cloneElement,
   createElement,
   forwardRef,
@@ -8,6 +7,7 @@ import {
   useCallback,
   useRef,
   type ElementType,
+  type MutableRefObject,
   type ReactElement,
   type Ref,
 } from 'react'

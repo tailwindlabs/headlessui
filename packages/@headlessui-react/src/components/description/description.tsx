@@ -11,7 +11,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { Props } from '../../types'
+import type { Props } from '../../types'
 import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
 
 // ---

@@ -44,8 +44,8 @@ import {
 } from '../../utils/render'
 import {
   Description,
-  _internal_ComponentDescription,
   useDescriptions,
+  type _internal_ComponentDescription,
 } from '../description/description'
 import { Keys } from '../keyboard'
 

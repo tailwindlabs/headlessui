@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import React, { ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 import { Description, useDescriptions } from './description'
 
 jest.mock('../../hooks/use-id')

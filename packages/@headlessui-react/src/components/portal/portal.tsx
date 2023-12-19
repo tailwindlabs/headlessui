@@ -21,7 +21,7 @@ import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
 import { env } from '../../utils/env'
-import { HasDisplayName, RefProp, forwardRefWithAs, render } from '../../utils/render'
+import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
 
 function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
   let forceInRoot = usePortalRoot()

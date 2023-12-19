@@ -1,4 +1,4 @@
-import { DependencyList, EffectCallback, useEffect, useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect, type DependencyList, type EffectCallback } from 'react'
 import { env } from '../utils/env'
 
 export let useIsoMorphicEffect = (effect: EffectCallback, deps?: DependencyList | undefined) => {

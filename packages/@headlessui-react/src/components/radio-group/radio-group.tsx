@@ -15,11 +15,11 @@ import React, {
 
 import {
   Description,
-  _internal_ComponentDescription,
   useDescriptions,
+  type _internal_ComponentDescription,
 } from '../../components/description/description'
 import { Keys } from '../../components/keyboard'
-import { Label, _internal_ComponentLabel, useLabels } from '../../components/label/label'
+import { Label, useLabels, type _internal_ComponentLabel } from '../../components/label/label'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
