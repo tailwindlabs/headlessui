@@ -45,7 +45,7 @@ function resolveContainers(containers?: Containers): Set<HTMLElement> {
 
 let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 
-enum Features {
+export enum FocusTrapFeatures {
   /** No features enabled for the focus trap. */
   None = 1 << 0,
 
@@ -77,23 +77,29 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 ) {
   let container = useRef<HTMLDivElement | null>(null)
   let focusTrapRef = useSyncRefs(container, ref)
-  let { initialFocus, containers, features = Features.All, ...theirProps } = props
+  let {
+    initialFocus,
+    initialFocusFallback,
+    containers,
+    features = FocusTrapFeatures.All,
+    ...theirProps
+  } = props
 
   if (!useServerHandoffComplete()) {
-    features = Features.None
+    features = FocusTrapFeatures.None
   }
 
   let ownerDocument = useOwnerDocument(container)
 
-  useRestoreFocus({ ownerDocument }, Boolean(features & Features.RestoreFocus))
+  useRestoreFocus({ ownerDocument }, Boolean(features & FocusTrapFeatures.RestoreFocus))
   let previousActiveElement = useInitialFocus(
-    { ownerDocument, container, initialFocus },
-    Boolean(features & Features.InitialFocus)
+    { ownerDocument, container, initialFocus, initialFocusFallback },
+    features
   )
 
   useFocusLock(
     { ownerDocument, container, containers, previousActiveElement },
-    Boolean(features & Features.FocusLock)
+    Boolean(features & FocusTrapFeatures.FocusLock)
   )
 
   let direction = useTabDirection()
@@ -165,7 +171,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   return (
     <>
-      {Boolean(features & Features.TabLock) && (
+      {Boolean(features & FocusTrapFeatures.TabLock) && (
         <Hidden
           as="button"
           type="button"
@@ -180,7 +186,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
         defaultTag: DEFAULT_FOCUS_TRAP_TAG,
         name: 'FocusTrap',
       })}
-      {Boolean(features & Features.TabLock) && (
+      {Boolean(features & FocusTrapFeatures.TabLock) && (
         <Hidden
           as="button"
           type="button"
@@ -204,7 +210,7 @@ export interface _internal_ComponentFocusTrap extends HasDisplayName {
 let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as unknown as _internal_ComponentFocusTrap
 
 export let FocusTrap = Object.assign(FocusTrapRoot, {
-  features: Features,
+  features: FocusTrapFeatures,
 })
 
 // ---
