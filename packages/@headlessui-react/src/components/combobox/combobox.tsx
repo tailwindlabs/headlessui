@@ -1,4 +1,5 @@
-import { useVirtualizer, Virtualizer } from '@tanstack/react-virtual'
+'use client'
+
 import React, {
   createContext,
   createRef,

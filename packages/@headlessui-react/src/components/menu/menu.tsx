@@ -1,3 +1,5 @@
+'use client'
+
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/
 import React, {
   Fragment,
