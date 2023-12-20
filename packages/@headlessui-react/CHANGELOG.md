@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Allow horizontal scrolling when scroll locking ([bdf4f8e](https://github.com/tailwindlabs/headlessui/commit/bdf4f8e32358485dd9c437c0d631309250ee5624))
+- Allow horizontal scrolling inside the `Dialog` component ([#2889](https://github.com/tailwindlabs/headlessui/pull/2889))
+- Improve cancellation of events when using `disabled` or `aria-disabled` attributes ([#2890](https://github.com/tailwindlabs/headlessui/pull/2890))
 
 ## [2.0.0-alpha.1] - 2023-12-20
 
