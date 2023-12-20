@@ -1,3 +1,6 @@
+let path = require('path')
+let { execSync } = require('child_process')
+
 // Given a version, figure out what the release channel is so that we can publish to the correct
 // channel on npm.
 //
