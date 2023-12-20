@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.0.0-alpha.1] - 2023-12-20
+
 ### Added
 
 - Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
@@ -572,7 +576,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.17...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.1...HEAD
+[2.0.0-alpha.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.17...v2.0.0-alpha.1
 [1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.16...v1.7.17
 [1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.15...@headlessui/react@v1.7.16
 [1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.14...@headlessui/react@v1.7.15
