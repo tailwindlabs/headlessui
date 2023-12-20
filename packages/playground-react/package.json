@@ -33,5 +33,8 @@
   },
   "devDependencies": {
     "@floating-ui/react": "^0.24.8"
+  },
+  "resolutions": {
+    "next/@swc/helpers": "0.4.36"
   }
 }
