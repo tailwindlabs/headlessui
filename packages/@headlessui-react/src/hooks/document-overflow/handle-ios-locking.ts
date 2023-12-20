@@ -97,7 +97,6 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
               if (inAllowedContainer(e.target as HTMLElement)) {
                 // We are in an allowed container, however on iOS the page can still scroll in
                 // certain scenarios...
-
                 let rootContainer = e.target
                 while (
                   rootContainer.parentElement &&
@@ -113,20 +112,32 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
                   // portal, its over.
                   scrollableParent.dataset.headlessuiPortal !== ''
                 ) {
-                  if (scrollableParent.scrollHeight > scrollableParent.clientHeight) {
+                  // Verify that we are in a scrollable container (which may or may not overflow yet)
+                  let css = window.getComputedStyle(scrollableParent)
+                  if (/(auto|scroll)/.test(css.overflow + css.overflowY + css.overflowX)) {
+                    break
+                  }
+
+                  // Check if the scrollable container is already overflowing
+                  if (
+                    scrollableParent.scrollHeight > scrollableParent.clientHeight ||
+                    scrollableParent.scrollWidth > scrollableParent.clientWidth
+                  ) {
                     break
                   }
 
                   scrollableParent = scrollableParent.parentElement
                 }
 
-                // We crawled up the tree until the beginnging of the Portal, let's prevent the event.
+                // We crawled up the tree until the beginnging of the Portal, let's prevent the
+                // event if this is the case. If not, then we are in a container where we are
+                // allowed to scroll so we don't have to prevent the event.
                 if (scrollableParent.dataset.headlessuiPortal === '') {
                   e.preventDefault()
                 }
               }
 
-              // We are not in an allowed contains, so let's prevent the event.
+              // We are not in an allowed container, so let's prevent the event.
               else {
                 e.preventDefault()
               }

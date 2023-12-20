@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Allow horizontal scrolling when scroll locking ([bdf4f8e](https://github.com/tailwindlabs/headlessui/commit/bdf4f8e32358485dd9c437c0d631309250ee5624))
 
 ## [2.0.0-alpha.1] - 2023-12-20
 
