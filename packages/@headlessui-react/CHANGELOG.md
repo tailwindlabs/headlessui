@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
+- Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
+- Add new `Checkbox` component
+- Add new `Radio` component as an alternative to the existing `RadioGroup.Option` component
+- Add new `Button` component
+- Add new `Input` component
+- Add new `Textarea` component
+- Add new `Select` component
+- Add new `Field`, `Label`, `Description`, `Fieldset` and `Legend` components
+- Add new `DataInteractive` component
+- Add new `anchor` and `modal` prop to `ComboboxOptions`, `ListboxOptions`, `MenuItems` and `PopoverPanel` components
+- Add new `ListboxSelectedOption` component
+- Add new `MenuSection`, `MenuHeading`, and `MenuSeparator` components
+- Add new simplified `data-*` attributes as an alternative to the existing `data-headlessui-state="..."` attribute
+- Add `autoFocus` prop on focusable components (which maps to `data-autofocus`)
+
+### Changed
+
+- Bumped to React and React DOM 18
+- Dialog is focused by default instead of the first focusable element (unless an element exists with a `data-autofocus` in the dialog)
+
 ### Fixed
 
 - Don't call `<Dialog>`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
@@ -21,11 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix outside click detection when component is mounted in the Shadow DOM ([#2866](https://github.com/tailwindlabs/headlessui/pull/2866))
 - Fix CJS types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
 - Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
-
-### Added
-
-- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
-- Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
+- Fix iOS scroll lock glitches
 
 ## [1.7.17] - 2023-08-17
 
