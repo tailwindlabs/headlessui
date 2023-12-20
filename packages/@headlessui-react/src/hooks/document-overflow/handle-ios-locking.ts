@@ -1,6 +1,6 @@
 import { disposables } from '../../utils/disposables'
 import { isIOS } from '../../utils/platform'
-import { ScrollLockStep } from './overflow-store'
+import type { ScrollLockStep } from './overflow-store'
 
 interface ContainerMetadata {
   containers: (() => HTMLElement[])[]
@@ -11,14 +11,8 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
     return {}
   }
 
-  let scrollPosition: number
-
   return {
-    before() {
-      scrollPosition = window.pageYOffset
-    },
-
-    after({ doc, d, meta }) {
+    before({ doc, d, meta }) {
       function inAllowedContainer(el: HTMLElement) {
         return meta.containers
           .flatMap((resolve) => resolve())
@@ -37,12 +31,13 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
         // not using smooth scrolling.
         if (window.getComputedStyle(doc.documentElement).scrollBehavior !== 'auto') {
           let _d = disposables()
-          _d.style(doc.documentElement, 'scroll-behavior', 'auto')
+          _d.style(doc.documentElement, 'scrollBehavior', 'auto')
           d.add(() => d.microTask(() => _d.dispose()))
         }
 
-        d.style(doc.body, 'marginTop', `-${scrollPosition}px`)
-        window.scrollTo(0, 0)
+        // Keep track of the current scroll position so that we can restore the scroll position if
+        // it has changed in the meantime.
+        let scrollPosition = window.scrollY ?? window.pageYOffset
 
         // Relatively hacky, but if you click a link like `<a href="#foo">` in the Dialog, and there
         // exists an element on the page (outside of the Dialog) with that id, then the browser will
@@ -73,35 +68,82 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
           true
         )
 
+        // Rely on overscrollBehavior to prevent scrolling outside of the Dialog.
+        d.addEventListener(doc, 'touchstart', (e) => {
+          if (e.target instanceof HTMLElement) {
+            if (inAllowedContainer(e.target as HTMLElement)) {
+              // Find the root of the allowed containers
+              let rootContainer = e.target
+              while (
+                rootContainer.parentElement &&
+                inAllowedContainer(rootContainer.parentElement)
+              ) {
+                rootContainer = rootContainer.parentElement!
+              }
+
+              d.style(rootContainer, 'overscrollBehavior', 'contain')
+            } else {
+              d.style(e.target, 'touchAction', 'none')
+            }
+          }
+        })
+
         d.addEventListener(
           doc,
           'touchmove',
           (e) => {
             // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
-            if (e.target instanceof HTMLElement && !inAllowedContainer(e.target as HTMLElement)) {
-              e.preventDefault()
+            if (e.target instanceof HTMLElement) {
+              if (inAllowedContainer(e.target as HTMLElement)) {
+                // We are in an allowed container, however on iOS the page can still scroll in
+                // certain scenarios...
+
+                let rootContainer = e.target
+                while (
+                  rootContainer.parentElement &&
+                  inAllowedContainer(rootContainer.parentElement)
+                ) {
+                  rootContainer = rootContainer.parentElement!
+                }
+
+                let scrollableParent = rootContainer
+                while (
+                  scrollableParent.parentElement &&
+                  // Assumption that we are always used in a Headless UI Portal. Once we reach the
+                  // portal, its over.
+                  scrollableParent.dataset.headlessuiPortal !== ''
+                ) {
+                  if (scrollableParent.scrollHeight > scrollableParent.clientHeight) {
+                    break
+                  }
+
+                  scrollableParent = scrollableParent.parentElement
+                }
+
+                // We crawled up the tree until the beginnging of the Portal, let's prevent the event.
+                if (scrollableParent.dataset.headlessuiPortal === '') {
+                  e.preventDefault()
+                }
+              }
+
+              // We are not in an allowed contains, so let's prevent the event.
+              else {
+                e.preventDefault()
+              }
             }
           },
           { passive: false }
         )
 
-        // Restore scroll position
+        // Restore scroll position if a scrollToElement was captured.
         d.add(() => {
-          // Before opening the Dialog, we capture the current pageYOffset, and offset the page with
-          // this value so that we can also scroll to `(0, 0)`.
-          //
-          // If we want to restore a few things can happen:
-          //
-          // 1. The window.pageYOffset is still at 0, this means nothing happened, and we can safely
-          // restore to the captured value earlier.
-          // 2. The window.pageYOffset is **not** at 0. This means that something happened (e.g.: a
-          // link was scrolled into view in the background). Ideally we want to restore to this _new_
-          // position. To do this, we can take the new value into account with the captured value from
-          // before.
-          //
-          // (Since the value of window.pageYOffset is 0 in the first case, we should be able to
-          // always sum these values)
-          window.scrollTo(0, window.pageYOffset + scrollPosition)
+          let newScrollPosition = window.scrollY ?? window.pageYOffset
+
+          // If the scroll position changed, then we can restore it to the previous value. This will
+          // happen if you focus an input field and the browser scrolls for you.
+          if (scrollPosition !== newScrollPosition) {
+            window.scrollTo(0, scrollPosition)
+          }
 
           // If we captured an element that should be scrolled to, then we can try to do that if the
           // element is still connected (aka, still in the DOM).

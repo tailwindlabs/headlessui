@@ -21,7 +21,7 @@ import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import { Keys } from '../../keyboard'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { dom } from '../../utils/dom'
 import {
   Focus as FocusManagementFocus,

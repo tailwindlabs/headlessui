@@ -8,7 +8,7 @@ import {
   getByText,
   getRadioGroupOptions,
 } from '../../test-utils/accessibility-assertions'
-import { click, focus, Keys, press, shift } from '../../test-utils/interactions'
+import { Keys, click, focus, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { RadioGroup } from './radio-group'
 
@@ -25,7 +25,7 @@ describe('Safe guards', () => {
   it.each([['RadioGroup.Option', RadioGroup.Option]])(
     'should error when we are using a <%s /> without a parent <RadioGroup />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement(Component))).toThrowError(
+      expect(() => render(createElement(Component))).toThrow(
         `<${name} /> is missing a parent <RadioGroup /> component.`
       )
     })
@@ -164,7 +164,7 @@ describe('Rendering', () => {
               <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
               <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
               <RadioGroup.Option value="render-prop" data-value="render-prop">
-                {JSON.stringify}
+                {(slot) => <>{JSON.stringify(slot)}</>}
               </RadioGroup.Option>
             </RadioGroup>
           </>
@@ -183,6 +183,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: true,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -203,6 +206,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: false,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -230,7 +236,7 @@ describe('Rendering', () => {
               <RadioGroup.Option value="home-delivery">Home delivery</RadioGroup.Option>
               <RadioGroup.Option value="dine-in">Dine in</RadioGroup.Option>
               <RadioGroup.Option value="render-prop" disabled={disabled} data-value="render-prop">
-                {JSON.stringify}
+                {(slot) => <>{JSON.stringify(slot)}</>}
               </RadioGroup.Option>
             </RadioGroup>
           </>
@@ -248,6 +254,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: true,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -274,6 +283,9 @@ describe('Rendering', () => {
           checked: false,
           disabled: false,
           active: false,
+          hover: false,
+          focus: false,
+          autofocus: false,
         })
       )
 
@@ -347,7 +359,7 @@ describe('Rendering', () => {
       await press(Keys.Tab)
 
       // The first one should be active, but not checked yet
-      expect(options[0]).toHaveAttribute('data-headlessui-state', 'active')
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'active focus')
       expect(options[1]).toHaveAttribute('data-headlessui-state', '')
       expect(options[2]).toHaveAttribute('data-headlessui-state', '')
 
@@ -355,7 +367,7 @@ describe('Rendering', () => {
       await press(Keys.Space)
 
       // The first one should be active and checked
-      expect(options[0]).toHaveAttribute('data-headlessui-state', 'checked active')
+      expect(options[0]).toHaveAttribute('data-headlessui-state', 'checked active focus')
       expect(options[1]).toHaveAttribute('data-headlessui-state', '')
       expect(options[2]).toHaveAttribute('data-headlessui-state', '')
 
@@ -364,7 +376,7 @@ describe('Rendering', () => {
 
       // The second one should be active and checked
       expect(options[0]).toHaveAttribute('data-headlessui-state', '')
-      expect(options[1]).toHaveAttribute('data-headlessui-state', 'checked active')
+      expect(options[1]).toHaveAttribute('data-headlessui-state', 'checked active focus')
       expect(options[2]).toHaveAttribute('data-headlessui-state', '')
     })
   )
@@ -396,7 +408,14 @@ describe('Rendering', () => {
         let bob = getRadioGroupOptions()[1]
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: true, disabled: false, active: false })
+          JSON.stringify({
+            checked: true,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )
@@ -421,15 +440,36 @@ describe('Rendering', () => {
         let [alice, bob, charlie] = getRadioGroupOptions()
         expect(alice).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: false, disabled: false, active: false })
+          JSON.stringify({
+            checked: false,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: false, disabled: false, active: false })
+          JSON.stringify({
+            checked: false,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(charlie).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: false, disabled: false, active: false })
+          JSON.stringify({
+            checked: false,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )
@@ -454,7 +494,14 @@ describe('Rendering', () => {
         let bob = getRadioGroupOptions()[1]
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: true, disabled: false, active: false })
+          JSON.stringify({
+            checked: true,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )
@@ -483,7 +530,14 @@ describe('Rendering', () => {
         let bob = getRadioGroupOptions()[1]
         expect(bob).toHaveAttribute(
           'class',
-          JSON.stringify({ checked: true, disabled: false, active: false })
+          JSON.stringify({
+            checked: true,
+            disabled: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )
@@ -1428,7 +1482,7 @@ describe('Form compatibility', () => {
       // Submit the form
       await click(getByText('Submit'))
 
-      expect(submits).lastCalledWith([['delivery', 'pickup']])
+      expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
     })
   )
 
@@ -1463,7 +1517,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([]) // no data
+      expect(submits).toHaveBeenLastCalledWith([]) // no data
 
       // Choose home delivery
       await click(getByText('Home delivery'))
@@ -1472,7 +1526,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([['delivery', 'home-delivery']])
+      expect(submits).toHaveBeenLastCalledWith([['delivery', 'home-delivery']])
 
       // Choose pickup
       await click(getByText('Pickup'))
@@ -1481,7 +1535,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([['delivery', 'pickup']])
+      expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
     })
   )
 
@@ -1539,7 +1593,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([
+      expect(submits).toHaveBeenLastCalledWith([
         ['delivery[id]', '1'],
         ['delivery[value]', 'pickup'],
         ['delivery[label]', 'Pickup'],
@@ -1553,7 +1607,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([
+      expect(submits).toHaveBeenLastCalledWith([
         ['delivery[id]', '2'],
         ['delivery[value]', 'home-delivery'],
         ['delivery[label]', 'Home delivery'],
@@ -1567,7 +1621,7 @@ describe('Form compatibility', () => {
       await click(getByText('Submit'))
 
       // Verify that the form has been submitted
-      expect(submits).lastCalledWith([
+      expect(submits).toHaveBeenLastCalledWith([
         ['delivery[id]', '1'],
         ['delivery[value]', 'pickup'],
         ['delivery[label]', 'Pickup'],

@@ -1,21 +1,29 @@
+'use client'
+
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/
+import { useFocusRing } from '@react-aria/focus'
+import { useHover } from '@react-aria/interactions'
 import React, {
+  Fragment,
   createContext,
   createRef,
-  Fragment,
   useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
+  type CSSProperties,
   type Dispatch,
   type ElementType,
+  type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MutableRefObject,
   type Ref,
 } from 'react'
+import { useActivePress } from '../../hooks/use-active-press'
+import { useDidElementMove } from '../../hooks/use-did-element-move'
 import { useDisposables } from '../../hooks/use-disposables'
+import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -26,10 +34,19 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import {
+  FloatingProvider,
+  useFloatingPanel,
+  useFloatingPanelProps,
+  useFloatingReference,
+  useFloatingReferenceProps,
+  type AnchorProps,
+} from '../../internal/floating'
+import { Modal, ModalFeatures, type ModalProps } from '../../internal/modal'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { calculateActiveIndex, Focus } from '../../utils/calculate-active-index'
+import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import {
   Focus as FocusManagementFocus,
@@ -41,14 +58,17 @@ import {
 } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import {
-  Features,
+  RenderFeatures,
   forwardRefWithAs,
+  mergeProps,
   render,
   type HasDisplayName,
-  type PropsForFeatures,
   type RefProp,
 } from '../../utils/render'
+import { useDescriptions } from '../description/description'
 import { Keys } from '../keyboard'
+import { useLabelContext, useLabels } from '../label/label'
+import { Portal } from '../portal/portal'
 
 enum MenuStates {
   Open,
@@ -148,6 +168,99 @@ let reducers: {
     }
   },
   [ActionTypes.GoToItem]: (state, action) => {
+    if (state.menuState === MenuStates.Closed) return state
+
+    let base = {
+      ...state,
+      searchQuery: '',
+      activationTrigger: action.trigger ?? ActivationTrigger.Other,
+    }
+
+    // Optimization:
+    //
+    // There is no need to sort the DOM nodes if we know that we don't want to focus anything
+    if (action.focus === Focus.Nothing) {
+      return {
+        ...base,
+        activeItemIndex: null,
+      }
+    }
+
+    // Optimization:
+    //
+    // There is no need to sort the DOM nodes if we know exactly where to go
+    if (action.focus === Focus.Specific) {
+      return {
+        ...base,
+        activeItemIndex: state.items.findIndex((o) => o.id === action.id),
+      }
+    }
+
+    // Optimization:
+    //
+    // If the current DOM node and the previous DOM node are next to eachother, or if the previous
+    // DOM node is already the first DOM node, then we don't have to sort all the DOM nodes.
+    else if (action.focus === Focus.Previous) {
+      let activeItemIdx = state.activeItemIndex
+      if (activeItemIdx !== null) {
+        let currentDom = state.items[activeItemIdx].dataRef.current.domRef
+        let previousItemIndex = calculateActiveIndex(action, {
+          resolveItems: () => state.items,
+          resolveActiveIndex: () => state.activeItemIndex,
+          resolveId: (item) => item.id,
+          resolveDisabled: (item) => item.dataRef.current.disabled,
+        })
+        if (previousItemIndex !== null) {
+          let previousDom = state.items[previousItemIndex].dataRef.current.domRef
+          if (
+            // Next to eachother
+            currentDom.current?.previousElementSibling === previousDom.current ||
+            // Or already the first element
+            previousDom.current?.previousElementSibling === null
+          ) {
+            return {
+              ...base,
+              activeItemIndex: previousItemIndex,
+            }
+          }
+        }
+      }
+    }
+
+    // Optimization:
+    //
+    // If the current DOM node and the next DOM node are next to eachother, or if the next DOM node
+    // is already the last DOM node, then we don't have to sort all the DOM nodes.
+    else if (action.focus === Focus.Next) {
+      let activeItemIdx = state.activeItemIndex
+      if (activeItemIdx !== null) {
+        let currentDom = state.items[activeItemIdx].dataRef.current.domRef
+        let nextItemIndex = calculateActiveIndex(action, {
+          resolveItems: () => state.items,
+          resolveActiveIndex: () => state.activeItemIndex,
+          resolveId: (item) => item.id,
+          resolveDisabled: (item) => item.dataRef.current.disabled,
+        })
+        if (nextItemIndex !== null) {
+          let nextDom = state.items[nextItemIndex].dataRef.current.domRef
+          if (
+            // Next to eachother
+            currentDom.current?.nextElementSibling === nextDom.current ||
+            // Or already the last element
+            nextDom.current?.nextElementSibling === null
+          ) {
+            return {
+              ...base,
+              activeItemIndex: nextItemIndex,
+            }
+          }
+        }
+      }
+    }
+
+    // Slow path:
+    //
+    // Ensure all the items are correctly sorted according to DOM position
     let adjustedState = adjustOrderedState(state)
     let activeItemIndex = calculateActiveIndex(action, {
       resolveItems: () => adjustedState.items,
@@ -157,11 +270,9 @@ let reducers: {
     })
 
     return {
-      ...state,
+      ...base,
       ...adjustedState,
-      searchQuery: '',
       activeItemIndex,
-      activationTrigger: action.trigger ?? ActivationTrigger.Other,
     }
   },
   [ActionTypes.Search]: (state, action) => {
@@ -237,15 +348,16 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 let DEFAULT_MENU_TAG = Fragment
-interface MenuRenderPropArg {
+type MenuRenderPropArg = {
   open: boolean
   close: () => void
 }
+type MenuPropsWeControl = never
 
-export type MenuProps<TTag extends ElementType> = Props<
+export type MenuProps<TTag extends ElementType = typeof DEFAULT_MENU_TAG> = Props<
   TTag,
   MenuRenderPropArg,
-  never,
+  MenuPropsWeControl,
   {
     __demoMode?: boolean
   }
@@ -287,47 +399,54 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     dispatch({ type: ActionTypes.CloseMenu })
   })
 
-  let slot = useMemo<MenuRenderPropArg>(
-    () => ({ open: menuState === MenuStates.Open, close }),
+  let slot = useMemo(
+    () => ({ open: menuState === MenuStates.Open, close }) satisfies MenuRenderPropArg,
     [menuState, close]
   )
 
   let ourProps = { ref: menuRef }
 
   return (
-    <MenuContext.Provider value={reducerBag}>
-      <OpenClosedProvider
-        value={match(menuState, {
-          [MenuStates.Open]: State.Open,
-          [MenuStates.Closed]: State.Closed,
-        })}
-      >
-        {render({
-          ourProps,
-          theirProps,
-          slot,
-          defaultTag: DEFAULT_MENU_TAG,
-          name: 'Menu',
-        })}
-      </OpenClosedProvider>
-    </MenuContext.Provider>
+    <FloatingProvider>
+      <MenuContext.Provider value={reducerBag}>
+        <OpenClosedProvider
+          value={match(menuState, {
+            [MenuStates.Open]: State.Open,
+            [MenuStates.Closed]: State.Closed,
+          })}
+        >
+          {render({
+            ourProps,
+            theirProps,
+            slot,
+            defaultTag: DEFAULT_MENU_TAG,
+            name: 'Menu',
+          })}
+        </OpenClosedProvider>
+      </MenuContext.Provider>
+    </FloatingProvider>
   )
 }
 
 // ---
 
 let DEFAULT_BUTTON_TAG = 'button' as const
-interface ButtonRenderPropArg {
+type ButtonRenderPropArg = {
   open: boolean
+  active: boolean
+  hover: boolean
+  focus: boolean
+  autofocus: boolean
 }
 type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded' | 'aria-haspopup'
 
-export type MenuButtonProps<TTag extends ElementType> = Props<
+export type MenuButtonProps<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG> = Props<
   TTag,
   ButtonRenderPropArg,
   ButtonPropsWeControl,
   {
     disabled?: boolean
+    autoFocus?: boolean
   }
 >
 
@@ -338,7 +457,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let internalId = useId()
   let { id = `headlessui-menu-button-${internalId}`, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Button')
-  let buttonRef = useSyncRefs(state.buttonRef, ref)
+  let getFloatingReferenceProps = useFloatingReferenceProps()
+  let buttonRef = useSyncRefs(state.buttonRef, ref, useFloatingReference())
 
   let d = useDisposables()
 
@@ -387,21 +507,39 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let slot = useMemo<ButtonRenderPropArg>(
-    () => ({ open: state.menuState === MenuStates.Open }),
-    [state]
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
+  let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
+
+  let slot = useMemo(
+    () =>
+      ({
+        open: state.menuState === MenuStates.Open,
+        active: active || state.menuState === MenuStates.Open,
+        hover,
+        focus,
+        autofocus: props.autoFocus ?? false,
+      }) satisfies ButtonRenderPropArg,
+    [state, hover, focus, active, props.autoFocus]
   )
-  let ourProps = {
-    ref: buttonRef,
-    id,
-    type: useResolveButtonType(props, state.buttonRef),
-    'aria-haspopup': 'menu',
-    'aria-controls': state.itemsRef.current?.id,
-    'aria-expanded': state.menuState === MenuStates.Open,
-    onKeyDown: handleKeyDown,
-    onKeyUp: handleKeyUp,
-    onClick: handleClick,
-  }
+
+  let ourProps = mergeProps(
+    getFloatingReferenceProps(),
+    {
+      ref: buttonRef,
+      id,
+      type: useResolveButtonType(props, state.buttonRef),
+      'aria-haspopup': 'menu',
+      'aria-controls': state.itemsRef.current?.id,
+      'aria-expanded': state.menuState === MenuStates.Open,
+      onKeyDown: handleKeyDown,
+      onKeyUp: handleKeyUp,
+      onClick: handleClick,
+    },
+    focusProps,
+    hoverProps,
+    pressProps
+  )
 
   return render({
     ourProps,
@@ -415,29 +553,45 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 // ---
 
 let DEFAULT_ITEMS_TAG = 'div' as const
-interface ItemsRenderPropArg {
+type ItemsRenderPropArg = {
   open: boolean
 }
 type ItemsPropsWeControl = 'aria-activedescendant' | 'aria-labelledby' | 'role' | 'tabIndex'
 
-let ItemsRenderFeatures = Features.RenderStrategy | Features.Static
+let ItemsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
-export type MenuItemsProps<TTag extends ElementType> = Props<
+export type MenuItemsProps<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG> = Props<
   TTag,
   ItemsRenderPropArg,
-  ItemsPropsWeControl
-> &
-  PropsForFeatures<typeof ItemsRenderFeatures>
+  ItemsPropsWeControl,
+  {
+    anchor?: AnchorProps
+    modal?: boolean
+
+    // ItemsRenderFeatures
+    static?: boolean
+    unmount?: boolean
+  }
+>
 
 function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   props: MenuItemsProps<TTag>,
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-menu-items-${internalId}`, ...theirProps } = props
+  let { id = `headlessui-menu-items-${internalId}`, anchor, modal, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Items')
-  let itemsRef = useSyncRefs(state.itemsRef, ref)
+  let [floatingRef, style] = useFloatingPanel(anchor)
+  let getFloatingPanelProps = useFloatingPanelProps()
+  let itemsRef = useSyncRefs(state.itemsRef, ref, anchor ? floatingRef : null)
   let ownerDocument = useOwnerDocument(state.itemsRef)
+
+  // Always use `modal` when `anchor` is passed in
+  if (anchor != null && modal == null) {
+    modal = true
+  } else if (modal == null) {
+    modal = false
+  }
 
   let searchDisposables = useDisposables()
 
@@ -449,6 +603,21 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
 
     return state.menuState === MenuStates.Open
   })()
+
+  // We keep track whether the button moved or not, we only check this when the menu state becomes
+  // closed. If the button moved, then we want to cancel pending transitions to prevent that the
+  // attached `MenuItems` is still transitioning while the button moved away.
+  //
+  // If we don't cancel these transitions then there will be a period where the `MenuItems` is
+  // visible and moving around because it is trying to re-position itself based on the new position.
+  //
+  // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
+  // want to transition the y-axis for example you will run into the same issue again.
+  let didButtonMove = useDidElementMove(state.buttonRef, state.menuState !== MenuStates.Open)
+
+  // Now that we know that the button did move or not, we can either disable the panel and all of
+  // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
+  let panelEnabled = didButtonMove ? false : visible
 
   useEffect(() => {
     let container = state.itemsRef.current
@@ -530,7 +699,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
         event.preventDefault()
         event.stopPropagation()
         dispatch({ type: ActionTypes.CloseMenu })
-        disposables().nextFrame(() => {
+        disposables().microTask(() => {
           focusFrom(
             state.buttonRef.current!,
             event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
@@ -558,12 +727,12 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     }
   })
 
-  let slot = useMemo<ItemsRenderPropArg>(
-    () => ({ open: state.menuState === MenuStates.Open }),
+  let slot = useMemo(
+    () => ({ open: state.menuState === MenuStates.Open }) satisfies ItemsRenderPropArg,
     [state]
   )
 
-  let ourProps = {
+  let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
     'aria-labelledby': state.buttonRef.current?.id,
@@ -573,36 +742,60 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     role: 'menu',
     tabIndex: 0,
     ref: itemsRef,
-  }
-
-  return render({
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_ITEMS_TAG,
-    features: ItemsRenderFeatures,
-    visible,
-    name: 'Menu.Items',
+    style: {
+      ...style,
+      '--button-width': useElementSize(state.buttonRef, true).width,
+    } as CSSProperties,
   })
+
+  let Wrapper = modal ? Modal : anchor ? Portal : Fragment
+  let wrapperProps = modal
+    ? ({
+        features: ModalFeatures.ScrollLock,
+        enabled: state.menuState === MenuStates.Open,
+      } satisfies ModalProps)
+    : {}
+
+  return (
+    <Wrapper {...wrapperProps}>
+      {render({
+        ourProps,
+        theirProps,
+        slot,
+        defaultTag: DEFAULT_ITEMS_TAG,
+        features: ItemsRenderFeatures,
+        visible: panelEnabled,
+        name: 'Menu.Items',
+      })}
+    </Wrapper>
+  )
 }
 
 // ---
 
 let DEFAULT_ITEM_TAG = Fragment
-interface ItemRenderPropArg {
+type ItemRenderPropArg = {
+  /** @deprecated use `focus` instead */
   active: boolean
+  focus: boolean
   disabled: boolean
   close: () => void
 }
-type ItemPropsWeControl = 'aria-disabled' | 'role' | 'tabIndex'
+type ItemPropsWeControl =
+  | 'aria-describedby'
+  | 'aria-disabled'
+  | 'aria-labelledby'
+  | 'role'
+  | 'tabIndex'
 
-export type MenuItemProps<TTag extends ElementType> = Props<
+export type MenuItemProps<TTag extends ElementType = typeof DEFAULT_ITEM_TAG> = Props<
   TTag,
   ItemRenderPropArg,
-  ItemPropsWeControl
-> & {
-  disabled?: boolean
-}
+  ItemPropsWeControl,
+  {
+    disabled?: boolean
+  }
+>
 
 function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   props: MenuItemProps<TTag>,
@@ -670,7 +863,17 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
 
   let pointer = useTrackedPointer()
 
-  let handleEnter = useEvent((evt) => pointer.update(evt))
+  let handleEnter = useEvent((evt) => {
+    pointer.update(evt)
+    if (disabled) return
+    if (active) return
+    dispatch({
+      type: ActionTypes.GoToItem,
+      focus: Focus.Specific,
+      id,
+      trigger: ActivationTrigger.Pointer,
+    })
+  })
 
   let handleMove = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
@@ -691,8 +894,11 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     dispatch({ type: ActionTypes.GoToItem, focus: Focus.Nothing })
   })
 
-  let slot = useMemo<ItemRenderPropArg>(
-    () => ({ active, disabled, close }),
+  let [labelledby, LabelProvider] = useLabels()
+  let [describedby, DescriptionProvider] = useDescriptions()
+
+  let slot = useMemo(
+    () => ({ active, focus: active, disabled, close }) satisfies ItemRenderPropArg,
     [active, disabled, close]
   )
   let ourProps = {
@@ -701,6 +907,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     role: 'menuitem',
     tabIndex: disabled === true ? undefined : -1,
     'aria-disabled': disabled === true ? true : undefined,
+    'aria-labelledby': labelledby,
+    'aria-describedby': describedby,
     disabled: undefined, // Never forward the `disabled` prop
     onClick: handleClick,
     onFocus: handleFocus,
@@ -712,12 +920,113 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     onMouseLeave: handleLeave,
   }
 
+  return (
+    <LabelProvider>
+      <DescriptionProvider>
+        {render({
+          ourProps,
+          theirProps,
+          slot,
+          defaultTag: DEFAULT_ITEM_TAG,
+          name: 'Menu.Item',
+        })}
+      </DescriptionProvider>
+    </LabelProvider>
+  )
+}
+
+// ---
+
+let DEFAULT_SECTION_TAG = 'div' as const
+type SectionRenderPropArg = {}
+type SectionPropsWeControl = 'role' | 'aria-labelledby'
+
+export type MenuSectionProps<TTag extends ElementType = typeof DEFAULT_SECTION_TAG> = Props<
+  TTag,
+  SectionRenderPropArg,
+  SectionPropsWeControl
+>
+
+function SectionFn<TTag extends ElementType = typeof DEFAULT_SECTION_TAG>(
+  props: MenuSectionProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
+  let [labelledby, LabelProvider] = useLabels()
+
+  let theirProps = props
+  let ourProps = { ref, 'aria-labelledby': labelledby, role: 'group' }
+
+  return (
+    <LabelProvider>
+      {render({
+        ourProps,
+        theirProps,
+        slot: {},
+        defaultTag: DEFAULT_SECTION_TAG,
+        name: 'Menu.Section',
+      })}
+    </LabelProvider>
+  )
+}
+
+// --
+
+let DEFAULT_HEADING_TAG = 'header' as const
+type HeadingRenderPropArg = {}
+type HeadingPropsWeControl = 'role'
+
+export type MenuHeadingProps<TTag extends ElementType = typeof DEFAULT_HEADING_TAG> = Props<
+  TTag,
+  HeadingRenderPropArg,
+  HeadingPropsWeControl
+>
+
+function HeadingFn<TTag extends ElementType = typeof DEFAULT_HEADING_TAG>(
+  props: MenuHeadingProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
+  let internalId = useId()
+  let { id = `headlessui-menu-heading-${internalId}`, ...theirProps } = props
+
+  let context = useLabelContext()
+  useIsoMorphicEffect(() => context.register(id), [id, context.register])
+
+  let ourProps = { id, ref, role: 'presentation', ...context.props }
+
   return render({
     ourProps,
     theirProps,
-    slot,
-    defaultTag: DEFAULT_ITEM_TAG,
-    name: 'Menu.Item',
+    slot: {},
+    defaultTag: DEFAULT_HEADING_TAG,
+    name: 'Menu.Heading',
+  })
+}
+
+// ---
+
+let DEFAULT_SEPARATOR_TAG = 'div' as const
+type SeparatorRenderPropArg = {}
+type SeparatorPropsWeControl = 'role'
+
+export type MenuSeparatorProps<TTag extends ElementType = typeof DEFAULT_SEPARATOR_TAG> = Props<
+  TTag,
+  SeparatorRenderPropArg,
+  SeparatorPropsWeControl
+>
+
+function SeparatorFn<TTag extends ElementType = typeof DEFAULT_SEPARATOR_TAG>(
+  props: MenuSeparatorProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
+  let theirProps = props
+  let ourProps = { ref, role: 'separator' }
+
+  return render({
+    ourProps,
+    theirProps,
+    slot: {},
+    defaultTag: DEFAULT_SEPARATOR_TAG,
+    name: 'Menu.Separator',
   })
 }
 
@@ -747,9 +1056,39 @@ export interface _internal_ComponentMenuItem extends HasDisplayName {
   ): JSX.Element
 }
 
-let MenuRoot = forwardRefWithAs(MenuFn) as unknown as _internal_ComponentMenu
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentMenuButton
-let Items = forwardRefWithAs(ItemsFn) as unknown as _internal_ComponentMenuItems
-let Item = forwardRefWithAs(ItemFn) as unknown as _internal_ComponentMenuItem
+export interface _internal_ComponentMenuSection extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_SECTION_TAG>(
+    props: MenuSectionProps<TTag> & RefProp<typeof SectionFn>
+  ): JSX.Element
+}
 
-export let Menu = Object.assign(MenuRoot, { Button, Items, Item })
+export interface _internal_ComponentMenuHeading extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_HEADING_TAG>(
+    props: MenuHeadingProps<TTag> & RefProp<typeof HeadingFn>
+  ): JSX.Element
+}
+
+export interface _internal_ComponentMenuSeparator extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_SEPARATOR_TAG>(
+    props: MenuSeparatorProps<TTag> & RefProp<typeof SeparatorFn>
+  ): JSX.Element
+}
+
+let MenuRoot = forwardRefWithAs(MenuFn) as unknown as _internal_ComponentMenu
+export let MenuButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentMenuButton
+export let MenuItems = forwardRefWithAs(ItemsFn) as unknown as _internal_ComponentMenuItems
+export let MenuItem = forwardRefWithAs(ItemFn) as unknown as _internal_ComponentMenuItem
+export let MenuSection = forwardRefWithAs(SectionFn) as unknown as _internal_ComponentMenuSection
+export let MenuHeading = forwardRefWithAs(HeadingFn) as unknown as _internal_ComponentMenuHeading
+export let MenuSeparator = forwardRefWithAs(
+  SeparatorFn
+) as unknown as _internal_ComponentMenuSeparator
+
+export let Menu = Object.assign(MenuRoot, {
+  Button: MenuButton,
+  Items: MenuItems,
+  Item: MenuItem,
+  Section: MenuSection,
+  Heading: MenuHeading,
+  Separator: MenuSeparator,
+})

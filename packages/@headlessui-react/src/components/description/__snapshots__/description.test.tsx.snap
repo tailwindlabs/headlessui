@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should be possible to use a DescriptionProvider and a single Description, and have them linked 1`] = `
+<div
+  aria-describedby="headlessui-description-1"
+>
+  <p
+    data-headlessui-state=""
+    id="headlessui-description-1"
+  >
+    I am a description
+  </p>
+  <span>
+    Contents
+  </span>
+</div>
+`;
+
+exports[`should be possible to use a DescriptionProvider and multiple Description components, and have them linked 1`] = `
+<div
+  aria-describedby="headlessui-description-1 headlessui-description-2"
+>
+  <p
+    data-headlessui-state=""
+    id="headlessui-description-1"
+  >
+    I am a description
+  </p>
+  <span>
+    Contents
+  </span>
+  <p
+    data-headlessui-state=""
+    id="headlessui-description-2"
+  >
+    I am also a description
+  </p>
+</div>
+`;
+
+exports[`should be possible to use a DescriptionProvider without using a Description 1`] = `
+<div>
+  No description
+</div>
+`;

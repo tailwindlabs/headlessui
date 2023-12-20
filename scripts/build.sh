@@ -3,6 +3,11 @@ set -e
 
 SCRIPT_DIR=$(cd ${0%/*} && pwd -P)
 
+# Make Next.js barrel file optimizations happy. Using `@swc-node/reigster` because we need to handle
+# the TypeScript files.
+# TODO: make this script run automatically.
+# node -r @swc-node/register "${SCRIPT_DIR}/make-nextjs-happy.js"
+
 # Known variables
 SRC='./src'
 DST='./dist'

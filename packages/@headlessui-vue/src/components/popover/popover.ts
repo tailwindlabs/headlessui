@@ -1,7 +1,7 @@
 import {
+  Fragment,
   computed,
   defineComponent,
-  Fragment,
   h,
   inject,
   onMounted,
@@ -21,15 +21,15 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
 import {
   Focus,
+  FocusResult,
   FocusableMode,
   focusIn,
-  FocusResult,
   getFocusableElements,
   isFocusableElement,
 } from '../../utils/focus-management'

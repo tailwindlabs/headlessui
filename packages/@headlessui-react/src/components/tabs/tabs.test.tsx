@@ -6,7 +6,7 @@ import {
   getByText,
   getTabs,
 } from '../../test-utils/accessibility-assertions'
-import { click, Keys, press, shift } from '../../test-utils/interactions'
+import { Keys, click, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Dialog } from '../dialog/dialog'
 import { Tab } from './tabs'
@@ -27,7 +27,7 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Tab.Group /> component',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement(Component))).toThrowError(
+      expect(() => render(createElement(Component as any))).toThrow(
         `<${name} /> is missing a parent <Tab.Group /> component.`
       )
     })
@@ -538,25 +538,61 @@ describe('Rendering', () => {
         )
 
         expect(document.querySelector('[data-tab="0"]')).toHaveTextContent(
-          JSON.stringify({ selected: true })
+          JSON.stringify({
+            selected: true,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="1"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="2"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
 
         await click(getTabs()[1])
 
         expect(document.querySelector('[data-tab="0"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="1"]')).toHaveTextContent(
-          JSON.stringify({ selected: true })
+          JSON.stringify({
+            selected: true,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
         expect(document.querySelector('[data-tab="2"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({
+            selected: false,
+            hover: false,
+            active: false,
+            focus: false,
+            autofocus: false,
+          })
         )
       })
     )

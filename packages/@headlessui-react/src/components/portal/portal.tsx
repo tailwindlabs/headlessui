@@ -1,6 +1,8 @@
+'use client'
+
 import React, {
-  createContext,
   Fragment,
+  createContext,
   useContext,
   useEffect,
   useMemo,
@@ -21,7 +23,7 @@ import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { usePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
 import { env } from '../../utils/env'
-import { forwardRefWithAs, HasDisplayName, RefProp, render } from '../../utils/render'
+import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
 
 function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
   let forceInRoot = usePortalRoot()
@@ -66,9 +68,14 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 // ---
 
 let DEFAULT_PORTAL_TAG = Fragment
-interface PortalRenderPropArg {}
+type PortalRenderPropArg = {}
+type PortalPropsWeControl = never
 
-export type PortalProps<TTag extends ElementType> = Props<TTag, PortalRenderPropArg>
+export type PortalProps<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG> = Props<
+  TTag,
+  PortalRenderPropArg,
+  PortalPropsWeControl
+>
 
 function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   props: PortalProps<TTag>,
@@ -77,7 +84,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
-    optionalRef<typeof internalPortalRootRef['current']>((ref) => {
+    optionalRef<(typeof internalPortalRootRef)['current']>((ref) => {
       internalPortalRootRef.current = ref
     }),
     ref
@@ -130,6 +137,7 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
         render({
           ourProps,
           theirProps,
+          slot: {},
           defaultTag: DEFAULT_PORTAL_TAG,
           name: 'Portal',
         }),
@@ -140,13 +148,19 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
 // ---
 
 let DEFAULT_GROUP_TAG = Fragment
-interface GroupRenderPropArg {}
+type GroupRenderPropArg = {}
+type GroupPropsWeControl = never
 
 let PortalGroupContext = createContext<MutableRefObject<HTMLElement | null> | null>(null)
 
-export type PortalGroupProps<TTag extends ElementType> = Props<TTag, GroupRenderPropArg> & {
-  target: MutableRefObject<HTMLElement | null>
-}
+export type PortalGroupProps<TTag extends ElementType = typeof DEFAULT_GROUP_TAG> = Props<
+  TTag,
+  GroupRenderPropArg,
+  GroupPropsWeControl,
+  {
+    target: MutableRefObject<HTMLElement | null>
+  }
+>
 
 function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
   props: PortalGroupProps<TTag>,
@@ -223,6 +237,6 @@ export interface _internal_ComponentPortalGroup extends HasDisplayName {
 }
 
 let PortalRoot = forwardRefWithAs(PortalFn) as unknown as _internal_ComponentPortal
-let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPortalGroup
+export let PortalGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPortalGroup
 
-export let Portal = Object.assign(PortalRoot, { Group })
+export let Portal = Object.assign(PortalRoot, { Group: PortalGroup })

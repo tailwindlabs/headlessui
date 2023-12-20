@@ -3,6 +3,7 @@ import { createRenderTemplate, render } from '../../test-utils/vue-testing-libra
 
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
+  PopoverState,
   assertActiveElement,
   assertContainsActiveElement,
   assertPopoverButton,
@@ -11,10 +12,9 @@ import {
   getPopoverButton,
   getPopoverOverlay,
   getPopoverPanel,
-  PopoverState,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
-import { click, focus, Keys, MouseButton, press, shift } from '../../test-utils/interactions'
+import { Keys, MouseButton, click, focus, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Portal } from '../portal/portal'
 import { Popover, PopoverButton, PopoverGroup, PopoverOverlay, PopoverPanel } from './popover'

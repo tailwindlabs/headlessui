@@ -1,7 +1,8 @@
 import { act as _act, render } from '@testing-library/react'
-import React, { createElement, Fragment, useEffect, useRef, useState } from 'react'
+import React, { Fragment, createElement, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import {
+  PopoverState,
   assertActiveElement,
   assertContainsActiveElement,
   assertPopoverButton,
@@ -10,12 +11,11 @@ import {
   getPopoverButton,
   getPopoverOverlay,
   getPopoverPanel,
-  PopoverState,
 } from '../../test-utils/accessibility-assertions'
-import { click, focus, Keys, MouseButton, press, shift } from '../../test-utils/interactions'
+import { Keys, MouseButton, click, focus, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Portal } from '../portal/portal'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Popover } from './popover'
 
 let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
@@ -42,7 +42,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Popover />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(createElement<typeof Component>(Component))).toThrowError(
+      expect(() => render(createElement(Component as any))).toThrow(
         `<${name} /> is missing a parent <Popover /> component.`
       )
     })
@@ -370,7 +370,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Popover>
-            <Popover.Button>{JSON.stringify}</Popover.Button>
+            <Popover.Button>{(slot) => <>{JSON.stringify(slot)}</>}</Popover.Button>
             <Popover.Panel></Popover.Panel>
           </Popover>
         )
@@ -378,7 +378,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
@@ -387,7 +393,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.Visible })
       })
@@ -399,7 +411,7 @@ describe('Rendering', () => {
         render(
           <Popover>
             <Popover.Button as="div" role="button">
-              {JSON.stringify}
+              {(slot) => <>{JSON.stringify(slot)}</>}
             </Popover.Button>
             <Popover.Panel />
           </Popover>
@@ -408,7 +420,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.InvisibleUnmounted,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: false }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
@@ -417,7 +435,13 @@ describe('Rendering', () => {
         assertPopoverButton({
           state: PopoverState.Visible,
           attributes: { id: 'headlessui-popover-button-1' },
-          textContent: JSON.stringify({ open: true }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            hover: false,
+            focus: false,
+            autofocus: false,
+          }),
         })
         assertPopoverPanel({ state: PopoverState.Visible })
       })
@@ -491,7 +515,7 @@ describe('Rendering', () => {
         render(
           <Popover>
             <Popover.Button>Trigger</Popover.Button>
-            <Popover.Panel>{JSON.stringify}</Popover.Panel>
+            <Popover.Panel>{(slot) => <>{JSON.stringify(slot)}</>}</Popover.Panel>
           </Popover>
         )
 

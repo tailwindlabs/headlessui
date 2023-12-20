@@ -5,26 +5,22 @@ import * as HeadlessUI from './index'
  * the outside world that we didn't want!
  */
 it('should expose the correct components', () => {
-  expect(Object.keys(HeadlessUI)).toEqual([
-    // Portal
-    'Portal',
-    'PortalGroup',
-
+  expect(Object.keys(HeadlessUI).sort((a, z) => a.localeCompare(z))).toEqual([
     // Combobox
     'Combobox',
-    'ComboboxLabel',
     'ComboboxButton',
     'ComboboxInput',
-    'ComboboxOptions',
+    'ComboboxLabel',
     'ComboboxOption',
+    'ComboboxOptions',
 
     // Dialog
     'Dialog',
-    'DialogOverlay',
     'DialogBackdrop',
+    'DialogDescription',
+    'DialogOverlay',
     'DialogPanel',
     'DialogTitle',
-    'DialogDescription',
 
     // Disclosure
     'Disclosure',
@@ -36,42 +32,46 @@ it('should expose the correct components', () => {
 
     // Listbox
     'Listbox',
-    'ListboxLabel',
     'ListboxButton',
-    'ListboxOptions',
+    'ListboxLabel',
     'ListboxOption',
+    'ListboxOptions',
 
     // Menu
     'Menu',
     'MenuButton',
-    'MenuItems',
     'MenuItem',
+    'MenuItems',
 
     // Popover
     'Popover',
     'PopoverButton',
+    'PopoverGroup',
     'PopoverOverlay',
     'PopoverPanel',
-    'PopoverGroup',
+
+    // Portal
+    'Portal',
+    'PortalGroup',
 
     // RadioGroup
     'RadioGroup',
-    'RadioGroupOption',
-    'RadioGroupLabel',
     'RadioGroupDescription',
+    'RadioGroupLabel',
+    'RadioGroupOption',
 
     // Switch
-    'SwitchGroup',
     'Switch',
-    'SwitchLabel',
     'SwitchDescription',
+    'SwitchGroup',
+    'SwitchLabel',
 
     // Tabs
+    'Tab',
     'TabGroup',
     'TabList',
-    'Tab',
-    'TabPanels',
     'TabPanel',
+    'TabPanels',
 
     // Transition
     'TransitionChild',

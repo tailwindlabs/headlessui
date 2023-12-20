@@ -1,6 +1,6 @@
-import { computed, Ref, watch } from 'vue'
+import { computed, watch, type Ref } from 'vue'
 import { useStore } from '../../hooks/use-store'
-import { MetaFn, overflows } from './overflow-store'
+import { overflows, type MetaFn } from './overflow-store'
 
 export function useDocumentOverflowLockedEffect(
   doc: Ref<Document | null>,

@@ -1,5 +1,5 @@
 import { onUnmounted, shallowRef } from 'vue'
-import { Store } from '../utils/store'
+import type { Store } from '../utils/store'
 
 export function useStore<T>(store: Store<T, any>) {
   let state = shallowRef(store.getSnapshot())

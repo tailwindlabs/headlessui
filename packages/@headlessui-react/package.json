@@ -47,15 +47,17 @@
   },
   "devDependencies": {
     "@testing-library/react": "^13.0.0",
-    "@types/react": "^17.0.43",
-    "@types/react-dom": "^17.0.14",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
     "esbuild": "^0.11.18",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "snapshot-diff": "^0.8.1"
   },
   "dependencies": {
-    "@tanstack/react-virtual": "^3.0.0-beta.60",
-    "client-only": "^0.0.1"
+    "@floating-ui/react": "^0.26.2",
+    "@tanstack/react-virtual": "3.0.0-beta.60",
+    "@react-aria/focus": "^3.14.3",
+    "@react-aria/interactions": "3.0.0-nightly.2584"
   }
 }

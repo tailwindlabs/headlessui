@@ -1,8 +1,10 @@
+'use client'
+
 import React, {
   useRef,
   type ElementType,
-  type FocusEvent as ReactFocusEvent,
   type MutableRefObject,
+  type FocusEvent as ReactFocusEvent,
   type Ref,
 } from 'react'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -15,10 +17,10 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { useWatch } from '../../hooks/use-watch'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, HiddenFeatures } from '../../internal/hidden'
 import type { Props } from '../../types'
 import { history } from '../../utils/active-element-history'
-import { Focus, focusElement, focusIn, FocusResult } from '../../utils/focus-management'
+import { Focus, FocusResult, focusElement, focusIn } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
@@ -45,7 +47,7 @@ function resolveContainers(containers?: Containers): Set<HTMLElement> {
 
 let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 
-enum Features {
+export enum FocusTrapFeatures {
   /** No features enabled for the focus trap. */
   None = 1 << 0,
 
@@ -61,15 +63,30 @@ enum Features {
   /** Ensure that we restore the focus when unmounting the focus trap. */
   RestoreFocus = 1 << 4,
 
+  /** Initial focus should look for the `data-autofocus` */
+  AutoFocus = 1 << 5,
+
   /** Enable all features. */
   All = InitialFocus | TabLock | FocusLock | RestoreFocus,
 }
 
-export type FocusTrapProps<TTag extends ElementType> = Props<TTag> & {
-  initialFocus?: MutableRefObject<HTMLElement | null>
-  features?: Features
-  containers?: Containers
-}
+type FocusTrapRenderPropArg = {}
+type FocusTrapPropsWeControl = never
+
+export type FocusTrapProps<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG> = Props<
+  TTag,
+  FocusTrapRenderPropArg,
+  FocusTrapPropsWeControl,
+  {
+    initialFocus?: MutableRefObject<HTMLElement | null>
+    // A fallback element to focus, but this element will be skipped when tabbing around. This is
+    // only done for focusing a fallback parent container (e.g.: A `Dialog`, but you want to tab
+    // *inside* the dialog excluding the dialog itself).
+    initialFocusFallback?: MutableRefObject<HTMLElement | null>
+    features?: FocusTrapFeatures
+    containers?: Containers
+  }
+>
 
 function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
   props: FocusTrapProps<TTag>,
@@ -77,23 +94,29 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 ) {
   let container = useRef<HTMLDivElement | null>(null)
   let focusTrapRef = useSyncRefs(container, ref)
-  let { initialFocus, containers, features = Features.All, ...theirProps } = props
+  let {
+    initialFocus,
+    initialFocusFallback,
+    containers,
+    features = FocusTrapFeatures.All,
+    ...theirProps
+  } = props
 
   if (!useServerHandoffComplete()) {
-    features = Features.None
+    features = FocusTrapFeatures.None
   }
 
   let ownerDocument = useOwnerDocument(container)
 
-  useRestoreFocus({ ownerDocument }, Boolean(features & Features.RestoreFocus))
+  useRestoreFocus({ ownerDocument }, Boolean(features & FocusTrapFeatures.RestoreFocus))
   let previousActiveElement = useInitialFocus(
-    { ownerDocument, container, initialFocus },
-    Boolean(features & Features.InitialFocus)
+    { ownerDocument, container, initialFocus, initialFocusFallback },
+    features
   )
 
   useFocusLock(
     { ownerDocument, container, containers, previousActiveElement },
-    Boolean(features & Features.FocusLock)
+    Boolean(features & FocusTrapFeatures.FocusLock)
   )
 
   let direction = useTabDirection()
@@ -106,10 +129,14 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     wrapper(() => {
       match(direction.current, {
         [TabDirection.Forwards]: () => {
-          focusIn(el, Focus.First, { skipElements: [e.relatedTarget as HTMLElement] })
+          focusIn(el, Focus.First, {
+            skipElements: [e.relatedTarget, initialFocusFallback] as HTMLElement[],
+          })
         },
         [TabDirection.Backwards]: () => {
-          focusIn(el, Focus.Last, { skipElements: [e.relatedTarget as HTMLElement] })
+          focusIn(el, Focus.Last, {
+            skipElements: [e.relatedTarget, initialFocusFallback] as HTMLElement[],
+          })
         },
       })
     })
@@ -128,6 +155,8 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
       }
     },
     onBlur(e: ReactFocusEvent) {
+      if (!Boolean(features & FocusTrapFeatures.FocusLock)) return
+
       let allContainers = resolveContainers(containers)
       if (container.current instanceof HTMLElement) allContainers.add(container.current)
 
@@ -165,7 +194,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   return (
     <>
-      {Boolean(features & Features.TabLock) && (
+      {Boolean(features & FocusTrapFeatures.TabLock) && (
         <Hidden
           as="button"
           type="button"
@@ -180,7 +209,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
         defaultTag: DEFAULT_FOCUS_TRAP_TAG,
         name: 'FocusTrap',
       })}
-      {Boolean(features & Features.TabLock) && (
+      {Boolean(features & FocusTrapFeatures.TabLock) && (
         <Hidden
           as="button"
           type="button"
@@ -204,7 +233,7 @@ export interface _internal_ComponentFocusTrap extends HasDisplayName {
 let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as unknown as _internal_ComponentFocusTrap
 
 export let FocusTrap = Object.assign(FocusTrapRoot, {
-  features: Features,
+  features: FocusTrapFeatures,
 })
 
 // ---
@@ -263,20 +292,35 @@ function useInitialFocus(
     ownerDocument,
     container,
     initialFocus,
+    initialFocusFallback,
   }: {
     ownerDocument: Document | null
     container: MutableRefObject<HTMLElement | null>
     initialFocus?: MutableRefObject<HTMLElement | null>
+    initialFocusFallback?: MutableRefObject<HTMLElement | null>
   },
-  enabled: boolean
+  features: FocusTrapFeatures
 ) {
+  let enabled = Boolean(features & FocusTrapFeatures.InitialFocus)
   let previousActiveElement = useRef<HTMLElement | null>(null)
 
   let mounted = useIsMounted()
 
   // Handle initial focus
   useWatch(() => {
-    if (!enabled) return
+    if (!enabled) {
+      // If we are disabling the initialFocus, then we should focus the fallback element if one is
+      // provided. This is needed to ensure _something_ is focused. Typically a wrapping element
+      // (e.g.: `Dialog` component).
+      //
+      // Note: we _don't_ want to move focus to the `initialFocus` ref, because the `InitialFocus`
+      // feature is disabled.
+      if (initialFocusFallback?.current) {
+        focusElement(initialFocusFallback.current)
+      }
+
+      return
+    }
     let containerElement = container.current
     if (!containerElement) return
 
@@ -311,14 +355,33 @@ function useInitialFocus(
       if (initialFocus?.current) {
         focusElement(initialFocus.current)
       } else {
-        if (focusIn(containerElement!, Focus.First) === FocusResult.Error) {
-          console.warn('There are no focusable elements inside the <FocusTrap />')
+        if (features & FocusTrapFeatures.AutoFocus) {
+          // Try to focus the first focusable element with `Focus.AutoFocus` feature enabled
+          if (focusIn(containerElement!, Focus.First | Focus.AutoFocus) !== FocusResult.Error) {
+            return // Worked, bail
+          }
         }
+
+        // Try to focus the first focusable element.
+        else if (focusIn(containerElement!, Focus.First) !== FocusResult.Error) {
+          return // Worked, bail
+        }
+
+        // Try the fallback
+        if (initialFocusFallback?.current) {
+          focusElement(initialFocusFallback.current)
+          if (ownerDocument?.activeElement === initialFocusFallback.current) {
+            return // Worked, bail
+          }
+        }
+
+        // Nothing worked
+        console.warn('There are no focusable elements inside the <FocusTrap />')
       }
 
       previousActiveElement.current = ownerDocument?.activeElement as HTMLElement
     })
-  }, [enabled])
+  }, [initialFocusFallback, enabled, features])
 
   return previousActiveElement
 }

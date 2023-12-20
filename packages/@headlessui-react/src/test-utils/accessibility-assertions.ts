@@ -6,6 +6,173 @@ function assertNever(x: never): never {
 
 // ---
 
+export function getLabel(): HTMLElement | null {
+  return document.querySelector('label,[id^="headlessui-label-"]')
+}
+
+export function getLabels(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('label,[id^="headlessui-label-"]'))
+}
+
+export function getDescription(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-description-"]')
+}
+
+export function getDescriptions(): HTMLElement[] {
+  return Array.from(document.querySelectorAll('[id^="headlessui-description-"]'))
+}
+
+export function getControl(): HTMLElement | null {
+  return document.querySelector('[id^="headlessui-control-"]')
+}
+
+export function getInput(): HTMLElement | null {
+  return document.querySelector('input')
+}
+
+export function getSelect(): HTMLElement | null {
+  return document.querySelector('select')
+}
+
+export function getTextarea(): HTMLElement | null {
+  return document.querySelector('textarea')
+}
+
+export function getCheckbox(): HTMLElement | null {
+  return document.querySelector('input[type="checkbox"],[role="checkbox"]')
+}
+
+export enum CheckboxState {
+  /** The checkbox is checked. */
+  Checked,
+
+  /** The checkbox is unchecked. */
+  Unchecked,
+
+  /** The checkbox is indeterminate. */
+  Indeterminate,
+}
+
+export function assertCheckbox(
+  options: {
+    attributes?: Record<string, string | null>
+    state: CheckboxState
+  },
+  checkbox = getCheckbox()
+) {
+  try {
+    switch (options.state) {
+      case CheckboxState.Checked:
+        if (checkbox === null) return expect(checkbox).not.toBe(null)
+
+        expect(checkbox).toHaveAttribute('aria-checked', 'true')
+        expect(checkbox).toHaveAttribute('role', 'checkbox')
+        expect(checkbox).toHaveAttribute('tabindex', '0')
+        expect(checkbox).toHaveAttribute('data-checked')
+
+        for (let attributeName in options.attributes) {
+          expect(checkbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case CheckboxState.Unchecked:
+        if (checkbox === null) return expect(checkbox).not.toBe(null)
+
+        expect(checkbox).toHaveAttribute('aria-checked', 'false')
+        expect(checkbox).toHaveAttribute('role', 'checkbox')
+        expect(checkbox).toHaveAttribute('tabindex', '0')
+
+        for (let attributeName in options.attributes) {
+          expect(checkbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      case CheckboxState.Indeterminate:
+        if (checkbox === null) return expect(checkbox).not.toBe(null)
+
+        expect(checkbox).toHaveAttribute('aria-checked', 'mixed')
+        expect(checkbox).toHaveAttribute('indeterminate', 'true')
+        expect(checkbox).toHaveAttribute('role', 'checkbox')
+        expect(checkbox).toHaveAttribute('tabindex', '0')
+        expect(checkbox).toHaveAttribute('data-indeterminate')
+
+        for (let attributeName in options.attributes) {
+          expect(checkbox).toHaveAttribute(attributeName, options.attributes[attributeName])
+        }
+        break
+
+      default:
+        assertNever(options.state)
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertCheckbox)
+    throw err
+  }
+}
+
+export function assertLinkedWithLabel(
+  element: HTMLElement | null,
+  label: HTMLElement | HTMLElement[]
+) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    let labels = Array.isArray(label) ? label : [label]
+
+    expect(element).toHaveAttribute('aria-labelledby')
+
+    let labelledBy = new Set(element.getAttribute('aria-labelledby')?.split(' ') ?? [])
+    for (let label of labels) {
+      expect(labelledBy).toContain(label.id)
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertLinkedWithLabel)
+    throw err
+  }
+}
+
+export function assertNotLinkedWithLabel(
+  element: HTMLElement | null,
+  label: HTMLElement | HTMLElement[]
+) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    let labels = Array.isArray(label) ? label : [label]
+
+    let labelledBy = new Set(element.getAttribute('aria-labelledby')?.split(' ') ?? [])
+    for (let label of labels) {
+      expect(labelledBy).not.toContain(label.id)
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertNotLinkedWithLabel)
+    throw err
+  }
+}
+
+export function assertLinkedWithDescription(
+  element: HTMLElement | null,
+  description: HTMLElement | HTMLElement[]
+) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    let descriptions = Array.isArray(description) ? description : [description]
+
+    expect(element).toHaveAttribute('aria-describedby')
+
+    let descriptionledBy = new Set(element.getAttribute('aria-describedby')?.split(' ') ?? [])
+    for (let description of descriptions) {
+      expect(descriptionledBy).toContain(description.id)
+    }
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertLinkedWithDescription)
+    throw err
+  }
+}
+
+// ---
+
 export function getMenuButton(): HTMLElement | null {
   return document.querySelector('button,[role="button"],[id^="headlessui-menu-button-"]')
 }
@@ -214,7 +381,7 @@ export function assertMenuItem(
 // ---
 
 export function getComboboxLabel(): HTMLElement | null {
-  return document.querySelector('label,[id^="headlessui-combobox-label"]')
+  return document.querySelector('label,[id^="headlessui-combobox-label"],[id^="headlessui-label"]')
 }
 
 export function getComboboxButton(): HTMLElement | null {
@@ -644,7 +811,7 @@ export function assertComboboxOption(
 // ---
 
 export function getListboxLabel(): HTMLElement | null {
-  return document.querySelector('label,[id^="headlessui-listbox-label"]')
+  return document.querySelector('label,[id^="headlessui-listbox-label"],[id^="headlessui-label"]')
 }
 
 export function getListboxButton(): HTMLElement | null {
@@ -961,7 +1128,7 @@ export function getSwitch(): HTMLElement | null {
 }
 
 export function getSwitchLabel(): HTMLElement | null {
-  return document.querySelector('label,[id^="headlessui-switch-label"]')
+  return document.querySelector('label,[id^="headlessui-switch-label"],[id^="headlessui-label"]')
 }
 
 // ---
@@ -1562,7 +1729,7 @@ export function getRadioGroup(): HTMLElement | null {
 }
 
 export function getRadioGroupLabel(): HTMLElement | null {
-  return document.querySelector('[id^="headlessui-label-"]')
+  return document.querySelector('label,[id^="headlessui-label-"]')
 }
 
 export function getRadioGroupOptions(): HTMLElement[] {
@@ -1790,6 +1957,29 @@ export function assertNotInert(element: HTMLElement | null) {
     expect(element.inert).toBeUndefined()
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertNotInert)
+    throw err
+  }
+}
+
+// ---
+
+export function assertDisabledish(element: HTMLElement | null) {
+  try {
+    if (element === null) return expect(element).not.toBe(null)
+
+    let actuallyDisabled = element.getAttribute('disabled')
+    if (actuallyDisabled === 'true' || actuallyDisabled === '') {
+      return
+    }
+
+    let ariaDisabled = element.getAttribute('aria-disabled')
+    if (ariaDisabled === 'true' || ariaDisabled === '') {
+      return
+    }
+
+    throw new Error(`Expected element to be disabledish, but it wasn't.`)
+  } catch (err) {
+    if (err instanceof Error) Error.captureStackTrace(err, assertDisabledish)
     throw err
   }
 }

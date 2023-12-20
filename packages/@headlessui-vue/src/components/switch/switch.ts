@@ -1,7 +1,7 @@
 import {
+  Fragment,
   computed,
   defineComponent,
-  Fragment,
   h,
   inject,
   onMounted,
@@ -14,7 +14,7 @@ import {
 import { useControllable } from '../../hooks/use-controllable'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
 import { attemptSubmit } from '../../utils/form'

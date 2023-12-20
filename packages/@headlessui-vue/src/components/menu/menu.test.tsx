@@ -1,6 +1,7 @@
 import { defineComponent, h, nextTick, reactive, ref, watch } from 'vue'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
+  MenuState,
   assertActiveElement,
   assertMenu,
   assertMenuButton,
@@ -14,14 +15,13 @@ import {
   getMenuButtons,
   getMenuItems,
   getMenus,
-  MenuState,
 } from '../../test-utils/accessibility-assertions'
 import { jsx } from '../../test-utils/html'
 import {
-  click,
-  focus,
   Keys,
   MouseButton,
+  click,
+  focus,
   mouseLeave,
   mouseMove,
   press,

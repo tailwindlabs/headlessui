@@ -1,7 +1,7 @@
 import {
+  Fragment,
   computed,
   defineComponent,
-  Fragment,
   h,
   inject,
   onMounted,
@@ -19,7 +19,7 @@ import { FocusSentinel } from '../../internal/focus-sentinel'
 import { Hidden } from '../../internal/hidden'
 import { Keys } from '../../keyboard'
 import { dom } from '../../utils/dom'
-import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
+import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'
@@ -170,7 +170,7 @@ export let TabGroup = defineComponent({
           setSelectedIndex(index)
         }
       },
-      registerTab(tab: typeof tabs['value'][number]) {
+      registerTab(tab: (typeof tabs)['value'][number]) {
         if (tabs.value.includes(tab)) return
         let activeTab = tabs.value[selectedIndex.value!]
 
@@ -182,16 +182,16 @@ export let TabGroup = defineComponent({
           selectedIndex.value = localSelectedIndex
         }
       },
-      unregisterTab(tab: typeof tabs['value'][number]) {
+      unregisterTab(tab: (typeof tabs)['value'][number]) {
         let idx = tabs.value.indexOf(tab)
         if (idx !== -1) tabs.value.splice(idx, 1)
       },
-      registerPanel(panel: typeof panels['value'][number]) {
+      registerPanel(panel: (typeof panels)['value'][number]) {
         if (panels.value.includes(panel)) return
         panels.value.push(panel)
         panels.value = sortByDomNode(panels.value, dom)
       },
-      unregisterPanel(panel: typeof panels['value'][number]) {
+      unregisterPanel(panel: (typeof panels)['value'][number]) {
         let idx = panels.value.indexOf(panel)
         if (idx !== -1) panels.value.splice(idx, 1)
       },

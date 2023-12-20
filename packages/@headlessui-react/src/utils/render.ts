@@ -1,13 +1,13 @@
 import {
+  Fragment,
   cloneElement,
   createElement,
   forwardRef,
-  Fragment,
   isValidElement,
-  MutableRefObject,
   useCallback,
   useRef,
   type ElementType,
+  type MutableRefObject,
   type ReactElement,
   type Ref,
 } from 'react'
@@ -15,7 +15,7 @@ import type { Expand, Props, XOR, __ } from '../types'
 import { classNames } from './class-names'
 import { match } from './match'
 
-export enum Features {
+export enum RenderFeatures {
   /** No features at all */
   None = 0,
 
@@ -40,16 +40,20 @@ export enum RenderStrategy {
   Hidden,
 }
 
-type PropsForFeature<TPassedInFeatures extends Features, TForFeature extends Features, TProps> = {
+type PropsForFeature<
+  TPassedInFeatures extends RenderFeatures,
+  TForFeature extends RenderFeatures,
+  TProps,
+> = {
   [P in TPassedInFeatures]: P extends TForFeature ? TProps : __
 }[TPassedInFeatures]
 
-export type PropsForFeatures<T extends Features> = XOR<
-  PropsForFeature<T, Features.Static, { static?: boolean }>,
-  PropsForFeature<T, Features.RenderStrategy, { unmount?: boolean }>
+export type PropsForFeatures<T extends RenderFeatures> = XOR<
+  PropsForFeature<T, RenderFeatures.Static, { static?: boolean }>,
+  PropsForFeature<T, RenderFeatures.RenderStrategy, { unmount?: boolean }>
 >
 
-export function render<TFeature extends Features, TTag extends ElementType, TSlot>({
+export function render<TFeature extends RenderFeatures, TTag extends ElementType, TSlot>({
   ourProps,
   theirProps,
   slot,
@@ -72,22 +76,22 @@ export function render<TFeature extends Features, TTag extends ElementType, TSlo
 }) {
   mergeRefs = mergeRefs ?? defaultMergeRefs
 
-  let props = mergeProps(theirProps, ourProps)
+  let props = mergePropsAdvanced(theirProps, ourProps)
 
   // Visible always render
   if (visible) return _render(props, slot, defaultTag, name, mergeRefs)
 
-  let featureFlags = features ?? Features.None
+  let featureFlags = features ?? RenderFeatures.None
 
-  if (featureFlags & Features.Static) {
-    let { static: isStatic = false, ...rest } = props as PropsForFeatures<Features.Static>
+  if (featureFlags & RenderFeatures.Static) {
+    let { static: isStatic = false, ...rest } = props as PropsForFeatures<RenderFeatures.Static>
 
     // When the `static` prop is passed as `true`, then the user is in control, thus we don't care about anything else
     if (isStatic) return _render(rest, slot, defaultTag, name, mergeRefs)
   }
 
-  if (featureFlags & Features.RenderStrategy) {
-    let { unmount = true, ...rest } = props as PropsForFeatures<Features.RenderStrategy>
+  if (featureFlags & RenderFeatures.RenderStrategy) {
+    let { unmount = true, ...rest } = props as PropsForFeatures<RenderFeatures.RenderStrategy>
     let strategy = unmount ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
     return match(strategy, {
@@ -136,6 +140,12 @@ function _render<TTag extends ElementType, TSlot>(
     rest.className = rest.className(slot)
   }
 
+  // Drop `aria-labelledby` if it only references the current element. If the `aria-labelledby`
+  // references itself but also another element then we can keep it.
+  if (rest['aria-labelledby'] && rest['aria-labelledby'] === rest.id) {
+    rest['aria-labelledby'] = undefined
+  }
+
   let dataAttributes: Record<string, string> = {}
   if (slot) {
     let exposeState = false
@@ -144,64 +154,78 @@ function _render<TTag extends ElementType, TSlot>(
       if (typeof v === 'boolean') {
         exposeState = true
       }
+
       if (v === true) {
-        states.push(k)
+        states.push(k.replace(/([A-Z])/g, (m) => `-${m.toLowerCase()}`))
       }
     }
 
-    if (exposeState) dataAttributes[`data-headlessui-state`] = states.join(' ')
+    if (exposeState) {
+      dataAttributes['data-headlessui-state'] = states.join(' ')
+      for (let state of states) {
+        dataAttributes[`data-${state}`] = ''
+      }
+    }
   }
 
   if (Component === Fragment) {
-    if (Object.keys(compact(rest)).length > 0) {
+    if (Object.keys(compact(rest)).length > 0 || Object.keys(compact(dataAttributes)).length > 0) {
       if (
         !isValidElement(resolvedChildren) ||
         (Array.isArray(resolvedChildren) && resolvedChildren.length > 1)
       ) {
-        throw new Error(
-          [
-            'Passing props on "Fragment"!',
-            '',
-            `The current component <${name} /> is rendering a "Fragment".`,
-            `However we need to passthrough the following props:`,
-            Object.keys(rest)
-              .map((line) => `  - ${line}`)
-              .join('\n'),
-            '',
-            'You can apply a few solutions:',
+        if (Object.keys(compact(rest)).length > 0) {
+          throw new Error(
             [
-              'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
-              'Render a single element as the child so that we can forward the props onto that element.',
-            ]
-              .map((line) => `  - ${line}`)
-              .join('\n'),
-          ].join('\n')
+              'Passing props on "Fragment"!',
+              '',
+              `The current component <${name} /> is rendering a "Fragment".`,
+              `However we need to passthrough the following props:`,
+              Object.keys(compact(rest))
+                .concat(Object.keys(compact(dataAttributes)))
+                .map((line) => `  - ${line}`)
+                .join('\n'),
+              '',
+              'You can apply a few solutions:',
+              [
+                'Add an `as="..."` prop, to ensure that we render an actual element instead of a "Fragment".',
+                'Render a single element as the child so that we can forward the props onto that element.',
+              ]
+                .map((line) => `  - ${line}`)
+                .join('\n'),
+            ].join('\n')
+          )
+        }
+      } else {
+        // Merge class name prop in SSR
+        // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
+        let childProps = resolvedChildren.props as { className: string | (() => string) } | null
+
+        let childPropsClassName = childProps?.className
+        let newClassName =
+          typeof childPropsClassName === 'function'
+            ? (...args: any[]) =>
+                classNames(
+                  (childPropsClassName as Function)(...args),
+                  (rest as { className?: string }).className
+                )
+            : classNames(childPropsClassName, (rest as { className?: string }).className)
+
+        let classNameProps = newClassName ? { className: newClassName } : {}
+
+        return cloneElement(
+          resolvedChildren,
+          Object.assign(
+            {},
+            // Filter out undefined values so that they don't override the existing values
+            mergePropsAdvanced(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
+            dataAttributes,
+            refRelatedProps,
+            { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
+            classNameProps
+          )
         )
       }
-
-      // Merge class name prop in SSR
-      // @ts-ignore We know that the props may not have className. It'll be undefined then which is fine.
-      let childProps = resolvedChildren.props as { className: string | (() => string) } | null
-
-      let newClassName =
-        typeof childProps?.className === 'function'
-          ? (...args: any[]) => classNames(childProps?.className(...args), rest.className)
-          : classNames(childProps?.className, rest.className)
-
-      let classNameProps = newClassName ? { className: newClassName } : {}
-
-      return cloneElement(
-        resolvedChildren,
-        Object.assign(
-          {},
-          // Filter out undefined values so that they don't override the existing values
-          mergeProps(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
-          dataAttributes,
-          refRelatedProps,
-          { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
-          classNameProps
-        )
-      )
     }
   }
 
@@ -233,7 +257,7 @@ function _render<TTag extends ElementType, TSlot>(
 export function useMergeRefsFn() {
   type MaybeRef<T> = MutableRefObject<T> | ((value: T) => void) | null | undefined
   let currentRefs = useRef<MaybeRef<any>[]>([])
-  let mergedRef = useCallback((value) => {
+  let mergedRef = useCallback((value: any) => {
     for (let ref of currentRefs.current) {
       if (ref == null) continue
       if (typeof ref === 'function') ref(value)
@@ -268,7 +292,9 @@ function defaultMergeRefs(...refs: any[]) {
       }
 }
 
-function mergeProps(...listOfProps: Props<any, any>[]) {
+// A more complex example fo the `mergeProps` function, this one also cancels subsequent event
+// listeners if the event has already been `preventDefault`ed.
+function mergePropsAdvanced(...listOfProps: Props<any, any>[]) {
   if (listOfProps.length === 0) return {}
   if (listOfProps.length === 1) return listOfProps[0]
 
@@ -334,6 +360,44 @@ export type HasDisplayName = {
 export type RefProp<T extends Function> = T extends (props: any, ref: Ref<infer RefType>) => any
   ? { ref?: Ref<RefType> }
   : never
+
+// TODO: add proper return type, but this is not exposed as public API so it's fine for now
+export function mergeProps<T extends Props<any, any>[]>(...listOfProps: T) {
+  if (listOfProps.length === 0) return {}
+  if (listOfProps.length === 1) return listOfProps[0]
+
+  let target: Props<any, any> = {}
+
+  let eventHandlers: Record<string, ((...args: any[]) => void | undefined)[]> = {}
+
+  for (let props of listOfProps) {
+    for (let prop in props) {
+      // Merge event listeners
+      if (prop.startsWith('on') && typeof props[prop] === 'function') {
+        eventHandlers[prop] ??= []
+        eventHandlers[prop].push(props[prop])
+      } else {
+        // Override incoming prop
+        target[prop] = props[prop]
+      }
+    }
+  }
+
+  // Merge event handlers
+  for (let eventName in eventHandlers) {
+    Object.assign(target, {
+      [eventName](...args: any[]) {
+        let handlers = eventHandlers[eventName]
+
+        for (let handler of handlers) {
+          handler?.(...args)
+        }
+      },
+    })
+  }
+
+  return target
+}
 
 /**
  * This is a hack, but basically we want to keep the full 'API' of the component, but we do want to

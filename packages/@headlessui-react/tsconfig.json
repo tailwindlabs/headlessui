@@ -26,7 +26,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true
   },
   "exclude": ["node_modules", "**/*.test.tsx?"]
 }

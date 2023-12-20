@@ -1,4 +1,5 @@
 import {
+  Teleport,
   computed,
   defineComponent,
   getCurrentInstance,
@@ -9,7 +10,6 @@ import {
   provide,
   reactive,
   ref,
-  Teleport,
   watch,
   watchEffect,
   type InjectionKey,
@@ -25,7 +25,7 @@ type ContextType<T> = T extends InjectionKey<infer V> ? V : never
 
 // ---
 
-function getPortalRoot(contextElement?: Element | null) {
+function getPortalRoot(contextElement?: HTMLElement | null) {
   let ownerDocument = getOwnerDocument(contextElement)
   if (!ownerDocument) {
     if (contextElement === null) {
@@ -59,8 +59,8 @@ export let Portal = defineComponent({
       forcePortalRoot === true
         ? getPortalRoot(element.value)
         : groupContext == null
-        ? getPortalRoot(element.value)
-        : groupContext.resolveTarget()
+          ? getPortalRoot(element.value)
+          : groupContext.resolveTarget()
     )
 
     let ready = ref(false)

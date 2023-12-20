@@ -16,15 +16,15 @@ import {
 } from 'vue'
 import { useId } from '../../hooks/use-id'
 import {
-  hasOpenClosed,
   State,
+  hasOpenClosed,
   useOpenClosed,
   useOpenClosedProvider,
 } from '../../internal/open-closed'
 import { dom } from '../../utils/dom'
 import { env } from '../../utils/env'
 import { match } from '../../utils/match'
-import { Features, omit, render, RenderStrategy } from '../../utils/render'
+import { Features, RenderStrategy, omit, render } from '../../utils/render'
 import { Reason, transition } from './utils/transition'
 
 type ID = ReturnType<typeof useId>

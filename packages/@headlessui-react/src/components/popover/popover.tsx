@@ -1,4 +1,9 @@
+'use client'
+
+import { useFocusRing } from '@react-aria/focus'
+import { useHover } from '@react-aria/interactions'
 import React, {
+  Fragment,
   createContext,
   createRef,
   useContext,
@@ -10,15 +15,14 @@ import React, {
   type ContextType,
   type Dispatch,
   type ElementType,
+  type MouseEventHandler,
+  type MutableRefObject,
   type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
-  type MouseEventHandler,
-  type MutableRefObject,
   type Ref,
 } from 'react'
-
-import { useNestedPortals } from '../../components/portal/portal'
+import { useActivePress } from '../../hooks/use-active-press'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
@@ -30,15 +34,23 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import {
+  FloatingProvider,
+  useFloatingPanel,
+  useFloatingPanelProps,
+  useFloatingReference,
+  type AnchorProps,
+} from '../../internal/floating'
+import { Hidden, HiddenFeatures } from '../../internal/hidden'
+import { Modal, ModalFeatures as ModalRenderFeatures, type ModalProps } from '../../internal/modal'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import {
   Focus,
+  FocusResult,
   FocusableMode,
   focusIn,
-  FocusResult,
   getFocusableElements,
   isFocusableElement,
 } from '../../utils/focus-management'
@@ -46,15 +58,18 @@ import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'
 import {
-  Features,
+  RenderFeatures,
   forwardRefWithAs,
+  mergeProps,
   render,
   useMergeRefsFn,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
 } from '../../utils/render'
+import { FocusTrapFeatures } from '../focus-trap/focus-trap'
 import { Keys } from '../keyboard'
+import { Portal, useNestedPortals } from '../portal/portal'
 
 type MouseEvent<T> = Parameters<MouseEventHandler<T>>[0]
 
@@ -203,17 +218,18 @@ function stateReducer(state: StateDefinition, action: Actions) {
 // ---
 
 let DEFAULT_POPOVER_TAG = 'div' as const
-interface PopoverRenderPropArg {
+type PopoverRenderPropArg = {
   open: boolean
   close(
     focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null> | MouseEvent<HTMLElement>
   ): void
 }
+type PopoverPropsWeControl = never
 
-export type PopoverProps<TTag extends ElementType> = Props<
+export type PopoverProps<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG> = Props<
   TTag,
   PopoverRenderPropArg,
-  never,
+  PopoverPropsWeControl,
   {
     __demoMode?: boolean
   }
@@ -379,54 +395,61 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     [close, isPortalled]
   )
 
-  let slot = useMemo<PopoverRenderPropArg>(
-    () => ({ open: popoverState === PopoverStates.Open, close }),
+  let slot = useMemo(
+    () => ({ open: popoverState === PopoverStates.Open, close }) satisfies PopoverRenderPropArg,
     [popoverState, close]
   )
 
   let ourProps = { ref: popoverRef }
 
   return (
-    <PopoverPanelContext.Provider value={null}>
-      <PopoverContext.Provider value={reducerBag}>
-        <PopoverAPIContext.Provider value={api}>
-          <OpenClosedProvider
-            value={match(popoverState, {
-              [PopoverStates.Open]: State.Open,
-              [PopoverStates.Closed]: State.Closed,
-            })}
-          >
-            <PortalWrapper>
-              {render({
-                ourProps,
-                theirProps,
-                slot,
-                defaultTag: DEFAULT_POPOVER_TAG,
-                name: 'Popover',
+    <FloatingProvider>
+      <PopoverPanelContext.Provider value={null}>
+        <PopoverContext.Provider value={reducerBag}>
+          <PopoverAPIContext.Provider value={api}>
+            <OpenClosedProvider
+              value={match(popoverState, {
+                [PopoverStates.Open]: State.Open,
+                [PopoverStates.Closed]: State.Closed,
               })}
-              <root.MainTreeNode />
-            </PortalWrapper>
-          </OpenClosedProvider>
-        </PopoverAPIContext.Provider>
-      </PopoverContext.Provider>
-    </PopoverPanelContext.Provider>
+            >
+              <PortalWrapper>
+                {render({
+                  ourProps,
+                  theirProps,
+                  slot,
+                  defaultTag: DEFAULT_POPOVER_TAG,
+                  name: 'Popover',
+                })}
+                <root.MainTreeNode />
+              </PortalWrapper>
+            </OpenClosedProvider>
+          </PopoverAPIContext.Provider>
+        </PopoverContext.Provider>
+      </PopoverPanelContext.Provider>
+    </FloatingProvider>
   )
 }
 
 // ---
 
 let DEFAULT_BUTTON_TAG = 'button' as const
-interface ButtonRenderPropArg {
+type ButtonRenderPropArg = {
   open: boolean
+  active: boolean
+  hover: boolean
+  focus: boolean
+  autofocus: boolean
 }
 type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded'
 
-export type PopoverButtonProps<TTag extends ElementType> = Props<
+export type PopoverButtonProps<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG> = Props<
   TTag,
   ButtonRenderPropArg,
   ButtonPropsWeControl,
   {
     disabled?: boolean
+    autoFocus?: boolean
   }
 >
 
@@ -485,6 +508,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let buttonRef = useSyncRefs(
     internalButtonRef,
     ref,
+    useFloatingReference(),
     isWithinPanel
       ? null
       : (button) => {
@@ -577,28 +601,52 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     event.stopPropagation()
   })
 
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
+  let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
+
   let visible = state.popoverState === PopoverStates.Open
-  let slot = useMemo<ButtonRenderPropArg>(() => ({ open: visible }), [visible])
+  let slot = useMemo(
+    () =>
+      ({
+        open: visible,
+        active: active || visible,
+        hover,
+        focus,
+        autofocus: props.autoFocus ?? false,
+      }) satisfies ButtonRenderPropArg,
+    [visible, hover, focus, active, props.autoFocus]
+  )
 
   let type = useResolveButtonType(props, internalButtonRef)
   let ourProps = isWithinPanel
-    ? {
-        ref: withinPanelButtonRef,
-        type,
-        onKeyDown: handleKeyDown,
-        onClick: handleClick,
-      }
-    : {
-        ref: buttonRef,
-        id: state.buttonId,
-        type,
-        'aria-expanded': state.popoverState === PopoverStates.Open,
-        'aria-controls': state.panel ? state.panelId : undefined,
-        onKeyDown: handleKeyDown,
-        onKeyUp: handleKeyUp,
-        onClick: handleClick,
-        onMouseDown: handleMouseDown,
-      }
+    ? mergeProps(
+        {
+          ref: withinPanelButtonRef,
+          type,
+          onKeyDown: handleKeyDown,
+          onClick: handleClick,
+        },
+        focusProps,
+        hoverProps,
+        pressProps
+      )
+    : mergeProps(
+        {
+          ref: buttonRef,
+          id: state.buttonId,
+          type,
+          'aria-expanded': state.popoverState === PopoverStates.Open,
+          'aria-controls': state.panel ? state.panelId : undefined,
+          onKeyDown: handleKeyDown,
+          onKeyUp: handleKeyUp,
+          onClick: handleClick,
+          onMouseDown: handleMouseDown,
+        },
+        focusProps,
+        hoverProps,
+        pressProps
+      )
 
   let direction = useTabDirection()
   let handleFocus = useEvent(() => {
@@ -657,19 +705,19 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 // ---
 
 let DEFAULT_OVERLAY_TAG = 'div' as const
-interface OverlayRenderPropArg {
+type OverlayRenderPropArg = {
   open: boolean
 }
 type OverlayPropsWeControl = 'aria-hidden'
 
-let OverlayRenderFeatures = Features.RenderStrategy | Features.Static
+let OverlayRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
-export type PopoverOverlayProps<TTag extends ElementType> = Props<
+export type PopoverOverlayProps<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG> = Props<
   TTag,
   OverlayRenderPropArg,
-  OverlayPropsWeControl
-> &
+  OverlayPropsWeControl,
   PropsForFeatures<typeof OverlayRenderFeatures>
+>
 
 function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
   props: PopoverOverlayProps<TTag>,
@@ -694,8 +742,8 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
     dispatch({ type: ActionTypes.ClosePopover })
   })
 
-  let slot = useMemo<OverlayRenderPropArg>(
-    () => ({ open: popoverState === PopoverStates.Open }),
+  let slot = useMemo(
+    () => ({ open: popoverState === PopoverStates.Open }) satisfies OverlayRenderPropArg,
     [popoverState]
   )
 
@@ -720,21 +768,27 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
 // ---
 
 let DEFAULT_PANEL_TAG = 'div' as const
-interface PanelRenderPropArg {
+type PanelRenderPropArg = {
   open: boolean
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
 }
 
-let PanelRenderFeatures = Features.RenderStrategy | Features.Static
+let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
 type PanelPropsWeControl = 'tabIndex'
 
-export type PopoverPanelProps<TTag extends ElementType> = Props<
+export type PopoverPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TAG> = Props<
   TTag,
   PanelRenderPropArg,
   PanelPropsWeControl,
-  PropsForFeatures<typeof PanelRenderFeatures> & {
+  {
     focus?: boolean
+    anchor?: AnchorProps
+    modal?: boolean
+
+    // ItemsRenderFeatures
+    static?: boolean
+    unmount?: boolean
   }
 >
 
@@ -743,16 +797,32 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-popover-panel-${internalId}`, focus = false, ...theirProps } = props
+  let {
+    id = `headlessui-popover-panel-${internalId}`,
+    focus = false,
+    anchor,
+    modal,
+    ...theirProps
+  } = props
 
   let [state, dispatch] = usePopoverContext('Popover.Panel')
   let { close, isPortalled } = usePopoverAPIContext('Popover.Panel')
 
-  let beforePanelSentinelId = `headlessui-focus-sentinel-before-${useId()}`
-  let afterPanelSentinelId = `headlessui-focus-sentinel-after-${useId()}`
+  let beforePanelSentinelId = `headlessui-focus-sentinel-before-${internalId}`
+  let afterPanelSentinelId = `headlessui-focus-sentinel-after-${internalId}`
 
   let internalPanelRef = useRef<HTMLDivElement | null>(null)
-  let panelRef = useSyncRefs(internalPanelRef, ref, (panel) => {
+  let [floatingRef, style] = useFloatingPanel(anchor)
+  let getFloatingPanelProps = useFloatingPanelProps()
+
+  // Always use `modal` when `anchor` is passed in
+  if (anchor != null && modal == null) {
+    modal = true
+  } else if (modal == null) {
+    modal = false
+  }
+
+  let panelRef = useSyncRefs(internalPanelRef, ref, anchor ? floatingRef : null, (panel) => {
     dispatch({ type: ActionTypes.SetPanel, panel })
   })
   let ownerDocument = useOwnerDocument(internalPanelRef)
@@ -774,7 +844,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     return state.popoverState === PopoverStates.Open
   })()
 
-  let handleKeyDown = useEvent((event: KeyboardEvent) => {
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
       case Keys.Escape:
         if (state.popoverState !== PopoverStates.Open) return
@@ -815,12 +885,12 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     focusIn(internalPanelRef.current, Focus.First)
   }, [state.__demoMode, focus, internalPanelRef, state.popoverState])
 
-  let slot = useMemo<PanelRenderPropArg>(
-    () => ({ open: state.popoverState === PopoverStates.Open, close }),
+  let slot = useMemo(
+    () => ({ open: state.popoverState === PopoverStates.Open, close }) satisfies PanelRenderPropArg,
     [state, close]
   )
 
-  let ourProps = {
+  let ourProps: Record<string, any> = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     ref: panelRef,
     id,
     onKeyDown: handleKeyDown,
@@ -843,7 +913,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
           }
         : undefined,
     tabIndex: -1,
-  }
+    ...(style ? { style } : {}),
+  })
 
   let direction = useTabDirection()
   let handleBeforeFocus = useEvent(() => {
@@ -922,40 +993,57 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     }
   })
 
+  let Wrapper = modal ? Modal : anchor ? Portal : Fragment
+  let wrapperProps = modal
+    ? ({
+        focusTrapFeatures: FocusTrapFeatures.None,
+        features: ModalRenderFeatures.ScrollLock,
+        enabled: state.popoverState === PopoverStates.Open,
+      } satisfies ModalProps)
+    : {}
+
+  if (Wrapper === Portal || Wrapper === Modal) {
+    isPortalled = true
+  }
+
   return (
     <PopoverPanelContext.Provider value={id}>
-      {visible && isPortalled && (
-        <Hidden
-          id={beforePanelSentinelId}
-          ref={state.beforePanelSentinel}
-          features={HiddenFeatures.Focusable}
-          data-headlessui-focus-guard
-          as="button"
-          type="button"
-          onFocus={handleBeforeFocus}
-        />
-      )}
-      {render({
-        mergeRefs,
-        ourProps,
-        theirProps,
-        slot,
-        defaultTag: DEFAULT_PANEL_TAG,
-        features: PanelRenderFeatures,
-        visible,
-        name: 'Popover.Panel',
-      })}
-      {visible && isPortalled && (
-        <Hidden
-          id={afterPanelSentinelId}
-          ref={state.afterPanelSentinel}
-          features={HiddenFeatures.Focusable}
-          data-headlessui-focus-guard
-          as="button"
-          type="button"
-          onFocus={handleAfterFocus}
-        />
-      )}
+      <PopoverAPIContext.Provider value={{ close, isPortalled }}>
+        <Wrapper {...wrapperProps}>
+          {visible && isPortalled && (
+            <Hidden
+              id={beforePanelSentinelId}
+              ref={state.beforePanelSentinel}
+              features={HiddenFeatures.Focusable}
+              data-headlessui-focus-guard
+              as="button"
+              type="button"
+              onFocus={handleBeforeFocus}
+            />
+          )}
+          {render({
+            mergeRefs,
+            ourProps,
+            theirProps,
+            slot,
+            defaultTag: DEFAULT_PANEL_TAG,
+            features: PanelRenderFeatures,
+            visible,
+            name: 'Popover.Panel',
+          })}
+          {visible && isPortalled && (
+            <Hidden
+              id={afterPanelSentinelId}
+              ref={state.afterPanelSentinel}
+              features={HiddenFeatures.Focusable}
+              data-headlessui-focus-guard
+              as="button"
+              type="button"
+              onFocus={handleAfterFocus}
+            />
+          )}
+        </Wrapper>
+      </PopoverAPIContext.Provider>
     </PopoverPanelContext.Provider>
   )
 }
@@ -963,11 +1051,16 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 // ---
 
 let DEFAULT_GROUP_TAG = 'div' as const
-interface GroupRenderPropArg {}
+type GroupRenderPropArg = {}
+type GroupPropsWeControl = never
 
-export type PopoverGroupProps<TTag extends ElementType> = Props<TTag, GroupRenderPropArg>
+export type PopoverGroupProps<TTag extends ElementType = typeof DEFAULT_GROUP_TAG> = Props<
+  TTag,
+  GroupRenderPropArg,
+  GroupPropsWeControl
+>
 
-function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
+function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
   props: PopoverGroupProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
@@ -1032,7 +1125,7 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     ]
   )
 
-  let slot = useMemo<GroupRenderPropArg>(() => ({}), [])
+  let slot = useMemo(() => ({}) satisfies GroupRenderPropArg, [])
 
   let theirProps = props
   let ourProps = { ref: groupRef }
@@ -1084,9 +1177,16 @@ export interface _internal_ComponentPopoverGroup extends HasDisplayName {
 }
 
 let PopoverRoot = forwardRefWithAs(PopoverFn) as unknown as _internal_ComponentPopover
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentPopoverButton
-let Overlay = forwardRefWithAs(OverlayFn) as unknown as _internal_ComponentPopoverOverlay
-let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentPopoverPanel
-let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPopoverGroup
+export let PopoverButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentPopoverButton
+export let PopoverOverlay = forwardRefWithAs(
+  OverlayFn
+) as unknown as _internal_ComponentPopoverOverlay
+export let PopoverPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentPopoverPanel
+export let PopoverGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPopoverGroup
 
-export let Popover = Object.assign(PopoverRoot, { Button, Overlay, Panel, Group })
+export let Popover = Object.assign(PopoverRoot, {
+  Button: PopoverButton,
+  Overlay: PopoverOverlay,
+  Panel: PopoverPanel,
+  Group: PopoverGroup,
+})

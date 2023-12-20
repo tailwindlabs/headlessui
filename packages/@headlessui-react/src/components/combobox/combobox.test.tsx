@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react'
 import React, { createElement, useEffect, useState } from 'react'
 import {
+  ComboboxMode,
+  ComboboxState,
   assertActiveComboboxOption,
   assertActiveElement,
   assertCombobox,
@@ -15,23 +17,21 @@ import {
   assertNoActiveComboboxOption,
   assertNoSelectedComboboxOption,
   assertNotActiveComboboxOption,
-  ComboboxMode,
-  ComboboxState,
   getByText,
   getComboboxButton,
   getComboboxButtons,
-  getComboboxes,
   getComboboxInput,
   getComboboxInputs,
   getComboboxLabel,
   getComboboxOptions,
+  getComboboxes,
 } from '../../test-utils/accessibility-assertions'
 import {
+  Keys,
+  MouseButton,
   blur,
   click,
   focus,
-  Keys,
-  MouseButton,
   mouseLeave,
   mouseMove,
   press,
@@ -41,7 +41,7 @@ import {
   word,
 } from '../../test-utils/interactions'
 import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
-import { Transition } from '../transitions/transition'
+import { Transition } from '../transition/transition'
 import { Combobox } from './combobox'
 
 let NOOP = () => {}
@@ -70,10 +70,17 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Combobox />',
     suppressConsoleLogs((name, Component) => {
-      // @ts-expect-error This is fine
-      expect(() => render(createElement(Component))).toThrowError(
-        `<${name} /> is missing a parent <Combobox /> component.`
-      )
+      if (name === 'Combobox.Label') {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          'You used a <Label /> component, but it is not inside a relevant parent.'
+        )
+      } else {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          `<${name} /> is missing a parent <Combobox /> component.`
+        )
+      }
     })
   )
 
@@ -244,7 +251,7 @@ describe('Rendering', () => {
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({ active: true, focus: true, selected: true, disabled: false })
           )
         })
       )
@@ -274,15 +281,30 @@ describe('Rendering', () => {
           let [alice, bob, charlie] = getComboboxOptions()
           expect(alice).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: false, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: false,
+              disabled: false,
+            })
           )
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: false, selected: false, disabled: false })
+            JSON.stringify({
+              active: false,
+              focus: false,
+              selected: false,
+              disabled: false,
+            })
           )
           expect(charlie).toHaveAttribute(
             'class',
-            JSON.stringify({ active: false, selected: false, disabled: false })
+            JSON.stringify({
+              active: false,
+              focus: false,
+              selected: false,
+              disabled: false,
+            })
           )
         })
       )
@@ -312,7 +334,12 @@ describe('Rendering', () => {
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: true,
+              disabled: false,
+            })
           )
         })
       )
@@ -346,7 +373,12 @@ describe('Rendering', () => {
           let bob = getComboboxOptions()[1]
           expect(bob).toHaveAttribute(
             'class',
-            JSON.stringify({ active: true, selected: true, disabled: false })
+            JSON.stringify({
+              active: true,
+              focus: true,
+              selected: true,
+              disabled: false,
+            })
           )
         })
       )
@@ -814,7 +846,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={(x) => console.log(x)}>
-            <Combobox.Label>{JSON.stringify}</Combobox.Label>
+            <Combobox.Label>{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Label>
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -830,7 +862,7 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-combobox-button-3' },
         })
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -838,7 +870,7 @@ describe('Rendering', () => {
         await click(getComboboxButton())
 
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
@@ -868,7 +900,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <Combobox value="test" onChange={(x) => console.log(x)}>
-            <Combobox.Label as="p">{JSON.stringify}</Combobox.Label>
+            <Combobox.Label as="p">{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Label>
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -880,7 +912,7 @@ describe('Rendering', () => {
         )
 
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
@@ -888,7 +920,7 @@ describe('Rendering', () => {
 
         await click(getComboboxButton())
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })
@@ -904,7 +936,7 @@ describe('Rendering', () => {
         render(
           <Combobox value="test" onChange={(x) => console.log(x)}>
             <Combobox.Input onChange={NOOP} />
-            <Combobox.Button>{JSON.stringify}</Combobox.Button>
+            <Combobox.Button>{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
               <Combobox.Option value="b">Option B</Combobox.Option>
@@ -916,7 +948,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: false, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -925,7 +964,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: true, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
       })
@@ -938,7 +984,7 @@ describe('Rendering', () => {
           <Combobox value="test" onChange={(x) => console.log(x)}>
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button as="div" role="button">
-              {JSON.stringify}
+              {(slot) => <>{JSON.stringify(slot)}</>}
             </Combobox.Button>
             <Combobox.Options>
               <Combobox.Option value="a">Option A</Combobox.Option>
@@ -951,7 +997,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.InvisibleUnmounted,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: false, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: false,
+            active: false,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
 
@@ -960,7 +1013,14 @@ describe('Rendering', () => {
         assertComboboxButton({
           state: ComboboxState.Visible,
           attributes: { id: 'headlessui-combobox-button-2' },
-          textContent: JSON.stringify({ open: true, disabled: false, value: 'test' }),
+          textContent: JSON.stringify({
+            open: true,
+            active: true,
+            disabled: false,
+            value: 'test',
+            hover: false,
+            focus: false,
+          }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
       })
@@ -1146,7 +1206,7 @@ describe('Rendering', () => {
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
-              <Combobox.Option value="a">{JSON.stringify}</Combobox.Option>
+              <Combobox.Option value="a">{(slot) => <>{JSON.stringify(slot)}</>}</Combobox.Option>
             </Combobox.Options>
           </Combobox>
         )
@@ -1165,7 +1225,12 @@ describe('Rendering', () => {
         })
         assertComboboxList({
           state: ComboboxState.Visible,
-          textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
+          textContent: JSON.stringify({
+            active: true,
+            focus: true,
+            selected: false,
+            disabled: false,
+          }),
         })
       })
     )
@@ -1498,7 +1563,10 @@ describe('Rendering', () => {
         >
           <Combobox name="assignee" defaultValue={{ id: 2, name: 'bob', label: 'Bob' }} by="id">
             <Combobox.Button>{({ value }) => value?.name ?? 'Trigger'}</Combobox.Button>
-            <Combobox.Input onChange={NOOP} displayValue={(value: typeof data[0]) => value.name} />
+            <Combobox.Input
+              onChange={NOOP}
+              displayValue={(value: (typeof data)[0]) => value.name}
+            />
             <Combobox.Options>
               {data.map((person) => (
                 <Combobox.Option key={person.id} value={person}>
@@ -1659,10 +1727,20 @@ describe('Rendering composition', () => {
 
       // Verify correct classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: true, selected: false, disabled: false })
+        JSON.stringify({
+          active: true,
+          focus: true,
+          selected: false,
+          disabled: false,
+        })
       )
       expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: true,
+        })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
@@ -1671,10 +1749,20 @@ describe('Rendering composition', () => {
 
       // Verify the classNames
       expect('' + options[0].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: false })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: false,
+        })
       )
       expect('' + options[1].classList).toEqual(
-        JSON.stringify({ active: false, selected: false, disabled: true })
+        JSON.stringify({
+          active: false,
+          focus: false,
+          selected: false,
+          disabled: true,
+        })
       )
       expect('' + options[2].classList).toEqual('no-special-treatment')
 
@@ -1815,7 +1903,12 @@ describe('Composition', () => {
       })
       assertComboboxList({
         state: ComboboxState.Visible,
-        textContent: JSON.stringify({ active: true, selected: false, disabled: false }),
+        textContent: JSON.stringify({
+          active: true,
+          focus: true,
+          selected: false,
+          disabled: false,
+        }),
       })
 
       await rawClick(getComboboxButton())
@@ -1855,11 +1948,11 @@ describe.each([{ virtual: true }, { virtual: false }])(
         return typeof option === 'string'
           ? false
           : typeof option === 'object' &&
-            option !== null &&
-            'disabled' in option &&
-            typeof option.disabled === 'boolean'
-          ? option?.disabled ?? false
-          : false
+              option !== null &&
+              'disabled' in option &&
+              typeof option.disabled === 'boolean'
+            ? option?.disabled ?? false
+            : false
       }
       if (virtual) {
         return (
@@ -4047,10 +4140,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
       })
 
       describe('`Any` key aka search', () => {
+        type Option = { value: string; name: string; disabled: boolean }
         function Example(props: { people: { value: string; name: string; disabled: boolean }[] }) {
-          let [value, setValue] = useState<
-            { value: string; name: string; disabled: boolean } | undefined
-          >(undefined)
+          let [value, setValue] = useState<Option | undefined>(undefined)
           let [query, setQuery] = useState<string>('')
           let filteredPeople =
             query === ''
@@ -4073,10 +4165,10 @@ describe.each([{ virtual: true }, { virtual: false }])(
                 <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
-                  {({ option }: { option: NonNullable<typeof value> }) => {
+                  {({ option }) => {
                     return (
-                      <Combobox.Option {...option} value={option}>
-                        {option.name}
+                      <Combobox.Option {...(option as Option)} value={option}>
+                        {(option as Option).name}
                       </Combobox.Option>
                     )
                   }}
@@ -4332,8 +4424,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       return typeof option === 'string'
         ? false
         : typeof option === 'object' && option !== null && 'disabled' in option
-        ? (option?.disabled as unknown as boolean | undefined) ?? false
-        : false
+          ? (option?.disabled as unknown as boolean | undefined) ?? false
+          : false
     }
     if (virtual) {
       return (
@@ -5255,7 +5347,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to controlled'))
 
       // Make sure we get a warning
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
       expect(spy.mock.calls.map((args) => args[0])).toEqual([
         'A component is changing from uncontrolled to controlled. This may be caused by the value changing from undefined to a defined value, which should not happen.',
       ])
@@ -5267,7 +5359,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to controlled'))
 
       // We shouldn't have gotten another warning as we do not want to warn on every render
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   )
 
@@ -5292,7 +5384,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to uncontrolled'))
 
       // Make sure we get a warning
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
       expect(spy.mock.calls.map((args) => args[0])).toEqual([
         'A component is changing from controlled to uncontrolled. This may be caused by the value changing from a defined value to undefined, which should not happen.',
       ])
@@ -5304,7 +5396,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       await click(getByText('to uncontrolled'))
 
       // We shouldn't have gotten another warning as we do not want to warn on every render
-      expect(spy).toBeCalledTimes(1)
+      expect(spy).toHaveBeenCalledTimes(1)
     })
   )
 
@@ -5318,7 +5410,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       ]
 
       function Example() {
-        let [value, setValue] = useState<typeof people[number] | null>(people[1])
+        let [value, setValue] = useState<(typeof people)[number] | null>(people[1])
 
         return (
           <>
@@ -5326,7 +5418,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
               options={people}
               comboboxProps={{ value, onChange: setValue }}
               inputProps={{
-                displayValue: (person: typeof people[number]) => person?.name,
+                displayValue: (person: (typeof people)[number]) => person?.name,
               }}
             />
             <button onClick={() => setValue(null)}>reset</button>
@@ -5589,7 +5681,7 @@ describe('Form compatibility', () => {
     // Submit the form
     await click(getByText('Submit'))
 
-    expect(submits).lastCalledWith([['delivery', 'pickup']])
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
   })
 
   it('should be possible to submit a form with a value', async () => {
@@ -5628,7 +5720,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([]) // no data
+    expect(submits).toHaveBeenLastCalledWith([]) // no data
 
     // Open combobox again
     await click(getComboboxButton())
@@ -5640,7 +5732,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([['delivery', 'home-delivery']])
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'home-delivery']])
 
     // Open combobox again
     await click(getComboboxButton())
@@ -5652,7 +5744,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([['delivery', 'pickup']])
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
   })
 
   it('should be possible to submit a form with a complex value object', async () => {
@@ -5714,7 +5806,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([
+    expect(submits).toHaveBeenLastCalledWith([
       ['delivery[id]', '1'],
       ['delivery[value]', 'pickup'],
       ['delivery[label]', 'Pickup'],
@@ -5731,7 +5823,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([
+    expect(submits).toHaveBeenLastCalledWith([
       ['delivery[id]', '2'],
       ['delivery[value]', 'home-delivery'],
       ['delivery[label]', 'Home delivery'],
@@ -5748,7 +5840,7 @@ describe('Form compatibility', () => {
     await click(getByText('Submit'))
 
     // Verify that the form has been submitted
-    expect(submits).lastCalledWith([
+    expect(submits).toHaveBeenLastCalledWith([
       ['delivery[id]', '1'],
       ['delivery[value]', 'pickup'],
       ['delivery[label]', 'Pickup'],

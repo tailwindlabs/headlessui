@@ -1,4 +1,4 @@
-import { ScrollLockStep } from './overflow-store'
+import type { ScrollLockStep } from './overflow-store'
 
 export function adjustScrollbarPadding(): ScrollLockStep {
   let scrollbarWidthBefore: number
@@ -8,7 +8,7 @@ export function adjustScrollbarPadding(): ScrollLockStep {
       let documentElement = doc.documentElement
       let ownerWindow = doc.defaultView ?? window
 
-      scrollbarWidthBefore = ownerWindow.innerWidth - documentElement.clientWidth
+      scrollbarWidthBefore = Math.max(0, ownerWindow.innerWidth - documentElement.clientWidth)
     },
 
     after({ doc, d }) {
@@ -16,8 +16,11 @@ export function adjustScrollbarPadding(): ScrollLockStep {
 
       // Account for the change in scrollbar width
       // NOTE: This is a bit of a hack, but it's the only way to do this
-      let scrollbarWidthAfter = documentElement.clientWidth - documentElement.offsetWidth
-      let scrollbarWidth = scrollbarWidthBefore - scrollbarWidthAfter
+      let scrollbarWidthAfter = Math.max(
+        0,
+        documentElement.clientWidth - documentElement.offsetWidth
+      )
+      let scrollbarWidth = Math.max(0, scrollbarWidthBefore - scrollbarWidthAfter)
 
       d.style(documentElement, 'paddingRight', `${scrollbarWidth}px`)
     },

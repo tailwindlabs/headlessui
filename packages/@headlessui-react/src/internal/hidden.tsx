@@ -4,7 +4,7 @@ import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../
 
 let DEFAULT_VISUALLY_HIDDEN_TAG = 'div' as const
 
-export enum Features {
+export enum HiddenFeatures {
   // The default, no features.
   None = 1 << 0,
 
@@ -15,17 +15,24 @@ export enum Features {
   Hidden = 1 << 2,
 }
 
-export type HiddenProps<TTag extends ElementType> = Props<TTag, {}, never, { features?: Features }>
+type HiddenRenderPropArg = {}
+type HiddenPropsWeControl = never
+export type HiddenProps<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG> = Props<
+  TTag,
+  HiddenRenderPropArg,
+  HiddenPropsWeControl,
+  { features?: HiddenFeatures }
+>
 
 function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG>(
   props: HiddenProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let { features = Features.None, ...theirProps } = props
+  let { features = HiddenFeatures.None, ...theirProps } = props
   let ourProps = {
     ref,
     'aria-hidden':
-      (features & Features.Focusable) === Features.Focusable
+      (features & HiddenFeatures.Focusable) === HiddenFeatures.Focusable
         ? true
         : theirProps['aria-hidden'] ?? undefined,
     style: {
@@ -40,8 +47,10 @@ function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDE
       clip: 'rect(0, 0, 0, 0)',
       whiteSpace: 'nowrap',
       borderWidth: '0',
-      ...((features & Features.Hidden) === Features.Hidden &&
-        !((features & Features.Focusable) === Features.Focusable) && { display: 'none' }),
+      ...((features & HiddenFeatures.Hidden) === HiddenFeatures.Hidden &&
+        !((features & HiddenFeatures.Focusable) === HiddenFeatures.Focusable) && {
+          display: 'none',
+        }),
     },
   }
 

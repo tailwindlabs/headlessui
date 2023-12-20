@@ -1,3 +1,4 @@
+import type { MutableRefObject } from 'react'
 import { disposables } from './disposables'
 import { match } from './match'
 import { getOwnerDocument } from './owner'
@@ -14,6 +15,20 @@ let focusableSelector = [
   'input:not([disabled])',
   'select:not([disabled])',
   'textarea:not([disabled])',
+]
+  .map(
+    process.env.NODE_ENV === 'test'
+      ? // TODO: Remove this once JSDOM fixes the issue where an element that is
+        // "hidden" can be the document.activeElement, because this is not possible
+        // in real browsers.
+        (selector) => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
+      : (selector) => `${selector}:not([tabindex='-1'])`
+  )
+  .join(',')
+
+let autoFocusableSelector = [
+  // In a perfect world this was just `autofocus`, but React doesn't pass `autofocus` to the DOM...
+  '[data-autofocus]',
 ]
   .map(
     process.env.NODE_ENV === 'test'
@@ -43,6 +58,9 @@ export enum Focus {
 
   /** Prevent scrolling the focusable elements into view */
   NoScroll = 1 << 5,
+
+  /** Focus the first focusable element with the `data-autofocus` attribute. */
+  AutoFocus = 1 << 6,
 }
 
 export enum FocusResult {
@@ -67,6 +85,15 @@ enum Direction {
 export function getFocusableElements(container: HTMLElement | null = document.body) {
   if (container == null) return []
   return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).sort(
+    // We want to move `tabIndex={0}` to the end of the list, this is what the browser does as well.
+    (a, z) =>
+      Math.sign((a.tabIndex || Number.MAX_SAFE_INTEGER) - (z.tabIndex || Number.MAX_SAFE_INTEGER))
+  )
+}
+
+export function getAutoFocusableElements(container: HTMLElement | null = document.body) {
+  if (container == null) return []
+  return Array.from(container.querySelectorAll<HTMLElement>(autoFocusableSelector)).sort(
     // We want to move `tabIndex={0}` to the end of the list, this is what the browser does as well.
     (a, z) =>
       Math.sign((a.tabIndex || Number.MAX_SAFE_INTEGER) - (z.tabIndex || Number.MAX_SAFE_INTEGER))
@@ -198,7 +225,11 @@ export function focusIn(
     sorted = true,
     relativeTo = null,
     skipElements = [],
-  }: Partial<{ sorted: boolean; relativeTo: HTMLElement | null; skipElements: HTMLElement[] }> = {}
+  }: Partial<{
+    sorted: boolean
+    relativeTo: HTMLElement | null
+    skipElements: (HTMLElement | MutableRefObject<HTMLElement | null>)[]
+  }> = {}
 ) {
   let ownerDocument = Array.isArray(container)
     ? container.length > 0
@@ -210,10 +241,20 @@ export function focusIn(
     ? sorted
       ? sortByDomNode(container)
       : container
-    : getFocusableElements(container)
+    : focus & Focus.AutoFocus
+      ? getAutoFocusableElements(container)
+      : getFocusableElements(container)
 
   if (skipElements.length > 0 && elements.length > 1) {
-    elements = elements.filter((x) => !skipElements.includes(x))
+    elements = elements.filter(
+      (element) =>
+        !skipElements.some(
+          (skipElement) =>
+            skipElement != null && 'current' in skipElement
+              ? skipElement?.current === element // Handle MutableRefObject
+              : skipElement === element // Handle HTMLElement directly
+        )
+    )
   }
 
   relativeTo = relativeTo ?? (ownerDocument.activeElement as HTMLElement)

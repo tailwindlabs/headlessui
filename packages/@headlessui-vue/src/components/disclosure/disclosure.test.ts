@@ -1,16 +1,16 @@
 import { defineComponent, h, nextTick, ref, watch } from 'vue'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
+  DisclosureState,
   assertActiveElement,
   assertDisclosureButton,
   assertDisclosurePanel,
-  DisclosureState,
   getByText,
   getDisclosureButton,
   getDisclosurePanel,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
-import { click, Keys, MouseButton, press } from '../../test-utils/interactions'
+import { Keys, MouseButton, click, press } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { createRenderTemplate, render } from '../../test-utils/vue-testing-library'
 import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'

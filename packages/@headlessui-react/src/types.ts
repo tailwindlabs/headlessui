@@ -17,9 +17,9 @@ export type PropsOf<TTag extends ReactTag> = TTag extends React.ElementType
 type PropsWeControl = 'as' | 'children' | 'refName' | 'className'
 
 // Resolve the props of the component, but ensure to omit certain props that we control
-type CleanProps<TTag extends ReactTag, TOmitableProps extends PropertyKey = never> = Omit<
+type CleanProps<TTag extends ReactTag, TOmittableProps extends PropertyKey = never> = Omit<
   PropsOf<TTag>,
-  TOmitableProps | PropsWeControl
+  TOmittableProps | PropsWeControl
 >
 
 // Add certain props that we control
@@ -32,8 +32,8 @@ type OurProps<TTag extends ReactTag, TSlot> = {
 type HasProperty<T extends object, K extends PropertyKey> = T extends never
   ? never
   : K extends keyof T
-  ? true
-  : never
+    ? true
+    : never
 
 // Conditionally override the `className`, to also allow for a function
 // if and only if the PropsOf<TTag> already defines `className`.
@@ -48,9 +48,9 @@ type ClassNameOverride<TTag extends ReactTag, TSlot = {}> =
 export type Props<
   TTag extends ReactTag,
   TSlot = {},
-  TOmitableProps extends PropertyKey = never,
-  Overrides = {}
-> = CleanProps<TTag, TOmitableProps | keyof Overrides> &
+  TOmittableProps extends PropertyKey = never,
+  Overrides = {},
+> = CleanProps<TTag, TOmittableProps | keyof Overrides> &
   OurProps<TTag, TSlot> &
   ClassNameOverride<TTag, TSlot> &
   Overrides
@@ -59,14 +59,11 @@ type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 export type XOR<T, U> = T | U extends __
   ? never
   : T extends __
-  ? U
-  : U extends __
-  ? T
-  : T | U extends object
-  ? (Without<T, U> & U) | (Without<U, T> & T)
-  : T | U
+    ? U
+    : U extends __
+      ? T
+      : T | U extends object
+        ? (Without<T, U> & U) | (Without<U, T> & T)
+        : T | U
 
-export type ByComparator<T> =
-  | (T extends null ? string : keyof T & string)
-  | ((a: T, b: T) => boolean)
 export type EnsureArray<T> = T extends any[] ? T : Expand<T>[]

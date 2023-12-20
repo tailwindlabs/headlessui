@@ -1,4 +1,4 @@
-import { computed, ComputedRef, ref, UnwrapRef } from 'vue'
+import { computed, ref, type ComputedRef, type UnwrapRef } from 'vue'
 
 export function useControllable<T>(
   controlledValue: ComputedRef<T | undefined>,

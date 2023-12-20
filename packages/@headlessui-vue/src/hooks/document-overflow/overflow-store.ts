@@ -1,4 +1,4 @@
-import { disposables, Disposables } from '../../utils/disposables'
+import { disposables, type Disposables } from '../../utils/disposables'
 import { createStore } from '../../utils/store'
 import { adjustScrollbarPadding } from './adjust-scrollbar-padding'
 import { handleIOSLocking } from './handle-ios-locking'

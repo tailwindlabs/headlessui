@@ -1,6 +1,8 @@
-import { computed, defineComponent, h, nextTick, PropType, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, h, nextTick, reactive, ref, watch, type PropType } from 'vue'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import {
+  ComboboxMode,
+  ComboboxState,
   assertActiveComboboxOption,
   assertActiveElement,
   assertCombobox,
@@ -15,24 +17,22 @@ import {
   assertNoActiveComboboxOption,
   assertNoSelectedComboboxOption,
   assertNotActiveComboboxOption,
-  ComboboxMode,
-  ComboboxState,
   getByText,
   getComboboxButton,
   getComboboxButtons,
-  getComboboxes,
   getComboboxInput,
   getComboboxInputs,
   getComboboxLabel,
   getComboboxOptions,
+  getComboboxes,
 } from '../../test-utils/accessibility-assertions'
 import { html } from '../../test-utils/html'
 import {
+  Keys,
+  MouseButton,
   blur,
   click,
   focus,
-  Keys,
-  MouseButton,
   mouseLeave,
   mouseMove,
   press,
@@ -2014,8 +2014,8 @@ describe.each([{ virtual: true }, { virtual: false }])(
           return typeof option === 'string'
             ? false
             : typeof option === 'object' && option !== null && 'disabled' in option
-            ? option?.disabled ?? false
-            : false
+              ? option?.disabled ?? false
+              : false
         }
 
         let model = ref(value)
@@ -4732,8 +4732,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
         return typeof option === 'string'
           ? false
           : typeof option === 'object' && option !== null && 'disabled' in option
-          ? option?.disabled ?? false
-          : false
+            ? option?.disabled ?? false
+            : false
       }
 
       let model = ref(value)

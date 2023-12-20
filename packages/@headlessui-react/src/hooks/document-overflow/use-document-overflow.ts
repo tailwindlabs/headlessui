@@ -5,7 +5,7 @@ import { overflows } from './overflow-store'
 export function useDocumentOverflowLockedEffect(
   doc: Document | null,
   shouldBeLocked: boolean,
-  meta: (meta: Record<string, any>) => Record<string, any>
+  meta: (meta: Record<string, any>) => Record<string, any> = () => ({ containers: [] })
 ) {
   let store = useStore(overflows)
   let entry = doc ? store.get(doc) : undefined

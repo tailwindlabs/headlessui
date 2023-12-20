@@ -1,0 +1,241 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default functionality should be possible to add a ref with a different name 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div
+    potato=\\"[object Object]\\"
+  >
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Default functionality should be possible to change the underlying DOM node using the \`as\` prop 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <button />
+</div>"
+`;
+
+exports[`Default functionality should be possible to change the underlying DOM node using the \`as\` prop and still have a function as children 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <button>
+    <span>
+      Contents
+    </span>
+  </button>
+</div>"
+`;
+
+exports[`Default functionality should be possible to merge class fns when rendering 1`] = `
+"<div
+  data-testid=\\"wrapper-with-class\\"
+>
+  <div
+    data-testid=\\"wrapper\\"
+  >
+    <div
+      class=\\"test-inner test-outer\\"
+    />
+  </div>
+</div>"
+`;
+
+exports[`Default functionality should be possible to merge classes when rendering 1`] = `
+"<div
+  data-testid=\\"wrapper-with-class\\"
+>
+  <div
+    class=\\"test-inner test-outer\\"
+  />
+</div>"
+`;
+
+exports[`Default functionality should be possible to passthrough props to a dummy component 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div
+    a=\\"1\\"
+    b=\\"2\\"
+    c=\\"3\\"
+  />
+</div>"
+`;
+
+exports[`Default functionality should be possible to render a dummy component 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div />
+</div>"
+`;
+
+exports[`Default functionality should be possible to render a dummy component with some children as a callback 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    <span>
+      Contents
+    </span>
+  </div>
+</div>"
+`;
+
+exports[`Default functionality should be possible to render the children only when the \`as\` prop is set to Fragment 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  Contents
+</div>"
+`;
+
+exports[`Default functionality should forward all the props to the first child when using an as={Fragment} 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <span
+    a=\\"1\\"
+    b=\\"1\\"
+  >
+    Contents
+  </span>
+</div>"
+`;
+
+exports[`Default functionality should not error when we are rendering a Fragment with multiple children when we don't passthrough additional props 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <span>
+    Contents A
+  </span>
+  <span>
+    Contents B
+  </span>
+</div>"
+`;
+
+exports[`Features.RenderStrategy Hidden render strategy should be possible to render an \`unmount={false}\` dummy component (show = false) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div
+    hidden=\\"\\"
+    style=\\"display: none;\\"
+  >
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.RenderStrategy Hidden render strategy should be possible to render an \`unmount={false}\` dummy component (show = true) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.RenderStrategy Unmount render strategy should be possible to render an \`unmount\` dummy component (show = false) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+/>"
+`;
+
+exports[`Features.RenderStrategy Unmount render strategy should be possible to render an \`unmount\` dummy component (show = true) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.Static | Features.RenderStrategy Hidden render strategy should be possible to render an \`unmount={false}\` dummy component (show = false) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div
+    hidden=\\"\\"
+    style=\\"display: none;\\"
+  >
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.Static | Features.RenderStrategy Hidden render strategy should be possible to render an \`unmount={false}\` dummy component (show = true) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.Static | Features.RenderStrategy Unmount render strategy should be possible to render an \`unmount\` dummy component (show = false) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+/>"
+`;
+
+exports[`Features.Static | Features.RenderStrategy Unmount render strategy should be possible to render an \`unmount\` dummy component (show = true) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.Static | Features.RenderStrategy should be possible to render a \`static\` dummy component (show = false) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.Static | Features.RenderStrategy should be possible to render a \`static\` dummy component (show = true) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.Static should be possible to render a \`static\` dummy component (show = false) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;
+
+exports[`Features.Static should be possible to render a \`static\` dummy component (show = true) 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div>
+    Contents
+  </div>
+</div>"
+`;

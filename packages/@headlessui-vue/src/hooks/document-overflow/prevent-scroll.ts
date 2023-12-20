@@ -1,4 +1,4 @@
-import { ScrollLockStep } from './overflow-store'
+import type { ScrollLockStep } from './overflow-store'
 
 export function preventScroll(): ScrollLockStep {
   return {

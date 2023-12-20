@@ -1,4 +1,4 @@
-import { ComponentPublicInstance, Ref } from 'vue'
+import type { ComponentPublicInstance, Ref } from 'vue'
 
 type AsElement<T extends HTMLElement | ComponentPublicInstance> =
   | (T extends HTMLElement ? T : HTMLElement)

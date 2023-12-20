@@ -1,4 +1,4 @@
-import { type MutableRefObject } from 'react'
+import type { MutableRefObject } from 'react'
 import { env } from './env'
 
 export function getOwnerDocument<T extends Element | MutableRefObject<Element | null>>(

@@ -1,7 +1,7 @@
 import {
+  Fragment,
   computed,
   defineComponent,
-  Fragment,
   h,
   onMounted,
   onUnmounted,
@@ -13,10 +13,10 @@ import {
 } from 'vue'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
-import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { history } from '../../utils/active-element-history'
 import { dom } from '../../utils/dom'
-import { Focus, focusElement, focusIn, FocusResult } from '../../utils/focus-management'
+import { Focus, FocusResult, focusElement, focusIn } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
 import { getOwnerDocument } from '../../utils/owner'
