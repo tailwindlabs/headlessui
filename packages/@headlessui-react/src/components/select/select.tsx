@@ -52,7 +52,6 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
   let { isFocusVisible: focus, focusProps } = useFocusRing({
-    within: true,
     autoFocus: props.autoFocus ?? false,
   })
 

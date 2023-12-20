@@ -403,7 +403,6 @@ function OptionFn<
   let isDisabled = data.disabled || disabled
 
   let { isFocusVisible: focus, focusProps } = useFocusRing({
-    within: true,
     autoFocus: props.autoFocus ?? false,
   })
 

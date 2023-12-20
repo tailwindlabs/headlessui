@@ -50,7 +50,6 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
   let { isFocusVisible: focus, focusProps } = useFocusRing({
-    within: true,
     isTextInput: true,
     autoFocus: props.autoFocus ?? false,
   })
