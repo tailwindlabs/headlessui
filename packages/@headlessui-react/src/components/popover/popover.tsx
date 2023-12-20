@@ -601,14 +601,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     event.stopPropagation()
   })
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({
-    autoFocus: props.autoFocus ?? false,
-  })
-
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: props.disabled ?? false,
-  })
-
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
   let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
 
   let visible = state.popoverState === PopoverStates.Open

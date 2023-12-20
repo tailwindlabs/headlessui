@@ -37,12 +37,8 @@ function DataInteractiveFn<TTag extends ElementType = typeof DEFAULT_DATA_INTERA
   let disabled = false
 
   let { isFocusVisible: focus, focusProps } = useFocusRing()
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: disabled,
-  })
-  let { pressed: active, pressProps } = useActivePress({
-    disabled,
-  })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
   let ourProps = mergeProps({ ref }, focusProps, hoverProps, pressProps)
 

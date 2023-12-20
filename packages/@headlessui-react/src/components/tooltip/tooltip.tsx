@@ -333,13 +333,8 @@ function TriggerFn<TTag extends ElementType = typeof DEFAULT_TRIGGER_TAG>(
   let internalButtonRef = useRef<HTMLElement | null>(null)
   let triggerRef = useSyncRefs(internalButtonRef, ref, useFloatingReference())
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({
-    autoFocus: props.autoFocus ?? false,
-  })
-
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: props.disabled ?? false,
-  })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {

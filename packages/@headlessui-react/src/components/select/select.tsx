@@ -51,14 +51,9 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
 
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
-  let { isFocusVisible: focus, focusProps } = useFocusRing({
-    autoFocus: props.autoFocus ?? false,
-  })
 
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: disabled ?? false,
-  })
-
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
   let { pressed: active, pressProps } = useActivePress({ disabled: disabled ?? false })
 
   let ourProps = mergeProps(

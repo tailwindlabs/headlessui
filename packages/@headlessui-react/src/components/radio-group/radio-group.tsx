@@ -402,13 +402,8 @@ function OptionFn<
   let isFirstOption = data.firstOption?.id === id
   let isDisabled = data.disabled || disabled
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({
-    autoFocus: props.autoFocus ?? false,
-  })
-
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: isDisabled ?? false,
-  })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: isDisabled ?? false })
 
   let checked = data.compare(data.value as TType, value)
   let ourProps = mergeProps(
@@ -526,13 +521,8 @@ function RadioFn<
     internalRadioRef.current?.focus()
   })
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({
-    autoFocus: props.autoFocus ?? false,
-  })
-
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: disabled ?? false,
-  })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
 
   let isFirstOption = data.firstOption?.id === id
 

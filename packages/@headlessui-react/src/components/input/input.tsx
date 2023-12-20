@@ -49,14 +49,12 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
 
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
+
   let { isFocusVisible: focus, focusProps } = useFocusRing({
     isTextInput: true,
     autoFocus: props.autoFocus ?? false,
   })
-
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: disabled ?? false,
-  })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
 
   let ourProps = mergeProps(
     {

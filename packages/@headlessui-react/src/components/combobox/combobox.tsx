@@ -1320,10 +1320,7 @@ function InputFn<
     isTextInput: true,
     autoFocus: props.autoFocus ?? false,
   })
-
-  let { isHovered: hover, hoverProps } = useHover({
-    isDisabled: data.disabled ?? false,
-  })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: data.disabled ?? false })
 
   let slot = useMemo(
     () =>
