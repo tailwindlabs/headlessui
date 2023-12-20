@@ -24,6 +24,7 @@ import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useComputed } from '../../hooks/use-computed'
 import { useControllable } from '../../hooks/use-controllable'
+import { useDidElementMove } from '../../hooks/use-did-element-move'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
@@ -658,7 +659,7 @@ function ListboxFn<
         disabled,
       }}
     >
-      <FloatingProvider enabled={data.listboxState === ListboxStates.Open}>
+      <FloatingProvider>
         <ListboxActionsContext.Provider value={actions}>
           <ListboxDataContext.Provider value={data}>
             <OpenClosedProvider
@@ -909,6 +910,21 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     }
   }, [visible, data.listRef])
 
+  // We keep track whether the button moved or not, we only check this when the menu state becomes
+  // closed. If the button moved, then we want to cancel pending transitions to prevent that the
+  // attached `MenuItems` is still transitioning while the button moved away.
+  //
+  // If we don't cancel these transitions then there will be a period where the `MenuItems` is
+  // visible and moving around because it is trying to re-position itself based on the new position.
+  //
+  // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
+  // want to transition the y-axis for example you will run into the same issue again.
+  let didButtonMove = useDidElementMove(data.buttonRef, data.listboxState !== ListboxStates.Open)
+
+  // Now that we know that the button did move or not, we can either disable the panel and all of
+  // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
+  let panelEnabled = didButtonMove ? false : visible
+
   let anchorOptions = (() => {
     if (anchor == null) return undefined
     if (data.listRef.current.size <= 0) return { ...anchor, inner: undefined }
@@ -1062,7 +1078,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
           slot,
           defaultTag: DEFAULT_OPTIONS_TAG,
           features: OptionsRenderFeatures,
-          visible,
+          visible: panelEnabled,
           name: 'Listbox.Options',
         })}
       </ListboxDataContext.Provider>
