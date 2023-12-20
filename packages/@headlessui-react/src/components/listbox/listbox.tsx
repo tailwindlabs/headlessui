@@ -937,7 +937,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     if (data.listboxState !== ListboxStates.Open) return
     if (container === getOwnerDocument(container)?.activeElement) return
 
-    d.nextFrame(() => container?.focus({ preventScroll: true }))
+    container?.focus({ preventScroll: true })
   }, [data.listboxState, data.optionsRef])
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
