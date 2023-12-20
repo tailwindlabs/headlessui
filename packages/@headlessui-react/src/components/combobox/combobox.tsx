@@ -39,6 +39,7 @@ import { useDisabled } from '../../internal/disabled'
 import {
   FloatingProvider,
   useFloatingPanel,
+  useFloatingPanelProps,
   useFloatingReference,
   type AnchorProps,
 } from '../../internal/floating'
@@ -1560,7 +1561,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let data = useData('Combobox.Options')
 
   let [floatingRef, style] = useFloatingPanel(anchor)
-  let optionsRef = useSyncRefs(data.optionsRef, ref, floatingRef)
+  let getFloatingPanelProps = useFloatingPanelProps()
+  let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -1601,14 +1603,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       }) satisfies OptionsRenderPropArg,
     [data]
   )
-  let ourProps = {
+  let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-labelledby': labelledBy,
     role: 'listbox',
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     id,
     ref: optionsRef,
     ...(style ? { style } : {}),
-  }
+  })
 
   // Map the children in a scrollable container when virtualization is enabled
   if (data.virtual && data.comboboxState === ComboboxState.Open) {

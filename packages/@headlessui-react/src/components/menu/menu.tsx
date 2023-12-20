@@ -583,7 +583,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let [state, dispatch] = useMenuContext('Menu.Items')
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
-  let itemsRef = useSyncRefs(state.itemsRef, ref, floatingRef)
+  let itemsRef = useSyncRefs(state.itemsRef, ref, anchor ? floatingRef : null)
   let ownerDocument = useOwnerDocument(state.itemsRef)
 
   // Always use `modal` when `anchor` is passed in
@@ -732,7 +732,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     [state]
   )
 
-  let ourProps = mergeProps(getFloatingPanelProps(), {
+  let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
     'aria-labelledby': state.buttonRef.current?.id,

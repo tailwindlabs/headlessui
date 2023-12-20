@@ -822,7 +822,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     modal = false
   }
 
-  let panelRef = useSyncRefs(internalPanelRef, ref, floatingRef, (panel) => {
+  let panelRef = useSyncRefs(internalPanelRef, ref, anchor ? floatingRef : null, (panel) => {
     dispatch({ type: ActionTypes.SetPanel, panel })
   })
   let ownerDocument = useOwnerDocument(internalPanelRef)
@@ -890,7 +890,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     [state, close]
   )
 
-  let ourProps: Record<string, any> = mergeProps(getFloatingPanelProps(), {
+  let ourProps: Record<string, any> = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     ref: panelRef,
     id,
     onKeyDown: handleKeyDown,

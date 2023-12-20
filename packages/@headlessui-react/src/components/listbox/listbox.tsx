@@ -926,7 +926,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let [floatingRef, style] = useFloatingPanel(anchorOptions)
   let getFloatingPanelProps = useFloatingPanelProps()
-  let optionsRef = useSyncRefs(data.optionsRef, ref, floatingRef)
+  let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
 
   let d = useDisposables()
   let searchDisposables = useDisposables()
@@ -1016,7 +1016,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     [data]
   )
 
-  let ourProps = mergeProps(getFloatingPanelProps(), {
+  let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     id,
     ref: optionsRef,
     'aria-activedescendant':
