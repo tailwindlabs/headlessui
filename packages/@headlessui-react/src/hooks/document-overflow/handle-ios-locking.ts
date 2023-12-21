@@ -95,30 +95,26 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
             // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
             if (e.target instanceof HTMLElement) {
               if (inAllowedContainer(e.target as HTMLElement)) {
-                // We are in an allowed container, however on iOS the page can still scroll in
-                // certain scenarios...
-                let rootContainer = e.target
-                while (
-                  rootContainer.parentElement &&
-                  inAllowedContainer(rootContainer.parentElement)
-                ) {
-                  rootContainer = rootContainer.parentElement!
-                }
-
-                let scrollableParent = rootContainer
+                // Even if we are in an allowed container, on iOS the main page can still scroll, we
+                // have to make sure that we `event.preventDefault()` this event to prevent that.
+                //
+                // However, if we happen to scroll on an element that is overflowing, or any of its
+                // parents are overflowing, then we should not call `event.preventDefault()` because
+                // otherwise we are preventing the user from scrolling inside that container which
+                // is not what we want.
+                let scrollableParent = e.target
                 while (
                   scrollableParent.parentElement &&
-                  // Assumption that we are always used in a Headless UI Portal. Once we reach the
-                  // portal, its over.
+                  // Assumption: We are always used in a Headless UI Portal. Once we reach the
+                  // portal itself, we can stop crawling up the tree.
                   scrollableParent.dataset.headlessuiPortal !== ''
                 ) {
-                  // Verify that we are in a scrollable container (which may or may not overflow yet)
-                  let css = window.getComputedStyle(scrollableParent)
-                  if (/(auto|scroll)/.test(css.overflow + css.overflowY + css.overflowX)) {
-                    break
-                  }
-
-                  // Check if the scrollable container is already overflowing
+                  // Check if the scrollable container is overflowing or not.
+                  //
+                  // NOTE: we could check the `overflow`, `overflow-y` and `overflow-x` properties
+                  // but when there is no overflow happening then the `overscrollBehavior` doesn't
+                  // seem to work and the main page will still scroll. So instead we check if the
+                  // scrollable container is overflowing or not and use that heuristic instead.
                   if (
                     scrollableParent.scrollHeight > scrollableParent.clientHeight ||
                     scrollableParent.scrollWidth > scrollableParent.clientWidth
