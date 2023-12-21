@@ -23,7 +23,7 @@ let version = require(path.resolve(pkgPath, 'package.json')).version
 let match = /\d+\.\d+\.\d+-(.*)\.\d+/g.exec(version)
 if (match) {
   // We want to release alpha to the next channel because it will be the next version
-  if (match === 'alpha') match = 'next'
+  if (match[1] === 'alpha') match[1] = 'next'
   console.log(match[1])
 } else {
   console.log('latest')
