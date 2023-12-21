@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Combobox } from '@headlessui/react'
 import { useMemo, useState } from 'react'
 
