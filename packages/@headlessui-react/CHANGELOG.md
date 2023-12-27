@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Ensure `Input`, `Select` and `Textarea` expose `Ref` related types ([#2902](https://github.com/tailwindlabs/headlessui/pull/2902))
 
 ## [2.0.0-alpha.3] - 2023-12-20
 

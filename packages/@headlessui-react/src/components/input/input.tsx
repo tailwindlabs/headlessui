@@ -7,7 +7,13 @@ import { useId } from '../../hooks/use-id'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
-import { forwardRefWithAs, mergeProps, render, type HasDisplayName } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  mergeProps,
+  render,
+  type HasDisplayName,
+  type RefProp,
+} from '../../utils/render'
 import { useDescribedBy } from '../description/description'
 import { useLabelledBy } from '../label/label'
 
@@ -91,7 +97,9 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
 }
 
 export interface _internal_ComponentInput extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(props: InputProps<TTag>): JSX.Element
+  <TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
+    props: InputProps<TTag> & RefProp<typeof InputFn>
+  ): JSX.Element
 }
 
 export let Input = forwardRefWithAs(InputFn) as unknown as _internal_ComponentInput
