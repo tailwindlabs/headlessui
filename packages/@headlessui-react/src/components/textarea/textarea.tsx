@@ -7,7 +7,13 @@ import { useId } from '../../hooks/use-id'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
-import { forwardRefWithAs, mergeProps, render, type HasDisplayName } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  mergeProps,
+  render,
+  type HasDisplayName,
+  type RefProp,
+} from '../../utils/render'
 import { useDescribedBy } from '../description/description'
 import { useLabelledBy } from '../label/label'
 
@@ -88,7 +94,9 @@ function TextareaFn<TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
 }
 
 export interface _internal_ComponentTextarea extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(props: TextareaProps<TTag>): JSX.Element
+  <TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
+    props: TextareaProps<TTag> & RefProp<typeof TextareaFn>
+  ): JSX.Element
 }
 
 export let Textarea = forwardRefWithAs(TextareaFn) as unknown as _internal_ComponentTextarea

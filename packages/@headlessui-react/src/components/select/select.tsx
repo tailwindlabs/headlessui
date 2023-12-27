@@ -8,7 +8,13 @@ import { useId } from '../../hooks/use-id'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
-import { forwardRefWithAs, mergeProps, render, type HasDisplayName } from '../../utils/render'
+import {
+  forwardRefWithAs,
+  mergeProps,
+  render,
+  type HasDisplayName,
+  type RefProp,
+} from '../../utils/render'
 import { useDescribedBy } from '../description/description'
 import { useLabelledBy } from '../label/label'
 
@@ -93,7 +99,9 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
 }
 
 export interface _internal_ComponentSelect extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(props: SelectProps<TTag>): JSX.Element
+  <TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
+    props: SelectProps<TTag> & RefProp<typeof SelectFn>
+  ): JSX.Element
 }
 
 export let Select = forwardRefWithAs(SelectFn) as unknown as _internal_ComponentSelect
