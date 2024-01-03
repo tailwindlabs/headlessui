@@ -23,7 +23,7 @@
     "@tailwindcss/typography": "^0.5.2",
     "autoprefixer": "^10.4.7",
     "framer-motion": "^6.0.0",
-    "next": "^12.1.4",
+    "next": "^14.0.4",
     "postcss": "^8.4.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
