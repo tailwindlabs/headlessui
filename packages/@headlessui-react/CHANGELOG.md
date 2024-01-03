@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.0.0-alpha.4] - 2024-01-03
+
 ### Fixed
 
 - Ensure `Input`, `Select` and `Textarea` expose `Ref` related types ([#2902](https://github.com/tailwindlabs/headlessui/pull/2902))
@@ -591,7 +595,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.4...HEAD
+[2.0.0-alpha.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.2...v2.0.0-alpha.3
 [2.0.0-alpha.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.1...v2.0.0-alpha.2
 [2.0.0-alpha.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.17...v2.0.0-alpha.1
