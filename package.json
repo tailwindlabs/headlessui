@@ -7,7 +7,8 @@
   "license": "MIT",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "playgrounds/*"
   ],
   "scripts": {
     "react": "yarn workspace @headlessui/react",
