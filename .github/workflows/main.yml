@@ -26,9 +26,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: npm ci
         env:
           CI: true
 
@@ -42,9 +42,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Lint
-        run: yarn lint
+        run: npm run lint
         env:
           CI: true
 
@@ -58,10 +58,10 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Test
         run: |
-          yarn test || yarn test || yarn test || exit 1
+          npm run test || npm run test || npm run test || exit 1
         env:
           CI: true
 
@@ -75,9 +75,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Build
-        run: yarn build
+        run: npm run build
         env:
           CI: true
 
@@ -91,8 +91,8 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Check Types
-        run: yarn lint-types
+        run: npm run lint-types
         env:
           CI: true

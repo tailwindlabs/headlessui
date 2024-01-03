@@ -30,6 +30,6 @@ if [ -z "$@" ]; then
 fi
 
 # Execute
-yarn prettier "${prettierArgs[@]}"
+npx prettier "${prettierArgs[@]}"
 
 popd > /dev/null
