@@ -19,14 +19,14 @@ Also make sure that you are making changes to both the `React` and `Vue` version
 
 ## Monorepo
 
-The Headless UI repo is a monorepo using `yarn` workspaces. Note that we are using `yarn` **version 1**.
+The Headless UI repo is a monorepo using `npm` workspaces.
 
 ## Installation
 
-You only require a `yarn install` in the root directory to install everything you need.
+You only require a `npm install` in the root directory to install everything you need.
 
 ```sh
-yarn install
+npm install
 ```
 
 ## Coding standards
@@ -35,28 +35,28 @@ We use `prettier` for making sure that the codebase is formatted consistently.
 To automatically fix any style violations in your code, you can run:
 
 ```sh
-yarn lint
+npm lint
 ```
 
 **Note**: Whenever you commit, the lint check will run on all staged files.
-**Note**: In CI, we will only check your code, and not write with the formatted files. If you want to just check, then you can either run `yarn lint-check` or `CI=true yarn lint`
+**Note**: In CI, we will only check your code, and not write with the formatted files. If you want to just check, then you can either run `npm run lint-check` or `CI=true npm run lint`
 
 ## Running tests
 
 You can run the test suite using the following commands:
 
 ```sh
-yarn test
+npm run test
 ```
 
 You can also run them for React or Vue individually:
 
 ```sh
-yarn react test
+npm run react test
 
 # or
 
-yarn vue test
+npm run vue test
 ```
 
 Please ensure that the tests are passing when submitting a pull request. If you're adding new features to Headless UI, please include tests.
@@ -68,11 +68,11 @@ Currently the `React` playground (located in `packages/playground-react`) is a N
 You can launch them by running:
 
 ```sh
-yarn react playground
+npm run react playground
 
 # or
 
-yarn vue playground
+npm run vue playground
 ```
 
 This will also start the necessary watchers so that you don't have to care about them.
@@ -81,41 +81,41 @@ This will also start the necessary watchers so that you don't have to care about
 
 Global scripts, and some aliases:
 
-- `yarn install`: install all dependencies for all packages
-- `yarn clean`: this will call all `yarn {package} clean` commands
-- `yarn build`: this will call all `yarn {package} build` commands
-- `yarn lint`: this will `lint` all packages
-- `yarn test`: this will `test` all packages
-  - `yarn test`: run all jest tests
-  - `yarn test --watch`: run all jest tests in interactive mode
-  - `yarn test tabs`: run all jest tests filtered by `tabs`
-  - `yarn test tabs --watch`: run all jest tests in interactive mode filtered by `tabs`
+- `npm install`: install all dependencies for all packages
+- `npm run clean`: this will call all `npm run {package} clean` commands
+- `npm run build`: this will call all `npm run {package} build` commands
+- `npm run lint`: this will `lint` all packages
+- `npm run test`: this will `test` all packages
+  - `npm run test`: run all jest tests
+  - `npm run test --watch`: run all jest tests in interactive mode
+  - `npm run test tabs`: run all jest tests filtered by `tabs`
+  - `npm run test tabs --watch`: run all jest tests in interactive mode filtered by `tabs`
 
 Scripts per package:
 
-- `yarn react`: Prefix to run anything in the `@headlessui/react` package
-  - `yarn react test`: run all jest tests
-  - `yarn react test --watch`: run all jest tests in interactive mode
-  - `yarn react test tabs`: run all jest tests filtered by `tabs`
-  - `yarn react test tabs --watch`: run all jest tests in interactive mode filtered by `tabs`
-  - `yarn react build`: build the final artefacts
-  - `yarn react lint`: validate and fix the react codebase using prettier
-  - `yarn react watch`: start a watcher for the react esm build
-    - **Note**: this will be executed for you when using the `yarn react playground`
+- `npm run react`: Prefix to run anything in the `@headlessui/react` package
+  - `npm run react test`: run all jest tests
+  - `npm run react test --watch`: run all jest tests in interactive mode
+  - `npm run react test tabs`: run all jest tests filtered by `tabs`
+  - `npm run react test tabs --watch`: run all jest tests in interactive mode filtered by `tabs`
+  - `npm run react build`: build the final artefacts
+  - `npm run react lint`: validate and fix the react codebase using prettier
+  - `npm run react watch`: start a watcher for the react esm build
+    - **Note**: this will be executed for you when using the `npm run react playground`
     - **Note**: this is not required for jest. You will probably never need this
-  - `yarn react playground`: (alias) start a development server in the `playground-react` package
-    - **Note**: this will also run `yarn react watch` for you, which means that you only need to execute `yarn react playground`
-  - `yarn react clean`: this will remove `dist` files
-- `yarn vue`: Prefix to run anything in the `@headlessui/vue` package
-  - `yarn vue test`: run all jest tests
-  - `yarn vue test --watch`: run all jest tests in interactive mode
-  - `yarn vue test tabs`: run all jest tests filtered by `tabs`
-  - `yarn vue test tabs --watch`: run all jest tests in interactive mode filtered by `tabs`
-  - `yarn vue build`: build the final artefacts
-  - `yarn vue lint`: validate and fix the vue codebase using prettier
-  - `yarn vue watch`: start a watcher for the vue esm build
-    - **Note**: this will be executed for you when using the `yarn vue playground`
+  - `npm run react playground`: (alias) start a development server in the `playground-react` package
+    - **Note**: this will also run `npm run react watch` for you, which means that you only need to execute `npm run react playground`
+  - `npm run react clean`: this will remove `dist` files
+- `npm run vue`: Prefix to run anything in the `@headlessui/vue` package
+  - `npm run vue test`: run all jest tests
+  - `npm run vue test --watch`: run all jest tests in interactive mode
+  - `npm run vue test tabs`: run all jest tests filtered by `tabs`
+  - `npm run vue test tabs --watch`: run all jest tests in interactive mode filtered by `tabs`
+  - `npm run vue build`: build the final artefacts
+  - `npm run vue lint`: validate and fix the vue codebase using prettier
+  - `npm run vue watch`: start a watcher for the vue esm build
+    - **Note**: this will be executed for you when using the `npm run vue playground`
     - **Note**: this is not required for jest. You will probably never need this
-  - `yarn vue playground`: (alias) start a development server in the `playground-vue` package
-    - **Note**: this will also run `yarn vue watch` for you, which means that you only need to execute `yarn react playground`
-  - `yarn vue clean`: this will remove `dist` files
+  - `npm run vue playground`: (alias) start a development server in the `playground-vue` package
+    - **Note**: this will also run `npm run vue watch` for you, which means that you only need to execute `npm run react playground`
+  - `npm run vue clean`: this will remove `dist` files

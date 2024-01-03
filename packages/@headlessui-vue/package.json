@@ -37,8 +37,8 @@
     "watch": "../../scripts/watch.sh --external:vue",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
-    "lint-types": "yarn run attw -P",
-    "playground": "yarn workspace playground-vue dev",
+    "lint-types": "npm run attw -P --workspaces --if-present",
+    "playground": "npm run dev --workspace=playground-vue",
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {

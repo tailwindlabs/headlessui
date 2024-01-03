@@ -37,8 +37,8 @@
     "watch": "../../scripts/watch.sh --external:react --external:react-dom",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",
-    "lint-types": "yarn run attw -P",
-    "playground": "yarn workspace playground-react dev",
+    "lint-types": "npm run attw -P --workspaces --if-present",
+    "playground": "npm run dev --workspace=playground-react",
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {

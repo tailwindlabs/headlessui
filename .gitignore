@@ -3,24 +3,29 @@
 # dependencies
 /node_modules
 /packages/**/node_modules
+/playgrounds/**/node_modules
 
 # testing
 /coverage
 /packages/**/coverage
+/playgrounds/**/coverage
 
 # logs
 *.log
 /packages/**/*.log
+/playgrounds/**/*.log
 
 # next.js
 /.next/
-/packages/**/.next/
+/playgrounds/**/.next/
 /out/
 /packages/**/out/
+/playgrounds/**/out/
 
 # production
 /dist
 /packages/**/dist
+/playgrounds/**/dist
 
 # misc
 .DS_Store

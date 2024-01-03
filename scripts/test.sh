@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-node="yarn node"
 jestArgs=()
 
 # Add default arguments
@@ -17,5 +16,5 @@ fi
 jestArgs+=($@)
 
 # Execute
-$node "$(yarn bin jest)" "${jestArgs[@]}"
+npx jest "${jestArgs[@]}"
 
