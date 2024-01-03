@@ -1,18 +1,8 @@
 import ErrorPage from 'next/error'
 import Head from 'next/head'
 import Link from 'next/link'
-import React from 'react'
 
 import { ExamplesType, resolveAllExamples } from '../utils/resolve-all-examples'
-
-function NextLink(props: React.ComponentProps<'a'>) {
-  let { href, children, ...rest } = props
-  return (
-    <Link href={href}>
-      <a {...rest}>{children}</a>
-    </Link>
-  )
-}
 
 export async function getStaticProps() {
   return {
@@ -51,9 +41,9 @@ export function Examples(props: { examples: ExamplesType[] }) {
           {example.children ? (
             <h3 className="text-xl capitalize">{example.name}</h3>
           ) : (
-            <NextLink href={example.path} className="capitalize">
+            <Link href={example.path} className="capitalize">
               {example.name}
-            </NextLink>
+            </Link>
           )}
           {example.children && <Examples examples={example.children} />}
         </li>

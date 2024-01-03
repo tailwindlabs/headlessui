@@ -1,7 +1,7 @@
 import { Menu, MenuItemProps } from '@headlessui/react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Link from 'next/link'
-import React, { forwardRef } from 'react'
+import { forwardRef } from 'react'
 
 import { Button } from '../../components/button'
 import { classNames } from '../../utils/class-names'
@@ -45,7 +45,7 @@ export default function Home() {
 
                     <div className="py-1">
                       <Item href="#account-settings">Account settings</Item>
-                      <Item as={NextLink} href="#support">
+                      <Item as={Link} href="#support">
                         Support
                       </Item>
                       <Item href="#new-feature" disabled>
@@ -67,17 +67,6 @@ export default function Home() {
     </div>
   )
 }
-
-let NextLink = forwardRef<HTMLAnchorElement>((props: React.ComponentProps<'a'>, ref) => {
-  let { href, children, ...rest } = props
-  return (
-    <Link href={href}>
-      <a ref={ref} {...rest}>
-        {children}
-      </a>
-    </Link>
-  )
-})
 
 let SignOutButton = forwardRef<HTMLButtonElement>((props, ref) => {
   return (
