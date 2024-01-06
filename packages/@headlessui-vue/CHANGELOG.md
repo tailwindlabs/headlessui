@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix outside click detection when component is mounted in the Shadow DOM ([6846231](https://github.com/tailwindlabs/headlessui/commit/684623131b99d9e75dfc1c1f6d27244c334a95d9))
 - Fix CJS types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
 - Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
+- Fix incorrect `activeIndex` when handling `Focus.Previous` ([bc4a744](https://github.com/tailwindlabs/headlessui/commit/bc4a74494774ed98b4534079cc80bb4e61236b36))
+- Improve iOS scroll locking ([799e98a](https://github.com/tailwindlabs/headlessui/commit/799e98a56eee7b7cc1ce6b784910b5b5bb7f3603))
 
 ### Added
 
