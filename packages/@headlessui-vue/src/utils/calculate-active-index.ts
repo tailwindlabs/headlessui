@@ -48,6 +48,9 @@ export function calculateActiveIndex<TItem>(
     }
 
     case Focus.Previous: {
+      // If nothing is active, focus the last relevant item
+      if (activeIndex === -1) activeIndex = items.length
+
       for (let i = activeIndex - 1; i >= 0; --i) {
         if (!resolvers.resolveDisabled(items[i], i, items)) {
           return i
