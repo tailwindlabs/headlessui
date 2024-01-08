@@ -605,11 +605,6 @@ export type ComboboxProps<
   __demoMode?: boolean
   form?: string
   name?: string
-  immediate?: boolean
-  virtual?: {
-    options: TValue[]
-    disabled?: (value: TValue) => boolean
-  } | null
 }
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
@@ -644,10 +639,22 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     __demoMode = false,
     nullable = false,
     multiple = false,
-    immediate = false,
-    virtual = null,
+    // @ts-expect-error
+    immediate: _immediate = false,
+    // @ts-expect-error
+    virtual: _virtual = null,
     ...theirProps
   } = props
+
+  // Disabling immediate mode feature for patch release v1.7.x
+  let immediate = false
+
+  // Disabling virtual feature for patch release v1.7.x
+  let virtual = null as {
+    options: TValue[]
+    disabled?: (value: TValue) => boolean
+  } | null
+
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
     controlledValue,
     controlledOnChange,

@@ -365,7 +365,10 @@ export let Combobox = defineComponent({
       })
     }
 
-    let virtualOptions = computed(() => props.virtual?.options)
+    let virtualOptions = computed(() => {
+      return undefined as unknown[] | undefined
+      // return props.virtual?.options
+    })
     watch([virtualOptions], ([newOptions], [oldOptions]) => {
       if (!api.virtual.value) return
       if (!newOptions) return
@@ -410,14 +413,18 @@ export let Combobox = defineComponent({
       },
       defaultValue: computed(() => props.defaultValue),
       nullable,
-      immediate: computed(() => props.immediate),
+      immediate: computed(() => {
+        return false
+        // return props.immediate
+      }),
       virtual: computed(() => {
-        return props.virtual
-          ? {
-              options: props.virtual.options,
-              disabled: props.virtual.disabled ?? (() => false),
-            }
-          : null
+        return null
+        // return props.virtual
+        //   ? {
+        //       options: props.virtual.options,
+        //       disabled: props.virtual.disabled ?? (() => false),
+        //     }
+        //   : null
       }),
       inputRef,
       labelRef,
