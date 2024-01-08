@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.17] - 2024-01-08
+
 ### Fixed
 
 - Don't call `<Dialog>`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
@@ -499,7 +503,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.17...HEAD
+[1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...@headlessui/vue@v1.7.17
 [1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...v1.7.16
 [1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.14...@headlessui/vue@v1.7.15
 [1.7.14]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.13...@headlessui/vue@v1.7.14
