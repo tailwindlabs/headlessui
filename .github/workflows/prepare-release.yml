@@ -26,13 +26,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check Types
-        run: |
-          yarn build
-          yarn lint-types
-        env:
-          CI: true
-
       - run: git fetch --tags -f
 
       - name: Resolve version

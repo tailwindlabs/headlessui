@@ -23,11 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
 - Improve iOS locking ([7721aca](https://github.com/tailwindlabs/headlessui/commit/7721acaecea2008c2d7e8ab29cc8d45b70bb021e))
 
-### Added
-
-- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
-- Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
-
 ## [1.7.17] - 2023-08-17
 
 ### Fixed
