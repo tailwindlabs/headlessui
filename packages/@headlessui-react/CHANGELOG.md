@@ -53,6 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bumped to React and React DOM 18
 - Dialog is focused by default instead of the first focusable element (unless an element exists with a `data-autofocus` in the dialog)
 
+## [1.7.18] - 2024-01-08
+
 ### Fixed
 
 - Don't call `<Dialog>`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
@@ -67,7 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix outside click detection when component is mounted in the Shadow DOM ([#2866](https://github.com/tailwindlabs/headlessui/pull/2866))
 - Fix CJS types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
 - Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
-- Fix iOS scroll lock glitches
+- Improve iOS locking ([7721aca](https://github.com/tailwindlabs/headlessui/commit/7721acaecea2008c2d7e8ab29cc8d45b70bb021e))
 
 ## [1.7.17] - 2023-08-17
 
@@ -599,7 +601,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2.0.0-alpha.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.2...v2.0.0-alpha.3
 [2.0.0-alpha.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.1...v2.0.0-alpha.2
-[2.0.0-alpha.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.17...v2.0.0-alpha.1
+[2.0.0-alpha.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.18...v2.0.0-alpha.1
+[1.7.18]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.17...v1.7.18
 [1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.16...v1.7.17
 [1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.15...@headlessui/react@v1.7.16
 [1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.14...@headlessui/react@v1.7.15

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
+- Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
+
+## [1.7.17] - 2024-01-08
+
 ### Fixed
 
 - Don't call `<Dialog>`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
@@ -21,13 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix outside click detection when component is mounted in the Shadow DOM ([6846231](https://github.com/tailwindlabs/headlessui/commit/684623131b99d9e75dfc1c1f6d27244c334a95d9))
 - Fix CJS types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
 - Fix error when transition classes contain new lines ([#2871](https://github.com/tailwindlabs/headlessui/pull/2871))
-- Fix incorrect `activeIndex` when handling `Focus.Previous` ([bc4a744](https://github.com/tailwindlabs/headlessui/commit/bc4a74494774ed98b4534079cc80bb4e61236b36))
-- Improve iOS scroll locking ([799e98a](https://github.com/tailwindlabs/headlessui/commit/799e98a56eee7b7cc1ce6b784910b5b5bb7f3603))
-
-### Added
-
-- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
-- Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
 
 ## [1.7.16] - 2023-08-17
 
@@ -506,7 +506,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.17...HEAD
+[1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...v1.7.17
 [1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...v1.7.16
 [1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.14...@headlessui/vue@v1.7.15
 [1.7.14]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.13...@headlessui/vue@v1.7.14
