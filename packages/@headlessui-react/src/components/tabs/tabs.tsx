@@ -374,6 +374,7 @@ function ListFn<TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
 let DEFAULT_TAB_TAG = 'button' as const
 interface TabRenderPropArg {
   selected: boolean
+  disabled: boolean
 }
 type TabPropsWeControl = 'aria-controls' | 'aria-selected' | 'role' | 'tabIndex'
 
@@ -382,7 +383,7 @@ export type TabProps<TTag extends ElementType> = Props<
   TabRenderPropArg,
   TabPropsWeControl
 > & {
-  //
+  disabled?: boolean
 }
 
 function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
@@ -484,7 +485,10 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     event.preventDefault()
   })
 
-  let slot = useMemo(() => ({ selected }), [selected])
+  let slot = useMemo(
+    () => ({ selected, disabled: props.disabled ?? false }),
+    [selected, props.disabled]
+  )
 
   let ourProps = {
     ref: tabRef,

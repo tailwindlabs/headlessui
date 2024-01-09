@@ -425,7 +425,7 @@ export let Tab = defineComponent({
     )
 
     return () => {
-      let slot = { selected: selected.value }
+      let slot = { selected: selected.value, disabled: props.disabled ?? false }
       let { ...theirProps } = props
       let ourProps = {
         ref: internalTabRef,
