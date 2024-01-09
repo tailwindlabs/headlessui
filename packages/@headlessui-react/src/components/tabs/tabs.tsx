@@ -388,6 +388,7 @@ type TabRenderPropArg = {
   active: boolean
   autofocus: boolean
   selected: boolean
+  disabled: boolean
 }
 type TabPropsWeControl = 'aria-controls' | 'aria-selected' | 'role' | 'tabIndex'
 
@@ -512,8 +513,9 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
         active,
         focus,
         autofocus: props.autoFocus ?? false,
+        disabled: props.disabled ?? false,
       }) satisfies TabRenderPropArg,
-    [selected, hover, focus, active, props.autoFocus]
+    [selected, hover, focus, active, props.autoFocus, props.disabled]
   )
 
   let ourProps = mergeProps(

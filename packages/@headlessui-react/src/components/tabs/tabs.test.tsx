@@ -544,6 +544,7 @@ describe('Rendering', () => {
             active: false,
             focus: false,
             autofocus: false,
+            disabled: false,
           })
         )
         expect(document.querySelector('[data-tab="1"]')).toHaveTextContent(
@@ -553,6 +554,7 @@ describe('Rendering', () => {
             active: false,
             focus: false,
             autofocus: false,
+            disabled: false,
           })
         )
         expect(document.querySelector('[data-tab="2"]')).toHaveTextContent(
@@ -562,6 +564,7 @@ describe('Rendering', () => {
             active: false,
             focus: false,
             autofocus: false,
+            disabled: false,
           })
         )
 
@@ -574,6 +577,7 @@ describe('Rendering', () => {
             active: false,
             focus: false,
             autofocus: false,
+            disabled: false,
           })
         )
         expect(document.querySelector('[data-tab="1"]')).toHaveTextContent(
@@ -583,6 +587,7 @@ describe('Rendering', () => {
             active: false,
             focus: false,
             autofocus: false,
+            disabled: false,
           })
         )
         expect(document.querySelector('[data-tab="2"]')).toHaveTextContent(
@@ -592,6 +597,7 @@ describe('Rendering', () => {
             active: false,
             focus: false,
             autofocus: false,
+            disabled: false,
           })
         )
       })
