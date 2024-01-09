@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Expose `disabled` state on `<Tab />` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
+- Prevent default behaviour when clicking outside of a `Dialog.Panel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
 
 ## [2.0.0-alpha.4] - 2024-01-03
 
