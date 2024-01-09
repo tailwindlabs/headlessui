@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Make sure panels re-register when IDs are calculated in React < 18 ([#2883](https://github.com/tailwindlabs/headlessui/pull/2883))
 - Expose `disabled` state on `<Tab />` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
+- Prevent default behaviour when clicking outside of a `Dialog.Panel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
 
 ## [1.7.18] - 2024-01-08
 

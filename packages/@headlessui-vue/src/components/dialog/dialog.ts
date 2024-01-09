@@ -238,7 +238,8 @@ export let Dialog = defineComponent({
     })
     useOutsideClick(
       resolveRootContainers,
-      (_event, target) => {
+      (event, target) => {
+        event.preventDefault()
         api.close()
         nextTick(() => target?.focus())
       },
