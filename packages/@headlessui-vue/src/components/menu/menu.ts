@@ -566,16 +566,14 @@ export let MenuItem = defineComponent({
     }
 
     return () => {
-      let { disabled } = props
+      let { disabled, ...theirProps } = props
       let slot = { active: active.value, disabled, close: api.closeMenu }
-      let { ...theirProps } = props
       let ourProps = {
         id,
         ref: internalItemRef,
         role: 'menuitem',
         tabIndex: disabled === true ? undefined : -1,
         'aria-disabled': disabled === true ? true : undefined,
-        disabled: undefined, // Never forward the `disabled` prop
         onClick: handleClick,
         onFocus: handleFocus,
         onPointerenter: handleEnter,

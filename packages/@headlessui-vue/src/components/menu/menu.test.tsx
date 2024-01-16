@@ -686,6 +686,53 @@ describe('Rendering', () => {
       })
     })
 
+    it('should not override an explicit disabled prop on MenuItems child', async () => {
+      renderTemplate(jsx`
+        <Menu>
+          <MenuButton>Trigger</MenuButton>
+          <MenuItems>
+            <MenuItem v-slot="{ active, disabled }">
+              <button :data-active="active" :disabled="disabled">Item A</button>
+            </MenuItem>
+            <MenuItem v-slot="{ active, disabled }">
+              <button :data-active="active" :disabled="disabled">Item B</button>
+            </MenuItem>
+            <MenuItem disabled v-slot="{ active, disabled }">
+              <button :data-active="active" :disabled="disabled">Item C</button>
+            </MenuItem>
+          </MenuItems>
+        </Menu>
+      `)
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      getMenuButton()?.focus()
+
+      await press(Keys.Enter)
+
+      assertMenuButton({
+        state: MenuState.Visible,
+        attributes: { id: 'headlessui-menu-button-1' },
+      })
+      assertMenu({ state: MenuState.Visible })
+      assertMenuItem(getMenuItems()[0], {
+        tag: 'button',
+        attributes: { 'data-active': 'true' },
+      })
+      assertMenuItem(getMenuItems()[1], {
+        tag: 'button',
+        attributes: { 'data-active': 'false' },
+      })
+      assertMenuItem(getMenuItems()[2], {
+        tag: 'button',
+        attributes: { 'data-active': 'false', disabled: '' },
+      })
+    })
+
     it('should yell when we render a MenuItem using a template `as` prop that contains multiple children', async () => {
       expect.hasAssertions()
 
@@ -712,7 +759,6 @@ describe('Rendering', () => {
                 'The current component <MenuItem /> is rendering a "template".',
                 'However we need to passthrough the following props:',
                 '  - aria-disabled',
-                '  - disabled',
                 '  - id',
                 '  - onClick',
                 '  - onFocus',
