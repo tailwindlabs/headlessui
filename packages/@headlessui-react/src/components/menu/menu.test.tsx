@@ -448,6 +448,47 @@ describe('Rendering', () => {
         assertMenu({ state: MenuState.InvisibleUnmounted })
       })
     )
+
+    it('should not override an explicit disabled prop on MenuItems child', async () => {
+      render(
+        <Menu>
+          <Menu.Button>Trigger</Menu.Button>
+          <Menu.Items>
+            <Menu.Item>{({ disabled }) => <button disabled={disabled}>Item A</button>}</Menu.Item>
+            <Menu.Item>{({ disabled }) => <button disabled={disabled}>Item B</button>}</Menu.Item>
+            <Menu.Item disabled>
+              {({ disabled }) => <button disabled={disabled}>Item C</button>}
+            </Menu.Item>
+          </Menu.Items>
+        </Menu>
+      )
+
+      assertMenuButton({
+        state: MenuState.InvisibleUnmounted,
+      })
+      assertMenu({ state: MenuState.InvisibleUnmounted })
+
+      getMenuButton()?.focus()
+
+      await press(Keys.Enter)
+
+      assertMenuButton({
+        state: MenuState.Visible,
+      })
+      assertMenu({ state: MenuState.Visible })
+      assertMenuItem(getMenuItems()[0], {
+        tag: 'button',
+        attributes: { 'data-focus': '' },
+      })
+      assertMenuItem(getMenuItems()[1], {
+        tag: 'button',
+        attributes: {},
+      })
+      assertMenuItem(getMenuItems()[2], {
+        tag: 'button',
+        attributes: { disabled: '' },
+      })
+    })
   })
 
   it('should guarantee the order of DOM nodes when performing actions', async () => {
