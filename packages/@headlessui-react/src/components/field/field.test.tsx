@@ -14,6 +14,25 @@ describe('Rendering', () => {
     expect(container.firstChild).not.toHaveAttribute('aria-disabled', 'true')
   })
 
+  it('should render a `Field` component with a render prop', async () => {
+    let { container } = render(
+      <Field>
+        {(slot) => {
+          return (
+            <div data-slot={JSON.stringify(slot)}>
+              <input />
+            </div>
+          )
+        }}
+      </Field>
+    )
+
+    expect(container.querySelector('[data-slot]')?.getAttribute('data-slot')).toEqual(
+      JSON.stringify({ disabled: false })
+    )
+    expect(container.firstChild).not.toHaveAttribute('aria-disabled', 'true')
+  })
+
   it('should add `aria-disabled` when a `Field` is disabled', async () => {
     let { container } = render(
       <Field disabled>

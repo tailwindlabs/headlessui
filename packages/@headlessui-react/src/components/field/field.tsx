@@ -53,7 +53,13 @@ function FieldFn<TTag extends ElementType = typeof DEFAULT_FIELD_TAG>(
               ourProps,
               theirProps: {
                 ...theirProps,
-                children: <FormFieldsProvider>{theirProps.children}</FormFieldsProvider>,
+                children: (
+                  <FormFieldsProvider>
+                    {typeof theirProps.children === 'function'
+                      ? theirProps.children(slot)
+                      : theirProps.children}
+                  </FormFieldsProvider>
+                ),
               },
               slot,
               defaultTag: DEFAULT_FIELD_TAG,
