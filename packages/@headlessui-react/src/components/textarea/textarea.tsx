@@ -56,7 +56,7 @@ function TextareaFn<TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isFocused: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
 
   let ourProps = mergeProps(
