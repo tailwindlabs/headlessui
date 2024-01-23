@@ -1317,10 +1317,7 @@ function InputFn<
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({
-    isTextInput: true,
-    autoFocus: props.autoFocus ?? false,
-  })
+  let { isFocused: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: data.disabled ?? false })
 
   let slot = useMemo(
@@ -1479,10 +1476,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let labelledBy = useLabelledBy([id])
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({
-    isTextInput: true,
-    autoFocus: props.autoFocus ?? false,
-  })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: data.disabled ?? false })
   let { pressed: active, pressProps } = useActivePress({ disabled: data.disabled ?? false })
 
