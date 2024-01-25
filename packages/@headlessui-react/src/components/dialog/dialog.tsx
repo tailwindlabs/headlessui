@@ -83,13 +83,13 @@ let reducers: {
 
 let DialogContext = createContext<
   | [
-      {
-        dialogState: DialogStates
-        close(): void
-        setTitleId(id: string | null): void
-      },
-      StateDefinition,
-    ]
+    {
+      dialogState: DialogStates
+      close(event?: DialogEventType): void
+      setTitleId(id: string | null): void
+    },
+    StateDefinition,
+  ]
   | null
 >(null)
 DialogContext.displayName = 'DialogContext'
@@ -128,13 +128,15 @@ type DialogPropsWeControl = 'aria-describedby' | 'aria-labelledby' | 'aria-modal
 
 let DialogRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
+export type DialogEventType = ReactMouseEvent | PointerEvent | FocusEvent | TouchEvent | KeyboardEvent
+
 export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = Props<
   TTag,
   DialogRenderPropArg,
   DialogPropsWeControl,
   PropsForFeatures<typeof DialogRenderFeatures> & {
     open?: boolean
-    onClose(value: boolean): void
+    onClose(value: boolean, event?: DialogEventType): void
     initialFocus?: MutableRefObject<HTMLElement | null>
     role?: 'dialog' | 'alertdialog'
     autoFocus?: boolean
@@ -228,7 +230,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     panelRef: createRef(),
   } as StateDefinition)
 
-  let close = useEvent(() => onClose(false))
+  let close = useEvent((event?: DialogEventType) => onClose(false, event))
 
   let setTitleId = useEvent((id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }))
 
@@ -309,7 +311,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     resolveRootContainers,
     (event) => {
       event.preventDefault()
-      close()
+      close(event)
     },
     outsideClickEnabled
   )
@@ -326,7 +328,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (event.key !== Keys.Escape) return
     event.preventDefault()
     event.stopPropagation()
-    close()
+    close(event)
   })
 
   // Scroll lock
@@ -383,9 +385,9 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   let focusTrapFeatures = enabled
     ? match(position, {
-        parent: FocusTrapFeatures.RestoreFocus,
-        leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
-      })
+      parent: FocusTrapFeatures.RestoreFocus,
+      leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
+    })
     : FocusTrapFeatures.None
 
   // Enable AutoFocus feature
@@ -477,7 +479,7 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     event.preventDefault()
     event.stopPropagation()
-    close()
+    close(event)
   })
 
   let slot = useMemo(
@@ -680,7 +682,7 @@ export interface _internal_ComponentDialogTitle extends HasDisplayName {
   ): JSX.Element
 }
 
-export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription {}
+export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription { }
 
 let DialogRoot = forwardRefWithAs(DialogFn) as unknown as _internal_ComponentDialog
 export let DialogBackdrop = forwardRefWithAs(
