@@ -35,6 +35,7 @@ function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDE
       (features & HiddenFeatures.Focusable) === HiddenFeatures.Focusable
         ? true
         : theirProps['aria-hidden'] ?? undefined,
+    hidden: (features & HiddenFeatures.Hidden) === HiddenFeatures.Hidden ? true : undefined,
     style: {
       position: 'fixed',
       top: 1,
