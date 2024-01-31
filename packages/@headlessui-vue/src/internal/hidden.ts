@@ -27,6 +27,7 @@ export let Hidden = defineComponent({
             ? true
             : // @ts-ignore
               theirProps['aria-hidden'] ?? undefined,
+        hidden: (features & Features.Hidden) === Features.Hidden ? true : undefined,
         style: {
           position: 'fixed',
           top: 1,
