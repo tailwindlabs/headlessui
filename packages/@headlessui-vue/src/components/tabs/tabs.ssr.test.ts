@@ -3,8 +3,6 @@ import { html } from '../../test-utils/html'
 import { renderHydrate, renderSSR } from '../../test-utils/ssr'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs'
 
-jest.mock('../../hooks/use-id')
-
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)
@@ -12,8 +10,25 @@ beforeAll(() => {
 
 afterAll(() => jest.restoreAllMocks())
 
+let uniqueId = 0
+
+beforeEach(() => {
+  uniqueId = 0
+})
+
 let Example = defineComponent({
-  components: { TabGroup, TabList, Tab, TabPanels, TabPanel },
+  components: {
+    TabGroup,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel,
+  },
+
+  provide: {
+    'headlessui.useid': () => `custom-${++uniqueId}`,
+  },
+
   template: html`
     <TabGroup>
       <TabList>
@@ -39,6 +54,18 @@ describe('Rendering', () => {
       expect(contents).toContain(`Content 1`)
       expect(contents).not.toContain(`Content 2`)
       expect(contents).not.toContain(`Content 3`)
+
+      // Make sure our custom IDs are being used
+      let tabs = Array.from(document.body.querySelectorAll('[role=tab]'))
+      let panels = Array.from(document.body.querySelectorAll('[role=tabpanel]'))
+
+      expect(tabs[0]).toHaveAttribute('id', 'headlessui-tabs-tab-custom-1')
+      expect(tabs[1]).toHaveAttribute('id', 'headlessui-tabs-tab-custom-2')
+      expect(tabs[2]).toHaveAttribute('id', 'headlessui-tabs-tab-custom-3')
+
+      expect(panels[0]).toHaveAttribute('id', 'headlessui-tabs-panel-custom-4')
+      expect(panels[1]).toHaveAttribute('id', 'headlessui-tabs-panel-custom-5')
+      expect(panels[2]).toHaveAttribute('id', 'headlessui-tabs-panel-custom-6')
     })
 
     it('should be possible to server side render the defaultIndex Tab and Panel', async () => {
@@ -57,6 +84,18 @@ describe('Rendering', () => {
       expect(contents).toContain(`Content 1`)
       expect(contents).not.toContain(`Content 2`)
       expect(contents).not.toContain(`Content 3`)
+
+      // Make sure our custom IDs are being used even after hydration
+      let tabs = Array.from(document.body.querySelectorAll('[role=tab]'))
+      let panels = Array.from(document.body.querySelectorAll('[role=tabpanel]'))
+
+      expect(tabs[0]).toHaveAttribute('id', 'headlessui-tabs-tab-custom-1')
+      expect(tabs[1]).toHaveAttribute('id', 'headlessui-tabs-tab-custom-2')
+      expect(tabs[2]).toHaveAttribute('id', 'headlessui-tabs-tab-custom-3')
+
+      expect(panels[0]).toHaveAttribute('id', 'headlessui-tabs-panel-custom-4')
+      expect(panels[1]).toHaveAttribute('id', 'headlessui-tabs-panel-custom-5')
+      expect(panels[2]).toHaveAttribute('id', 'headlessui-tabs-panel-custom-6')
     })
 
     it('should be possible to server side render the defaultIndex Tab and Panel', async () => {
