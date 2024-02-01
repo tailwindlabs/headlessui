@@ -284,17 +284,18 @@ export let PopoverButton = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
-    id: { type: String, default: () => `headlessui-popover-button-${useId()}` },
+    id: { type: String, default: null },
   },
   inheritAttrs: false,
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-popover-button-${useId()}`
     let api = usePopoverContext('PopoverButton')
     let ownerDocument = computed(() => getOwnerDocument(api.button))
 
     expose({ el: api.button, $el: api.button })
 
     onMounted(() => {
-      api.buttonId.value = props.id
+      api.buttonId.value = id
     })
     onUnmounted(() => {
       api.buttonId.value = null
@@ -431,7 +432,7 @@ export let PopoverButton = defineComponent({
     return () => {
       let visible = api.popoverState.value === PopoverStates.Open
       let slot = { open: visible }
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = isWithinPanel.value
         ? {
             ref: elementRef,
@@ -534,10 +535,11 @@ export let PopoverPanel = defineComponent({
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
     focus: { type: Boolean, default: false },
-    id: { type: String, default: () => `headlessui-popover-panel-${useId()}` },
+    id: { type: String, default: null },
   },
   inheritAttrs: false,
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-popover-panel-${useId()}`
     let { focus } = props
     let api = usePopoverContext('PopoverPanel')
     let ownerDocument = computed(() => getOwnerDocument(api.panel))
@@ -548,7 +550,7 @@ export let PopoverPanel = defineComponent({
     expose({ el: api.panel, $el: api.panel })
 
     onMounted(() => {
-      api.panelId.value = props.id
+      api.panelId.value = id
     })
     onUnmounted(() => {
       api.panelId.value = null
@@ -694,7 +696,7 @@ export let PopoverPanel = defineComponent({
         close: api.close,
       }
 
-      let { id, focus: _focus, ...theirProps } = props
+      let { focus: _focus, ...theirProps } = props
       let ourProps = {
         ref: api.panel,
         id,

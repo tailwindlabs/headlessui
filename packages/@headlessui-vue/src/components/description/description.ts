@@ -66,16 +66,18 @@ export let Description = defineComponent({
   name: 'Description',
   props: {
     as: { type: [Object, String], default: 'p' },
-    id: { type: String, default: () => `headlessui-description-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(myProps, { attrs, slots }) {
+    let id = myProps.id ?? `headlessui-description-${useId()}`
     let context = useDescriptionContext()
 
-    onMounted(() => onUnmounted(context.register(myProps.id)))
+    onMounted(() => onUnmounted(context.register(id)))
 
     return () => {
       let { name = 'Description', slot = ref({}), props = {} } = context
-      let { id, ...theirProps } = myProps
+      let { id: _id, ...theirProps } = myProps
+
       let ourProps = {
         ...Object.entries(props).reduce(
           (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),

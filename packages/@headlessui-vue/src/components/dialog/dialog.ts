@@ -73,11 +73,12 @@ export let Dialog = defineComponent({
     unmount: { type: Boolean, default: true },
     open: { type: [Boolean, String], default: Missing },
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
-    id: { type: String, default: () => `headlessui-dialog-${useId()}` },
+    id: { type: String, default: null },
     role: { type: String as PropType<'dialog' | 'alertdialog'>, default: 'dialog' },
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-dialog-${useId()}`
     let ready = ref(false)
     onMounted(() => {
       ready.value = true
@@ -292,7 +293,7 @@ export let Dialog = defineComponent({
     })
 
     return () => {
-      let { id, open: _, initialFocus, ...theirProps } = props
+      let { open: _, initialFocus, ...theirProps } = props
       let ourProps = {
         // Manually passthrough the attributes, because Vue can't automatically pass
         // it to the underlying div because of all the wrapper components below.
@@ -352,9 +353,10 @@ export let DialogOverlay = defineComponent({
   name: 'DialogOverlay',
   props: {
     as: { type: [Object, String], default: 'div' },
-    id: { type: String, default: () => `headlessui-dialog-overlay-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots }) {
+    let id = props.id ?? `headlessui-dialog-overlay-${useId()}`
     let api = useDialogContext('DialogOverlay')
 
     function handleClick(event: MouseEvent) {
@@ -365,7 +367,7 @@ export let DialogOverlay = defineComponent({
     }
 
     return () => {
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         id,
         'aria-hidden': true,
@@ -390,10 +392,11 @@ export let DialogBackdrop = defineComponent({
   name: 'DialogBackdrop',
   props: {
     as: { type: [Object, String], default: 'div' },
-    id: { type: String, default: () => `headlessui-dialog-backdrop-${useId()}` },
+    id: { type: String, default: null },
   },
   inheritAttrs: false,
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-dialog-backdrop-${useId()}`
     let api = useDialogContext('DialogBackdrop')
     let internalBackdropRef = ref(null)
 
@@ -408,7 +411,7 @@ export let DialogBackdrop = defineComponent({
     })
 
     return () => {
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         id,
         ref: internalBackdropRef,
@@ -437,9 +440,10 @@ export let DialogPanel = defineComponent({
   name: 'DialogPanel',
   props: {
     as: { type: [Object, String], default: 'div' },
-    id: { type: String, default: () => `headlessui-dialog-panel-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-dialog-panel-${useId()}`
     let api = useDialogContext('DialogPanel')
 
     expose({ el: api.panelRef, $el: api.panelRef })
@@ -449,7 +453,7 @@ export let DialogPanel = defineComponent({
     }
 
     return () => {
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         id,
         ref: api.panelRef,
@@ -474,18 +478,19 @@ export let DialogTitle = defineComponent({
   name: 'DialogTitle',
   props: {
     as: { type: [Object, String], default: 'h2' },
-    id: { type: String, default: () => `headlessui-dialog-title-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots }) {
+    let id = props.id ?? `headlessui-dialog-title-${useId()}`
     let api = useDialogContext('DialogTitle')
 
     onMounted(() => {
-      api.setTitleId(props.id)
+      api.setTitleId(id)
       onUnmounted(() => api.setTitleId(null))
     })
 
     return () => {
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = { id }
 
       return render({
