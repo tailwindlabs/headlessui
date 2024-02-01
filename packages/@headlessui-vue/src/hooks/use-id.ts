@@ -1,8 +1,12 @@
+import { inject } from 'vue'
+
 let id = 0
 function generateId() {
-  return ++id
+  return `${++id}`
 }
 
 export function useId() {
-  return generateId()
+  let makeId = inject<() => string>('headlessui.useid', generateId)
+
+  return makeId()
 }
