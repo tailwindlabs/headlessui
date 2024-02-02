@@ -1,4 +1,5 @@
 import { defineComponent } from 'vue'
+import { provideUseId } from '../../hooks/use-id'
 import { html } from '../../test-utils/html'
 import { renderHydrate, renderSSR } from '../../test-utils/ssr'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from './tabs'
@@ -25,9 +26,7 @@ let Example = defineComponent({
     TabPanel,
   },
 
-  provide: {
-    'headlessui.useid': () => `custom-${++uniqueId}`,
-  },
+  setup: () => provideUseId(() => `custom-${++uniqueId}`),
 
   template: html`
     <TabGroup>
