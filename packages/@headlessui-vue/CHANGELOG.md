@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.18] - 2024-02-02
+
 ### Added
 
 - Allow users customize ID generation ([#2959](https://github.com/tailwindlabs/headlessui/pull/2959))
@@ -505,7 +509,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.17...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.18...HEAD
+[1.7.18]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.17...@headlessui/vue@v1.7.18
 [1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...@headlessui/vue@v1.7.17
 [1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...v1.7.16
 [1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.14...@headlessui/vue@v1.7.15
