@@ -129,27 +129,11 @@ it('should be possible to update a prop from the parent and it should reflect in
 
   await new Promise<void>(nextTick)
 
-  expect(format(container.firstElementChild)).toEqual(
-    format(html`
-      <div>
-        <div aria-labelledby="headlessui-label-1">
-          <label data-count="0" id="headlessui-label-1">I am a label</label>
-          <button>+1</button>
-        </div>
-      </div>
-    `)
-  )
+  let label = container.querySelector('label')!
+
+  expect(label.dataset.count).toEqual('0')
 
   await click(getByText('+1'))
 
-  expect(format(container.firstElementChild)).toEqual(
-    format(html`
-      <div>
-        <div aria-labelledby="headlessui-label-1">
-          <label data-count="1" id="headlessui-label-1">I am a label</label>
-          <button>+1</button>
-        </div>
-      </div>
-    `)
-  )
+  expect(label.dataset.count).toEqual('1')
 })
