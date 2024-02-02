@@ -75,7 +75,7 @@ export let Label = defineComponent({
 
     return () => {
       let { name = 'Label', slot = {}, props = {} } = context
-      let { id: _id, passive, ...theirProps } = myProps
+      let { passive, ...theirProps } = myProps
       let ourProps = {
         ...Object.entries(props).reduce(
           (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),

@@ -76,7 +76,7 @@ export let Description = defineComponent({
 
     return () => {
       let { name = 'Description', slot = ref({}), props = {} } = context
-      let { id: _id, ...theirProps } = myProps
+      let { ...theirProps } = myProps
 
       let ourProps = {
         ...Object.entries(props).reduce(
