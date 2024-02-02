@@ -21,6 +21,7 @@ import { FormFields } from '../../internal/form-fields'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
+import { attemptSubmit } from '../../utils/form'
 import {
   forwardRefWithAs,
   mergeProps,
@@ -110,19 +111,21 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    event.preventDefault()
     toggle()
   })
 
-  let handleKeyDown = useEvent((event: ReactKeyboardEvent) => {
-    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-
-    switch (event.key) {
-      case Keys.Space:
-        event.preventDefault()
-        toggle()
-        break
+  let handleKeyUp = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === Keys.Space) {
+      event.preventDefault()
+      toggle()
+    } else if (event.key === Keys.Enter) {
+      attemptSubmit(event.currentTarget)
     }
   })
+
+  // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
+  let handleKeyPress = useEvent((event: ReactKeyboardEvent<HTMLElement>) => event.preventDefault())
 
   let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
@@ -139,7 +142,8 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
       'aria-disabled': disabled ? true : undefined,
       indeterminate: indeterminate ? 'true' : undefined,
       tabIndex: 0,
-      onKeyDown: disabled ? undefined : handleKeyDown,
+      onKeyUp: disabled ? undefined : handleKeyUp,
+      onKeyPress: disabled ? undefined : handleKeyPress,
       onClick: disabled ? undefined : handleClick,
     },
     focusProps,
