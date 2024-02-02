@@ -119,3 +119,47 @@ describe.each([
     })
   )
 })
+
+describe('Form submissions', () => {
+  it('should be possible to use in an uncontrolled way', async () => {
+    let handleSubmission = jest.fn()
+
+    render(
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
+        }}
+      >
+        <Checkbox name="notifications" />
+      </form>
+    )
+
+    // Focus the checkbox
+    await focus(getCheckbox())
+
+    // Submit
+    await press(Keys.Enter)
+
+    // No values
+    expect(handleSubmission).toHaveBeenLastCalledWith({})
+
+    // Toggle
+    await click(getCheckbox())
+
+    // Submit
+    await press(Keys.Enter)
+
+    // Notifications should be on
+    expect(handleSubmission).toHaveBeenLastCalledWith({ notifications: 'on' })
+
+    // Toggle
+    await click(getCheckbox())
+
+    // Submit
+    await press(Keys.Enter)
+
+    // Notifications should be off (or in this case, non-existant)
+    expect(handleSubmission).toHaveBeenLastCalledWith({})
+  })
+})
