@@ -13,10 +13,10 @@ export function useId() {
 }
 
 /**
- * This function is allows users to provide a custom id generator
- * as a workaround for the lack of stable SSR IDs in Vue 3.x
+ * This function allows users to provide a custom ID generator
+ * as a workaround for the lack of stable SSR IDs in Vue 3.x.
  *
- * This lets users of Nuxt swap in the Nuxt `useId` function
+ * This Nuxt users use the Nuxt provided `useId` function
  * which is stable across SSR and client.
  */
 export function provideUseId(fn: () => string) {
