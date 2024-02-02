@@ -65,16 +65,17 @@ export let Label = defineComponent({
   props: {
     as: { type: [Object, String], default: 'label' },
     passive: { type: [Boolean], default: false },
-    id: { type: String, default: () => `headlessui-label-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(myProps, { slots, attrs }) {
+    let id = myProps.id ?? `headlessui-label-${useId()}`
     let context = useLabelContext()
 
-    onMounted(() => onUnmounted(context.register(myProps.id)))
+    onMounted(() => onUnmounted(context.register(id)))
 
     return () => {
       let { name = 'Label', slot = {}, props = {} } = context
-      let { id, passive, ...theirProps } = myProps
+      let { id: _id, passive, ...theirProps } = myProps
       let ourProps = {
         ...Object.entries(props).reduce(
           (acc, [key, value]) => Object.assign(acc, { [key]: unref(value) }),

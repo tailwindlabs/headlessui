@@ -779,9 +779,10 @@ export let ComboboxLabel = defineComponent({
   name: 'ComboboxLabel',
   props: {
     as: { type: [Object, String], default: 'label' },
-    id: { type: String, default: () => `headlessui-combobox-label-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots }) {
+    let id = props.id ?? `headlessui-combobox-label-${useId()}`
     let api = useComboboxContext('ComboboxLabel')
 
     function handleClick() {
@@ -794,7 +795,7 @@ export let ComboboxLabel = defineComponent({
         disabled: api.disabled.value,
       }
 
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = { id, ref: api.labelRef, onClick: handleClick }
 
       return render({
@@ -815,9 +816,10 @@ export let ComboboxButton = defineComponent({
   name: 'ComboboxButton',
   props: {
     as: { type: [Object, String], default: 'button' },
-    id: { type: String, default: () => `headlessui-combobox-button-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-combobox-button-${useId()}`
     let api = useComboboxContext('ComboboxButton')
 
     expose({ el: api.buttonRef, $el: api.buttonRef })
@@ -884,7 +886,7 @@ export let ComboboxButton = defineComponent({
         disabled: api.disabled.value,
         value: api.value.value,
       }
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         ref: api.buttonRef,
         id,
@@ -921,12 +923,13 @@ export let ComboboxInput = defineComponent({
     unmount: { type: Boolean, default: true },
     displayValue: { type: Function as PropType<(item: unknown) => string> },
     defaultValue: { type: String, default: undefined },
-    id: { type: String, default: () => `headlessui-combobox-input-${useId()}` },
+    id: { type: String, default: null },
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
   },
   setup(props, { emit, attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-combobox-input-${useId()}`
     let api = useComboboxContext('ComboboxInput')
     let ownerDocument = computed(() => getOwnerDocument(dom(api.inputRef)))
 
@@ -1284,7 +1287,7 @@ export let ComboboxInput = defineComponent({
 
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
-      let { id, displayValue, onChange: _onChange, ...theirProps } = props
+      let { displayValue, onChange: _onChange, ...theirProps } = props
       let ourProps = {
         'aria-controls': api.optionsRef.value?.id,
         'aria-expanded': api.comboboxState.value === ComboboxStates.Open,

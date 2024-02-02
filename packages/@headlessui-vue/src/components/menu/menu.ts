@@ -247,9 +247,10 @@ export let MenuButton = defineComponent({
   props: {
     disabled: { type: Boolean, default: false },
     as: { type: [Object, String], default: 'button' },
-    id: { type: String, default: () => `headlessui-menu-button-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-menu-button-${useId()}`
     let api = useMenuContext('MenuButton')
 
     expose({ el: api.buttonRef, $el: api.buttonRef })
@@ -313,7 +314,7 @@ export let MenuButton = defineComponent({
     return () => {
       let slot = { open: api.menuState.value === MenuStates.Open }
 
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         ref: api.buttonRef,
         id,
@@ -344,9 +345,10 @@ export let MenuItems = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    id: { type: String, default: () => `headlessui-menu-items-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-menu-items-${useId()}`
     let api = useMenuContext('MenuItems')
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
@@ -463,7 +465,7 @@ export let MenuItems = defineComponent({
 
     return () => {
       let slot = { open: api.menuState.value === MenuStates.Open }
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         'aria-activedescendant':
           api.activeItemIndex.value === null
@@ -498,9 +500,10 @@ export let MenuItem = defineComponent({
   props: {
     as: { type: [Object, String], default: 'template' },
     disabled: { type: Boolean, default: false },
-    id: { type: String, default: () => `headlessui-menu-item-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { slots, attrs, expose }) {
+    let id = props.id ?? `headlessui-menu-item-${useId()}`
     let api = useMenuContext('MenuItem')
     let internalItemRef = ref<HTMLElement | null>(null)
 
@@ -508,7 +511,7 @@ export let MenuItem = defineComponent({
 
     let active = computed(() => {
       return api.activeItemIndex.value !== null
-        ? api.items.value[api.activeItemIndex.value].id === props.id
+        ? api.items.value[api.activeItemIndex.value].id === id
         : false
     })
 
@@ -521,8 +524,8 @@ export let MenuItem = defineComponent({
       domRef: internalItemRef,
     }))
 
-    onMounted(() => api.registerItem(props.id, dataRef))
-    onUnmounted(() => api.unregisterItem(props.id))
+    onMounted(() => api.registerItem(id, dataRef))
+    onUnmounted(() => api.unregisterItem(id))
 
     watchEffect(() => {
       if (api.menuState.value !== MenuStates.Open) return
@@ -539,7 +542,7 @@ export let MenuItem = defineComponent({
 
     function handleFocus() {
       if (props.disabled) return api.goToItem(Focus.Nothing)
-      api.goToItem(Focus.Specific, props.id)
+      api.goToItem(Focus.Specific, id)
     }
 
     let pointer = useTrackedPointer()
@@ -552,7 +555,7 @@ export let MenuItem = defineComponent({
       if (!pointer.wasMoved(evt)) return
       if (props.disabled) return
       if (active.value) return
-      api.goToItem(Focus.Specific, props.id, ActivationTrigger.Pointer)
+      api.goToItem(Focus.Specific, id, ActivationTrigger.Pointer)
     }
 
     function handleLeave(evt: PointerEvent) {
@@ -565,7 +568,7 @@ export let MenuItem = defineComponent({
     return () => {
       let { disabled } = props
       let slot = { active: active.value, disabled, close: api.closeMenu }
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         id,
         ref: internalItemRef,

@@ -80,10 +80,12 @@ export let RadioGroup = defineComponent({
     defaultValue: { type: [Object, String, Number, Boolean], default: undefined },
     form: { type: String, optional: true },
     name: { type: String, optional: true },
-    id: { type: String, default: () => `headlessui-radiogroup-${useId()}` },
+    id: { type: String, default: null },
   },
   inheritAttrs: false,
   setup(props, { emit, attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-radiogroup-${useId()}`
+
     let radioGroupRef = ref<HTMLElement | null>(null)
     let options = ref<StateDefinition['options']['value']>([])
     let labelledby = useLabels({ name: 'RadioGroupLabel' })
@@ -238,7 +240,7 @@ export let RadioGroup = defineComponent({
     })
 
     return () => {
-      let { disabled, name, id, form, ...theirProps } = props
+      let { disabled, name, form, ...theirProps } = props
 
       let ourProps = {
         ref: radioGroupRef,
@@ -294,9 +296,11 @@ export let RadioGroupOption = defineComponent({
     as: { type: [Object, String], default: 'div' },
     value: { type: [Object, String, Number, Boolean] },
     disabled: { type: Boolean, default: false },
-    id: { type: String, default: () => `headlessui-radiogroup-option-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-radiogroup-option-${useId()}`
+
     let api = useRadioGroupContext('RadioGroupOption')
     let labelledby = useLabels({ name: 'RadioGroupLabel' })
     let describedby = useDescriptions({ name: 'RadioGroupDescription' })
@@ -308,10 +312,10 @@ export let RadioGroupOption = defineComponent({
     expose({ el: optionRef, $el: optionRef })
 
     let element = computed(() => dom(optionRef))
-    onMounted(() => api.registerOption({ id: props.id, element, propsRef }))
-    onUnmounted(() => api.unregisterOption(props.id))
+    onMounted(() => api.registerOption({ id, element, propsRef }))
+    onUnmounted(() => api.unregisterOption(id))
 
-    let isFirstOption = computed(() => api.firstOption.value?.id === props.id)
+    let isFirstOption = computed(() => api.firstOption.value?.id === id)
     let disabled = computed(() => api.disabled.value || props.disabled)
     let checked = computed(() => api.compare(toRaw(api.value.value), toRaw(props.value)))
     let tabIndex = computed(() => {
@@ -337,7 +341,7 @@ export let RadioGroupOption = defineComponent({
     }
 
     return () => {
-      let { id, value: _value, disabled: _disabled, ...theirProps } = props
+      let { value: _value, disabled: _disabled, ...theirProps } = props
 
       let slot = {
         checked: checked.value,

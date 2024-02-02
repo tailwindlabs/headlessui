@@ -10,6 +10,9 @@ it('should expose the correct components', () => {
     'Portal',
     'PortalGroup',
 
+    // provideUseId
+    'provideUseId',
+
     // Combobox
     'Combobox',
     'ComboboxLabel',

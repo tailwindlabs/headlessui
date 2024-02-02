@@ -426,9 +426,10 @@ export let ListboxLabel = defineComponent({
   name: 'ListboxLabel',
   props: {
     as: { type: [Object, String], default: 'label' },
-    id: { type: String, default: () => `headlessui-listbox-label-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots }) {
+    let id = props.id ?? `headlessui-listbox-label-${useId()}`
     let api = useListboxContext('ListboxLabel')
 
     function handleClick() {
@@ -440,7 +441,7 @@ export let ListboxLabel = defineComponent({
         open: api.listboxState.value === ListboxStates.Open,
         disabled: api.disabled.value,
       }
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = { id, ref: api.labelRef, onClick: handleClick }
 
       return render({
@@ -461,9 +462,10 @@ export let ListboxButton = defineComponent({
   name: 'ListboxButton',
   props: {
     as: { type: [Object, String], default: 'button' },
-    id: { type: String, default: () => `headlessui-listbox-button-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-listbox-button-${useId()}`
     let api = useListboxContext('ListboxButton')
 
     expose({ el: api.buttonRef, $el: api.buttonRef })
@@ -529,7 +531,7 @@ export let ListboxButton = defineComponent({
         value: api.value.value,
       }
 
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         ref: api.buttonRef,
         id,
@@ -564,9 +566,10 @@ export let ListboxOptions = defineComponent({
     as: { type: [Object, String], default: 'ul' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    id: { type: String, default: () => `headlessui-listbox-options-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-listbox-options-${useId()}`
     let api = useListboxContext('ListboxOptions')
     let searchDebounce = ref<ReturnType<typeof setTimeout> | null>(null)
 
@@ -656,7 +659,7 @@ export let ListboxOptions = defineComponent({
 
     return () => {
       let slot = { open: api.listboxState.value === ListboxStates.Open }
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         'aria-activedescendant':
           api.activeOptionIndex.value === null
@@ -696,9 +699,10 @@ export let ListboxOption = defineComponent({
       >,
     },
     disabled: { type: Boolean, default: false },
-    id: { type: String, default: () => `headlessui-listbox.option-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { slots, attrs, expose }) {
+    let id = props.id ?? `headlessui-listbox-option-${useId()}`
     let api = useListboxContext('ListboxOption')
     let internalOptionRef = ref<HTMLElement | null>(null)
 
@@ -706,7 +710,7 @@ export let ListboxOption = defineComponent({
 
     let active = computed(() => {
       return api.activeOptionIndex.value !== null
-        ? api.options.value[api.activeOptionIndex.value].id === props.id
+        ? api.options.value[api.activeOptionIndex.value].id === id
         : false
     })
 
@@ -727,7 +731,7 @@ export let ListboxOption = defineComponent({
           return (
             api.options.value.find((option) =>
               currentValues.some((value) => api.compare(toRaw(value), toRaw(option.dataRef.value)))
-            )?.id === props.id
+            )?.id === id
           )
         },
         [ValueMode.Single]: () => selected.value,
@@ -744,8 +748,8 @@ export let ListboxOption = defineComponent({
       domRef: internalOptionRef,
     }))
 
-    onMounted(() => api.registerOption(props.id, dataRef))
-    onUnmounted(() => api.unregisterOption(props.id))
+    onMounted(() => api.registerOption(id, dataRef))
+    onUnmounted(() => api.unregisterOption(id))
 
     onMounted(() => {
       watch(
@@ -756,10 +760,10 @@ export let ListboxOption = defineComponent({
 
           match(api.mode.value, {
             [ValueMode.Multi]: () => {
-              if (isFirstSelected.value) api.goToOption(Focus.Specific, props.id)
+              if (isFirstSelected.value) api.goToOption(Focus.Specific, id)
             },
             [ValueMode.Single]: () => {
-              api.goToOption(Focus.Specific, props.id)
+              api.goToOption(Focus.Specific, id)
             },
           })
         },
@@ -785,7 +789,7 @@ export let ListboxOption = defineComponent({
 
     function handleFocus() {
       if (props.disabled) return api.goToOption(Focus.Nothing)
-      api.goToOption(Focus.Specific, props.id)
+      api.goToOption(Focus.Specific, id)
     }
 
     let pointer = useTrackedPointer()
@@ -798,7 +802,7 @@ export let ListboxOption = defineComponent({
       if (!pointer.wasMoved(evt)) return
       if (props.disabled) return
       if (active.value) return
-      api.goToOption(Focus.Specific, props.id, ActivationTrigger.Pointer)
+      api.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
     }
 
     function handleLeave(evt: PointerEvent) {
@@ -811,7 +815,7 @@ export let ListboxOption = defineComponent({
     return () => {
       let { disabled } = props
       let slot = { active: active.value, selected: selected.value, disabled }
-      let { id, value: _value, disabled: _disabled, ...theirProps } = props
+      let { value: _value, disabled: _disabled, ...theirProps } = props
       let ourProps = {
         id,
         ref: internalOptionRef,

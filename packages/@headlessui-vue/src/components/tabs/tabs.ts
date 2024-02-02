@@ -306,9 +306,11 @@ export let Tab = defineComponent({
   props: {
     as: { type: [Object, String], default: 'button' },
     disabled: { type: [Boolean], default: false },
-    id: { type: String, default: () => `headlessui-tabs-tab-${useId()}` },
+    id: { type: String, default: null },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-tabs-tab-${useId()}`
+
     let api = useTabsContext('Tab')
 
     let internalTabRef = ref<HTMLElement | null>(null)
@@ -322,8 +324,8 @@ export let Tab = defineComponent({
     // Note: there's a divergence here between React and Vue. Vue can work with `indexOf` implementation while React on the server can't.
     let mySSRIndex = computed(() => {
       if (SSRContext.value) {
-        let mySSRIndex = SSRContext.value.tabs.indexOf(props.id)
-        if (mySSRIndex === -1) return SSRContext.value.tabs.push(props.id) - 1
+        let mySSRIndex = SSRContext.value.tabs.indexOf(id)
+        if (mySSRIndex === -1) return SSRContext.value.tabs.push(id) - 1
         return mySSRIndex
       }
 
@@ -424,7 +426,7 @@ export let Tab = defineComponent({
 
     return () => {
       let slot = { selected: selected.value }
-      let { id, ...theirProps } = props
+      let { ...theirProps } = props
       let ourProps = {
         ref: internalTabRef,
         onKeydown: handleKeyDown,
@@ -482,10 +484,12 @@ export let TabPanel = defineComponent({
     as: { type: [Object, String], default: 'div' },
     static: { type: Boolean, default: false },
     unmount: { type: Boolean, default: true },
-    id: { type: String, default: () => `headlessui-tabs-panel-${useId()}` },
+    id: { type: String, default: null },
     tabIndex: { type: Number, default: 0 },
   },
   setup(props, { attrs, slots, expose }) {
+    let id = props.id ?? `headlessui-tabs-panel-${useId()}`
+
     let api = useTabsContext('TabPanel')
 
     let internalPanelRef = ref<HTMLElement | null>(null)
@@ -498,8 +502,8 @@ export let TabPanel = defineComponent({
     let SSRContext = inject(TabsSSRContext)!
     let mySSRIndex = computed(() => {
       if (SSRContext.value) {
-        let mySSRIndex = SSRContext.value.panels.indexOf(props.id)
-        if (mySSRIndex === -1) return SSRContext.value.panels.push(props.id) - 1
+        let mySSRIndex = SSRContext.value.panels.indexOf(id)
+        if (mySSRIndex === -1) return SSRContext.value.panels.push(id) - 1
         return mySSRIndex
       }
 
@@ -515,7 +519,7 @@ export let TabPanel = defineComponent({
 
     return () => {
       let slot = { selected: selected.value }
-      let { id, tabIndex, ...theirProps } = props
+      let { tabIndex, ...theirProps } = props
       let ourProps = {
         ref: internalPanelRef,
         id,
