@@ -59,6 +59,47 @@ describe('Rendering', () => {
     assertSwitch({ state: SwitchState.Off, label: 'Enable notifications' })
   })
 
+  describe('`tabIndex` attribute', () => {
+    it('should have a default tabIndex of `0`', () => {
+      render(
+        <Switch checked={false} onChange={console.log}>
+          <span>Enable notifications</span>
+        </Switch>
+      )
+      assertSwitch({
+        state: SwitchState.Off,
+        label: 'Enable notifications',
+        attributes: { tabindex: '0' },
+      })
+    })
+
+    it('should be possible to override the `tabIndex`', () => {
+      render(
+        <Switch checked={false} onChange={console.log} tabIndex={3}>
+          <span>Enable notifications</span>
+        </Switch>
+      )
+      assertSwitch({
+        state: SwitchState.Off,
+        label: 'Enable notifications',
+        attributes: { tabindex: '3' },
+      })
+    })
+
+    it('should not be possible to override the `tabIndex` to `-1`', () => {
+      render(
+        <Switch checked={false} onChange={console.log} tabIndex={-1}>
+          <span>Enable notifications</span>
+        </Switch>
+      )
+      assertSwitch({
+        state: SwitchState.Off,
+        label: 'Enable notifications',
+        attributes: { tabindex: '0' },
+      })
+    })
+  })
+
   describe('`type` attribute', () => {
     it('should set the `type` to "button" by default', async () => {
       render(

@@ -978,6 +978,7 @@ export function assertSwitch(
     textContent?: string
     label?: string
     description?: string
+    attributes?: Record<string, string | null>
   },
   switchElement = getSwitch()
 ) {
@@ -985,7 +986,8 @@ export function assertSwitch(
     if (switchElement === null) return expect(switchElement).not.toBe(null)
 
     expect(switchElement).toHaveAttribute('role', 'switch')
-    expect(switchElement).toHaveAttribute('tabindex', '0')
+    let tabIndex = Number(switchElement.getAttribute('tabindex') ?? '0')
+    expect(tabIndex).toBeGreaterThanOrEqual(0)
 
     if (options.textContent) {
       expect(switchElement).toHaveTextContent(options.textContent)
@@ -1014,6 +1016,11 @@ export function assertSwitch(
 
       default:
         assertNever(options.state)
+    }
+
+    // Ensure disclosure button has the following attributes
+    for (let attributeName in options.attributes) {
+      expect(switchElement).toHaveAttribute(attributeName, options.attributes[attributeName])
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertSwitch)

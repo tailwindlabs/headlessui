@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose `disabled` state on `<Tab />` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
 - Prevent default behaviour when clicking outside of a `Dialog.Panel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
 - Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
+- Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
 
 ## [1.7.18] - 2024-01-08
 

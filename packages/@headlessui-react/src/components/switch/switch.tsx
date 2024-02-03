@@ -102,12 +102,7 @@ let DEFAULT_SWITCH_TAG = 'button' as const
 interface SwitchRenderPropArg {
   checked: boolean
 }
-type SwitchPropsWeControl =
-  | 'aria-checked'
-  | 'aria-describedby'
-  | 'aria-labelledby'
-  | 'role'
-  | 'tabIndex'
+type SwitchPropsWeControl = 'aria-checked' | 'aria-describedby' | 'aria-labelledby' | 'role'
 
 export type SwitchProps<TTag extends ElementType> = Props<
   TTag,
@@ -120,6 +115,7 @@ export type SwitchProps<TTag extends ElementType> = Props<
     name?: string
     value?: string
     form?: string
+    tabIndex?: number
   }
 >
 
@@ -172,7 +168,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     ref: switchRef,
     role: 'switch',
     type: useResolveButtonType(props, internalSwitchRef),
-    tabIndex: 0,
+    tabIndex: props.tabIndex === -1 ? 0 : props.tabIndex ?? 0,
     'aria-checked': checked,
     'aria-labelledby': groupContext?.labelledby,
     'aria-describedby': groupContext?.describedby,

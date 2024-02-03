@@ -78,6 +78,7 @@ export let Switch = defineComponent({
     name: { type: String, optional: true },
     value: { type: String, optional: true },
     id: { type: String, default: null },
+    tabIndex: { type: Number, default: 0 },
   },
   inheritAttrs: false,
   setup(props, { emit, attrs, slots, expose }) {
@@ -145,14 +146,14 @@ export let Switch = defineComponent({
     })
 
     return () => {
-      let { name, value, form, ...theirProps } = props
+      let { name, value, form, tabIndex, ...theirProps } = props
       let slot = { checked: checked.value }
       let ourProps = {
         id,
         ref: switchRef,
         role: 'switch',
         type: type.value,
-        tabIndex: 0,
+        tabIndex: tabIndex === -1 ? 0 : tabIndex,
         'aria-checked': checked.value,
         'aria-labelledby': api?.labelledby.value,
         'aria-describedby': api?.describedby.value,
