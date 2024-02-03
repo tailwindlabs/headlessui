@@ -116,12 +116,7 @@ type SwitchRenderPropArg = {
   changing: boolean
   disabled: boolean
 }
-type SwitchPropsWeControl =
-  | 'aria-checked'
-  | 'aria-describedby'
-  | 'aria-labelledby'
-  | 'role'
-  | 'tabIndex'
+type SwitchPropsWeControl = 'aria-checked' | 'aria-describedby' | 'aria-labelledby' | 'role'
 
 export type SwitchProps<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG> = Props<
   TTag,
@@ -136,6 +131,7 @@ export type SwitchProps<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG> = 
     form?: string
     autoFocus?: boolean
     disabled?: boolean
+    tabIndex?: number
   }
 >
 
@@ -220,7 +216,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
       ref: switchRef,
       role: 'switch',
       type: useResolveButtonType(props, internalSwitchRef),
-      tabIndex: 0,
+      tabIndex: props.tabIndex === -1 ? 0 : props.tabIndex ?? 0,
       'aria-checked': checked,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,

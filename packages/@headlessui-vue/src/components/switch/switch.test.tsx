@@ -327,6 +327,38 @@ describe('Rendering', () => {
       expect(handleChange).toHaveBeenNthCalledWith(3, true)
     })
   })
+
+  describe('`tabIndex` attribute', () => {
+    it('should have a default tabIndex of `0`', () => {
+      renderTemplate(html`<Switch :checked="false" :tabIndex="0">Enable notifications</Switch>`)
+
+      assertSwitch({
+        state: SwitchState.Off,
+        label: 'Enable notifications',
+        attributes: { tabindex: '0' },
+      })
+    })
+
+    it('should be possible to override the `tabIndex`', () => {
+      renderTemplate(html`<Switch :checked="false" :tabIndex="3">Enable notifications</Switch>`)
+
+      assertSwitch({
+        state: SwitchState.Off,
+        label: 'Enable notifications',
+        attributes: { tabindex: '3' },
+      })
+    })
+
+    it('should not be possible to override the `tabIndex` to `-1`', () => {
+      renderTemplate(html`<Switch :checked="false" :tabIndex="-1">Enable notifications</Switch>`)
+
+      assertSwitch({
+        state: SwitchState.Off,
+        label: 'Enable notifications',
+        attributes: { tabindex: '0' },
+      })
+    })
+  })
 })
 
 describe('Render composition', () => {
