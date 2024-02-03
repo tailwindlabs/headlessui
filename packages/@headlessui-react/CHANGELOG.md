@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `children` prop of `Field` component can be a render prop ([#2941](https://github.com/tailwindlabs/headlessui/pull/2941))
 - Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
 - Attempt form submission when pressing `Enter` on `Checkbox` component ([#2962](https://github.com/tailwindlabs/headlessui/pull/2962))
+- Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
 
 ## [2.0.0-alpha.4] - 2024-01-03
 
