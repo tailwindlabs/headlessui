@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Submit form when pressing `Enter` on the `<Listbox.Button />` component ([#2972](https://github.com/tailwindlabs/headlessui/pull/2972))
+- Attempt form submission when pressing `Enter` on the `<Listbox.Button />` component ([#2972](https://github.com/tailwindlabs/headlessui/pull/2972))
 
 ## [2.0.0-alpha.4] - 2024-01-03
 
