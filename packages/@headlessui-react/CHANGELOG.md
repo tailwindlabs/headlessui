@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Attempt form submission when pressing `Enter` on `Checkbox` component ([#2962](https://github.com/tailwindlabs/headlessui/pull/2962))
 - Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
 
+### Changed
+
+- Submit form when pressing `Enter` on the `<Listbox.Button />` component ([#2972](https://github.com/tailwindlabs/headlessui/pull/2972))
+
 ## [2.0.0-alpha.4] - 2024-01-03
 
 ### Fixed
