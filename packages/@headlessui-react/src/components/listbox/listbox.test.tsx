@@ -12,7 +12,6 @@ import {
   assertListboxLabel,
   assertListboxOption,
   assertNoActiveListboxOption,
-  assertNoSelectedListboxOption,
   getByText,
   getListbox,
   getListboxButton,
@@ -1491,378 +1490,6 @@ describe('Composition', () => {
 describe('Keyboard interactions', () => {
   describe('`Enter` key', () => {
     it(
-      'should be possible to open the listbox with Enter',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option value="a">Option A</Listbox.Option>
-              <Listbox.Option value="b">Option B</Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertListboxButton({ state: ListboxState.Visible })
-        assertListbox({
-          state: ListboxState.Visible,
-          attributes: { id: 'headlessui-listbox-options-2' },
-        })
-        assertActiveElement(getListbox())
-        assertListboxButtonLinkedWithListbox()
-
-        // Verify we have listbox options
-        let options = getListboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option) => assertListboxOption(option, { selected: false }))
-
-        // Verify that the first listbox option is active
-        assertActiveListboxOption(options[0])
-        assertNoSelectedListboxOption()
-      })
-    )
-
-    it(
-      'should not be possible to open the listbox with Enter when the button is disabled',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)} disabled>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option value="a">Option A</Listbox.Option>
-              <Listbox.Option value="b">Option B</Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Try to open the listbox
-        await press(Keys.Enter)
-
-        // Verify it is still closed
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-      })
-    )
-
-    it(
-      'should be possible to open the listbox with Enter, and focus the selected option',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value="b" onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option value="a">Option A</Listbox.Option>
-              <Listbox.Option value="b">Option B</Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertListboxButton({ state: ListboxState.Visible })
-        assertListbox({
-          state: ListboxState.Visible,
-          attributes: { id: 'headlessui-listbox-options-2' },
-        })
-        assertActiveElement(getListbox())
-        assertListboxButtonLinkedWithListbox()
-
-        // Verify we have listbox options
-        let options = getListboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second listbox option is active (because it is already selected)
-        assertActiveListboxOption(options[1])
-      })
-    )
-
-    it(
-      'should be possible to open the listbox with Enter, and focus the selected option (when using the `hidden` render strategy)',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value="b" onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options unmount={false}>
-              <Listbox.Option value="a">Option A</Listbox.Option>
-              <Listbox.Option value="b">Option B</Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleHidden,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleHidden })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertListboxButton({ state: ListboxState.Visible })
-        assertListbox({
-          state: ListboxState.Visible,
-          attributes: { id: 'headlessui-listbox-options-2' },
-        })
-        assertActiveElement(getListbox())
-        assertListboxButtonLinkedWithListbox()
-
-        let options = getListboxOptions()
-
-        // Hover over Option A
-        await mouseMove(options[0])
-
-        // Verify that Option A is active
-        assertActiveListboxOption(options[0])
-
-        // Verify that Option B is still selected
-        assertListboxOption(options[1], { selected: true })
-
-        // Close/Hide the listbox
-        await press(Keys.Escape)
-
-        // Re-open the listbox
-        await click(getListboxButton())
-
-        // Verify we have listbox options
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second listbox option is active (because it is already selected)
-        assertActiveListboxOption(options[1])
-      })
-    )
-
-    it(
-      'should be possible to open the listbox with Enter, and focus the selected option (with a list of objects)',
-      suppressConsoleLogs(async () => {
-        let myOptions = [
-          { id: 'a', name: 'Option A' },
-          { id: 'b', name: 'Option B' },
-          { id: 'c', name: 'Option C' },
-        ]
-        let selectedOption = myOptions[1]
-        render(
-          <Listbox value={selectedOption} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              {myOptions.map((myOption) => (
-                <Listbox.Option key={myOption.id} value={myOption}>
-                  {myOption.name}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-
-        // Verify it is visible
-        assertListboxButton({ state: ListboxState.Visible })
-        assertListbox({
-          state: ListboxState.Visible,
-          attributes: { id: 'headlessui-listbox-options-2' },
-        })
-        assertActiveElement(getListbox())
-        assertListboxButtonLinkedWithListbox()
-
-        // Verify we have listbox options
-        let options = getListboxOptions()
-        expect(options).toHaveLength(3)
-        options.forEach((option, i) => assertListboxOption(option, { selected: i === 1 }))
-
-        // Verify that the second listbox option is active (because it is already selected)
-        assertActiveListboxOption(options[1])
-      })
-    )
-
-    it(
-      'should have no active listbox option when there are no listbox options at all',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options />
-          </Listbox>
-        )
-
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-        assertListbox({ state: ListboxState.Visible })
-        assertActiveElement(getListbox())
-
-        assertNoActiveListboxOption()
-      })
-    )
-
-    it(
-      'should focus the first non disabled listbox option when opening with Enter',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option disabled value="a">
-                Option A
-              </Listbox.Option>
-              <Listbox.Option value="b">Option B</Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-
-        let options = getListboxOptions()
-
-        // Verify that the first non-disabled listbox option is active
-        assertActiveListboxOption(options[1])
-      })
-    )
-
-    it(
-      'should focus the first non disabled listbox option when opening with Enter (jump over multiple disabled ones)',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option disabled value="a">
-                Option A
-              </Listbox.Option>
-              <Listbox.Option disabled value="b">
-                Option B
-              </Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-
-        let options = getListboxOptions()
-
-        // Verify that the first non-disabled listbox option is active
-        assertActiveListboxOption(options[2])
-      })
-    )
-
-    it(
-      'should have no active listbox option upon Enter key press, when there are no non-disabled listbox options',
-      suppressConsoleLogs(async () => {
-        render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option disabled value="a">
-                Option A
-              </Listbox.Option>
-              <Listbox.Option disabled value="b">
-                Option B
-              </Listbox.Option>
-              <Listbox.Option disabled value="c">
-                Option C
-              </Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
-        )
-
-        assertListboxButton({
-          state: ListboxState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-listbox-button-1' },
-        })
-        assertListbox({ state: ListboxState.InvisibleUnmounted })
-
-        // Focus the button
-        await focus(getListboxButton())
-
-        // Open listbox
-        await press(Keys.Enter)
-
-        assertNoActiveListboxOption()
-      })
-    )
-
-    it(
       'should be possible to close the listbox with Enter when there is no active listboxoption',
       suppressConsoleLogs(async () => {
         render(
@@ -2358,7 +1985,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         // Verify it is visible
         assertListboxButton({ state: ListboxState.Visible })
@@ -2409,7 +2036,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         // Verify it is visible
         assertListboxButton({ state: ListboxState.Visible })
@@ -2611,7 +2238,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         // Verify we have listbox options
         let options = getListboxOptions()
@@ -2659,7 +2286,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         // Verify we have listbox options
         let options = getListboxOptions()
@@ -2701,7 +2328,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         // Verify we have listbox options
         let options = getListboxOptions()
@@ -2737,7 +2364,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         // Verify we have listbox options
         let options = getListboxOptions()
@@ -2976,7 +2603,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         // Verify we have listbox options
         let options = getListboxOptions()
@@ -3127,7 +2754,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         let options = getListboxOptions()
 
@@ -3163,7 +2790,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         let options = getListboxOptions()
 
@@ -3267,7 +2894,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         let options = getListboxOptions()
 
@@ -3303,7 +2930,7 @@ describe('Keyboard interactions', () => {
         await focus(getListboxButton())
 
         // Open listbox
-        await press(Keys.Enter)
+        await press(Keys.Space)
 
         let options = getListboxOptions()
 
@@ -4910,6 +4537,74 @@ describe('Form compatibility', () => {
     // Submit the form
     await click(getByText('Submit'))
 
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
+  })
+
+  it('should be possible to submit a form by pressing enter', async () => {
+    let submits = jest.fn()
+
+    function Example() {
+      let [value, setValue] = useState(null)
+      return (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget).entries()])
+          }}
+        >
+          <Listbox value={value} onChange={setValue} name="delivery">
+            <Listbox.Button>Trigger</Listbox.Button>
+            <Listbox.Label>Pizza Delivery</Listbox.Label>
+            <Listbox.Options>
+              <Listbox.Option value="pickup">Pickup</Listbox.Option>
+              <Listbox.Option value="home-delivery">Home delivery</Listbox.Option>
+              <Listbox.Option value="dine-in">Dine in</Listbox.Option>
+            </Listbox.Options>
+          </Listbox>
+          <button>Submit</button>
+        </form>
+      )
+    }
+
+    render(<Example />)
+
+    // Focus the listbox
+    await focus(getListboxButton())
+
+    // Submit the form by pressing enter
+    await press(Keys.Enter)
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([]) // no data
+
+    // Open listbox again
+    await click(getListboxButton())
+
+    // Choose home delivery
+    await click(getByText('Home delivery'))
+
+    // Focus the listbox
+    await focus(getListboxButton())
+
+    // Submit the form by pressing enter
+    await press(Keys.Enter)
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([['delivery', 'home-delivery']])
+
+    // Open listbox again
+    await click(getListboxButton())
+
+    // Choose pickup
+    await click(getByText('Pickup'))
+
+    // Focus the listbox
+    await focus(getListboxButton())
+
+    // Submit the form by pressing enter
+    await press(Keys.Enter)
+
+    // Verify that the form has been submitted
     expect(submits).toHaveBeenLastCalledWith([['delivery', 'pickup']])
   })
 

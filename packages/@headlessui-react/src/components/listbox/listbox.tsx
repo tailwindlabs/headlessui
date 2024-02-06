@@ -54,6 +54,7 @@ import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
+import { attemptSubmit } from '../../utils/form'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
 import {
@@ -733,8 +734,11 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/#keyboard-interaction-13
 
-      case Keys.Space:
       case Keys.Enter:
+        attemptSubmit(event.currentTarget)
+        break
+
+      case Keys.Space:
       case Keys.ArrowDown:
         event.preventDefault()
         actions.openListbox()
@@ -774,6 +778,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       actions.openListbox()
     }
   })
+
+  // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
+  let handleKeyPress = useEvent((event: ReactKeyboardEvent<HTMLElement>) => event.preventDefault())
 
   let labelledBy = useLabelledBy([id])
   let describedBy = useDescribedBy()
@@ -820,6 +827,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       disabled: data.disabled,
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
+      onKeyPress: handleKeyPress,
       onClick: handleClick,
     },
     focusProps,
