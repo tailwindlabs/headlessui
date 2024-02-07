@@ -718,7 +718,7 @@ export let Combobox = defineComponent({
             ? null
             : api.virtual.value
               ? api.virtual.value.options[api.activeOptionIndex.value ?? 0]
-              : api.options.value[api.activeOptionIndex.value]?.dataRef.value.value ?? null,
+              : api.options.value[api.activeOptionIndex.value]?.dataRef.value ?? null,
         value: value.value,
       }
 

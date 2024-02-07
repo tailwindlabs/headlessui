@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Fix Combobox `activeOption` render prop ([#2973](https://github.com/tailwindlabs/headlessui/pull/2973))
+
+## [1.7.18] - 2024-02-02
+
 ### Added
 
 - Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
