@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+- Fix Combobox `activeOption` render prop ([#2973](https://github.com/tailwindlabs/headlessui/pull/2973))
 
 ## [1.7.18] - 2024-02-02
 
