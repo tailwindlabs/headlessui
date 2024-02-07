@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.19] - 2024-02-07
+
 - Fix Combobox `activeOption` render prop ([#2973](https://github.com/tailwindlabs/headlessui/pull/2973))
 
 ## [1.7.18] - 2024-02-02
@@ -509,7 +513,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.18...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.19...HEAD
+[1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.18...@headlessui/vue@v1.7.19
 [1.7.18]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.17...@headlessui/vue@v1.7.18
 [1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...@headlessui/vue@v1.7.17
 [1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...v1.7.16
