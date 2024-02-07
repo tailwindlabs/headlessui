@@ -7,10 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Fix Combobox `activeOption` render prop ([#2973](https://github.com/tailwindlabs/headlessui/pull/2973))
-
-## [1.7.18] - 2024-02-02
-
 ### Added
 
 - Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
@@ -23,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don’t override explicit `disabled` prop for components inside `<MenuItem>` ([#2929](https://github.com/tailwindlabs/headlessui/pull/2929))
 - Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
 - Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
+
+## [1.7.19] - 2024-02-07
+
+- Fix Combobox `activeOption` render prop ([#2973](https://github.com/tailwindlabs/headlessui/pull/2973))
+
+## [1.7.18] - 2024-02-02
+
+### Added
+
+- Allow users customize ID generation ([#2959](https://github.com/tailwindlabs/headlessui/pull/2959))
 
 ## [1.7.17] - 2024-01-08
 
@@ -518,9 +524,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.17...HEAD
-[1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...v1.7.17
-[1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...v1.7.16
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.19...HEAD
+[1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.18...@headlessui/vue@v1.7.19
+[1.7.18]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.17...@headlessui/vue@v1.7.18
+[1.7.17]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.16...@headlessui/vue@v1.7.17
+[1.7.16]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.15...@headlessui/vue@v1.7.16
 [1.7.15]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.14...@headlessui/vue@v1.7.15
 [1.7.14]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.13...@headlessui/vue@v1.7.14
 [1.7.13]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.12...@headlessui/vue@v1.7.13
