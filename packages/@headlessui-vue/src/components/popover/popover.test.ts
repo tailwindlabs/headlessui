@@ -249,6 +249,42 @@ describe('Rendering', () => {
         assertActiveElement(getByText('restoreable'))
       })
     )
+
+    it(
+      'should emit events on opening and closing the popover',
+      suppressConsoleLogs(async () => {
+        const { wrapper } = renderTemplate({
+          template: html`
+            <Popover v-slot="{ close }">
+              <PopoverButton>Trigger</PopoverButton>
+              <PopoverPanel> <button @click="close(elementRef)">Close me</button>} </PopoverPanel>
+            </Popover>
+          `,
+          setup: () => ({ elementRef: ref() }),
+        })
+
+        const popoverWrapper = wrapper.getComponent(Popover)
+
+        // Focus the button
+        getPopoverButton()?.focus()
+
+        // Ensure the button is focused
+        assertActiveElement(getPopoverButton())
+
+        // Open the popover
+        await click(getPopoverButton())
+
+        expect(popoverWrapper.emitted()).toHaveProperty('open')
+
+        // Ensure we can click the close button
+        await click(getByText('Close me'))
+
+        expect(popoverWrapper.emitted()).toHaveProperty('close')
+
+        // Ensure the popover is closed
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      })
+    )
   })
 
   describe('PopoverButton', () => {

@@ -9,6 +9,7 @@ import {
   provide,
   ref,
   shallowRef,
+  watch,
   watchEffect,
   type ComponentPublicInstance,
   type InjectionKey,
@@ -106,7 +107,8 @@ export let Popover = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  setup(props, { slots, attrs, expose }) {
+  emits: ['open', 'close'],
+  setup(props, { slots, attrs, expose, emit }) {
     let internalPopoverRef = ref<HTMLElement | null>(null)
 
     expose({ el: internalPopoverRef, $el: internalPopoverRef })
@@ -257,6 +259,20 @@ export let Popover = defineComponent({
       },
       computed(() => popoverState.value === PopoverStates.Open)
     )
+
+    //Emit events on state change
+    watch(popoverState, (value) => {
+      const isOpen = match(value, {
+        [PopoverStates.Open]: true,
+        [PopoverStates.Closed]: false,
+      })
+
+      if (isOpen) {
+        emit('open')
+      } else {
+        emit('close')
+      }
+    })
 
     return () => {
       let slot = { open: popoverState.value === PopoverStates.Open, close: api.close }

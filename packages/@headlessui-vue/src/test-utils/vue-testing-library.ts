@@ -55,6 +55,7 @@ export function render(TestComponent: any, options?: Parameters<typeof mount>[1]
       template.innerHTML = wrapper.element.parentElement!.innerHTML
       return template.content
     },
+    wrapper,
   }
 }
 
