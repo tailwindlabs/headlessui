@@ -106,7 +106,8 @@ export let Popover = defineComponent({
   props: {
     as: { type: [Object, String], default: 'div' },
   },
-  setup(props, { slots, attrs, expose }) {
+  emits: { close: (_close: boolean) => true },
+  setup(props, { slots, attrs, emit, expose }) {
     let internalPopoverRef = ref<HTMLElement | null>(null)
 
     expose({ el: internalPopoverRef, $el: internalPopoverRef })
@@ -169,6 +170,7 @@ export let Popover = defineComponent({
       closePopover() {
         if (popoverState.value === PopoverStates.Closed) return
         popoverState.value = PopoverStates.Closed
+        emit('close', false)
       },
       close(focusableElement: HTMLElement | Ref<HTMLElement | null>) {
         api.closePopover()
