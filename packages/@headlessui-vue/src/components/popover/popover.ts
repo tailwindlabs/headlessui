@@ -9,7 +9,6 @@ import {
   provide,
   ref,
   shallowRef,
-  watch,
   watchEffect,
   type ComponentPublicInstance,
   type InjectionKey,
@@ -261,8 +260,8 @@ export let Popover = defineComponent({
     )
 
     //Emit events on state change
-    watch(popoverState, (value) => {
-      const isOpen = match(value, {
+    watchEffect(() => {
+      const isOpen = match(popoverState.value, {
         [PopoverStates.Open]: true,
         [PopoverStates.Closed]: false,
       })
