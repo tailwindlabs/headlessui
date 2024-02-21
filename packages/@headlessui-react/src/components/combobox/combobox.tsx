@@ -942,6 +942,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
                   hidden: true,
                   readOnly: true,
                   form: formName,
+                  disabled,
                   name,
                   value,
                 })}

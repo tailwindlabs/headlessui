@@ -264,6 +264,7 @@ export let RadioGroup = defineComponent({
                   hidden: true,
                   readOnly: true,
                   form,
+                  disabled,
                   name,
                   value,
                 })

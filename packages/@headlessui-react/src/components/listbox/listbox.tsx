@@ -566,6 +566,7 @@ function ListboxFn<
                   hidden: true,
                   readOnly: true,
                   form: formName,
+                  disabled,
                   name,
                   value,
                 })}

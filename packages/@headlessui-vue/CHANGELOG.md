@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Don’t override explicit `disabled` prop for components inside `<MenuItem>` ([#2929](https://github.com/tailwindlabs/headlessui/pull/2929))
 - Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
 - Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
+- Forward `disabled` state to hidden inputs in form-like components ([#3004](https://github.com/tailwindlabs/headlessui/pull/3004))
 
 ## [1.7.19] - 2024-02-07
 

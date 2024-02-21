@@ -114,6 +114,7 @@ export type SwitchProps<TTag extends ElementType> = Props<
     onChange?(checked: boolean): void
     name?: string
     value?: string
+    disabled?: boolean
     form?: string
     tabIndex?: number
   }
@@ -129,6 +130,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     checked: controlledChecked,
     defaultChecked = false,
     onChange: controlledOnChange,
+    disabled = false,
     name,
     value,
     form,
@@ -172,6 +174,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     'aria-checked': checked,
     'aria-labelledby': groupContext?.labelledby,
     'aria-describedby': groupContext?.describedby,
+    disabled,
     onClick: handleClick,
     onKeyUp: handleKeyUp,
     onKeyPress: handleKeyPress,
@@ -198,6 +201,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
             type: 'checkbox',
             hidden: true,
             readOnly: true,
+            disabled,
             form,
             checked,
             name,

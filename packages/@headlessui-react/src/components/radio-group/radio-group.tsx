@@ -350,6 +350,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
                     hidden: true,
                     readOnly: true,
                     form: formName,
+                    disabled,
                     name,
                     value,
                   })}

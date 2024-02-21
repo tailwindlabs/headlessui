@@ -5655,6 +5655,48 @@ describe('Form compatibility', () => {
     expect(submits).lastCalledWith([['delivery', 'pickup']])
   })
 
+  it('should not submit the data if the Combobox is disabled', async () => {
+    let submits = jest.fn()
+
+    function Example() {
+      let [value, setValue] = useState('home-delivery')
+      return (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget).entries()])
+          }}
+        >
+          <input type="hidden" name="foo" value="bar" />
+          <Combobox value={value} onChange={setValue} name="delivery" disabled>
+            <Combobox.Input onChange={NOOP} />
+            <Combobox.Button>Trigger</Combobox.Button>
+            <Combobox.Label>Pizza Delivery</Combobox.Label>
+            <Combobox.Options>
+              <Combobox.Option value="pickup">Pickup</Combobox.Option>
+              <Combobox.Option value="home-delivery">Home delivery</Combobox.Option>
+              <Combobox.Option value="dine-in">Dine in</Combobox.Option>
+            </Combobox.Options>
+          </Combobox>
+          <button>Submit</button>
+        </form>
+      )
+    }
+
+    render(<Example />)
+
+    // Open combobox
+    await click(getComboboxButton())
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([
+      ['foo', 'bar'], // The only available field
+    ])
+  })
+
   it('should be possible to submit a form with a complex value object', async () => {
     let submits = jest.fn()
     let options = [

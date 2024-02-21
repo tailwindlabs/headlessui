@@ -392,6 +392,7 @@ export let Listbox = defineComponent({
                   hidden: true,
                   readOnly: true,
                   form,
+                  disabled,
                   name,
                   value,
                 })
