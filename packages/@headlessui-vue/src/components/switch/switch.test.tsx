@@ -929,4 +929,39 @@ describe('Form compatibility', () => {
     // Verify that the form has been submitted
     expect(submits).lastCalledWith([['fruit', 'apple']])
   })
+
+  it('should not submit the data if the Switch is disabled', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <form @submit="handleSubmit">
+          <input type="hidden" name="foo" value="bar" />
+          <SwitchGroup>
+            <Switch v-model="checked" name="fruit" value="apple" disabled />
+            <SwitchLabel>Apple</SwitchLabel>
+          </SwitchGroup>
+          <button>Submit</button>
+        </form>
+      `,
+      setup: () => {
+        let checked = ref(true)
+        return {
+          checked,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([
+      ['foo', 'bar'], // The only available field
+    ])
+  })
 })

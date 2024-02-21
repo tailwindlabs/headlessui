@@ -1680,6 +1680,43 @@ describe('Form compatibility', () => {
     expect(submits).lastCalledWith([['delivery', 'pickup']])
   })
 
+  it('should not submit the data if the RadioGroup is disabled', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <form @submit="handleSubmit">
+          <input type="hidden" name="foo" value="bar" />
+          <RadioGroup v-model="value" name="delivery" disabled>
+            <RadioGroupLabel>Pizza Delivery</RadioGroupLabel>
+            <RadioGroupOption value="pickup">Pickup</RadioGroupOption>
+            <RadioGroupOption value="home-delivery">Home delivery</RadioGroupOption>
+            <RadioGroupOption value="dine-in">Dine in</RadioGroupOption>
+          </RadioGroup>
+          <button>Submit</button>
+        </form>
+      `,
+      setup: () => {
+        let value = ref('home-delivery')
+        return {
+          value,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([
+      ['foo', 'bar'], // The only available field
+    ])
+  })
+
   it('should be possible to submit a form with a complex value object', async () => {
     let submits = jest.fn()
 
