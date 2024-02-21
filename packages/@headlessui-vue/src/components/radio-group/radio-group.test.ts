@@ -43,7 +43,7 @@ describe('Safe guards', () => {
   it.each([['RadioGroupOption', RadioGroupOption]])(
     'should error when we are using a <%s /> without a parent <RadioGroup />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(Component)).toThrowError(
+      expect(() => render(Component)).toThrow(
         `<${name} /> is missing a parent <RadioGroup /> component.`
       )
     })

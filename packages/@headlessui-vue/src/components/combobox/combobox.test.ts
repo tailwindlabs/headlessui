@@ -98,7 +98,7 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Combobox />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(Component)).toThrowError(
+      expect(() => render(Component)).toThrow(
         `<${name} /> is missing a parent <Combobox /> component.`
       )
     })

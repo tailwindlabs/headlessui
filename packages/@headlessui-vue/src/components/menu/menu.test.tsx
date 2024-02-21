@@ -63,9 +63,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Menu />',
     suppressConsoleLogs((name, component) => {
-      expect(() => render(component)).toThrowError(
-        `<${name} /> is missing a parent <Menu /> component.`
-      )
+      expect(() => render(component)).toThrow(`<${name} /> is missing a parent <Menu /> component.`)
     })
   )
 
