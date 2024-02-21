@@ -670,7 +670,12 @@ function ListboxFn<
               })}
             >
               {name != null && value != null && (
-                <FormFields data={{ [name]: value }} form={form} onReset={reset} />
+                <FormFields
+                  disabled={disabled}
+                  data={{ [name]: value }}
+                  form={form}
+                  onReset={reset}
+                />
               )}
               {render({
                 ourProps,

@@ -173,7 +173,12 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
   return (
     <>
       {name != null && (
-        <FormFields data={checked ? { [name]: value || 'on' } : {}} form={form} onReset={reset} />
+        <FormFields
+          disabled={disabled}
+          data={checked ? { [name]: value || 'on' } : {}}
+          form={form}
+          onReset={reset}
+        />
       )}
       {render({
         ourProps,
