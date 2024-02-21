@@ -237,7 +237,12 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   return (
     <>
       {name != null && (
-        <FormFields data={checked ? { [name]: value || 'on' } : {}} form={form} onReset={reset} />
+        <FormFields
+          disabled={disabled}
+          data={checked ? { [name]: value || 'on' } : {}}
+          form={form}
+          onReset={reset}
+        />
       )}
       {render({ ourProps, theirProps, slot, defaultTag: DEFAULT_SWITCH_TAG, name: 'Switch' })}
     </>

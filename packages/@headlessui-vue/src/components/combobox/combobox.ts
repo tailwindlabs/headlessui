@@ -735,6 +735,7 @@ export let Combobox = defineComponent({
                   hidden: true,
                   readOnly: true,
                   form,
+                  disabled,
                   name,
                   value,
                 })

@@ -314,6 +314,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
           <RadioGroupDataContext.Provider value={radioGroupData}>
             {name != null && (
               <FormFields
+                disabled={disabled}
                 data={value != null ? { [name]: value || 'on' } : {}}
                 form={form}
                 onReset={reset}

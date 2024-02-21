@@ -5071,6 +5071,48 @@ describe('Form compatibility', () => {
     expect(submits).lastCalledWith([['delivery', 'pickup']])
   })
 
+  it('should not submit the data if the Listbox is disabled', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <form @submit="handleSubmit">
+          <input type="hidden" name="foo" value="bar" />
+          <Listbox v-model="value" name="delivery" disabled>
+            <ListboxButton>Trigger</ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="pickup">Pickup</ListboxOption>
+              <ListboxOption value="home-delivery">Home delivery</ListboxOption>
+              <ListboxOption value="dine-in">Dine in</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+          <button>Submit</button>
+        </form>
+      `,
+      setup: () => {
+        let value = ref('home-delivery')
+        return {
+          value,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Open listbox
+    await click(getListboxButton())
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([
+      ['foo', 'bar'], // The only available field
+    ])
+  })
+
   it('should be possible to submit a form with a complex value object', async () => {
     let submits = jest.fn()
 

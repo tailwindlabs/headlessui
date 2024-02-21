@@ -907,6 +907,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
             >
               {name != null && (
                 <FormFields
+                  disabled={disabled}
                   data={value != null ? { [name]: value } : {}}
                   form={form}
                   onReset={reset}

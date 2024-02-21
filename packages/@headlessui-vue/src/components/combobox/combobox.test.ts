@@ -6146,6 +6146,49 @@ describe('Form compatibility', () => {
     expect(submits).lastCalledWith([['delivery', 'pickup']])
   })
 
+  it('should not submit the data if the Combobox is disabled', async () => {
+    let submits = jest.fn()
+
+    renderTemplate({
+      template: html`
+        <form @submit="handleSubmit">
+          <input type="hidden" name="foo" value="bar" />
+          <Combobox v-model="value" name="delivery" disabled>
+            <ComboboxInput />
+            <ComboboxButton>Trigger</ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="pickup">Pickup</ComboboxOption>
+              <ComboboxOption value="home-delivery">Home delivery</ComboboxOption>
+              <ComboboxOption value="dine-in">Dine in</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+          <button>Submit</button>
+        </form>
+      `,
+      setup: () => {
+        let value = ref('home-delivery')
+        return {
+          value,
+          handleSubmit(event: SubmitEvent) {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget as HTMLFormElement).entries()])
+          },
+        }
+      },
+    })
+
+    // Open combobox
+    await click(getComboboxButton())
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([
+      ['foo', 'bar'], // The only available field
+    ])
+  })
+
   it('should be possible to submit a form with a complex value object', async () => {
     let submits = jest.fn()
 

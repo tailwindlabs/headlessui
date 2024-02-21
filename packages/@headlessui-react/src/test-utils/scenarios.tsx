@@ -202,6 +202,35 @@ export function commonFormScenarios(
       expect(formDataMock.mock.calls[0][0].has('foo')).toBe(true)
     })
 
+    it('should not submit the data if the control is disabled', async () => {
+      let submits = jest.fn()
+
+      function Example() {
+        return (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              submits([...new FormData(event.currentTarget).entries()])
+            }}
+          >
+            <input type="hidden" name="foo" value="bar" />
+            <Control name="bar" disabled />
+            <button>Submit</button>
+          </form>
+        )
+      }
+
+      render(<Example />)
+
+      // Submit the form
+      await click(screen.getByText('Submit'))
+
+      // Verify that the form has been submitted
+      expect(submits).toHaveBeenLastCalledWith([
+        ['foo', 'bar'], // The only available field
+      ])
+    })
+
     it(
       'should reset the control when the form is reset',
       suppressConsoleLogs(async () => {
