@@ -1786,7 +1786,7 @@ function OptionFn<
     id,
     ref: optionRef,
     role: 'option',
-    tabIndex: disabled === true ? undefined : -1,
+    tabIndex: -1,
     'aria-disabled': disabled === true ? true : undefined,
     // According to the WAI-ARIA best practices, we should use aria-checked for
     // multi-select,but Voice-Over disagrees. So we use aria-checked instead for
