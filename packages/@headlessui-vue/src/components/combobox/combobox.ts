@@ -1461,6 +1461,12 @@ export let ComboboxOption = defineComponent({
       if (props.disabled || api.virtual.value?.disabled(props.value)) return event.preventDefault()
       api.selectOption(id)
 
+      if (api.mode.value === ValueMode.Single) {
+        requestAnimationFrame(() => api.closeCombobox())
+      }
+    }
+
+    function handleFocus() {
       // We want to make sure that we don't accidentally trigger the virtual keyboard.
       //
       // This would happen if the input is focused, the options are open, you select an option
@@ -1477,12 +1483,6 @@ export let ComboboxOption = defineComponent({
         requestAnimationFrame(() => dom(api.inputRef)?.focus({ preventScroll: true }))
       }
 
-      if (api.mode.value === ValueMode.Single) {
-        requestAnimationFrame(() => api.closeCombobox())
-      }
-    }
-
-    function handleFocus() {
       if (props.disabled || api.virtual.value?.disabled(props.value)) {
         return api.goToOption(Focus.Nothing)
       }

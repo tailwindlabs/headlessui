@@ -1728,6 +1728,12 @@ function OptionFn<
     if (disabled || data.virtual?.disabled(value)) return event.preventDefault()
     select()
 
+    if (data.mode === ValueMode.Single) {
+      requestAnimationFrame(() => actions.closeCombobox())
+    }
+  })
+
+  let handleFocus = useEvent(() => {
     // We want to make sure that we don't accidentally trigger the virtual keyboard.
     //
     // This would happen if the input is focused, the options are open, you select an option (which
@@ -1744,12 +1750,6 @@ function OptionFn<
       requestAnimationFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
     }
 
-    if (data.mode === ValueMode.Single) {
-      requestAnimationFrame(() => actions.closeCombobox())
-    }
-  })
-
-  let handleFocus = useEvent(() => {
     if (disabled || data.virtual?.disabled(value)) {
       return actions.goToOption(Focus.Nothing)
     }
