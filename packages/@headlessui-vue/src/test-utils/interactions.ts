@@ -243,7 +243,7 @@ export async function click(
       if (!cancelled) {
         let next: HTMLElement | null = element as HTMLElement | null
         while (next !== null) {
-          if (next.matches(focusableSelector)) {
+          if (next.matches(focusableSelectorWithNegativeTabindex)) {
             next.focus()
             break
           }
@@ -456,9 +456,7 @@ function focusNext(event: Partial<KeyboardEvent>) {
   return innerFocusNext()
 }
 
-// Credit:
-//  - https://stackoverflow.com/a/30753870
-let focusableSelector = [
+let _focusableSelector = [
   '[contentEditable=true]',
   '[tabindex]',
   'a[href]',
@@ -469,6 +467,10 @@ let focusableSelector = [
   'select:not([disabled])',
   'textarea:not([disabled])',
 ]
+
+// Credit:
+//  - https://stackoverflow.com/a/30753870
+let focusableSelector = _focusableSelector
   .map(
     process.env.NODE_ENV === 'test'
       ? // TODO: Remove this once JSDOM fixes the issue where an element that is
@@ -476,6 +478,14 @@ let focusableSelector = [
         // in real browsers.
         (selector) => `${selector}:not([tabindex='-1']):not([style*='display: none'])`
       : (selector) => `${selector}:not([tabindex='-1'])`
+  )
+  .join(',')
+
+let focusableSelectorWithNegativeTabindex = _focusableSelector
+  .map(
+    process.env.NODE_ENV === 'test'
+      ? (selector) => `${selector}:not([style*='display: none'])`
+      : (selector) => selector
   )
   .join(',')
 
