@@ -31,10 +31,12 @@ export function HoistFormFields({ children }: React.PropsWithChildren<{}>) {
 export function FormFields({
   data,
   form: formId,
+  disabled,
   onReset,
 }: {
   data: Record<string, any>
   form?: string
+  disabled?: boolean
   onReset?: (e: Event) => void
 }) {
   let [form, setForm] = useState<HTMLFormElement | null>(null)
@@ -61,6 +63,7 @@ export function FormFields({
               hidden: true,
               readOnly: true,
               form: formId,
+              disabled,
               name,
               value,
             })}

@@ -810,4 +810,37 @@ describe('Form compatibility', () => {
     // Verify that the form has been submitted
     expect(submits).toHaveBeenLastCalledWith([['fruit', 'apple']])
   })
+
+  it('should not submit the data if the Switch is disabled', async () => {
+    let submits = jest.fn()
+
+    function Example() {
+      let [state, setState] = useState(true)
+      return (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            submits([...new FormData(event.currentTarget).entries()])
+          }}
+        >
+          <input type="hidden" name="foo" value="bar" />
+          <Switch.Group>
+            <Switch checked={state} onChange={setState} name="fruit" value="apple" disabled />
+            <Switch.Label>Apple</Switch.Label>
+          </Switch.Group>
+          <button>Submit</button>
+        </form>
+      )
+    }
+
+    render(<Example />)
+
+    // Submit the form
+    await click(getByText('Submit'))
+
+    // Verify that the form has been submitted
+    expect(submits).toHaveBeenLastCalledWith([
+      ['foo', 'bar'], // The only available field
+    ])
+  })
 })

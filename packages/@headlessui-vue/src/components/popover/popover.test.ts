@@ -45,7 +45,7 @@ describe('Safe guards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Popover />',
     suppressConsoleLogs((name, Component) => {
-      expect(() => render(Component)).toThrowError(
+      expect(() => render(Component)).toThrow(
         `<${name} /> is missing a parent <Popover /> component.`
       )
     })

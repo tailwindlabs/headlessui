@@ -78,6 +78,7 @@ export let Switch = defineComponent({
     name: { type: String, optional: true },
     value: { type: String, optional: true },
     id: { type: String, default: () => `headlessui-switch-${useId()}` },
+    disabled: { type: Boolean, default: false },
     tabIndex: { type: Number, default: 0 },
   },
   inheritAttrs: false,
@@ -172,6 +173,7 @@ export let Switch = defineComponent({
                 readOnly: true,
                 checked: checked.value,
                 form,
+                disabled: theirProps.disabled,
                 name,
                 value,
               })
