@@ -61,6 +61,7 @@ interface StateDefinition {
 
 enum ActionTypes {
   ToggleDisclosure,
+  OpenDisclosure,
   CloseDisclosure,
 
   SetButtonId,
@@ -72,6 +73,7 @@ enum ActionTypes {
 
 type Actions =
   | { type: ActionTypes.ToggleDisclosure }
+  | { type: ActionTypes.OpenDisclosure }
   | { type: ActionTypes.CloseDisclosure }
   | { type: ActionTypes.SetButtonId; buttonId: string | null }
   | { type: ActionTypes.SetPanelId; panelId: string | null }
@@ -91,6 +93,10 @@ let reducers: {
       [DisclosureStates.Closed]: DisclosureStates.Open,
     }),
   }),
+  [ActionTypes.OpenDisclosure]: (state) => {
+    if (state.disclosureState === DisclosureStates.Open) return state
+    return { ...state, disclosureState: DisclosureStates.Open }
+  },
   [ActionTypes.CloseDisclosure]: (state) => {
     if (state.disclosureState === DisclosureStates.Closed) return state
     return { ...state, disclosureState: DisclosureStates.Closed }
@@ -167,6 +173,7 @@ export type DisclosureProps<TTag extends ElementType = typeof DEFAULT_DISCLOSURE
   DisclosurePropsWeControl,
   {
     defaultOpen?: boolean
+    isOpen?: boolean
   }
 >
 
@@ -174,7 +181,7 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   props: DisclosureProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let { defaultOpen = false, ...theirProps } = props
+  let { defaultOpen = false, isOpen = false, ...theirProps } = props
   let internalDisclosureRef = useRef<HTMLElement | null>(null)
   let disclosureRef = useSyncRefs(
     ref,
@@ -191,8 +198,10 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   let panelRef = useRef<StateDefinition['panelRef']['current']>(null)
   let buttonRef = useRef<StateDefinition['buttonRef']['current']>(null)
 
+  const initialDisclosureState = defaultOpen ?? isOpen
+
   let reducerBag = useReducer(stateReducer, {
-    disclosureState: defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed,
+    disclosureState: initialDisclosureState ? DisclosureStates.Open : DisclosureStates.Closed,
     linkedPanel: false,
     buttonRef,
     panelRef,
@@ -217,6 +226,15 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
 
     restoreElement?.focus()
   })
+
+  useEffect(() => {
+    if (isOpen) {
+      dispatch({ type: ActionTypes.OpenDisclosure })
+      return
+    }
+
+    dispatch({ type: ActionTypes.CloseDisclosure })
+  }, [isOpen])
 
   let api = useMemo<ContextType<typeof DisclosureAPIContext>>(() => ({ close }), [close])
 
