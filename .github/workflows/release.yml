@@ -10,6 +10,7 @@ concurrency:
 
 permissions:
   contents: read
+  id-token: write
 
 env:
   CI: true
@@ -58,6 +59,6 @@ jobs:
           echo "PACKAGE_PATH=$(npm run package-path $TAG_NAME --silent)" >> $GITHUB_ENV
 
       - name: Publish
-        run: npm publish ${{ env.PACKAGE_PATH }} --tag ${{ env.RELEASE_CHANNEL }}
+        run: npm publish ${{ env.PACKAGE_PATH }} --provenance --tag ${{ env.RELEASE_CHANNEL }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
