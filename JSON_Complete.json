@@ -2199,7 +2199,11 @@
       },
       "button / betslip / default": {
         "$type": "color",
-        "$value": "#3772DFFF"
+        "$value": "#FFFFFF00"
+      },
+      "button / kamila / default": {
+        "$type": "color",
+        "$value": "#66677700"
       },
       "button / betslip / disabled": {
         "$type": "color",
