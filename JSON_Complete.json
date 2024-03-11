@@ -1,0 +1,6172 @@
+{
+  "ESPN": {
+    "2xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.2xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "2xl_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.2xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "2xs_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "2xs_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "2xs_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "3xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.3xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.3xl}",
+        "letterSpacing": "{Letter Space.tightest"
+      }
+    },
+    "background": {
+      "alert": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "alert / betslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "badge / account / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "badge / account / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF00"
+      },
+      "betslip / confirmation": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "betslip / handle": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "betslip / offset": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "betslip / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "betslip / primary / hovered": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "betslip / primary / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "betslip / secondary / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "betslip / success": {
+        "$type": "color",
+        "$value": "#C8F9C8FF"
+      },
+      "betslip / teaser / new": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "button / bar / betslip / loading": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "button / betslip / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / betslip / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / betslip / loading": {
+        "$type": "color",
+        "$value": "#BCD0F4FF"
+      },
+      "button / betslip / success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "button / critical / default": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "button / critical / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / critical / hovered": {
+        "$type": "color",
+        "$value": "#B80000FF"
+      },
+      "button / critical / pressed": {
+        "$type": "color",
+        "$value": "#930000FF"
+      },
+      "button / floating": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / primary / loading": {
+        "$type": "color",
+        "$value": "#BCD0F4FF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / progress / success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "button / progress / temporaryDisabled": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#DEE8FAFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#BCD0F4FF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#9BB9EFFF"
+      },
+      "card / games": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "card / offset": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "card / primary": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "confirmation": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "control / deselected / default": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "control / deselected / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "control / deselected / hovered": {
+        "$type": "color",
+        "$value": "#D4D5D5FF"
+      },
+      "control / deselected / pressed": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "control / payments / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "control / payments / disabled": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "control / payments / pressed": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "control / selected / default": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "control / selected / disabled": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "control / selected / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "control / selected / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "feedback / betslip / default": {
+        "$type": "color",
+        "$value": "#20F4CAFF"
+      },
+      "feedback / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "feedback / empty": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "feedback / subdued": {
+        "$type": "color",
+        "$value": "#9BB9EFFF"
+      },
+      "filter / default": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "filter / pressed": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "forbidden": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "header / badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF29"
+      },
+      "header / betslip": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "header / betslip / pressed": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "header / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF29"
+      },
+      "header / offset": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "header / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "header / scrollbar": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "header / selected": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "header / sunken": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "hoverLabel / casino": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "input / betslip / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "input / betslip / disabled": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "input / betslip / readOnly": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "input / readOnly": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "input / search": {
+        "$type": "color",
+        "$value": "#414346FF"
+      },
+      "inverse / offset": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "inverse / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "keyboard / betslip / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "keyboard / betslip / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "label / casino": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "label / casino / brandedGame": {
+        "$type": "color",
+        "$value": "#4F00FFFF"
+      },
+      "label / primary": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "label / quaternary": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "label / subdued": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "league": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "league / hovered": {
+        "$type": "color",
+        "$value": "#686A6BFF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "menuRow / betslip / active": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / betslip / hovered": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / betslip / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / primary / active": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / primary / hovered": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / primary / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "modal": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF29"
+      },
+      "navigation / default": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "navigation / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF29"
+      },
+      "navigation / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "navigation / scrollbar": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "navigation / selected": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "navigation / sunken": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "new": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "notification": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "offset": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "offset / hovered": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "offset / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "offsetTemp": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "overlay / card / interaction": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "overlay / casino / unavailable": {
+        "$type": "color",
+        "$value": "#000000A3"
+      },
+      "overlay / deep": {
+        "$type": "color",
+        "$value": "#000000CC"
+      },
+      "overlay / image": {
+        "$type": "color",
+        "$value": "#0000008F"
+      },
+      "overlay / image / casino / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF52"
+      },
+      "overlay / image / casino / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF52"
+      },
+      "overlay / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "overlay / medium": {
+        "$type": "color",
+        "$value": "#000000A3"
+      },
+      "overlay / modal": {
+        "$type": "color",
+        "$value": "#000000A3"
+      },
+      "overlay / shallow": {
+        "$type": "color",
+        "$value": "#0000003D"
+      },
+      "payments / vendor": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "payments / vendor / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "primary / hovered": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "primary / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "primary / pressedTemp": {
+        "$type": "color",
+        "$value": "#D4D5D5FF"
+      },
+      "primary / selected": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "primaryTemp": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "quickBetslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "scores / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "scores / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "scrollbar": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "selector / betslip / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "selector / betslip / disabled": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "selector / betslip / focused": {
+        "$type": "color",
+        "$value": "#0000003D"
+      },
+      "selector / betslip / hover": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / betslip / pressed": {
+        "$type": "color",
+        "$value": "#0000003D"
+      },
+      "signUp": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "surface / overlay": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "surface / raised / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "surface / raised / primary / hovered": {
+        "$type": "color",
+        "$value": "#F7F7F7FF"
+      },
+      "surface / raised / primary / pressed": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "surface / raised / primary / selected": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "surface / raised / secondary / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "surface / raised / secondary / hovered": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "surface / raised / secondary / pressed": {
+        "$type": "color",
+        "$value": "#D4D5D5FF"
+      },
+      "systemSplash": {
+        "$type": "color",
+        "$value": "#20F4CAFF"
+      },
+      "tab / bottom": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "tag / parlay": {
+        "$type": "color",
+        "$value": "#AACAE5FF"
+      },
+      "tag / quickBets": {
+        "$type": "color",
+        "$value": "#AD73E8FF"
+      },
+      "toast": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "toggle / handle": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "toggle / track / deselected": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "toggle / track / selected": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "topNavigation": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      }
+    },
+    "base": {
+      "accent": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "navigationBar": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "primary / dark": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "ripple": {
+        "$type": "color",
+        "$value": "#00000052"
+      },
+      "ripple / outlinedButton": {
+        "$type": "color",
+        "$value": "#3772DF4D"
+      },
+      "shadow": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "toolbar / webview": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "transparent": {
+        "$type": "color",
+        "$value": "#00000000"
+      }
+    },
+    "border": {
+      "betslip": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "betslip / prominent": {
+        "$type": "color",
+        "$value": "#20F4CAFF"
+      },
+      "button / critical / focused": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "button / jackpot / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "button / jackpot / focused": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFA3"
+      },
+      "button / jackpot / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "button / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / outlined / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / outlined / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / primary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / progress / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / quickbetslip / outlined / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / quickbetslip / outlined / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / secondary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "chips / quickBets": {
+        "$type": "color",
+        "$value": "#AD73E8FF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "divider": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "divider / casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "divider / header": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "graphic / primary": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "graphic / secondary": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "input / betslip / default": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / betslip / disabled": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "input / betslip / selected": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / default / primary": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / quickBetslip / danger": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "input / quickBetslip / default": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / quickBetslip / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / selected": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "inverse / subdued": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "keyboard / betslip": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "league": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "league / hovered": {
+        "$type": "color",
+        "$value": "#686A6BFF"
+      },
+      "link / primary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / secondary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "navigation": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "offset / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "parlay": {
+        "$type": "color",
+        "$value": "#AACAE5FF"
+      },
+      "parlay / usa": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "payments / vendorLogo": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "placeholderOutline": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "prominent": {
+        "$type": "color",
+        "$value": "#20F4CAFF"
+      },
+      "quickBetslip": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "signUp / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      }
+    },
+    "brand": {
+      "logo / rg / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "logo / rg / secondary": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#20F4CAFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#121418FF"
+      }
+    },
+    "graphic": {
+      "danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#121418FF"
+      },
+      "subdued / primary": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "subdued / secondary": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "subdued / tertiary": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "tick": {
+        "$type": "color",
+        "$value": "#121213FF"
+      }
+    },
+    "icon": {
+      "betslip / default": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "betslip / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "betslip / dropdown": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / critical": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / floating": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / outlined": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFFA3"
+      },
+      "chip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "confirmation": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "indicator": {
+        "$type": "color",
+        "$value": "#CCA61DFF"
+      },
+      "link / betslip / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / betslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "link / betslip / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "loading / spinner / primary": {
+        "$type": "color",
+        "$value": "#9BB9EFFF"
+      },
+      "loading / spinner / secondary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "menu": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "menu / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "menu / secondary": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "menu / sports": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "navigation / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / secondary": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "onDanger": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onFeedback": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onOverlay / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "onOverlay / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onWarning": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "payments / logo": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "pennPlay / banner": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "quickBetslip / primary": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "quickBetslip / success": {
+        "$type": "color",
+        "$value": "#13BA15FF"
+      },
+      "search": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "selector / deselected": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "selector / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "tab / active": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "tab / body / active": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "tab / body / hovered": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "tab / body / inactive": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tab / body / pressed": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "tab / bottom / active": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / bottom / inactive": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "tab / pill / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / pill / hovered": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tab / pill / inactive": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "tab / pill / pressed": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tag / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "toolbar": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      }
+    },
+    "l_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "l_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "l_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "m_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "m_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "m_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "skeleton": {
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "header / highlight": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "primary / highlight": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "secondary / highlight": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      }
+    },
+    "text": {
+      "alert / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "alert / primary / betslip": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "alert / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "alert / secondary / betslip": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "betslip / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "betslip / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "button / alert": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / alert / betslip": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / betslip / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / betslip / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / betslip / loading": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / betslip / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / critical / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF3D"
+      },
+      "button / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFA3"
+      },
+      "button / jackpot / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFA3"
+      },
+      "button / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / outlined / pressed": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / progress / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / progress / temporaryDisabled": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "button / quickbetslip / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / quickbetslip / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / quickbetslip / outlined / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "casino / jackpot / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "casino / jackpot / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFA3"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "danger / betslip": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "favorite": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      },
+      "graphic / header": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "graphic / prominent": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "header / betslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / favorite": {
+        "$type": "color",
+        "$value": "#FFDF6DFF"
+      },
+      "header / live": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / secondary": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / betslip / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / betslip / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "input / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / placeholder": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "input / placeholder / betslip": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "input / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "input / quickBetslip / default": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "input / quickBetslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "input / quickBetslip / placeholder": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "input / search / focused": {
+        "$type": "color",
+        "$value": "#7AA1EAFF"
+      },
+      "input / search / placeholder": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "input / search / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "input / secondary": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "inverse / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "inverse / subdued / primary": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "keyboard / betslip / default": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "keyboard / betslip / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "keyboard / betslip / prominent / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "keyboard / betslip / prominent / selected": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "label / casino": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "label / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "label / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "label / tertiary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "link / betslip / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / betslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "link / betslip / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "link / header / default": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "link / header / hovered": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / header / pressed": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / primary / default": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / primary / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "link / primary / hovered": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "link / primary / pressed": {
+        "$type": "color",
+        "$value": "#16449BFF"
+      },
+      "link / secondary / default": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "link / secondary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "link / secondary / hovered": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "link / secondary / pressed": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#121418FF"
+      },
+      "menu / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "menu / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "navigation / live": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / secondary": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "onDanger": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onFeedback": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onNotification": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onOverlay": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onWarning": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "pennPlay / card": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "placeholder": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "placeholderOutline": {
+        "$type": "color",
+        "$value": "#0000007A"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "quickBetslip / danger": {
+        "$type": "color",
+        "$value": "#D40909FF"
+      },
+      "quickBetslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "quickBetslip / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "quickBetslip / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "quickBetslip / success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "selector / betslip / default": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "selector / deselected": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "selector / label / deselected": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "selector / label / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / subdued": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "subdued / primary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "tab / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / betslip / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / betslip / inactive": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "tab / body / active": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / body / hovered": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / body / inactive": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tab / body / pressed": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / bottom / active": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / bottom / inactive": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "tab / header / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / header / inactive": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "tab / inactive / primary": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      }
+    },
+    "xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xl_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xl_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xs_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "xs_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "xs_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    }
+  },
+  "Letter Space": {
+    "default": {
+      "$type": "dimension",
+      "$value": "0.0px"
+    },
+    "loose": {
+      "$type": "dimension",
+      "$value": "0.01px"
+    },
+    "tight": {
+      "$type": "dimension",
+      "$value": "-0.01px"
+    },
+    "tightest": {
+      "$type": "dimension",
+      "$value": "-0.02px"
+    }
+  },
+  "Line Height": {
+    "2xl": {
+      "$type": "number",
+      "$value": "28px"
+    },
+    "2xs": {
+      "$type": "number",
+      "$value": "14px"
+    },
+    "3xl": {
+      "$type": "number",
+      "$value": "42px"
+    },
+    "l": {
+      "$type": "number",
+      "$value": "24px"
+    },
+    "m": {
+      "$type": "number",
+      "$value": "24px"
+    },
+    "s": {
+      "$type": "number",
+      "$value": "20px"
+    },
+    "xl": {
+      "$type": "number",
+      "$value": "26px"
+    },
+    "xs": {
+      "$type": "number",
+      "$value": "18px"
+    }
+  },
+  "PennPlay": {
+    "2xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.2xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "2xl_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.2xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "2xs_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "2xs_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "2xs_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "3xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.3xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.3xl}",
+        "letterSpacing": "{Letter Space.tightest"
+      }
+    },
+    "background": {
+      "alert": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "alert / betslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "badge / account / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "badge / account / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF00"
+      },
+      "betslip / confirmation": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "betslip / handle": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "betslip / offset": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "betslip / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "betslip / primary / hovered": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "betslip / primary / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "betslip / secondary / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "betslip / success": {
+        "$type": "color",
+        "$value": "#C8F9C8FF"
+      },
+      "betslip / teaser / new": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "button / bar / betslip / loading": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "button / betslip / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / betslip / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / betslip / loading": {
+        "$type": "color",
+        "$value": "#BCD0F4FF"
+      },
+      "button / betslip / success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "button / critical / default": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "button / critical / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / critical / hovered": {
+        "$type": "color",
+        "$value": "#B80000FF"
+      },
+      "button / critical / pressed": {
+        "$type": "color",
+        "$value": "#930000FF"
+      },
+      "button / floating": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / primary / loading": {
+        "$type": "color",
+        "$value": "#BCD0F4FF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / progress / success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "button / progress / temporaryDisabled": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#DEE8FAFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#BCD0F4FF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#9BB9EFFF"
+      },
+      "card / games": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "card / offset": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "card / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "confirmation": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "control / deselected / default": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "control / deselected / disabled": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "control / deselected / hovered": {
+        "$type": "color",
+        "$value": "#D4D5D5FF"
+      },
+      "control / deselected / pressed": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "control / payments / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "control / payments / disabled": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "control / payments / pressed": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "control / selected / default": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "control / selected / disabled": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "control / selected / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "control / selected / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "feedback / betslip / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "feedback / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "feedback / empty": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "feedback / subdued": {
+        "$type": "color",
+        "$value": "#9BB9EFFF"
+      },
+      "filter / default": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "filter / pressed": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "forbidden": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "header / badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "header / betslip": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "header / betslip / pressed": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "header / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "header / offset": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "header / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "header / scrollbar": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "header / selected": {
+        "$type": "color",
+        "$value": "#FFFFFF33"
+      },
+      "header / sunken": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "hoverLabel / casino": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "input / betslip / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "input / betslip / disabled": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "input / betslip / readOnly": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "input / readOnly": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "input / search": {
+        "$type": "color",
+        "$value": "#414346FF"
+      },
+      "inverse / offset": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "inverse / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "keyboard / betslip / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "keyboard / betslip / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "label / casino": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "label / casino / brandedGame": {
+        "$type": "color",
+        "$value": "#4F00FFFF"
+      },
+      "label / primary": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "label / quaternary": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "label / subdued": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "league": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "league / hovered": {
+        "$type": "color",
+        "$value": "#565859FF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "menuRow / betslip / active": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / betslip / hovered": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / betslip / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / primary / active": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / primary / hovered": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "menuRow / primary / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "modal": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "navigation / default": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "navigation / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "navigation / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "navigation / scrollbar": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "navigation / selected": {
+        "$type": "color",
+        "$value": "#FFFFFF33"
+      },
+      "navigation / sunken": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "new": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "notification": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "offset": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "offset / hovered": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "offset / pressed": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "offsetTemp": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "overlay / card / interaction": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "overlay / casino / unavailable": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "overlay / deep": {
+        "$type": "color",
+        "$value": "#000000CC"
+      },
+      "overlay / image": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "overlay / image / casino / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF4D"
+      },
+      "overlay / image / casino / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF4D"
+      },
+      "overlay / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "overlay / medium": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "overlay / modal": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "overlay / shallow": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "payments / vendor": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "payments / vendor / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "primary / hovered": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "primary / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "primary / pressedTemp": {
+        "$type": "color",
+        "$value": "#D4D5D5FF"
+      },
+      "primary / selected": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "primaryTemp": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "quickBetslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "scores / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "scores / pressed": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "scrollbar": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "selector / betslip / default": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "selector / betslip / disabled": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "selector / betslip / focused": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "selector / betslip / hover": {
+        "$type": "color",
+        "$value": "#D4D5D5FF"
+      },
+      "selector / betslip / pressed": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "signUp": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "surface / overlay": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "surface / raised / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "surface / raised / primary / hovered": {
+        "$type": "color",
+        "$value": "#FAFAFAFF"
+      },
+      "surface / raised / primary / pressed": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "surface / raised / primary / selected": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "surface / raised / secondary / default": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "surface / raised / secondary / hovered": {
+        "$type": "color",
+        "$value": "#EAEAEAFF"
+      },
+      "surface / raised / secondary / pressed": {
+        "$type": "color",
+        "$value": "#D4D5D5FF"
+      },
+      "systemSplash": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "tab / bottom": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "tag / parlay": {
+        "$type": "color",
+        "$value": "#DF9937FF"
+      },
+      "tag / quickBets": {
+        "$type": "color",
+        "$value": "#AD73E8FF"
+      },
+      "toast": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "toggle / handle": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "toggle / track / deselected": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "toggle / track / selected": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "topNavigation": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      }
+    },
+    "base": {
+      "accent": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "navigationBar": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "primary / dark": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "ripple": {
+        "$type": "color",
+        "$value": "#0000004D"
+      },
+      "ripple / outlinedButton": {
+        "$type": "color",
+        "$value": "#3772DF4D"
+      },
+      "shadow": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "toolbar / webview": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "transparent": {
+        "$type": "color",
+        "$value": "#00000000"
+      }
+    },
+    "border": {
+      "betslip": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "betslip / prominent": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / critical / focused": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "button / jackpot / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "button / jackpot / focused": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "button / jackpot / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / outlined / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / outlined / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / primary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / progress / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / quickbetslip / outlined / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / quickbetslip / outlined / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / secondary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "chips / quickBets": {
+        "$type": "color",
+        "$value": "#AD73E8FF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "divider": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "divider / casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "divider / header": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "graphic / primary": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "graphic / secondary": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFF33"
+      },
+      "input / betslip / default": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / betslip / disabled": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "input / betslip / selected": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / default / primary": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / quickBetslip / danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "input / quickBetslip / default": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / quickBetslip / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / selected": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "inverse / subdued": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "keyboard / betslip": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "league": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "league / hovered": {
+        "$type": "color",
+        "$value": "#565859FF"
+      },
+      "link / primary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / secondary / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "navigation": {
+        "$type": "color",
+        "$value": "#FFFFFF33"
+      },
+      "offset / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "parlay": {
+        "$type": "color",
+        "$value": "#DF9937FF"
+      },
+      "parlay / usa": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "payments / vendorLogo": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "placeholderOutline": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "prominent": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "quickBetslip": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "signUp / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      }
+    },
+    "brand": {
+      "logo / rg / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "logo / rg / secondary": {
+        "$type": "color",
+        "$value": "#1D1E1FFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      }
+    },
+    "graphic": {
+      "danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "subdued / primary": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "subdued / secondary": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "subdued / tertiary": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "tick": {
+        "$type": "color",
+        "$value": "#121213FF"
+      }
+    },
+    "icon": {
+      "betslip / default": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "betslip / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "betslip / dropdown": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / critical": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / floating": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / outlined": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "chip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "confirmation": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "indicator": {
+        "$type": "color",
+        "$value": "#CCA61DFF"
+      },
+      "link / betslip / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / betslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "link / betslip / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "loading / spinner / primary": {
+        "$type": "color",
+        "$value": "#9BB9EFFF"
+      },
+      "loading / spinner / secondary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "menu": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "menu / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "menu / secondary": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "menu / sports": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / secondary": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "onDanger": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onFeedback": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onOverlay / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "onOverlay / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onWarning": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "payments / logo": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "pennPlay / banner": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "quickBetslip / primary": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "quickBetslip / success": {
+        "$type": "color",
+        "$value": "#13BA15FF"
+      },
+      "search": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "selector / deselected": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "selector / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "tab / active": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "tab / body / active": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "tab / body / hovered": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "tab / body / inactive": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tab / body / pressed": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "tab / bottom / active": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / bottom / inactive": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "tab / pill / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / pill / hovered": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tab / pill / inactive": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "tab / pill / pressed": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tag / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "toolbar": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      }
+    },
+    "l_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "l_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "l_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "m_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "m_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "m_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "skeleton": {
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "header / highlight": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "primary / highlight": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "secondary / highlight": {
+        "$type": "color",
+        "$value": "#DDDEDEFF"
+      }
+    },
+    "text": {
+      "alert / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "alert / primary / betslip": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "alert / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "alert / secondary / betslip": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "betslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "betslip / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "button / alert": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / alert / betslip": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / betslip / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / betslip / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / betslip / loading": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / betslip / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / critical / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "button / jackpot / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "button / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / outlined / pressed": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / progress / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / progress / temporaryDisabled": {
+        "$type": "color",
+        "$value": "#F4F4F4FF"
+      },
+      "button / quickbetslip / outlined / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / quickbetslip / outlined / disabled": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "button / quickbetslip / outlined / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "button / quickbetslip / outlined / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "casino / jackpot / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "casino / jackpot / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "danger / betslip": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "favorite": {
+        "$type": "color",
+        "$value": "#FFD749FF"
+      },
+      "graphic / header": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "graphic / prominent": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "header / betslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / favorite": {
+        "$type": "color",
+        "$value": "#FFDF6DFF"
+      },
+      "header / live": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / secondary": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "input / betslip / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / betslip / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "input / focused": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "input / placeholder": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "input / placeholder / betslip": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "input / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "input / quickBetslip / default": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "input / quickBetslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "input / quickBetslip / placeholder": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "input / search / focused": {
+        "$type": "color",
+        "$value": "#7AA1EAFF"
+      },
+      "input / search / placeholder": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "input / search / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "input / secondary": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "inverse / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "inverse / subdued / primary": {
+        "$type": "color",
+        "$value": "#B5B7B7FF"
+      },
+      "keyboard / betslip / default": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "keyboard / betslip / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "keyboard / betslip / prominent / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "keyboard / betslip / prominent / selected": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "label / casino": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "label / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "label / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "label / tertiary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "link / betslip / default": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / betslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "link / betslip / hovered": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "link / header / default": {
+        "$type": "color",
+        "$value": "#588AE4FF"
+      },
+      "link / header / hovered": {
+        "$type": "color",
+        "$value": "#3772DFFF"
+      },
+      "link / header / pressed": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / primary / default": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "link / primary / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "link / primary / hovered": {
+        "$type": "color",
+        "$value": "#1A49A0FF"
+      },
+      "link / primary / pressed": {
+        "$type": "color",
+        "$value": "#47A1FFFF"
+      },
+      "link / secondary / default": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "link / secondary / disabled": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "link / secondary / hovered": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "link / secondary / pressed": {
+        "$type": "color",
+        "$value": "#2B2C2DFF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "menu / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "menu / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "navigation / live": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / secondary": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "onDanger": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onFeedback": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onNotification": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onOverlay": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onWarning": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "pennPlay / card": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "placeholder": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "placeholderOutline": {
+        "$type": "color",
+        "$value": "#00000080"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "quickBetslip / danger": {
+        "$type": "color",
+        "$value": "#DD0000FF"
+      },
+      "quickBetslip / disabled": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "quickBetslip / primary": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "quickBetslip / secondary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "quickBetslip / success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "selector / betslip / default": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "selector / deselected": {
+        "$type": "color",
+        "$value": "#305BC8FF"
+      },
+      "selector / label / deselected": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "selector / label / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / subdued": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "subdued / primary": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#0D830FFF"
+      },
+      "tab / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / betslip / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / betslip / inactive": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "tab / body / active": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / body / hovered": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / body / inactive": {
+        "$type": "color",
+        "$value": "#6C6E6FFF"
+      },
+      "tab / body / pressed": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / bottom / active": {
+        "$type": "color",
+        "$value": "#121213FF"
+      },
+      "tab / bottom / inactive": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "tab / header / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / header / inactive": {
+        "$type": "color",
+        "$value": "#9D9E9FFF"
+      },
+      "tab / inactive / primary": {
+        "$type": "color",
+        "$value": "#848687FF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#5A5C5DFF"
+      }
+    },
+    "xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xl_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xl_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xs_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "xs_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "xs_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    }
+  },
+  "Text Size": {
+    "2xl": {
+      "$type": "dimension",
+      "$value": "22px"
+    },
+    "2xs": {
+      "$type": "dimension",
+      "$value": "11px"
+    },
+    "3xl": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "l": {
+      "$type": "dimension",
+      "$value": "18px"
+    },
+    "m": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "s": {
+      "$type": "dimension",
+      "$value": "14px"
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": "20px"
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": "12px"
+    }
+  },
+  "TheScore": {
+    "2xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.2xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "2xl_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.2xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "2xs_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "2xs_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "2xs_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.2xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.2xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "3xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.3xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.3xl}",
+        "letterSpacing": "{Letter Space.tightest"
+      }
+    },
+    "background": {
+      "alert": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "alert / betslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "badge / account / default": {
+        "$type": "color",
+        "$value": "#31353AFF"
+      },
+      "badge / account / pressed": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "badge / live": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "betslip / confirmation": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "betslip / handle": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "betslip / offset": {
+        "$type": "color",
+        "$value": "#F5F5F5FF"
+      },
+      "betslip / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "betslip / primary / hovered": {
+        "$type": "color",
+        "$value": "#EBEBEBFF"
+      },
+      "betslip / primary / pressed": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#F5F5F5FF"
+      },
+      "betslip / secondary / pressed": {
+        "$type": "color",
+        "$value": "#EBEBEBFF"
+      },
+      "betslip / success": {
+        "$type": "color",
+        "$value": "#F0F6F4FF"
+      },
+      "betslip / teaser / new": {
+        "$type": "color",
+        "$value": "#EBEBEBFF"
+      },
+      "button / bar / betslip / loading": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "button / betslip / default": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "button / betslip / disabled": {
+        "$type": "color",
+        "$value": "#0079FF40"
+      },
+      "button / betslip / loading": {
+        "$type": "color",
+        "$value": "#0079FF40"
+      },
+      "button / betslip / success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "button / critical / default": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "button / critical / disabled": {
+        "$type": "color",
+        "$value": "#FF3B2F40"
+      },
+      "button / critical / hovered": {
+        "$type": "color",
+        "$value": "#BD0B00FF"
+      },
+      "button / critical / pressed": {
+        "$type": "color",
+        "$value": "#BD0B00FF"
+      },
+      "button / floating": {
+        "$type": "color",
+        "$value": "#252525FF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#0079FF40"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "button / primary / loading": {
+        "$type": "color",
+        "$value": "#05387AFF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "button / progress / success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "button / progress / temporaryDisabled": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF0A"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF0A"
+      },
+      "card / games": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "card / offset": {
+        "$type": "color",
+        "$value": "#202122FF"
+      },
+      "card / primary": {
+        "$type": "color",
+        "$value": "#171819FF"
+      },
+      "confirmation": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "control / deselected / default": {
+        "$type": "color",
+        "$value": "#2A2D33FF"
+      },
+      "control / deselected / disabled": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "control / deselected / hovered": {
+        "$type": "color",
+        "$value": "#222429FF"
+      },
+      "control / deselected / pressed": {
+        "$type": "color",
+        "$value": "#222429FF"
+      },
+      "control / payments / default": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "control / payments / disabled": {
+        "$type": "color",
+        "$value": "#1C1C1CFF"
+      },
+      "control / payments / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF0A"
+      },
+      "control / selected / default": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "control / selected / disabled": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "control / selected / hovered": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "control / selected / pressed": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "feedback / betslip / default": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "feedback / default": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "feedback / empty": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "feedback / subdued": {
+        "$type": "color",
+        "$value": "#0079FF80"
+      },
+      "filter / default": {
+        "$type": "color",
+        "$value": "#2A2D33FF"
+      },
+      "filter / pressed": {
+        "$type": "color",
+        "$value": "#222429FF"
+      },
+      "forbidden": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "header / badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "header / betslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / betslip / pressed": {
+        "$type": "color",
+        "$value": "#EBEBEBFF"
+      },
+      "header / hovered": {
+        "$type": "color",
+        "$value": "#27292CFF"
+      },
+      "header / offset": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "header / pressed": {
+        "$type": "color",
+        "$value": "#1F2023FF"
+      },
+      "header / scrollbar": {
+        "$type": "color",
+        "$value": "#2C2E31FF"
+      },
+      "header / selected": {
+        "$type": "color",
+        "$value": "#2C2E31FF"
+      },
+      "header / sunken": {
+        "$type": "color",
+        "$value": "#111213FF"
+      },
+      "hoverLabel / casino": {
+        "$type": "color",
+        "$value": "#171819FF"
+      },
+      "input / betslip / default": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "input / betslip / disabled": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "input / betslip / readOnly": {
+        "$type": "color",
+        "$value": "#EBEBEBFF"
+      },
+      "input / readOnly": {
+        "$type": "color",
+        "$value": "#252525FF"
+      },
+      "input / search": {
+        "$type": "color",
+        "$value": "#2D2E30FF"
+      },
+      "inverse / offset": {
+        "$type": "color",
+        "$value": "#F3F3F3FF"
+      },
+      "inverse / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "keyboard / betslip / default": {
+        "$type": "color",
+        "$value": "#F5F5F5FF"
+      },
+      "keyboard / betslip / pressed": {
+        "$type": "color",
+        "$value": "#E1E1E1FF"
+      },
+      "label / casino": {
+        "$type": "color",
+        "$value": "#31353AFF"
+      },
+      "label / casino / brandedGame": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "label / primary": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "label / quaternary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "label / subdued": {
+        "$type": "color",
+        "$value": "#31353AFF"
+      },
+      "league": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "league / hovered": {
+        "$type": "color",
+        "$value": "#4D4D4DFF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "menuRow / betslip / active": {
+        "$type": "color",
+        "$value": "#F5F5F5FF"
+      },
+      "menuRow / betslip / hovered": {
+        "$type": "color",
+        "$value": "#F5F5F5FF"
+      },
+      "menuRow / betslip / pressed": {
+        "$type": "color",
+        "$value": "#F5F5F5FF"
+      },
+      "menuRow / primary / active": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "menuRow / primary / hovered": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "menuRow / primary / pressed": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "modal": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "navigation / badge / live": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "navigation / default": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "navigation / hovered": {
+        "$type": "color",
+        "$value": "#27292CFF"
+      },
+      "navigation / pressed": {
+        "$type": "color",
+        "$value": "#1F2023FF"
+      },
+      "navigation / scrollbar": {
+        "$type": "color",
+        "$value": "#2C2E31FF"
+      },
+      "navigation / selected": {
+        "$type": "color",
+        "$value": "#2C2E31FF"
+      },
+      "navigation / sunken": {
+        "$type": "color",
+        "$value": "#111213FF"
+      },
+      "new": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "notification": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "offset": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "offset / hovered": {
+        "$type": "color",
+        "$value": "#1F2023FF"
+      },
+      "offset / pressed": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "offsetTemp": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "overlay / card / interaction": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "overlay / casino / unavailable": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "overlay / deep": {
+        "$type": "color",
+        "$value": "#000000BF"
+      },
+      "overlay / image": {
+        "$type": "color",
+        "$value": "#000000BF"
+      },
+      "overlay / image / casino / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF59"
+      },
+      "overlay / image / casino / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF59"
+      },
+      "overlay / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF1A"
+      },
+      "overlay / medium": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "overlay / modal": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "overlay / shallow": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "payments / vendor": {
+        "$type": "color",
+        "$value": "#363636FF"
+      },
+      "payments / vendor / disabled": {
+        "$type": "color",
+        "$value": "#242424FF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#121212FF"
+      },
+      "primary / hovered": {
+        "$type": "color",
+        "$value": "#27292CFF"
+      },
+      "primary / pressed": {
+        "$type": "color",
+        "$value": "#171819FF"
+      },
+      "primary / pressedTemp": {
+        "$type": "color",
+        "$value": "#1F2023FF"
+      },
+      "primary / selected": {
+        "$type": "color",
+        "$value": "#242629FF"
+      },
+      "primaryTemp": {
+        "$type": "color",
+        "$value": "#111213FF"
+      },
+      "quickBetslip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "scores / default": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "scores / pressed": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "scrollbar": {
+        "$type": "color",
+        "$value": "#484A4DFF"
+      },
+      "selector / betslip / default": {
+        "$type": "color",
+        "$value": "#0000000A"
+      },
+      "selector / betslip / disabled": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "selector / betslip / focused": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "selector / betslip / hover": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / betslip / pressed": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "signUp": {
+        "$type": "color",
+        "$value": "#121212FF"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "surface / overlay": {
+        "$type": "color",
+        "$value": "#242629FF"
+      },
+      "surface / raised / primary / default": {
+        "$type": "color",
+        "$value": "#111213FF"
+      },
+      "surface / raised / primary / hovered": {
+        "$type": "color",
+        "$value": "#27292CFF"
+      },
+      "surface / raised / primary / pressed": {
+        "$type": "color",
+        "$value": "#1F2023FF"
+      },
+      "surface / raised / primary / selected": {
+        "$type": "color",
+        "$value": "#242629FF"
+      },
+      "surface / raised / secondary / default": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "surface / raised / secondary / hovered": {
+        "$type": "color",
+        "$value": "#1F2023FF"
+      },
+      "surface / raised / secondary / pressed": {
+        "$type": "color",
+        "$value": "#161819FF"
+      },
+      "systemSplash": {
+        "$type": "color",
+        "$value": "#083A76FF"
+      },
+      "tab / bottom": {
+        "$type": "color",
+        "$value": "#0B090AFF"
+      },
+      "tag / parlay": {
+        "$type": "color",
+        "$value": "#2FCEBCFF"
+      },
+      "tag / quickBets": {
+        "$type": "color",
+        "$value": "#A777FFFF"
+      },
+      "toast": {
+        "$type": "color",
+        "$value": "#31353AFF"
+      },
+      "toggle / handle": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "toggle / track / deselected": {
+        "$type": "color",
+        "$value": "#323334FF"
+      },
+      "toggle / track / selected": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "topNavigation": {
+        "$type": "color",
+        "$value": "#111213FF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      }
+    },
+    "base": {
+      "accent": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "navigationBar": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "primary / dark": {
+        "$type": "color",
+        "$value": "#1B1C1EFF"
+      },
+      "ripple": {
+        "$type": "color",
+        "$value": "#FFFFFF54"
+      },
+      "ripple / outlinedButton": {
+        "$type": "color",
+        "$value": "#056FFA54"
+      },
+      "shadow": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "toolbar / webview": {
+        "$type": "color",
+        "$value": "#24262BFF"
+      },
+      "transparent": {
+        "$type": "color",
+        "$value": "#00000000"
+      }
+    },
+    "border": {
+      "betslip": {
+        "$type": "color",
+        "$value": "#00000014"
+      },
+      "betslip / prominent": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "button / critical / focused": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "button / jackpot / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "button / jackpot / focused": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "button / jackpot / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / outlined / default": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "button / outlined / disabled": {
+        "$type": "color",
+        "$value": "#005ABE80"
+      },
+      "button / outlined / focused": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "button / outlined / hovered": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "button / outlined / pressed": {
+        "$type": "color",
+        "$value": "#005ABE80"
+      },
+      "button / primary / focused": {
+        "$type": "color",
+        "$value": "#3B85F6FF"
+      },
+      "button / progress / focused": {
+        "$type": "color",
+        "$value": "#3B85F6FF"
+      },
+      "button / quickbetslip / outlined / default": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "button / quickbetslip / outlined / disabled": {
+        "$type": "color",
+        "$value": "#BFD8FEFF"
+      },
+      "button / quickbetslip / outlined / focused": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "button / quickbetslip / outlined / hovered": {
+        "$type": "color",
+        "$value": "#599AFCFF"
+      },
+      "button / quickbetslip / outlined / pressed": {
+        "$type": "color",
+        "$value": "#BFD8FEFF"
+      },
+      "button / secondary / focused": {
+        "$type": "color",
+        "$value": "#3B85F6FF"
+      },
+      "casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "chips / quickBets": {
+        "$type": "color",
+        "$value": "#A777FFFF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "divider": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "divider / casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "divider / header": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "graphic / primary": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "graphic / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#2C2E31FF"
+      },
+      "input / betslip / default": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "input / betslip / disabled": {
+        "$type": "color",
+        "$value": "#E0E0E0FF"
+      },
+      "input / betslip / selected": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "input / default / primary": {
+        "$type": "color",
+        "$value": "#4D4D4DFF"
+      },
+      "input / focused": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "input / quickBetslip / danger": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "input / quickBetslip / default": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "input / quickBetslip / focused": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "input / selected": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "inverse / subdued": {
+        "$type": "color",
+        "$value": "#C8C9CBFF"
+      },
+      "keyboard / betslip": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "league": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "league / hovered": {
+        "$type": "color",
+        "$value": "#4D4D4DFF"
+      },
+      "link / primary / focused": {
+        "$type": "color",
+        "$value": "#3B85F6FF"
+      },
+      "link / secondary / focused": {
+        "$type": "color",
+        "$value": "#3B85F6FF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "navigation": {
+        "$type": "color",
+        "$value": "#2C2E31FF"
+      },
+      "offset / focused": {
+        "$type": "color",
+        "$value": "#2F8CFEFF"
+      },
+      "parlay": {
+        "$type": "color",
+        "$value": "#2FCEBCFF"
+      },
+      "parlay / usa": {
+        "$type": "color",
+        "$value": "#C58E01FF"
+      },
+      "payments / vendorLogo": {
+        "$type": "color",
+        "$value": "#FFFFFF00"
+      },
+      "placeholderOutline": {
+        "$type": "color",
+        "$value": "#121212FF"
+      },
+      "prominent": {
+        "$type": "color",
+        "$value": "#1E8CFFFF"
+      },
+      "quickBetslip": {
+        "$type": "color",
+        "$value": "#EBEBEBFF"
+      },
+      "signUp / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      }
+    },
+    "brand": {
+      "logo / rg / primary": {
+        "$type": "color",
+        "$value": "#31353AFF"
+      },
+      "logo / rg / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#FFBF00FF"
+      }
+    },
+    "graphic": {
+      "danger": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      },
+      "subdued / primary": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "subdued / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "subdued / tertiary": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "tick": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      }
+    },
+    "icon": {
+      "betslip / default": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "betslip / disabled": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "betslip / dropdown": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "button / critical": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / floating": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / outlined": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "button / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#5B5B5BFF"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "casino / jackpot": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "chip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "confirmation": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#4D4D4DFF"
+      },
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "indicator": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      },
+      "link / betslip / default": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "link / betslip / disabled": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "link / betslip / hovered": {
+        "$type": "color",
+        "$value": "#0056D6FF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#0056D6FF"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "loading / spinner / primary": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "loading / spinner / secondary": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "menu": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "menu / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "menu / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "menu / sports": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / secondary": {
+        "$type": "color",
+        "$value": "#616467FF"
+      },
+      "onDanger": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onFeedback": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onOverlay / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "onOverlay / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onWarning": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "payments / logo": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "pennPlay / banner": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "quickBetslip / primary": {
+        "$type": "color",
+        "$value": "#595959FF"
+      },
+      "quickBetslip / success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "search": {
+        "$type": "color",
+        "$value": "#969797FF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / deselected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "subdued": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "tab / active": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "tab / body / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / body / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / body / inactive": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tab / body / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / bottom / active": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "tab / bottom / inactive": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tab / pill / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / pill / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tab / pill / inactive": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tab / pill / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tag / primary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "toolbar": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      }
+    },
+    "l_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "l_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "l_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.l}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.l}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "m_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "m_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "m_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.m}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.m}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "s_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.s}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.s}",
+        "letterSpacing": "{Letter Space.default"
+      }
+    },
+    "skeleton": {
+      "header": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "header / highlight": {
+        "$type": "color",
+        "$value": "#484A4DFF"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#FFFFFF14"
+      },
+      "primary / highlight": {
+        "$type": "color",
+        "$value": "#363636FF"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "#0000000A"
+      },
+      "secondary / highlight": {
+        "$type": "color",
+        "$value": "#E1E1E1FF"
+      }
+    },
+    "text": {
+      "alert / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "alert / primary / betslip": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "alert / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "alert / secondary / betslip": {
+        "$type": "color",
+        "$value": "#00000080"
+      },
+      "betslip / disabled": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "betslip / primary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "betslip / secondary": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "button / alert": {
+        "$type": "color",
+        "$value": "#1E8CFFFF"
+      },
+      "button / alert / betslip": {
+        "$type": "color",
+        "$value": "#006DFFFF"
+      },
+      "button / betslip / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / betslip / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / betslip / loading": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / betslip / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / critical / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / critical / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / jackpot / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / jackpot / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "button / jackpot / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "button / outlined / default": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "button / outlined / disabled": {
+        "$type": "color",
+        "$value": "#005ABE80"
+      },
+      "button / outlined / hovered": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "button / outlined / pressed": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "button / primary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / primary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / primary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / progress / success": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / progress / temporaryDisabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / quickbetslip / outlined / default": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "button / quickbetslip / outlined / disabled": {
+        "$type": "color",
+        "$value": "#5994D5FF"
+      },
+      "button / quickbetslip / outlined / hovered": {
+        "$type": "color",
+        "$value": "#0D6CFAFF"
+      },
+      "button / quickbetslip / outlined / pressed": {
+        "$type": "color",
+        "$value": "#0D6CFAFF"
+      },
+      "button / secondary / default": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "button / secondary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "button / secondary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "casino / jackpot / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "casino / jackpot / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "#FF3B2FFF"
+      },
+      "danger / betslip": {
+        "$type": "color",
+        "$value": "#E91C17FF"
+      },
+      "disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "favorite": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      },
+      "graphic / header": {
+        "$type": "color",
+        "$value": "#1E8CFFFF"
+      },
+      "graphic / prominent": {
+        "$type": "color",
+        "$value": "#1E8CFFFF"
+      },
+      "header / betslip": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "header / favorite": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      },
+      "header / live": {
+        "$type": "color",
+        "$value": "#14B850FF"
+      },
+      "header / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "header / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "input / betslip / focused": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "input / betslip / primary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "input / focused": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "input / placeholder": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "input / placeholder / betslip": {
+        "$type": "color",
+        "$value": "#565656FF"
+      },
+      "input / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "input / quickBetslip / default": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "input / quickBetslip / disabled": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "input / quickBetslip / placeholder": {
+        "$type": "color",
+        "$value": "#595959FF"
+      },
+      "input / search / focused": {
+        "$type": "color",
+        "$value": "#1E8CFFFF"
+      },
+      "input / search / placeholder": {
+        "$type": "color",
+        "$value": "#969797FF"
+      },
+      "input / search / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "input / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "inverse / primary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "inverse / subdued / primary": {
+        "$type": "color",
+        "$value": "#484A4DFF"
+      },
+      "keyboard / betslip / default": {
+        "$type": "color",
+        "$value": "#565656FF"
+      },
+      "keyboard / betslip / disabled": {
+        "$type": "color",
+        "$value": "#D3D3D3FF"
+      },
+      "keyboard / betslip / prominent / disabled": {
+        "$type": "color",
+        "$value": "#ACACACFF"
+      },
+      "keyboard / betslip / prominent / selected": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "label / casino": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "label / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "label / secondary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "label / tertiary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "link / betslip / default": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "link / betslip / disabled": {
+        "$type": "color",
+        "$value": "#00000040"
+      },
+      "link / betslip / hovered": {
+        "$type": "color",
+        "$value": "#0056D6FF"
+      },
+      "link / betslip / pressed": {
+        "$type": "color",
+        "$value": "#0056D6FF"
+      },
+      "link / header / default": {
+        "$type": "color",
+        "$value": "#0079FFFF"
+      },
+      "link / header / hovered": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "link / header / pressed": {
+        "$type": "color",
+        "$value": "#005ABEFF"
+      },
+      "link / primary / default": {
+        "$type": "color",
+        "$value": "#1E8CFFFF"
+      },
+      "link / primary / disabled": {
+        "$type": "color",
+        "$value": "#005ABE40"
+      },
+      "link / primary / hovered": {
+        "$type": "color",
+        "$value": "#47A1FFFF"
+      },
+      "link / primary / pressed": {
+        "$type": "color",
+        "$value": "#47A1FFFF"
+      },
+      "link / secondary / default": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "link / secondary / disabled": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "link / secondary / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "link / secondary / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFF40"
+      },
+      "live": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "menu / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "menu / secondary": {
+        "$type": "color",
+        "$value": "#FFFFFFA6"
+      },
+      "navigation / live": {
+        "$type": "color",
+        "$value": "#14B850FF"
+      },
+      "navigation / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "navigation / secondary": {
+        "$type": "color",
+        "$value": "#A6A8ABFF"
+      },
+      "onDanger": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onFeedback": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onNotification": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onOverlay": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onSuccess": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "onWarning": {
+        "$type": "color",
+        "$value": "#090A0BFF"
+      },
+      "pennPlay / card": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "placeholder": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "placeholderOutline": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "quickBetslip / danger": {
+        "$type": "color",
+        "$value": "#E91C17FF"
+      },
+      "quickBetslip / disabled": {
+        "$type": "color",
+        "$value": "#BFBFBFFF"
+      },
+      "quickBetslip / primary": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "quickBetslip / secondary": {
+        "$type": "color",
+        "$value": "#595959FF"
+      },
+      "quickBetslip / success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "selector / betslip / default": {
+        "$type": "color",
+        "$value": "#0064FAFF"
+      },
+      "selector / deselected": {
+        "$type": "color",
+        "$value": "#1E8CFFFF"
+      },
+      "selector / label / deselected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / label / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "selector / selected": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / primary": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "signUp / subdued": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "subdued / primary": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "#1BB955FF"
+      },
+      "tab / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / betslip / active": {
+        "$type": "color",
+        "$value": "#000000FF"
+      },
+      "tab / betslip / inactive": {
+        "$type": "color",
+        "$value": "#000000A6"
+      },
+      "tab / body / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / body / hovered": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / body / inactive": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tab / body / pressed": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / bottom / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / bottom / inactive": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tab / header / active": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "tab / header / inactive": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tab / inactive / primary": {
+        "$type": "color",
+        "$value": "#FFFFFF80"
+      },
+      "tooltip": {
+        "$type": "color",
+        "$value": "#FFFFFFFF"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "#FFCC00FF"
+      }
+    },
+    "xl_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xl_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xl_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xl}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.xl}",
+        "letterSpacing": "{Letter Space.tight"
+      }
+    },
+    "xs_bold": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{bold}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "xs_medium": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{medium}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    },
+    "xs_regular": {
+      "$type": "typography",
+      "$value": {
+        "fontSize": "{Text Size.xs}",
+        "fontFamily": "{default}",
+        "fontWeight": "{regular}",
+        "lineHeight": "{Line Height.xs}",
+        "letterSpacing": "{Letter Space.loose"
+      }
+    }
+  },
+  "bold": {
+    "$type": "fontWeight",
+    "$value": 700
+  },
+  "default": {
+    "$type": "fontFamily",
+    "$value": "inter"
+  },
+  "display": {
+    "$type": "fontFamily",
+    "$value": "inter"
+  },
+  "medium": {
+    "$type": "fontWeight",
+    "$value": 500
+  },
+  "mono": {
+    "$type": "fontFamily",
+    "$value": "fira mono"
+  },
+  "regular": {
+    "$type": "fontWeight",
+    "$value": 400
+  }
+}
