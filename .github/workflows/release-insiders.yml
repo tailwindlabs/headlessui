@@ -8,6 +8,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -53,7 +57,7 @@ jobs:
         run: npm version -w packages 0.0.0-insiders.${{ steps.vars.outputs.sha_short }} --force --no-git-tag-version
 
       - name: Publish
-        run: npm publish -w packages --tag insiders
+        run: npm publish -w packages --provenance --tag insiders
         env:
           CI: true
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
