@@ -109,6 +109,22 @@ exports[`Default functionality should forward all the props to the first child w
 </div>"
 `;
 
+exports[`Default functionality should forward boolean values from \`slot\` as data attributes 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <div
+    data-a=\\"\\"
+    data-c=\\"\\"
+    data-headlessui-state=\\"a c\\"
+  >
+    <span>
+      Contents
+    </span>
+  </div>
+</div>"
+`;
+
 exports[`Default functionality should not error when we are rendering a Fragment with multiple children when we don't passthrough additional props 1`] = `
 "<div
   data-testid=\\"wrapper\\"
@@ -118,6 +134,19 @@ exports[`Default functionality should not error when we are rendering a Fragment
   </span>
   <span>
     Contents B
+  </span>
+</div>"
+`;
+
+exports[`Default functionality should prefer user provided data attributes over the ones we set automatically 1`] = `
+"<div
+  data-testid=\\"wrapper\\"
+>
+  <span
+    data-accept=\\"always\\"
+    data-headlessui-state=\\"accept\\"
+  >
+    Contents
   </span>
 </div>"
 `;

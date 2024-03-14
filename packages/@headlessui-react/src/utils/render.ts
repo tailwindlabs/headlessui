@@ -213,12 +213,35 @@ function _render<TTag extends ElementType, TSlot>(
 
         let classNameProps = newClassName ? { className: newClassName } : {}
 
+        // Merge props from the existing element with the incoming props
+        let mergedProps = mergePropsAdvanced(
+          resolvedChildren.props as any,
+          // Filter out undefined values so that they don't override the existing values
+          compact(omit(rest, ['ref']))
+        )
+
+        // Make sure that `data-*` that already exist in the `mergedProps` are
+        // skipped.
+        //
+        // Typically we want to keep the props we set in each component because
+        // they are required to make the component work correctly. However, in
+        // case of `data-*` attributes, these are attributes that help the end
+        // user.
+        //
+        // This means that since the props are not required for the component to
+        // work, that we can safely prefer the `data-*` attributes from the
+        // component that the end user provided.
+        for (let key in dataAttributes) {
+          if (key in mergedProps) {
+            delete dataAttributes[key]
+          }
+        }
+
         return cloneElement(
           resolvedChildren,
           Object.assign(
             {},
-            // Filter out undefined values so that they don't override the existing values
-            mergePropsAdvanced(resolvedChildren.props as any, compact(omit(rest, ['ref']))),
+            mergedProps,
             dataAttributes,
             refRelatedProps,
             { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
