@@ -153,6 +153,50 @@ describe('Default functionality', () => {
     expect(contents()).toMatchSnapshot()
   })
 
+  it('should forward boolean values from `slot` as data attributes', () => {
+    function Dummy<TTag extends ElementType = 'div'>(
+      props: Props<TTag> & Partial<{ a: any; b: any; c: any }>
+    ) {
+      return (
+        <div data-testid="wrapper">
+          {render({
+            ourProps: {},
+            theirProps: props,
+            slot: { a: true, b: false, c: true },
+            defaultTag: 'div',
+            name: 'Dummy',
+          })}
+        </div>
+      )
+    }
+
+    testRender(<Dummy>{() => <span>Contents</span>}</Dummy>)
+
+    expect(contents()).toMatchSnapshot()
+  })
+
+  it('should prefer user provided data attributes over the ones we set automatically', () => {
+    function Dummy<TTag extends ElementType = 'div'>(
+      props: Props<TTag> & Partial<{ a: any; b: any; c: any }>
+    ) {
+      return (
+        <div data-testid="wrapper">
+          {render({
+            ourProps: {},
+            theirProps: props,
+            slot: { accept: true },
+            defaultTag: 'div',
+            name: 'Dummy',
+          })}
+        </div>
+      )
+    }
+
+    testRender(<Dummy as={Fragment}>{() => <span data-accept="always">Contents</span>}</Dummy>)
+
+    expect(contents()).toMatchSnapshot()
+  })
+
   it(
     'should error when we are rendering a Fragment with multiple children',
     suppressConsoleLogs(() => {
