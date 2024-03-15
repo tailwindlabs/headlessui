@@ -47,6 +47,7 @@ enum Ordering {
 }
 
 interface StateDefinition {
+  info: MutableRefObject<{ isControlled: boolean }>
   selectedIndex: number
 
   tabs: MutableRefObject<HTMLElement | null>[]
@@ -139,8 +140,18 @@ let reducers: {
     let activeTab = state.tabs[state.selectedIndex]
 
     let adjustedTabs = sortByDomNode([...state.tabs, action.tab], (tab) => tab.current)
-    let selectedIndex = adjustedTabs.indexOf(activeTab) ?? state.selectedIndex
-    if (selectedIndex === -1) selectedIndex = state.selectedIndex
+    let selectedIndex = state.selectedIndex
+
+    // When the component is uncontrolled, then we want to maintain the actively
+    // selected tab even if new tabs are inserted or removed before the active
+    // tab.
+    //
+    // When the component is controlled, then we don't want to do this and
+    // instead we want to select the tab based on the `selectedIndex` prop.
+    if (!state.info.current.isControlled) {
+      selectedIndex = adjustedTabs.indexOf(activeTab)
+      if (selectedIndex === -1) selectedIndex = state.selectedIndex
+    }
 
     return { ...state, tabs: adjustedTabs, selectedIndex }
   },
@@ -238,8 +249,11 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
 
   let isControlled = selectedIndex !== null
 
+  let info = useLatestValue({ isControlled })
+
   let tabsRef = useSyncRefs(ref)
   let [state, dispatch] = useReducer(stateReducer, {
+    info,
     selectedIndex: selectedIndex ?? defaultIndex,
     tabs: [],
     panels: [],

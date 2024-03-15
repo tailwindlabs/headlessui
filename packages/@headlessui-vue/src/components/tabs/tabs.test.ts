@@ -172,6 +172,45 @@ describe('Rendering', () => {
   )
 
   it(
+    'should use the `selectedIndex` when injecting new tabs dynamically',
+    suppressConsoleLogs(async () => {
+      renderTemplate({
+        template: html`
+          <TabGroup :selectedIndex="1">
+            <TabList>
+              <Tab v-for="t in tabs" :key="t">Tab {{ t }}</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel v-for="t in tabs" :key="t">Panel {{ t }}</TabPanel>
+            </TabPanels>
+          </TabGroup>
+          <button @click="add">Insert</button>
+        `,
+        setup() {
+          let tabs = ref<string[]>(['A', 'B', 'C'])
+
+          return {
+            tabs,
+            add() {
+              tabs.value.splice(1, 0, 'D')
+            },
+          }
+        },
+      })
+
+      await new Promise<void>(nextTick)
+
+      assertTabs({ active: 1, tabContents: 'Tab B', panelContents: 'Panel B' })
+
+      // Add some new tabs
+      await click(getByText('Insert'))
+
+      // We should still be at the same tab position, but the tab itself changed
+      assertTabs({ active: 1, tabContents: 'Tab D', panelContents: 'Panel D' })
+    })
+  )
+
+  it(
     'should guarantee the order of DOM nodes when reversing the tabs and panels themselves, then performing actions (controlled component)',
     suppressConsoleLogs(async () => {
       renderTemplate({
