@@ -177,9 +177,18 @@ export let TabGroup = defineComponent({
         tabs.value.push(tab)
         tabs.value = sortByDomNode(tabs.value, dom)
 
-        let localSelectedIndex = tabs.value.indexOf(activeTab) ?? selectedIndex.value
-        if (localSelectedIndex !== -1) {
-          selectedIndex.value = localSelectedIndex
+        // When the component is uncontrolled, then we want to maintain the
+        // actively selected tab even if new tabs are inserted or removed before
+        // the active tab.
+        //
+        // When the component is controlled, then we don't want to do this and
+        // instead we want to select the tab based on the `selectedIndex` prop.
+        if (!isControlled.value) {
+          let localSelectedIndex = tabs.value.indexOf(activeTab) ?? selectedIndex.value
+
+          if (localSelectedIndex !== -1) {
+            selectedIndex.value = localSelectedIndex
+          }
         }
       },
       unregisterTab(tab: (typeof tabs)['value'][number]) {
