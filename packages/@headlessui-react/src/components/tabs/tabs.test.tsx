@@ -190,7 +190,7 @@ describe('Rendering', () => {
             <button
               onClick={() => {
                 setTabs((old) => {
-                  let copy= old.slice()
+                  let copy = old.slice()
                   copy.splice(1, 0, 'D')
                   return copy
                 })
