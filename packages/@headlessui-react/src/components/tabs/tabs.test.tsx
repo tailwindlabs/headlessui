@@ -189,7 +189,11 @@ describe('Rendering', () => {
             </Tab.Group>
             <button
               onClick={() => {
-                setTabs((old) => old.with(1, 'D'))
+                setTabs((old) => {
+                  let copy= old.slice()
+                  copy.splice(1, 0, 'D')
+                  return copy
+                })
               }}
             >
               Insert
