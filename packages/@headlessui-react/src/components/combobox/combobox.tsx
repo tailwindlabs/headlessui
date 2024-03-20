@@ -1005,7 +1005,7 @@ function InputFn<
   // which should always result in a string (since we are filling in the value of the text input),
   // you don't have to use this at all, a more common UI is a "tag" based UI, which you can render
   // yourself using the selected option(s).
-  let currentDisplayValue = (function () {
+  let currentDisplayValue = useMemo(() => {
     if (typeof displayValue === 'function' && data.value !== undefined) {
       return displayValue(data.value as unknown as TType) ?? ''
     } else if (typeof data.value === 'string') {
@@ -1013,7 +1013,7 @@ function InputFn<
     } else {
       return ''
     }
-  })()
+  }, [data.value, displayValue])
 
   // Syncing the input value has some rules attached to it to guarantee a smooth and expected user
   // experience:
