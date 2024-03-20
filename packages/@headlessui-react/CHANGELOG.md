@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Forward `disabled` state to hidden inputs in form-like components ([#3004](https://github.com/tailwindlabs/headlessui/pull/3004))
 - Prefer incoming `data-*` attributes, over the ones set by Headless UI ([#3035](https://github.com/tailwindlabs/headlessui/pull/3035))
 - Respect `selectedIndex` for controlled `<Tab/>` components ([#3037](https://github.com/tailwindlabs/headlessui/pull/3037))
+- Prevent unnecessary execution of the `displayValue` callback in the `ComboboxInput` component ([#3048](https://github.com/tailwindlabs/headlessui/pull/3048))
 
 ### Changed
 
