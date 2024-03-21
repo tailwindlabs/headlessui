@@ -494,6 +494,48 @@ describe('Rendering', () => {
 
         renderTemplate({
           template: html`
+            <Combobox v-model="person" name="assignee" by="id">
+              <ComboboxInput :displayValue="displayValue" />
+              <ComboboxButton />
+              <ComboboxOptions>
+                <ComboboxOption v-for="person in data" :key="person.id" :value="person">
+                  {{ person.label }}
+                </ComboboxOption>
+              <ComboboxOptions>
+            </Combobox>
+          `,
+          setup: () => ({ person: ref(data[0]), data, displayValue: () => String(Math.random()) }),
+        })
+
+        let value = getComboboxInput()?.value
+
+        // Toggle the state a few times combobox
+        await click(getComboboxButton())
+        await click(getComboboxButton())
+        await click(getComboboxButton())
+
+        // Verify the value is still the same
+        expect(getComboboxInput()?.value).toBe(value)
+
+        // Choose an option, which should update the value
+        await click(getComboboxOptions()[1])
+
+        // Verify the value changed
+        expect(getComboboxInput()?.value).not.toBe(value)
+      })
+    )
+
+    it(
+      'should not crash when a defaultValue is not given',
+      suppressConsoleLogs(async () => {
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        renderTemplate({
+          template: html`
             <Combobox name="assignee" by="id">
               <ComboboxInput :displayValue="(value) => value.name" />
               <ComboboxOptions>

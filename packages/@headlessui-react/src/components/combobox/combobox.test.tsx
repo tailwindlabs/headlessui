@@ -490,6 +490,53 @@ describe('Rendering', () => {
     )
 
     it(
+      'should keep the defaultValue when the Combobox state changes',
+      suppressConsoleLogs(async () => {
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        function Example() {
+          let [person, setPerson] = useState(data[1])
+
+          return (
+            <Combobox value={person} onChange={setPerson} name="assignee" by="id">
+              <Combobox.Input displayValue={() => String(Math.random())} />
+              <Combobox.Button />
+              <Combobox.Options>
+                {data.map((person) => (
+                  <Combobox.Option key={person.id} value={person}>
+                    {person.label}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Combobox>
+          )
+        }
+
+        render(<Example />)
+
+        let value = getComboboxInput()?.value
+
+        // Toggle the state a few times combobox
+        await click(getComboboxButton())
+        await click(getComboboxButton())
+        await click(getComboboxButton())
+
+        // Verify the value is still the same
+        expect(getComboboxInput()?.value).toBe(value)
+
+        // Choose an option, which should update the value
+        await click(getComboboxOptions()[2])
+
+        // Verify the value changed
+        expect(getComboboxInput()?.value).not.toBe(value)
+      })
+    )
+
+    it(
       'should close the Combobox when the input is blurred',
       suppressConsoleLogs(async () => {
         let data = [
