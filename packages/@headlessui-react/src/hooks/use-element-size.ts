@@ -7,11 +7,14 @@ function computeSize(element: HTMLElement | null) {
   return { width, height }
 }
 
-export function useElementSize(ref: React.MutableRefObject<HTMLElement | null>, unit = false) {
-  let [size, setSize] = useState(() => computeSize(ref.current))
+export function useElementSize(
+  ref: React.MutableRefObject<HTMLElement | null> | HTMLElement | null,
+  unit = false
+) {
+  let element = ref === null ? null : 'current' in ref ? ref.current : ref
+  let [size, setSize] = useState(() => computeSize(element))
 
   useIsoMorphicEffect(() => {
-    let element = ref.current
     if (!element) return
 
     let observer = new ResizeObserver(() => {
@@ -23,7 +26,7 @@ export function useElementSize(ref: React.MutableRefObject<HTMLElement | null>, 
     return () => {
       observer.disconnect()
     }
-  }, [ref])
+  }, [element])
 
   if (unit) {
     return {

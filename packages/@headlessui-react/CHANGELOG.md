@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Accept optional `strategy` for the `anchor` prop ([#3034](https://github.com/tailwindlabs/headlessui/pull/3034))
 - Expose `--input-width` and `--button-width` CSS variables on the `ComboboxOptions` component ([#3057](https://github.com/tailwindlabs/headlessui/pull/3057))
+- Expose the `--button-width` CSS variable on the `PopoverPanel` component ([#3058](https://github.com/tailwindlabs/headlessui/pull/3058))
 
 ## [2.0.0-alpha.4] - 2024-01-03
 

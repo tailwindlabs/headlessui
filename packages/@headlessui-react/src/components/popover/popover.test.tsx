@@ -22,6 +22,12 @@ let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
 
 jest.mock('../../hooks/use-id')
 
+// @ts-expect-error
+global.ResizeObserver = class FakeResizeObserver {
+  observe() {}
+  disconnect() {}
+}
+
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {
