@@ -23,6 +23,7 @@ import React, {
   type Ref,
 } from 'react'
 import { useActivePress } from '../../hooks/use-active-press'
+import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
@@ -913,7 +914,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
           }
         : undefined,
     tabIndex: -1,
-    ...(style ? { style } : {}),
+    style: {
+      ...style,
+      '--button-width': useElementSize(state.button, true).width,
+    } as React.CSSProperties,
   })
 
   let direction = useTabDirection()
