@@ -11,7 +11,7 @@ export function useElementSize(
   ref: React.MutableRefObject<HTMLElement | null> | HTMLElement | null,
   unit = false
 ) {
-  let element = ref === null ? null : ref instanceof HTMLElement ? ref : ref.current
+  let element = ref === null ? null : 'current' in ref ? ref.current : ref
   let [size, setSize] = useState(() => computeSize(element))
 
   useIsoMorphicEffect(() => {
