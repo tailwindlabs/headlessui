@@ -13,6 +13,7 @@ import React, {
   useReducer,
   useRef,
   useState,
+  type CSSProperties,
   type ElementType,
   type MutableRefObject,
   type FocusEvent as ReactFocusEvent,
@@ -24,6 +25,7 @@ import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
+import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -1604,7 +1606,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     id,
     ref: optionsRef,
-    ...(style ? { style } : {}),
+    style: {
+      ...style,
+      '--input-width': useElementSize(data.inputRef, true).width,
+      '--button-width': useElementSize(data.buttonRef, true).width,
+    } as CSSProperties,
   })
 
   // Map the children in a scrollable container when virtualization is enabled

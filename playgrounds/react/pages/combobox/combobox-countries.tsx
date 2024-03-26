@@ -72,8 +72,8 @@ export default function Home() {
                 </Combobox.Button>
               </span>
 
-              <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
+              <div className="absolute mt-1 rounded-md bg-white shadow-lg">
+                <Combobox.Options className="shadow-xs max-h-60 w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
                   {countries.map((country) => (
                     <Combobox.Option
                       key={country}
