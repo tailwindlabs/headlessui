@@ -436,6 +436,7 @@ type ButtonRenderPropArg = {
   active: boolean
   hover: boolean
   focus: boolean
+  disabled: boolean
   autofocus: boolean
 }
 type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded' | 'aria-haspopup'
@@ -511,16 +512,18 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
   let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
 
+  let disabled = props.disabled ?? false
   let slot = useMemo(
     () =>
       ({
         open: state.menuState === MenuStates.Open,
         active: active || state.menuState === MenuStates.Open,
+        disabled,
         hover,
         focus,
         autofocus: props.autoFocus ?? false,
       }) satisfies ButtonRenderPropArg,
-    [state, hover, focus, active, props.autoFocus]
+    [state, hover, focus, active, disabled, props.autoFocus]
   )
 
   let ourProps = mergeProps(
