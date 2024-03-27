@@ -440,6 +440,7 @@ type ButtonRenderPropArg = {
   active: boolean
   hover: boolean
   focus: boolean
+  disabled: boolean
   autofocus: boolean
 }
 type ButtonPropsWeControl = 'aria-controls' | 'aria-expanded'
@@ -607,16 +608,18 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
 
   let visible = state.popoverState === PopoverStates.Open
+  let disabled = props.disabled ?? false
   let slot = useMemo(
     () =>
       ({
         open: visible,
         active: active || visible,
+        disabled,
         hover,
         focus,
         autofocus: props.autoFocus ?? false,
       }) satisfies ButtonRenderPropArg,
-    [visible, hover, focus, active, props.autoFocus]
+    [visible, hover, focus, active, disabled, props.autoFocus]
   )
 
   let type = useResolveButtonType(props, internalButtonRef)

@@ -387,6 +387,7 @@ describe('Rendering', () => {
           textContent: JSON.stringify({
             open: false,
             active: false,
+            disabled: false,
             hover: false,
             focus: false,
             autofocus: false,
@@ -402,6 +403,7 @@ describe('Rendering', () => {
           textContent: JSON.stringify({
             open: true,
             active: true,
+            disabled: false,
             hover: false,
             focus: false,
             autofocus: false,
@@ -429,6 +431,7 @@ describe('Rendering', () => {
           textContent: JSON.stringify({
             open: false,
             active: false,
+            disabled: false,
             hover: false,
             focus: false,
             autofocus: false,
@@ -444,6 +447,7 @@ describe('Rendering', () => {
           textContent: JSON.stringify({
             open: true,
             active: true,
+            disabled: false,
             hover: false,
             focus: false,
             autofocus: false,
