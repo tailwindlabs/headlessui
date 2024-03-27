@@ -460,7 +460,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-popover-button-${internalId}`, ...theirProps } = props
+  let {
+    id = `headlessui-popover-button-${internalId}`,
+    disabled = false,
+    autoFocus = false,
+    ...theirProps
+  } = props
   let [state, dispatch] = usePopoverContext('Popover.Button')
   let { isPortalled } = usePopoverAPIContext('Popover.Button')
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
@@ -585,7 +590,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return
-    if (props.disabled) return
+    if (disabled) return
     if (isWithinPanel) {
       dispatch({ type: ActionTypes.ClosePopover })
       state.button?.focus() // Re-focus the original opening Button
@@ -603,24 +608,21 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     event.stopPropagation()
   })
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
   let visible = state.popoverState === PopoverStates.Open
-  let disabled = props.disabled ?? false
-  let slot = useMemo(
-    () =>
-      ({
-        open: visible,
-        active: active || visible,
-        disabled,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies ButtonRenderPropArg,
-    [visible, hover, focus, active, disabled, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: visible,
+      active: active || visible,
+      disabled,
+      hover,
+      focus,
+      autofocus: autoFocus,
+    } satisfies ButtonRenderPropArg
+  }, [visible, hover, focus, active, disabled, autoFocus])
 
   let type = useResolveButtonType(props, internalButtonRef)
   let ourProps = isWithinPanel
@@ -630,6 +632,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           type,
           onKeyDown: handleKeyDown,
           onClick: handleClick,
+          disabled: disabled || undefined,
+          autoFocus,
         },
         focusProps,
         hoverProps,
@@ -642,6 +646,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           type,
           'aria-expanded': state.popoverState === PopoverStates.Open,
           'aria-controls': state.panel ? state.panelId : undefined,
+          disabled: disabled || undefined,
+          autoFocus,
           onKeyDown: handleKeyDown,
           onKeyUp: handleKeyUp,
           onClick: handleClick,

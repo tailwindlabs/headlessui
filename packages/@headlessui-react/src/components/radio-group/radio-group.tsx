@@ -371,13 +371,18 @@ function OptionFn<
   // But today is not that day..
   TType = Parameters<typeof RadioGroupRoot>[0]['value'],
 >(props: RadioOptionProps<TTag, TType>, ref: Ref<HTMLElement>) {
+  let data = useData('RadioGroup.Option')
+  let actions = useActions('RadioGroup.Option')
+
   let internalId = useId()
   let {
     id = `headlessui-radiogroup-option-${internalId}`,
     value,
-    disabled = false,
+    disabled = data.disabled || false,
+    autoFocus = false,
     ...theirProps
   } = props
+
   let internalOptionRef = useRef<HTMLElement | null>(null)
   let optionRef = useSyncRefs(internalOptionRef, ref)
 
@@ -385,9 +390,6 @@ function OptionFn<
   let [describedby, DescriptionProvider] = useDescriptions()
 
   let propsRef = useLatestValue({ value, disabled })
-
-  let data = useData('RadioGroup.Option')
-  let actions = useActions('RadioGroup.Option')
 
   useIsoMorphicEffect(
     () => actions.registerOption({ id, element: internalOptionRef, propsRef }),
@@ -401,10 +403,9 @@ function OptionFn<
   })
 
   let isFirstOption = data.firstOption?.id === id
-  let isDisabled = data.disabled || disabled
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: isDisabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
 
   let checked = data.compare(data.value as TType, value)
   let ourProps = mergeProps(
@@ -415,31 +416,30 @@ function OptionFn<
       'aria-checked': checked ? 'true' : 'false',
       'aria-labelledby': labelledby,
       'aria-describedby': describedby,
-      'aria-disabled': isDisabled ? true : undefined,
+      'aria-disabled': disabled ? true : undefined,
       tabIndex: (() => {
-        if (isDisabled) return -1
+        if (disabled) return -1
         if (checked) return 0
         if (!data.containsCheckedOption && isFirstOption) return 0
         return -1
       })(),
-      onClick: isDisabled ? undefined : handleClick,
+      onClick: disabled ? undefined : handleClick,
+      autoFocus,
     },
     focusProps,
     hoverProps
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        checked,
-        disabled: isDisabled,
-        active: focus,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies OptionRenderPropArg,
-    [checked, isDisabled, hover, focus, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return {
+      checked,
+      disabled,
+      active: focus,
+      hover,
+      focus,
+      autofocus: autoFocus,
+    } satisfies OptionRenderPropArg
+  }, [checked, disabled, hover, focus, autoFocus])
 
   return (
     <DescriptionProvider name="RadioGroup.Description">
@@ -500,6 +500,7 @@ function RadioFn<
     id = providedId || `headlessui-radio-${internalId}`,
     value,
     disabled = data.disabled || providedDisabled || false,
+    autoFocus = false,
     ...theirProps
   } = props
   let internalRadioRef = useRef<HTMLElement | null>(null)
@@ -522,8 +523,8 @@ function RadioFn<
     internalRadioRef.current?.focus()
   })
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
 
   let isFirstOption = data.firstOption?.id === id
 
@@ -543,22 +544,15 @@ function RadioFn<
         if (!data.containsCheckedOption && isFirstOption) return 0
         return -1
       })(),
+      autoFocus,
       onClick: disabled ? undefined : handleClick,
     },
     focusProps,
     hoverProps
   )
-  let slot = useMemo(
-    () =>
-      ({
-        checked,
-        disabled,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies RadioRenderPropArg,
-    [checked, disabled, hover, focus, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return { checked, disabled, hover, focus, autofocus: autoFocus } satisfies RadioRenderPropArg
+  }, [checked, disabled, hover, focus, autoFocus])
 
   return render({
     ourProps,

@@ -456,7 +456,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-menu-button-${internalId}`, ...theirProps } = props
+  let {
+    id = `headlessui-menu-button-${internalId}`,
+    disabled = false,
+    autoFocus = false,
+    ...theirProps
+  } = props
   let [state, dispatch] = useMenuContext('Menu.Button')
   let getFloatingReferenceProps = useFloatingReferenceProps()
   let buttonRef = useSyncRefs(state.buttonRef, ref, useFloatingReference())
@@ -498,7 +503,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    if (props.disabled) return
+    if (disabled) return
     if (state.menuState === MenuStates.Open) {
       dispatch({ type: ActionTypes.CloseMenu })
       d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
@@ -508,23 +513,20 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let disabled = props.disabled ?? false
-  let slot = useMemo(
-    () =>
-      ({
-        open: state.menuState === MenuStates.Open,
-        active: active || state.menuState === MenuStates.Open,
-        disabled,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies ButtonRenderPropArg,
-    [state, hover, focus, active, disabled, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: state.menuState === MenuStates.Open,
+      active: active || state.menuState === MenuStates.Open,
+      disabled,
+      hover,
+      focus,
+      autofocus: autoFocus,
+    } satisfies ButtonRenderPropArg
+  }, [state, hover, focus, active, disabled, autoFocus])
 
   let ourProps = mergeProps(
     getFloatingReferenceProps(),
@@ -535,6 +537,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-haspopup': 'menu',
       'aria-controls': state.itemsRef.current?.id,
       'aria-expanded': state.menuState === MenuStates.Open,
+      disabled: disabled || undefined,
+      autoFocus,
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
       onClick: handleClick,

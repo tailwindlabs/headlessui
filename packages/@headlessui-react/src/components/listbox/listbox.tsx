@@ -554,16 +554,14 @@ function ListboxFn<
     data.listboxState === ListboxStates.Open
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: data.listboxState === ListboxStates.Open,
-        disabled,
-        invalid,
-        value,
-      }) satisfies ListboxRenderPropArg<TType>,
-    [data, disabled, value, invalid]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: data.listboxState === ListboxStates.Open,
+      disabled,
+      invalid,
+      value,
+    } satisfies ListboxRenderPropArg<TType>
+  }, [data, disabled, value, invalid])
 
   let selectOption = useEvent((id: string) => {
     let option = data.options.find((item) => item.id === id)
@@ -718,6 +716,7 @@ export type ListboxButtonProps<TTag extends ElementType = typeof DEFAULT_BUTTON_
   ButtonPropsWeControl,
   {
     autoFocus?: boolean
+    disabled?: boolean
   }
 >
 
@@ -725,11 +724,17 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: ListboxButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let internalId = useId()
-  let providedId = useProvidedId()
-  let { id = providedId || `headlessui-listbox-button-${internalId}`, ...theirProps } = props
   let data = useData('Listbox.Button')
   let actions = useActions('Listbox.Button')
+
+  let internalId = useId()
+  let providedId = useProvidedId()
+  let {
+    id = providedId || `headlessui-listbox-button-${internalId}`,
+    disabled = data.disabled || false,
+    autoFocus = false,
+    ...theirProps
+  } = props
   let buttonRef = useSyncRefs(data.buttonRef, ref, useFloatingReference())
   let getFloatingReferenceProps = useFloatingReferenceProps()
 
@@ -790,33 +795,22 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let labelledBy = useLabelledBy([id])
   let describedBy = useDescribedBy()
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: data.disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: data.disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: data.listboxState === ListboxStates.Open,
-        active: active || data.listboxState === ListboxStates.Open,
-        disabled: data.disabled,
-        invalid: data.invalid,
-        value: data.value,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies ButtonRenderPropArg,
-    [
-      data.listboxState,
-      data.disabled,
-      data.value,
+  let slot = useMemo(() => {
+    return {
+      open: data.listboxState === ListboxStates.Open,
+      active: active || data.listboxState === ListboxStates.Open,
+      disabled,
+      invalid: data.invalid,
+      value: data.value,
       hover,
       focus,
-      active,
-      data.invalid,
-      props.autoFocus,
-    ]
-  )
+      autofocus: autoFocus,
+    } satisfies ButtonRenderPropArg
+  }, [data.listboxState, data.value, disabled, hover, focus, active, data.invalid, autoFocus])
 
   let ourProps = mergeProps(
     getFloatingReferenceProps(),
@@ -829,7 +823,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-expanded': data.listboxState === ListboxStates.Open,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
-      disabled: data.disabled,
+      disabled: disabled || undefined,
+      autoFocus,
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,
@@ -1225,17 +1220,15 @@ function OptionFn<
     actions.goToOption(Focus.Nothing)
   })
 
-  let slot = useMemo(
-    () =>
-      ({
-        active,
-        focus: active,
-        selected,
-        disabled,
-        selectedOption: selected && usedInSelectedOption,
-      }) satisfies OptionRenderPropArg,
-    [active, selected, disabled, usedInSelectedOption]
-  )
+  let slot = useMemo(() => {
+    return {
+      active,
+      focus: active,
+      selected,
+      disabled,
+      selectedOption: selected && usedInSelectedOption,
+    } satisfies OptionRenderPropArg
+  }, [active, selected, disabled, usedInSelectedOption])
   let ourProps = !usedInSelectedOption
     ? {
         id,

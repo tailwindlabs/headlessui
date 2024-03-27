@@ -421,7 +421,12 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-tabs-tab-${internalId}`, ...theirProps } = props
+  let {
+    id = `headlessui-tabs-tab-${internalId}`,
+    disabled = false,
+    autoFocus = false,
+    ...theirProps
+  } = props
 
   let { orientation, activation, selectedIndex, tabs, panels } = useData('Tab')
   let actions = useActions('Tab')
@@ -515,22 +520,20 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     event.preventDefault()
   })
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(
-    () =>
-      ({
-        selected,
-        hover,
-        active,
-        focus,
-        autofocus: props.autoFocus ?? false,
-        disabled: props.disabled ?? false,
-      }) satisfies TabRenderPropArg,
-    [selected, hover, focus, active, props.autoFocus, props.disabled]
-  )
+  let slot = useMemo(() => {
+    return {
+      selected,
+      hover,
+      active,
+      focus,
+      autofocus: autoFocus,
+      disabled,
+    } satisfies TabRenderPropArg
+  }, [selected, hover, focus, active, autoFocus, disabled])
 
   let ourProps = mergeProps(
     {
@@ -544,6 +547,8 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
       'aria-controls': panels[myIndex]?.current?.id,
       'aria-selected': selected,
       tabIndex: selected ? 0 : -1,
+      disabled: disabled || undefined,
+      autoFocus,
     },
     focusProps,
     hoverProps,

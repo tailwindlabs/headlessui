@@ -326,15 +326,15 @@ function TriggerFn<TTag extends ElementType = typeof DEFAULT_TRIGGER_TAG>(
   props: TooltipTriggerProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let { ...theirProps } = props
+  let { disabled = false, autoFocus = false, ...theirProps } = props
   let data = useData('TooltipTrigger')
   let actions = useActions('TooltipTrigger')
   let describedBy = useDescribedBy()
   let internalButtonRef = useRef<HTMLElement | null>(null)
   let triggerRef = useSyncRefs(internalButtonRef, ref, useFloatingReference())
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
@@ -375,8 +375,8 @@ function TriggerFn<TTag extends ElementType = typeof DEFAULT_TRIGGER_TAG>(
   })
 
   let slot = useMemo(
-    () => ({ hover, focus, autofocus: props.autoFocus ?? false }) satisfies TriggerRenderPropArg,
-    [hover, focus, props.autoFocus]
+    () => ({ hover, focus, autofocus: autoFocus }) satisfies TriggerRenderPropArg,
+    [hover, focus, autoFocus]
   )
   let ourProps = mergeProps(
     {

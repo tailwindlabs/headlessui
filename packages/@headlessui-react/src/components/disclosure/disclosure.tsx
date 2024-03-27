@@ -220,14 +220,12 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
 
   let api = useMemo<ContextType<typeof DisclosureAPIContext>>(() => ({ close }), [close])
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: disclosureState === DisclosureStates.Open,
-        close,
-      }) satisfies DisclosureRenderPropArg,
-    [disclosureState, close]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: disclosureState === DisclosureStates.Open,
+      close,
+    } satisfies DisclosureRenderPropArg
+  }, [disclosureState, close])
 
   let ourProps = {
     ref: disclosureRef,
@@ -283,7 +281,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   ref: Ref<HTMLButtonElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-disclosure-button-${internalId}`, ...theirProps } = props
+  let {
+    id = `headlessui-disclosure-button-${internalId}`,
+    disabled = false,
+    autoFocus = false,
+    ...theirProps
+  } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Button')
   let panelContext = useDisclosurePanelContext()
   let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
@@ -339,7 +342,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return
-    if (props.disabled) return
+    if (disabled) return
 
     if (isWithinPanel) {
       dispatch({ type: ActionTypes.ToggleDisclosure })
@@ -349,23 +352,20 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let disabled = props.disabled ?? false
-  let slot = useMemo(
-    () =>
-      ({
-        open: state.disclosureState === DisclosureStates.Open,
-        hover,
-        active,
-        disabled,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies ButtonRenderPropArg,
-    [state, hover, active, focus, disabled, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: state.disclosureState === DisclosureStates.Open,
+      hover,
+      active,
+      disabled,
+      focus,
+      autofocus: autoFocus,
+    } satisfies ButtonRenderPropArg
+  }, [state, hover, active, focus, disabled, autoFocus])
 
   let type = useResolveButtonType(props, internalButtonRef)
   let ourProps = isWithinPanel
@@ -373,6 +373,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         {
           ref: buttonRef,
           type,
+          disabled: disabled || undefined,
+          autoFocus,
           onKeyDown: handleKeyDown,
           onClick: handleClick,
         },
@@ -387,6 +389,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           type,
           'aria-expanded': state.disclosureState === DisclosureStates.Open,
           'aria-controls': state.linkedPanel ? state.panelId : undefined,
+          disabled: disabled || undefined,
+          autoFocus,
           onKeyDown: handleKeyDown,
           onKeyUp: handleKeyUp,
           onClick: handleClick,
@@ -454,14 +458,12 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     return state.disclosureState === DisclosureStates.Open
   })()
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: state.disclosureState === DisclosureStates.Open,
-        close,
-      }) satisfies PanelRenderPropArg,
-    [state, close]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: state.disclosureState === DisclosureStates.Open,
+      close,
+    } satisfies PanelRenderPropArg
+  }, [state, close])
 
   let ourProps = {
     ref: panelRef,

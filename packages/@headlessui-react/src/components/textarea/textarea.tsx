@@ -49,6 +49,7 @@ function TextareaFn<TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
   let {
     id = providedId || `headlessui-textarea-${internalId}`,
     disabled = providedDisabled || false,
+    autoFocus = false,
     invalid = false,
     ...theirProps
   } = props
@@ -56,8 +57,8 @@ function TextareaFn<TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
 
-  let { isFocused: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
+  let { isFocused: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
 
   let ourProps = mergeProps(
     {
@@ -67,22 +68,15 @@ function TextareaFn<TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
       'aria-describedby': describedBy,
       'aria-invalid': invalid ? '' : undefined,
       disabled: disabled || undefined,
+      autoFocus,
     },
     focusProps,
     hoverProps
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        disabled,
-        invalid,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies TextareaRenderPropArg,
-    [disabled, invalid, hover, focus, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return { disabled, invalid, hover, focus, autofocus: autoFocus } satisfies TextareaRenderPropArg
+  }, [disabled, invalid, hover, focus, autoFocus])
 
   return render({
     ourProps,
