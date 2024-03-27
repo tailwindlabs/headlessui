@@ -262,6 +262,7 @@ type ButtonRenderPropArg = {
   open: boolean
   hover: boolean
   active: boolean
+  disabled: boolean
   focus: boolean
   autofocus: boolean
 }
@@ -352,16 +353,18 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: props.disabled ?? false })
   let { pressed: active, pressProps } = useActivePress({ disabled: props.disabled ?? false })
 
+  let disabled = props.disabled ?? false
   let slot = useMemo(
     () =>
       ({
         open: state.disclosureState === DisclosureStates.Open,
         hover,
         active,
+        disabled,
         focus,
         autofocus: props.autoFocus ?? false,
       }) satisfies ButtonRenderPropArg,
-    [state, hover, active, focus, props.autoFocus]
+    [state, hover, active, focus, disabled, props.autoFocus]
   )
 
   let type = useResolveButtonType(props, internalButtonRef)
