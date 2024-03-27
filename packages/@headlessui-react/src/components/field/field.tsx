@@ -40,7 +40,7 @@ function FieldFn<TTag extends ElementType = typeof DEFAULT_FIELD_TAG>(
 
   let ourProps = {
     ref,
-    disabled,
+    disabled: disabled || undefined,
     'aria-disabled': disabled || undefined,
   }
 

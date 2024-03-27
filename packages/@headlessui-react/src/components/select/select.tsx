@@ -52,15 +52,16 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
     id = providedId || `headlessui-select-${internalId}`,
     disabled = providedDisabled || false,
     invalid = false,
+    autoFocus = false,
     ...theirProps
   } = props
 
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
   let ourProps = mergeProps(
     {
@@ -70,24 +71,23 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
       'aria-describedby': describedBy,
       'aria-invalid': invalid ? '' : undefined,
       disabled: disabled || undefined,
+      autoFocus,
     },
     focusProps,
     hoverProps,
     pressProps
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        disabled,
-        invalid,
-        hover,
-        focus,
-        active,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies SelectRenderPropArg,
-    [disabled, invalid, hover, focus, active, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return {
+      disabled,
+      invalid,
+      hover,
+      focus,
+      active,
+      autofocus: autoFocus,
+    } satisfies SelectRenderPropArg
+  }, [disabled, invalid, hover, focus, active, autoFocus])
 
   return render({
     ourProps,

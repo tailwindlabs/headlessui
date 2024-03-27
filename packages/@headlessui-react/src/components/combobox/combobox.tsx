@@ -770,22 +770,20 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     data.comboboxState === ComboboxState.Open
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: data.comboboxState === ComboboxState.Open,
-        disabled,
-        activeIndex: data.activeOptionIndex,
-        activeOption:
-          data.activeOptionIndex === null
-            ? null
-            : data.virtual
-              ? data.virtual.options[data.activeOptionIndex ?? 0]
-              : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
-        value,
-      }) satisfies ComboboxRenderPropArg<unknown>,
-    [data, disabled, value]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: data.comboboxState === ComboboxState.Open,
+      disabled,
+      activeIndex: data.activeOptionIndex,
+      activeOption:
+        data.activeOptionIndex === null
+          ? null
+          : data.virtual
+            ? data.virtual.options[data.activeOptionIndex ?? 0]
+            : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
+      value,
+    } satisfies ComboboxRenderPropArg<unknown>
+  }, [data, disabled, value])
 
   let selectActiveOption = useEvent(() => {
     if (data.activeOptionIndex === null) return
@@ -958,6 +956,7 @@ export type ComboboxInputProps<
   InputPropsWeControl,
   {
     defaultValue?: TType
+    disabled?: boolean
     displayValue?(item: TType): string
     onChange?(event: React.ChangeEvent<HTMLInputElement>): void
     autoFocus?: boolean
@@ -970,18 +969,21 @@ function InputFn<
   // But today is not that day..
   TType = Parameters<typeof ComboboxRoot>[0]['value'],
 >(props: ComboboxInputProps<TTag, TType>, ref: Ref<HTMLInputElement>) {
+  let data = useData('Combobox.Input')
+  let actions = useActions('Combobox.Input')
+
   let internalId = useId()
   let providedId = useProvidedId()
   let {
     id = providedId || `headlessui-combobox-input-${internalId}`,
     onChange,
     displayValue,
+    disabled = data.disabled || false,
+    autoFocus = false,
     // @ts-ignore: We know this MAY NOT exist for a given tag but we only care when it _does_ exist.
     type = 'text',
     ...theirProps
   } = props
-  let data = useData('Combobox.Input')
-  let actions = useActions('Combobox.Input')
 
   let inputRef = useSyncRefs(data.inputRef, ref, useFloatingReference())
   let ownerDocument = useOwnerDocument(data.inputRef)
@@ -1320,20 +1322,18 @@ function InputFn<
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
 
-  let { isFocused: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: data.disabled ?? false })
+  let { isFocused: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: data.comboboxState === ComboboxState.Open,
-        disabled: data.disabled,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies InputRenderPropArg,
-    [data, hover, focus, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: data.comboboxState === ComboboxState.Open,
+      disabled,
+      hover,
+      focus,
+      autofocus: autoFocus,
+    } satisfies InputRenderPropArg
+  }, [data, hover, focus, autoFocus, disabled])
 
   let ourProps = mergeProps(
     {
@@ -1365,7 +1365,8 @@ function InputFn<
           ? displayValue?.(data.defaultValue as unknown as TType)
           : null) ??
         data.defaultValue,
-      disabled: data.disabled,
+      disabled: disabled || undefined,
+      autoFocus,
       onCompositionStart: handleCompositionStart,
       onCompositionEnd: handleCompositionEnd,
       onKeyDown: handleKeyDown,
@@ -1411,6 +1412,7 @@ export type ComboboxButtonProps<TTag extends ElementType = typeof DEFAULT_BUTTON
   ButtonPropsWeControl,
   {
     autoFocus?: boolean
+    disabled?: boolean
   }
 >
 
@@ -1422,7 +1424,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let actions = useActions('Combobox.Button')
   let buttonRef = useSyncRefs(data.buttonRef, ref)
   let internalId = useId()
-  let { id = `headlessui-combobox-button-${internalId}`, ...theirProps } = props
+  let {
+    id = `headlessui-combobox-button-${internalId}`,
+    disabled = data.disabled || false,
+    autoFocus = false,
+    ...theirProps
+  } = props
   let d = useDisposables()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
@@ -1479,22 +1486,20 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let labelledBy = useLabelledBy([id])
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: data.disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: data.disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: data.comboboxState === ComboboxState.Open,
-        active: active || data.comboboxState === ComboboxState.Open,
-        disabled: data.disabled,
-        value: data.value,
-        hover,
-        focus,
-      }) satisfies ButtonRenderPropArg,
-    [data, hover, focus, active]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: data.comboboxState === ComboboxState.Open,
+      active: active || data.comboboxState === ComboboxState.Open,
+      disabled,
+      value: data.value,
+      hover,
+      focus,
+    } satisfies ButtonRenderPropArg
+  }, [data, hover, focus, active, disabled])
   let ourProps = mergeProps(
     {
       ref: buttonRef,
@@ -1505,7 +1510,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-controls': data.optionsRef.current?.id,
       'aria-expanded': data.comboboxState === ComboboxState.Open,
       'aria-labelledby': labelledBy,
-      disabled: data.disabled,
+      disabled: disabled || undefined,
+      autoFocus,
       onClick: handleClick,
       onKeyDown: handleKeyDown,
     },
@@ -1592,14 +1598,12 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let labelledBy = useLabelledBy([data.buttonRef.current?.id])
 
-  let slot = useMemo(
-    () =>
-      ({
-        open: data.comboboxState === ComboboxState.Open,
-        option: undefined,
-      }) satisfies OptionsRenderPropArg,
-    [data]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: data.comboboxState === ComboboxState.Open,
+      option: undefined,
+    } satisfies OptionsRenderPropArg
+  }, [data])
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-labelledby': labelledBy,
     role: 'listbox',

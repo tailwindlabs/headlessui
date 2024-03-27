@@ -83,6 +83,7 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
   let {
     id = providedId || `headlessui-checkbox-${internalId}`,
     disabled = providedDisabled || false,
+    autoFocus = false,
     checked: controlledChecked,
     defaultChecked = false,
     onChange: controlledOnChange,
@@ -127,9 +128,9 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
   // This is needed so that we can "cancel" the click event when we use the `Enter` key on a button.
   let handleKeyPress = useEvent((event: ReactKeyboardEvent<HTMLElement>) => event.preventDefault())
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: disabled ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
 
   let ourProps = mergeProps(
     {
@@ -151,20 +152,18 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
     pressProps
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        checked,
-        disabled,
-        hover,
-        focus,
-        active,
-        indeterminate,
-        changing,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies CheckboxRenderPropArg,
-    [checked, indeterminate, disabled, hover, focus, active, changing, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return {
+      checked,
+      disabled,
+      hover,
+      focus,
+      active,
+      indeterminate,
+      changing,
+      autofocus: autoFocus,
+    } satisfies CheckboxRenderPropArg
+  }, [checked, indeterminate, disabled, hover, focus, active, changing, autoFocus])
 
   let reset = useCallback(() => {
     return onChange?.(defaultChecked)

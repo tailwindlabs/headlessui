@@ -151,6 +151,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     name,
     value,
     form,
+    autoFocus = false,
     ...theirProps
   } = props
   let groupContext = useContext(GroupContext)
@@ -192,23 +193,22 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
 
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
-  let { pressed: active, pressProps } = useActivePress({ disabled: disabled ?? false })
 
-  let slot = useMemo(
-    () =>
-      ({
-        checked,
-        disabled,
-        hover,
-        focus,
-        active,
-        autofocus: props.autoFocus ?? false,
-        changing,
-      }) satisfies SwitchRenderPropArg,
-    [checked, hover, focus, active, disabled, changing, props.autoFocus]
-  )
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
+  let { pressed: active, pressProps } = useActivePress({ disabled })
+
+  let slot = useMemo(() => {
+    return {
+      checked,
+      disabled,
+      hover,
+      focus,
+      active,
+      autofocus: autoFocus,
+      changing,
+    } satisfies SwitchRenderPropArg
+  }, [checked, hover, focus, active, disabled, changing, autoFocus])
 
   let ourProps = mergeProps(
     {
@@ -220,7 +220,8 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
       'aria-checked': checked,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
-      disabled,
+      disabled: disabled || undefined,
+      autoFocus,
       onClick: handleClick,
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,

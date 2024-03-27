@@ -49,6 +49,7 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
   let {
     id = providedId || `headlessui-input-${internalId}`,
     disabled = providedDisabled || false,
+    autoFocus = false,
     invalid = false,
     ...theirProps
   } = props
@@ -56,10 +57,8 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
 
-  let { isFocused: focus, focusProps } = useFocusRing({
-    autoFocus: props.autoFocus ?? false,
-  })
-  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled ?? false })
+  let { isFocused: focus, focusProps } = useFocusRing({ autoFocus })
+  let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
 
   let ourProps = mergeProps(
     {
@@ -69,22 +68,15 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
       'aria-describedby': describedBy,
       'aria-invalid': invalid ? '' : undefined,
       disabled: disabled || undefined,
+      autoFocus,
     },
     focusProps,
     hoverProps
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        disabled,
-        invalid,
-        hover,
-        focus,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies InputRenderPropArg,
-    [disabled, invalid, hover, focus, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return { disabled, invalid, hover, focus, autofocus: autoFocus } satisfies InputRenderPropArg
+  }, [disabled, invalid, hover, focus, autoFocus])
 
   return render({
     ourProps,

@@ -41,34 +41,27 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let providedDisabled = useDisabled()
-  let { disabled = providedDisabled || false, ...theirProps } = props
+  let { disabled = providedDisabled || false, autoFocus = false, ...theirProps } = props
 
-  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus: props.autoFocus ?? false })
+  let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
   let ourProps = mergeProps(
     {
       ref,
-      disabled: disabled || undefined,
       type: theirProps.type ?? 'button',
+      disabled: disabled || undefined,
+      autoFocus,
     },
     focusProps,
     hoverProps,
     pressProps
   )
 
-  let slot = useMemo(
-    () =>
-      ({
-        disabled,
-        hover,
-        focus,
-        active,
-        autofocus: props.autoFocus ?? false,
-      }) satisfies ButtonRenderPropArg,
-    [disabled, hover, focus, active, props.autoFocus]
-  )
+  let slot = useMemo(() => {
+    return { disabled, hover, focus, active, autofocus: autoFocus } satisfies ButtonRenderPropArg
+  }, [disabled, hover, focus, active, autoFocus])
 
   return render({
     ourProps,
