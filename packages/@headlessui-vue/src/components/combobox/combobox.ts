@@ -1462,6 +1462,12 @@ export let ComboboxOption = defineComponent({
       if (props.disabled || api.virtual.value?.disabled(props.value)) return event.preventDefault()
       api.selectOption(id)
 
+      if (api.mode.value === ValueMode.Single) {
+        requestAnimationFrame(() => api.closeCombobox())
+      }
+    }
+
+    function handleFocus() {
       // We want to make sure that we don't accidentally trigger the virtual keyboard.
       //
       // This would happen if the input is focused, the options are open, you select an option
@@ -1478,12 +1484,6 @@ export let ComboboxOption = defineComponent({
         requestAnimationFrame(() => dom(api.inputRef)?.focus({ preventScroll: true }))
       }
 
-      if (api.mode.value === ValueMode.Single) {
-        requestAnimationFrame(() => api.closeCombobox())
-      }
-    }
-
-    function handleFocus() {
       if (props.disabled || api.virtual.value?.disabled(props.value)) {
         return api.goToOption(Focus.Nothing)
       }
@@ -1520,7 +1520,7 @@ export let ComboboxOption = defineComponent({
         id,
         ref: internalOptionRef,
         role: 'option',
-        tabIndex: disabled === true ? undefined : -1,
+        tabIndex: -1,
         'aria-disabled': disabled === true ? true : undefined,
         // According to the WAI-ARIA best practices, we should use aria-checked for
         // multi-select,but Voice-Over disagrees. So we use aria-selected instead for

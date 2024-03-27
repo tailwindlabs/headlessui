@@ -218,16 +218,14 @@ function mergeProps(...listOfProps: Record<any, any>[]) {
     }
   }
 
-  // Do not attach any event handlers when there is a `disabled` or `aria-disabled` prop set.
+  // Ensure event listeners are not called if `disabled` or `aria-disabled` is true
   if (target.disabled || target['aria-disabled']) {
-    return Object.assign(
-      target,
-      // Set all event listeners that we collected to `undefined`. This is
-      // important because of the `cloneElement` from above, which merges the
-      // existing and new props, they don't just override therefore we have to
-      // explicitly nullify them.
-      Object.fromEntries(Object.keys(eventHandlers).map((eventName) => [eventName, undefined]))
-    )
+    for (let eventName in eventHandlers) {
+      // Prevent default events for `onClick`, `onMouseDown`, `onKeyDown`, etc.
+      if (/^(on(?:Click|Pointer|Mouse|Key)(?:Down|Up|Press)?)$/.test(eventName)) {
+        eventHandlers[eventName] = [(e: any) => e?.preventDefault?.()]
+      }
+    }
   }
 
   // Merge event handlers
