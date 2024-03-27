@@ -629,15 +629,19 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
   let selected = myIndex === selectedIndex
 
-  let slot = useMemo(() => ({ selected }), [selected])
+  let { isFocusVisible: focus, focusProps } = useFocusRing()
+  let slot = useMemo(() => ({ selected, focus }), [selected, focus])
 
-  let ourProps = {
-    ref: panelRef,
-    id,
-    role: 'tabpanel',
-    'aria-labelledby': tabs[myIndex]?.current?.id,
-    tabIndex: selected ? tabIndex : -1,
-  }
+  let ourProps = mergeProps(
+    {
+      ref: panelRef,
+      id,
+      role: 'tabpanel',
+      'aria-labelledby': tabs[myIndex]?.current?.id,
+      tabIndex: selected ? tabIndex : -1,
+    },
+    focusProps
+  )
 
   if (!selected && (theirProps.unmount ?? true) && !(theirProps.static ?? false)) {
     return <Hidden as="span" aria-hidden="true" {...ourProps} />

@@ -691,25 +691,25 @@ describe('Rendering', () => {
         )
 
         expect(document.querySelector('[data-panel="0"]')).toHaveTextContent(
-          JSON.stringify({ selected: true })
+          JSON.stringify({ selected: true, focus: false })
         )
         expect(document.querySelector('[data-panel="1"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({ selected: false, focus: false })
         )
         expect(document.querySelector('[data-panel="2"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({ selected: false, focus: false })
         )
 
         await click(getByText('Tab 2'))
 
         expect(document.querySelector('[data-panel="0"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({ selected: false, focus: false })
         )
         expect(document.querySelector('[data-panel="1"]')).toHaveTextContent(
-          JSON.stringify({ selected: true })
+          JSON.stringify({ selected: true, focus: false })
         )
         expect(document.querySelector('[data-panel="2"]')).toHaveTextContent(
-          JSON.stringify({ selected: false })
+          JSON.stringify({ selected: false, focus: false })
         )
       })
     )
