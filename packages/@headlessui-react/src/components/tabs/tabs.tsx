@@ -583,7 +583,7 @@ function PanelsFn<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
   let { selectedIndex } = useData('Tab.Panels')
   let panelsRef = useSyncRefs(ref)
 
-  let slot = useMemo(() => ({ selectedIndex }), [selectedIndex])
+  let slot = useMemo(() => ({ selectedIndex }) satisfies PanelsRenderPropArg, [selectedIndex])
 
   let theirProps = props
   let ourProps = { ref: panelsRef }
@@ -602,6 +602,7 @@ function PanelsFn<TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
 let DEFAULT_PANEL_TAG = 'div' as const
 type PanelRenderPropArg = {
   selected: boolean
+  focus: boolean
 }
 type PanelPropsWeControl = 'role' | 'aria-labelledby'
 let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -635,7 +636,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let selected = myIndex === selectedIndex
 
   let { isFocusVisible: focus, focusProps } = useFocusRing()
-  let slot = useMemo(() => ({ selected, focus }), [selected, focus])
+  let slot = useMemo(() => ({ selected, focus }) satisfies PanelRenderPropArg, [selected, focus])
 
   let ourProps = mergeProps(
     {
