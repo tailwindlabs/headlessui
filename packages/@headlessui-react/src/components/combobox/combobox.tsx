@@ -502,7 +502,6 @@ let ComboboxDataContext = createContext<
       disabled: boolean
       mode: ValueMode
       activeOptionIndex: number | null
-      nullable: boolean
       immediate: boolean
 
       virtual: { options: unknown[]; disabled: (value: unknown) => boolean } | null
@@ -552,18 +551,16 @@ type ComboboxRenderPropArg<TValue, TActive = TValue> = {
   value: TValue
 }
 
-type O = 'value' | 'defaultValue' | 'nullable' | 'multiple' | 'onChange' | 'by'
+type O = 'value' | 'defaultValue' | 'multiple' | 'onChange' | 'by'
 
 type ComboboxValueProps<
   TValue,
-  TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
 > = Extract<
   | ({
       value?: EnsureArray<TValue>
       defaultValue?: EnsureArray<TValue>
-      nullable: true // We ignore `nullable` in multiple mode
       multiple: true
       onChange?(value: EnsureArray<TValue>): void
       by?: ByComparator<TValue>
@@ -571,7 +568,6 @@ type ComboboxValueProps<
   | ({
       value?: TValue | null
       defaultValue?: TValue | null
-      nullable: true
       multiple?: false
       onChange?(value: TValue | null): void
       by?: ByComparator<TValue | null>
@@ -579,28 +575,25 @@ type ComboboxValueProps<
   | ({
       value?: EnsureArray<TValue>
       defaultValue?: EnsureArray<TValue>
-      nullable?: false
       multiple: true
       onChange?(value: EnsureArray<TValue>): void
       by?: ByComparator<TValue extends Array<infer U> ? U : TValue>
     } & Expand<Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>, TValue>, O>>)
   | ({
       value?: TValue
-      nullable?: false
       multiple?: false
       defaultValue?: TValue
       onChange?(value: TValue): void
       by?: ByComparator<TValue>
     } & Props<TTag, ComboboxRenderPropArg<TValue>, O>),
-  { nullable?: TNullable; multiple?: TMultiple }
+  { multiple?: TMultiple }
 >
 
 export type ComboboxProps<
   TValue,
-  TNullable extends boolean | undefined,
   TMultiple extends boolean | undefined,
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
-> = ComboboxValueProps<TValue, TNullable, TMultiple, TTag> & {
+> = ComboboxValueProps<TValue, TMultiple, TTag> & {
   disabled?: boolean
   __demoMode?: boolean
   form?: string
@@ -613,24 +606,16 @@ export type ComboboxProps<
 }
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, true, true, TTag>,
+  props: ComboboxProps<TValue, true, TTag>,
   ref: Ref<HTMLElement>
 ): JSX.Element
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, true, false, TTag>,
-  ref: Ref<HTMLElement>
-): JSX.Element
-function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, false, false, TTag>,
-  ref: Ref<HTMLElement>
-): JSX.Element
-function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, false, true, TTag>,
+  props: ComboboxProps<TValue, false, TTag>,
   ref: Ref<HTMLElement>
 ): JSX.Element
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, boolean | undefined, boolean | undefined, TTag>,
+  props: ComboboxProps<TValue, boolean | undefined, TTag>,
   ref: Ref<HTMLElement>
 ) {
   let providedDisabled = useDisabled()
@@ -643,7 +628,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     by,
     disabled = providedDisabled || false,
     __demoMode = false,
-    nullable = false,
     multiple = false,
     immediate = false,
     virtual = null,
@@ -748,10 +732,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       compare,
       isSelected,
       isActive,
-      nullable,
       __demoMode,
     }),
-    [value, defaultValue, disabled, multiple, nullable, __demoMode, state, virtual]
+    [value, defaultValue, disabled, multiple, __demoMode, state, virtual]
   )
 
   useIsoMorphicEffect(() => {
@@ -1214,7 +1197,7 @@ function InputFn<
           event.stopPropagation()
         }
 
-        if (data.nullable && data.mode === ValueMode.Single) {
+        if (data.mode === ValueMode.Single) {
           // We want to clear the value when the user presses escape if and only if the current
           // value is not set (aka, they didn't select anything yet, or they cleared the input which
           // caused the value to be set to `null`). If the current value is set, then we want to
@@ -1252,7 +1235,7 @@ function InputFn<
     //
     // This is can happen when you press backspace, but also when you select all the text and press
     // ctrl/cmd+x.
-    if (data.nullable && data.mode === ValueMode.Single) {
+    if (data.mode === ValueMode.Single) {
       if (event.target.value === '') {
         clear()
       }
@@ -1285,7 +1268,7 @@ function InputFn<
       // caused the value to be set to `null`). If the current value is set, then we want to
       // fallback to that value when we press escape (this part is handled in the watcher that
       // syncs the value with the input field again).
-      if (data.nullable && data.value === null) {
+      if (data.value === null) {
         clear()
       }
 
@@ -1827,16 +1810,10 @@ function OptionFn<
 
 export interface _internal_ComponentCombobox extends HasDisplayName {
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, true, true, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, true, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
   <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, true, false, TTag> & RefProp<typeof ComboboxFn>
-  ): JSX.Element
-  <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, false, true, TTag> & RefProp<typeof ComboboxFn>
-  ): JSX.Element
-  <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, false, false, TTag> & RefProp<typeof ComboboxFn>
+    props: ComboboxProps<TValue, false, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
 }
 

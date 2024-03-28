@@ -692,7 +692,7 @@ describe('Rendering', () => {
 
           return (
             <>
-              <Combobox value={value} onChange={setValue} nullable>
+              <Combobox value={value} onChange={setValue}>
                 <Combobox.Input
                   onChange={NOOP}
                   displayValue={(str?: string) =>
@@ -4100,27 +4100,6 @@ describe.each([{ virtual: true }, { virtual: false }])(
               let [value, setValue] = useState<string | null>('bob')
               let [, setQuery] = useState<string>('')
 
-              // return (
-              //   <MyCombobox
-              //     options={[
-              //       { value: 'alice', children: 'Alice' },
-              //       { value: 'bob', children: 'Bob' },
-              //       { value: 'charlie', children: 'Charlie' },
-              //     ]}
-              //     comboboxProps={{
-              //       value,
-              //       onChange: (value: any) => {
-              //         setValue(value)
-              //         handleChange(value)
-              //       },
-              //       nullable: true,
-              //     }}
-              //     inputProps={{
-              //       onChange: (event: any) => setQuery(event.target.value),
-              //     }}
-              //   />
-              // )
-
               return (
                 <Combobox
                   value={value}
@@ -4128,7 +4107,6 @@ describe.each([{ virtual: true }, { virtual: false }])(
                     setValue(value)
                     handleChange(value)
                   }}
-                  nullable
                 >
                   <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
                   <Combobox.Button>Trigger</Combobox.Button>
