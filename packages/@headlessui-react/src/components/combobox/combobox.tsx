@@ -566,6 +566,9 @@ export type ComboboxProps<
     onChange?(value: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>): void
     by?: ByComparator<NoInfer<TValue>>
 
+    /** @deprecated The `<Combobox />` is now nullable default */
+    nullable?: boolean
+
     multiple?: TMultiple
     disabled?: boolean
     form?: string
