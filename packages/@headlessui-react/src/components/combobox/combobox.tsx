@@ -1251,32 +1251,28 @@ function InputFn<
     isTyping.current = false
 
     // Focus is moved into the list, we don't want to close yet.
-    if (data.optionsRef.current?.contains(relatedTarget)) {
-      return
-    }
+    if (data.optionsRef.current?.contains(relatedTarget)) return
 
-    if (data.buttonRef.current?.contains(relatedTarget)) {
-      return
-    }
+    // Focus is moved to the button, we don't want to close yet.
+    if (data.buttonRef.current?.contains(relatedTarget)) return
 
+    // Focus is moved, but the combobox is not open. This can mean two things:
+    //
+    // 1. The combobox was never opened, so we don't have to do anything.
+    // 2. The combobox was closed and focus was moved already. At that point we
+    //    don't need to try and select the active option.
     if (data.comboboxState !== ComboboxState.Open) return
+
     event.preventDefault()
 
-    if (data.mode === ValueMode.Single) {
-      // We want to clear the value when the user presses escape if and only if the current
-      // value is not set (aka, they didn't select anything yet, or they cleared the input which
-      // caused the value to be set to `null`). If the current value is set, then we want to
-      // fallback to that value when we press escape (this part is handled in the watcher that
-      // syncs the value with the input field again).
-      if (data.value === null) {
-        clear()
-      }
-
-      // We do have a value, so let's select the active option, unless we were just going through
-      // the form and we opened it due to the focus event.
-      else if (data.activationTrigger !== ActivationTrigger.Focus) {
-        actions.selectActiveOption()
-      }
+    // We want to clear the value when the user presses escape or clicks outside
+    // the combobox if and only if the current value is not set (aka, they
+    // didn't select anything yet, or they cleared the input which caused the
+    // value to be set to `null`). If the current value is set, then we want to
+    // fallback to that value when we press escape (this part is handled in the
+    // watcher that syncs the value with the input field again).
+    if (data.mode === ValueMode.Single && data.value === null) {
+      clear()
     }
 
     return actions.closeCombobox()
