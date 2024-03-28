@@ -48,7 +48,7 @@ import {
 import { FormFields } from '../../internal/form-fields'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
-import type { EnsureArray, Expand, Props } from '../../types'
+import type { EnsureArray, Props } from '../../types'
 import { history } from '../../utils/active-element-history'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
@@ -551,68 +551,34 @@ type ComboboxRenderPropArg<TValue, TActive = TValue> = {
   value: TValue
 }
 
-type O = 'value' | 'defaultValue' | 'multiple' | 'onChange' | 'by'
-
-type ComboboxValueProps<
-  TValue,
-  TMultiple extends boolean | undefined,
-  TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
-> = Extract<
-  | ({
-      value?: EnsureArray<TValue>
-      defaultValue?: EnsureArray<TValue>
-      multiple: true
-      onChange?(value: EnsureArray<TValue>): void
-      by?: ByComparator<TValue>
-    } & Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>, TValue>, O>)
-  | ({
-      value?: TValue | null
-      defaultValue?: TValue | null
-      multiple?: false
-      onChange?(value: TValue | null): void
-      by?: ByComparator<TValue | null>
-    } & Expand<Props<TTag, ComboboxRenderPropArg<TValue | null>, O>>)
-  | ({
-      value?: EnsureArray<TValue>
-      defaultValue?: EnsureArray<TValue>
-      multiple: true
-      onChange?(value: EnsureArray<TValue>): void
-      by?: ByComparator<TValue extends Array<infer U> ? U : TValue>
-    } & Expand<Props<TTag, ComboboxRenderPropArg<EnsureArray<TValue>, TValue>, O>>)
-  | ({
-      value?: TValue
-      multiple?: false
-      defaultValue?: TValue
-      onChange?(value: TValue): void
-      by?: ByComparator<TValue>
-    } & Props<TTag, ComboboxRenderPropArg<TValue>, O>),
-  { multiple?: TMultiple }
->
-
 export type ComboboxProps<
   TValue,
   TMultiple extends boolean | undefined,
   TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
-> = ComboboxValueProps<TValue, TMultiple, TTag> & {
-  disabled?: boolean
-  __demoMode?: boolean
-  form?: string
-  name?: string
-  immediate?: boolean
-  virtual?: {
-    options: TValue[]
-    disabled?: (value: TValue) => boolean
-  } | null
-}
+> = Props<
+  TTag,
+  ComboboxRenderPropArg<NoInfer<TValue>>,
+  'value' | 'defaultValue' | 'multiple' | 'onChange' | 'by',
+  {
+    value?: TMultiple extends true ? EnsureArray<TValue> : TValue
+    defaultValue?: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>
 
-function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, true, TTag>,
-  ref: Ref<HTMLElement>
-): JSX.Element
-function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-  props: ComboboxProps<TValue, false, TTag>,
-  ref: Ref<HTMLElement>
-): JSX.Element
+    onChange?(value: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>): void
+    by?: ByComparator<NoInfer<TValue>>
+
+    multiple?: TMultiple
+    disabled?: boolean
+    form?: string
+    name?: string
+    immediate?: boolean
+    virtual?: {
+      options: NoInfer<TValue>[]
+      disabled?: (value: NoInfer<TValue>) => boolean
+    } | null
+
+    __demoMode?: boolean
+  }
+>
 
 function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
   props: ComboboxProps<TValue, boolean | undefined, TTag>,
