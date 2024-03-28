@@ -63,6 +63,6 @@
     "prettier-plugin-tailwindcss": "^0.5.7",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
-    "typescript": "^5.3.2"
+    "typescript": "^5.4.3"
   }
 }
