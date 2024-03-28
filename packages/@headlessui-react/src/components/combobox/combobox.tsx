@@ -1230,15 +1230,13 @@ function InputFn<
     // options while typing won't work at all because we are still in "composing" mode.
     onChange?.(event)
 
-    // When the value becomes empty in a single value mode while being nullable then we want to clear
+    // When the value becomes empty in a single value mode then we want to clear
     // the option entirely.
     //
     // This is can happen when you press backspace, but also when you select all the text and press
     // ctrl/cmd+x.
-    if (data.mode === ValueMode.Single) {
-      if (event.target.value === '') {
-        clear()
-      }
+    if (data.mode === ValueMode.Single && event.target.value === '') {
+      clear()
     }
 
     // Open the combobox to show the results based on what the user has typed
