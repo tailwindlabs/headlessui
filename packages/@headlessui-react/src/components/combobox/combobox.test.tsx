@@ -387,7 +387,10 @@ describe('Rendering', () => {
         'should be possible to use completely new objects while rendering (single mode)',
         suppressConsoleLogs(async () => {
           function Example() {
-            let [value, setValue] = useState<{ id: number; name: string }>({ id: 2, name: 'Bob' })
+            let [value, setValue] = useState<{ id: number; name: string } | null>({
+              id: 2,
+              name: 'Bob',
+            })
 
             return (
               <Combobox value={value} onChange={setValue} by="id">
@@ -499,7 +502,7 @@ describe('Rendering', () => {
         ]
 
         function Example() {
-          let [person, setPerson] = useState(data[1])
+          let [person, setPerson] = useState<(typeof data)[number] | null>(data[1])
 
           return (
             <Combobox value={person} onChange={setPerson} name="assignee" by="id">
@@ -647,7 +650,7 @@ describe('Rendering', () => {
       'selecting an option puts the display value into Combobox.Input when displayValue is provided (when value is undefined)',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState<null | undefined>(undefined)
 
           return (
             <Combobox value={value} onChange={setValue}>
@@ -766,7 +769,7 @@ describe('Rendering', () => {
       'should reflect the value in the input when the value changes and when you are typing',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState('bob')
+          let [value, setValue] = useState<string | null>('bob')
           let [_query, setQuery] = useState('')
 
           return (
@@ -4171,7 +4174,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
       describe('`Any` key aka search', () => {
         type Option = { value: string; name: string; disabled: boolean }
         function Example(props: { people: { value: string; name: string; disabled: boolean }[] }) {
-          let [value, setValue] = useState<Option | undefined>(undefined)
+          let [value, setValue] = useState<Option | null | undefined>(undefined)
           let [query, setQuery] = useState<string>('')
           let filteredPeople =
             query === ''
@@ -5780,7 +5783,7 @@ describe('Form compatibility', () => {
     let submits = jest.fn()
 
     function Example() {
-      let [value, setValue] = useState('home-delivery')
+      let [value, setValue] = useState<string | null>('home-delivery')
       return (
         <form
           onSubmit={(event) => {
@@ -5842,7 +5845,7 @@ describe('Form compatibility', () => {
     ]
 
     function Example() {
-      let [value, setValue] = useState(options[0])
+      let [value, setValue] = useState<(typeof options)[number] | null>(options[0])
 
       return (
         <form

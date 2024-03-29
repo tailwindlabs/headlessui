@@ -563,7 +563,9 @@ export type ComboboxProps<
     value?: TMultiple extends true ? EnsureArray<TValue> : TValue
     defaultValue?: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>
 
-    onChange?(value: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>): void
+    onChange?(
+      value: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue> | null
+    ): void
     by?: ByComparator<
       TMultiple extends true ? EnsureArray<NoInfer<TValue>>[number] : NoInfer<TValue>
     >
