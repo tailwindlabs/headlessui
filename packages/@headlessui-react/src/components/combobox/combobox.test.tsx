@@ -4100,7 +4100,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
       describe('`Backspace` key', () => {
         it(
-          'should reset the value when the last character is removed, when in `nullable` mode',
+          'should reset the value when the last character is removed',
           suppressConsoleLogs(async () => {
             let handleChange = jest.fn()
             function Example() {
@@ -4160,7 +4160,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.Backspace)
             expect(getComboboxInput()?.value).toBe('')
 
-            // Verify that we don't have an selected option anymore since we are in `nullable` mode
+            // Verify that we don't have an selected option anymore
             assertNotActiveComboboxOption(options[1])
             assertNoSelectedComboboxOption()
 
