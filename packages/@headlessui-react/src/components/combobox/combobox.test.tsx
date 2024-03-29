@@ -387,10 +387,13 @@ describe('Rendering', () => {
         'should be possible to use completely new objects while rendering (single mode)',
         suppressConsoleLogs(async () => {
           function Example() {
-            let [value, setValue] = useState({ id: 2, name: 'Bob' })
+            let [value, setValue] = useState<{ id: number; name: string } | null>({
+              id: 2,
+              name: 'Bob',
+            })
 
             return (
-              <Combobox value={value} onChange={(value) => setValue(value)} by="id">
+              <Combobox value={value} onChange={setValue} by="id">
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
                   <Combobox.Option value={{ id: 1, name: 'alice' }}>alice</Combobox.Option>
@@ -432,7 +435,7 @@ describe('Rendering', () => {
             let [value, setValue] = useState([{ id: 2, name: 'Bob' }])
 
             return (
-              <Combobox value={value} onChange={(value) => setValue(value)} by="id" multiple>
+              <Combobox value={value} onChange={setValue} by="id" multiple>
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
                   <Combobox.Option value={{ id: 1, name: 'alice' }}>alice</Combobox.Option>
@@ -472,7 +475,7 @@ describe('Rendering', () => {
         ]
 
         render(
-          <Combobox name="assignee" by="id">
+          <Combobox<(typeof data)[number]> name="assignee" by="id">
             <Combobox.Input
               displayValue={(value: { name: string }) => value.name}
               onChange={NOOP}
@@ -499,7 +502,7 @@ describe('Rendering', () => {
         ]
 
         function Example() {
-          let [person, setPerson] = useState(data[1])
+          let [person, setPerson] = useState<(typeof data)[number] | null>(data[1])
 
           return (
             <Combobox value={person} onChange={setPerson} name="assignee" by="id">
@@ -546,7 +549,7 @@ describe('Rendering', () => {
         ]
 
         render(
-          <Combobox name="assignee" by="id">
+          <Combobox<(typeof data)[number]> name="assignee" by="id">
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button />
             <Combobox.Options>
@@ -647,7 +650,7 @@ describe('Rendering', () => {
       'selecting an option puts the display value into Combobox.Input when displayValue is provided (when value is undefined)',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState(undefined)
+          let [value, setValue] = useState<null | undefined>(undefined)
 
           return (
             <Combobox value={value} onChange={setValue}>
@@ -692,7 +695,7 @@ describe('Rendering', () => {
 
           return (
             <>
-              <Combobox value={value} onChange={setValue} nullable>
+              <Combobox value={value} onChange={setValue}>
                 <Combobox.Input
                   onChange={NOOP}
                   displayValue={(str?: string) =>
@@ -766,7 +769,7 @@ describe('Rendering', () => {
       'should reflect the value in the input when the value changes and when you are typing',
       suppressConsoleLogs(async () => {
         function Example() {
-          let [value, setValue] = useState('bob')
+          let [value, setValue] = useState<string | null>('bob')
           let [_query, setQuery] = useState('')
 
           return (
@@ -1608,7 +1611,11 @@ describe('Rendering', () => {
             handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
           }}
         >
-          <Combobox name="assignee" defaultValue={{ id: 2, name: 'bob', label: 'Bob' }} by="id">
+          <Combobox<(typeof data)[number]>
+            name="assignee"
+            defaultValue={{ id: 2, name: 'bob', label: 'Bob' }}
+            by="id"
+          >
             <Combobox.Button>{({ value }) => value?.name ?? 'Trigger'}</Combobox.Button>
             <Combobox.Input
               onChange={NOOP}
@@ -4093,33 +4100,12 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
       describe('`Backspace` key', () => {
         it(
-          'should reset the value when the last character is removed, when in `nullable` mode',
+          'should reset the value when the last character is removed',
           suppressConsoleLogs(async () => {
             let handleChange = jest.fn()
             function Example() {
               let [value, setValue] = useState<string | null>('bob')
               let [, setQuery] = useState<string>('')
-
-              // return (
-              //   <MyCombobox
-              //     options={[
-              //       { value: 'alice', children: 'Alice' },
-              //       { value: 'bob', children: 'Bob' },
-              //       { value: 'charlie', children: 'Charlie' },
-              //     ]}
-              //     comboboxProps={{
-              //       value,
-              //       onChange: (value: any) => {
-              //         setValue(value)
-              //         handleChange(value)
-              //       },
-              //       nullable: true,
-              //     }}
-              //     inputProps={{
-              //       onChange: (event: any) => setQuery(event.target.value),
-              //     }}
-              //   />
-              // )
 
               return (
                 <Combobox
@@ -4128,7 +4114,6 @@ describe.each([{ virtual: true }, { virtual: false }])(
                     setValue(value)
                     handleChange(value)
                   }}
-                  nullable
                 >
                   <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
                   <Combobox.Button>Trigger</Combobox.Button>
@@ -4175,7 +4160,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await press(Keys.Backspace)
             expect(getComboboxInput()?.value).toBe('')
 
-            // Verify that we don't have an selected option anymore since we are in `nullable` mode
+            // Verify that we don't have an selected option anymore
             assertNotActiveComboboxOption(options[1])
             assertNoSelectedComboboxOption()
 
@@ -4189,7 +4174,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
       describe('`Any` key aka search', () => {
         type Option = { value: string; name: string; disabled: boolean }
         function Example(props: { people: { value: string; name: string; disabled: boolean }[] }) {
-          let [value, setValue] = useState<Option | undefined>(undefined)
+          let [value, setValue] = useState<Option | null | undefined>(undefined)
           let [query, setQuery] = useState<string>('')
           let filteredPeople =
             query === ''
@@ -4207,7 +4192,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
                 }}
                 value={value}
                 by="value"
-                onChange={(value) => setValue(value)}
+                onChange={setValue}
               >
                 <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
                 <Combobox.Button>Trigger</Combobox.Button>
@@ -5502,7 +5487,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5538,7 +5523,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5567,7 +5552,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5600,7 +5585,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5648,7 +5633,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>([])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5798,7 +5783,7 @@ describe('Form compatibility', () => {
     let submits = jest.fn()
 
     function Example() {
-      let [value, setValue] = useState('home-delivery')
+      let [value, setValue] = useState<string | null>('home-delivery')
       return (
         <form
           onSubmit={(event) => {
@@ -5860,7 +5845,7 @@ describe('Form compatibility', () => {
     ]
 
     function Example() {
-      let [value, setValue] = useState(options[0])
+      let [value, setValue] = useState<(typeof options)[number] | null>(options[0])
 
       return (
         <form

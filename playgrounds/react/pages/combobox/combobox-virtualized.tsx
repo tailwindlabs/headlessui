@@ -66,7 +66,6 @@ function Example({ virtual = true, data, initial }: { virtual?: boolean; data; i
           <Combobox
             virtual={virtual ? { options: timezones } : undefined}
             value={activeTimezone}
-            nullable
             onChange={(value) => {
               setActiveTimezone(value)
               setQuery('')
