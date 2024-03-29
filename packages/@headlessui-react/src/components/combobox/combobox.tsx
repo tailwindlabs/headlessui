@@ -32,6 +32,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
+import { useRefocusableInput } from '../../hooks/use-refocusable-input'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
@@ -1381,6 +1382,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   } = props
   let d = useDisposables()
 
+  let refocusInput = useRefocusableInput(data.inputRef)
+
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
@@ -1392,7 +1395,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           actions.openCombobox()
         }
 
-        return d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+        return d.nextFrame(() => refocusInput())
 
       case Keys.ArrowUp:
         event.preventDefault()
@@ -1405,7 +1408,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
             }
           })
         }
-        return d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+        return d.nextFrame(() => refocusInput())
 
       case Keys.Escape:
         if (data.comboboxState !== ComboboxState.Open) return
@@ -1414,7 +1417,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           event.stopPropagation()
         }
         actions.closeCombobox()
-        return d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+        return d.nextFrame(() => refocusInput())
 
       default:
         return
@@ -1430,7 +1433,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       actions.openCombobox()
     }
 
-    d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+    d.nextFrame(() => refocusInput())
   })
 
   let labelledBy = useLabelledBy([id])
@@ -1629,6 +1632,8 @@ function OptionFn<
   let data = useData('Combobox.Option')
   let actions = useActions('Combobox.Option')
 
+  let refocusInput = useRefocusableInput(data.inputRef)
+
   let active = data.virtual
     ? data.activeOptionIndex === data.calculateIndex(value)
     : data.activeOptionIndex === null
@@ -1701,7 +1706,7 @@ function OptionFn<
     // But right now this is still an experimental feature:
     // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
     if (!isMobile()) {
-      requestAnimationFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
+      requestAnimationFrame(() => refocusInput())
     }
 
     if (data.mode === ValueMode.Single) {
