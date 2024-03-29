@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
 export type ByComparator<T> =
-  | (T extends null ? string : keyof T & string)
+  | (NonNullable<T> extends never ? string : keyof NonNullable<T> & string)
   | ((a: T, z: T) => boolean)
 
 function defaultBy<T>(a: T, z: T) {
