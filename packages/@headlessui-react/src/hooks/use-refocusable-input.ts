@@ -10,11 +10,11 @@ import { useEventListener } from './use-event-listener'
  */
 export function useRefocusableInput(ref: MutableRefObject<HTMLInputElement | null>) {
   // Track the cursor position and the value of the input
-  let info = useRef<{
-    value: string
-    selectionStart: number | null
-    selectionEnd: number | null
-  }>({ value: '', selectionStart: null, selectionEnd: null })
+  let info = useRef({
+    value: '',
+    selectionStart: null as number | null,
+    selectionEnd: null as number | null,
+  })
 
   useEventListener(ref.current, 'blur', (event) => {
     let target = event.target
