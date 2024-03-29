@@ -390,7 +390,7 @@ describe('Rendering', () => {
             let [value, setValue] = useState<{ id: number; name: string }>({ id: 2, name: 'Bob' })
 
             return (
-              <Combobox value={value} onChange={(value) => setValue(value)} by="id">
+              <Combobox value={value} onChange={setValue} by="id">
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
                   <Combobox.Option value={{ id: 1, name: 'alice' }}>alice</Combobox.Option>
@@ -432,7 +432,7 @@ describe('Rendering', () => {
             let [value, setValue] = useState([{ id: 2, name: 'Bob' }])
 
             return (
-              <Combobox value={value} onChange={(value) => setValue(value)} by="id" multiple>
+              <Combobox value={value} onChange={setValue} by="id" multiple>
                 <Combobox.Button>Trigger</Combobox.Button>
                 <Combobox.Options>
                   <Combobox.Option value={{ id: 1, name: 'alice' }}>alice</Combobox.Option>
@@ -4189,7 +4189,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
                 }}
                 value={value}
                 by="value"
-                onChange={(value) => setValue(value)}
+                onChange={setValue}
               >
                 <Combobox.Input onChange={(event) => setQuery(event.target.value)} />
                 <Combobox.Button>Trigger</Combobox.Button>
@@ -5484,7 +5484,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5520,7 +5520,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5549,7 +5549,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5582,7 +5582,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>(['bob', 'charlie'])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
@@ -5630,7 +5630,7 @@ describe('Multi-select', () => {
         let [value, setValue] = useState<string[]>([])
 
         return (
-          <Combobox value={value} onChange={(value) => setValue(value)} multiple>
+          <Combobox value={value} onChange={setValue} multiple>
             <Combobox.Input onChange={() => {}} />
             <Combobox.Button>Trigger</Combobox.Button>
             <Combobox.Options>
