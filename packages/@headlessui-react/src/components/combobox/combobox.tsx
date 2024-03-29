@@ -564,7 +564,9 @@ export type ComboboxProps<
     defaultValue?: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>
 
     onChange?(value: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>): void
-    by?: ByComparator<NoInfer<TValue>>
+    by?: ByComparator<
+      TMultiple extends true ? EnsureArray<NoInfer<TValue>>[number] : NoInfer<TValue>
+    >
 
     /** @deprecated The `<Combobox />` is now nullable default */
     nullable?: boolean
@@ -628,7 +630,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let optionsRef = useRef<_Data['optionsRef']['current']>(null)
 
   type TActualValue = true extends typeof multiple ? EnsureArray<TValue>[number] : TValue
-  // @ts-expect-error Eventually we'll want to tackle this, but for now this will do.
   let compare = useByComparator<TActualValue>(by)
 
   let calculateIndex = useEvent((value: TValue) => {
