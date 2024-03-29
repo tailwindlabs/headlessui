@@ -387,7 +387,7 @@ describe('Rendering', () => {
         'should be possible to use completely new objects while rendering (single mode)',
         suppressConsoleLogs(async () => {
           function Example() {
-            let [value, setValue] = useState({ id: 2, name: 'Bob' })
+            let [value, setValue] = useState<{ id: number; name: string }>({ id: 2, name: 'Bob' })
 
             return (
               <Combobox value={value} onChange={(value) => setValue(value)} by="id">
@@ -472,7 +472,7 @@ describe('Rendering', () => {
         ]
 
         render(
-          <Combobox name="assignee" by="id">
+          <Combobox<(typeof data)[number]> name="assignee" by="id">
             <Combobox.Input
               displayValue={(value: { name: string }) => value.name}
               onChange={NOOP}
@@ -546,7 +546,7 @@ describe('Rendering', () => {
         ]
 
         render(
-          <Combobox name="assignee" by="id">
+          <Combobox<(typeof data)[number]> name="assignee" by="id">
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button />
             <Combobox.Options>
@@ -1608,7 +1608,11 @@ describe('Rendering', () => {
             handleSubmission(Object.fromEntries(new FormData(e.target as HTMLFormElement)))
           }}
         >
-          <Combobox name="assignee" defaultValue={{ id: 2, name: 'bob', label: 'Bob' }} by="id">
+          <Combobox<(typeof data)[number]>
+            name="assignee"
+            defaultValue={{ id: 2, name: 'bob', label: 'Bob' }}
+            by="id"
+          >
             <Combobox.Button>{({ value }) => value?.name ?? 'Trigger'}</Combobox.Button>
             <Combobox.Input
               onChange={NOOP}
