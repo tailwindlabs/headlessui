@@ -121,30 +121,52 @@ export function transition(
     leave: () => classes.leaveFrom,
   })
 
-  removeClasses(
-    node,
-    ...classes.base,
-    ...classes.enter,
-    ...classes.enterTo,
-    ...classes.enterFrom,
-    ...classes.leave,
-    ...classes.leaveFrom,
-    ...classes.leaveTo,
-    ...classes.entered
-  )
-  addClasses(node, ...classes.base, ...base, ...from)
-
-  d.nextFrame(() => {
-    removeClasses(node, ...classes.base, ...base, ...from)
-    addClasses(node, ...classes.base, ...base, ...to)
-
-    waitForTransition(node, () => {
-      removeClasses(node, ...classes.base, ...base)
-      addClasses(node, ...classes.base, ...classes.entered)
-
-      return _done()
-    })
+  // Prepare the transitions by ensuring that all the "before" classes are
+  // applied and flushed to the DOM.
+  prepareTransition(node, () => {
+    removeClasses(
+      node,
+      ...classes.base,
+      ...classes.enter,
+      ...classes.enterTo,
+      ...classes.enterFrom,
+      ...classes.leave,
+      ...classes.leaveFrom,
+      ...classes.leaveTo,
+      ...classes.entered
+    )
+    addClasses(node, ...classes.base, ...base, ...from)
   })
 
+  // Wait for the transition, once the transition is complete we can cleanup.
+  // This is registered first to prevent race conditions, otherwise it could
+  // happen that the transition is already done before we start waiting for the
+  // actual event.
+  waitForTransition(node, () => {
+    removeClasses(node, ...classes.base, ...base)
+    addClasses(node, ...classes.base, ...classes.entered)
+
+    return _done()
+  })
+
+  // Initiate the transition by applying the new classes.
+  removeClasses(node, ...classes.base, ...base, ...from)
+  addClasses(node, ...classes.base, ...base, ...to)
+
   return d.dispose
+}
+
+function prepareTransition(node: HTMLElement, prepare: () => void) {
+  let previous = node.style.transition
+
+  // Force cancel current transition
+  node.style.transition = 'none'
+
+  prepare()
+
+  // Trigger a reflow, flushing the CSS changes
+  node.offsetHeight
+
+  // Reset the transition to what it was before
+  node.style.transition = previous
 }
