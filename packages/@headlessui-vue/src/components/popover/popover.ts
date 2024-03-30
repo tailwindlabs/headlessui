@@ -700,7 +700,7 @@ export let PopoverPanel = defineComponent({
         id,
         onKeydown: handleKeyDown,
         onFocusout: focus && api.popoverState.value === PopoverStates.Open ? handleBlur : undefined,
-        tabIndex: -1,
+        tabIndex: 0,
       }
 
       return render({
