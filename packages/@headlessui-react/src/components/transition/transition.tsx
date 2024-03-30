@@ -504,7 +504,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
     show = (usesOpenClosedState & State.Open) === State.Open
   }
 
-  if (![true, false].includes(show as unknown as boolean)) {
+  if (show === undefined) {
     throw new Error('A <Transition /> is used but it is missing a `show={true | false}` prop.')
   }
 
