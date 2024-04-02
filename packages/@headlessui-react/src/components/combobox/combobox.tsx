@@ -1425,6 +1425,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   })
 
   let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
+    // We use the `mousedown` event because this will fire before the `focus`
+    // event. When we use `event.preventDefault()` here, the
+    // `document.activeElement` will stay on the current element.
+    //
+    // Typically that means that the `ComboboxInput` will stay focused, and thus
+    // the selection / cursor position will be preserved.
     event.preventDefault()
 
     if (isDisabledReactIssue7711(event.currentTarget)) return
@@ -1691,6 +1697,12 @@ function OptionFn<
   ])
 
   let handleMouseDown = useEvent((event: { preventDefault: Function }) => {
+    // We use the `mousedown` event because this will fire before the `focus`
+    // event. When we use `event.preventDefault()` here, the
+    // `document.activeElement` will stay on the current element.
+    //
+    // Typically that means that the `ComboboxInput` will stay focused, and thus
+    // the selection / cursor position will be preserved.
     event.preventDefault()
 
     if (disabled || data.virtual?.disabled(value)) return
