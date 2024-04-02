@@ -31,6 +31,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
@@ -897,6 +898,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
     return data.listboxState === ListboxStates.Open
   })()
+
+  // Ensure we close the listbox as soon as the button becomes hidden
+  useOnDisappear(data.buttonRef, actions.closeListbox, visible)
 
   let initialOption = useRef<number | null>(null)
 

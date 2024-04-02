@@ -24,6 +24,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
 import { useInert } from '../../hooks/use-inert'
 import { useIsTouchDevice } from '../../hooks/use-is-touch-device'
+import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useRootContainers } from '../../hooks/use-root-containers'
@@ -338,24 +339,8 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })()
   useScrollLock(ownerDocument, scrollLockEnabled, resolveRootContainers)
 
-  // Trigger close when the FocusTrap gets hidden
-  useEffect(() => {
-    if (dialogState !== DialogStates.Open) return
-    if (!internalDialogRef.current) return
-
-    let observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        let rect = entry.target.getBoundingClientRect()
-        if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
-          close()
-        }
-      }
-    })
-
-    observer.observe(internalDialogRef.current)
-
-    return () => observer.disconnect()
-  }, [dialogState, internalDialogRef, close])
+  // Ensure we close the dialog as soon as the dialog itself becomes hidden
+  useOnDisappear(internalDialogRef, close, dialogState === DialogStates.Open)
 
   let [describedby, DescriptionProvider] = useDescriptions()
 
