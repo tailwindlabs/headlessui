@@ -59,6 +59,10 @@ export function disposables() {
     },
 
     add(cb: () => void) {
+      if (_disposables.includes(cb)) {
+        return
+      }
+
       _disposables.push(cb)
       return () => {
         let idx = _disposables.indexOf(cb)
