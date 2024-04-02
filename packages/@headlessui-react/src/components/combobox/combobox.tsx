@@ -1404,6 +1404,11 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
           actions.openCombobox()
+          d.nextFrame(() => {
+            if (!data.value) {
+              actions.goToOption(Focus.First)
+            }
+          })
         }
 
         return d.nextFrame(() => refocusInput())
