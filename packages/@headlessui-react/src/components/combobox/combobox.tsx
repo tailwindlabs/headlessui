@@ -1389,6 +1389,16 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
+      case Keys.Space:
+      case Keys.Enter:
+        event.preventDefault()
+        event.stopPropagation()
+        if (data.comboboxState === ComboboxState.Closed) {
+          actions.openCombobox()
+        }
+
+        return d.nextFrame(() => refocusInput())
+
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
