@@ -69,6 +69,7 @@ import {
 import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
 import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
+import { MouseButton } from '../mouse'
 
 enum ComboboxState {
   Open,
@@ -1434,13 +1435,21 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     event.preventDefault()
 
     if (isDisabledReactIssue7711(event.currentTarget)) return
-    if (data.comboboxState === ComboboxState.Open) {
-      actions.closeCombobox()
-    } else {
-      actions.openCombobox()
+
+    // When we used the `click` event we didn't have to worry about this because
+    // that only fires if you use the `left` mouse button. However, now that
+    // we use the `mousedown` event, we do have to worry about which button is
+    // pressed.
+    if (event.button === MouseButton.Left) {
+      if (data.comboboxState === ComboboxState.Open) {
+        actions.closeCombobox()
+      } else {
+        actions.openCombobox()
+      }
     }
 
-    d.nextFrame(() => refocusInput())
+    // Ensure we focus the input
+    refocusInput()
   })
 
   let labelledBy = useLabelledBy([id])
@@ -1696,7 +1705,7 @@ function OptionFn<
     /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex,
   ])
 
-  let handleMouseDown = useEvent((event: { preventDefault: Function }) => {
+  let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
     // We use the `mousedown` event because this will fire before the `focus`
     // event. When we use `event.preventDefault()` here, the
     // `document.activeElement` will stay on the current element.
@@ -1704,6 +1713,14 @@ function OptionFn<
     // Typically that means that the `ComboboxInput` will stay focused, and thus
     // the selection / cursor position will be preserved.
     event.preventDefault()
+
+    // When we used the `click` event we didn't have to worry about this because
+    // that only fires if you use the `left` mouse button. However, now that we
+    // use the `mousedown` event, we do have to worry about which button is
+    // pressed.
+    if (event.button !== MouseButton.Left) {
+      return
+    }
 
     if (disabled || data.virtual?.disabled(value)) return
     select()
