@@ -1,3 +1,4 @@
+import type { MutableRefObject } from 'react'
 import { disposables } from '../../../utils/disposables'
 import { match } from '../../../utils/match'
 import { once } from '../../../utils/once'
@@ -10,7 +11,8 @@ function removeClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.remove(...classes)
 }
 
-function waitForTransition(node: HTMLElement, done: () => void) {
+function waitForTransition(node: HTMLElement, _done: () => void) {
+  let done = once(_done)
   let d = disposables()
 
   if (!node) return d.dispose
@@ -82,20 +84,27 @@ function waitForTransition(node: HTMLElement, done: () => void) {
 
 export function transition(
   node: HTMLElement,
-  classes: {
-    base: string[]
-    enter: string[]
-    enterFrom: string[]
-    enterTo: string[]
-    leave: string[]
-    leaveFrom: string[]
-    leaveTo: string[]
-    entered: string[]
-  },
-  show: boolean,
-  done?: () => void
+  {
+    direction,
+    done,
+    classes,
+    inFlight,
+  }: {
+    direction: 'enter' | 'leave'
+    done?: () => void
+    classes: {
+      base: string[]
+      enter: string[]
+      enterFrom: string[]
+      enterTo: string[]
+      leave: string[]
+      leaveFrom: string[]
+      leaveTo: string[]
+      entered: string[]
+    }
+    inFlight?: MutableRefObject<boolean>
+  }
 ) {
-  let direction = show ? 'enter' : 'leave'
   let d = disposables()
   let _done = done !== undefined ? once(done) : () => {}
 
@@ -123,20 +132,26 @@ export function transition(
 
   // Prepare the transitions by ensuring that all the "before" classes are
   // applied and flushed to the DOM.
-  prepareTransition(node, () => {
-    removeClasses(
-      node,
-      ...classes.base,
-      ...classes.enter,
-      ...classes.enterTo,
-      ...classes.enterFrom,
-      ...classes.leave,
-      ...classes.leaveFrom,
-      ...classes.leaveTo,
-      ...classes.entered
-    )
-    addClasses(node, ...classes.base, ...base, ...from)
+  prepareTransition(node, {
+    prepare() {
+      removeClasses(
+        node,
+        ...classes.base,
+        ...classes.enter,
+        ...classes.enterTo,
+        ...classes.enterFrom,
+        ...classes.leave,
+        ...classes.leaveFrom,
+        ...classes.leaveTo,
+        ...classes.entered
+      )
+      addClasses(node, ...classes.base, ...base, ...from)
+    },
+    inFlight,
   })
+
+  // Mark the transition as in-flight.
+  if (inFlight) inFlight.current = true
 
   // Wait for the transition, once the transition is complete we can cleanup.
   // This is registered first to prevent race conditions, otherwise it could
@@ -144,7 +159,10 @@ export function transition(
   // actual event.
   waitForTransition(node, () => {
     removeClasses(node, ...classes.base, ...base)
-    addClasses(node, ...classes.base, ...classes.entered)
+    addClasses(node, ...classes.base, ...classes.entered, ...to)
+
+    // Mark the transition as done.
+    if (inFlight) inFlight.current = false
 
     return _done()
   })
@@ -156,7 +174,18 @@ export function transition(
   return d.dispose
 }
 
-function prepareTransition(node: HTMLElement, prepare: () => void) {
+function prepareTransition(
+  node: HTMLElement,
+  { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
+) {
+  // If we are already in a transition, then we can skip the preparation of
+  // force cancelling the current transition. This improves the cancellation of
+  // existing transitions instead of a hard cut-off.
+  if (inFlight?.current) {
+    prepare()
+    return
+  }
+
   let previous = node.style.transition
 
   // Force cancel current transition

@@ -1,4 +1,4 @@
-import type { MutableRefObject } from 'react'
+import { useRef, type MutableRefObject } from 'react'
 import { transition } from '../components/transition/utils/transition'
 import { disposables } from '../utils/disposables'
 import { useDisposables } from './use-disposables'
@@ -40,6 +40,12 @@ export function useTransition({
 
   let latestDirection = useLatestValue(direction)
 
+  // Track whether the transition is in flight or not. This will help us for
+  // cancelling mid-transition because in that case we don't have to force
+  // clearing existing transitions. See: `prepareTransition` in the `transition`
+  // file.
+  let inFlight = useRef(false)
+
   useIsoMorphicEffect(() => {
     if (!immediate) return
 
@@ -60,9 +66,14 @@ export function useTransition({
     onStart.current(latestDirection.current)
 
     dd.add(
-      transition(node, classes.current, latestDirection.current === 'enter', () => {
-        dd.dispose()
-        onStop.current(latestDirection.current)
+      transition(node, {
+        direction: latestDirection.current,
+        classes: classes.current,
+        inFlight,
+        done() {
+          dd.dispose()
+          onStop.current(latestDirection.current)
+        },
       })
     )
 
