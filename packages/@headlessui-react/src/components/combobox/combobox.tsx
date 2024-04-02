@@ -1424,12 +1424,13 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleClick = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
-    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+  let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+
+    if (isDisabledReactIssue7711(event.currentTarget)) return
     if (data.comboboxState === ComboboxState.Open) {
       actions.closeCombobox()
     } else {
-      event.preventDefault()
       actions.openCombobox()
     }
 
@@ -1464,7 +1465,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-labelledby': labelledBy,
       disabled: disabled || undefined,
       autoFocus,
-      onClick: handleClick,
+      onMouseDown: handleMouseDown,
       onKeyDown: handleKeyDown,
     },
     focusProps,
@@ -1689,8 +1690,10 @@ function OptionFn<
     /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex,
   ])
 
-  let handleClick = useEvent((event: { preventDefault: Function }) => {
-    if (disabled || data.virtual?.disabled(value)) return event.preventDefault()
+  let handleMouseDown = useEvent((event: { preventDefault: Function }) => {
+    event.preventDefault()
+
+    if (disabled || data.virtual?.disabled(value)) return
     select()
 
     // We want to make sure that we don't accidentally trigger the virtual keyboard.
@@ -1758,7 +1761,7 @@ function OptionFn<
     // both single and multi-select.
     'aria-selected': selected,
     disabled: undefined, // Never forward the `disabled` prop
-    onClick: handleClick,
+    onMouseDown: handleMouseDown,
     onFocus: handleFocus,
     onPointerEnter: handleEnter,
     onMouseEnter: handleEnter,
