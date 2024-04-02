@@ -1078,8 +1078,21 @@ function InputFn<
     })
   })
 
+  let dd = useDisposables()
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
     isTyping.current = true
+
+    // Re-set the typing flag, this behaves as a debounce-like implementation,
+    // so as long as we are typing we will not reset the `isTyping` flag, but
+    // once we stop typing we will reset it.
+    {
+      d.add(dd.dispose) // Ensure we cleanup when `d` is disposed
+      dd.dispose() // Cleanup previous disposables
+      dd.nextFrame(() => {
+        isTyping.current = false
+      })
+    }
+
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
