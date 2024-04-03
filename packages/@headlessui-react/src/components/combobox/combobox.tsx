@@ -1454,17 +1454,17 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   })
 
   let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
-    // We use the `mousedown` event here since it fires before the focus
-    // event, allowing us to cancel the event before focus is moved from
-    // the `ComboboxInput` to the `ComboboxButton`. This keeps the input
-    // focused, preserving the cursor position and any text selection.
+    // We use the `mousedown` event here since it fires before the focus event,
+    // allowing us to cancel the event before focus is moved from the
+    // `ComboboxInput` to the `ComboboxButton`. This keeps the input focused,
+    // preserving the cursor position and any text selection.
     event.preventDefault()
 
     if (isDisabledReactIssue7711(event.currentTarget)) return
 
-    // Since we're using the `mousedown` event instead of a `click` event
-    // here to preserve the focus of the `ComboboxInput`, we need to also
-    // check that the `left` mouse button was clicked.
+    // Since we're using the `mousedown` event instead of a `click` event here
+    // to preserve the focus of the `ComboboxInput`, we need to also check
+    // that the `left` mouse button was clicked.
     if (event.button === MouseButton.Left) {
       if (data.comboboxState === ComboboxState.Open) {
         actions.closeCombobox()
@@ -1731,18 +1731,15 @@ function OptionFn<
   ])
 
   let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
-    // We use the `mousedown` event because this will fire before the `focus`
-    // event. When we use `event.preventDefault()` here, the
-    // `document.activeElement` will stay on the current element.
-    //
-    // Typically that means that the `ComboboxInput` will stay focused, and thus
-    // the selection / cursor position will be preserved.
+    // We use the `mousedown` event here since it fires before the focus event,
+    // allowing us to cancel the event before focus is moved from the
+    // `ComboboxInput` to the `ComboboxOption`. This keeps the input focused,
+    // preserving the cursor position and any text selection.
     event.preventDefault()
 
-    // When we used the `click` event we didn't have to worry about this because
-    // that only fires if you use the `left` mouse button. However, now that we
-    // use the `mousedown` event, we do have to worry about which button is
-    // pressed.
+    // Since we're using the `mousedown` event instead of a `click` event here
+    // to preserve the focus of the `ComboboxInput`, we need to also check
+    // that the `left` mouse button was clicked.
     if (event.button !== MouseButton.Left) {
       return
     }
