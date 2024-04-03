@@ -385,14 +385,18 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     })
   })
 
+  let isTransitioning = useRef(false)
+
   let nesting = useNesting(() => {
-    // When all children have been unmounted we can only hide ourselves if and only if we are not
-    // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
+    // When all children have been unmounted we can only hide ourselves if and
+    // only if we are not transitioning ourselves. Otherwise we would unmount
+    // before the transitions are finished.
+    if (isTransitioning.current) return
+
     setState(TreeStates.Hidden)
     unregister(container)
   }, parentNesting)
 
-  let isTransitioning = useRef(false)
   useTransition({
     container,
     classes,
@@ -406,8 +410,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
       nesting.onStop(container, direction, afterEvent)
 
       if (direction === 'leave' && !hasChildren(nesting)) {
-        // When we don't have children anymore we can safely unregister from the parent and hide
-        // ourselves.
+        // When we don't have children anymore we can safely unregister from the
+        // parent and hide ourselves.
         setState(TreeStates.Hidden)
         unregister(container)
       }
