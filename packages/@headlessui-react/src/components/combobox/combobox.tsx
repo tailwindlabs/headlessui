@@ -3,7 +3,6 @@
 import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
 import { Virtualizer, useVirtualizer } from '@tanstack/react-virtual'
-import { useFrameDebounce } from 'hooks/use-frame-debounce'
 import React, {
   Fragment,
   createContext,
@@ -28,6 +27,7 @@ import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
+import { useFrameDebounce } from '../../hooks/use-frame-debounce'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
