@@ -457,6 +457,21 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     if (theirProps.className === '') delete theirProps.className
   }
 
+  // If we are not transitioning (anymore), then we should apply the
+  // `{enter,leave}To` classes as the final state.
+  else {
+    theirProps.className = classNames(
+      rest.className,
+      container.current?.className,
+      ...match(transitionDirection, {
+        enter: [...classes.current.enterTo, ...classes.current.entered],
+        leave: classes.current.leaveTo,
+        idle: [],
+      })
+    )
+    if (theirProps.className === '') delete theirProps.className
+  }
+
   return (
     <NestingContext.Provider value={nesting}>
       <OpenClosedProvider
