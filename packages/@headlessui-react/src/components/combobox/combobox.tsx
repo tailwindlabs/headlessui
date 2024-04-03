@@ -27,6 +27,7 @@ import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
+import { useFrameDebounce } from '../../hooks/use-frame-debounce'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
@@ -69,6 +70,7 @@ import {
 import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
 import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
+import { MouseButton } from '../mouse'
 
 enum ComboboxState {
   Open,
@@ -1077,8 +1079,13 @@ function InputFn<
     })
   })
 
+  let debounce = useFrameDebounce()
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
     isTyping.current = true
+    debounce(() => {
+      isTyping.current = false
+    })
+
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
@@ -1388,11 +1395,26 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
+      case Keys.Space:
+      case Keys.Enter:
+        event.preventDefault()
+        event.stopPropagation()
+        if (data.comboboxState === ComboboxState.Closed) {
+          actions.openCombobox()
+        }
+
+        return d.nextFrame(() => refocusInput())
+
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
           actions.openCombobox()
+          d.nextFrame(() => {
+            if (!data.value) {
+              actions.goToOption(Focus.First)
+            }
+          })
         }
 
         return d.nextFrame(() => refocusInput())
@@ -1424,16 +1446,28 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleClick = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
-    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    if (data.comboboxState === ComboboxState.Open) {
-      actions.closeCombobox()
-    } else {
-      event.preventDefault()
-      actions.openCombobox()
+  let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
+    // We use the `mousedown` event here since it fires before the focus event,
+    // allowing us to cancel the event before focus is moved from the
+    // `ComboboxInput` to the `ComboboxButton`. This keeps the input focused,
+    // preserving the cursor position and any text selection.
+    event.preventDefault()
+
+    if (isDisabledReactIssue7711(event.currentTarget)) return
+
+    // Since we're using the `mousedown` event instead of a `click` event here
+    // to preserve the focus of the `ComboboxInput`, we need to also check
+    // that the `left` mouse button was clicked.
+    if (event.button === MouseButton.Left) {
+      if (data.comboboxState === ComboboxState.Open) {
+        actions.closeCombobox()
+      } else {
+        actions.openCombobox()
+      }
     }
 
-    d.nextFrame(() => refocusInput())
+    // Ensure we focus the input
+    refocusInput()
   })
 
   let labelledBy = useLabelledBy([id])
@@ -1464,7 +1498,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-labelledby': labelledBy,
       disabled: disabled || undefined,
       autoFocus,
-      onClick: handleClick,
+      onMouseDown: handleMouseDown,
       onKeyDown: handleKeyDown,
     },
     focusProps,
@@ -1689,8 +1723,21 @@ function OptionFn<
     /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex,
   ])
 
-  let handleClick = useEvent((event: { preventDefault: Function }) => {
-    if (disabled || data.virtual?.disabled(value)) return event.preventDefault()
+  let handleMouseDown = useEvent((event: ReactMouseEvent<HTMLButtonElement>) => {
+    // We use the `mousedown` event here since it fires before the focus event,
+    // allowing us to cancel the event before focus is moved from the
+    // `ComboboxInput` to the `ComboboxOption`. This keeps the input focused,
+    // preserving the cursor position and any text selection.
+    event.preventDefault()
+
+    // Since we're using the `mousedown` event instead of a `click` event here
+    // to preserve the focus of the `ComboboxInput`, we need to also check
+    // that the `left` mouse button was clicked.
+    if (event.button !== MouseButton.Left) {
+      return
+    }
+
+    if (disabled || data.virtual?.disabled(value)) return
     select()
 
     // We want to make sure that we don't accidentally trigger the virtual keyboard.
@@ -1758,7 +1805,7 @@ function OptionFn<
     // both single and multi-select.
     'aria-selected': selected,
     disabled: undefined, // Never forward the `disabled` prop
-    onClick: handleClick,
+    onMouseDown: handleMouseDown,
     onFocus: handleFocus,
     onPointerEnter: handleEnter,
     onMouseEnter: handleEnter,

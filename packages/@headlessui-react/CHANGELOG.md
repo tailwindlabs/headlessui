@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent unnecessary execution of the `displayValue` callback in the `ComboboxInput` component ([#3048](https://github.com/tailwindlabs/headlessui/pull/3048))
 - Expose missing `data-disabled` and `data-focus` attributes on the `TabsPanel`, `MenuButton`, `PopoverButton` and `DisclosureButton` components ([#3061](https://github.com/tailwindlabs/headlessui/pull/3061))
 - Fix cursor position when re-focusing the `ComboboxInput` component ([#3065](https://github.com/tailwindlabs/headlessui/pull/3065))
+- Keep focus inside of the `<ComboboxInput />` component ([#3073](https://github.com/tailwindlabs/headlessui/pull/3073))
 
 ### Changed
 
