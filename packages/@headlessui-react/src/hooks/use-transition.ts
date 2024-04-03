@@ -1,6 +1,5 @@
 import { useRef, type MutableRefObject } from 'react'
 import { transition } from '../components/transition/utils/transition'
-import { disposables } from '../utils/disposables'
 import { useDisposables } from './use-disposables'
 import { useIsMounted } from './use-is-mounted'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
@@ -53,30 +52,25 @@ export function useTransition({
   }, [immediate])
 
   useIsoMorphicEffect(() => {
-    let dd = disposables()
-    d.add(dd.dispose)
-
     let node = container.current
     if (!node) return // We don't have a DOM node (yet)
     if (latestDirection.current === 'idle') return // We don't need to transition
     if (!mounted.current) return
 
-    dd.dispose()
-
     onStart.current(latestDirection.current)
 
-    dd.add(
+    d.add(
       transition(node, {
         direction: latestDirection.current,
         classes: classes.current,
         inFlight,
         done() {
-          dd.dispose()
+          d.dispose()
           onStop.current(latestDirection.current)
         },
       })
     )
 
-    return dd.dispose
+    return d.dispose
   }, [direction])
 }

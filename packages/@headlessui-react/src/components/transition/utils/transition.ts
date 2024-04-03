@@ -76,9 +76,6 @@ function waitForTransition(node: HTMLElement, _done: () => void) {
     done()
   }
 
-  // If we get disposed before the transition finishes, we should cleanup anyway.
-  d.add(() => done())
-
   return d.dispose
 }
 
@@ -155,17 +152,19 @@ export function transition(
 
   // Wait for the transition, once the transition is complete we can cleanup.
   // This is registered first to prevent race conditions, otherwise it could
-  // happen that the transition is already done before we start waiting for the
-  // actual event.
-  waitForTransition(node, () => {
-    removeClasses(node, ...classes.base, ...base)
-    addClasses(node, ...classes.base, ...classes.entered, ...to)
+  // happen that the transition is already done before we start waiting for
+  // the actual event.
+  d.add(
+    waitForTransition(node, () => {
+      removeClasses(node, ...classes.base, ...base)
+      addClasses(node, ...classes.base, ...classes.entered, ...to)
 
-    // Mark the transition as done.
-    if (inFlight) inFlight.current = false
+      // Mark the transition as done.
+      if (inFlight) inFlight.current = false
 
-    return _done()
-  })
+      return _done()
+    })
+  )
 
   // Initiate the transition by applying the new classes.
   removeClasses(node, ...classes.base, ...base, ...from)
