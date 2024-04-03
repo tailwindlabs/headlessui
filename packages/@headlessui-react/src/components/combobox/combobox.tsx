@@ -1462,10 +1462,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
     if (isDisabledReactIssue7711(event.currentTarget)) return
 
-    // When we used the `click` event we didn't have to worry about this because
-    // that only fires if you use the `left` mouse button. However, now that
-    // we use the `mousedown` event, we do have to worry about which button is
-    // pressed.
+    // Since we're using the `mousedown` event instead of a `click` event
+    // here to preserve the focus of the `ComboboxInput`, we need to also
+    // check that the `left` mouse button was clicked.
     if (event.button === MouseButton.Left) {
       if (data.comboboxState === ComboboxState.Open) {
         actions.closeCombobox()
