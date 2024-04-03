@@ -4,7 +4,6 @@ import React, {
   Fragment,
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -259,26 +258,6 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
   )
 }
 
-function noop() {}
-let eventNames = ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'] as const
-function ensureEventHooksExist(events: TransitionEvents) {
-  let result = {} as Record<keyof typeof events, () => void>
-  for (let name of eventNames) {
-    result[name] = events[name] ?? noop
-  }
-  return result
-}
-
-function useEvents(events: TransitionEvents) {
-  let eventsRef = useRef(ensureEventHooksExist(events))
-
-  useEffect(() => {
-    eventsRef.current = ensureEventHooksExist(events)
-  }, [events])
-
-  return eventsRef
-}
-
 // ---
 
 let DEFAULT_TRANSITION_CHILD_TAG = 'div' as const
@@ -349,7 +328,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     leaveTo: splitClasses(leaveTo),
   })
 
-  let events = useEvents({
+  let events = useLatestValue({
     beforeEnter,
     afterEnter,
     beforeLeave,
@@ -381,11 +360,11 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     return match(direction, {
       enter: () => {
         transitionStateFlags.addFlag(State.Opening)
-        events.current.beforeEnter()
+        events.current.beforeEnter?.()
       },
       leave: () => {
         transitionStateFlags.addFlag(State.Closing)
-        events.current.beforeLeave()
+        events.current.beforeLeave?.()
       },
       idle: () => {},
     })
@@ -395,11 +374,11 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     return match(direction, {
       enter: () => {
         transitionStateFlags.removeFlag(State.Opening)
-        events.current.afterEnter()
+        events.current.afterEnter?.()
       },
       leave: () => {
         transitionStateFlags.removeFlag(State.Closing)
-        events.current.afterLeave()
+        events.current.afterLeave?.()
       },
       idle: () => {},
     })
