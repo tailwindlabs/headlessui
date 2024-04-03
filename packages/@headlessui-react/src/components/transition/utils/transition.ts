@@ -177,9 +177,8 @@ function prepareTransition(
   node: HTMLElement,
   { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
 ) {
-  // If we are already in a transition, then we can skip the preparation of
-  // force cancelling the current transition. This improves the cancellation of
-  // existing transitions instead of a hard cut-off.
+  // If we are already transitioning, then we don't need to force cancel the
+  // current transition (by triggering a reflow).
   if (inFlight?.current) {
     prepare()
     return
