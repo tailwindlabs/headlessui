@@ -2,6 +2,14 @@ import { microTask } from './micro-task'
 
 export type Disposables = ReturnType<typeof disposables>
 
+/**
+ * Disposables are a way to manage resources that need to be cleaned up when
+ * they are no longer needed.
+ *
+ * Each function returns a dispose function that can be called to clean up the
+ * resource. This also returns a `dispose` function that will clean up all the
+ * pending resources that have been added.
+ */
 export function disposables() {
   let _disposables: Function[] = []
 
