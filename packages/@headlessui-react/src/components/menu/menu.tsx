@@ -27,6 +27,7 @@ import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
+import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -610,6 +611,9 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
 
     return state.menuState === MenuStates.Open
   })()
+
+  // Ensure we close the menu as soon as the button becomes hidden
+  useOnDisappear(state.buttonRef, () => dispatch({ type: ActionTypes.CloseMenu }), visible)
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
   // closed. If the button moved, then we want to cancel pending transitions to prevent that the

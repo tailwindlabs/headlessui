@@ -31,6 +31,7 @@ import { useFrameDebounce } from '../../hooks/use-frame-debounce'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useRefocusableInput } from '../../hooks/use-refocusable-input'
@@ -1548,6 +1549,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ...theirProps
   } = props
   let data = useData('Combobox.Options')
+  let actions = useActions('Combobox.Options')
 
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
@@ -1561,6 +1563,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
     return data.comboboxState === ComboboxState.Open
   })()
+
+  // Ensure we close the combobox as soon as the input becomes hidden
+  useOnDisappear(data.inputRef, actions.closeCombobox, visible)
 
   useIsoMorphicEffect(() => {
     data.optionsPropsRef.current.static = props.static ?? false

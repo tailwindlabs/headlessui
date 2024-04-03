@@ -29,6 +29,7 @@ import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -853,6 +854,9 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
     return state.popoverState === PopoverStates.Open
   })()
+
+  // Ensure we close the popover as soon as the button becomes hidden
+  useOnDisappear(state.button, () => dispatch({ type: ActionTypes.ClosePopover }), visible)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
