@@ -32,6 +32,7 @@ export function useRefocusableInput(ref: MutableRefObject<HTMLInputElement | nul
 
     // If the input is already focused, we don't need to do anything
     if (document.activeElement === input) return
+
     if (!(input instanceof HTMLInputElement)) return
     if (!input.isConnected) return
 
