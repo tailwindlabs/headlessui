@@ -369,6 +369,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let immediate = appear && show && initial
 
   let transitionDirection = (() => {
+    if (immediate) return 'enter'
     if (!ready) return 'idle'
     if (skip) return 'idle'
     return show ? 'enter' : 'leave'
@@ -413,7 +414,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
   let isTransitioning = useRef(false)
   useTransition({
-    immediate,
     container,
     classes,
     direction: transitionDirection,

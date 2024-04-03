@@ -150,25 +150,36 @@ export function transition(
   // Mark the transition as in-flight.
   if (inFlight) inFlight.current = true
 
-  // Wait for the transition, once the transition is complete we can cleanup.
-  // This is registered first to prevent race conditions, otherwise it could
-  // happen that the transition is already done before we start waiting for
-  // the actual event.
-  d.add(
-    waitForTransition(node, () => {
-      removeClasses(node, ...classes.base, ...base)
-      addClasses(node, ...classes.base, ...classes.entered, ...to)
+  // BUG: This is a workaround for a bug in all major browsers.
+  //
+  // 1. When an element is just mounted
+  // 2. And you apply a transition to it (e.g.: via a class)
+  // 3. When you use `getComputedStyle` and read any returned value
+  // 4. Then the `transition` immediately jumps to the end state
+  //
+  // This means that no transition happen at all. To fix this, we delay the
+  // actual transition by one frame. This fixes the bug.
+  d.nextFrame(() => {
+    // Wait for the transition, once the transition is complete we can cleanup.
+    // This is registered first to prevent race conditions, otherwise it could
+    // happen that the transition is already done before we start waiting for
+    // the actual event.
+    d.add(
+      waitForTransition(node, () => {
+        removeClasses(node, ...classes.base, ...base)
+        addClasses(node, ...classes.base, ...classes.entered, ...to)
 
-      // Mark the transition as done.
-      if (inFlight) inFlight.current = false
+        // Mark the transition as done.
+        if (inFlight) inFlight.current = false
 
-      return _done()
-    })
-  )
+        return _done()
+      })
+    )
 
-  // Initiate the transition by applying the new classes.
-  removeClasses(node, ...classes.base, ...base, ...from)
-  addClasses(node, ...classes.base, ...base, ...to)
+    // Initiate the transition by applying the new classes.
+    removeClasses(node, ...classes.base, ...base, ...from)
+    addClasses(node, ...classes.base, ...base, ...to)
+  })
 
   return d.dispose
 }

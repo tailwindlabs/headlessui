@@ -343,6 +343,7 @@ describe('Setup API', () => {
           <div
             class="foo1
         foo2 foo1 foo2 leave"
+            style=""
           >
             Children
           </div>

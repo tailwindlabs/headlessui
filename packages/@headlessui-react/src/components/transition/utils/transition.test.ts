@@ -48,13 +48,13 @@ it('should be possible to transition', async () => {
   expect(snapshots[0].content).toEqual('<div></div>')
 
   // Start of transition
-  expect(snapshots[1].content).toEqual('<div class="enter enterFrom"></div>')
+  expect(snapshots[1].content).toEqual('<div style="" class="enter enterFrom"></div>')
 
   // NOTE: There is no `enter enterTo`, because we didn't define a duration. Therefore it is not
   // necessary to put the classes on the element and immediately remove them.
 
   // Cleanup phase
-  expect(snapshots[2].content).toEqual('<div class="enterTo entered"></div>')
+  expect(snapshots[2].content).toEqual('<div style="" class="entered enterTo enter"></div>')
 
   d.dispose()
 })
