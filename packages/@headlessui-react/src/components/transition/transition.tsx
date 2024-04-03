@@ -17,6 +17,7 @@ import { useFlags } from '../../hooks/use-flags'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
@@ -530,23 +531,14 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
     [show, appear, initial]
   )
 
+  // Ensure we change the tree state to hidden once the transition becomes hidden
+  useOnDisappear(internalTransitionRef, () => setState(TreeStates.Hidden))
+
   useIsoMorphicEffect(() => {
     if (show) {
       setState(TreeStates.Visible)
     } else if (!hasChildren(nestingBag)) {
       setState(TreeStates.Hidden)
-    } else if (
-      process.env.NODE_ENV !==
-      'test' /* TODO: Remove this once we have real tests! JSDOM doesn't "render", therefore getBoundingClientRect() will always result in `0`. */
-    ) {
-      let node = internalTransitionRef.current
-      if (!node) return
-      let rect = node.getBoundingClientRect()
-
-      if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
-        // The node is completely hidden, let's hide it
-        setState(TreeStates.Hidden)
-      }
     }
   }, [show, nestingBag])
 
