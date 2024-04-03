@@ -531,7 +531,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   }, [changes, show])
 
   let transitionBag = useMemo<TransitionContextValues>(
-    () => ({ show: show as boolean, appear, initial }),
+    () => ({ show, appear, initial }),
     [show, appear, initial]
   )
 
