@@ -67,11 +67,11 @@ export function disposables() {
     },
 
     add(cb: () => void) {
-      if (_disposables.includes(cb)) {
-        return
+      // Ensure we don't add the same callback twice
+      if (!_disposables.includes(cb)) {
+        _disposables.push(cb)
       }
 
-      _disposables.push(cb)
       return () => {
         let idx = _disposables.indexOf(cb)
         if (idx >= 0) {
