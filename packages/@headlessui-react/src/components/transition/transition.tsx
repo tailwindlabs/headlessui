@@ -441,8 +441,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     if (theirProps.className === '') delete theirProps.className
   }
 
-  // If we are not transitioning (anymore), then we should apply the
-  // `{enter,leave}To` classes as the final state.
+  // If we were never transitioning, or we're not transitioning anymore, then
+  //  apply the `enterTo` and `leaveTo` classes as the final state.
   else {
     theirProps.className = classNames(
       rest.className,
