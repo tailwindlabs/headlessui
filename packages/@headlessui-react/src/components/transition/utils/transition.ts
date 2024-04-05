@@ -150,7 +150,7 @@ export function transition(
   // Mark the transition as in-flight
   if (inFlight) inFlight.current = true
 
-  // BUG: This is a workaround for a bug in all major browsers.
+  // This is a workaround for a bug in all major browsers.
   //
   // 1. When an element is just mounted
   // 2. And you apply a transition to it (e.g.: via a class)
