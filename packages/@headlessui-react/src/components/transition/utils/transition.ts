@@ -157,8 +157,8 @@ export function transition(
   // 3. When you use `getComputedStyle` and read any returned value
   // 4. Then the `transition` immediately jumps to the end state
   //
-  // This means that no transition happen at all. To fix this, we delay the
-  // actual transition by one frame. This fixes the bug.
+  // This means that no transition happens at all. To fix this, we delay the
+  // actual transition by one frame.
   d.nextFrame(() => {
     // Wait for the transition, once the transition is complete we can cleanup.
     // This is registered first to prevent race conditions, otherwise it could
