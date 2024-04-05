@@ -26,9 +26,9 @@ it('should be possible to transition', async () => {
   )
 
   await new Promise<void>((resolve) => {
-    transition(
-      element,
-      {
+    transition(element, {
+      direction: 'enter', // Show
+      classes: {
         base: [],
         enter: ['enter'],
         enterFrom: ['enterFrom'],
@@ -38,9 +38,8 @@ it('should be possible to transition', async () => {
         leaveTo: [],
         entered: ['entered'],
       },
-      true, // Show
-      resolve
-    )
+      done: resolve,
+    })
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))
@@ -49,13 +48,13 @@ it('should be possible to transition', async () => {
   expect(snapshots[0].content).toEqual('<div></div>')
 
   // Start of transition
-  expect(snapshots[1].content).toEqual('<div class="enter enterFrom"></div>')
+  expect(snapshots[1].content).toEqual('<div style="" class="enter enterFrom"></div>')
 
   // NOTE: There is no `enter enterTo`, because we didn't define a duration. Therefore it is not
   // necessary to put the classes on the element and immediately remove them.
 
   // Cleanup phase
-  expect(snapshots[2].content).toEqual('<div class="enterTo entered"></div>')
+  expect(snapshots[2].content).toEqual('<div style="" class="entered enterTo enter"></div>')
 
   d.dispose()
 })
@@ -84,9 +83,9 @@ it('should wait the correct amount of time to finish a transition', async () => 
   )
 
   await new Promise<void>((resolve) => {
-    transition(
-      element,
-      {
+    transition(element, {
+      direction: 'enter', // Show
+      classes: {
         base: [],
         enter: ['enter'],
         enterFrom: ['enterFrom'],
@@ -96,9 +95,8 @@ it('should wait the correct amount of time to finish a transition', async () => 
         leaveTo: [],
         entered: ['entered'],
       },
-      true, // Show
-      resolve
-    )
+      done: resolve,
+    })
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))
@@ -154,9 +152,9 @@ it('should keep the delay time into account', async () => {
   )
 
   await new Promise<void>((resolve) => {
-    transition(
-      element,
-      {
+    transition(element, {
+      direction: 'enter', // Show
+      classes: {
         base: [],
         enter: ['enter'],
         enterFrom: ['enterFrom'],
@@ -166,9 +164,8 @@ it('should keep the delay time into account', async () => {
         leaveTo: [],
         entered: ['entered'],
       },
-      true, // Show
-      resolve
-    )
+      done: resolve,
+    })
   })
 
   await new Promise((resolve) => d.nextFrame(resolve))

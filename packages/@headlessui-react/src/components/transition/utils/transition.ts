@@ -1,3 +1,4 @@
+import type { MutableRefObject } from 'react'
 import { disposables } from '../../../utils/disposables'
 import { match } from '../../../utils/match'
 import { once } from '../../../utils/once'
@@ -10,7 +11,8 @@ function removeClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.remove(...classes)
 }
 
-function waitForTransition(node: HTMLElement, done: () => void) {
+function waitForTransition(node: HTMLElement, _done: () => void) {
+  let done = once(_done)
   let d = disposables()
 
   if (!node) return d.dispose
@@ -74,28 +76,32 @@ function waitForTransition(node: HTMLElement, done: () => void) {
     done()
   }
 
-  // If we get disposed before the transition finishes, we should cleanup anyway.
-  d.add(() => done())
-
   return d.dispose
 }
 
 export function transition(
   node: HTMLElement,
-  classes: {
-    base: string[]
-    enter: string[]
-    enterFrom: string[]
-    enterTo: string[]
-    leave: string[]
-    leaveFrom: string[]
-    leaveTo: string[]
-    entered: string[]
-  },
-  show: boolean,
-  done?: () => void
+  {
+    direction,
+    done,
+    classes,
+    inFlight,
+  }: {
+    direction: 'enter' | 'leave'
+    done?: () => void
+    classes: {
+      base: string[]
+      enter: string[]
+      enterFrom: string[]
+      enterTo: string[]
+      leave: string[]
+      leaveFrom: string[]
+      leaveTo: string[]
+      entered: string[]
+    }
+    inFlight?: MutableRefObject<boolean>
+  }
 ) {
-  let direction = show ? 'enter' : 'leave'
   let d = disposables()
   let _done = done !== undefined ? once(done) : () => {}
 
@@ -121,30 +127,84 @@ export function transition(
     leave: () => classes.leaveFrom,
   })
 
-  removeClasses(
-    node,
-    ...classes.base,
-    ...classes.enter,
-    ...classes.enterTo,
-    ...classes.enterFrom,
-    ...classes.leave,
-    ...classes.leaveFrom,
-    ...classes.leaveTo,
-    ...classes.entered
-  )
-  addClasses(node, ...classes.base, ...base, ...from)
+  // Prepare the transitions by ensuring that all the "before" classes are
+  // applied and flushed to the DOM.
+  prepareTransition(node, {
+    prepare() {
+      removeClasses(
+        node,
+        ...classes.base,
+        ...classes.enter,
+        ...classes.enterTo,
+        ...classes.enterFrom,
+        ...classes.leave,
+        ...classes.leaveFrom,
+        ...classes.leaveTo,
+        ...classes.entered
+      )
+      addClasses(node, ...classes.base, ...base, ...from)
+    },
+    inFlight,
+  })
 
+  // Mark the transition as in-flight
+  if (inFlight) inFlight.current = true
+
+  // This is a workaround for a bug in all major browsers.
+  //
+  // 1. When an element is just mounted
+  // 2. And you apply a transition to it (e.g.: via a class)
+  // 3. And you're using `getComputedStyle` and read any returned value
+  // 4. Then the `transition` immediately jumps to the end state
+  //
+  // This means that no transition happens at all. To fix this, we delay the
+  // actual transition by one frame.
   d.nextFrame(() => {
+    // Wait for the transition, once the transition is complete we can cleanup.
+    // This is registered first to prevent race conditions, otherwise it could
+    // happen that the transition is already done before we start waiting for
+    // the actual event.
+    d.add(
+      waitForTransition(node, () => {
+        removeClasses(node, ...classes.base, ...base)
+        addClasses(node, ...classes.base, ...classes.entered, ...to)
+
+        // Mark the transition as done.
+        if (inFlight) inFlight.current = false
+
+        return _done()
+      })
+    )
+
+    // Initiate the transition by applying the new classes.
     removeClasses(node, ...classes.base, ...base, ...from)
     addClasses(node, ...classes.base, ...base, ...to)
-
-    waitForTransition(node, () => {
-      removeClasses(node, ...classes.base, ...base)
-      addClasses(node, ...classes.base, ...classes.entered)
-
-      return _done()
-    })
   })
 
   return d.dispose
+}
+
+function prepareTransition(
+  node: HTMLElement,
+  { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
+) {
+  // If we are already transitioning, then we don't need to force cancel the
+  // current transition (by triggering a reflow).
+  if (inFlight?.current) {
+    prepare()
+    return
+  }
+
+  let previous = node.style.transition
+
+  // Force cancel current transition
+  node.style.transition = 'none'
+
+  prepare()
+
+  // Trigger a reflow, flushing the CSS changes
+  node.offsetHeight
+
+  // Reset the transition to what it was before
+  node.style.transition = previous
 }

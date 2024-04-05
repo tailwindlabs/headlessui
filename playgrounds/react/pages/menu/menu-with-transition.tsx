@@ -1,4 +1,5 @@
 import { Menu, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
 import { Button } from '../../components/button'
 import { classNames } from '../../utils/class-names'
 
@@ -29,10 +30,11 @@ export default function Home() {
           </span>
 
           <Transition
-            enter="transition duration-1000 ease-out"
+            as={Fragment}
+            enter="transition duration-500 ease-out"
             enterFrom="transform scale-95 opacity-0"
             enterTo="transform scale-100 opacity-100"
-            leave="transition duration-1000 ease-out"
+            leave="transition duration-500 ease-out"
             leaveFrom="transform scale-100 opacity-100"
             leaveTo="transform scale-95 opacity-0"
             beforeEnter={() => console.log('Before enter')}
@@ -40,7 +42,10 @@ export default function Home() {
             beforeLeave={() => console.log('Before leave')}
             afterLeave={() => console.log('After leave')}
           >
-            <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none">
+            <Menu.Items
+              anchor={{ to: 'bottom start', gap: 'var(--gap)' }}
+              className="w-[calc(var(--button-width)*2)] divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none [--gap:theme(spacing.2)]"
+            >
               <div className="px-4 py-3">
                 <p className="text-sm leading-5">Signed in as</p>
                 <p className="truncate text-sm font-medium leading-5 text-gray-900">

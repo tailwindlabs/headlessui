@@ -4,7 +4,6 @@ import React, {
   Fragment,
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -18,6 +17,7 @@ import { useFlags } from '../../hooks/use-flags'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
+import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
@@ -259,26 +259,6 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
   )
 }
 
-function noop() {}
-let eventNames = ['beforeEnter', 'afterEnter', 'beforeLeave', 'afterLeave'] as const
-function ensureEventHooksExist(events: TransitionEvents) {
-  let result = {} as Record<keyof typeof events, () => void>
-  for (let name of eventNames) {
-    result[name] = events[name] ?? noop
-  }
-  return result
-}
-
-function useEvents(events: TransitionEvents) {
-  let eventsRef = useRef(ensureEventHooksExist(events))
-
-  useEffect(() => {
-    eventsRef.current = ensureEventHooksExist(events)
-  }, [events])
-
-  return eventsRef
-}
-
 // ---
 
 let DEFAULT_TRANSITION_CHILD_TAG = 'div' as const
@@ -349,7 +329,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     leaveTo: splitClasses(leaveTo),
   })
 
-  let events = useEvents({
+  let events = useLatestValue({
     beforeEnter,
     afterEnter,
     beforeLeave,
@@ -369,6 +349,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let immediate = appear && show && initial
 
   let transitionDirection = (() => {
+    if (immediate) return 'enter'
     if (!ready) return 'idle'
     if (skip) return 'idle'
     return show ? 'enter' : 'leave'
@@ -380,11 +361,11 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     return match(direction, {
       enter: () => {
         transitionStateFlags.addFlag(State.Opening)
-        events.current.beforeEnter()
+        events.current.beforeEnter?.()
       },
       leave: () => {
         transitionStateFlags.addFlag(State.Closing)
-        events.current.beforeLeave()
+        events.current.beforeLeave?.()
       },
       idle: () => {},
     })
@@ -394,26 +375,29 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     return match(direction, {
       enter: () => {
         transitionStateFlags.removeFlag(State.Opening)
-        events.current.afterEnter()
+        events.current.afterEnter?.()
       },
       leave: () => {
         transitionStateFlags.removeFlag(State.Closing)
-        events.current.afterLeave()
+        events.current.afterLeave?.()
       },
       idle: () => {},
     })
   })
 
+  let isTransitioning = useRef(false)
+
   let nesting = useNesting(() => {
-    // When all children have been unmounted we can only hide ourselves if and only if we are not
-    // transitioning ourselves. Otherwise we would unmount before the transitions are finished.
+    // When all children have been unmounted we can only hide ourselves if and
+    // only if we are not transitioning ourselves. Otherwise we would unmount
+    // before the transitions are finished.
+    if (isTransitioning.current) return
+
     setState(TreeStates.Hidden)
     unregister(container)
   }, parentNesting)
 
-  let isTransitioning = useRef(false)
   useTransition({
-    immediate,
     container,
     classes,
     direction: transitionDirection,
@@ -426,8 +410,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
       nesting.onStop(container, direction, afterEvent)
 
       if (direction === 'leave' && !hasChildren(nesting)) {
-        // When we don't have children anymore we can safely unregister from the parent and hide
-        // ourselves.
+        // When we don't have children anymore we can safely unregister from the
+        // parent and hide ourselves.
         setState(TreeStates.Hidden)
         unregister(container)
       }
@@ -437,10 +421,10 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let theirProps = rest
   let ourProps = { ref: transitionRef }
 
+  // Already apply the `enter` and `enterFrom` on the server if required
   if (immediate) {
     theirProps = {
       ...theirProps,
-      // Already apply the `enter` and `enterFrom` on the server if required
       className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
     }
   }
@@ -454,6 +438,21 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     // This is a bit dirty, but we need to make sure React is not applying changes to the class
     // attribute while we are transitioning.
     theirProps.className = classNames(rest.className, container.current?.className)
+    if (theirProps.className === '') delete theirProps.className
+  }
+
+  // If we were never transitioning, or we're not transitioning anymore, then
+  // apply the `enterTo` and `leaveTo` classes as the final state.
+  else {
+    theirProps.className = classNames(
+      rest.className,
+      container.current?.className,
+      ...match(transitionDirection, {
+        enter: [...classes.current.enterTo, ...classes.current.entered],
+        leave: classes.current.leaveTo,
+        idle: [],
+      })
+    )
     if (theirProps.className === '') delete theirProps.className
   }
 
@@ -504,7 +503,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
     show = (usesOpenClosedState & State.Open) === State.Open
   }
 
-  if (![true, false].includes(show as unknown as boolean)) {
+  if (show === undefined) {
     throw new Error('A <Transition /> is used but it is missing a `show={true | false}` prop.')
   }
 
@@ -532,27 +531,18 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   }, [changes, show])
 
   let transitionBag = useMemo<TransitionContextValues>(
-    () => ({ show: show as boolean, appear, initial }),
+    () => ({ show, appear, initial }),
     [show, appear, initial]
   )
+
+  // Ensure we change the tree state to hidden once the transition becomes hidden
+  useOnDisappear(internalTransitionRef, () => setState(TreeStates.Hidden))
 
   useIsoMorphicEffect(() => {
     if (show) {
       setState(TreeStates.Visible)
     } else if (!hasChildren(nestingBag)) {
       setState(TreeStates.Hidden)
-    } else if (
-      process.env.NODE_ENV !==
-      'test' /* TODO: Remove this once we have real tests! JSDOM doesn't "render", therefore getBoundingClientRect() will always result in `0`. */
-    ) {
-      let node = internalTransitionRef.current
-      if (!node) return
-      let rect = node.getBoundingClientRect()
-
-      if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
-        // The node is completely hidden, let's hide it
-        setState(TreeStates.Hidden)
-      }
     }
   }, [show, nestingBag])
 
