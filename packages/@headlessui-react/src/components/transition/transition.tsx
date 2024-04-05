@@ -442,7 +442,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   }
 
   // If we were never transitioning, or we're not transitioning anymore, then
-  //  apply the `enterTo` and `leaveTo` classes as the final state.
+  // apply the `enterTo` and `leaveTo` classes as the final state.
   else {
     theirProps.className = classNames(
       rest.className,
