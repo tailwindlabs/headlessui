@@ -154,7 +154,7 @@ export function transition(
   //
   // 1. When an element is just mounted
   // 2. And you apply a transition to it (e.g.: via a class)
-  // 3. When you use `getComputedStyle` and read any returned value
+  // 3. And you're using `getComputedStyle` and read any returned value
   // 4. Then the `transition` immediately jumps to the end state
   //
   // This means that no transition happens at all. To fix this, we delay the
