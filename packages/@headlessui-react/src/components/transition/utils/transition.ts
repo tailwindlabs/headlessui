@@ -147,7 +147,7 @@ export function transition(
     inFlight,
   })
 
-  // Mark the transition as in-flight.
+  // Mark the transition as in-flight
   if (inFlight) inFlight.current = true
 
   // BUG: This is a workaround for a bug in all major browsers.
