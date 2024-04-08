@@ -253,7 +253,7 @@ export function commonFormScenarios(
           </form>
         )
 
-        // Submit the form to get the intial state of the form
+        // Submit the form to get the initial state of the form
         await click(screen.getByText('Submit'))
         let formState = Object.fromEntries(formDataMock.mock.calls[0][0])
 

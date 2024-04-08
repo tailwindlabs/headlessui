@@ -121,7 +121,7 @@ function ModalFn<TTag extends ElementType = typeof DEFAULT_MODAL_TAG>(
 
   let [portals, PortalWrapper] = useNestedPortals()
 
-  // We use this because reading these values during iniital render(s)
+  // We use this because reading these values during initial render(s)
   // can result in `null` rather then the actual elements
   let defaultContainer: RefObject<HTMLElement> = {
     get current() {

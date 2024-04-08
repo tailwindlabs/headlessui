@@ -188,7 +188,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <>
-            <button id="test">restoreable</button>
+            <button id="test">restorable</button>
             <Popover>
               {({ close }) => (
                 <>
@@ -219,8 +219,8 @@ describe('Rendering', () => {
         // Ensure the popover is closed
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
 
@@ -231,7 +231,7 @@ describe('Rendering', () => {
           let elementRef = useRef(null)
           return (
             <>
-              <button ref={elementRef}>restoreable</button>
+              <button ref={elementRef}>restorable</button>
               <Popover>
                 {({ close }) => (
                   <>
@@ -263,8 +263,8 @@ describe('Rendering', () => {
         // Ensure the popover is closed
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
 
@@ -740,7 +740,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <>
-            <button id="test">restoreable</button>
+            <button id="test">restorable</button>
             <Popover>
               <Popover.Button>Trigger</Popover.Button>
               <Popover.Panel>
@@ -767,8 +767,8 @@ describe('Rendering', () => {
         // Ensure the popover is closed
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
 
@@ -779,7 +779,7 @@ describe('Rendering', () => {
           let elementRef = useRef(null)
           return (
             <>
-              <button ref={elementRef}>restoreable</button>
+              <button ref={elementRef}>restorable</button>
               <Popover>
                 <Popover.Button>Trigger</Popover.Button>
                 <Popover.Panel>
@@ -807,8 +807,8 @@ describe('Rendering', () => {
         // Ensure the popover is closed
         assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
   })
@@ -1873,7 +1873,7 @@ describe('Keyboard interactions', () => {
     )
 
     it(
-      'should focus the Popover.Button when pressing Shift+Tab when we focus inside the Popover.Panel (heuristc based portal)',
+      'should focus the Popover.Button when pressing Shift+Tab when we focus inside the Popover.Panel (heuristic based portal)',
       suppressConsoleLogs(async () => {
         function Example() {
           let [portal, setPortal] = useState<HTMLElement | null>(null)

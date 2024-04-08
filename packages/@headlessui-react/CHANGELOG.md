@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Expose `disabled` state on `<Tab />` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
-- Prevent default behaviour when clicking outside of a `Dialog.Panel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
+- Prevent default behavior when clicking outside of a `Dialog.Panel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
 - Use `isFocused` instead of `isFocusVisible` for `Input` and `Textarea` components ([#2940](https://github.com/tailwindlabs/headlessui/pull/2940))
 - Ensure `children` prop of `Field` component can be a render prop ([#2941](https://github.com/tailwindlabs/headlessui/pull/2941))
 - Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
@@ -118,7 +118,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ensure the caret is in a consistent position when syncing the `Combobox.Input` value ([#2568](https://github.com/tailwindlabs/headlessui/pull/2568))
-- Improve "outside click" behaviour in combination with 3rd party libraries ([#2572](https://github.com/tailwindlabs/headlessui/pull/2572))
+- Improve "outside click" behavior in combination with 3rd party libraries ([#2572](https://github.com/tailwindlabs/headlessui/pull/2572))
 - Ensure IME works on Android devices ([#2580](https://github.com/tailwindlabs/headlessui/pull/2580))
 - Calculate `aria-expanded` purely based on the open/closed state ([#2610](https://github.com/tailwindlabs/headlessui/pull/2610))
 - Submit form on `Enter` even if no submit-like button was found ([#2613](https://github.com/tailwindlabs/headlessui/pull/2613))
@@ -376,7 +376,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix closing of `Popover.Panel` in React 18 ([#1409](https://github.com/tailwindlabs/headlessui/pull/1409))
 - Ignore `Escape` when event got prevented in `Dialog` component ([#1424](https://github.com/tailwindlabs/headlessui/pull/1424))
-- Improve `FocusTrap` behaviour ([#1432](https://github.com/tailwindlabs/headlessui/pull/1432))
+- Improve `FocusTrap` behavior ([#1432](https://github.com/tailwindlabs/headlessui/pull/1432))
 - Simplify `Popover` Tab logic by using sentinel nodes instead of keydown event interception ([#1440](https://github.com/tailwindlabs/headlessui/pull/1440))
 - Ensure the `Popover.Panel` is clickable without closing the `Popover` ([#1443](https://github.com/tailwindlabs/headlessui/pull/1443))
 - Improve "Scroll lock" scrollbar width for `Dialog` component ([#1457](https://github.com/tailwindlabs/headlessui/pull/1457))
@@ -434,7 +434,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Ensure correct order when conditionally rendering `Menu.Item`, `Listbox.Option` and `RadioGroup.Option` ([#1045](https://github.com/tailwindlabs/headlessui/pull/1045))
-- Improve controlled Tabs behaviour ([#1050](https://github.com/tailwindlabs/headlessui/pull/1050))
+- Improve controlled Tabs behavior ([#1050](https://github.com/tailwindlabs/headlessui/pull/1050))
 - Improve typeahead search logic ([#1051](https://github.com/tailwindlabs/headlessui/pull/1051))
 - Improve overal codebase, use modern tech like `esbuild` and TypeScript 4! ([#1055](https://github.com/tailwindlabs/headlessui/pull/1055))
 - Improve build files ([#1078](https://github.com/tailwindlabs/headlessui/pull/1078))
@@ -513,7 +513,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improve SSR for `Dialog` ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
 - Delay focus trap initialization ([#477](https://github.com/tailwindlabs/headlessui/pull/477))
-- Improve incorrect behaviour for nesting `Dialog` components ([#560](https://github.com/tailwindlabs/headlessui/pull/560))
+- Improve incorrect behavior for nesting `Dialog` components ([#560](https://github.com/tailwindlabs/headlessui/pull/560))
 
 ## [1.1.1] - 2021-04-28
 
@@ -577,7 +577,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `Switch` has `type="button"` ([#192](https://github.com/tailwindlabs/headlessui/pull/192))
 - Fix `useId()` hook returning `undefined` on the client
 - Fix `disabled` not working when inside a disabled fieldset ([#202](https://github.com/tailwindlabs/headlessui/pull/202))
-- Trigger "outside click" behaviour on mousedown ([#212](https://github.com/tailwindlabs/headlessui/pull/212))
+- Trigger "outside click" behavior on mousedown ([#212](https://github.com/tailwindlabs/headlessui/pull/212))
 - Ensure the `active` MenuItem is scrolled into view
 - Ensure valid Menu accessibility tree ([#228](https://github.com/tailwindlabs/headlessui/pull/228))
 
@@ -606,8 +606,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixes
 
-- Fix outside click behaviour. If you had multiple menu's, when menu 1 is open, menu 2 is closed and you click on menu button 2 it will open both menu's. This is now fixed.
-- Ensure when using keyboard navigation we prevent the default behaviour.
+- Fix outside click behavior. If you had multiple menu's, when menu 1 is open, menu 2 is closed and you click on menu button 2 it will open both menu's. This is now fixed.
+- Ensure when using keyboard navigation we prevent the default behavior.
 
 ## [0.1.2] - 2020-09-25
 

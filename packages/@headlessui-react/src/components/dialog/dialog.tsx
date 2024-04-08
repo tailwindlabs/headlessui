@@ -239,7 +239,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let hasParentDialog = useContext(DialogContext) !== null
   let [portals, PortalWrapper] = useNestedPortals()
 
-  // We use this because reading these values during iniital render(s)
+  // We use this because reading these values during initial render(s)
   // can result in `null` rather then the actual elements
   // This doesn't happen when using certain components like a
   // `<Dialog.Title>` because they cause the parent to re-render
@@ -259,7 +259,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })
 
   // If there are multiple dialogs, then you can be the root, the leaf or one
-  // in between. We only care abou whether you are the top most one or not.
+  // in between. We only care about whether you are the top most one or not.
   let position = !hasNestedDialogs ? 'leaf' : 'parent'
 
   // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes

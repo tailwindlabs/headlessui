@@ -174,7 +174,7 @@ describe('Rendering', () => {
               <Dialog
                 open={isOpen}
                 onClose={setIsOpen}
-                // @ts-expect-error: We explicitly type role to only accept valid options — but we still want to verify runtime behaviorr
+                // @ts-expect-error: We explicitly type role to only accept valid options — but we still want to verify runtime behavior
                 role="foobar"
               >
                 <TabSentinel />
@@ -1771,7 +1771,7 @@ describe('Mouse interactions', () => {
             <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
               Trigger
             </button>
-            <div id="imoutside">this thing</div>
+            <div id="i-am-outside">this thing</div>
             <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
               <Dialog.Backdrop />
               <Dialog.Panel>
@@ -1791,12 +1791,12 @@ describe('Mouse interactions', () => {
       assertDialog({ state: DialogState.Visible })
 
       // Start a click inside the dialog and end it outside
-      await mouseDrag(document.getElementById('inside'), document.getElementById('imoutside'))
+      await mouseDrag(document.getElementById('inside'), document.getElementById('i-am-outside'))
 
       // It should not have hidden
       assertDialog({ state: DialogState.Visible })
 
-      await click(document.getElementById('imoutside'))
+      await click(document.getElementById('i-am-outside'))
 
       // It's gone
       assertDialog({ state: DialogState.InvisibleUnmounted })

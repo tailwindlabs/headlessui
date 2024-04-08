@@ -44,7 +44,7 @@ type ClassNameOverride<TTag extends ReactTag, TSlot = {}> =
     ? { className?: PropsOf<TTag>['className'] | ((bag: TSlot) => string) }
     : {}
 
-// Provide clean TypeScript props, which exposes some of our custom API's.
+// Provide clean TypeScript props, which exposes some of our custom APIs.
 export type Props<
   TTag extends ReactTag,
   TSlot = {},

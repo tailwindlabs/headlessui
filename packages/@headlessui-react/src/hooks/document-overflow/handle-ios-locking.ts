@@ -24,7 +24,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
         // have `scroll-behavior: smooth` set, then changing the scrollTop in any way shape or form
         // will trigger a "smooth" scroll and the new position would be incorrect.
         //
-        // This is why we are forcing the `scroll-behaviour: auto` here, and then restoring it later.
+        // This is why we are forcing the `scroll-behavior: auto` here, and then restoring it later.
         // We have to be a bit careful, because removing `scroll-behavior: auto` back to
         // `scroll-behavior: smooth` can start triggering smooth scrolling. Delaying this by a
         // microTask will guarantee that everything is done such that both enter/exit of the Dialog is
@@ -125,7 +125,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
                   scrollableParent = scrollableParent.parentElement
                 }
 
-                // We crawled up the tree until the beginnging of the Portal, let's prevent the
+                // We crawled up the tree until the beginning of the Portal, let's prevent the
                 // event if this is the case. If not, then we are in a container where we are
                 // allowed to scroll so we don't have to prevent the event.
                 if (scrollableParent.dataset.headlessuiPortal === '') {

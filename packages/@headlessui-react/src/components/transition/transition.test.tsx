@@ -334,7 +334,7 @@ describe('Setup API', () => {
 
       // TODO: This is not quite right
       // The `foo1\nfoo2` should be gone
-      // I think this is a qurk of JSDOM
+      // I think this is a quirk of JSDOM
       expect(container.firstChild).toMatchInlineSnapshot(`
         <div>
           <button>
@@ -754,7 +754,7 @@ describe('Transitions', () => {
               null, // Initial render
               null, // Setup leave classes
               fastLeaveDuration, // Done with fast leave
-              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compaired with previous render snapshot so we have to subtract those)
+              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compared with previous render snapshot so we have to subtract those)
             ]
           },
         ])
@@ -804,7 +804,7 @@ describe('Transitions', () => {
               null, // Initial render
               null, // Setup leave classes
               fastLeaveDuration, // Done with fast leave
-              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compaired with previous render snapshot so we have to subtract those)
+              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compared with previous render snapshot so we have to subtract those)
             ]
           },
         ])

@@ -161,9 +161,9 @@ export function assertLinkedWithDescription(
 
     expect(element).toHaveAttribute('aria-describedby')
 
-    let descriptionledBy = new Set(element.getAttribute('aria-describedby')?.split(' ') ?? [])
+    let describedby = new Set(element.getAttribute('aria-describedby')?.split(' ') ?? [])
     for (let description of descriptions) {
-      expect(descriptionledBy).toContain(description.id)
+      expect(describedby).toContain(description.id)
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertLinkedWithDescription)
