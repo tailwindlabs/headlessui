@@ -156,7 +156,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <>
-            <button id="test">restoreable</button>
+            <button id="test">restorable</button>
             <Disclosure>
               {({ close }) => (
                 <>
@@ -187,8 +187,8 @@ describe('Rendering', () => {
         // Ensure the disclosure is closed
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
 
@@ -199,7 +199,7 @@ describe('Rendering', () => {
           let elementRef = useRef(null)
           return (
             <>
-              <button ref={elementRef}>restoreable</button>
+              <button ref={elementRef}>restorable</button>
               <Disclosure>
                 {({ close }) => (
                   <>
@@ -231,8 +231,8 @@ describe('Rendering', () => {
         // Ensure the disclosure is closed
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
 
@@ -501,7 +501,7 @@ describe('Rendering', () => {
       suppressConsoleLogs(async () => {
         render(
           <>
-            <button id="test">restoreable</button>
+            <button id="test">restorable</button>
             <Disclosure>
               <Disclosure.Button>Trigger</Disclosure.Button>
               <Disclosure.Panel>
@@ -528,8 +528,8 @@ describe('Rendering', () => {
         // Ensure the disclosure is closed
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
 
@@ -540,7 +540,7 @@ describe('Rendering', () => {
           let elementRef = useRef(null)
           return (
             <>
-              <button ref={elementRef}>restoreable</button>
+              <button ref={elementRef}>restorable</button>
               <Disclosure>
                 <Disclosure.Button>Trigger</Disclosure.Button>
                 <Disclosure.Panel>
@@ -568,8 +568,8 @@ describe('Rendering', () => {
         // Ensure the disclosure is closed
         assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
-        // Ensure the restoreable button got the restored focus
-        assertActiveElement(getByText('restoreable'))
+        // Ensure the restorable button got the restored focus
+        assertActiveElement(getByText('restorable'))
       })
     )
   })

@@ -189,8 +189,8 @@ function usePopoverAPIContext(component: string) {
 }
 
 let PopoverGroupContext = createContext<{
-  registerPopover(registerbag: PopoverRegisterBag): void
-  unregisterPopover(registerbag: PopoverRegisterBag): void
+  registerPopover(registerBag: PopoverRegisterBag): void
+  unregisterPopover(registerBag: PopoverRegisterBag): void
   isFocusWithinPopoverGroup(): boolean
   closeOthers(buttonId: string): void
   mainTreeNodeRef: MutableRefObject<HTMLElement | null>
@@ -282,10 +282,11 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
       }
     }
 
-    // Use another heuristic to try and calculate wether or not the focusable elements are near
-    // eachother (aka, following the default focus/tab order from the browser). If they are then it
-    // doesn't really matter if they are portalled or not because we can follow the default tab
-    // order. But if they are not, then we can consider it being portalled so that we can ensure
+    // Use another heuristic to try and calculate wether or not the focusable
+    // elements are near each other (aka, following the default focus/tab order
+    // from the browser). If they are then it doesn't really matter if they are
+    // portalled or not because we can follow the default tab order. But if they
+    // are not, then we can consider it being portalled so that we can ensure
     // that tab and shift+tab (hopefully) go to the correct spot.
     let elements = getFocusableElements()
     let buttonIdx = elements.indexOf(button)
@@ -1086,9 +1087,9 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
   let [popovers, setPopovers] = useState<PopoverRegisterBag[]>([])
   let root = useMainTreeNode()
 
-  let unregisterPopover = useEvent((registerbag: PopoverRegisterBag) => {
+  let unregisterPopover = useEvent((registerBag: PopoverRegisterBag) => {
     setPopovers((existing) => {
-      let idx = existing.indexOf(registerbag)
+      let idx = existing.indexOf(registerBag)
       if (idx !== -1) {
         let clone = existing.slice()
         clone.splice(idx, 1)
@@ -1098,9 +1099,9 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
     })
   })
 
-  let registerPopover = useEvent((registerbag: PopoverRegisterBag) => {
-    setPopovers((existing) => [...existing, registerbag])
-    return () => unregisterPopover(registerbag)
+  let registerPopover = useEvent((registerBag: PopoverRegisterBag) => {
+    setPopovers((existing) => [...existing, registerBag])
+    return () => unregisterPopover(registerBag)
   })
 
   let isFocusWithinPopoverGroup = useEvent(() => {

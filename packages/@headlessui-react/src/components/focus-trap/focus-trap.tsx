@@ -332,7 +332,7 @@ function useInitialFocus(
     // There is an additional issue with doing this immediately. The FocusTrap is used inside a
     // Dialog, the Dialog is rendered inside of a Portal and the Portal is rendered at the end of
     // the `document.body`. This means that the moment we call focus, the browser immediately
-    // tries to focus the element, which will still be at the bodem resulting in the page to
+    // tries to focus the element, which will still be at the bottom resulting in the page to
     // scroll down. Delaying this will prevent the page to scroll down entirely.
     microTask(() => {
       if (!mounted.current) {

@@ -125,7 +125,7 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
                   scrollableParent = scrollableParent.parentElement
                 }
 
-                // We crawled up the tree until the beginnging of the Portal, let's prevent the
+                // We crawled up the tree until the beginning of the Portal, let's prevent the
                 // event if this is the case. If not, then we are in a container where we are
                 // allowed to scroll so we don't have to prevent the event.
                 if (scrollableParent.dataset.headlessuiPortal === '') {

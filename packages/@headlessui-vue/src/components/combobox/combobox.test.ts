@@ -5554,7 +5554,7 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
             options: [
               { value: 'alice', children: 'Alice', disabled: false },
               { value: 'bob', children: 'Bob', disabled: true },
-              { value: 'charile', children: 'Charlie', disabled: false },
+              { value: 'charlie', children: 'Charlie', disabled: false },
             ],
             update(newValue: any) {
               value.value = newValue

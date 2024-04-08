@@ -90,7 +90,7 @@ export async function executeTimeline(
       return snapshot.content !== snapshots[i - 1].content
     })
 
-    // Add a relative time compaired to the previous snapshot. We recorded everything in
+    // Add a relative time compared to the previous snapshot. We recorded everything in
     // process.hrtime.bigint() which is in nanoseconds, we want it in milliseconds.
     .map((snapshot, i, all) => ({
       ...snapshot,

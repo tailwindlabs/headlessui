@@ -251,7 +251,7 @@ function TooltipFn<TTag extends ElementType = typeof DEFAULT_TOOLTIP_TAG>(
       when = When.Immediate
     }
 
-    // This tooltip should be immediatley visible, therefore it should be the active tooltip.
+    // This tooltip should be immediately visible, therefore it should be the active tooltip.
     if (when === When.Immediate) {
       tooltipStore.setTooltipId(id)
     }
@@ -259,7 +259,7 @@ function TooltipFn<TTag extends ElementType = typeof DEFAULT_TOOLTIP_TAG>(
     dispatch({ type: ActionTypes.ShowTooltip, when })
   })
   let hideTooltip = useEvent((when: When) => {
-    // We are the current active tooltip and we need to be hidden immediatlely, therefore there
+    // We are the current active tooltip and we need to be hidden immediately, therefore there
     // should not be any active tooltip anymore.
     if (activeTooltipId === id && when === When.Immediate) {
       tooltipStore.setTooltipId(null)

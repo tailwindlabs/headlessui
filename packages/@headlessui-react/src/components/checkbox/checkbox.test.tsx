@@ -159,7 +159,7 @@ describe('Form submissions', () => {
     // Submit
     await press(Keys.Enter)
 
-    // Notifications should be off (or in this case, non-existant)
+    // Notifications should be off (or in this case, non-existent)
     expect(handleSubmission).toHaveBeenLastCalledWith({})
   })
 })

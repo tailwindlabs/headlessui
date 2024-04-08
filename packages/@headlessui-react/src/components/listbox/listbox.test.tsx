@@ -1490,7 +1490,7 @@ describe('Composition', () => {
 describe('Keyboard interactions', () => {
   describe('`Enter` key', () => {
     it(
-      'should be possible to close the listbox with Enter when there is no active listboxoption',
+      'should be possible to close the listbox with Enter when there is no active listbox option',
       suppressConsoleLogs(async () => {
         render(
           <Listbox value={undefined} onChange={(x) => console.log(x)}>
@@ -3474,7 +3474,7 @@ describe('Keyboard interactions', () => {
     )
 
     it(
-      'should be possible to search for the next occurence',
+      'should be possible to search for the next occurrence',
       suppressConsoleLogs(async () => {
         render(
           <Listbox value={undefined} onChange={(x) => console.log(x)}>

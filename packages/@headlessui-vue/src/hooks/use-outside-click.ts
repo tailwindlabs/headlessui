@@ -68,7 +68,7 @@ export function useOutsideClick(
     // This allows us to check whether the event was defaultPrevented when you are nesting this
     // inside a `<Dialog />` for example.
     if (
-      // This check alllows us to know whether or not we clicked on a "focusable" element like a
+      // This check allows us to know whether or not we clicked on a "focusable" element like a
       // button or an input. This is a backwards compatibility check so that you can open a <Menu
       // /> and click on another <Menu /> which should close Menu A and open Menu B. We might
       // revisit that so that you will require 2 clicks instead.

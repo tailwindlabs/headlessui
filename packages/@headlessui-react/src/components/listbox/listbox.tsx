@@ -218,8 +218,9 @@ let reducers: {
 
     // Optimization:
     //
-    // If the current DOM node and the previous DOM node are next to eachother, or if the previous
-    // DOM node is already the first DOM node, then we don't have to sort all the DOM nodes.
+    // If the current DOM node and the previous DOM node are next to each other,
+    // or if the previous DOM node is already the first DOM node, then we don't
+    // have to sort all the DOM nodes.
     else if (action.focus === Focus.Previous) {
       let activeOptionIdx = state.activeOptionIndex
       if (activeOptionIdx !== null) {
@@ -233,7 +234,7 @@ let reducers: {
         if (previousOptionIndex !== null) {
           let previousDom = state.options[previousOptionIndex].dataRef.current.domRef
           if (
-            // Next to eachother
+            // Next to each other
             currentDom.current?.previousElementSibling === previousDom.current ||
             // Or already the first element
             previousDom.current?.previousElementSibling === null
@@ -249,8 +250,9 @@ let reducers: {
 
     // Optimization:
     //
-    // If the current DOM node and the next DOM node are next to eachother, or if the next DOM node
-    // is already the last DOM node, then we don't have to sort all the DOM nodes.
+    // If the current DOM node and the next DOM node are next to each other, or
+    // if the next DOM node is already the last DOM node, then we don't have to
+    // sort all the DOM nodes.
     else if (action.focus === Focus.Next) {
       let activeOptionIdx = state.activeOptionIndex
       if (activeOptionIdx !== null) {
@@ -264,7 +266,7 @@ let reducers: {
         if (nextOptionIndex !== null) {
           let nextDom = state.options[nextOptionIndex].dataRef.current.domRef
           if (
-            // Next to eachother
+            // Next to each other
             currentDom.current?.nextElementSibling === nextDom.current ||
             // Or already the last element
             nextDom.current?.nextElementSibling === null

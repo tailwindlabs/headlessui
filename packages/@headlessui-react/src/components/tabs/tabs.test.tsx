@@ -1074,13 +1074,13 @@ describe('Rendering', () => {
 
         assertActiveElement(document.body)
 
-        // test controlled behaviour
+        // test controlled behavior
         await click(getByText('setSelectedIndex'))
         assertTabs({ active: 1 })
         await click(getByText('setSelectedIndex'))
         assertTabs({ active: 2 })
 
-        // test uncontrolled behaviour again
+        // test uncontrolled behavior again
         await click(getByText('Tab 1'))
         assertTabs({ active: 2 }) // Should still be Tab 3 because `selectedIndex` didn't update
         await click(getByText('Tab 2'))
@@ -1133,17 +1133,17 @@ describe('Rendering', () => {
 
         assertActiveElement(document.body)
 
-        // test uncontrolled behaviour
+        // test uncontrolled behavior
         await click(getByText('Tab 2'))
         expect(handleChange).toHaveBeenCalledTimes(1)
         expect(handleChange).toHaveBeenNthCalledWith(1, 1)
         assertTabs({ active: 1 })
 
-        // test controlled behaviour
+        // test controlled behavior
         await click(getByText('setSelectedIndex'))
         assertTabs({ active: 2 })
 
-        // test uncontrolled behaviour again
+        // test uncontrolled behavior again
         await click(getByText('Tab 2'))
         expect(handleChange).toHaveBeenCalledTimes(2)
         expect(handleChange).toHaveBeenNthCalledWith(2, 1)

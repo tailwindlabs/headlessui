@@ -312,8 +312,9 @@ export function FloatingProvider({
 
   // Calculate placement information to expose as data attributes
   let [exposedTo = to, exposedAlign = align] = context.placement.split('-')
-  // If userland code is using custom styles specifically for `bottom`, but they chose `selection`,
-  // then we want to make sure to map it to selection again otherwise styles could be wrong.
+  // If user-land code is using custom styles specifically for `bottom`, but
+  // they chose `selection`, then we want to make sure to map it to selection
+  // again otherwise styles could be wrong.
   if (to === 'selection') exposedTo = 'selection'
 
   let data = useMemo(

@@ -188,7 +188,7 @@ describe('Rendering', () => {
       // Submit
       await click(document.getElementById('submit'))
 
-      // Notifications should be off (or in this case, non-existant)
+      // Notifications should be off (or in this case, non-existent)
       expect(handleSubmission).toHaveBeenLastCalledWith({})
     })
 
@@ -230,7 +230,7 @@ describe('Rendering', () => {
       // Submit
       await click(document.getElementById('submit'))
 
-      // Notifications should be off (or in this case, non-existant)
+      // Notifications should be off (or in this case, non-existent)
       expect(handleSubmission).toHaveBeenLastCalledWith({})
     })
 
@@ -263,7 +263,7 @@ describe('Rendering', () => {
       // Submit
       await click(document.getElementById('submit'))
 
-      // Notifications should be off (or in this case non-existant)
+      // Notifications should be off (or in this case non-existent)
       expect(handleSubmission).toHaveBeenLastCalledWith({})
     })
 
@@ -777,7 +777,7 @@ describe('Mouse interactions', () => {
   })
 
   xit('should be possible to hover the label and trigger a hover on the switch', async () => {
-    // This test doen't work in JSDOM :(
+    // This test doesn't work in JSDOM :(
     // Keeping it here for reference when we can test this in a real browser
     renderTemplate({
       template: html`

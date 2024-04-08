@@ -2706,7 +2706,7 @@ describe('Keyboard interactions', () => {
     )
 
     it(
-      'should be possible to search for the next occurence',
+      'should be possible to search for the next occurrence',
       suppressConsoleLogs(async () => {
         render(
           <Menu>

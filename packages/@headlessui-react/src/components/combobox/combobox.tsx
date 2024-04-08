@@ -1096,7 +1096,7 @@ function InputFn<
 
         // When the user is still in the middle of composing by using an IME, then we don't want to
         // submit this value and close the Combobox yet. Instead, we will fallback to the default
-        // behaviour which is to "end" the composition.
+        // behavior which is to "end" the composition.
         if (isComposing.current) return
 
         event.preventDefault()
