@@ -76,8 +76,8 @@ function usePopoverContext(component: string) {
 }
 
 let PopoverGroupContext = Symbol('PopoverGroupContext') as InjectionKey<{
-  registerPopover(registerbag: PopoverRegisterBag): void
-  unregisterPopover(registerbag: PopoverRegisterBag): void
+  registerPopover(registerBag: PopoverRegisterBag): void
+  unregisterPopover(registerBag: PopoverRegisterBag): void
   isFocusWithinPopoverGroup(): boolean
   closeOthers(buttonId: string): void
   mainTreeNodeRef: Ref<HTMLElement | null>
@@ -130,11 +130,12 @@ export let Popover = defineComponent({
         }
       }
 
-      // Use another heuristic to try and calculate wether or not the focusable elements are near
-      // eachother (aka, following the default focus/tab order from the browser). If they are then it
-      // doesn't really matter if they are portalled or not because we can follow the default tab
-      // order. But if they are not, then we can consider it being portalled so that we can ensure
-      // that tab and shift+tab (hopefully) go to the correct spot.
+      // Use another heuristic to try and calculate wether or not the focusable
+      // elements are near each other (aka, following the default focus/tab
+      // order from the browser). If they are then it doesn't really matter if
+      // they are portalled or not because we can follow the default tab order.
+      // But if they are not, then we can consider it being portalled so that we
+      // can ensure that tab and shift+tab (hopefully) go to the correct spot.
       let elements = getFocusableElements()
       let buttonIdx = elements.indexOf(dom(button)!)
 

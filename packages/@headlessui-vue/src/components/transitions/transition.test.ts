@@ -708,7 +708,7 @@ describe('Transitions', () => {
               null, // Initial render
               null, // Setup leave classes
               fastLeaveDuration, // Done with fast leave
-              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compaired with previous render snapshot so we have to subtract those)
+              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compared with previous render snapshot so we have to subtract those)
             ]
           },
         ])
@@ -762,7 +762,7 @@ describe('Transitions', () => {
               null, // Initial render
               null, // Setup leave classes
               fastLeaveDuration, // Done with fast leave
-              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compaired with previous render snapshot so we have to subtract those)
+              slowLeaveDuration - fastLeaveDuration, // Done with slow leave (which starts at the same time, but it is compared with previous render snapshot so we have to subtract those)
             ]
           },
         ])

@@ -2869,7 +2869,7 @@ describe('Keyboard interactions', () => {
       assertMenuLinkedWithMenuItem(items[1])
     })
 
-    it('should be possible to search for the next occurence', async () => {
+    it('should be possible to search for the next occurrence', async () => {
       renderTemplate(jsx`
         <Menu>
           <MenuButton>Trigger</MenuButton>
