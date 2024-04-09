@@ -182,7 +182,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
 
   let compare = useByComparator(by)
   let [state, dispatch] = useReducer(stateReducer, { options: [] } as StateDefinition<TType>)
-  let options = state.options as unknown as Option<TType>[]
+  let options = state.options as Option<TType>[]
   let [labelledby, LabelProvider] = useLabels()
   let [describedby, DescriptionProvider] = useDescriptions()
   let internalRadioGroupRef = useRef<HTMLElement | null>(null)
@@ -586,11 +586,9 @@ export interface _internal_ComponentRadio extends HasDisplayName {
 export interface _internal_ComponentRadioLabel extends _internal_ComponentLabel {}
 export interface _internal_ComponentRadioDescription extends _internal_ComponentDescription {}
 
-let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as _internal_ComponentRadioGroup
-export let RadioGroupOption = forwardRefWithAs(
-  OptionFn
-) as unknown as _internal_ComponentRadioOption
-export let Radio = forwardRefWithAs(RadioFn) as unknown as _internal_ComponentRadio
+let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as _internal_ComponentRadioGroup
+export let RadioGroupOption = forwardRefWithAs(OptionFn) as _internal_ComponentRadioOption
+export let Radio = forwardRefWithAs(RadioFn) as _internal_ComponentRadio
 /** @deprecated use `<Label>` instead of `<RadioGroupLabel>` */
 export let RadioGroupLabel = Label as _internal_ComponentRadioLabel
 /** @deprecated use `<Description>` instead of `<RadioGroupDescription>` */

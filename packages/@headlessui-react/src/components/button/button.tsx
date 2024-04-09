@@ -78,4 +78,4 @@ export interface _internal_ComponentButton extends HasDisplayName {
   ): JSX.Element
 }
 
-export let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentButton
+export let Button = forwardRefWithAs(ButtonFn) as _internal_ComponentButton

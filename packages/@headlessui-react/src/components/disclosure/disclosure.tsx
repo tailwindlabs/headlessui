@@ -180,7 +180,7 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
     ref,
     optionalRef(
       (ref) => {
-        internalDisclosureRef.current = ref as unknown as HTMLElement | null
+        internalDisclosureRef.current = ref as HTMLElement | null
       },
       props.as === undefined ||
         // @ts-expect-error The `as` prop _can_ be a Fragment
@@ -506,13 +506,9 @@ export interface _internal_ComponentDisclosurePanel extends HasDisplayName {
   ): JSX.Element
 }
 
-let DisclosureRoot = forwardRefWithAs(DisclosureFn) as unknown as _internal_ComponentDisclosure
-export let DisclosureButton = forwardRefWithAs(
-  ButtonFn
-) as unknown as _internal_ComponentDisclosureButton
-export let DisclosurePanel = forwardRefWithAs(
-  PanelFn
-) as unknown as _internal_ComponentDisclosurePanel
+let DisclosureRoot = forwardRefWithAs(DisclosureFn) as _internal_ComponentDisclosure
+export let DisclosureButton = forwardRefWithAs(ButtonFn) as _internal_ComponentDisclosureButton
+export let DisclosurePanel = forwardRefWithAs(PanelFn) as _internal_ComponentDisclosurePanel
 
 export let Disclosure = Object.assign(DisclosureRoot, {
   Button: DisclosureButton,

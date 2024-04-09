@@ -31,4 +31,4 @@ export interface _internal_ComponentLegend extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LEGEND_TAG>(props: LegendProps<TTag>): JSX.Element
 }
 
-export let Legend = forwardRefWithAs(LegendFn) as unknown as _internal_ComponentLegend
+export let Legend = forwardRefWithAs(LegendFn) as _internal_ComponentLegend

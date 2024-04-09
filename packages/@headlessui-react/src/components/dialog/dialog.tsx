@@ -667,15 +667,11 @@ export interface _internal_ComponentDialogTitle extends HasDisplayName {
 
 export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription {}
 
-let DialogRoot = forwardRefWithAs(DialogFn) as unknown as _internal_ComponentDialog
-export let DialogBackdrop = forwardRefWithAs(
-  BackdropFn
-) as unknown as _internal_ComponentDialogBackdrop
-export let DialogPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDialogPanel
-export let DialogOverlay = forwardRefWithAs(
-  OverlayFn
-) as unknown as _internal_ComponentDialogOverlay
-export let DialogTitle = forwardRefWithAs(TitleFn) as unknown as _internal_ComponentDialogTitle
+let DialogRoot = forwardRefWithAs(DialogFn) as _internal_ComponentDialog
+export let DialogBackdrop = forwardRefWithAs(BackdropFn) as _internal_ComponentDialogBackdrop
+export let DialogPanel = forwardRefWithAs(PanelFn) as _internal_ComponentDialogPanel
+export let DialogOverlay = forwardRefWithAs(OverlayFn) as _internal_ComponentDialogOverlay
+export let DialogTitle = forwardRefWithAs(TitleFn) as _internal_ComponentDialogTitle
 /** @deprecated use `<Description>` instead of `<DialogDescription>` */
 export let DialogDescription = Description as _internal_ComponentDialogDescription
 

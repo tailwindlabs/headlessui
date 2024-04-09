@@ -18,7 +18,7 @@ import { Portal } from '../portal/portal'
 import { Transition } from '../transition/transition'
 import { Popover } from './popover'
 
-let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
+let act = _act as <T>(fn: () => T) => PromiseLike<T>
 
 jest.mock('../../hooks/use-id')
 

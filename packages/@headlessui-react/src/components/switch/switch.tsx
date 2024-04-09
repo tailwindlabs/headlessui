@@ -267,8 +267,8 @@ export interface _internal_ComponentSwitchGroup extends HasDisplayName {
 export interface _internal_ComponentSwitchLabel extends _internal_ComponentLabel {}
 export interface _internal_ComponentSwitchDescription extends _internal_ComponentDescription {}
 
-let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as _internal_ComponentSwitch
-export let SwitchGroup = GroupFn as unknown as _internal_ComponentSwitchGroup
+let SwitchRoot = forwardRefWithAs(SwitchFn) as _internal_ComponentSwitch
+export let SwitchGroup = GroupFn as _internal_ComponentSwitchGroup
 /** @deprecated use `<Label>` instead of `<SwitchLabel>` */
 export let SwitchLabel = Label as _internal_ComponentSwitchLabel
 /** @deprecated use `<Description>` instead of `<SwitchDescription>` */

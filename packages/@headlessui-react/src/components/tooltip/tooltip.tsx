@@ -494,6 +494,6 @@ export interface _internal_ComponentPanel extends HasDisplayName {
   ): JSX.Element
 }
 
-export let Tooltip = forwardRefWithAs(TooltipFn) as unknown as _internal_ComponentTooltip
-export let TooltipTrigger = forwardRefWithAs(TriggerFn) as unknown as _internal_ComponentTrigger
-export let TooltipPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentPanel
+export let Tooltip = forwardRefWithAs(TooltipFn) as _internal_ComponentTooltip
+export let TooltipTrigger = forwardRefWithAs(TriggerFn) as _internal_ComponentTrigger
+export let TooltipPanel = forwardRefWithAs(PanelFn) as _internal_ComponentPanel

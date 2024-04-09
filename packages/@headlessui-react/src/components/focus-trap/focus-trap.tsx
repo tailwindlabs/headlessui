@@ -230,7 +230,7 @@ export interface _internal_ComponentFocusTrap extends HasDisplayName {
   ): JSX.Element
 }
 
-let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as unknown as _internal_ComponentFocusTrap
+let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as _internal_ComponentFocusTrap
 
 export let FocusTrap = Object.assign(FocusTrapRoot, {
   features: FocusTrapFeatures,

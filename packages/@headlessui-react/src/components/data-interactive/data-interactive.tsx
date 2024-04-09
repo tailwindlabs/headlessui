@@ -64,4 +64,4 @@ export interface _internal_ComponentDataInteractive extends HasDisplayName {
 
 export let DataInteractive = forwardRefWithAs(
   DataInteractiveFn
-) as unknown as _internal_ComponentDataInteractive
+) as _internal_ComponentDataInteractive

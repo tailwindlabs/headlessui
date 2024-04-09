@@ -23,7 +23,7 @@ export function useByComparator<T>(by: ByComparator<T> = defaultBy) {
   return useCallback(
     (a: T, z: T) => {
       if (typeof by === 'string') {
-        let property = by as unknown as keyof T
+        let property = by as keyof T
         return a?.[property] === z?.[property]
       }
 

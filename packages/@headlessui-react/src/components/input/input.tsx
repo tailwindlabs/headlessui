@@ -93,4 +93,4 @@ export interface _internal_ComponentInput extends HasDisplayName {
   ): JSX.Element
 }
 
-export let Input = forwardRefWithAs(InputFn) as unknown as _internal_ComponentInput
+export let Input = forwardRefWithAs(InputFn) as _internal_ComponentInput

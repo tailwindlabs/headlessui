@@ -814,7 +814,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
           copy.splice(idx, 1)
         }
 
-        return theirOnChange?.(copy as unknown as TValue[])
+        return theirOnChange?.(copy as TValue[])
       },
     })
   })
@@ -970,7 +970,7 @@ function InputFn<
   // yourself using the selected option(s).
   let currentDisplayValue = useMemo(() => {
     if (typeof displayValue === 'function' && data.value !== undefined) {
-      return displayValue(data.value as unknown as TType) ?? ''
+      return displayValue(data.value as TType) ?? ''
     } else if (typeof data.value === 'string') {
       return data.value
     } else {
@@ -1319,9 +1319,7 @@ function InputFn<
       'aria-autocomplete': 'list',
       defaultValue:
         props.defaultValue ??
-        (data.defaultValue !== undefined
-          ? displayValue?.(data.defaultValue as unknown as TType)
-          : null) ??
+        (data.defaultValue !== undefined ? displayValue?.(data.defaultValue as TType) : null) ??
         data.defaultValue,
       disabled: disabled || undefined,
       autoFocus,
@@ -1869,19 +1867,13 @@ export interface _internal_ComponentComboboxOption extends HasDisplayName {
   ): JSX.Element
 }
 
-let ComboboxRoot = forwardRefWithAs(ComboboxFn) as unknown as _internal_ComponentCombobox
-export let ComboboxButton = forwardRefWithAs(
-  ButtonFn
-) as unknown as _internal_ComponentComboboxButton
-export let ComboboxInput = forwardRefWithAs(InputFn) as unknown as _internal_ComponentComboboxInput
+let ComboboxRoot = forwardRefWithAs(ComboboxFn) as _internal_ComponentCombobox
+export let ComboboxButton = forwardRefWithAs(ButtonFn) as _internal_ComponentComboboxButton
+export let ComboboxInput = forwardRefWithAs(InputFn) as _internal_ComponentComboboxInput
 /** @deprecated use `<Label>` instead of `<ComboboxLabel>` */
 export let ComboboxLabel = Label as _internal_ComponentComboboxLabel
-export let ComboboxOptions = forwardRefWithAs(
-  OptionsFn
-) as unknown as _internal_ComponentComboboxOptions
-export let ComboboxOption = forwardRefWithAs(
-  OptionFn
-) as unknown as _internal_ComponentComboboxOption
+export let ComboboxOptions = forwardRefWithAs(OptionsFn) as _internal_ComponentComboboxOptions
+export let ComboboxOption = forwardRefWithAs(OptionFn) as _internal_ComponentComboboxOption
 
 export let Combobox = Object.assign(ComboboxRoot, {
   Input: ComboboxInput,

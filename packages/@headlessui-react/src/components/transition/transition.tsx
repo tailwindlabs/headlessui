@@ -618,15 +618,11 @@ export interface _internal_ComponentTransitionChild extends HasDisplayName {
   ): JSX.Element
 }
 
-let TransitionRoot = forwardRefWithAs(
-  TransitionRootFn
-) as unknown as _internal_ComponentTransitionRoot
+let TransitionRoot = forwardRefWithAs(TransitionRootFn) as _internal_ComponentTransitionRoot
 let InternalTransitionChild = forwardRefWithAs(
   TransitionChildFn
-) as unknown as _internal_ComponentTransitionChild
-export let TransitionChild = forwardRefWithAs(
-  ChildFn
-) as unknown as _internal_ComponentTransitionChild
+) as _internal_ComponentTransitionChild
+export let TransitionChild = forwardRefWithAs(ChildFn) as _internal_ComponentTransitionChild
 
 export let Transition = Object.assign(TransitionRoot, {
   Child: TransitionChild,
