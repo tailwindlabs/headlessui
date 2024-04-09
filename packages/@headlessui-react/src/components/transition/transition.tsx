@@ -66,6 +66,9 @@ export interface TransitionClasses {
   enter?: string
   enterFrom?: string
   enterTo?: string
+  /**
+   * @deprecated The `enterTo` and `leaveTo` classes stay applied after the transition has finished.
+   */
   entered?: string
   leave?: string
   leaveFrom?: string
