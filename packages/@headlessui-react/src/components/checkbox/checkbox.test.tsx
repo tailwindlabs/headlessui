@@ -135,8 +135,10 @@ describe('Form submissions', () => {
       </form>
     )
 
+    let checkbox = document.querySelector('[id^="headlessui-checkbox-"]') as HTMLInputElement
+
     // Focus the checkbox
-    await focus(getCheckbox())
+    await focus(checkbox)
 
     // Submit
     await press(Keys.Enter)
@@ -145,7 +147,7 @@ describe('Form submissions', () => {
     expect(handleSubmission).toHaveBeenLastCalledWith({})
 
     // Toggle
-    await click(getCheckbox())
+    await click(checkbox)
 
     // Submit
     await press(Keys.Enter)
@@ -154,7 +156,7 @@ describe('Form submissions', () => {
     expect(handleSubmission).toHaveBeenLastCalledWith({ notifications: 'on' })
 
     // Toggle
-    await click(getCheckbox())
+    await click(checkbox)
 
     // Submit
     await press(Keys.Enter)

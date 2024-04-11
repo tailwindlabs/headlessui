@@ -33,8 +33,10 @@ export function FormFields({
   form: formId,
   disabled,
   onReset,
+  overrides,
 }: {
   data: Record<string, any>
+  overrides?: Record<string, any>
   form?: string
   disabled?: boolean
   onReset?: (e: Event) => void
@@ -66,6 +68,7 @@ export function FormFields({
               disabled,
               name,
               value,
+              ...overrides,
             })}
           />
         )
