@@ -315,7 +315,8 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
             {name != null && (
               <FormFields
                 disabled={disabled}
-                data={value != null ? { [name]: value || 'on' } : {}}
+                data={{ [name]: value || 'on' }}
+                overrides={{ type: 'radio', checked: value != null }}
                 form={form}
                 onReset={reset}
               />

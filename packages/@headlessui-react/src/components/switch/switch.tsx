@@ -240,7 +240,8 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
       {name != null && (
         <FormFields
           disabled={disabled}
-          data={checked ? { [name]: value || 'on' } : {}}
+          data={{ [name]: value || 'on' }}
+          overrides={{ type: 'checkbox', checked }}
           form={form}
           onReset={reset}
         />
