@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from '../use-sync-external-store-shim/index'
+import { useSyncExternalStore } from 'react'
 import type { Store } from '../utils/store'
 
 export function useStore<T>(store: Store<T, any>) {
