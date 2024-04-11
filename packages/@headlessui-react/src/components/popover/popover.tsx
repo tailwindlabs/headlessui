@@ -1194,13 +1194,11 @@ export interface _internal_ComponentPopoverGroup extends HasDisplayName {
   ): JSX.Element
 }
 
-let PopoverRoot = forwardRefWithAs(PopoverFn) as unknown as _internal_ComponentPopover
-export let PopoverButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentPopoverButton
-export let PopoverOverlay = forwardRefWithAs(
-  OverlayFn
-) as unknown as _internal_ComponentPopoverOverlay
-export let PopoverPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentPopoverPanel
-export let PopoverGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPopoverGroup
+let PopoverRoot = forwardRefWithAs(PopoverFn) as _internal_ComponentPopover
+export let PopoverButton = forwardRefWithAs(ButtonFn) as _internal_ComponentPopoverButton
+export let PopoverOverlay = forwardRefWithAs(OverlayFn) as _internal_ComponentPopoverOverlay
+export let PopoverPanel = forwardRefWithAs(PanelFn) as _internal_ComponentPopoverPanel
+export let PopoverGroup = forwardRefWithAs(GroupFn) as _internal_ComponentPopoverGroup
 
 export let Popover = Object.assign(PopoverRoot, {
   Button: PopoverButton,

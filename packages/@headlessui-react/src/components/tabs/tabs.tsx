@@ -696,11 +696,11 @@ export interface _internal_ComponentTabPanel extends HasDisplayName {
   ): JSX.Element
 }
 
-let TabRoot = forwardRefWithAs(TabFn) as unknown as _internal_ComponentTab
-export let TabGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentTabGroup
-export let TabList = forwardRefWithAs(ListFn) as unknown as _internal_ComponentTabList
-export let TabPanels = forwardRefWithAs(PanelsFn) as unknown as _internal_ComponentTabPanels
-export let TabPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentTabPanel
+let TabRoot = forwardRefWithAs(TabFn) as _internal_ComponentTab
+export let TabGroup = forwardRefWithAs(GroupFn) as _internal_ComponentTabGroup
+export let TabList = forwardRefWithAs(ListFn) as _internal_ComponentTabList
+export let TabPanels = forwardRefWithAs(PanelsFn) as _internal_ComponentTabPanels
+export let TabPanel = forwardRefWithAs(PanelFn) as _internal_ComponentTabPanel
 
 export let Tab = Object.assign(TabRoot, {
   Group: TabGroup,

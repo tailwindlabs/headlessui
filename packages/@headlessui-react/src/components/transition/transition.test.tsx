@@ -7,7 +7,7 @@ import { createSnapshot } from '../../test-utils/snapshot'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from './transition'
 
-let act = _act as unknown as <T>(fn: () => T) => PromiseLike<T>
+let act = _act as <T>(fn: () => T) => PromiseLike<T>
 
 function nextFrame() {
   return new Promise<void>((resolve) => {

@@ -1087,15 +1087,13 @@ export interface _internal_ComponentMenuSeparator extends HasDisplayName {
   ): JSX.Element
 }
 
-let MenuRoot = forwardRefWithAs(MenuFn) as unknown as _internal_ComponentMenu
-export let MenuButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentMenuButton
-export let MenuItems = forwardRefWithAs(ItemsFn) as unknown as _internal_ComponentMenuItems
-export let MenuItem = forwardRefWithAs(ItemFn) as unknown as _internal_ComponentMenuItem
-export let MenuSection = forwardRefWithAs(SectionFn) as unknown as _internal_ComponentMenuSection
-export let MenuHeading = forwardRefWithAs(HeadingFn) as unknown as _internal_ComponentMenuHeading
-export let MenuSeparator = forwardRefWithAs(
-  SeparatorFn
-) as unknown as _internal_ComponentMenuSeparator
+let MenuRoot = forwardRefWithAs(MenuFn) as _internal_ComponentMenu
+export let MenuButton = forwardRefWithAs(ButtonFn) as _internal_ComponentMenuButton
+export let MenuItems = forwardRefWithAs(ItemsFn) as _internal_ComponentMenuItems
+export let MenuItem = forwardRefWithAs(ItemFn) as _internal_ComponentMenuItem
+export let MenuSection = forwardRefWithAs(SectionFn) as _internal_ComponentMenuSection
+export let MenuHeading = forwardRefWithAs(HeadingFn) as _internal_ComponentMenuHeading
+export let MenuSeparator = forwardRefWithAs(SeparatorFn) as _internal_ComponentMenuSeparator
 
 export let Menu = Object.assign(MenuRoot, {
   Button: MenuButton,

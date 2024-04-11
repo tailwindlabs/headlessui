@@ -220,7 +220,7 @@ export interface _internal_ComponentLabel extends HasDisplayName {
   ): JSX.Element
 }
 
-let LabelRoot = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentLabel
+let LabelRoot = forwardRefWithAs(LabelFn) as _internal_ComponentLabel
 
 export let Label = Object.assign(LabelRoot, {
   //

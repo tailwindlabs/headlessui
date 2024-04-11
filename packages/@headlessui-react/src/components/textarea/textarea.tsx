@@ -93,4 +93,4 @@ export interface _internal_ComponentTextarea extends HasDisplayName {
   ): JSX.Element
 }
 
-export let Textarea = forwardRefWithAs(TextareaFn) as unknown as _internal_ComponentTextarea
+export let Textarea = forwardRefWithAs(TextareaFn) as _internal_ComponentTextarea

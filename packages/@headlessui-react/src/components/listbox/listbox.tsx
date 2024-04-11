@@ -510,9 +510,7 @@ function ListboxFn<
     (compareValue) =>
       match(data.mode, {
         [ValueMode.Multi]: () => {
-          return (value as unknown as EnsureArray<TType>).some((option) =>
-            compare(option, compareValue)
-          )
+          return (value as EnsureArray<TType>).some((option) => compare(option, compareValue))
         },
         [ValueMode.Single]: () => {
           return compare(value as TActualType, compareValue)
@@ -1362,17 +1360,15 @@ export interface _internal_ComponentListboxSelectedOption extends HasDisplayName
   ): JSX.Element
 }
 
-let ListboxRoot = forwardRefWithAs(ListboxFn) as unknown as _internal_ComponentListbox
-export let ListboxButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentListboxButton
+let ListboxRoot = forwardRefWithAs(ListboxFn) as _internal_ComponentListbox
+export let ListboxButton = forwardRefWithAs(ButtonFn) as _internal_ComponentListboxButton
 /** @deprecated use `<Label>` instead of `<ListboxLabel>` */
 export let ListboxLabel = Label as _internal_ComponentListboxLabel
-export let ListboxOptions = forwardRefWithAs(
-  OptionsFn
-) as unknown as _internal_ComponentListboxOptions
-export let ListboxOption = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentListboxOption
+export let ListboxOptions = forwardRefWithAs(OptionsFn) as _internal_ComponentListboxOptions
+export let ListboxOption = forwardRefWithAs(OptionFn) as _internal_ComponentListboxOption
 export let ListboxSelectedOption = forwardRefWithAs(
   SelectedFn
-) as unknown as _internal_ComponentListboxSelectedOption
+) as _internal_ComponentListboxSelectedOption
 
 export let Listbox = Object.assign(ListboxRoot, {
   Button: ListboxButton,

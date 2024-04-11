@@ -70,4 +70,4 @@ interface ComponentHidden extends HasDisplayName {
   ): JSX.Element
 }
 
-export let Hidden = forwardRefWithAs(VisuallyHidden) as unknown as ComponentHidden
+export let Hidden = forwardRefWithAs(VisuallyHidden) as ComponentHidden

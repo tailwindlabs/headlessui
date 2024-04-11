@@ -198,4 +198,4 @@ export interface _internal_ComponentCheckbox extends HasDisplayName {
   ): JSX.Element
 }
 
-export let Checkbox = forwardRefWithAs(CheckboxFn) as unknown as _internal_ComponentCheckbox
+export let Checkbox = forwardRefWithAs(CheckboxFn) as _internal_ComponentCheckbox

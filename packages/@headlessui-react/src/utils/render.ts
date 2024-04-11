@@ -427,7 +427,7 @@ export function mergeProps<T extends Props<any, any>[]>(...listOfProps: T) {
 export function forwardRefWithAs<T extends { name: string; displayName?: string }>(
   component: T
 ): T & { displayName: string } {
-  return Object.assign(forwardRef(component as unknown as any) as any, {
+  return Object.assign(forwardRef(component as any) as any, {
     displayName: component.displayName ?? component.name,
   })
 }

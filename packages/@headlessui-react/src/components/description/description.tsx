@@ -137,7 +137,7 @@ export interface _internal_ComponentDescription extends HasDisplayName {
   ): JSX.Element
 }
 
-let DescriptionRoot = forwardRefWithAs(DescriptionFn) as unknown as _internal_ComponentDescription
+let DescriptionRoot = forwardRefWithAs(DescriptionFn) as _internal_ComponentDescription
 
 export let Description = Object.assign(DescriptionRoot, {
   //

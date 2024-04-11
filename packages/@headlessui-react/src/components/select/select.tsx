@@ -104,4 +104,4 @@ export interface _internal_ComponentSelect extends HasDisplayName {
   ): JSX.Element
 }
 
-export let Select = forwardRefWithAs(SelectFn) as unknown as _internal_ComponentSelect
+export let Select = forwardRefWithAs(SelectFn) as _internal_ComponentSelect

@@ -5,11 +5,11 @@ export function useWatch<T extends any[]>(
   cb: (newValues: [...T], oldValues: [...T]) => void | (() => void),
   dependencies: [...T]
 ) {
-  let track = useRef<typeof dependencies>([] as unknown as [...T])
+  let track = useRef([] as unknown as typeof dependencies)
   let action = useEvent(cb)
 
   useEffect(() => {
-    let oldValues = [...track.current] as unknown as [...T]
+    let oldValues = [...track.current] as [...T]
 
     for (let [idx, value] of dependencies.entries()) {
       if (track.current[idx] !== value) {

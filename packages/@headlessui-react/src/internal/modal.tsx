@@ -213,6 +213,6 @@ export interface _internal_ComponentModal extends HasDisplayName {
   ): JSX.Element
 }
 
-let ModalRoot = forwardRefWithAs(ModalFn) as unknown as _internal_ComponentModal
+let ModalRoot = forwardRefWithAs(ModalFn) as _internal_ComponentModal
 
 export let Modal = Object.assign(ModalRoot, {})

@@ -198,7 +198,7 @@ function isSelectableElement(
 
 export function sortByDomNode<T>(
   nodes: T[],
-  resolveKey: (item: T) => HTMLElement | null = (i) => i as unknown as HTMLElement | null
+  resolveKey: (item: T) => HTMLElement | null = (i) => i as HTMLElement | null
 ): T[] {
   return nodes.slice().sort((aItem, zItem) => {
     let a = resolveKey(aItem)

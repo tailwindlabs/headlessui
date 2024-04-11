@@ -76,4 +76,4 @@ export interface _internal_ComponentField extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_FIELD_TAG>(props: FieldProps<TTag>): JSX.Element
 }
 
-export let Field = forwardRefWithAs(FieldFn) as unknown as _internal_ComponentField
+export let Field = forwardRefWithAs(FieldFn) as _internal_ComponentField
