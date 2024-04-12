@@ -9,16 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Expose `disabled` state on `<Tab />` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
-- Prevent default behavior when clicking outside of a `Dialog.Panel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
 - Use `isFocused` instead of `isFocusVisible` for `Input` and `Textarea` components ([#2940](https://github.com/tailwindlabs/headlessui/pull/2940))
 - Ensure `children` prop of `Field` component can be a render prop ([#2941](https://github.com/tailwindlabs/headlessui/pull/2941))
-- Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
 - Attempt form submission when pressing `Enter` on `Checkbox` component ([#2962](https://github.com/tailwindlabs/headlessui/pull/2962))
-- Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
-- Forward `disabled` state to hidden inputs in form-like components ([#3004](https://github.com/tailwindlabs/headlessui/pull/3004))
 - Prefer incoming `data-*` attributes, over the ones set by Headless UI ([#3035](https://github.com/tailwindlabs/headlessui/pull/3035))
-- Respect `selectedIndex` for controlled `<Tab/>` components ([#3037](https://github.com/tailwindlabs/headlessui/pull/3037))
 - Prevent unnecessary execution of the `displayValue` callback in the `ComboboxInput` component ([#3048](https://github.com/tailwindlabs/headlessui/pull/3048))
 - Expose missing `data-disabled` and `data-focus` attributes on the `TabsPanel`, `MenuButton`, `PopoverButton` and `DisclosureButton` components ([#3061](https://github.com/tailwindlabs/headlessui/pull/3061))
 - Fix cursor position when re-focusing the `ComboboxInput` component ([#3065](https://github.com/tailwindlabs/headlessui/pull/3065))
@@ -40,6 +34,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose the `--button-width` CSS variable on the `PopoverPanel` component ([#3058](https://github.com/tailwindlabs/headlessui/pull/3058))
 - Close the `Combobox`, `Dialog`, `Listbox`, `Menu` and `Popover` components when the trigger disappears ([#3075](https://github.com/tailwindlabs/headlessui/pull/3075))
 - Add new `CloseButton` component and `useClose` hook ([#3096](https://github.com/tailwindlabs/headlessui/pull/3096))
+
+## [1.7.19] - 2024-04-15
+
+### Fixed
+
+- Make sure panels re-register when IDs are calculated in React < 18 ([#2883](https://github.com/tailwindlabs/headlessui/pull/2883))
+- Expose `disabled` state on `<Tab />` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
+- Prevent default behavior when clicking outside of a `Dialog.Panel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
+- Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
+- Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
+- Forward `disabled` state to hidden inputs in form-like components ([#3004](https://github.com/tailwindlabs/headlessui/pull/3004))
+- Respect `selectedIndex` for controlled `<Tab/>` components ([#3037](https://github.com/tailwindlabs/headlessui/pull/3037))
 
 ## [2.0.0-alpha.4] - 2024-01-03
 
@@ -630,6 +636,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Everything!
 
 [unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.4...HEAD
+[1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.18...v1.7.19
 [2.0.0-alpha.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.2...v2.0.0-alpha.3
 [2.0.0-alpha.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.1...v2.0.0-alpha.2
