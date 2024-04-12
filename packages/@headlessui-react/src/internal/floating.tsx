@@ -22,7 +22,7 @@ type Placement = 'top' | 'right' | 'bottom' | 'left'
 
 type BaseAnchorProps = {
   /**
-   * The strategy to use when positioning the panel. Defaults to `fixed`.
+   * The strategy to use when positioning the panel. Defaults to `absolute`.
    */
   strategy: 'absolute' | 'fixed'
 
@@ -171,7 +171,7 @@ export function FloatingProvider({
     offset = 0,
     padding = 0,
     inner,
-    strategy = 'fixed',
+    strategy = 'absolute',
   } = useResolvedConfig(config, floatingEl)
   let [to, align = 'center'] = placement.split(' ') as [Placement | 'selection', Align | 'center']
 
