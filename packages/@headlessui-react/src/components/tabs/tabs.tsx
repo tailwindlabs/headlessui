@@ -566,7 +566,17 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let internalPanelRef = useRef<HTMLElement | null>(null)
   let panelRef = useSyncRefs(internalPanelRef, ref)
 
-  useIsoMorphicEffect(() => actions.registerPanel(internalPanelRef), [actions, internalPanelRef])
+  useIsoMorphicEffect(
+    () => actions.registerPanel(internalPanelRef),
+    [
+      actions,
+      internalPanelRef,
+
+      // The `id` prop is here to force a re-render of the
+      // corresponding `Tab` whenever the `id` is calculated in React < 18
+      id,
+    ]
+  )
 
   let mySSRIndex = useStableCollectionIndex('panels')
 
