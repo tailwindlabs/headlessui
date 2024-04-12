@@ -30,6 +30,7 @@ import { useOwnerDocument } from '../../hooks/use-owner'
 import { useRootContainers } from '../../hooks/use-root-containers'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
+import { CloseProvider } from '../../internal/close-provider'
 import { HoistFormFields } from '../../internal/form-fields'
 import { State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
@@ -410,15 +411,17 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
                       containers={resolveRootContainers}
                       features={focusTrapFeatures}
                     >
-                      {render({
-                        ourProps,
-                        theirProps,
-                        slot,
-                        defaultTag: DEFAULT_DIALOG_TAG,
-                        features: DialogRenderFeatures,
-                        visible: dialogState === DialogStates.Open,
-                        name: 'Dialog',
-                      })}
+                      <CloseProvider value={close}>
+                        {render({
+                          ourProps,
+                          theirProps,
+                          slot,
+                          defaultTag: DEFAULT_DIALOG_TAG,
+                          features: DialogRenderFeatures,
+                          visible: dialogState === DialogStates.Open,
+                          name: 'Dialog',
+                        })}
+                      </CloseProvider>
                     </FocusTrap>
                   </PortalWrapper>
                 </DescriptionProvider>

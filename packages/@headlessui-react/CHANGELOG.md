@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose `--input-width` and `--button-width` CSS variables on the `ComboboxOptions` component ([#3057](https://github.com/tailwindlabs/headlessui/pull/3057))
 - Expose the `--button-width` CSS variable on the `PopoverPanel` component ([#3058](https://github.com/tailwindlabs/headlessui/pull/3058))
 - Close the `Combobox`, `Dialog`, `Listbox`, `Menu` and `Popover` components when the trigger disappears ([#3075](https://github.com/tailwindlabs/headlessui/pull/3075))
+- Add new `CloseButton` component and `useClose` hook ([#3096](https://github.com/tailwindlabs/headlessui/pull/3096))
 
 ## [2.0.0-alpha.4] - 2024-01-03
 

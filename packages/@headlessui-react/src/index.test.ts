@@ -10,6 +10,8 @@ it('should expose the correct components', () => {
 
     'Checkbox',
 
+    'CloseButton',
+
     'Combobox',
     'ComboboxButton',
     'ComboboxInput',
@@ -90,5 +92,7 @@ it('should expose the correct components', () => {
 
     'Transition',
     'TransitionChild',
+
+    'useClose',
   ])
 })
