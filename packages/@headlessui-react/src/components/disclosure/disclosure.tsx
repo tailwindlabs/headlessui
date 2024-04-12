@@ -24,6 +24,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
+import { CloseProvider } from '../../internal/close-provider'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -234,20 +235,22 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
   return (
     <DisclosureContext.Provider value={reducerBag}>
       <DisclosureAPIContext.Provider value={api}>
-        <OpenClosedProvider
-          value={match(disclosureState, {
-            [DisclosureStates.Open]: State.Open,
-            [DisclosureStates.Closed]: State.Closed,
-          })}
-        >
-          {render({
-            ourProps,
-            theirProps,
-            slot,
-            defaultTag: DEFAULT_DISCLOSURE_TAG,
-            name: 'Disclosure',
-          })}
-        </OpenClosedProvider>
+        <CloseProvider value={close}>
+          <OpenClosedProvider
+            value={match(disclosureState, {
+              [DisclosureStates.Open]: State.Open,
+              [DisclosureStates.Closed]: State.Closed,
+            })}
+          >
+            {render({
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_DISCLOSURE_TAG,
+              name: 'Disclosure',
+            })}
+          </OpenClosedProvider>
+        </CloseProvider>
       </DisclosureAPIContext.Provider>
     </DisclosureContext.Provider>
   )
