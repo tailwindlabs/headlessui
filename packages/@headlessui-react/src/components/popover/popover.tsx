@@ -36,6 +36,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
+import { CloseProvider } from '../../internal/close-provider'
 import {
   FloatingProvider,
   useFloatingPanel,
@@ -410,23 +411,25 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
       <PopoverPanelContext.Provider value={null}>
         <PopoverContext.Provider value={reducerBag}>
           <PopoverAPIContext.Provider value={api}>
-            <OpenClosedProvider
-              value={match(popoverState, {
-                [PopoverStates.Open]: State.Open,
-                [PopoverStates.Closed]: State.Closed,
-              })}
-            >
-              <PortalWrapper>
-                {render({
-                  ourProps,
-                  theirProps,
-                  slot,
-                  defaultTag: DEFAULT_POPOVER_TAG,
-                  name: 'Popover',
+            <CloseProvider value={close}>
+              <OpenClosedProvider
+                value={match(popoverState, {
+                  [PopoverStates.Open]: State.Open,
+                  [PopoverStates.Closed]: State.Closed,
                 })}
-                <root.MainTreeNode />
-              </PortalWrapper>
-            </OpenClosedProvider>
+              >
+                <PortalWrapper>
+                  {render({
+                    ourProps,
+                    theirProps,
+                    slot,
+                    defaultTag: DEFAULT_POPOVER_TAG,
+                    name: 'Popover',
+                  })}
+                  <root.MainTreeNode />
+                </PortalWrapper>
+              </OpenClosedProvider>
+            </CloseProvider>
           </PopoverAPIContext.Provider>
         </PopoverContext.Provider>
       </PopoverPanelContext.Provider>
