@@ -608,6 +608,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     multiple = false,
     immediate = false,
     virtual = null,
+    // Deprecated, but let's pluck it from the props such that it doesn't end up
+    // on the `Fragment`
+    nullable: _nullable,
     ...theirProps
   } = props
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
