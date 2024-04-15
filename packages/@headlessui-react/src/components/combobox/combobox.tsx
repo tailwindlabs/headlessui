@@ -1830,11 +1830,12 @@ function OptionFn<
 // ---
 
 export interface _internal_ComponentCombobox extends HasDisplayName {
-  <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, true, TTag> & RefProp<typeof ComboboxFn>
-  ): JSX.Element
-  <TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG>(
-    props: ComboboxProps<TValue, false, TTag> & RefProp<typeof ComboboxFn>
+  <
+    TValue,
+    TMultiple extends boolean | undefined = false,
+    TTag extends ElementType = typeof DEFAULT_COMBOBOX_TAG,
+  >(
+    props: ComboboxProps<TValue, TMultiple, TTag> & RefProp<typeof ComboboxFn>
   ): JSX.Element
 }
 
