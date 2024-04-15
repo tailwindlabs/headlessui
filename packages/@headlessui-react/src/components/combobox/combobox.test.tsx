@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react'
-import React, { createElement, useEffect, useState } from 'react'
+import React, { Fragment, createElement, useEffect, useState } from 'react'
 import {
   ComboboxMode,
   ComboboxState,
@@ -573,6 +573,31 @@ describe('Rendering', () => {
 
         // Verify it is closed
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      })
+    )
+
+    it(
+      'should not crash when the `Combobox` still contains a `nullable` prop',
+      suppressConsoleLogs(async () => {
+        let data = [
+          { id: 1, name: 'alice', label: 'Alice' },
+          { id: 2, name: 'bob', label: 'Bob' },
+          { id: 3, name: 'charlie', label: 'Charlie' },
+        ]
+
+        render(
+          <Combobox nullable as={Fragment}>
+            <Combobox.Input onChange={NOOP} />
+            <Combobox.Button />
+            <Combobox.Options>
+              {data.map((person) => (
+                <Combobox.Option key={person.id} value={person}>
+                  {person.label}
+                </Combobox.Option>
+              ))}
+            </Combobox.Options>
+          </Combobox>
+        )
       })
     )
   })
