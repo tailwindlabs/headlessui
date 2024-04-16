@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet!
 
+### Fixed
+
+- Prevent closing the `Combobox` component when clicking inside the scrollbar area ([#3104](https://github.com/tailwindlabs/headlessui/pull/3104))
+
 ## [1.7.20] - 2024-04-15
 
 ### Fixed
