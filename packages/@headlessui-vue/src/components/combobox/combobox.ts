@@ -1372,6 +1372,15 @@ export let ComboboxOptions = defineComponent({
       },
     })
 
+    /**
+     * Prevent focus from being lost if the user clicks on the scrollbar.
+     * Otherwise the `ComboboxInput` will lose focus and the combobox will
+     * close.
+     */
+    function handleMouseDown(event: MouseEvent) {
+      event.preventDefault()
+    }
+
     return () => {
       let slot = { open: api.comboboxState.value === ComboboxStates.Open }
       let ourProps = {
@@ -1380,6 +1389,7 @@ export let ComboboxOptions = defineComponent({
         ref: api.optionsRef,
         role: 'listbox',
         'aria-multiselectable': api.mode.value === ValueMode.Multi ? true : undefined,
+        onMousedown: handleMouseDown,
       }
       let theirProps = omit(props, ['hold'])
 
