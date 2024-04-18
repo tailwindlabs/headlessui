@@ -18,6 +18,7 @@ export default function AppearExample() {
           <span className="mb-2">Initial render</span>
           <div className="grid max-w-6xl grid-cols-4 gap-4">
             <Transition
+              as="div"
               show={show}
               appear={true}
               unmount={true}
@@ -50,6 +51,7 @@ export default function AppearExample() {
             </Transition>
 
             <Transition
+              as="div"
               show={show}
               appear={false}
               unmount={true}
@@ -82,6 +84,7 @@ export default function AppearExample() {
             </Transition>
 
             <Transition
+              as="div"
               show={show}
               appear={true}
               unmount={false}
@@ -114,6 +117,7 @@ export default function AppearExample() {
             </Transition>
 
             <Transition
+              as="div"
               show={show}
               appear={false}
               unmount={false}
@@ -152,6 +156,7 @@ export default function AppearExample() {
             <span className="mb-2">Not on the initial render</span>
             <div className="grid max-w-6xl grid-cols-4 gap-4">
               <Transition
+                as="div"
                 show={show}
                 appear={true}
                 unmount={true}
@@ -184,6 +189,7 @@ export default function AppearExample() {
               </Transition>
 
               <Transition
+                as="div"
                 show={show}
                 appear={false}
                 unmount={true}
@@ -216,6 +222,7 @@ export default function AppearExample() {
               </Transition>
 
               <Transition
+                as="div"
                 show={show}
                 appear={true}
                 unmount={false}
@@ -248,6 +255,7 @@ export default function AppearExample() {
               </Transition>
 
               <Transition
+                as="div"
                 show={show}
                 appear={false}
                 unmount={false}

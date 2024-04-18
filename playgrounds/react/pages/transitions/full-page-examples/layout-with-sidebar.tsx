@@ -26,9 +26,10 @@ export default function App() {
 
       <div className="bg-cool-gray-100 flex h-screen overflow-hidden">
         {/* Off-canvas menu for mobile */}
-        <Transition show={mobileOpen} unmount={false} className="fixed inset-0 z-40 flex">
+        <Transition as="div" show={mobileOpen} unmount={false} className="fixed inset-0 z-40 flex">
           {/* Off-canvas menu overlay, show/hide based on off-canvas menu state. */}
           <Transition.Child
+            as="div"
             unmount={false}
             enter="transition-opacity ease-linear duration-300"
             enterFrom="opacity-0"
@@ -49,6 +50,7 @@ export default function App() {
 
           {/* Off-canvas menu, show/hide based on off-canvas menu state. */}
           <Transition.Child
+            as="div"
             unmount={false}
             enter="transition ease-in-out duration-300 transform"
             enterFrom="-translate-x-full"

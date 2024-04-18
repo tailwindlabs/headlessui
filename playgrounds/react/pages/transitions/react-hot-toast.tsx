@@ -7,6 +7,7 @@ const TailwindToaster = () => {
       {(t) => (
         <Transition
           appear
+          as="div"
           show={t.visible}
           className="flex transform rounded bg-white p-4 shadow-lg"
           enter="transition-all duration-500"

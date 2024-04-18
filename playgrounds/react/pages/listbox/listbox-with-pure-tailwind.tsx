@@ -1,5 +1,5 @@
 import { Listbox, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 let people = [
   'Wade Cooper',
@@ -60,7 +60,6 @@ export default function Home() {
               </span>
 
               <Transition
-                as={Fragment}
                 enter="transition duration-500 ease-out"
                 enterFrom="transform scale-95 opacity-0"
                 enterTo="transform scale-100 opacity-100"

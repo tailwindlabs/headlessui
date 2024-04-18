@@ -1,5 +1,4 @@
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
 import { Button } from '../../components/button'
 import { classNames } from '../../utils/class-names'
 
@@ -30,7 +29,6 @@ export default function Home() {
           </span>
 
           <Transition
-            as={Fragment}
             enter="transition duration-500 ease-out"
             enterFrom="transform scale-95 opacity-0"
             enterTo="transform scale-100 opacity-100"
