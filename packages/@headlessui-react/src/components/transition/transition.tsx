@@ -292,7 +292,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     ...rest
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
-  let transitionRef = useSyncRefs(container, ref)
+  let requiresRef = Boolean(enter || enterFrom || enterTo || leave || leaveFrom || leaveTo)
+  let transitionRef = useSyncRefs(...(requiresRef ? [container, ref] : ref === null ? [] : [ref]))
   let strategy = rest.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
@@ -342,10 +343,12 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let ready = useServerHandoffComplete()
 
   useIsoMorphicEffect(() => {
+    if (!requiresRef) return
+
     if (ready && state === TreeStates.Visible && container.current === null) {
       throw new Error('Did you forget to passthrough the `ref` to the actual DOM node?')
     }
-  }, [container, state, ready])
+  }, [container, state, ready, requiresRef])
 
   // Skipping initial transition
   let skip = initial && !appear
@@ -495,7 +498,17 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   // @ts-expect-error
   let { show, appear = false, unmount = true, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
-  let transitionRef = useSyncRefs(internalTransitionRef, ref)
+  let requiresRef = Boolean(
+    props.enter ||
+      props.enterFrom ||
+      props.enterTo ||
+      props.leave ||
+      props.leaveFrom ||
+      props.leaveTo
+  )
+  let transitionRef = useSyncRefs(
+    ...(requiresRef ? [internalTransitionRef, ref] : ref === null ? [] : [ref])
+  )
 
   // The TransitionChild will also call this hook, and we have to make sure that we are ready.
   useServerHandoffComplete()
