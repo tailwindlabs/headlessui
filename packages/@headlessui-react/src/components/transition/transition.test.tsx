@@ -128,7 +128,11 @@ describe('Setup API', () => {
         }
 
         expect(() => {
-          render(<Transition show={true}>{() => <Dummy />}</Transition>)
+          render(
+            <Transition show={true} enter="duration-200">
+              {() => <Dummy />}
+            </Transition>
+          )
         }).toThrowErrorMatchingSnapshot()
       })
     )
@@ -267,13 +271,39 @@ describe('Setup API', () => {
             <div className="My Page">
               <Transition show={true}>
                 <div>
-                  <Transition.Child>{() => <Dummy>Sidebar</Dummy>}</Transition.Child>
-                  <Transition.Child>{() => <Dummy>Content</Dummy>}</Transition.Child>
+                  <Transition.Child enter="duration-200">
+                    {() => <Dummy>Sidebar</Dummy>}
+                  </Transition.Child>
+                  <Transition.Child enter="duration-200">
+                    {() => <Dummy>Content</Dummy>}
+                  </Transition.Child>
                 </div>
               </Transition>
             </div>
           )
         }).toThrowErrorMatchingSnapshot()
+      })
+    )
+
+    it(
+      'should not error when the `Transition` component does not contain any props that need to be forwarded',
+      suppressConsoleLogs(() => {
+        expect.assertions(1)
+
+        expect(() => {
+          render(
+            <div className="My Page">
+              <Transition show={true}>
+                <Transition.Child>
+                  <div>Sidebar</div>
+                </Transition.Child>
+                <Transition.Child>
+                  <div>Content</div>
+                </Transition.Child>
+              </Transition>
+            </div>
+          )
+        }).not.toThrow()
       })
     )
 
@@ -289,7 +319,7 @@ describe('Setup API', () => {
         expect(() => {
           render(
             <div className="My Page">
-              <Transition show={true}>
+              <Transition show={true} enter="duration-200">
                 {() => (
                   <Dummy>
                     <Transition.Child>{() => <aside>Sidebar</aside>}</Transition.Child>
