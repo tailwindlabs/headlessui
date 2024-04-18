@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecate the `entered` prop on the `Transition` component ([#3089](https://github.com/tailwindlabs/headlessui/pull/3089))
 - Use native `useId` and `useSyncExternalStore` hooks ([#3092](https://github.com/tailwindlabs/headlessui/pull/3092))
 - Use `absolute` as the default Floating UI strategy ([#3097](https://github.com/tailwindlabs/headlessui/pull/3097))
+- Change default tags for `ListboxOptions`, `ListboxOption`, `ComboboxOptions`, `ComboboxOption` and `TabGroup` components ([#3109](https://github.com/tailwindlabs/headlessui/pull/3109))
 
 ### Added
 
