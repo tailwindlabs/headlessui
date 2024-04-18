@@ -292,7 +292,15 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     ...rest
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
-  let requiresRef = Boolean(enter || enterFrom || enterTo || leave || leaveFrom || leaveTo)
+  let requiresRef = Boolean(
+    enter ||
+      enterFrom ||
+      enterTo ||
+      leave ||
+      leaveFrom ||
+      leaveTo ||
+      (props.as ?? DEFAULT_TRANSITION_CHILD_TAG) !== Fragment
+  )
   let transitionRef = useSyncRefs(...(requiresRef ? [container, ref] : ref === null ? [] : [ref]))
   let strategy = rest.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
@@ -504,7 +512,8 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
       props.enterTo ||
       props.leave ||
       props.leaveFrom ||
-      props.leaveTo
+      props.leaveTo ||
+      (props.as ?? DEFAULT_TRANSITION_CHILD_TAG) !== Fragment
   )
   let transitionRef = useSyncRefs(
     ...(requiresRef ? [internalTransitionRef, ref] : ref === null ? [] : [ref])
