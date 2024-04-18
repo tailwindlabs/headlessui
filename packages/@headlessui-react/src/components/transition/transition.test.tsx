@@ -1,5 +1,5 @@
 import { act as _act, fireEvent, render } from '@testing-library/react'
-import React, { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { getByText } from '../../test-utils/accessibility-assertions'
 import { executeTimeline } from '../../test-utils/execute-timeline'
 import { click } from '../../test-utils/interactions'
@@ -22,7 +22,7 @@ function nextFrame() {
 it('should not steal the ref from the child', async () => {
   let fn = jest.fn()
   render(
-    <Transition show={true} as={Fragment}>
+    <Transition show={true}>
       <div ref={fn}>...</div>
     </Transition>
   )
@@ -38,11 +38,6 @@ it('should render without crashing', () => {
       <div className="hello">Children</div>
     </Transition>
   )
-})
-
-it('should be possible to render a Transition without children', () => {
-  render(<Transition show={true} className="transition" />)
-  expect(document.getElementsByClassName('transition')).not.toBeNull()
 })
 
 it(
@@ -62,16 +57,15 @@ it(
 
 describe('Setup API', () => {
   describe('shallow', () => {
-    it('should render a div and its children by default', () => {
-      let { container } = render(<Transition show={true}>Children</Transition>)
-
-      expect(container.firstChild).toMatchSnapshot()
-    })
-
     it('should passthrough all the props (that we do not use internally)', () => {
       let { container } = render(
+        /**
+         * Renders a Fragment by default and forwards props. But not possible to
+         * type in TypeScript land. This is also discouraged, but it works.
+         */
+        // @ts-expect-error
         <Transition show={true} id="root" className="text-blue-400">
-          Children
+          <div>Children</div>
         </Transition>
       )
 
@@ -99,7 +93,11 @@ describe('Setup API', () => {
     })
 
     it('should render nothing when the show prop is false', () => {
-      let { container } = render(<Transition show={false}>Children</Transition>)
+      let { container } = render(
+        <Transition show={false}>
+          <div>Children</div>
+        </Transition>
+      )
 
       expect(container.firstChild).toMatchSnapshot()
     })
@@ -115,11 +113,7 @@ describe('Setup API', () => {
     })
 
     it('should be possible to use a render prop', () => {
-      let { container } = render(
-        <Transition show={true} as={Fragment}>
-          {() => <span>Children</span>}
-        </Transition>
-      )
+      let { container } = render(<Transition show={true}>{() => <span>Children</span>}</Transition>)
 
       expect(container.firstChild).toMatchSnapshot()
     })
@@ -134,11 +128,7 @@ describe('Setup API', () => {
         }
 
         expect(() => {
-          render(
-            <Transition show={true} as={Fragment}>
-              {() => <Dummy />}
-            </Transition>
-          )
+          render(<Transition show={true}>{() => <Dummy />}</Transition>)
         }).toThrowErrorMatchingSnapshot()
       })
     )
@@ -153,7 +143,9 @@ describe('Setup API', () => {
         expect(() => {
           render(
             <div className="My Page">
-              <Transition.Child>Oops</Transition.Child>
+              <Transition.Child>
+                <div>Oops</div>
+              </Transition.Child>
             </div>
           )
         }).toThrowErrorMatchingSnapshot()
@@ -163,7 +155,9 @@ describe('Setup API', () => {
     it('should be possible to render a Transition.Child without children', () => {
       render(
         <Transition show={true}>
-          <Transition.Child className="transition" />
+          <Transition.Child>
+            <div className="transition" />
+          </Transition.Child>
         </Transition>
       )
       expect(document.getElementsByClassName('transition')).not.toBeNull()
@@ -172,7 +166,9 @@ describe('Setup API', () => {
     it('should be possible to use a Transition.Root and a Transition.Child', () => {
       render(
         <Transition.Root show={true}>
-          <Transition.Child className="transition" />
+          <Transition.Child>
+            <div className="transition" />
+          </Transition.Child>
         </Transition.Root>
       )
       expect(document.getElementsByClassName('transition')).not.toBeNull()
@@ -182,8 +178,14 @@ describe('Setup API', () => {
       let { container } = render(
         <div className="My Page">
           <Transition show={true}>
-            <Transition.Child>Sidebar</Transition.Child>
-            <Transition.Child>Content</Transition.Child>
+            <div>
+              <Transition.Child>
+                <div>Sidebar</div>
+              </Transition.Child>
+              <Transition.Child>
+                <div>Content</div>
+              </Transition.Child>
+            </div>
           </Transition>
         </div>
       )
@@ -195,8 +197,10 @@ describe('Setup API', () => {
       let { container } = render(
         <div className="My Page">
           <Transition show={true}>
-            <Transition.Child as="aside">Sidebar</Transition.Child>
-            <Transition.Child as="section">Content</Transition.Child>
+            <div>
+              <Transition.Child as="aside">Sidebar</Transition.Child>
+              <Transition.Child as="section">Content</Transition.Child>
+            </div>
           </Transition>
         </div>
       )
@@ -221,8 +225,10 @@ describe('Setup API', () => {
       let { container } = render(
         <div className="My Page">
           <Transition show={true}>
-            <Transition.Child as={Fragment}>{() => <aside>Sidebar</aside>}</Transition.Child>
-            <Transition.Child as={Fragment}>{() => <section>Content</section>}</Transition.Child>
+            <div>
+              <Transition.Child>{() => <aside>Sidebar</aside>}</Transition.Child>
+              <Transition.Child>{() => <section>Content</section>}</Transition.Child>
+            </div>
           </Transition>
         </div>
       )
@@ -233,13 +239,11 @@ describe('Setup API', () => {
     it('should be possible to use render props on the Transition and Transition.Child components', () => {
       let { container } = render(
         <div className="My Page">
-          <Transition show={true} as={Fragment}>
+          <Transition show={true}>
             {() => (
               <article>
-                <Transition.Child as={Fragment}>{() => <aside>Sidebar</aside>}</Transition.Child>
-                <Transition.Child as={Fragment}>
-                  {() => <section>Content</section>}
-                </Transition.Child>
+                <Transition.Child>{() => <aside>Sidebar</aside>}</Transition.Child>
+                <Transition.Child>{() => <section>Content</section>}</Transition.Child>
               </article>
             )}
           </Transition>
@@ -262,8 +266,10 @@ describe('Setup API', () => {
           render(
             <div className="My Page">
               <Transition show={true}>
-                <Transition.Child as={Fragment}>{() => <Dummy>Sidebar</Dummy>}</Transition.Child>
-                <Transition.Child as={Fragment}>{() => <Dummy>Content</Dummy>}</Transition.Child>
+                <div>
+                  <Transition.Child>{() => <Dummy>Sidebar</Dummy>}</Transition.Child>
+                  <Transition.Child>{() => <Dummy>Content</Dummy>}</Transition.Child>
+                </div>
               </Transition>
             </div>
           )
@@ -283,7 +289,7 @@ describe('Setup API', () => {
         expect(() => {
           render(
             <div className="My Page">
-              <Transition show={true} as={Fragment}>
+              <Transition show={true}>
                 {() => (
                   <Dummy>
                     <Transition.Child>{() => <aside>Sidebar</aside>}</Transition.Child>
@@ -362,7 +368,7 @@ describe('Setup API', () => {
           leaveFrom="leave-from"
           leaveTo="leave-to"
         >
-          Children
+          <div>Children</div>
         </Transition>
       )
 
@@ -387,7 +393,7 @@ describe('Setup API', () => {
             leaveFrom="leave-from"
             leaveTo="leave-to"
           >
-            Children
+            <div>Children</div>
           </Transition>
         )
       }
@@ -732,10 +738,10 @@ describe('Transitions', () => {
 
               <Transition show={show}>
                 <Transition.Child leave="leave-fast" leaveFrom="leave-from" leaveTo="leave-to">
-                  I am fast
+                  <div>I am fast</div>
                 </Transition.Child>
                 <Transition.Child leave="leave-slow" leaveFrom="leave-from" leaveTo="leave-to">
-                  I am slow
+                  <div>I am slow</div>
                 </Transition.Child>
               </Transition>
 
@@ -781,11 +787,11 @@ describe('Transitions', () => {
                 <Transition.Child leave="leave-fast" leaveFrom="leave-from" leaveTo="leave-to">
                   <span>I am fast</span>
                   <Transition show={show} leave="leave-slow">
-                    I am my own root component and I don't talk to the parent
+                    <div>I am my own root component and I don't talk to the parent</div>
                   </Transition>
                 </Transition.Child>
                 <Transition.Child leave="leave-slow" leaveFrom="leave-from" leaveTo="leave-to">
-                  I am slow
+                  <div>I am slow</div>
                 </Transition.Child>
               </Transition>
 
@@ -953,12 +959,22 @@ describe('Events', () => {
             <style>{`.child-2-2.leave { transition-duration: ${leaveDuration * 2.5}ms; }`}</style>
 
             <Transition show={show} {...getProps('root')}>
-              <Transition.Child {...getProps('child-1')}>Child 1.</Transition.Child>
-              <Transition.Child {...getProps('child-2')}>
-                Child 2.
-                <Transition.Child {...getProps('child-2-1')}>Child 2.1.</Transition.Child>
-                <Transition.Child {...getProps('child-2-2')}>Child 2.2.</Transition.Child>
-              </Transition.Child>
+              <div>
+                <Transition.Child {...getProps('child-1')}>
+                  <div>Child 1.</div>
+                </Transition.Child>
+                <Transition.Child {...getProps('child-2')}>
+                  <div>
+                    <div>Child 2.</div>
+                    <Transition.Child {...getProps('child-2-1')}>
+                      <div>Child 2.1.</div>
+                    </Transition.Child>
+                    <Transition.Child {...getProps('child-2-2')}>
+                      <div>Child 2.2.</div>
+                    </Transition.Child>
+                  </div>
+                </Transition.Child>
+              </div>
             </Transition>
 
             <button
@@ -1104,7 +1120,9 @@ describe('Events', () => {
                 leave="leave-1"
                 leaveFrom="leave-from"
                 leaveTo="leave-to"
-              />
+              >
+                <div />
+              </Transition.Child>
               <Transition.Child
                 enter="enter-1"
                 enterFrom="enter-from"

@@ -111,12 +111,6 @@ exports[`Setup API shallow should passthrough all the props (that we do not use 
 </a>
 `;
 
-exports[`Setup API shallow should render a div and its children by default 1`] = `
-<div>
-  Children
-</div>
-`;
-
 exports[`Setup API shallow should render another component if the \`as\` prop is used and its children by default 1`] = `
 <a>
   Children
