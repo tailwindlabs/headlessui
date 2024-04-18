@@ -977,7 +977,7 @@ describe('Composition', () => {
           <Transition>
             <Debug name="Transition" fn={orderFn} />
             <Popover.Panel>
-              <Transition.Child>
+              <Transition.Child as="div">
                 <Debug name="Transition.Child" fn={orderFn} />
               </Transition.Child>
             </Popover.Panel>
