@@ -3,7 +3,6 @@
 import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
 import React, {
-  Fragment,
   createContext,
   useContext,
   useMemo,
@@ -220,7 +219,7 @@ function stateReducer(state: StateDefinition, action: Actions) {
 
 // ---
 
-let DEFAULT_TABS_TAG = Fragment
+let DEFAULT_TABS_TAG = 'div' as const
 type TabsRenderPropArg = {
   selectedIndex: number
 }

@@ -1519,7 +1519,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
 // ---
 
-let DEFAULT_OPTIONS_TAG = 'ul' as const
+let DEFAULT_OPTIONS_TAG = 'div' as const
 type OptionsRenderPropArg = {
   open: boolean
   option: unknown
@@ -1630,7 +1630,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
 // ---
 
-let DEFAULT_OPTION_TAG = 'li' as const
+let DEFAULT_OPTION_TAG = 'div' as const
 type OptionRenderPropArg = {
   focus: boolean
   /** @deprecated use `focus` instead */
