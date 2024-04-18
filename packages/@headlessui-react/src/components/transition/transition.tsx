@@ -49,6 +49,44 @@ function splitClasses(classes: string = '') {
   return classes.split(/\s+/).filter((className) => className.length > 1)
 }
 
+/**
+ * Check if we should forward the ref to the child element or not. This is to
+ * prevent crashes when the `as` prop is a Fragment _and_ the component just acts
+ * as a state container (aka, there is no actual transition happening).
+ *
+ * E.g.:
+ *
+ * ```tsx
+ * <Transition show={true}>
+ *   <Transition.Child enter="duration-100"><div>Child 1</div></Transition.Child>
+ *   <Transition.Child enter="duration-200"><div>Child 2</div></Transition.Child>
+ * </Transition>
+ * ```
+ *
+ * In this scenario, the child components are transitioning, but the
+ * `Transition` parent, which is a `Fragment`, is not. So we should not forward
+ * the ref to the `Fragment`.
+ */
+function shouldForwardRef<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
+  props: TransitionRootProps<TTag>
+) {
+  return (
+    // If we have any of the enter/leave classes
+    Boolean(
+      props.enter ||
+        props.enterFrom ||
+        props.enterTo ||
+        props.leave ||
+        props.leaveFrom ||
+        props.leaveTo
+    ) ||
+    // If the `as` prop is not a Fragment
+    (props.as ?? DEFAULT_TRANSITION_CHILD_TAG) !== Fragment ||
+    // If we have a single child, then we can forward the ref directly
+    React.Children.count(props.children) === 1
+  )
+}
+
 interface TransitionContextValues {
   show: boolean
   appear: boolean
@@ -292,15 +330,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     ...rest
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
-  let requiresRef = Boolean(
-    enter ||
-      enterFrom ||
-      enterTo ||
-      leave ||
-      leaveFrom ||
-      leaveTo ||
-      (props.as ?? DEFAULT_TRANSITION_CHILD_TAG) !== Fragment
-  )
+  let requiresRef = shouldForwardRef(props)
+
   let transitionRef = useSyncRefs(...(requiresRef ? [container, ref] : ref === null ? [] : [ref]))
   let strategy = rest.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
@@ -506,15 +537,8 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   // @ts-expect-error
   let { show, appear = false, unmount = true, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
-  let requiresRef = Boolean(
-    props.enter ||
-      props.enterFrom ||
-      props.enterTo ||
-      props.leave ||
-      props.leaveFrom ||
-      props.leaveTo ||
-      (props.as ?? DEFAULT_TRANSITION_CHILD_TAG) !== Fragment
-  )
+  let requiresRef = shouldForwardRef(props)
+
   let transitionRef = useSyncRefs(
     ...(requiresRef ? [internalTransitionRef, ref] : ref === null ? [] : [ref])
   )
