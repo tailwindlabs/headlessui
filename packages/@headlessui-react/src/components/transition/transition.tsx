@@ -264,7 +264,7 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
 
 // ---
 
-let DEFAULT_TRANSITION_CHILD_TAG = 'div' as const
+let DEFAULT_TRANSITION_CHILD_TAG = Fragment
 type TransitionChildRenderPropArg = MutableRefObject<HTMLDivElement>
 let TransitionChildRenderFeatures = RenderFeatures.RenderStrategy
 
