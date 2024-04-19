@@ -139,8 +139,8 @@ export function useFloatingPanel(
   let context = useContext(FloatingContext)
 
   return useMemo(
-    () => [context.setFloating, context.styles] as const,
-    [context.setFloating, context.styles]
+    () => [context.setFloating, placement ? context.styles : {}] as const,
+    [context.setFloating, placement, context.styles]
   )
 }
 
@@ -343,7 +343,7 @@ export function FloatingProvider({
         value={{
           setFloating: setFloatingRef,
           setReference: refs.setReference,
-          styles: !isEnabled ? {} : floatingStyles,
+          styles: floatingStyles,
           getReferenceProps,
           getFloatingProps,
           slot: data,
