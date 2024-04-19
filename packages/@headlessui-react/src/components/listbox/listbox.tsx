@@ -966,7 +966,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     if (container === getOwnerDocument(container)?.activeElement) return
 
     container?.focus({ preventScroll: true })
-  }, [data.listboxState, data.optionsRef])
+  }, [data.listboxState, data.optionsRef, data.optionsRef.current])
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
     searchDisposables.dispose()
