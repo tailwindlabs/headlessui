@@ -160,6 +160,7 @@ function FullPageTransition() {
             <div className="relative h-96 overflow-hidden rounded-lg">
               {pages.map((page, i) => (
                 <Transition
+                  as="div"
                   appear={false}
                   key={page}
                   show={activePage === i}

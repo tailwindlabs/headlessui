@@ -41,6 +41,7 @@ export default function Home() {
       </div>
 
       <Transition
+        as="div"
         show={isOpen}
         className="fixed inset-0 z-10 overflow-y-auto"
         beforeEnter={() => {
@@ -78,6 +79,7 @@ export default function Home() {
           {/* This element is to trick the browser into centering the modal contents. */}
           <span className="hidden sm:inline-block sm:h-screen sm:align-middle"></span>&#8203;
           <Transition.Child
+            as="div"
             className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle"
             role="dialog"
             aria-modal="true"

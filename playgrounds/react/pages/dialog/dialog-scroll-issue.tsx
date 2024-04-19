@@ -1,13 +1,12 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 
 function MyDialog({ open, close }) {
   return (
     <>
-      <Transition show={open} as={Fragment}>
+      <Transition show={open}>
         <Dialog onClose={close} className="relative z-50">
           <Transition.Child
-            as={Fragment}
             enter="transition duration-500 ease-out"
             enterFrom="opacity-0"
             enterTo="opacity-100"

@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationIcon } from '@heroicons/react/outline'
-import { Fragment, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function Example() {
   const [open, setOpen] = useState(false)
@@ -18,10 +18,9 @@ export default function Example() {
           Open Dialog
         </button>
       </div>
-      <Transition.Root show={open} as={Fragment}>
+      <Transition.Root show={open}>
         <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
           <Transition.Child
-            as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
             enterTo="opacity-100"
@@ -35,7 +34,6 @@ export default function Example() {
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
-                as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 enterTo="opacity-100 translate-y-0 sm:scale-100"

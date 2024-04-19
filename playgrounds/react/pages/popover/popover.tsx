@@ -1,5 +1,5 @@
 import { Popover, Portal, Transition } from '@headlessui/react'
-import React, { Fragment, forwardRef } from 'react'
+import React, { forwardRef } from 'react'
 import { usePopper } from '../../utils/hooks/use-popper'
 
 let Button = forwardRef(
@@ -33,7 +33,6 @@ export default function Home() {
       <Popover.Group as="nav" aria-label="Mythical University" className="flex space-x-3">
         <Popover as="div" className="relative">
           <Transition
-            as={Fragment}
             enter="transition ease-out duration-300 transform"
             enterFrom="opacity-0"
             enterTo="opacity-100"

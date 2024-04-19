@@ -18,7 +18,7 @@ export default function Home() {
             </button>
           </span>
 
-          <Transition show={isOpen} unmount={false}>
+          <Transition as="div" show={isOpen} unmount={false}>
             <Box>
               <Box>
                 <Box>

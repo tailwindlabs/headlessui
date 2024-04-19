@@ -19,6 +19,7 @@ export default function Home() {
           </span>
 
           <Transition
+            as="div"
             show={isOpen}
             appear={false}
             beforeEnter={() => console.log('beforeEnter')}

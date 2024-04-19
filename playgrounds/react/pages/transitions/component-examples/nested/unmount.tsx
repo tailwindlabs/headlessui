@@ -18,7 +18,7 @@ export default function Home() {
             </button>
           </span>
 
-          <Transition show={isOpen} unmount={true}>
+          <Transition as="div" show={isOpen} unmount={true}>
             <Box>
               <Box>
                 <Box>
@@ -43,6 +43,7 @@ export default function Home() {
 function Box({ children }: { children?: ReactNode }) {
   return (
     <Transition.Child
+      as="div"
       unmount={true}
       enter="transition translate duration-300"
       enterFrom="transform -translate-x-full"

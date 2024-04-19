@@ -1,5 +1,5 @@
 import { Dialog, Menu, Portal, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import Flatpickr from 'react-flatpickr'
 import { Button } from '../../components/button'
 import { classNames } from '../../utils/class-names'
@@ -64,7 +64,6 @@ export default function Home() {
       <Transition
         data-debug="Dialog"
         show={isOpen}
-        as={Fragment}
         beforeEnter={() => console.log('[Transition] Before enter')}
         afterEnter={() => console.log('[Transition] After enter')}
         beforeLeave={() => console.log('[Transition] Before leave')}
@@ -79,7 +78,6 @@ export default function Home() {
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
               <Transition.Child
-                as={Fragment}
                 enter="ease-out duration-300"
                 enterFrom="opacity-0"
                 enterTo="opacity-75"
@@ -96,6 +94,7 @@ export default function Home() {
               </Transition.Child>
 
               <Transition.Child
+                as="div"
                 enter="ease-out transform duration-300"
                 enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 enterTo="opacity-100 translate-y-0 sm:scale-100"

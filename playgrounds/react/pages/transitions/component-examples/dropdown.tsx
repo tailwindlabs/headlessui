@@ -44,6 +44,7 @@ function Dropdown() {
       </div>
 
       <Transition
+        as="div"
         show={isOpen}
         enter="transition ease-out duration-75"
         enterFrom="transform opacity-0 scale-95"

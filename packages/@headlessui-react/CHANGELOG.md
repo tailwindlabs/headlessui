@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use native `useId` and `useSyncExternalStore` hooks ([#3092](https://github.com/tailwindlabs/headlessui/pull/3092))
 - Use `absolute` as the default Floating UI strategy ([#3097](https://github.com/tailwindlabs/headlessui/pull/3097))
 - Change default tags for `ListboxOptions`, `ListboxOption`, `ComboboxOptions`, `ComboboxOption` and `TabGroup` components ([#3109](https://github.com/tailwindlabs/headlessui/pull/3109))
+- Change default tag from `div` to `Fragment` on `Transition` components ([#3110](https://github.com/tailwindlabs/headlessui/pull/3110))
 
 ### Added
 
