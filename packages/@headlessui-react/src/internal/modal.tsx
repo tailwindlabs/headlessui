@@ -27,6 +27,7 @@ import {
   type RefProp,
 } from '../utils/render'
 import { ForcePortalRoot } from './portal-force-root'
+import { StackProvider } from './stack-context'
 
 function useScrollLock(
   ownerDocument: Document | null,
@@ -171,7 +172,7 @@ function ModalFn<TTag extends ElementType = typeof DEFAULT_MODAL_TAG>(
   }
 
   return (
-    <>
+    <StackProvider type="Modal" enabled={enabled} element={internalModalRef}>
       <ForcePortalRoot force={true}>
         <Portal>
           <FocusTrap
@@ -201,7 +202,7 @@ function ModalFn<TTag extends ElementType = typeof DEFAULT_MODAL_TAG>(
       <HoistFormFields>
         <MainTreeNode />
       </HoistFormFields>
-    </>
+    </StackProvider>
   )
 }
 
