@@ -639,7 +639,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     if (container === ownerDocument?.activeElement) return
 
     container.focus({ preventScroll: true })
-  }, [state.menuState, state.itemsRef, ownerDocument])
+  }, [state.menuState, state.itemsRef, ownerDocument, state.itemsRef.current])
 
   useTreeWalker({
     container: state.itemsRef.current,

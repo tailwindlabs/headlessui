@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure the `multiple` prop is typed correctly when passing explicit types to the `Combobox` component ([#3099](https://github.com/tailwindlabs/headlessui/pull/3099))
 - Omit `nullable` prop from `Combobox` component ([#3100](https://github.com/tailwindlabs/headlessui/pull/3100))
 - Ensure anchored components are properly stacked on top of `Dialog` components ([#3111](https://github.com/tailwindlabs/headlessui/pull/3111))
+- Move focus to `ListboxOptions` and `MenuItems` when they are rendered later ([#3112](https://github.com/tailwindlabs/headlessui/pull/3112))
 
 ### Changed
 
