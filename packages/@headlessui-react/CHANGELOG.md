@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Render hidden form input fields for `Checkbox`, `Switch` and `RadioGroup` components ([#3095](https://github.com/tailwindlabs/headlessui/pull/3095))
 - Ensure the `multiple` prop is typed correctly when passing explicit types to the `Combobox` component ([#3099](https://github.com/tailwindlabs/headlessui/pull/3099))
 - Omit `nullable` prop from `Combobox` component ([#3100](https://github.com/tailwindlabs/headlessui/pull/3100))
+- Ensure anchored components are properly stacked on top of `Dialog` components ([#3111](https://github.com/tailwindlabs/headlessui/pull/3111))
 
 ### Changed
 
