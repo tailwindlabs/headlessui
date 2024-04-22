@@ -42,6 +42,7 @@ import {
   useFloatingPanel,
   useFloatingPanelProps,
   useFloatingReference,
+  useResolvedAnchor,
   type AnchorProps,
 } from '../../internal/floating'
 import { Hidden, HiddenFeatures } from '../../internal/hidden'
@@ -798,7 +799,7 @@ export type PopoverPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TA
   PanelPropsWeControl,
   {
     focus?: boolean
-    anchor?: boolean | AnchorProps
+    anchor?: AnchorProps
     modal?: boolean
 
     // ItemsRenderFeatures
@@ -815,7 +816,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let {
     id = `headlessui-popover-panel-${internalId}`,
     focus = false,
-    anchor,
+    anchor: rawAnchor,
     modal,
     ...theirProps
   } = props
@@ -827,9 +828,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let afterPanelSentinelId = `headlessui-focus-sentinel-after-${internalId}`
 
   let internalPanelRef = useRef<HTMLDivElement | null>(null)
-  let [floatingRef, style] = useFloatingPanel(
-    anchor === false ? undefined : anchor === true ? {} : anchor
-  )
+  let anchor = useResolvedAnchor(rawAnchor)
+  let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
 
   // Always use `modal` when `anchor` is passed in

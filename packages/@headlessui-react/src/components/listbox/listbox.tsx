@@ -44,6 +44,7 @@ import {
   useFloatingPanelProps,
   useFloatingReference,
   useFloatingReferenceProps,
+  useResolvedAnchor,
   type AnchorPropsWithSelection,
 } from '../../internal/floating'
 import { FormFields } from '../../internal/form-fields'
@@ -868,7 +869,7 @@ export type ListboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTION
   OptionsRenderPropArg,
   OptionsPropsWeControl,
   {
-    anchor?: boolean | AnchorPropsWithSelection
+    anchor?: AnchorPropsWithSelection
     modal?: boolean
   } & PropsForFeatures<typeof OptionsRenderFeatures>
 >
@@ -878,7 +879,13 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-listbox-options-${internalId}`, anchor, modal, ...theirProps } = props
+  let {
+    id = `headlessui-listbox-options-${internalId}`,
+    anchor: rawAnchor,
+    modal,
+    ...theirProps
+  } = props
+  let anchor = useResolvedAnchor(rawAnchor)
 
   // Always use `modal` when `anchor` is passed in
   if (modal == null) {
@@ -903,8 +910,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let initialOption = useRef<number | null>(null)
 
   useEffect(() => {
-    if (typeof anchor === 'boolean') return
-
     if (!anchor?.to?.includes('selection')) return
 
     if (!visible) {
@@ -938,9 +943,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let panelEnabled = didButtonMove ? false : visible
 
   let anchorOptions = (() => {
-    if (anchor === false) return undefined
-    if (anchor === true) anchor = {}
-
     if (anchor == null) return undefined
     if (data.listRef.current.size <= 0) return { ...anchor, inner: undefined }
 

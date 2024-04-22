@@ -46,6 +46,7 @@ import {
   useFloatingPanel,
   useFloatingPanelProps,
   useFloatingReference,
+  useResolvedAnchor,
   type AnchorProps,
 } from '../../internal/floating'
 import { FormFields } from '../../internal/form-fields'
@@ -1534,7 +1535,7 @@ export type ComboboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTIO
   OptionsPropsWeControl,
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
-    anchor?: boolean | AnchorProps
+    anchor?: AnchorProps
   }
 >
 
@@ -1546,15 +1547,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let {
     id = `headlessui-combobox-options-${internalId}`,
     hold = false,
-    anchor,
+    anchor: rawAnchor,
     ...theirProps
   } = props
   let data = useData('Combobox.Options')
   let actions = useActions('Combobox.Options')
+  let anchor = useResolvedAnchor(rawAnchor)
 
-  let [floatingRef, style] = useFloatingPanel(
-    anchor === false ? undefined : anchor === true ? {} : anchor
-  )
+  let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
   let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
 

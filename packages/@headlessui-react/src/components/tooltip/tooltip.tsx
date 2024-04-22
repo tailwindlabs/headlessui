@@ -23,6 +23,7 @@ import {
   FloatingProvider,
   useFloatingPanel,
   useFloatingReference,
+  useResolvedAnchor,
   type AnchorProps,
 } from '../../internal/floating'
 import { State, useOpenClosed } from '../../internal/open-closed'
@@ -415,22 +416,14 @@ export type TooltipPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TA
   TTag,
   PanelRenderPropArg,
   PanelPropsWeControl,
-  { anchor?: boolean | AnchorProps } & PropsForFeatures<typeof PanelRenderFeatures>
+  { anchor?: AnchorProps } & PropsForFeatures<typeof PanelRenderFeatures>
 >
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: TooltipPanelProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let {
-    anchor = {
-      to: 'top',
-      padding: 8,
-      gap: 8,
-      offset: -4,
-    } as AnchorProps,
-    ...theirProps
-  } = props
+  let { anchor: rawAnchor, ...theirProps } = props
   let data = useData('TooltipPanel')
 
   let usesOpenClosedState = useOpenClosed()
@@ -443,9 +436,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   })()
 
   let internalPanelRef = useRef<HTMLElement | null>(null)
-  let [floatingRef, style] = useFloatingPanel(
-    visible && anchor !== false ? (anchor === true ? {} : anchor) : undefined
-  )
+  let anchor = useResolvedAnchor(rawAnchor ?? { to: 'top', padding: 8, gap: 8, offset: -4 })
+  let [floatingRef, style] = useFloatingPanel(visible ? anchor : undefined)
   let panelRef = useSyncRefs(internalPanelRef, ref, floatingRef)
 
   let ourProps = {

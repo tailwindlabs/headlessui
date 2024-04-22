@@ -41,6 +41,7 @@ import {
   useFloatingPanelProps,
   useFloatingReference,
   useFloatingReferenceProps,
+  useResolvedAnchor,
   type AnchorProps,
 } from '../../internal/floating'
 import { Modal, ModalFeatures, type ModalProps } from '../../internal/modal'
@@ -575,7 +576,7 @@ export type MenuItemsProps<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG> 
   ItemsRenderPropArg,
   ItemsPropsWeControl,
   {
-    anchor?: boolean | AnchorProps
+    anchor?: AnchorProps
     modal?: boolean
 
     // ItemsRenderFeatures
@@ -589,11 +590,15 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-menu-items-${internalId}`, anchor, modal, ...theirProps } = props
+  let {
+    id = `headlessui-menu-items-${internalId}`,
+    anchor: rawAnchor,
+    modal,
+    ...theirProps
+  } = props
+  let anchor = useResolvedAnchor(rawAnchor)
   let [state, dispatch] = useMenuContext('Menu.Items')
-  let [floatingRef, style] = useFloatingPanel(
-    anchor === false ? undefined : anchor === true ? {} : anchor
-  )
+  let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
   let itemsRef = useSyncRefs(state.itemsRef, ref, anchor ? floatingRef : null)
   let ownerDocument = useOwnerDocument(state.itemsRef)
