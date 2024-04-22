@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose the `--button-width` CSS variable on the `PopoverPanel` component ([#3058](https://github.com/tailwindlabs/headlessui/pull/3058))
 - Close the `Combobox`, `Dialog`, `Listbox`, `Menu` and `Popover` components when the trigger disappears ([#3075](https://github.com/tailwindlabs/headlessui/pull/3075))
 - Add new `CloseButton` component and `useClose` hook ([#3096](https://github.com/tailwindlabs/headlessui/pull/3096))
+- Allow passing a boolean to the `anchor` prop ([#3121](https://github.com/tailwindlabs/headlessui/pull/3121))
 
 ## [1.7.19] - 2024-04-15
 

@@ -41,6 +41,7 @@ import {
   useFloatingPanelProps,
   useFloatingReference,
   useFloatingReferenceProps,
+  useResolvedAnchor,
   type AnchorProps,
 } from '../../internal/floating'
 import { Modal, ModalFeatures, type ModalProps } from '../../internal/modal'
@@ -589,7 +590,13 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   ref: Ref<HTMLDivElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-menu-items-${internalId}`, anchor, modal, ...theirProps } = props
+  let {
+    id = `headlessui-menu-items-${internalId}`,
+    anchor: rawAnchor,
+    modal,
+    ...theirProps
+  } = props
+  let anchor = useResolvedAnchor(rawAnchor)
   let [state, dispatch] = useMenuContext('Menu.Items')
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
@@ -597,10 +604,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let ownerDocument = useOwnerDocument(state.itemsRef)
 
   // Always use `modal` when `anchor` is passed in
-  if (anchor != null && modal == null) {
-    modal = true
-  } else if (modal == null) {
-    modal = false
+  if (modal == null) {
+    modal = Boolean(anchor)
   }
 
   let searchDisposables = useDisposables()

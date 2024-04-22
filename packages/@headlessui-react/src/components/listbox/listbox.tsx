@@ -44,6 +44,7 @@ import {
   useFloatingPanelProps,
   useFloatingReference,
   useFloatingReferenceProps,
+  useResolvedAnchor,
   type AnchorPropsWithSelection,
 } from '../../internal/floating'
 import { FormFields } from '../../internal/form-fields'
@@ -878,13 +879,17 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-listbox-options-${internalId}`, anchor, modal, ...theirProps } = props
+  let {
+    id = `headlessui-listbox-options-${internalId}`,
+    anchor: rawAnchor,
+    modal,
+    ...theirProps
+  } = props
+  let anchor = useResolvedAnchor(rawAnchor)
 
   // Always use `modal` when `anchor` is passed in
-  if (anchor != null && modal == null) {
-    modal = true
-  } else if (modal == null) {
-    modal = false
+  if (modal == null) {
+    modal = Boolean(anchor)
   }
 
   let data = useData('Listbox.Options')
