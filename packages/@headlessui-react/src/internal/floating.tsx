@@ -37,25 +37,29 @@ type BaseAnchorProps = {
   padding: number | string // For `var()` support
 }
 
-export type AnchorProps = Partial<
-  BaseAnchorProps & {
-    /**
-     * The `to` value defines which side of the trigger the panel should be placed on and its
-     * alignment.
-     */
-    to: `${Placement}` | `${Placement} ${Align}`
-  }
->
+export type AnchorProps =
+  | boolean // Enable with defaults, or disable entirely
+  | Partial<
+      BaseAnchorProps & {
+        /**
+         * The `to` value defines which side of the trigger the panel should be placed on and its
+         * alignment.
+         */
+        to: `${Placement}` | `${Placement} ${Align}`
+      }
+    >
 
-export type AnchorPropsWithSelection = Partial<
-  BaseAnchorProps & {
-    /**
-     * The `to` value defines which side of the trigger the panel should be placed on and its
-     * alignment.
-     */
-    to: `${Placement | 'selection'}` | `${Placement | 'selection'} ${Align}`
-  }
->
+export type AnchorPropsWithSelection =
+  | boolean // Enable with defaults, or disable entirely
+  | Partial<
+      BaseAnchorProps & {
+        /**
+         * The `to` value defines which side of the trigger the panel should be placed on and its
+         * alignment.
+         */
+        to: `${Placement | 'selection'}` | `${Placement | 'selection'} ${Align}`
+      }
+    >
 
 export type InternalFloatingPanelProps = Partial<{
   inner: {
@@ -82,10 +86,20 @@ let FloatingContext = createContext<{
   slot: {},
 })
 FloatingContext.displayName = 'FloatingContext'
-let PlacementContext = createContext<((value: AnchorPropsWithSelection | null) => void) | null>(
-  null
-)
+let PlacementContext = createContext<
+  ((value: Exclude<AnchorPropsWithSelection, boolean> | null) => void) | null
+>(null)
 PlacementContext.displayName = 'PlacementContext'
+
+export function useResolvedAnchor<T extends AnchorProps | AnchorPropsWithSelection>(
+  anchor?: T
+): Exclude<T, boolean> | null {
+  return useMemo(() => {
+    if (anchor === true) return {} as Exclude<T, boolean> // Enable with defaults
+    if (!anchor) return null // Disable entirely
+    return anchor as Exclude<T, boolean> // User-provided value
+  }, [anchor])
+}
 
 export function useFloatingReference() {
   return useContext(FloatingContext).setReference
@@ -108,8 +122,11 @@ export function useFloatingPanelProps() {
 }
 
 export function useFloatingPanel(
-  placement?: AnchorPropsWithSelection & InternalFloatingPanelProps
+  placement: (AnchorPropsWithSelection & InternalFloatingPanelProps) | null = null
 ) {
+  if (placement === true) placement = {} // Enable with defaults
+  if (placement === false) placement = null // Disable entirely
+
   let updatePlacementConfig = useContext(PlacementContext)
   let stablePlacement = useMemo(
     () => placement,
@@ -372,7 +389,7 @@ function useFixScrollingPixel(element: HTMLElement | null) {
 }
 
 function useResolvedConfig(
-  config: (AnchorPropsWithSelection & InternalFloatingPanelProps) | null,
+  config: (Exclude<AnchorPropsWithSelection, boolean> & InternalFloatingPanelProps) | null,
   element?: HTMLElement | null
 ) {
   let gap = useResolvePxValue(config?.gap, element)
