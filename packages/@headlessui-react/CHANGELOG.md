@@ -34,11 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `absolute` as the default Floating UI strategy ([#3097](https://github.com/tailwindlabs/headlessui/pull/3097))
 - Change default tags for `ListboxOptions`, `ListboxOption`, `ComboboxOptions`, `ComboboxOption` and `TabGroup` components ([#3109](https://github.com/tailwindlabs/headlessui/pull/3109))
 - Change default tag from `div` to `Fragment` on `Transition` components ([#3110](https://github.com/tailwindlabs/headlessui/pull/3110))
-- Remove the `anchor.strategy` option ([#3120](https://github.com/tailwindlabs/headlessui/pull/3120))
 
 ### Added
 
-- Accept optional `strategy` for the `anchor` prop ([#3034](https://github.com/tailwindlabs/headlessui/pull/3034))
 - Expose `--input-width` and `--button-width` CSS variables on the `ComboboxOptions` component ([#3057](https://github.com/tailwindlabs/headlessui/pull/3057))
 - Expose the `--button-width` CSS variable on the `PopoverPanel` component ([#3058](https://github.com/tailwindlabs/headlessui/pull/3058))
 - Close the `Combobox`, `Dialog`, `Listbox`, `Menu` and `Popover` components when the trigger disappears ([#3075](https://github.com/tailwindlabs/headlessui/pull/3075))
