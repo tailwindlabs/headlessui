@@ -415,7 +415,7 @@ export type TooltipPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TA
   TTag,
   PanelRenderPropArg,
   PanelPropsWeControl,
-  { anchor?: AnchorProps } & PropsForFeatures<typeof PanelRenderFeatures>
+  { anchor?: boolean | AnchorProps } & PropsForFeatures<typeof PanelRenderFeatures>
 >
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
@@ -443,7 +443,9 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   })()
 
   let internalPanelRef = useRef<HTMLElement | null>(null)
-  let [floatingRef, style] = useFloatingPanel(visible ? anchor : undefined)
+  let [floatingRef, style] = useFloatingPanel(
+    visible && anchor !== false ? (anchor === true ? {} : anchor) : undefined
+  )
   let panelRef = useSyncRefs(internalPanelRef, ref, floatingRef)
 
   let ourProps = {

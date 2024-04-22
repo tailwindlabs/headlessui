@@ -575,7 +575,7 @@ export type MenuItemsProps<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG> 
   ItemsRenderPropArg,
   ItemsPropsWeControl,
   {
-    anchor?: AnchorProps
+    anchor?: boolean | AnchorProps
     modal?: boolean
 
     // ItemsRenderFeatures
@@ -591,16 +591,16 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let internalId = useId()
   let { id = `headlessui-menu-items-${internalId}`, anchor, modal, ...theirProps } = props
   let [state, dispatch] = useMenuContext('Menu.Items')
-  let [floatingRef, style] = useFloatingPanel(anchor)
+  let [floatingRef, style] = useFloatingPanel(
+    anchor === false ? undefined : anchor === true ? {} : anchor
+  )
   let getFloatingPanelProps = useFloatingPanelProps()
   let itemsRef = useSyncRefs(state.itemsRef, ref, anchor ? floatingRef : null)
   let ownerDocument = useOwnerDocument(state.itemsRef)
 
   // Always use `modal` when `anchor` is passed in
-  if (anchor != null && modal == null) {
-    modal = true
-  } else if (modal == null) {
-    modal = false
+  if (modal == null) {
+    modal = Boolean(anchor)
   }
 
   let searchDisposables = useDisposables()

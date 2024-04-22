@@ -1534,7 +1534,7 @@ export type ComboboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTIO
   OptionsPropsWeControl,
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
-    anchor?: AnchorProps
+    anchor?: boolean | AnchorProps
   }
 >
 
@@ -1552,7 +1552,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let data = useData('Combobox.Options')
   let actions = useActions('Combobox.Options')
 
-  let [floatingRef, style] = useFloatingPanel(anchor)
+  let [floatingRef, style] = useFloatingPanel(
+    anchor === false ? undefined : anchor === true ? {} : anchor
+  )
   let getFloatingPanelProps = useFloatingPanelProps()
   let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
 

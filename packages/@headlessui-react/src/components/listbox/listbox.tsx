@@ -868,7 +868,7 @@ export type ListboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTION
   OptionsRenderPropArg,
   OptionsPropsWeControl,
   {
-    anchor?: AnchorPropsWithSelection
+    anchor?: boolean | AnchorPropsWithSelection
     modal?: boolean
   } & PropsForFeatures<typeof OptionsRenderFeatures>
 >
@@ -881,10 +881,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let { id = `headlessui-listbox-options-${internalId}`, anchor, modal, ...theirProps } = props
 
   // Always use `modal` when `anchor` is passed in
-  if (anchor != null && modal == null) {
-    modal = true
-  } else if (modal == null) {
-    modal = false
+  if (modal == null) {
+    modal = Boolean(anchor)
   }
 
   let data = useData('Listbox.Options')
@@ -905,6 +903,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let initialOption = useRef<number | null>(null)
 
   useEffect(() => {
+    if (typeof anchor === 'boolean') return
+
     if (!anchor?.to?.includes('selection')) return
 
     if (!visible) {
@@ -938,6 +938,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let panelEnabled = didButtonMove ? false : visible
 
   let anchorOptions = (() => {
+    if (anchor === false) return undefined
+    if (anchor === true) anchor = {}
+
     if (anchor == null) return undefined
     if (data.listRef.current.size <= 0) return { ...anchor, inner: undefined }
 
