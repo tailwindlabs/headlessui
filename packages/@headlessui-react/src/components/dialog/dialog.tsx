@@ -18,7 +18,6 @@ import React, {
   type Ref,
   type RefObject,
 } from 'react'
-import { useDocumentOverflowLockedEffect } from '../../hooks/document-overflow/use-document-overflow'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
@@ -28,6 +27,7 @@ import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useRootContainers } from '../../hooks/use-root-containers'
+import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { CloseProvider } from '../../internal/close-provider'
@@ -104,16 +104,6 @@ function useDialogContext(component: string) {
     throw err
   }
   return context
-}
-
-function useScrollLock(
-  ownerDocument: Document | null,
-  enabled: boolean,
-  resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
-) {
-  useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta) => ({
-    containers: [...(meta.containers ?? []), resolveAllowedContainers],
-  }))
 }
 
 function stateReducer(state: StateDefinition, action: Actions) {

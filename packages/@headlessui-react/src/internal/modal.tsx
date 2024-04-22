@@ -10,11 +10,11 @@ import React, {
 } from 'react'
 import { FocusTrap, FocusTrapFeatures } from '../components/focus-trap/focus-trap'
 import { Portal, useNestedPortals } from '../components/portal/portal'
-import { useDocumentOverflowLockedEffect } from '../hooks/document-overflow/use-document-overflow'
 import { useId } from '../hooks/use-id'
 import { useInert } from '../hooks/use-inert'
 import { useOwnerDocument } from '../hooks/use-owner'
 import { useRootContainers } from '../hooks/use-root-containers'
+import { useScrollLock } from '../hooks/use-scroll-lock'
 import { useSyncRefs } from '../hooks/use-sync-refs'
 import { HoistFormFields } from '../internal/form-fields'
 import type { Props } from '../types'
@@ -28,16 +28,6 @@ import {
 } from '../utils/render'
 import { ForcePortalRoot } from './portal-force-root'
 import { StackProvider } from './stack-context'
-
-function useScrollLock(
-  ownerDocument: Document | null,
-  enabled: boolean,
-  resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
-) {
-  useDocumentOverflowLockedEffect(ownerDocument, enabled, (meta) => ({
-    containers: [...(meta.containers ?? []), resolveAllowedContainers],
-  }))
-}
 
 export enum ModalFeatures {
   /** No modal features */
