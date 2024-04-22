@@ -22,11 +22,6 @@ type Placement = 'top' | 'right' | 'bottom' | 'left'
 
 type BaseAnchorProps = {
   /**
-   * The strategy to use when positioning the panel. Defaults to `absolute`.
-   */
-  strategy: 'absolute' | 'fixed'
-
-  /**
    * The `gap` is the space between the trigger and the panel.
    */
   gap: number | string // For `var()` support
@@ -171,7 +166,6 @@ export function FloatingProvider({
     offset = 0,
     padding = 0,
     inner,
-    strategy = 'absolute',
   } = useResolvedConfig(config, floatingEl)
   let [to, align = 'center'] = placement.split(' ') as [Placement | 'selection', Align | 'center']
 
@@ -195,7 +189,7 @@ export function FloatingProvider({
 
     // This component will be used in combination with a `Portal`, which means the floating
     // element will be rendered outside of the current DOM tree.
-    strategy,
+    strategy: 'absolute',
 
     // We use the panel in a `Dialog` which is making the page inert, therefore no re-positioning is
     // needed when scrolling changes.
