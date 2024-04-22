@@ -823,7 +823,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       'aria-controls': data.optionsRef.current?.id,
       'aria-expanded': data.listboxState === ListboxStates.Open,
       'aria-labelledby': labelledBy,
-      'aria-describedby': describedBy,
+      'aria-describedby': describedBy ?? theirProps['aria-describedby'],
       disabled: disabled || undefined,
       autoFocus,
       onKeyDown: handleKeyDown,
