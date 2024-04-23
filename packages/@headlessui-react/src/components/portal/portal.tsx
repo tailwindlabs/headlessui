@@ -151,12 +151,14 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
   props: PortalProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
+  let portalRef = useSyncRefs(ref)
+
   let { enabled = true, ...theirProps } = props
   return enabled ? (
-    <InternalPortalFn {...theirProps} ref={ref} />
+    <InternalPortalFn {...theirProps} ref={portalRef} />
   ) : (
     render({
-      ourProps: { ref },
+      ourProps: { ref: portalRef },
       theirProps,
       slot: {},
       defaultTag: DEFAULT_PORTAL_TAG,
