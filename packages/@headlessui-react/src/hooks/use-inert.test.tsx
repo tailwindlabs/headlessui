@@ -2,7 +2,7 @@ import { render } from '@testing-library/react'
 import React, { useRef, useState, type ReactNode } from 'react'
 import { assertInert, assertNotInert, getByText } from '../test-utils/accessibility-assertions'
 import { click } from '../test-utils/interactions'
-import { useInert } from './use-inert'
+import { useInert, useInertOthers } from './use-inert'
 
 beforeEach(() => {
   jest.restoreAllMocks()
@@ -138,4 +138,58 @@ it('should mark the element as not inert anymore, once all references are gone',
 
   // Parent should not be inert because both A and B are disabled
   assertNotInert(document.getElementById('parent'))
+})
+
+describe('use inert others', () => {
+  it('should be possible to mark everything but allowed containers as inert', async () => {
+    function Example({ children }: { children: ReactNode }) {
+      let [enabled, setEnabled] = useState(false)
+      useInertOthers(
+        () => [document.getElementById('a-a-b')!, document.getElementById('a-a-c')!],
+        enabled
+      )
+
+      return (
+        <div>
+          {children}
+          <button onClick={() => setEnabled((v) => !v)}>toggle</button>
+        </div>
+      )
+    }
+
+    render(
+      <Example>
+        <div id="a">
+          <div id="a-a">
+            <div id="a-a-a"></div>
+            <div id="a-a-b"></div>
+            <div id="a-a-c"></div>
+          </div>
+          <div id="a-b"></div>
+          <div id="a-c"></div>
+        </div>
+      </Example>,
+      { container: document.body }
+    )
+
+    let a = document.getElementById('a')!
+    let aa = document.getElementById('a-a')!
+    let aaa = document.getElementById('a-a-a')!
+    let aab = document.getElementById('a-a-b')!
+    let aac = document.getElementById('a-a-c')!
+    let ab = document.getElementById('a-b')!
+    let ac = document.getElementById('a-c')!
+
+    // Nothing should be inert
+    for (let el of [a, aa, aaa, aab, aac, ab, ac]) assertNotInert(el)
+
+    // Toggle inert state
+    await click(getByText('toggle'))
+
+    // Every sibling of `a-a-b` and `a-a-c` should be inert, and all the
+    // siblings of the parents of `a-a-b` and `a-a-c` should be inert as well.
+    // The path to the body should not be marked as inert.
+    for (let el of [a, aa, aab, aac]) assertNotInert(el)
+    for (let el of [aaa, ab, ac]) assertInert(el)
+  })
 })
