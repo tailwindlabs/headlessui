@@ -1,4 +1,6 @@
-import type { MutableRefObject } from 'react'
+import { type MutableRefObject } from 'react'
+import { disposables } from '../utils/disposables'
+import { getOwnerDocument } from '../utils/owner'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 let originals = new Map<HTMLElement, { 'aria-hidden': string | null; inert: boolean }>()
@@ -58,4 +60,69 @@ export function useInert<TElement extends HTMLElement>(
 
     return markInert(element)
   }, [node, enabled])
+}
+
+/**
+ * Mark all elements on the page as inert, except for the ones that are allowed.
+ *
+ * We move up the tree from the allowed elements, and mark all their siblings as
+ * inert. If any of the children happens to be a parent of one of the elements,
+ * then that child will not be marked as inert.
+ *
+ * E.g.:
+ *
+ * ```html
+ * <body>                      <!-- Stop at body -->
+ *   <header></header>         <!-- Inert, sibling of parent -->
+ *   <main>                    <!-- Not inert, parent of allowed element -->
+ *     <div>Sidebar</div>      <!-- Inert, sibling of parent -->
+ *     <div>                   <!-- Not inert, parent of allowed element -->
+ *       <listbox>             <!-- Not inert, parent of allowed element -->
+ *         <button></button>   <!-- Not inert, allowed element -->
+ *         <options></options> <!-- Not inert, allowed element -->
+ *       </listbox>
+ *     </div>
+ *   </main>
+ *   <footer></footer>         <!-- Inert, sibling of parent -->
+ * </body>
+ * ```
+ */
+export function useInertOthers(
+  resolveAllowedContainers: () => (HTMLElement | null)[],
+  enabled = true
+) {
+  useIsoMorphicEffect(() => {
+    if (!enabled) return
+
+    let d = disposables()
+    let elements = resolveAllowedContainers()
+
+    for (let element of elements) {
+      if (!element) continue
+
+      let ownerDocument = getOwnerDocument(element)
+      if (!ownerDocument) continue
+
+      let parent = element.parentElement
+      while (parent) {
+        // Mark all siblings as inert
+        for (let node of parent.childNodes) {
+          // If the node contains any of the elements we should not mark it as inert
+          // because it would make the elements unreachable.
+          if (elements.some((el) => node.contains(el))) continue
+
+          // Mark the node as inert
+          d.add(markInert(node as HTMLElement))
+        }
+
+        // Stop if we reach the body
+        if (parent === ownerDocument.body) break
+
+        // Move up the tree
+        parent = parent.parentElement
+      }
+    }
+
+    return d.dispose
+  }, [enabled, resolveAllowedContainers])
 }
