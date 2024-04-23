@@ -588,6 +588,8 @@ export type ComboboxProps<
       disabled?: (value: NoInfer<TValue>) => boolean
     } | null
 
+    onClose?(): void
+
     __demoMode?: boolean
   }
 >
@@ -605,6 +607,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     name,
     by,
     disabled = providedDisabled || false,
+    onClose,
     __demoMode = false,
     multiple = false,
     immediate = false,
@@ -771,6 +774,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let closeCombobox = useEvent(() => {
     dispatch({ type: ActionTypes.CloseCombobox })
     defaultToFirstOption.current = false
+    onClose?.()
   })
 
   let goToOption = useEvent((focus, idx, trigger) => {
