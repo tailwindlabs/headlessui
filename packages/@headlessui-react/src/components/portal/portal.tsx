@@ -33,7 +33,7 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 
   let [target, setTarget] = useState(() => {
     // Group context is used, but still null
-    if (!forceInRoot && groupTarget !== null) return null
+    if (!forceInRoot && groupTarget !== null) return groupTarget.current ?? null
 
     // No group context is used, let's create a default portal root
     if (env.isServer) return null
