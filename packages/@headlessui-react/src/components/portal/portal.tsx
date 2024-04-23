@@ -74,13 +74,15 @@ type PortalPropsWeControl = never
 export type PortalProps<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG> = Props<
   TTag,
   PortalRenderPropArg,
-  PortalPropsWeControl
+  PortalPropsWeControl,
+  {
+    enabled?: boolean
+  }
 >
 
-function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
-  props: PortalProps<TTag>,
-  ref: Ref<HTMLElement>
-) {
+let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
+  TTag extends ElementType = typeof DEFAULT_PORTAL_TAG,
+>(props: PortalProps<TTag>, ref: Ref<HTMLElement>) {
   let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
@@ -143,6 +145,24 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
         }),
         element
       )
+})
+
+function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
+  props: PortalProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
+  let { enabled = true, ...theirProps } = props
+  return enabled ? (
+    <InternalPortalFn {...theirProps} ref={ref} />
+  ) : (
+    render({
+      ourProps: { ref },
+      theirProps,
+      slot: {},
+      defaultTag: DEFAULT_PORTAL_TAG,
+      name: 'Portal',
+    })
+  )
 }
 
 // ---
