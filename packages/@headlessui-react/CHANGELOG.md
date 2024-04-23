@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure anchored components are properly stacked on top of `Dialog` components ([#3111](https://github.com/tailwindlabs/headlessui/pull/3111))
 - Move focus to `ListboxOptions` and `MenuItems` when they are rendered later ([#3112](https://github.com/tailwindlabs/headlessui/pull/3112))
 - Ensure anchored components are always rendered in a stacking context ([#3115](https://github.com/tailwindlabs/headlessui/pull/3115))
+- Add optional `onClose` callback to `Combobox` component ([#3122](https://github.com/tailwindlabs/headlessui/pull/3122))
 
 ### Changed
 
