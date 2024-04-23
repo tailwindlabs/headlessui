@@ -29,6 +29,7 @@ import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
 import { useFrameDebounce } from '../../hooks/use-frame-debounce'
 import { useId } from '../../hooks/use-id'
+import { useInertOthers } from '../../hooks/use-inert'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
@@ -36,6 +37,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useRefocusableInput } from '../../hooks/use-refocusable-input'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
@@ -73,6 +75,7 @@ import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
 import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
 import { MouseButton } from '../mouse'
+import { Portal } from '../portal/portal'
 
 enum ComboboxState {
   Open,
@@ -1540,6 +1543,8 @@ export type ComboboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTIO
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
     anchor?: AnchorProps
+    portal?: boolean
+    modal?: boolean
   }
 >
 
@@ -1552,6 +1557,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     id = `headlessui-combobox-options-${internalId}`,
     hold = false,
     anchor: rawAnchor,
+    portal = false,
+    modal = true,
     ...theirProps
   } = props
   let data = useData('Combobox.Options')
@@ -1561,6 +1568,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
   let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
+  let ownerDocument = useOwnerDocument(data.optionsRef)
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -1573,6 +1581,15 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   // Ensure we close the combobox as soon as the input becomes hidden
   useOnDisappear(data.inputRef, actions.closeCombobox, visible)
+
+  // Enable scroll locking when the combobox is visible, and `modal` is enabled
+  useScrollLock(ownerDocument, modal && data.comboboxState === ComboboxState.Open)
+
+  // Mark other elements as inert when the combobox is visible, and `modal` is enabled
+  useInertOthers(
+    useEvent(() => [data.inputRef.current, data.buttonRef.current, data.optionsRef.current]),
+    modal && data.comboboxState === ComboboxState.Open
+  )
 
   useIsoMorphicEffect(() => {
     data.optionsPropsRef.current.static = props.static ?? false
@@ -1623,15 +1640,19 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     })
   }
 
-  return render({
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_OPTIONS_TAG,
-    features: OptionsRenderFeatures,
-    visible,
-    name: 'Combobox.Options',
-  })
+  return (
+    <Portal enabled={visible && portal}>
+      {render({
+        ourProps,
+        theirProps,
+        slot,
+        defaultTag: DEFAULT_OPTIONS_TAG,
+        features: OptionsRenderFeatures,
+        visible,
+        name: 'Combobox.Options',
+      })}
+    </Portal>
+  )
 }
 
 // ---
