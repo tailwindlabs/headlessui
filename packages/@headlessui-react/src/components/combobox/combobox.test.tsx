@@ -542,6 +542,7 @@ describe('Rendering', () => {
     it(
       'should close the Combobox when the input is blurred',
       suppressConsoleLogs(async () => {
+        let closeHandler = jest.fn()
         let data = [
           { id: 1, name: 'alice', label: 'Alice' },
           { id: 2, name: 'bob', label: 'Bob' },
@@ -549,7 +550,7 @@ describe('Rendering', () => {
         ]
 
         render(
-          <Combobox<(typeof data)[number]> name="assignee" by="id">
+          <Combobox<(typeof data)[number]> name="assignee" by="id" onClose={closeHandler}>
             <Combobox.Input onChange={NOOP} />
             <Combobox.Button />
             <Combobox.Options>
@@ -569,7 +570,9 @@ describe('Rendering', () => {
         assertComboboxList({ state: ComboboxState.Visible })
 
         // Close the combobox
+        expect(closeHandler).toHaveBeenCalledTimes(0)
         await blur(getComboboxInput())
+        expect(closeHandler).toHaveBeenCalledTimes(1)
 
         // Verify it is closed
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -2825,6 +2828,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
           'should be possible to close the combobox with Enter and choose the active combobox option',
           suppressConsoleLogs(async () => {
             let handleChange = jest.fn()
+            let closeHandler = jest.fn()
 
             function Example() {
               let [value, setValue] = useState<string | undefined>(undefined)
@@ -2833,6 +2837,7 @@ describe.each([{ virtual: true }, { virtual: false }])(
                 <MyCombobox
                   comboboxProps={{
                     value,
+                    onClose: closeHandler,
                     onChange(value: string | undefined) {
                       setValue(value)
                       handleChange(value)
@@ -2861,7 +2866,9 @@ describe.each([{ virtual: true }, { virtual: false }])(
             await mouseMove(options[0])
 
             // Choose option, and close combobox
+            expect(closeHandler).toHaveBeenCalledTimes(0)
             await press(Keys.Enter)
+            expect(closeHandler).toHaveBeenCalledTimes(1)
 
             // Verify it is closed
             assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
@@ -4883,7 +4890,8 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
   it(
     'should be possible to click outside of the combobox which should close the combobox (even if we press the combobox button)',
     suppressConsoleLogs(async () => {
-      render(<MyCombobox />)
+      let closeHandler = jest.fn()
+      render(<MyCombobox comboboxProps={{ onClose: closeHandler }} />)
 
       // Open combobox
       await click(getComboboxButton())
@@ -4891,7 +4899,9 @@ describe.each([{ virtual: true }, { virtual: false }])('Mouse interactions %s', 
       assertActiveElement(getComboboxInput())
 
       // Click the combobox button again
+      expect(closeHandler).toHaveBeenCalledTimes(0)
       await click(getComboboxButton())
+      expect(closeHandler).toHaveBeenCalledTimes(1)
 
       // Should be closed now
       assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
