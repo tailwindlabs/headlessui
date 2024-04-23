@@ -26,11 +26,13 @@ import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
+import { useInertOthers } from '../../hooks/use-inert'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
@@ -44,7 +46,6 @@ import {
   useResolvedAnchor,
   type AnchorProps,
 } from '../../internal/floating'
-import { Modal, ModalFeatures, type ModalProps } from '../../internal/modal'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -577,6 +578,7 @@ export type MenuItemsProps<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG> 
   ItemsPropsWeControl,
   {
     anchor?: AnchorProps
+    portal?: boolean
     modal?: boolean
 
     // ItemsRenderFeatures
@@ -593,7 +595,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let {
     id = `headlessui-menu-items-${internalId}`,
     anchor: rawAnchor,
-    modal,
+    portal = false,
+    modal = true,
     ...theirProps
   } = props
   let anchor = useResolvedAnchor(rawAnchor)
@@ -603,9 +606,9 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let itemsRef = useSyncRefs(state.itemsRef, ref, anchor ? floatingRef : null)
   let ownerDocument = useOwnerDocument(state.itemsRef)
 
-  // Always use `modal` when `anchor` is passed in
-  if (modal == null) {
-    modal = Boolean(anchor)
+  // Always enable `portal` functionality, when `anchor` is enabled
+  if (anchor) {
+    portal = true
   }
 
   let searchDisposables = useDisposables()
@@ -621,6 +624,15 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
 
   // Ensure we close the menu as soon as the button becomes hidden
   useOnDisappear(state.buttonRef, () => dispatch({ type: ActionTypes.CloseMenu }), visible)
+
+  // Enable scroll locking when the menu is visible, and `modal` is enabled
+  useScrollLock(ownerDocument, modal && state.menuState === MenuStates.Open)
+
+  // Mark other elements as inert when the menu is visible, and `modal` is enabled
+  useInertOthers(
+    useEvent(() => [state.buttonRef.current, state.itemsRef.current]),
+    modal && state.menuState === MenuStates.Open
+  )
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
   // closed. If the button moved, then we want to cancel pending transitions to prevent that the
@@ -766,16 +778,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     } as CSSProperties,
   })
 
-  let Wrapper = modal ? Modal : anchor ? Portal : Fragment
-  let wrapperProps = modal
-    ? ({
-        features: ModalFeatures.ScrollLock,
-        enabled: state.menuState === MenuStates.Open,
-      } satisfies ModalProps)
-    : {}
-
   return (
-    <Wrapper {...wrapperProps}>
+    <Portal enabled={visible && portal}>
       {render({
         ourProps,
         theirProps,
@@ -785,7 +789,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
         visible: panelEnabled,
         name: 'Menu.Items',
       })}
-    </Wrapper>
+    </Portal>
   )
 }
 
