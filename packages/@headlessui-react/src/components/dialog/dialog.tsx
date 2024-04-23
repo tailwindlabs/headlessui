@@ -380,7 +380,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
       enabled={dialogState === DialogStates.Open}
       element={internalDialogRef}
       onUpdate={useEvent((message, type) => {
-        if (type !== 'Dialog' && type !== 'Modal') return
+        if (type !== 'Dialog') return
 
         match(message, {
           [StackMessage.Add]: () => setNestedDialogCount((count) => count + 1),
