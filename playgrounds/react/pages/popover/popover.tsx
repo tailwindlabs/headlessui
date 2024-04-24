@@ -60,8 +60,8 @@ export default function Home() {
         <Popover as="div" className="relative">
           <Button>Portal</Button>
           <Popover.Panel
-            anchor={{ to: 'bottom start', gap: 4 }}
-            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
+            anchor="bottom start"
+            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100 [--anchor-gap:theme(spacing.1)]"
           >
             {items.map((item) => (
               <Button key={item}>Portal - {item}</Button>
@@ -72,9 +72,9 @@ export default function Home() {
         <Popover as="div" className="relative">
           <Button>Focus in Portal</Button>
           <Popover.Panel
-            anchor={{ to: 'bottom start', gap: 4 }}
             focus
-            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
+            anchor="bottom start"
+            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100 [--anchor-gap:theme(spacing.1)]"
           >
             {items.map((item) => (
               <Button key={item}>Focus in Portal - {item}</Button>
