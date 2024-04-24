@@ -2,7 +2,7 @@ import { render } from '@testing-library/react'
 import React, { useRef, useState, type ReactNode } from 'react'
 import { assertInert, assertNotInert, getByText } from '../test-utils/accessibility-assertions'
 import { click } from '../test-utils/interactions'
-import { useInertOthers } from './use-inert'
+import { useInertOthers } from './use-inert-others'
 
 beforeEach(() => {
   jest.restoreAllMocks()

@@ -20,7 +20,7 @@ import React, {
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
-import { useInertOthers } from '../../hooks/use-inert'
+import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsTouchDevice } from '../../hooks/use-is-touch-device'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
