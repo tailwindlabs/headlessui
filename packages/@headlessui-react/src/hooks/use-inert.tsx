@@ -1,4 +1,3 @@
-import { type MutableRefObject } from 'react'
 import { disposables } from '../utils/disposables'
 import { getOwnerDocument } from '../utils/owner'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
@@ -46,20 +45,6 @@ function markNotInert(element: HTMLElement) {
 
   // Remove tracking of original values
   originals.delete(element)
-}
-
-export function useInert<TElement extends HTMLElement>(
-  node: MutableRefObject<TElement | null> | (() => TElement | null),
-  enabled = true
-) {
-  useIsoMorphicEffect(() => {
-    if (!enabled) return
-
-    let element = typeof node === 'function' ? node() : node.current
-    if (!element) return
-
-    return markInert(element)
-  }, [node, enabled])
 }
 
 /**
