@@ -4289,7 +4289,6 @@ describe.each([{ virtual: true }, { virtual: false }])(
 
             // Verify that we don't have an selected option anymore
             assertNotActiveComboboxOption(options[1])
-            assertNoSelectedComboboxOption()
 
             // Verify that we saw the `null` change coming in
             expect(handleChange).toHaveBeenCalledTimes(1)

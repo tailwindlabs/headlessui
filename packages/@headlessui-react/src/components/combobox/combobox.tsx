@@ -1646,17 +1646,35 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     })
   }
 
+  // Frozen state, the selected value will only update visually when the user re-opens the <Combobox />
+  let [frozenValue, setFrozenValue] = useState(data.value)
+  if (
+    data.value !== frozenValue &&
+    data.comboboxState === ComboboxState.Open &&
+    data.mode !== ValueMode.Multi
+  ) {
+    setFrozenValue(data.value)
+  }
+
+  let isSelected = useEvent((compareValue: unknown) => {
+    return data.compare(frozenValue, compareValue)
+  })
+
   return (
     <Portal enabled={visible && portal}>
-      {render({
-        ourProps,
-        theirProps,
-        slot,
-        defaultTag: DEFAULT_OPTIONS_TAG,
-        features: OptionsRenderFeatures,
-        visible,
-        name: 'Combobox.Options',
-      })}
+      <ComboboxDataContext.Provider
+        value={data.mode === ValueMode.Multi ? data : { ...data, isSelected }}
+      >
+        {render({
+          ourProps,
+          theirProps,
+          slot,
+          defaultTag: DEFAULT_OPTIONS_TAG,
+          features: OptionsRenderFeatures,
+          visible,
+          name: 'Combobox.Options',
+        })}
+      </ComboboxDataContext.Provider>
     </Portal>
   )
 }
@@ -1796,7 +1814,7 @@ function OptionFn<
     }
 
     if (data.mode === ValueMode.Single) {
-      requestAnimationFrame(() => actions.closeCombobox())
+      actions.closeCombobox()
     }
   })
 
