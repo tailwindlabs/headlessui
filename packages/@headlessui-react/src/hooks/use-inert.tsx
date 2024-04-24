@@ -104,7 +104,7 @@ export function useInertOthers(
       if (!ownerDocument) continue
 
       let parent = element.parentElement
-      while (parent) {
+      while (parent && parent !== ownerDocument.body) {
         // Mark all siblings as inert
         for (let node of parent.childNodes) {
           // If the node contains any of the elements we should not mark it as inert
@@ -114,9 +114,6 @@ export function useInertOthers(
           // Mark the node as inert
           d.add(markInert(node as HTMLElement))
         }
-
-        // Stop if we reach the body
-        if (parent === ownerDocument.body) break
 
         // Move up the tree
         parent = parent.parentElement
