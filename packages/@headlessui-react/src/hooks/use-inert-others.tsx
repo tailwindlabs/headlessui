@@ -74,12 +74,9 @@ function markNotInert(element: HTMLElement) {
  */
 export function useInertOthers(
   {
-    allowed,
-    disallowed,
-  }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {
-    allowed: () => [],
-    disallowed: () => [],
-  },
+    allowed = () => [],
+    disallowed = () => [],
+  }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {},
   enabled = true
 ) {
   useIsoMorphicEffect(() => {
@@ -88,39 +85,35 @@ export function useInertOthers(
     let d = disposables()
 
     // Mark all disallowed elements as inert
-    if (disallowed) {
-      for (let element of disallowed()) {
-        if (!element) continue
+    for (let element of disallowed()) {
+      if (!element) continue
 
-        d.add(markInert(element))
-      }
+      d.add(markInert(element))
     }
 
     // Mark all siblings of allowed elements (and parents) as inert
-    if (allowed) {
-      let allowedElements = allowed()
+    let allowedElements = allowed()
 
-      for (let element of allowedElements) {
-        if (!element) continue
+    for (let element of allowedElements) {
+      if (!element) continue
 
-        let ownerDocument = getOwnerDocument(element)
-        if (!ownerDocument) continue
+      let ownerDocument = getOwnerDocument(element)
+      if (!ownerDocument) continue
 
-        let parent = element.parentElement
-        while (parent && parent !== ownerDocument.body) {
-          // Mark all siblings as inert
-          for (let node of parent.childNodes) {
-            // If the node contains any of the elements we should not mark it as inert
-            // because it would make the elements unreachable.
-            if (allowedElements.some((el) => node.contains(el))) continue
+      let parent = element.parentElement
+      while (parent && parent !== ownerDocument.body) {
+        // Mark all siblings as inert
+        for (let node of parent.childNodes) {
+          // If the node contains any of the elements we should not mark it as inert
+          // because it would make the elements unreachable.
+          if (allowedElements.some((el) => node.contains(el))) continue
 
-            // Mark the node as inert
-            d.add(markInert(node as HTMLElement))
-          }
-
-          // Move up the tree
-          parent = parent.parentElement
+          // Mark the node as inert
+          d.add(markInert(node as HTMLElement))
         }
+
+        // Move up the tree
+        parent = parent.parentElement
       }
     }
 
