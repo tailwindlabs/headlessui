@@ -145,7 +145,7 @@ describe('use inert others', () => {
     function Example({ children }: { children: ReactNode }) {
       let [enabled, setEnabled] = useState(false)
       useInertOthers(
-        () => [document.getElementById('a-a-b')!, document.getElementById('a-a-c')!],
+        { allowed: () => [document.getElementById('a-a-b')!, document.getElementById('a-a-c')!] },
         enabled
       )
 

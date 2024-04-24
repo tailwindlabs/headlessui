@@ -1587,7 +1587,13 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   // Mark other elements as inert when the combobox is visible, and `modal` is enabled
   useInertOthers(
-    useEvent(() => [data.inputRef.current, data.buttonRef.current, data.optionsRef.current]),
+    {
+      allowed: useEvent(() => [
+        data.inputRef.current,
+        data.buttonRef.current,
+        data.optionsRef.current,
+      ]),
+    },
     modal && data.comboboxState === ComboboxState.Open
   )
 

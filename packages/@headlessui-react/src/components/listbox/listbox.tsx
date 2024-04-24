@@ -918,7 +918,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   // Mark other elements as inert when the listbox is visible, and `modal` is enabled
   useInertOthers(
-    useEvent(() => [data.buttonRef.current, data.optionsRef.current]),
+    { allowed: useEvent(() => [data.buttonRef.current, data.optionsRef.current]) },
     modal && data.listboxState === ListboxStates.Open
   )
 

@@ -88,38 +88,57 @@ export function useInert<TElement extends HTMLElement>(
  * ```
  */
 export function useInertOthers(
-  resolveAllowedContainers: () => (HTMLElement | null)[],
+  {
+    allowed,
+    disallowed,
+  }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {
+    allowed: () => [],
+    disallowed: () => [],
+  },
   enabled = true
 ) {
   useIsoMorphicEffect(() => {
     if (!enabled) return
 
     let d = disposables()
-    let elements = resolveAllowedContainers()
 
-    for (let element of elements) {
-      if (!element) continue
+    // Mark all disallowed elements as inert
+    if (disallowed) {
+      for (let element of disallowed()) {
+        if (!element) continue
 
-      let ownerDocument = getOwnerDocument(element)
-      if (!ownerDocument) continue
+        d.add(markInert(element))
+      }
+    }
 
-      let parent = element.parentElement
-      while (parent && parent !== ownerDocument.body) {
-        // Mark all siblings as inert
-        for (let node of parent.childNodes) {
-          // If the node contains any of the elements we should not mark it as inert
-          // because it would make the elements unreachable.
-          if (elements.some((el) => node.contains(el))) continue
+    // Mark all siblings of allowed elements (and parents) as inert
+    if (allowed) {
+      let allowedElements = allowed()
 
-          // Mark the node as inert
-          d.add(markInert(node as HTMLElement))
+      for (let element of allowedElements) {
+        if (!element) continue
+
+        let ownerDocument = getOwnerDocument(element)
+        if (!ownerDocument) continue
+
+        let parent = element.parentElement
+        while (parent && parent !== ownerDocument.body) {
+          // Mark all siblings as inert
+          for (let node of parent.childNodes) {
+            // If the node contains any of the elements we should not mark it as inert
+            // because it would make the elements unreachable.
+            if (allowedElements.some((el) => node.contains(el))) continue
+
+            // Mark the node as inert
+            d.add(markInert(node as HTMLElement))
+          }
+
+          // Move up the tree
+          parent = parent.parentElement
         }
-
-        // Move up the tree
-        parent = parent.parentElement
       }
     }
 
     return d.dispose
-  }, [enabled, resolveAllowedContainers])
+  }, [enabled, allowed, disallowed])
 }

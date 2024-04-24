@@ -630,7 +630,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
 
   // Mark other elements as inert when the menu is visible, and `modal` is enabled
   useInertOthers(
-    useEvent(() => [state.buttonRef.current, state.itemsRef.current]),
+    { allowed: useEvent(() => [state.buttonRef.current, state.itemsRef.current]) },
     modal && state.menuState === MenuStates.Open
   )
 
