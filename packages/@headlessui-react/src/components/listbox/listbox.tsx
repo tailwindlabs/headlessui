@@ -29,11 +29,14 @@ import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
+import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
+import { useOwnerDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
+import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
@@ -49,7 +52,6 @@ import {
 } from '../../internal/floating'
 import { FormFields } from '../../internal/form-fields'
 import { useProvidedId } from '../../internal/id'
-import { Modal, type ModalProps } from '../../internal/modal'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { EnsureArray, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -870,6 +872,7 @@ export type ListboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTION
   OptionsPropsWeControl,
   {
     anchor?: AnchorPropsWithSelection
+    portal?: boolean
     modal?: boolean
   } & PropsForFeatures<typeof OptionsRenderFeatures>
 >
@@ -882,18 +885,21 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let {
     id = `headlessui-listbox-options-${internalId}`,
     anchor: rawAnchor,
-    modal,
+    portal = false,
+    modal = true,
     ...theirProps
   } = props
   let anchor = useResolvedAnchor(rawAnchor)
 
-  // Always use `modal` when `anchor` is passed in
-  if (modal == null) {
-    modal = Boolean(anchor)
+  // Always enable `portal` functionality, when `anchor` is enabled
+  if (anchor) {
+    portal = true
   }
 
   let data = useData('Listbox.Options')
   let actions = useActions('Listbox.Options')
+
+  let ownerDocument = useOwnerDocument(data.optionsRef)
 
   let usesOpenClosedState = useOpenClosed()
   let visible = (() => {
@@ -906,6 +912,15 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   // Ensure we close the listbox as soon as the button becomes hidden
   useOnDisappear(data.buttonRef, actions.closeListbox, visible)
+
+  // Enable scroll locking when the listbox is visible, and `modal` is enabled
+  useScrollLock(ownerDocument, modal && data.listboxState === ListboxStates.Open)
+
+  // Mark other elements as inert when the listbox is visible, and `modal` is enabled
+  useInertOthers(
+    { allowed: useEvent(() => [data.buttonRef.current, data.optionsRef.current]) },
+    modal && data.listboxState === ListboxStates.Open
+  )
 
   let initialOption = useRef<number | null>(null)
 
@@ -1066,11 +1081,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     } as CSSProperties,
   })
 
-  let Wrapper = modal ? Modal : anchor ? Portal : Fragment
-  let wrapperProps = modal
-    ? ({ enabled: data.listboxState === ListboxStates.Open } satisfies ModalProps)
-    : {}
-
   // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
   let [frozenValue, setFrozenValue] = useState(data.value)
   if (
@@ -1085,7 +1095,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })
 
   return (
-    <Wrapper {...wrapperProps}>
+    <Portal enabled={visible && portal}>
       <ListboxDataContext.Provider
         value={data.mode === ValueMode.Multi ? data : { ...data, isSelected }}
       >
@@ -1099,7 +1109,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
           name: 'Listbox.Options',
         })}
       </ListboxDataContext.Provider>
-    </Wrapper>
+    </Portal>
   )
 }
 

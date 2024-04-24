@@ -1,6 +1,5 @@
-import { Popover, Portal, Transition } from '@headlessui/react'
+import { Popover, Transition } from '@headlessui/react'
 import React, { forwardRef } from 'react'
-import { usePopper } from '../../utils/hooks/use-popper'
 
 let Button = forwardRef(
   (props: React.ComponentProps<'button'>, ref: React.MutableRefObject<HTMLButtonElement>) => {
@@ -15,15 +14,6 @@ let Button = forwardRef(
 )
 
 export default function Home() {
-  let options = {
-    placement: 'bottom-start' as const,
-    strategy: 'fixed' as const,
-    modifiers: [],
-  }
-
-  let [reference1, popper1] = usePopper(options)
-  let [reference2, popper2] = usePopper(options)
-
   let items = ['First', 'Second', 'Third', 'Fourth']
 
   return (
@@ -68,32 +58,28 @@ export default function Home() {
         </Popover>
 
         <Popover as="div" className="relative">
-          <Button ref={reference1}>Portal</Button>
-          <Portal>
-            <Popover.Panel
-              ref={popper1}
-              className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
-            >
-              {items.map((item) => (
-                <Button key={item}>Portal - {item}</Button>
-              ))}
-            </Popover.Panel>
-          </Portal>
+          <Button>Portal</Button>
+          <Popover.Panel
+            anchor={{ to: 'bottom start', gap: 4 }}
+            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
+          >
+            {items.map((item) => (
+              <Button key={item}>Portal - {item}</Button>
+            ))}
+          </Popover.Panel>
         </Popover>
 
         <Popover as="div" className="relative">
-          <Button ref={reference2}>Focus in Portal</Button>
-          <Portal>
-            <Popover.Panel
-              ref={popper2}
-              focus
-              className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
-            >
-              {items.map((item) => (
-                <Button key={item}>Focus in Portal - {item}</Button>
-              ))}
-            </Popover.Panel>
-          </Portal>
+          <Button>Focus in Portal</Button>
+          <Popover.Panel
+            anchor={{ to: 'bottom start', gap: 4 }}
+            focus
+            className="flex w-64 flex-col border-2 border-blue-900 bg-gray-100"
+          >
+            {items.map((item) => (
+              <Button key={item}>Focus in Portal - {item}</Button>
+            ))}
+          </Popover.Panel>
         </Popover>
       </Popover.Group>
 

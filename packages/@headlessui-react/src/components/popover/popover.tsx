@@ -3,7 +3,6 @@
 import { useFocusRing } from '@react-aria/focus'
 import { useHover } from '@react-aria/interactions'
 import React, {
-  Fragment,
   createContext,
   createRef,
   useContext,
@@ -34,6 +33,7 @@ import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
+import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
 import { CloseProvider } from '../../internal/close-provider'
@@ -46,7 +46,6 @@ import {
   type AnchorProps,
 } from '../../internal/floating'
 import { Hidden, HiddenFeatures } from '../../internal/hidden'
-import { Modal, ModalFeatures as ModalRenderFeatures, type ModalProps } from '../../internal/modal'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
@@ -71,7 +70,6 @@ import {
   type PropsForFeatures,
   type RefProp,
 } from '../../utils/render'
-import { FocusTrapFeatures } from '../focus-trap/focus-trap'
 import { Keys } from '../keyboard'
 import { Portal, useNestedPortals } from '../portal/portal'
 
@@ -800,6 +798,7 @@ export type PopoverPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TA
   {
     focus?: boolean
     anchor?: AnchorProps
+    portal?: boolean
     modal?: boolean
 
     // ItemsRenderFeatures
@@ -817,7 +816,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     id = `headlessui-popover-panel-${internalId}`,
     focus = false,
     anchor: rawAnchor,
-    modal,
+    portal = false,
+    modal = false,
     ...theirProps
   } = props
 
@@ -832,9 +832,9 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
 
-  // Always use `modal` when `anchor` is passed in
-  if (modal == null) {
-    modal = Boolean(anchor)
+  // Always enable `portal` functionality, when `anchor` is enabled
+  if (anchor) {
+    portal = true
   }
 
   let panelRef = useSyncRefs(internalPanelRef, ref, anchor ? floatingRef : null, (panel) => {
@@ -861,6 +861,9 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
   // Ensure we close the popover as soon as the button becomes hidden
   useOnDisappear(state.button, () => dispatch({ type: ActionTypes.ClosePopover }), visible)
+
+  // Enable scroll locking when the popover is visible, and `modal` is enabled
+  useScrollLock(ownerDocument, modal && visible)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
@@ -1014,23 +1017,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     }
   })
 
-  let Wrapper = modal ? Modal : anchor ? Portal : Fragment
-  let wrapperProps = modal
-    ? ({
-        focusTrapFeatures: FocusTrapFeatures.None,
-        features: ModalRenderFeatures.ScrollLock,
-        enabled: state.popoverState === PopoverStates.Open,
-      } satisfies ModalProps)
-    : {}
-
-  if (Wrapper === Portal || Wrapper === Modal) {
-    isPortalled = true
-  }
-
   return (
     <PopoverPanelContext.Provider value={id}>
       <PopoverAPIContext.Provider value={{ close, isPortalled }}>
-        <Wrapper {...wrapperProps}>
+        <Portal enabled={visible && portal}>
           {visible && isPortalled && (
             <Hidden
               id={beforePanelSentinelId}
@@ -1063,7 +1053,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
               onFocus={handleAfterFocus}
             />
           )}
-        </Wrapper>
+        </Portal>
       </PopoverAPIContext.Provider>
     </PopoverPanelContext.Provider>
   )

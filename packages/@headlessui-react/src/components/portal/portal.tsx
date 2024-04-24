@@ -33,7 +33,7 @@ function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement
 
   let [target, setTarget] = useState(() => {
     // Group context is used, but still null
-    if (!forceInRoot && groupTarget !== null) return null
+    if (!forceInRoot && groupTarget !== null) return groupTarget.current ?? null
 
     // No group context is used, let's create a default portal root
     if (env.isServer) return null
@@ -74,13 +74,15 @@ type PortalPropsWeControl = never
 export type PortalProps<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG> = Props<
   TTag,
   PortalRenderPropArg,
-  PortalPropsWeControl
+  PortalPropsWeControl,
+  {
+    enabled?: boolean
+  }
 >
 
-function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
-  props: PortalProps<TTag>,
-  ref: Ref<HTMLElement>
-) {
+let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
+  TTag extends ElementType = typeof DEFAULT_PORTAL_TAG,
+>(props: PortalProps<TTag>, ref: Ref<HTMLElement>) {
   let theirProps = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
@@ -143,6 +145,26 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
         }),
         element
       )
+})
+
+function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
+  props: PortalProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
+  let portalRef = useSyncRefs(ref)
+
+  let { enabled = true, ...theirProps } = props
+  return enabled ? (
+    <InternalPortalFn {...theirProps} ref={portalRef} />
+  ) : (
+    render({
+      ourProps: { ref: portalRef },
+      theirProps,
+      slot: {},
+      defaultTag: DEFAULT_PORTAL_TAG,
+      name: 'Portal',
+    })
+  )
 }
 
 // ---
