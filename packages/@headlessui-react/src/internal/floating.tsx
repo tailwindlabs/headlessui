@@ -394,9 +394,9 @@ function useResolvedConfig(
   config: (Exclude<AnchorPropsWithSelection, boolean | string> & InternalFloatingPanelProps) | null,
   element?: HTMLElement | null
 ) {
-  let gap = useResolvePxValue(config?.gap, element)
-  let offset = useResolvePxValue(config?.offset, element)
-  let padding = useResolvePxValue(config?.padding, element)
+  let gap = useResolvePxValue(config?.gap ?? 'var(--anchor-gap, 0)', element)
+  let offset = useResolvePxValue(config?.offset ?? 'var(--anchor-offset, 0)', element)
+  let padding = useResolvePxValue(config?.padding ?? 'var(--anchor-padding, 0)', element)
 
   return { ...config, gap, offset, padding }
 }
