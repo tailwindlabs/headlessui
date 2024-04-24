@@ -42,8 +42,8 @@
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {
-    "react": "^16 || ^17 || ^18",
-    "react-dom": "^16 || ^17 || ^18"
+    "react": "^18",
+    "react-dom": "^18"
   },
   "devDependencies": {
     "@testing-library/react": "^13.0.0",
