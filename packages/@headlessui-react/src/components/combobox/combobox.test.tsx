@@ -1769,6 +1769,101 @@ describe('Rendering', () => {
       expect(handleChange).toHaveBeenNthCalledWith(2, 'bob')
     })
   })
+
+  describe.each([{ virtual: true }, { virtual: false }])('Data attributes', ({ virtual }) => {
+    let data = ['Option A', 'Option B', 'Option C']
+    function MyCombobox<T>({
+      options = data.slice() as T[],
+      useComboboxOptions = true,
+      comboboxProps = {},
+      inputProps = {},
+      buttonProps = {},
+      optionProps = {},
+    }: {
+      options?: T[]
+      useComboboxOptions?: boolean
+      comboboxProps?: Record<string, any>
+      inputProps?: Record<string, any>
+      buttonProps?: Record<string, any>
+      optionProps?: Record<string, any>
+    }) {
+      function isDisabled(option: T): boolean {
+        return typeof option === 'string'
+          ? false
+          : typeof option === 'object' &&
+              option !== null &&
+              'disabled' in option &&
+              typeof option.disabled === 'boolean'
+            ? option?.disabled ?? false
+            : false
+      }
+      if (virtual) {
+        return (
+          <Combobox
+            virtual={{
+              options,
+              disabled: isDisabled,
+            }}
+            value={'test' as T}
+            onChange={NOOP}
+            {...comboboxProps}
+          >
+            <Combobox.Input onChange={NOOP} {...inputProps} />
+            <Combobox.Button {...buttonProps}>Trigger</Combobox.Button>
+            {useComboboxOptions && (
+              <Combobox.Options>
+                {({ option }) => {
+                  return <Combobox.Option {...optionProps} value={option} />
+                }}
+              </Combobox.Options>
+            )}
+          </Combobox>
+        )
+      }
+
+      return (
+        <Combobox value="test" onChange={NOOP} {...comboboxProps}>
+          <Combobox.Input onChange={NOOP} {...inputProps} />
+          <Combobox.Button {...buttonProps}>Trigger</Combobox.Button>
+          {useComboboxOptions && (
+            <Combobox.Options>
+              {options.map((option, idx) => {
+                return (
+                  <Combobox.Option
+                    key={idx}
+                    disabled={isDisabled(option)}
+                    {...optionProps}
+                    value={option}
+                  />
+                )
+              })}
+            </Combobox.Options>
+          )}
+        </Combobox>
+      )
+    }
+
+    it('Disabled options should get a data-disabled attribute', async () => {
+      render(
+        <MyCombobox
+          options={[
+            { name: 'Option A', disabled: false },
+            { name: 'Option B', disabled: true },
+            { name: 'Option C', disabled: false },
+          ]}
+        />
+      )
+
+      // Open the Combobox
+      await click(getByText('Trigger'))
+
+      let options = getComboboxOptions()
+
+      expect(options[0]).not.toHaveAttribute('data-disabled')
+      expect(options[1]).toHaveAttribute('data-disabled', '')
+      expect(options[2]).not.toHaveAttribute('data-disabled')
+    })
+  })
 })
 
 describe('Rendering composition', () => {

@@ -1315,7 +1315,7 @@ function InputFn<
           : data.virtual
             ? data.options.find(
                 (option) =>
-                  !data.virtual?.disabled(option.dataRef.current.value) &&
+                  !option.dataRef.current.disabled &&
                   data.compare(
                     option.dataRef.current.value,
                     data.virtual!.options[data.activeOptionIndex!]
@@ -1666,17 +1666,17 @@ function OptionFn<
   // But today is not that day..
   TType = Parameters<typeof ComboboxRoot>[0]['value'],
 >(props: ComboboxOptionProps<TTag, TType>, ref: Ref<HTMLLIElement>) {
+  let data = useData('Combobox.Option')
+  let actions = useActions('Combobox.Option')
+
   let internalId = useId()
   let {
     id = `headlessui-combobox-option-${internalId}`,
-    disabled = false,
     value,
+    disabled = data.virtual?.disabled(value) ?? false,
     order = null,
     ...theirProps
   } = props
-
-  let data = useData('Combobox.Option')
-  let actions = useActions('Combobox.Option')
 
   let refocusInput = useRefocusableInput(data.inputRef)
 
@@ -1749,7 +1749,7 @@ function OptionFn<
       return
     }
 
-    if (disabled || data.virtual?.disabled(value)) return
+    if (disabled) return
     select()
 
     // We want to make sure that we don't accidentally trigger the virtual keyboard.
@@ -1774,7 +1774,7 @@ function OptionFn<
   })
 
   let handleFocus = useEvent(() => {
-    if (disabled || data.virtual?.disabled(value)) {
+    if (disabled) {
       return actions.goToOption(Focus.Nothing)
     }
     let idx = data.calculateIndex(value)
@@ -1787,7 +1787,7 @@ function OptionFn<
 
   let handleMove = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
-    if (disabled || data.virtual?.disabled(value)) return
+    if (disabled) return
     if (active) return
     let idx = data.calculateIndex(value)
     actions.goToOption(Focus.Specific, idx, ActivationTrigger.Pointer)
@@ -1795,16 +1795,20 @@ function OptionFn<
 
   let handleLeave = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
-    if (disabled || data.virtual?.disabled(value)) return
+    if (disabled) return
     if (!active) return
     if (data.optionsPropsRef.current.hold) return
     actions.goToOption(Focus.Nothing)
   })
 
-  let slot = useMemo(
-    () => ({ active, focus: active, selected, disabled }) satisfies OptionRenderPropArg,
-    [active, selected, disabled]
-  )
+  let slot = useMemo(() => {
+    return {
+      active,
+      focus: active,
+      selected,
+      disabled,
+    } satisfies OptionRenderPropArg
+  }, [active, selected, disabled])
 
   let ourProps = {
     id,
