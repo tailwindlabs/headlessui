@@ -1802,7 +1802,13 @@ function OptionFn<
   })
 
   let slot = useMemo(
-    () => ({ active, focus: active, selected, disabled }) satisfies OptionRenderPropArg,
+    () =>
+      ({
+        active,
+        focus: active,
+        selected,
+        disabled: Boolean(disabled || data.virtual?.disabled(value)),
+      }) satisfies OptionRenderPropArg,
     [active, selected, disabled]
   )
 
