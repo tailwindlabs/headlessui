@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure anchored components are always rendered in a stacking context ([#3115](https://github.com/tailwindlabs/headlessui/pull/3115))
 - Add optional `onClose` callback to `Combobox` component ([#3122](https://github.com/tailwindlabs/headlessui/pull/3122))
 - Make sure `data-disabled` is available on virtualized options in the `Combobox` component ([#3128](https://github.com/tailwindlabs/headlessui/pull/3128))
+- Add `overflow: auto` when using the `anchor` prop ([#3138](https://github.com/tailwindlabs/headlessui/pull/3138))
 
 ### Changed
 

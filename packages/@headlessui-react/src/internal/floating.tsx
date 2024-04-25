@@ -314,6 +314,7 @@ export function FloatingProvider({
       sizeMiddleware({
         apply({ availableWidth, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
+            overflow: 'auto',
             maxWidth: `${availableWidth - padding}px`,
             maxHeight: `${availableHeight - padding}px`,
           })
