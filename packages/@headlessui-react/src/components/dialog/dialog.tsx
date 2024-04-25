@@ -224,7 +224,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let setTitleId = useEvent((id: string | null) => dispatch({ type: ActionTypes.SetTitleId, id }))
 
   let ready = useServerHandoffComplete()
-  let enabled = ready ? (__demoMode ? false : dialogState === DialogStates.Open) : false
+  let enabled = ready ? dialogState === DialogStates.Open : false
   let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
   let hasParentDialog = useContext(DialogContext) !== null
   let [portals, PortalWrapper] = useNestedPortals()
@@ -281,7 +281,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
           null,
       ]),
     },
-    inertEnabled
+    __demoMode ? false : inertEnabled
   )
 
   // Close Dialog on outside click
@@ -321,7 +321,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasParentDialog) return false
     return true
   })()
-  useScrollLock(ownerDocument, scrollLockEnabled, resolveRootContainers)
+  useScrollLock(ownerDocument, __demoMode ? false : scrollLockEnabled, resolveRootContainers)
 
   // Ensure we close the dialog as soon as the dialog itself becomes hidden
   useOnDisappear(internalDialogRef, close, dialogState === DialogStates.Open)
@@ -365,6 +365,10 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   // Remove initialFocus when we should not auto focus at all
   if (!shouldAutoFocus) {
     focusTrapFeatures &= ~FocusTrapFeatures.InitialFocus
+  }
+
+  if (__demoMode) {
+    focusTrapFeatures = FocusTrapFeatures.None
   }
 
   return (
