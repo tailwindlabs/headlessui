@@ -38,7 +38,8 @@ type BaseAnchorProps = {
 }
 
 export type AnchorProps =
-  | boolean // Enable with defaults, or disable entirely
+  | false // Disable entirely
+  | (`${Placement}` | `${Placement} ${Align}`) // String value to define the placement
   | Partial<
       BaseAnchorProps & {
         /**
@@ -50,7 +51,8 @@ export type AnchorProps =
     >
 
 export type AnchorPropsWithSelection =
-  | boolean // Enable with defaults, or disable entirely
+  | false // Disable entirely
+  | (`${Placement | 'selection'}` | `${Placement | 'selection'} ${Align}`)
   | Partial<
       BaseAnchorProps & {
         /**
@@ -93,11 +95,11 @@ PlacementContext.displayName = 'PlacementContext'
 
 export function useResolvedAnchor<T extends AnchorProps | AnchorPropsWithSelection>(
   anchor?: T
-): Exclude<T, boolean> | null {
+): Exclude<T, boolean | string> | null {
   return useMemo(() => {
-    if (anchor === true) return {} as Exclude<T, boolean> // Enable with defaults
     if (!anchor) return null // Disable entirely
-    return anchor as Exclude<T, boolean> // User-provided value
+    if (typeof anchor === 'string') return { to: anchor } as Exclude<T, boolean | string> // Simple string based value,
+    return anchor as Exclude<T, boolean | string> // User-provided value
   }, [anchor])
 }
 
@@ -124,8 +126,8 @@ export function useFloatingPanelProps() {
 export function useFloatingPanel(
   placement: (AnchorPropsWithSelection & InternalFloatingPanelProps) | null = null
 ) {
-  if (placement === true) placement = {} // Enable with defaults
   if (placement === false) placement = null // Disable entirely
+  if (typeof placement === 'string') placement = { to: placement } // Simple string based value
 
   let updatePlacementConfig = useContext(PlacementContext)
   let stablePlacement = useMemo(
@@ -389,12 +391,12 @@ function useFixScrollingPixel(element: HTMLElement | null) {
 }
 
 function useResolvedConfig(
-  config: (Exclude<AnchorPropsWithSelection, boolean> & InternalFloatingPanelProps) | null,
+  config: (Exclude<AnchorPropsWithSelection, boolean | string> & InternalFloatingPanelProps) | null,
   element?: HTMLElement | null
 ) {
-  let gap = useResolvePxValue(config?.gap, element)
-  let offset = useResolvePxValue(config?.offset, element)
-  let padding = useResolvePxValue(config?.padding, element)
+  let gap = useResolvePxValue(config?.gap ?? 'var(--anchor-gap, 0)', element)
+  let offset = useResolvePxValue(config?.offset ?? 'var(--anchor-offset, 0)', element)
+  let padding = useResolvePxValue(config?.padding ?? 'var(--anchor-padding, 0)', element)
 
   return { ...config, gap, offset, padding }
 }

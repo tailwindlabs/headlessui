@@ -41,8 +41,8 @@ export default function Home() {
             afterLeave={() => console.log('After leave')}
           >
             <Menu.Items
-              anchor={{ to: 'bottom start', gap: 'var(--gap)' }}
-              className="w-[calc(var(--button-width)*2)] divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none [--gap:theme(spacing.2)]"
+              anchor="bottom start"
+              className="w-[calc(var(--button-width)*2)] divide-y divide-gray-100 rounded-md border border-gray-200 bg-white shadow-lg outline-none [--anchor-gap:theme(spacing.2)]"
             >
               <div className="px-4 py-3">
                 <p className="text-sm leading-5">Signed in as</p>
