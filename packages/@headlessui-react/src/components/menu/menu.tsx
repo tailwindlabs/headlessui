@@ -177,6 +177,7 @@ let reducers: {
       ...state,
       searchQuery: '',
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
+      __demoMode: false,
     }
 
     // Optimization:
@@ -626,12 +627,15 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   useOnDisappear(state.buttonRef, () => dispatch({ type: ActionTypes.CloseMenu }), visible)
 
   // Enable scroll locking when the menu is visible, and `modal` is enabled
-  useScrollLock(ownerDocument, modal && state.menuState === MenuStates.Open)
+  useScrollLock(
+    ownerDocument,
+    state.__demoMode ? false : modal && state.menuState === MenuStates.Open
+  )
 
   // Mark other elements as inert when the menu is visible, and `modal` is enabled
   useInertOthers(
     { allowed: useEvent(() => [state.buttonRef.current, state.itemsRef.current]) },
-    modal && state.menuState === MenuStates.Open
+    state.__demoMode ? false : modal && state.menuState === MenuStates.Open
   )
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
