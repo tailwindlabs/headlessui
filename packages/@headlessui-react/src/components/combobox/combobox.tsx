@@ -110,6 +110,8 @@ interface StateDefinition<T> {
   options: { id: string; dataRef: ComboboxOptionDataRef<T> }[]
   activeOptionIndex: number | null
   activationTrigger: ActivationTrigger
+
+  __demoMode: boolean
 }
 
 enum ActionTypes {
@@ -190,7 +192,12 @@ let reducers: {
     if (state.dataRef.current?.disabled) return state
     if (state.comboboxState === ComboboxState.Closed) return state
 
-    return { ...state, activeOptionIndex: null, comboboxState: ComboboxState.Closed }
+    return {
+      ...state,
+      activeOptionIndex: null,
+      comboboxState: ComboboxState.Closed,
+      __demoMode: false,
+    }
   },
   [ActionTypes.OpenCombobox](state) {
     if (state.dataRef.current?.disabled) return state
@@ -204,11 +211,12 @@ let reducers: {
           ...state,
           activeOptionIndex: idx,
           comboboxState: ComboboxState.Open,
+          __demoMode: false,
         }
       }
     }
 
-    return { ...state, comboboxState: ComboboxState.Open }
+    return { ...state, comboboxState: ComboboxState.Open, __demoMode: false }
   },
   [ActionTypes.GoToOption](state, action) {
     if (state.dataRef.current?.disabled) return state
@@ -249,6 +257,7 @@ let reducers: {
         ...state,
         activeOptionIndex,
         activationTrigger,
+        __demoMode: false,
       }
     }
 
@@ -290,6 +299,7 @@ let reducers: {
       ...adjustedState,
       activeOptionIndex,
       activationTrigger,
+      __demoMode: false,
     }
   },
   [ActionTypes.RegisterOption]: (state, action) => {
@@ -635,6 +645,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       : null,
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
+    __demoMode,
   } as StateDefinition<TValue>)
 
   let defaultToFirstOption = useRef(false)
@@ -1583,7 +1594,10 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   useOnDisappear(data.inputRef, actions.closeCombobox, visible)
 
   // Enable scroll locking when the combobox is visible, and `modal` is enabled
-  useScrollLock(ownerDocument, modal && data.comboboxState === ComboboxState.Open)
+  useScrollLock(
+    ownerDocument,
+    data.__demoMode ? false : modal && data.comboboxState === ComboboxState.Open
+  )
 
   // Mark other elements as inert when the combobox is visible, and `modal` is enabled
   useInertOthers(
@@ -1594,7 +1608,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
         data.optionsRef.current,
       ]),
     },
-    modal && data.comboboxState === ComboboxState.Open
+    data.__demoMode ? false : modal && data.comboboxState === ComboboxState.Open
   )
 
   useIsoMorphicEffect(() => {
@@ -1753,13 +1767,11 @@ function OptionFn<
 
   let enableScrollIntoView = useRef(data.virtual || data.__demoMode ? false : true)
   useIsoMorphicEffect(() => {
-    if (!data.virtual) return
-    if (!data.__demoMode) return
-    let d = disposables()
-    d.requestAnimationFrame(() => {
+    if (data.virtual) return
+    if (data.__demoMode) return
+    return disposables().requestAnimationFrame(() => {
       enableScrollIntoView.current = true
     })
-    return d.dispose
   }, [data.virtual, data.__demoMode])
 
   useIsoMorphicEffect(() => {
@@ -1767,11 +1779,9 @@ function OptionFn<
     if (data.comboboxState !== ComboboxState.Open) return
     if (!active) return
     if (data.activationTrigger === ActivationTrigger.Pointer) return
-    let d = disposables()
-    d.requestAnimationFrame(() => {
+    return disposables().requestAnimationFrame(() => {
       internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-    return d.dispose
   }, [
     internalOptionRef,
     active,
