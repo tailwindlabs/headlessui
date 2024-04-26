@@ -81,7 +81,6 @@ enum PopoverStates {
 }
 
 interface StateDefinition {
-  __demoMode: boolean
   popoverState: PopoverStates
 
   buttons: MutableRefObject<Symbol[]>
@@ -93,6 +92,8 @@ interface StateDefinition {
 
   beforePanelSentinel: MutableRefObject<HTMLButtonElement | null>
   afterPanelSentinel: MutableRefObject<HTMLButtonElement | null>
+
+  __demoMode: boolean
 }
 
 enum ActionTypes {
@@ -120,24 +121,18 @@ let reducers: {
   ) => StateDefinition
 } = {
   [ActionTypes.TogglePopover]: (state) => {
-    let nextState = {
+    return {
       ...state,
       popoverState: match(state.popoverState, {
         [PopoverStates.Open]: PopoverStates.Closed,
         [PopoverStates.Closed]: PopoverStates.Open,
       }),
+      __demoMode: false,
     }
-
-    /* We can turn off demo mode once we re-open the `Popover` */
-    if (nextState.popoverState === PopoverStates.Open) {
-      nextState.__demoMode = false
-    }
-
-    return nextState
   },
   [ActionTypes.ClosePopover](state) {
     if (state.popoverState === PopoverStates.Closed) return state
-    return { ...state, popoverState: PopoverStates.Closed }
+    return { ...state, popoverState: PopoverStates.Closed, __demoMode: false }
   },
   [ActionTypes.SetButton](state, action) {
     if (state.button === action.button) return state
@@ -863,7 +858,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   useOnDisappear(state.button, () => dispatch({ type: ActionTypes.ClosePopover }), visible)
 
   // Enable scroll locking when the popover is visible, and `modal` is enabled
-  useScrollLock(ownerDocument, modal && visible)
+  useScrollLock(ownerDocument, state.__demoMode ? false : modal && visible)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {

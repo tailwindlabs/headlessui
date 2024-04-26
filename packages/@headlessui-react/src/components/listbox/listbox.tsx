@@ -106,6 +106,8 @@ interface StateDefinition<T> {
   searchQuery: string
   activeOptionIndex: number | null
   activationTrigger: ActivationTrigger
+
+  __demoMode: boolean
 }
 
 enum ActionTypes {
@@ -172,7 +174,12 @@ let reducers: {
   [ActionTypes.CloseListbox](state) {
     if (state.dataRef.current.disabled) return state
     if (state.listboxState === ListboxStates.Closed) return state
-    return { ...state, activeOptionIndex: null, listboxState: ListboxStates.Closed }
+    return {
+      ...state,
+      activeOptionIndex: null,
+      listboxState: ListboxStates.Closed,
+      __demoMode: false,
+    }
   },
   [ActionTypes.OpenListbox](state) {
     if (state.dataRef.current.disabled) return state
@@ -187,7 +194,7 @@ let reducers: {
       activeOptionIndex = optionIdx
     }
 
-    return { ...state, listboxState: ListboxStates.Open, activeOptionIndex }
+    return { ...state, listboxState: ListboxStates.Open, activeOptionIndex, __demoMode: false }
   },
   [ActionTypes.GoToOption](state, action) {
     if (state.dataRef.current.disabled) return state
@@ -197,6 +204,7 @@ let reducers: {
       ...state,
       searchQuery: '',
       activationTrigger: action.trigger ?? ActivationTrigger.Other,
+      __demoMode: false,
     }
 
     // Optimization:
@@ -460,6 +468,8 @@ export type ListboxProps<
     form?: string
     name?: string
     multiple?: boolean
+
+    __demoMode?: boolean
   }
 >
 
@@ -480,6 +490,7 @@ function ListboxFn<
     disabled = providedDisabled || false,
     horizontal = false,
     multiple = false,
+    __demoMode = false,
     ...theirProps
   } = props
   const orientation = horizontal ? 'horizontal' : 'vertical'
@@ -493,12 +504,13 @@ function ListboxFn<
 
   let [state, dispatch] = useReducer(stateReducer, {
     dataRef: createRef(),
-    listboxState: ListboxStates.Closed,
+    listboxState: __demoMode ? ListboxStates.Open : ListboxStates.Closed,
     options: [],
     searchQuery: '',
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
     optionsVisible: false,
+    __demoMode,
   } as StateDefinition<TType>)
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
@@ -914,12 +926,15 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   useOnDisappear(data.buttonRef, actions.closeListbox, visible)
 
   // Enable scroll locking when the listbox is visible, and `modal` is enabled
-  useScrollLock(ownerDocument, modal && data.listboxState === ListboxStates.Open)
+  useScrollLock(
+    ownerDocument,
+    data.__demoMode ? false : modal && data.listboxState === ListboxStates.Open
+  )
 
   // Mark other elements as inert when the listbox is visible, and `modal` is enabled
   useInertOthers(
     { allowed: useEvent(() => [data.buttonRef.current, data.optionsRef.current]) },
-    modal && data.listboxState === ListboxStates.Open
+    data.__demoMode ? false : modal && data.listboxState === ListboxStates.Open
   )
 
   let initialOption = useRef<number | null>(null)
@@ -1181,6 +1196,7 @@ function OptionFn<
   })
 
   useIsoMorphicEffect(() => {
+    if (data.__demoMode) return
     if (data.listboxState !== ListboxStates.Open) return
     if (!active) return
     if (data.activationTrigger === ActivationTrigger.Pointer) return
@@ -1192,6 +1208,7 @@ function OptionFn<
   }, [
     internalOptionRef,
     active,
+    data.__demoMode,
     data.listboxState,
     data.activationTrigger,
     /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex,
