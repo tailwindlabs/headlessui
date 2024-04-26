@@ -391,3 +391,48 @@ it('should be possible to force the Portal into a specific element using PortalG
     `"<div><div><div data-v-app=\\"\\"><main><aside id=\\"group-1\\">A<div data-headlessui-portal=\\"\\">Next to A</div></aside><section id=\\"group-2\\"><span>B</span></section><!--teleport start--><!--teleport end--></main></div></div></div>"`
   )
 })
+
+it('the root shared by multiple portals should not unmount when they change in the same tick', async () => {
+  let a = ref(false)
+  let b = ref(false)
+
+  renderTemplate({
+    template: html`
+      <main>
+        <Portal v-if="a">Portal A</Portal>
+        <Portal v-if="b">Portal B</Portal>
+      </main>
+    `,
+    setup: () => ({ a, b }),
+  })
+
+  await new Promise<void>(nextTick)
+
+  let root = () => document.querySelector('#headlessui-portal-root')
+
+  // There is no portal root initially because there are no visible portals
+  expect(root()).toBe(null)
+
+  // Show portal A
+  a.value = true
+  await new Promise<void>(nextTick)
+
+  // There is a portal root now because there is a visible portal
+  expect(root()).not.toBe(null)
+
+  // Swap portal A for portal B
+  a.value = false
+  b.value = true
+
+  await new Promise<void>(nextTick)
+
+  // The portal root is still there because there are still visible portals
+  expect(root()).not.toBe(null)
+
+  // Hide portal B
+  b.value = false
+  await new Promise<void>(nextTick)
+
+  // The portal root is gone because there are no visible portals
+  expect(root()).toBe(null)
+})
