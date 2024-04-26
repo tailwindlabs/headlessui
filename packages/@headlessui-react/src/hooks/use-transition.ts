@@ -35,23 +35,31 @@ export function useTransition({ container, direction, classes, onStart, onStop }
   let inFlight = useRef(false)
 
   useIsoMorphicEffect(() => {
-    let node = container.current
-    if (!node) return // We don't have a DOM node (yet)
     if (direction === 'idle') return // We don't need to transition
     if (!mounted.current) return
 
     onStart.current(direction)
 
-    d.add(
-      transition(node, {
-        direction,
-        classes: classes.current,
-        inFlight,
-        done() {
-          onStop.current(direction)
-        },
-      })
-    )
+    let node = container.current
+    if (!node) {
+      // No node, so let's skip the transition and call the `onStop` callback
+      // immediately because there is no transition to wait for anyway.
+      onStop.current(direction)
+    }
+
+    // We do have a node, let's transition it!
+    else {
+      d.add(
+        transition(node, {
+          direction,
+          classes: classes.current,
+          inFlight,
+          done() {
+            onStop.current(direction)
+          },
+        })
+      )
+    }
 
     return d.dispose
   }, [direction])

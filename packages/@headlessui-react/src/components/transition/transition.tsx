@@ -559,6 +559,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   let [state, setState] = useState(show ? TreeStates.Visible : TreeStates.Hidden)
 
   let nestingBag = useNesting(() => {
+    if (show) return
     setState(TreeStates.Hidden)
   })
 
@@ -590,7 +591,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   useIsoMorphicEffect(() => {
     if (show) {
       setState(TreeStates.Visible)
-    } else if (!hasChildren(nestingBag)) {
+    } else if (!hasChildren(nestingBag) && internalTransitionRef.current !== null) {
       setState(TreeStates.Hidden)
     }
   }, [show, nestingBag])
