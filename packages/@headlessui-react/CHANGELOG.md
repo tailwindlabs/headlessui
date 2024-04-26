@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add optional `onClose` callback to `Combobox` component ([#3122](https://github.com/tailwindlabs/headlessui/pull/3122))
 - Make sure `data-disabled` is available on virtualized options in the `Combobox` component ([#3128](https://github.com/tailwindlabs/headlessui/pull/3128))
 - Add `overflow: auto` when using the `anchor` prop ([#3138](https://github.com/tailwindlabs/headlessui/pull/3138))
+- Ensure `TransitionRoot` component without props transitions correctly ([#3147](https://github.com/tailwindlabs/headlessui/pull/3147))
 
 ### Changed
 
