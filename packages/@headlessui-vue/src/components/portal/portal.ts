@@ -44,6 +44,27 @@ function getPortalRoot(contextElement?: Element | null) {
   return ownerDocument.body.appendChild(root)
 }
 
+// A counter that keeps track of how many portals are currently using
+// a specific portal root. This is used to know when we can safely
+// remove the portal root from the DOM.
+const counter = new WeakMap<HTMLElement, number>()
+
+function getCount(el: HTMLElement): number {
+  return counter.get(el) ?? 0
+}
+
+function setCount(el: HTMLElement, cb: (val: number) => number): number {
+  let newCount = cb(getCount(el))
+
+  if (newCount <= 0) {
+    counter.delete(el)
+  } else {
+    counter.set(el, newCount)
+  }
+
+  return newCount
+}
+
 export let Portal = defineComponent({
   name: 'Portal',
   props: {
@@ -62,6 +83,11 @@ export let Portal = defineComponent({
         ? getPortalRoot(element.value)
         : groupContext.resolveTarget()
     )
+
+    // Make a note that we are using this element
+    if (myTarget.value) {
+      setCount(myTarget.value, (val) => val + 1)
+    }
 
     let ready = ref(false)
     onMounted(() => {
@@ -95,9 +121,17 @@ export let Portal = defineComponent({
       if (!root) return
       if (myTarget.value !== root) return
 
-      if (myTarget.value.children.length <= 0) {
-        myTarget.value.parentElement?.removeChild(myTarget.value)
-      }
+      // We no longer need the portal target
+      let remaining = setCount(myTarget.value, (val) => val - 1)
+
+      // However, if another portal is still using the same target
+      // we should not remove it.
+      if (remaining) return
+
+      // There are still children in the portal, we should not remove it.
+      if (myTarget.value.children.length > 0) return
+
+      myTarget.value.parentElement?.removeChild(myTarget.value)
     })
 
     return () => {
