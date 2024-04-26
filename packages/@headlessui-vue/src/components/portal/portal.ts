@@ -95,9 +95,10 @@ export let Portal = defineComponent({
       if (!root) return
       if (myTarget.value !== root) return
 
-      if (myTarget.value.children.length <= 0) {
-        myTarget.value.parentElement?.removeChild(myTarget.value)
-      }
+      // There are still children in the portal, we should not remove it.
+      if (myTarget.value.children.length > 0) return
+
+      myTarget.value.parentElement?.removeChild(myTarget.value)
     })
 
     return () => {
