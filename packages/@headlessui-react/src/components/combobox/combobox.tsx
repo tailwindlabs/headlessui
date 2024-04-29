@@ -1576,6 +1576,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let actions = useActions('Combobox.Options')
   let anchor = useResolvedAnchor(rawAnchor)
 
+  // Always enable `portal` functionality, when `anchor` is enabled
+  if (anchor) {
+    portal = true
+  }
+
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
   let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
