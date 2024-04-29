@@ -316,7 +316,7 @@ export function FloatingProvider({
           Object.assign(elements.floating.style, {
             overflow: 'auto',
             maxWidth: `${availableWidth - padding}px`,
-            maxHeight: `${availableHeight - padding}px`,
+            maxHeight: `min(var(--anchor-max-height, 100vh), ${availableHeight - padding}px)`,
           })
         },
       }),

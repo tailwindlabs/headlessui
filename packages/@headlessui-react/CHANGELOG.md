@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `portal` prop to `Combobox`, `Listbox`, `Menu` and `Popover` components ([#3124](https://github.com/tailwindlabs/headlessui/pull/3124))
 - Add frozen value to `ComboboxOptions` component ([#3126](https://github.com/tailwindlabs/headlessui/pull/3126))
 - Add string shorthand for the `anchor` prop ([#3133](https://github.com/tailwindlabs/headlessui/pull/3133))
+- Use `var(--anchor-max-height)` when using the `anchor` prop ([#3148](https://github.com/tailwindlabs/headlessui/pull/3148))
 
 ## [1.7.19] - 2024-04-15
 
