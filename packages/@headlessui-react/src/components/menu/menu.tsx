@@ -783,7 +783,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   })
 
   return (
-    <Portal enabled={visible && portal}>
+    <Portal enabled={portal ? props.static || visible : false}>
       {render({
         ourProps,
         theirProps,

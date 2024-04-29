@@ -1015,7 +1015,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   return (
     <PopoverPanelContext.Provider value={id}>
       <PopoverAPIContext.Provider value={{ close, isPortalled }}>
-        <Portal enabled={visible && portal}>
+        <Portal enabled={portal ? props.static || visible : false}>
           {visible && isPortalled && (
             <Hidden
               id={beforePanelSentinelId}
