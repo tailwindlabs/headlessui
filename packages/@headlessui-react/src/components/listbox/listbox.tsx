@@ -1110,7 +1110,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })
 
   return (
-    <Portal enabled={visible && portal}>
+    <Portal enabled={portal ? props.static || visible : false}>
       <ListboxDataContext.Provider
         value={data.mode === ValueMode.Multi ? data : { ...data, isSelected }}
       >
