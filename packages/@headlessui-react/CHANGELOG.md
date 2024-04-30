@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `TransitionRoot` component without props transitions correctly ([#3147](https://github.com/tailwindlabs/headlessui/pull/3147))
 - Ensure the `static` and `portal` props work nicely together ([#3152](https://github.com/tailwindlabs/headlessui/pull/3152))
 - Only check for elements in `useInertOthers` ([#3154](https://github.com/tailwindlabs/headlessui/pull/3154))
+- Fix anchored elements not flipping when there is padding ([#3157](https://github.com/tailwindlabs/headlessui/pull/3157))
 
 ### Changed
 
