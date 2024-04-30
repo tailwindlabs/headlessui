@@ -103,7 +103,7 @@ export function useInertOthers(
       let parent = element.parentElement
       while (parent && parent !== ownerDocument.body) {
         // Mark all siblings as inert
-        for (let node of parent.childNodes) {
+        for (let node of parent.children) {
           // If the node contains any of the elements we should not mark it as inert
           // because it would make the elements unreachable.
           if (allowedElements.some((el) => node.contains(el))) continue
