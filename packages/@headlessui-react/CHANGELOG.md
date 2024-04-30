@@ -5,59 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Fixed
-
-- Use `isFocused` instead of `isFocusVisible` for `Input` and `Textarea` components ([#2940](https://github.com/tailwindlabs/headlessui/pull/2940))
-- Ensure `children` prop of `Field` component can be a render prop ([#2941](https://github.com/tailwindlabs/headlessui/pull/2941))
-- Attempt form submission when pressing `Enter` on `Checkbox` component ([#2962](https://github.com/tailwindlabs/headlessui/pull/2962))
-- Prefer incoming `data-*` attributes, over the ones set by Headless UI ([#3035](https://github.com/tailwindlabs/headlessui/pull/3035))
-- Prevent unnecessary execution of the `displayValue` callback in the `ComboboxInput` component ([#3048](https://github.com/tailwindlabs/headlessui/pull/3048))
-- Expose missing `data-disabled` and `data-focus` attributes on the `TabsPanel`, `MenuButton`, `PopoverButton` and `DisclosureButton` components ([#3061](https://github.com/tailwindlabs/headlessui/pull/3061))
-- Fix cursor position when re-focusing the `ComboboxInput` component ([#3065](https://github.com/tailwindlabs/headlessui/pull/3065))
-- Keep focus inside of the `<ComboboxInput />` component ([#3073](https://github.com/tailwindlabs/headlessui/pull/3073))
-- Fix enter transitions for the `Transition` component ([#3074](https://github.com/tailwindlabs/headlessui/pull/3074))
-- Render hidden form input fields for `Checkbox`, `Switch` and `RadioGroup` components ([#3095](https://github.com/tailwindlabs/headlessui/pull/3095))
-- Ensure the `multiple` prop is typed correctly when passing explicit types to the `Combobox` component ([#3099](https://github.com/tailwindlabs/headlessui/pull/3099))
-- Omit `nullable` prop from `Combobox` component ([#3100](https://github.com/tailwindlabs/headlessui/pull/3100))
-- Ensure anchored components are properly stacked on top of `Dialog` components ([#3111](https://github.com/tailwindlabs/headlessui/pull/3111))
-- Move focus to `ListboxOptions` and `MenuItems` when they are rendered later ([#3112](https://github.com/tailwindlabs/headlessui/pull/3112))
-- Ensure anchored components are always rendered in a stacking context ([#3115](https://github.com/tailwindlabs/headlessui/pull/3115))
-- Add optional `onClose` callback to `Combobox` component ([#3122](https://github.com/tailwindlabs/headlessui/pull/3122))
-- Make sure `data-disabled` is available on virtualized options in the `Combobox` component ([#3128](https://github.com/tailwindlabs/headlessui/pull/3128))
-- Add `overflow: auto` when using the `anchor` prop ([#3138](https://github.com/tailwindlabs/headlessui/pull/3138))
-- Ensure `TransitionRoot` component without props transitions correctly ([#3147](https://github.com/tailwindlabs/headlessui/pull/3147))
-- Ensure the `static` and `portal` props work nicely together ([#3152](https://github.com/tailwindlabs/headlessui/pull/3152))
-- Only check for elements in `useInertOthers` ([#3154](https://github.com/tailwindlabs/headlessui/pull/3154))
-- Fix anchored elements not flipping when there is padding ([#3157](https://github.com/tailwindlabs/headlessui/pull/3157))
-- Render virtual items during an exiting transition ([#3160](https://github.com/tailwindlabs/headlessui/pull/3160))
-- Only render virtual options wrapper when there are items to show ([#3161](https://github.com/tailwindlabs/headlessui/pull/3161))
-- Fix issues with scrolling to / around the active option in a virtual combobox ([#3163](https://github.com/tailwindlabs/headlessui/pull/3163))
-
-### Changed
-
-- Attempt form submission when pressing `Enter` on the `<Listbox.Button />` component ([#2972](https://github.com/tailwindlabs/headlessui/pull/2972))
-- Make the `Combobox` component `nullable` by default ([#3064](https://github.com/tailwindlabs/headlessui/pull/3064))
-- Deprecate the `entered` prop on the `Transition` component ([#3089](https://github.com/tailwindlabs/headlessui/pull/3089))
-- Use native `useId` and `useSyncExternalStore` hooks ([#3092](https://github.com/tailwindlabs/headlessui/pull/3092))
-- Use `absolute` as the default Floating UI strategy ([#3097](https://github.com/tailwindlabs/headlessui/pull/3097))
-- Change default tags for `ListboxOptions`, `ListboxOption`, `ComboboxOptions`, `ComboboxOption` and `TabGroup` components ([#3109](https://github.com/tailwindlabs/headlessui/pull/3109))
-- Change default tag from `div` to `Fragment` on `Transition` components ([#3110](https://github.com/tailwindlabs/headlessui/pull/3110))
-- Update minimal peer dependency version requirements for `react` and `react-dom` ([#3131](https://github.com/tailwindlabs/headlessui/pull/3131))
-- Deprecate dot notation for components ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#3170](https://github.com/tailwindlabs/headlessui/pull/3170))
+## [2.0.0] - TBD
 
 ### Added
 
+- Add new `Checkbox` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#2962](https://github.com/tailwindlabs/headlessui/pull/2962))
+- Add new `Radio` component as an alternative to the existing `RadioGroup.Option` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
+- Add new `Button` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
+- Add new `Input` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#2902](https://github.com/tailwindlabs/headlessui/pull/2902), [#2940](https://github.com/tailwindlabs/headlessui/pull/2940))
+- Add new `Textarea` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#2902](https://github.com/tailwindlabs/headlessui/pull/2902), [#2940](https://github.com/tailwindlabs/headlessui/pull/2940))
+- Add new `Select` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#2902](https://github.com/tailwindlabs/headlessui/pull/2902))
+- Add new `Field`, `Label`, `Description`, `Fieldset` and `Legend` components ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#2941](https://github.com/tailwindlabs/headlessui/pull/2941))
+- Add new `DataInteractive` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
+- Add new `anchor` and `modal` prop to `Combobox`, `Listbox`, `Menu` and `Popover` components ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#3075](https://github.com/tailwindlabs/headlessui/pull/3075), [#3097](https://github.com/tailwindlabs/headlessui/pull/3097), [#3111](https://github.com/tailwindlabs/headlessui/pull/3111), [#3115](https://github.com/tailwindlabs/headlessui/pull/3115), [#3121](https://github.com/tailwindlabs/headlessui/pull/3121), [#3124](https://github.com/tailwindlabs/headlessui/pull/3124), [#3133](https://github.com/tailwindlabs/headlessui/pull/3133), [#3138](https://github.com/tailwindlabs/headlessui/pull/3138), [#3148](https://github.com/tailwindlabs/headlessui/pull/3148), [#3152](https://github.com/tailwindlabs/headlessui/pull/3152), [#3154](https://github.com/tailwindlabs/headlessui/pull/3154), [#3157](https://github.com/tailwindlabs/headlessui/pull/3157))
+- Add new `ListboxSelectedOption` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
+- Add new `MenuSection`, `MenuHeading`, and `MenuSeparator` components ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
+- Add new `CloseButton` component and `useClose` hook ([#3096](https://github.com/tailwindlabs/headlessui/pull/3096))
+- Add new simplified `data-*` attributes as an alternative to the existing `data-headlessui-state="..."` attribute ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#3035](https://github.com/tailwindlabs/headlessui/pull/3035), [#3061](https://github.com/tailwindlabs/headlessui/pull/3061))
+- Add `autoFocus` prop on focusable components (which maps to `data-autofocus`) ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
 - Expose `--input-width` and `--button-width` CSS variables on the `ComboboxOptions` component ([#3057](https://github.com/tailwindlabs/headlessui/pull/3057))
 - Expose the `--button-width` CSS variable on the `PopoverPanel` component ([#3058](https://github.com/tailwindlabs/headlessui/pull/3058))
-- Close the `Combobox`, `Dialog`, `Listbox`, `Menu` and `Popover` components when the trigger disappears ([#3075](https://github.com/tailwindlabs/headlessui/pull/3075))
-- Add new `CloseButton` component and `useClose` hook ([#3096](https://github.com/tailwindlabs/headlessui/pull/3096))
-- Allow passing a boolean to the `anchor` prop ([#3121](https://github.com/tailwindlabs/headlessui/pull/3121))
-- Add `portal` prop to `Combobox`, `Listbox`, `Menu` and `Popover` components ([#3124](https://github.com/tailwindlabs/headlessui/pull/3124))
 - Add frozen value to `ComboboxOptions` component ([#3126](https://github.com/tailwindlabs/headlessui/pull/3126))
-- Add string shorthand for the `anchor` prop ([#3133](https://github.com/tailwindlabs/headlessui/pull/3133))
-- Use `var(--anchor-max-height)` when using the `anchor` prop ([#3148](https://github.com/tailwindlabs/headlessui/pull/3148))
+- Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779), [#3128](https://github.com/tailwindlabs/headlessui/pull/3128), [#3160](https://github.com/tailwindlabs/headlessui/pull/3160), [#3161](https://github.com/tailwindlabs/headlessui/pull/3161), [#3163](https://github.com/tailwindlabs/headlessui/pull/3163))
+- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
+- Add optional `onClose` callback to `Combobox` component ([#3122](https://github.com/tailwindlabs/headlessui/pull/3122))
+
+### Fixed
+
+- Allow horizontal scrolling inside the `Dialog` component ([#2889](https://github.com/tailwindlabs/headlessui/pull/2889))
+- Improve cancellation of events when using `disabled` or `aria-disabled` attributes ([#2890](https://github.com/tailwindlabs/headlessui/pull/2890))
+- Further fine tune scroll locking on iOS ([#2891](https://github.com/tailwindlabs/headlessui/pull/2891))
+- Prevent unnecessary execution of the `displayValue` callback in the `ComboboxInput` component ([#3048](https://github.com/tailwindlabs/headlessui/pull/3048))
+- Keep focus inside of the `<ComboboxInput />` component ([#3065](https://github.com/tailwindlabs/headlessui/pull/3065), [#3073](https://github.com/tailwindlabs/headlessui/pull/3073))
+- Ensure the `multiple` prop is typed correctly when passing explicit types to the `Combobox` component ([#3099](https://github.com/tailwindlabs/headlessui/pull/3099))
+- Fix enter transitions for the `Transition` component ([#3074](https://github.com/tailwindlabs/headlessui/pull/3074))
+- Render hidden form input fields for `Checkbox`, `Switch` and `RadioGroup` components ([#3095](https://github.com/tailwindlabs/headlessui/pull/3095))
+- Move focus to `ListboxOptions` and `MenuItems` when they are rendered later ([#3112](https://github.com/tailwindlabs/headlessui/pull/3112))
+
+### Changed
+
+- Bumped to React 18 ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#3092](https://github.com/tailwindlabs/headlessui/pull/3092), [#3131](https://github.com/tailwindlabs/headlessui/pull/3131))
+- Dialog is now focused by default instead of the first focusable element (unless an element exists with a `data-autofocus` in the dialog)
+- Change default tags for `ListboxOptions`, `ListboxOption`, `ComboboxOptions`, `ComboboxOption` and `TabGroup` components ([#3109](https://github.com/tailwindlabs/headlessui/pull/3109))
+- Change default tag from `div` to `Fragment` on `Transition` components ([#3110](https://github.com/tailwindlabs/headlessui/pull/3110), [#3147](https://github.com/tailwindlabs/headlessui/pull/3147))
+- Make the `Combobox` component `nullable` by default ([#3064](https://github.com/tailwindlabs/headlessui/pull/3064), [#3100](https://github.com/tailwindlabs/headlessui/pull/3100))
+- Attempt form submission when pressing `Enter` on the `<Listbox.Button />` component ([#2972](https://github.com/tailwindlabs/headlessui/pull/2972))
+- Deprecate the `entered` prop on the `Transition` component ([#3089](https://github.com/tailwindlabs/headlessui/pull/3089))
+- Deprecate dot notation for components ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#3170](https://github.com/tailwindlabs/headlessui/pull/3170))
 
 ## [1.7.19] - 2024-04-15
 
@@ -659,7 +653,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.4...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0...HEAD
+[2.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.19...v2.0.0
 [1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.18...v1.7.19
 [2.0.0-alpha.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.2...v2.0.0-alpha.3
