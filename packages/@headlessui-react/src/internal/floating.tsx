@@ -234,7 +234,7 @@ export function FloatingProvider({
       // The `flip` middleware will swap the `placement` of the panel if there is not enough room.
       // This is not compatible with the `inner` middleware (which is only enabled when `to` is set
       // to "selection").
-      to !== 'selection' && flipMiddleware(),
+      to !== 'selection' && flipMiddleware({ padding }),
 
       // The `inner` middleware will ensure the panel is always fully visible on screen and
       // positioned on top of the reference and moved to the currently selected item.
@@ -312,11 +312,12 @@ export function FloatingProvider({
       // The `size` middleware will ensure the panel is never bigger than the viewport minus the
       // provided `padding` that we want.
       sizeMiddleware({
+        padding,
         apply({ availableWidth, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
             overflow: 'auto',
-            maxWidth: `${availableWidth - padding}px`,
-            maxHeight: `min(var(--anchor-max-height, 100vh), ${availableHeight - padding}px)`,
+            maxWidth: `${availableWidth}px`,
+            maxHeight: `min(var(--anchor-max-height, 100vh), ${availableHeight}px)`,
           })
         },
       }),
