@@ -1,4 +1,5 @@
-import { act, fireEvent } from '@testing-library/react'
+import { fireEvent } from '@testing-library/react'
+import { act } from 'react'
 import { pointer } from './fake-pointer'
 
 function nextFrame(cb: Function): void {
