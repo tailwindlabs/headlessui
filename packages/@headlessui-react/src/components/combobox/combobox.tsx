@@ -1644,6 +1644,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       option: undefined,
     } satisfies OptionsRenderPropArg
   }, [data])
+
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-labelledby': labelledBy,
     role: 'listbox',
