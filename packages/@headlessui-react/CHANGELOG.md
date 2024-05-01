@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Only check for elements in `useInertOthers` ([#3154](https://github.com/tailwindlabs/headlessui/pull/3154))
 - Fix anchored elements not flipping when there is padding ([#3157](https://github.com/tailwindlabs/headlessui/pull/3157))
 - Render virtual items during an exiting transition ([#3160](https://github.com/tailwindlabs/headlessui/pull/3160))
+- Only render virtual options wrapper when there are items to show ([#3161](https://github.com/tailwindlabs/headlessui/pull/3161))
 
 ### Changed
 

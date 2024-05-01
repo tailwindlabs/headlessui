@@ -449,6 +449,12 @@ function VirtualProvider(props: {
     setBaseKey((v) => v + 1)
   }, [data.virtual?.options])
 
+  let items = virtualizer.getVirtualItems()
+
+  if (items.length === 0) {
+    return null
+  }
+
   return (
     <VirtualContext.Provider value={virtualizer}>
       <div
@@ -483,7 +489,7 @@ function VirtualProvider(props: {
           }
         }}
       >
-        {virtualizer.getVirtualItems().map((item) => {
+        {items.map((item) => {
           return (
             <Fragment key={item.key}>
               {React.cloneElement(
