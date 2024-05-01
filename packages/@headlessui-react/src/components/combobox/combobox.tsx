@@ -1659,7 +1659,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })
 
   // Map the children in a scrollable container when virtualization is enabled
-  if (data.virtual && data.comboboxState === ComboboxState.Open) {
+  if (data.virtual && visible) {
     Object.assign(theirProps, {
       // @ts-expect-error The `children` prop now is a callback function that receives `{ option }`.
       children: <VirtualProvider>{theirProps.children}</VirtualProvider>,
