@@ -196,6 +196,13 @@ let reducers: {
       ...state,
       activeOptionIndex: null,
       comboboxState: ComboboxState.Closed,
+
+      // Clear the last known activation trigger
+      // This is because if a user interacts with the combobox using a mouse
+      // resulting in it closing we might incorrectly handle the next interaction
+      // for example, not scrolling to the active option in a virtual list
+      activationTrigger: ActivationTrigger.Other,
+
       __demoMode: false,
     }
   },
@@ -1651,6 +1658,12 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     } satisfies OptionsRenderPropArg
   }, [data])
 
+  // When the user scrolls **using the mouse** (so scroll event isn't appropriate)
+  // we want to make sure that the current activation trigger is set to pointer
+  let handleWheel = useEvent(() => {
+    actions.setActivationTrigger(ActivationTrigger.Pointer)
+  })
+
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-labelledby': labelledBy,
     role: 'listbox',
@@ -1662,6 +1675,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       '--input-width': useElementSize(data.inputRef, true).width,
       '--button-width': useElementSize(data.buttonRef, true).width,
     } as CSSProperties,
+    onWheel: handleWheel,
   })
 
   // Map the children in a scrollable container when virtualization is enabled
