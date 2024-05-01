@@ -196,6 +196,13 @@ let reducers: {
       ...state,
       activeOptionIndex: null,
       comboboxState: ComboboxState.Closed,
+
+      // Clear the last known activation trigger
+      // This is because if a user interacts with the combobox using a mouse
+      // resulting in it closing we might incorrectly handle the next interaction
+      // for example, not scrolling to the active option in a virtual list
+      activationTrigger: ActivationTrigger.Other,
+
       __demoMode: false,
     }
   },
