@@ -46,12 +46,6 @@ import { Combobox } from './combobox'
 
 let NOOP = () => {}
 
-global.ResizeObserver = class FakeResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-
 jest.mock('../../hooks/use-id')
 
 beforeAll(() => {

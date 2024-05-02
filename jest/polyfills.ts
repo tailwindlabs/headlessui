@@ -1,3 +1,9 @@
+import ResizeObserverPolyfill from 'resize-observer-polyfill'
+
+if (typeof ResizeObserver === 'undefined') {
+  global.ResizeObserver = ResizeObserverPolyfill
+}
+
 // JSDOM Doesn't implement innerText yet: https://github.com/jsdom/jsdom/issues/1245
 // So this is a hacky way of implementing it using `textContent`.
 // Real implementation doesn't use textContent because:

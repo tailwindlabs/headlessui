@@ -41,12 +41,6 @@ import {
   DialogTitle,
 } from './dialog'
 
-// @ts-expect-error
-global.ResizeObserver = class FakeResizeObserver {
-  observe() {}
-  disconnect() {}
-}
-
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {

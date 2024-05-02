@@ -61,6 +61,7 @@
     "prettier": "^3.1.0",
     "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.7",
+    "resize-observer-polyfill": "^1.5.1",
     "rimraf": "^3.0.2",
     "tslib": "^2.3.1",
     "typescript": "^5.4.3"
