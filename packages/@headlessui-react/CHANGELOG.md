@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix enter transitions in `Transition` component ([#3074](https://github.com/tailwindlabs/headlessui/pull/3074))
 - Fix focus handling in `ListboxOptions` and `MenuItems` components ([#3112](https://github.com/tailwindlabs/headlessui/pull/3112))
 - Fix horizontal scrolling inside the `Dialog` component ([#2889](https://github.com/tailwindlabs/headlessui/pull/2889))
+- Don’t cancel `touchmove` on `input` elements inside a dialog ([#3166](https://github.com/tailwindlabs/headlessui/pull/3166))
 
 ### Changed
 
