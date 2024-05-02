@@ -51,12 +51,6 @@ import {
   ComboboxOptions,
 } from './combobox'
 
-global.ResizeObserver = class FakeResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-
 jest.mock('../../hooks/use-id')
 
 beforeAll(() => {

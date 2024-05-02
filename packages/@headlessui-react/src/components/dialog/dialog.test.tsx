@@ -28,12 +28,6 @@ import { Dialog } from './dialog'
 
 jest.mock('../../hooks/use-id')
 
-// @ts-expect-error
-global.ResizeObserver = class FakeResizeObserver {
-  observe() {}
-  disconnect() {}
-}
-
 afterAll(() => jest.restoreAllMocks())
 
 function nextFrame() {

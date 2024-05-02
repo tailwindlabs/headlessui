@@ -1,5 +1,5 @@
-import { act as _act, render } from '@testing-library/react'
-import React, { Fragment, createElement, useEffect, useRef, useState } from 'react'
+import { render } from '@testing-library/react'
+import React, { Fragment, act, createElement, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import {
   PopoverState,
@@ -18,15 +18,7 @@ import { Portal } from '../portal/portal'
 import { Transition } from '../transition/transition'
 import { Popover } from './popover'
 
-let act = _act as <T>(fn: () => T) => PromiseLike<T>
-
 jest.mock('../../hooks/use-id')
-
-// @ts-expect-error
-global.ResizeObserver = class FakeResizeObserver {
-  observe() {}
-  disconnect() {}
-}
 
 afterAll(() => jest.restoreAllMocks())
 

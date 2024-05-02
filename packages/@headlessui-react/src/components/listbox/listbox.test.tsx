@@ -39,12 +39,6 @@ import { Listbox } from './listbox'
 
 jest.mock('../../hooks/use-id')
 
-// @ts-expect-error
-global.ResizeObserver = class FakeResizeObserver {
-  observe() {}
-  disconnect() {}
-}
-
 beforeAll(() => {
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(setImmediate as any)
   jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(clearImmediate as any)

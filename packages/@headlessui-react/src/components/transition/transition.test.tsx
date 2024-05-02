@@ -1,13 +1,11 @@
-import { act as _act, fireEvent, render } from '@testing-library/react'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { fireEvent, render } from '@testing-library/react'
+import React, { act, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { getByText } from '../../test-utils/accessibility-assertions'
 import { executeTimeline } from '../../test-utils/execute-timeline'
 import { click } from '../../test-utils/interactions'
 import { createSnapshot } from '../../test-utils/snapshot'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from './transition'
-
-let act = _act as <T>(fn: () => T) => PromiseLike<T>
 
 function nextFrame() {
   return new Promise<void>((resolve) => {
