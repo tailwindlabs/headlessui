@@ -95,6 +95,12 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
             // Check if we are scrolling inside any of the allowed containers, if not let's cancel the event!
             if (e.target instanceof HTMLElement) {
               if (inAllowedContainer(e.target as HTMLElement)) {
+                // Some inputs like `<input type=range>` use touch events to
+                // allow interaction. We should not prevent this event.
+                if (e.target.tagName === 'INPUT') {
+                  return
+                }
+
                 // Even if we are in an allowed container, on iOS the main page can still scroll, we
                 // have to make sure that we `event.preventDefault()` this event to prevent that.
                 //
