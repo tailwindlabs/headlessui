@@ -93,7 +93,7 @@ interface StateDefinition {
   __demoMode: boolean
   menuState: MenuStates
   buttonRef: MutableRefObject<HTMLButtonElement | null>
-  itemsRef: MutableRefObject<HTMLDivElement | null>
+  itemsRef: MutableRefObject<HTMLElement | null>
   items: { id: string; dataRef: MenuItemDataRef }[]
   searchQuery: string
   activeItemIndex: number | null
@@ -590,7 +590,7 @@ export type MenuItemsProps<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG> 
 
 function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   props: MenuItemsProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let {
@@ -675,7 +675,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     },
   })
 
-  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLDivElement>) => {
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     searchDisposables.dispose()
 
     switch (event.key) {

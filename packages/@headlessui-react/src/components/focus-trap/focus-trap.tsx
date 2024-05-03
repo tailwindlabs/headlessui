@@ -90,9 +90,9 @@ export type FocusTrapProps<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_
 
 function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
   props: FocusTrapProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
-  let container = useRef<HTMLDivElement | null>(null)
+  let container = useRef<HTMLElement | null>(null)
   let focusTrapRef = useSyncRefs(container, ref)
   let {
     initialFocus,

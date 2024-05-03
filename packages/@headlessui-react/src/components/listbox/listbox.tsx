@@ -418,7 +418,7 @@ let ListboxDataContext = createContext<
       listRef: MutableRefObject<Map<string, HTMLElement | null>>
 
       buttonRef: MutableRefObject<HTMLButtonElement | null>
-      optionsRef: MutableRefObject<HTMLUListElement | null>
+      optionsRef: MutableRefObject<HTMLElement | null>
     } & Omit<StateDefinition<unknown>, 'dataRef'>)
   | null
 >(null)
@@ -1003,7 +1003,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     container?.focus({ preventScroll: true })
   }, [data.listboxState, data.optionsRef, data.optionsRef.current])
 
-  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     searchDisposables.dispose()
 
     switch (event.key) {
@@ -1176,7 +1176,7 @@ function OptionFn<
     data.activeOptionIndex !== null ? data.options[data.activeOptionIndex].id === id : false
 
   let selected = data.isSelected(value)
-  let internalOptionRef = useRef<HTMLLIElement | null>(null)
+  let internalOptionRef = useRef<HTMLElement | null>(null)
   let getTextValue = useTextValue(internalOptionRef)
   let bag = useLatestValue<ListboxOptionDataRef<TType>['current']>({
     disabled,
