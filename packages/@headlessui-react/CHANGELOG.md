@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change default tags for `ListboxOptions`, `ListboxOption`, `ComboboxOptions`, `ComboboxOption` and `TabGroup` components ([#3109](https://github.com/tailwindlabs/headlessui/pull/3109))
 - Change default tag from `div` to `Fragment` on `Transition` components ([#3110](https://github.com/tailwindlabs/headlessui/pull/3110))
 - Update minimal peer dependency version requirements for `react` and `react-dom` ([#3131](https://github.com/tailwindlabs/headlessui/pull/3131))
+- Deprecate dot notation for components ([#3170](https://github.com/tailwindlabs/headlessui/pull/3170))
 
 ### Added
 
