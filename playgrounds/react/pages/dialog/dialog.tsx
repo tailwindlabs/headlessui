@@ -21,8 +21,8 @@ function Nested({ onClose, level = 0 }) {
   return (
     <>
       <Dialog open={true} onClose={onClose} className="fixed inset-0 z-10">
-        <Dialog.Overlay className="fixed inset-0 bg-gray-500 opacity-25" />
-        <div
+        <div className="fixed inset-0 bg-gray-500 opacity-25" />
+        <Dialog.Panel
           className="fixed left-12 top-24 z-10 w-96 bg-white p-4"
           style={{
             transform: `translate(calc(50px * ${level}), calc(50px * ${level}))`,
@@ -34,7 +34,7 @@ function Nested({ onClose, level = 0 }) {
             <Button onClick={() => setShowChild(true)}>Open (2)</Button>
             <Button onClick={() => setShowChild(true)}>Open (3)</Button>
           </div>
-        </div>
+        </Dialog.Panel>
         {showChild && <Nested onClose={() => setShowChild(false)} level={level + 1} />}
       </Dialog>
     </>
