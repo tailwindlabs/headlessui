@@ -1408,4 +1408,5 @@ export let Listbox = Object.assign(ListboxRoot, {
   Label: ListboxLabel,
   Options: ListboxOptions,
   Option: ListboxOption,
+  SelectedOption: ListboxSelectedOption,
 })

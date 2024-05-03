@@ -597,6 +597,7 @@ export let RadioGroupDescription = Description as _internal_ComponentRadioDescri
 
 export let RadioGroup = Object.assign(RadioGroupRoot, {
   Option: RadioGroupOption,
+  Radio: Radio,
   /** @deprecated use `<Label>` instead of `<RadioGroup.Label>` */
   Label: RadioGroupLabel,
   /** @deprecated use `<Description>` instead of `<RadioGroup.Description>` */
