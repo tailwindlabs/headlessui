@@ -1403,10 +1403,14 @@ export let ListboxSelectedOption = forwardRefWithAs(
 ) as _internal_ComponentListboxSelectedOption
 
 export let Listbox = Object.assign(ListboxRoot, {
+  /** @deprecated use `<ListboxButton>` instead of `<Listbox.Button>` */
   Button: ListboxButton,
   /** @deprecated use `<Label>` instead of `<Listbox.Label>` */
   Label: ListboxLabel,
+  /** @deprecated use `<ListboxOptions>` instead of `<Listbox.Options>` */
   Options: ListboxOptions,
+  /** @deprecated use `<ListboxOption>` instead of `<Listbox.Option>` */
   Option: ListboxOption,
+  /** @deprecated use `<ListboxSelectedOption>` instead of `<Listbox.SelectedOption>` */
   SelectedOption: ListboxSelectedOption,
 })

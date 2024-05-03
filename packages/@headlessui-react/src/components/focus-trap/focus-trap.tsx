@@ -233,6 +233,7 @@ export interface _internal_ComponentFocusTrap extends HasDisplayName {
 let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as _internal_ComponentFocusTrap
 
 export let FocusTrap = Object.assign(FocusTrapRoot, {
+  /** @deprecated use `FocusTrapFeatures` instead of `FocusTrap.features` */
   features: FocusTrapFeatures,
 })
 

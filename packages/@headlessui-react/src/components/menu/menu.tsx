@@ -1109,10 +1109,16 @@ export let MenuHeading = forwardRefWithAs(HeadingFn) as _internal_ComponentMenuH
 export let MenuSeparator = forwardRefWithAs(SeparatorFn) as _internal_ComponentMenuSeparator
 
 export let Menu = Object.assign(MenuRoot, {
+  /** @deprecated use `<MenuButton>` instead of `<Menu.Button>` */
   Button: MenuButton,
+  /** @deprecated use `<MenuItems>` instead of `<Menu.Items>` */
   Items: MenuItems,
+  /** @deprecated use `<MenuItem>` instead of `<Menu.Item>` */
   Item: MenuItem,
+  /** @deprecated use `<MenuSection>` instead of `<Menu.Section>` */
   Section: MenuSection,
+  /** @deprecated use `<MenuHeading>` instead of `<Menu.Heading>` */
   Heading: MenuHeading,
+  /** @deprecated use `<MenuSeparator>` instead of `<Menu.Separator>` */
   Separator: MenuSeparator,
 })

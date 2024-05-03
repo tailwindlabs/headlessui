@@ -261,4 +261,7 @@ export interface _internal_ComponentPortalGroup extends HasDisplayName {
 let PortalRoot = forwardRefWithAs(PortalFn) as unknown as _internal_ComponentPortal
 export let PortalGroup = forwardRefWithAs(GroupFn) as _internal_ComponentPortalGroup
 
-export let Portal = Object.assign(PortalRoot, { Group: PortalGroup })
+export let Portal = Object.assign(PortalRoot, {
+  /** @deprecated use `<PortalGroup>` instead of `<Portal.Group>` */
+  Group: PortalGroup,
+})

@@ -666,9 +666,13 @@ export let DialogTitle = forwardRefWithAs(TitleFn) as _internal_ComponentDialogT
 export let DialogDescription = Description as _internal_ComponentDialogDescription
 
 export let Dialog = Object.assign(DialogRoot, {
+  /** @deprecated use `<DialogBackdrop>` instead of `<Dialog.Backdrop>` */
   Backdrop: DialogBackdrop,
+  /** @deprecated use `<DialogPanel>` instead of `<Dialog.Panel>` */
   Panel: DialogPanel,
+  /** @deprecated use `<DialogOverlay>` instead of `<Dialog.Overlay>` */
   Overlay: DialogOverlay,
+  /** @deprecated use `<DialogTitle>` instead of `<Dialog.Title>` */
   Title: DialogTitle,
   /** @deprecated use `<Description>` instead of `<Dialog.Description>` */
   Description: Description as _internal_ComponentDialogDescription,

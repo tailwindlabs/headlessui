@@ -1971,10 +1971,14 @@ export let ComboboxOptions = forwardRefWithAs(OptionsFn) as _internal_ComponentC
 export let ComboboxOption = forwardRefWithAs(OptionFn) as _internal_ComponentComboboxOption
 
 export let Combobox = Object.assign(ComboboxRoot, {
+  /** @deprecated use `<ComboboxInput>` instead of `<Combobox.Input>` */
   Input: ComboboxInput,
+  /** @deprecated use `<ComboboxButton>` instead of `<Combobox.Button>` */
   Button: ComboboxButton,
   /** @deprecated use `<Label>` instead of `<Combobox.Label>` */
   Label: ComboboxLabel,
+  /** @deprecated use `<ComboboxOptions>` instead of `<Combobox.Options>` */
   Options: ComboboxOptions,
+  /** @deprecated use `<ComboboxOption>` instead of `<Combobox.Option>` */
   Option: ComboboxOption,
 })
