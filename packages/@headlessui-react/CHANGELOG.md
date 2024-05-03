@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
 - Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
 
+### Fixed
+
+- Don’t cancel `touchmove` on `input` elements inside a dialog ([#3166](https://github.com/tailwindlabs/headlessui/pull/3166))
+
 ## [1.7.19] - 2024-04-15
 
 ### Fixed
