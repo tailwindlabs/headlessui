@@ -1189,8 +1189,12 @@ export let PopoverPanel = forwardRefWithAs(PanelFn) as _internal_ComponentPopove
 export let PopoverGroup = forwardRefWithAs(GroupFn) as _internal_ComponentPopoverGroup
 
 export let Popover = Object.assign(PopoverRoot, {
+  /** @deprecated use `<PopoverButton>` instead of `<Popover.Button>` */
   Button: PopoverButton,
+  /** @deprecated use `<PopoverOverlay>` instead of `<Popover.Overlay>` */
   Overlay: PopoverOverlay,
+  /** @deprecated use `<PopoverPanel>` instead of `<Popover.Panel>` */
   Panel: PopoverPanel,
+  /** @deprecated use `<PopoverGroup>` instead of `<Popover.Group>` */
   Group: PopoverGroup,
 })

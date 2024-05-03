@@ -675,6 +675,8 @@ let InternalTransitionChild = forwardRefWithAs(
 export let TransitionChild = forwardRefWithAs(ChildFn) as _internal_ComponentTransitionChild
 
 export let Transition = Object.assign(TransitionRoot, {
+  /** @deprecated use `<TransitionChild>` instead of `<Transition.Child>` */
   Child: TransitionChild,
+  /** @deprecated use `<Transition>` instead of `<Transition.Root>` */
   Root: TransitionRoot,
 })

@@ -658,17 +658,23 @@ export interface _internal_ComponentDialogTitle extends HasDisplayName {
 export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription {}
 
 let DialogRoot = forwardRefWithAs(DialogFn) as _internal_ComponentDialog
+/** @deprecated use a plain `<div>` instead of `<DialogBackdrop>` */
 export let DialogBackdrop = forwardRefWithAs(BackdropFn) as _internal_ComponentDialogBackdrop
 export let DialogPanel = forwardRefWithAs(PanelFn) as _internal_ComponentDialogPanel
+/** @deprecated use a plain `<div>` instead of `<DialogOverlay>` */
 export let DialogOverlay = forwardRefWithAs(OverlayFn) as _internal_ComponentDialogOverlay
 export let DialogTitle = forwardRefWithAs(TitleFn) as _internal_ComponentDialogTitle
 /** @deprecated use `<Description>` instead of `<DialogDescription>` */
 export let DialogDescription = Description as _internal_ComponentDialogDescription
 
 export let Dialog = Object.assign(DialogRoot, {
+  /** @deprecated use a plain `<div>` instead of `<Dialog.Backdrop>` */
   Backdrop: DialogBackdrop,
+  /** @deprecated use `<DialogPanel>` instead of `<Dialog.Panel>` */
   Panel: DialogPanel,
+  /** @deprecated use a plain `<div>` instead of `<Dialog.Overlay>` */
   Overlay: DialogOverlay,
+  /** @deprecated use `<DialogTitle>` instead of `<Dialog.Title>` */
   Title: DialogTitle,
   /** @deprecated use `<Description>` instead of `<Dialog.Description>` */
   Description: Description as _internal_ComponentDialogDescription,

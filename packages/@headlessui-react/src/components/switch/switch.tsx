@@ -276,6 +276,7 @@ export let SwitchLabel = Label as _internal_ComponentSwitchLabel
 export let SwitchDescription = Description as _internal_ComponentSwitchDescription
 
 export let Switch = Object.assign(SwitchRoot, {
+  /** @deprecated use `<SwitchGroup>` instead of `<Switch.Group>` */
   Group: SwitchGroup,
   /** @deprecated use `<Label>` instead of `<Switch.Label>` */
   Label: SwitchLabel,

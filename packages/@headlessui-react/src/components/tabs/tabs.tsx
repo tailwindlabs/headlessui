@@ -702,8 +702,12 @@ export let TabPanels = forwardRefWithAs(PanelsFn) as _internal_ComponentTabPanel
 export let TabPanel = forwardRefWithAs(PanelFn) as _internal_ComponentTabPanel
 
 export let Tab = Object.assign(TabRoot, {
+  /** @deprecated use `<TabGroup>` instead of `<Tab.Group>` */
   Group: TabGroup,
+  /** @deprecated use `<TabList>` instead of `<Tab.List>` */
   List: TabList,
+  /** @deprecated use `<TabPanels>` instead of `<Tab.Panels>` */
   Panels: TabPanels,
+  /** @deprecated use `<TabPanel>` instead of `<Tab.Panel>` */
   Panel: TabPanel,
 })

@@ -514,6 +514,8 @@ export let DisclosureButton = forwardRefWithAs(ButtonFn) as _internal_ComponentD
 export let DisclosurePanel = forwardRefWithAs(PanelFn) as _internal_ComponentDisclosurePanel
 
 export let Disclosure = Object.assign(DisclosureRoot, {
+  /** @deprecated use `<DisclosureButton>` instead of `<Disclosure.Button>` */
   Button: DisclosureButton,
+  /** @deprecated use `<DisclosurePanel>` instead of `<Disclosure.Panel>` */
   Panel: DisclosurePanel,
 })
