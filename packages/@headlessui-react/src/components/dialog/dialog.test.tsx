@@ -6,15 +6,11 @@ import {
   assertActiveElement,
   assertDialog,
   assertDialogDescription,
-  assertDialogOverlay,
   assertDialogTitle,
   assertPopoverPanel,
   DialogState,
   getByText,
   getDialog,
-  getDialogBackdrop,
-  getDialogOverlay,
-  getDialogOverlays,
   getDialogs,
   getPopoverButton,
   PopoverState,
@@ -46,9 +42,7 @@ function TabSentinel(props: PropsOf<'button'>) {
 
 describe('Safe guards', () => {
   it.each([
-    ['Dialog.Overlay', Dialog.Overlay],
     ['Dialog.Title', Dialog.Title],
-    ['Dialog.Backdrop', Dialog.Backdrop],
     ['Dialog.Panel', Dialog.Panel],
   ])(
     'should error when we are using a <%s /> without a parent <Dialog />',
@@ -66,7 +60,6 @@ describe('Safe guards', () => {
       render(
         <Dialog autoFocus={false} open={false} onClose={console.log}>
           <button>Trigger</button>
-          <Dialog.Overlay />
           <Dialog.Title />
           <p>Contents</p>
           <Dialog.Description />
@@ -553,148 +546,6 @@ describe('Rendering', () => {
     )
   })
 
-  describe('Dialog.Overlay', () => {
-    it(
-      'should be possible to render Dialog.Overlay using a render prop',
-      suppressConsoleLogs(async () => {
-        let overlay = jest.fn().mockReturnValue(null)
-        function Example() {
-          let [isOpen, setIsOpen] = useState(false)
-          return (
-            <>
-              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
-                Trigger
-              </button>
-              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-                <Dialog.Overlay>{overlay}</Dialog.Overlay>
-                <TabSentinel />
-              </Dialog>
-            </>
-          )
-        }
-
-        render(<Example />)
-
-        assertDialogOverlay({
-          state: DialogState.InvisibleUnmounted,
-          attributes: { id: 'headlessui-dialog-overlay-2' },
-        })
-
-        await click(document.getElementById('trigger'))
-
-        assertDialogOverlay({
-          state: DialogState.Visible,
-          attributes: { id: 'headlessui-dialog-overlay-2' },
-        })
-        expect(overlay).toHaveBeenCalledWith({ open: true })
-      })
-    )
-  })
-
-  describe('Dialog.Backdrop', () => {
-    it(
-      'should throw an error if a Dialog.Backdrop is used without a Dialog.Panel',
-      suppressConsoleLogs(async () => {
-        function Example() {
-          let [isOpen, setIsOpen] = useState(false)
-          return (
-            <>
-              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
-                Trigger
-              </button>
-              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-                <Dialog.Backdrop />
-                <TabSentinel />
-              </Dialog>
-            </>
-          )
-        }
-
-        render(<Example />)
-
-        try {
-          await click(document.getElementById('trigger'))
-
-          expect(true).toBe(false)
-        } catch (e: unknown) {
-          expect((e as Error).message).toBe(
-            'A <Dialog.Backdrop /> component is being used, but a <Dialog.Panel /> component is missing.'
-          )
-        }
-      })
-    )
-
-    it(
-      'should not throw an error if a Dialog.Backdrop is used with a Dialog.Panel',
-      suppressConsoleLogs(async () => {
-        function Example() {
-          let [isOpen, setIsOpen] = useState(false)
-          return (
-            <>
-              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
-                Trigger
-              </button>
-              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-                <Dialog.Backdrop />
-                <Dialog.Panel>
-                  <TabSentinel />
-                </Dialog.Panel>
-              </Dialog>
-            </>
-          )
-        }
-
-        render(<Example />)
-
-        await click(document.getElementById('trigger'))
-      })
-    )
-
-    it(
-      'should portal the Dialog.Backdrop',
-      suppressConsoleLogs(async () => {
-        function Example() {
-          let [isOpen, setIsOpen] = useState(false)
-          return (
-            <>
-              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
-                Trigger
-              </button>
-              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-                <Dialog.Backdrop />
-                <Dialog.Panel>
-                  <TabSentinel />
-                </Dialog.Panel>
-              </Dialog>
-            </>
-          )
-        }
-
-        render(<Example />)
-
-        await click(document.getElementById('trigger'))
-
-        let dialog = getDialog()
-        let backdrop = getDialogBackdrop()
-
-        expect(dialog).not.toBe(null)
-        dialog = dialog as HTMLElement
-
-        expect(backdrop).not.toBe(null)
-        backdrop = backdrop as HTMLElement
-
-        // It should not be nested
-        let position = dialog.compareDocumentPosition(backdrop)
-        expect(position & Node.DOCUMENT_POSITION_CONTAINED_BY).not.toBe(
-          Node.DOCUMENT_POSITION_CONTAINED_BY
-        )
-
-        // It should be a sibling
-        expect(position & Node.DOCUMENT_POSITION_FOLLOWING).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
-      })
-    )
-  })
-
   describe('Dialog.Title', () => {
     it(
       'should be possible to render Dialog.Title using a render prop',
@@ -1135,76 +986,6 @@ describe('Keyboard interactions', () => {
 
 describe('Mouse interactions', () => {
   it(
-    'should be possible to close a Dialog using a click on the Dialog.Overlay',
-    suppressConsoleLogs(async () => {
-      function Example() {
-        let [isOpen, setIsOpen] = useState(false)
-        return (
-          <>
-            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
-              Trigger
-            </button>
-            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              <Dialog.Overlay />
-              Contents
-              <TabSentinel />
-            </Dialog>
-          </>
-        )
-      }
-      render(<Example />)
-
-      // Open dialog
-      await click(document.getElementById('trigger'))
-
-      // Verify it is open
-      assertDialog({ state: DialogState.Visible })
-
-      // Click to close
-      await click(getDialogOverlay())
-
-      // Verify it is closed
-      assertDialog({ state: DialogState.InvisibleUnmounted })
-    })
-  )
-
-  it(
-    'should not close the Dialog when clicking on contents of the Dialog.Overlay',
-    suppressConsoleLogs(async () => {
-      function Example() {
-        let [isOpen, setIsOpen] = useState(false)
-        return (
-          <>
-            <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
-              Trigger
-            </button>
-            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              <Dialog.Overlay>
-                <button>hi</button>
-              </Dialog.Overlay>
-              Contents
-              <TabSentinel />
-            </Dialog>
-          </>
-        )
-      }
-      render(<Example />)
-
-      // Open dialog
-      await click(document.getElementById('trigger'))
-
-      // Verify it is open
-      assertDialog({ state: DialogState.Visible })
-
-      // Click on an element inside the overlay
-      await click(getByText('hi'))
-
-      // Verify it is still open
-      assertDialog({ state: DialogState.Visible })
-    })
-  )
-
-  it(
     'should be possible to close the dialog, and re-focus the button when we click outside on the body element',
     suppressConsoleLogs(async () => {
       function Example() {
@@ -1270,44 +1051,6 @@ describe('Mouse interactions', () => {
 
       // Verify the button is focused
       assertActiveElement(getByText('Hello'))
-    })
-  )
-
-  it(
-    'should stop propagating click events when clicking on the Dialog.Overlay',
-    suppressConsoleLogs(async () => {
-      let wrapperFn = jest.fn()
-      function Example() {
-        let [isOpen, setIsOpen] = useState(true)
-        return (
-          <div onClick={wrapperFn}>
-            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              Contents
-              <Dialog.Overlay />
-              <TabSentinel />
-            </Dialog>
-          </div>
-        )
-      }
-
-      render(<Example />)
-
-      await nextFrame()
-
-      // Verify it is open
-      assertDialog({ state: DialogState.Visible })
-
-      // Verify that the wrapper function has not been called yet
-      expect(wrapperFn).toHaveBeenCalledTimes(0)
-
-      // Click the Dialog.Overlay to close the Dialog
-      await click(getDialogOverlay())
-
-      // Verify it is closed
-      assertDialog({ state: DialogState.InvisibleUnmounted })
-
-      // Verify that the wrapper function has not been called yet
-      expect(wrapperFn).toHaveBeenCalledTimes(0)
     })
   )
 
@@ -1667,7 +1410,6 @@ describe('Mouse interactions', () => {
               Trigger
             </button>
             <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              <Dialog.Backdrop />
               <Dialog.Panel>
                 <TabSentinel />
               </Dialog.Panel>
@@ -1700,7 +1442,6 @@ describe('Mouse interactions', () => {
               Trigger
             </button>
             <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              <Dialog.Backdrop />
               <Dialog.Panel>
                 <button id="inside">Inside</button>
                 <TabSentinel />
@@ -1733,7 +1474,6 @@ describe('Mouse interactions', () => {
               Trigger
             </button>
             <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              <Dialog.Backdrop />
               <Dialog.Panel>
                 <button id="inside">Inside</button>
                 <TabSentinel />
@@ -1767,7 +1507,6 @@ describe('Mouse interactions', () => {
             </button>
             <div id="i-am-outside">this thing</div>
             <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              <Dialog.Backdrop />
               <Dialog.Panel>
                 <button id="inside">Inside</button>
                 <TabSentinel />
@@ -1816,8 +1555,6 @@ describe('Nesting', () => {
 
     return (
       <Dialog autoFocus={false} open={open} onClose={onClose}>
-        <Dialog.Overlay />
-
         <div>
           <p>Level: {level}</p>
           <button onClick={() => setShowChild(true)}>Open {level + 1} a</button>
@@ -1850,12 +1587,11 @@ describe('Nesting', () => {
   }
 
   it.each`
-    strategy                            | when         | action
-    ${'with `Escape`'}                  | ${'mounted'} | ${() => press(Keys.Escape)}
-    ${'with `Outside Click`'}           | ${'mounted'} | ${() => click(document.body)}
-    ${'with `Click on Dialog.Overlay`'} | ${'mounted'} | ${() => click(getDialogOverlays().pop()!)}
-    ${'with `Escape`'}                  | ${'always'}  | ${() => press(Keys.Escape)}
-    ${'with `Outside Click`'}           | ${'always'}  | ${() => click(document.body)}
+    strategy                  | when         | action
+    ${'with `Escape`'}        | ${'mounted'} | ${() => press(Keys.Escape)}
+    ${'with `Outside Click`'} | ${'mounted'} | ${() => click(document.body)}
+    ${'with `Escape`'}        | ${'always'}  | ${() => press(Keys.Escape)}
+    ${'with `Outside Click`'} | ${'always'}  | ${() => click(document.body)}
   `(
     'should be possible to open nested Dialog components (visible when $when) and close them $strategy',
     async ({ when, action }) => {

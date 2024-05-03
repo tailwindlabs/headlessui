@@ -35,7 +35,6 @@ import { State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { StackMessage, StackProvider } from '../../internal/stack-context'
 import type { Props } from '../../types'
-import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
 import {
   RenderFeatures,
@@ -426,115 +425,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
 // ---
 
-let DEFAULT_OVERLAY_TAG = 'div' as const
-type OverlayRenderPropArg = {
-  open: boolean
-}
-type OverlayPropsWeControl = 'aria-hidden'
-
-export type DialogOverlayProps<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG> = Props<
-  TTag,
-  OverlayRenderPropArg,
-  OverlayPropsWeControl
->
-
-function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
-  props: DialogOverlayProps<TTag>,
-  ref: Ref<HTMLElement>
-) {
-  let internalId = useId()
-  let { id = `headlessui-dialog-overlay-${internalId}`, ...theirProps } = props
-  let [{ dialogState, close }] = useDialogContext('Dialog.Overlay')
-  let overlayRef = useSyncRefs(ref)
-
-  let handleClick = useEvent((event: ReactMouseEvent) => {
-    if (event.target !== event.currentTarget) return
-    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    event.preventDefault()
-    event.stopPropagation()
-    close()
-  })
-
-  let slot = useMemo(
-    () => ({ open: dialogState === DialogStates.Open }) satisfies OverlayRenderPropArg,
-    [dialogState]
-  )
-
-  let ourProps = {
-    ref: overlayRef,
-    id,
-    'aria-hidden': true,
-    onClick: handleClick,
-  }
-
-  return render({
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_OVERLAY_TAG,
-    name: 'Dialog.Overlay',
-  })
-}
-
-// ---
-
-let DEFAULT_BACKDROP_TAG = 'div' as const
-type BackdropRenderPropArg = {
-  open: boolean
-}
-type BackdropPropsWeControl = 'aria-hidden'
-
-export type DialogBackdropProps<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG> = Props<
-  TTag,
-  BackdropRenderPropArg,
-  BackdropPropsWeControl
->
-
-function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
-  props: DialogBackdropProps<TTag>,
-  ref: Ref<HTMLElement>
-) {
-  let internalId = useId()
-  let { id = `headlessui-dialog-backdrop-${internalId}`, ...theirProps } = props
-  let [{ dialogState }, state] = useDialogContext('Dialog.Backdrop')
-  let backdropRef = useSyncRefs(ref)
-
-  useEffect(() => {
-    if (state.panelRef.current === null) {
-      throw new Error(
-        `A <Dialog.Backdrop /> component is being used, but a <Dialog.Panel /> component is missing.`
-      )
-    }
-  }, [state.panelRef])
-
-  let slot = useMemo(
-    () => ({ open: dialogState === DialogStates.Open }) satisfies BackdropRenderPropArg,
-    [dialogState]
-  )
-
-  let ourProps = {
-    ref: backdropRef,
-    id,
-    'aria-hidden': true,
-  }
-
-  return (
-    <ForcePortalRoot force>
-      <Portal>
-        {render({
-          ourProps,
-          theirProps,
-          slot,
-          defaultTag: DEFAULT_BACKDROP_TAG,
-          name: 'Dialog.Backdrop',
-        })}
-      </Portal>
-    </ForcePortalRoot>
-  )
-}
-
-// ---
-
 let DEFAULT_PANEL_TAG = 'div' as const
 type PanelRenderPropArg = {
   open: boolean
@@ -631,21 +521,9 @@ export interface _internal_ComponentDialog extends HasDisplayName {
   ): JSX.Element
 }
 
-export interface _internal_ComponentDialogBackdrop extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
-    props: DialogBackdropProps<TTag> & RefProp<typeof BackdropFn>
-  ): JSX.Element
-}
-
 export interface _internal_ComponentDialogPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: DialogPanelProps<TTag> & RefProp<typeof PanelFn>
-  ): JSX.Element
-}
-
-export interface _internal_ComponentDialogOverlay extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
-    props: DialogOverlayProps<TTag> & RefProp<typeof OverlayFn>
   ): JSX.Element
 }
 
@@ -659,21 +537,15 @@ export interface _internal_ComponentDialogDescription extends _internal_Componen
 
 let DialogRoot = forwardRefWithAs(DialogFn) as _internal_ComponentDialog
 /** @deprecated use a plain `<div>` instead of `<DialogBackdrop>` */
-export let DialogBackdrop = forwardRefWithAs(BackdropFn) as _internal_ComponentDialogBackdrop
 export let DialogPanel = forwardRefWithAs(PanelFn) as _internal_ComponentDialogPanel
 /** @deprecated use a plain `<div>` instead of `<DialogOverlay>` */
-export let DialogOverlay = forwardRefWithAs(OverlayFn) as _internal_ComponentDialogOverlay
 export let DialogTitle = forwardRefWithAs(TitleFn) as _internal_ComponentDialogTitle
 /** @deprecated use `<Description>` instead of `<DialogDescription>` */
 export let DialogDescription = Description as _internal_ComponentDialogDescription
 
 export let Dialog = Object.assign(DialogRoot, {
-  /** @deprecated use a plain `<div>` instead of `<Dialog.Backdrop>` */
-  Backdrop: DialogBackdrop,
   /** @deprecated use `<DialogPanel>` instead of `<Dialog.Panel>` */
   Panel: DialogPanel,
-  /** @deprecated use a plain `<div>` instead of `<Dialog.Overlay>` */
-  Overlay: DialogOverlay,
   /** @deprecated use `<DialogTitle>` instead of `<Dialog.Title>` */
   Title: DialogTitle,
   /** @deprecated use `<Description>` instead of `<Dialog.Description>` */

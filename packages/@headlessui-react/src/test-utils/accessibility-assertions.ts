@@ -1490,18 +1490,6 @@ export function getDialogDescription(): HTMLElement | null {
   return document.querySelector('[id^="headlessui-description-"]')
 }
 
-export function getDialogOverlay(): HTMLElement | null {
-  return document.querySelector('[id^="headlessui-dialog-overlay-"]')
-}
-
-export function getDialogBackdrop(): HTMLElement | null {
-  return document.querySelector('[id^="headlessui-dialog-backdrop-"]')
-}
-
-export function getDialogOverlays(): HTMLElement[] {
-  return Array.from(document.querySelectorAll('[id^="headlessui-dialog-overlay-"]'))
-}
-
 // ---
 
 export enum DialogState {
@@ -1678,53 +1666,6 @@ export function assertDialogDescription(
     }
   } catch (err) {
     if (err instanceof Error) Error.captureStackTrace(err, assertDialogDescription)
-    throw err
-  }
-}
-
-export function assertDialogOverlay(
-  options: {
-    attributes?: Record<string, string | null>
-    textContent?: string
-    state: DialogState
-  },
-  overlay = getDialogOverlay()
-) {
-  try {
-    switch (options.state) {
-      case DialogState.InvisibleHidden:
-        if (overlay === null) return expect(overlay).not.toBe(null)
-
-        assertHidden(overlay)
-
-        if (options.textContent) expect(overlay).toHaveTextContent(options.textContent)
-
-        for (let attributeName in options.attributes) {
-          expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
-        }
-        break
-
-      case DialogState.Visible:
-        if (overlay === null) return expect(overlay).not.toBe(null)
-
-        assertVisible(overlay)
-
-        if (options.textContent) expect(overlay).toHaveTextContent(options.textContent)
-
-        for (let attributeName in options.attributes) {
-          expect(overlay).toHaveAttribute(attributeName, options.attributes[attributeName])
-        }
-        break
-
-      case DialogState.InvisibleUnmounted:
-        expect(overlay).toBe(null)
-        break
-
-      default:
-        assertNever(options.state)
-    }
-  } catch (err) {
-    if (err instanceof Error) Error.captureStackTrace(err, assertDialogOverlay)
     throw err
   }
 }
