@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2024-05-03
+## [Unreleased]
 
 ### Added
 
@@ -654,8 +654,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0...HEAD
-[2.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.19...v2.0.0
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.19...HEAD
 [1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.18...v1.7.19
 [2.0.0-alpha.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.2...v2.0.0-alpha.3
