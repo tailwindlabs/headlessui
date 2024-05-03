@@ -54,7 +54,7 @@ interface StateDefinition {
   linkedPanel: boolean
 
   buttonRef: MutableRefObject<HTMLButtonElement | null>
-  panelRef: MutableRefObject<HTMLDivElement | null>
+  panelRef: MutableRefObject<HTMLElement | null>
 
   buttonId: string | null
   panelId: string | null
@@ -433,7 +433,7 @@ export type DisclosurePanelProps<TTag extends ElementType = typeof DEFAULT_PANEL
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: DisclosurePanelProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let { id = `headlessui-disclosure-panel-${internalId}`, ...theirProps } = props

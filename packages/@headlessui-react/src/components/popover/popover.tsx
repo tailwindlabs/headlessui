@@ -730,7 +730,7 @@ export type PopoverOverlayProps<TTag extends ElementType = typeof DEFAULT_OVERLA
 
 function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
   props: PopoverOverlayProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let { id = `headlessui-popover-overlay-${internalId}`, ...theirProps } = props
@@ -804,7 +804,7 @@ export type PopoverPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TA
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: PopoverPanelProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let {
@@ -822,7 +822,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let beforePanelSentinelId = `headlessui-focus-sentinel-before-${internalId}`
   let afterPanelSentinelId = `headlessui-focus-sentinel-after-${internalId}`
 
-  let internalPanelRef = useRef<HTMLDivElement | null>(null)
+  let internalPanelRef = useRef<HTMLElement | null>(null)
   let anchor = useResolvedAnchor(rawAnchor)
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()

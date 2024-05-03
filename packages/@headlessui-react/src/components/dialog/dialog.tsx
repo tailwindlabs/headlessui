@@ -61,7 +61,7 @@ enum DialogStates {
 
 interface StateDefinition {
   titleId: string | null
-  panelRef: MutableRefObject<HTMLDivElement | null>
+  panelRef: MutableRefObject<HTMLElement | null>
 }
 
 enum ActionTypes {
@@ -135,7 +135,7 @@ export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = 
 
 function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   props: DialogProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let {
@@ -173,7 +173,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     open = (usesOpenClosedState & State.Open) === State.Open
   }
 
-  let internalDialogRef = useRef<HTMLDivElement | null>(null)
+  let internalDialogRef = useRef<HTMLElement | null>(null)
   let dialogRef = useSyncRefs(internalDialogRef, ref)
 
   let ownerDocument = useOwnerDocument(internalDialogRef)
@@ -440,7 +440,7 @@ export type DialogOverlayProps<TTag extends ElementType = typeof DEFAULT_OVERLAY
 
 function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
   props: DialogOverlayProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let { id = `headlessui-dialog-overlay-${internalId}`, ...theirProps } = props
@@ -492,7 +492,7 @@ export type DialogBackdropProps<TTag extends ElementType = typeof DEFAULT_BACKDR
 
 function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
   props: DialogBackdropProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let { id = `headlessui-dialog-backdrop-${internalId}`, ...theirProps } = props
@@ -547,7 +547,7 @@ export type DialogPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TAG
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   props: DialogPanelProps<TTag>,
-  ref: Ref<HTMLDivElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let { id = `headlessui-dialog-panel-${internalId}`, ...theirProps } = props
@@ -594,7 +594,7 @@ export type DialogTitleProps<TTag extends ElementType = typeof DEFAULT_TITLE_TAG
 
 function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   props: DialogTitleProps<TTag>,
-  ref: Ref<HTMLHeadingElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let { id = `headlessui-dialog-title-${internalId}`, ...theirProps } = props

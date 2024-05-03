@@ -107,7 +107,7 @@ export type DescriptionProps<TTag extends ElementType = typeof DEFAULT_DESCRIPTI
 
 function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
   props: DescriptionProps<TTag>,
-  ref: Ref<HTMLParagraphElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let providedDisabled = useDisabled()

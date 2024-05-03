@@ -550,7 +550,7 @@ let ComboboxDataContext = createContext<
 
       inputRef: MutableRefObject<HTMLInputElement | null>
       buttonRef: MutableRefObject<HTMLButtonElement | null>
-      optionsRef: MutableRefObject<HTMLUListElement | null>
+      optionsRef: MutableRefObject<HTMLElement | null>
     } & Omit<StateDefinition<unknown>, 'dataRef'>)
   | null
 >(null)
@@ -1425,7 +1425,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let refocusInput = useRefocusableInput(data.inputRef)
 
-  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLUListElement>) => {
+  let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
@@ -1574,7 +1574,7 @@ export type ComboboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTIO
 
 function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   props: ComboboxOptionsProps<TTag>,
-  ref: Ref<HTMLUListElement>
+  ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
   let {
@@ -1750,7 +1750,7 @@ function OptionFn<
   // TODO: One day we will be able to infer this type from the generic in Combobox itself.
   // But today is not that day..
   TType = Parameters<typeof ComboboxRoot>[0]['value'],
->(props: ComboboxOptionProps<TTag, TType>, ref: Ref<HTMLLIElement>) {
+>(props: ComboboxOptionProps<TTag, TType>, ref: Ref<HTMLElement>) {
   let data = useData('Combobox.Option')
   let actions = useActions('Combobox.Option')
 
@@ -1772,7 +1772,7 @@ function OptionFn<
       : data.options[data.activeOptionIndex]?.id === id
 
   let selected = data.isSelected(value)
-  let internalOptionRef = useRef<HTMLLIElement | null>(null)
+  let internalOptionRef = useRef<HTMLElement | null>(null)
 
   let bag = useLatestValue<ComboboxOptionDataRef<TType>['current']>({
     disabled,
