@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecate the `entered` prop on the `Transition` component ([#3089](https://github.com/tailwindlabs/headlessui/pull/3089))
 - Deprecate dot notation for components ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#3170](https://github.com/tailwindlabs/headlessui/pull/3170))
 - Add frozen value to `ComboboxOptions` component ([#3126](https://github.com/tailwindlabs/headlessui/pull/3126))
+- Remove deprecated `DialogBackdrop` and `DialogOverlay` components ([#3171](https://github.com/tailwindlabs/headlessui/pull/3171))
 
 ## [1.7.19] - 2024-04-15
 
