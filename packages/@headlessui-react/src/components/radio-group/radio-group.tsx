@@ -588,6 +588,7 @@ export interface _internal_ComponentRadioLabel extends _internal_ComponentLabel 
 export interface _internal_ComponentRadioDescription extends _internal_ComponentDescription {}
 
 let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as _internal_ComponentRadioGroup
+/** @deprecated use `<Radio>` instead of `<RadioGroupOption>` */
 export let RadioGroupOption = forwardRefWithAs(OptionFn) as _internal_ComponentRadioOption
 export let Radio = forwardRefWithAs(RadioFn) as _internal_ComponentRadio
 /** @deprecated use `<Label>` instead of `<RadioGroupLabel>` */
