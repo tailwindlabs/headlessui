@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.0.0] - 2024-05-06
+
 ### Added
 
 - Add new `Checkbox` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#2962](https://github.com/tailwindlabs/headlessui/pull/2962))
@@ -657,6 +661,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Everything!
 
 [unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.4...HEAD
+[2.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.4...@headlessui/react@v2.0.0
 [1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.18...v1.7.19
 [2.0.0-alpha.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...v2.0.0-alpha.4
 [2.0.0-alpha.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.2...v2.0.0-alpha.3
