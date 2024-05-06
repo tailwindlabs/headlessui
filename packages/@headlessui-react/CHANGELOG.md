@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Remove accidental deprecation comments on `<DialogPanel>` and `<DialogTitle>` ([#3176](https://github.com/tailwindlabs/headlessui/pull/3176))
 
 ## [2.0.0] - 2024-05-06
 
