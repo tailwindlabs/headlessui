@@ -1436,6 +1436,9 @@ export let ComboboxOption = defineComponent({
     let api = useComboboxContext('ComboboxOption')
     let id = `headlessui-combobox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
+    let disabled = computed(() => {
+      return props.disabled || api.virtual.value?.disabled(props.value)
+    })
 
     expose({ el: internalOptionRef, $el: internalOptionRef })
 
@@ -1475,14 +1478,27 @@ export let ComboboxOption = defineComponent({
       nextTick(() => dom(internalOptionRef)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
-    function handleClick(event: MouseEvent) {
-      if (props.disabled || api.virtual.value?.disabled(props.value)) return event.preventDefault()
+    function handleMouseDown(event: MouseEvent) {
+      // We use the `mousedown` event here since it fires before the focus event,
+      // allowing us to cancel the event before focus is moved from the
+      // `ComboboxInput` to the `ComboboxOption`. This keeps the input focused,
+      // preserving the cursor position and any text selection.
+      event.preventDefault()
+
+      // Since we're using the `mousedown` event instead of a `click` event here
+      // to preserve the focus of the `ComboboxInput`, we need to also check
+      // that the `left` mouse button was clicked.
+      if (event.button !== MouseButton.Left) {
+        return
+      }
+
+      if (disabled.value) return
       api.selectOption(id)
 
       // We want to make sure that we don't accidentally trigger the virtual keyboard.
       //
-      // This would happen if the input is focused, the options are open, you select an option
-      // (which would blur the input, and focus the option (button), then we re-focus the input).
+      // This would happen if the input is focused, the options are open, you select an option (which
+      // would blur the input, and focus the option (button), then we re-focus the input).
       //
       // This would be annoying on mobile (or on devices with a virtual keyboard). Right now we are
       // assuming that the virtual keyboard would open on mobile devices (iOS / Android). This
@@ -1496,7 +1512,7 @@ export let ComboboxOption = defineComponent({
       }
 
       if (api.mode.value === ValueMode.Single) {
-        requestAnimationFrame(() => api.closeCombobox())
+        api.closeCombobox()
       }
     }
 
@@ -1544,7 +1560,7 @@ export let ComboboxOption = defineComponent({
         // both single and multi-select.
         'aria-selected': selected.value,
         disabled: undefined, // Never forward the `disabled` prop
-        onClick: handleClick,
+        onMousedown: handleMouseDown,
         onFocus: handleFocus,
         onPointerenter: handleEnter,
         onMouseenter: handleEnter,
