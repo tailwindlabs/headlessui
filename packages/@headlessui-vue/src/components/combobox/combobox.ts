@@ -1479,8 +1479,8 @@ export let ComboboxOption = defineComponent({
     })
 
     function handleMouseDown(event: MouseEvent) {
-      // We use the `mousedown` event here since it fires before the focus event,
-      // allowing us to cancel the event before focus is moved from the
+      // We use the `mousedown` event here since it fires before the focus
+      // event, allowing us to cancel the event before focus is moved from the
       // `ComboboxInput` to the `ComboboxOption`. This keeps the input focused,
       // preserving the cursor position and any text selection.
       event.preventDefault()
@@ -1495,17 +1495,21 @@ export let ComboboxOption = defineComponent({
       if (disabled.value) return
       api.selectOption(id)
 
-      // We want to make sure that we don't accidentally trigger the virtual keyboard.
+      // We want to make sure that we don't accidentally trigger the virtual
+      // keyboard.
       //
-      // This would happen if the input is focused, the options are open, you select an option (which
-      // would blur the input, and focus the option (button), then we re-focus the input).
+      // This would happen if the input is focused, the options are open, you
+      // select an option (which would blur the input, and focus the option
+      // (button), then we re-focus the input).
       //
-      // This would be annoying on mobile (or on devices with a virtual keyboard). Right now we are
-      // assuming that the virtual keyboard would open on mobile devices (iOS / Android). This
-      // assumption is not perfect, but will work in the majority of the cases.
+      // This would be annoying on mobile (or on devices with a virtual
+      // keyboard). Right now we are assuming that the virtual keyboard would open
+      // on mobile devices (iOS / Android). This assumption is not perfect, but
+      // will work in the majority of the cases.
       //
-      // Ideally we can have a better check where we can explicitly check for the virtual keyboard.
-      // But right now this is still an experimental feature:
+      // Ideally we can have a better check where we can explicitly check for
+      // the virtual keyboard. But right now this is still an experimental
+      // feature:
       // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
       if (!isMobile()) {
         requestAnimationFrame(() => dom(api.inputRef)?.focus({ preventScroll: true }))
