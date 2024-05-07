@@ -742,7 +742,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       compare,
       isSelected,
       isActive,
-      __demoMode,
     }),
     [value, defaultValue, disabled, multiple, __demoMode, state, virtual]
   )
