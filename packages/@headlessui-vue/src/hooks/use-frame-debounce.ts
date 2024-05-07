@@ -12,6 +12,6 @@ export function useFrameDebounce() {
 
   return (cb: () => void) => {
     d.dispose()
-    d.nextFrame(() => cb())
+    d.nextFrame(cb)
   }
 }
