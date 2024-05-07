@@ -23,6 +23,7 @@ import {
   type UnwrapNestedRefs,
 } from 'vue'
 import { useControllable } from '../../hooks/use-controllable'
+import { useFrameDebounce } from '../../hooks/use-frame-debounce'
 import { useId } from '../../hooks/use-id'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -31,6 +32,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import { Keys } from '../../keyboard'
+import { MouseButton } from '../../mouse'
 import { history } from '../../utils/active-element-history'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
@@ -1062,8 +1064,13 @@ export let ComboboxInput = defineComponent({
       })
     }
 
+    let debounce = useFrameDebounce()
     function handleKeyDown(event: KeyboardEvent) {
       isTyping.value = true
+      debounce(() => {
+        isTyping.value = false
+      })
+
       switch (event.key) {
         // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
