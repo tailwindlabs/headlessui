@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Improve performance of internal `useInertOthers` hook ([#3181](https://github.com/tailwindlabs/headlessui/pull/3181))
 
 ## [2.0.1] - 2024-05-06
 
