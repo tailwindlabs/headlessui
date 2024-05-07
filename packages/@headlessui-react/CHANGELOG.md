@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.0.3] - 2024-05-07
+
 ### Fixed
 
 - Make sure disabling demo mode on `<Combobox>` works ([#3182](hhttps://github.com/tailwindlabs/headlessui/pull/3182))
@@ -674,8 +678,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.2-alpha.4...HEAD
-[2.0.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.4...@headlessui/react@v2.0.2
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.3...HEAD
+[2.0.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.2...@headlessui/react@v2.0.3
+[2.0.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.1...@headlessui/react@v2.0.2
+[2.0.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0...@headlessui/react@v2.0.1
 [2.0.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.4...@headlessui/react@v2.0.0
 [1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v1.7.18...v1.7.19
 [2.0.0-alpha.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0-alpha.3...v2.0.0-alpha.4
