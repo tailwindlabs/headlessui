@@ -74,8 +74,8 @@ function markNotInert(element: HTMLElement) {
  */
 export function useInertOthers(
   {
-    allowed = () => [],
-    disallowed = () => [],
+    allowed,
+    disallowed,
   }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {},
   enabled = true
 ) {
@@ -85,14 +85,14 @@ export function useInertOthers(
     let d = disposables()
 
     // Mark all disallowed elements as inert
-    for (let element of disallowed()) {
+    for (let element of disallowed?.() ?? []) {
       if (!element) continue
 
       d.add(markInert(element))
     }
 
     // Mark all siblings of allowed elements (and parents) as inert
-    let allowedElements = allowed()
+    let allowedElements = allowed?.() ?? []
 
     for (let element of allowedElements) {
       if (!element) continue
