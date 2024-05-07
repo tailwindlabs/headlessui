@@ -23,6 +23,7 @@ import {
   type UnwrapNestedRefs,
 } from 'vue'
 import { useControllable } from '../../hooks/use-controllable'
+import { useFrameDebounce } from '../../hooks/use-frame-debounce'
 import { useId } from '../../hooks/use-id'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
@@ -31,6 +32,7 @@ import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { Hidden, Features as HiddenFeatures } from '../../internal/hidden'
 import { State, useOpenClosed, useOpenClosedProvider } from '../../internal/open-closed'
 import { Keys } from '../../keyboard'
+import { MouseButton } from '../../mouse'
 import { history } from '../../utils/active-element-history'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
@@ -1062,8 +1064,13 @@ export let ComboboxInput = defineComponent({
       })
     }
 
+    let debounce = useFrameDebounce()
     function handleKeyDown(event: KeyboardEvent) {
       isTyping.value = true
+      debounce(() => {
+        isTyping.value = false
+      })
+
       switch (event.key) {
         // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
@@ -1429,6 +1436,9 @@ export let ComboboxOption = defineComponent({
     let api = useComboboxContext('ComboboxOption')
     let id = `headlessui-combobox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
+    let disabled = computed(() => {
+      return props.disabled || api.virtual.value?.disabled(props.value)
+    })
 
     expose({ el: internalOptionRef, $el: internalOptionRef })
 
@@ -1468,28 +1478,45 @@ export let ComboboxOption = defineComponent({
       nextTick(() => dom(internalOptionRef)?.scrollIntoView?.({ block: 'nearest' }))
     })
 
-    function handleClick(event: MouseEvent) {
-      if (props.disabled || api.virtual.value?.disabled(props.value)) return event.preventDefault()
+    function handleMouseDown(event: MouseEvent) {
+      // We use the `mousedown` event here since it fires before the focus
+      // event, allowing us to cancel the event before focus is moved from the
+      // `ComboboxInput` to the `ComboboxOption`. This keeps the input focused,
+      // preserving the cursor position and any text selection.
+      event.preventDefault()
+
+      // Since we're using the `mousedown` event instead of a `click` event here
+      // to preserve the focus of the `ComboboxInput`, we need to also check
+      // that the `left` mouse button was clicked.
+      if (event.button !== MouseButton.Left) {
+        return
+      }
+
+      if (disabled.value) return
       api.selectOption(id)
 
-      // We want to make sure that we don't accidentally trigger the virtual keyboard.
+      // We want to make sure that we don't accidentally trigger the virtual
+      // keyboard.
       //
-      // This would happen if the input is focused, the options are open, you select an option
-      // (which would blur the input, and focus the option (button), then we re-focus the input).
+      // This would happen if the input is focused, the options are open, you
+      // select an option (which would blur the input, and focus the option
+      // (button), then we re-focus the input).
       //
-      // This would be annoying on mobile (or on devices with a virtual keyboard). Right now we are
-      // assuming that the virtual keyboard would open on mobile devices (iOS / Android). This
-      // assumption is not perfect, but will work in the majority of the cases.
+      // This would be annoying on mobile (or on devices with a virtual
+      // keyboard). Right now we are assuming that the virtual keyboard would open
+      // on mobile devices (iOS / Android). This assumption is not perfect, but
+      // will work in the majority of the cases.
       //
-      // Ideally we can have a better check where we can explicitly check for the virtual keyboard.
-      // But right now this is still an experimental feature:
+      // Ideally we can have a better check where we can explicitly check for
+      // the virtual keyboard. But right now this is still an experimental
+      // feature:
       // https://developer.mozilla.org/en-US/docs/Web/API/Navigator/virtualKeyboard
       if (!isMobile()) {
         requestAnimationFrame(() => dom(api.inputRef)?.focus({ preventScroll: true }))
       }
 
       if (api.mode.value === ValueMode.Single) {
-        requestAnimationFrame(() => api.closeCombobox())
+        api.closeCombobox()
       }
     }
 
@@ -1537,7 +1564,7 @@ export let ComboboxOption = defineComponent({
         // both single and multi-select.
         'aria-selected': selected.value,
         disabled: undefined, // Never forward the `disabled` prop
-        onClick: handleClick,
+        onMousedown: handleMouseDown,
         onFocus: handleFocus,
         onPointerenter: handleEnter,
         onMouseenter: handleEnter,

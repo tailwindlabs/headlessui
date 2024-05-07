@@ -1,5 +1,4 @@
 import { useDisposables } from './use-disposables'
-import { useEvent } from './use-event'
 
 /**
  * Schedule some task in the next frame.
@@ -11,8 +10,8 @@ import { useEvent } from './use-event'
 export function useFrameDebounce() {
   let d = useDisposables()
 
-  return useEvent((cb: () => void) => {
+  return (cb: () => void) => {
     d.dispose()
     d.nextFrame(cb)
-  })
+  }
 }
