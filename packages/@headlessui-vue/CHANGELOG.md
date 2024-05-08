@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [1.7.22] - 2024-05-08
+
 ### Fixed
 
 - Don’t cancel `touchmove` on `input` elements inside a dialog ([#3166](https://github.com/tailwindlabs/headlessui/pull/3166))
@@ -535,7 +539,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.21...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.22...HEAD
+[1.7.22]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.21...@headlessui/vue@v1.7.22
 [1.7.21]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.20...@headlessui/vue@v1.7.21
 [1.7.20]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.19...@headlessui/vue@v1.7.20
 [1.7.19]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/vue@v1.7.18...@headlessui/vue@v1.7.19
