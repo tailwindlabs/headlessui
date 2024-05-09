@@ -656,14 +656,15 @@ export interface _internal_ComponentDialogDescription extends _internal_Componen
 
 let DialogRoot = forwardRefWithAs(DialogFn) as unknown as _internal_ComponentDialog
 let Backdrop = forwardRefWithAs(BackdropFn) as unknown as _internal_ComponentDialogBackdrop
-let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDialogPanel
 let Overlay = forwardRefWithAs(OverlayFn) as unknown as _internal_ComponentDialogOverlay
-let Title = forwardRefWithAs(TitleFn) as unknown as _internal_ComponentDialogTitle
+export let DialogPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDialogPanel
+export let DialogTitle = forwardRefWithAs(TitleFn) as unknown as _internal_ComponentDialogTitle
+export let DialogDescription = Description as unknown as _internal_ComponentDialogDescription
 
 export let Dialog = Object.assign(DialogRoot, {
   Backdrop,
-  Panel,
+  Panel: DialogPanel,
   Overlay,
-  Title,
+  Title: DialogTitle,
   Description: Description as _internal_ComponentDialogDescription,
 })

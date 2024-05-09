@@ -571,7 +571,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
             ...sharedProps,
             as: Fragment,
             children: (
-              <TransitionChild
+              <InternalTransitionChild
                 ref={transitionRef}
                 {...sharedProps}
                 {...theirProps}
@@ -605,7 +605,7 @@ function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>
         <TransitionRoot ref={ref} {...props} />
       ) : (
         // @ts-expect-error This is an object
-        <TransitionChild ref={ref} {...props} />
+        <InternalTransitionChild ref={ref} {...props} />
       )}
     </>
   )
@@ -626,9 +626,14 @@ export interface _internal_ComponentTransitionChild extends HasDisplayName {
 let TransitionRoot = forwardRefWithAs(
   TransitionRootFn
 ) as unknown as _internal_ComponentTransitionRoot
-let TransitionChild = forwardRefWithAs(
+let InternalTransitionChild = forwardRefWithAs(
   TransitionChildFn
 ) as unknown as _internal_ComponentTransitionChild
-let Child = forwardRefWithAs(ChildFn) as unknown as _internal_ComponentTransitionChild
+export let TransitionChild = forwardRefWithAs(
+  ChildFn
+) as unknown as _internal_ComponentTransitionChild
 
-export let Transition = Object.assign(TransitionRoot, { Child, Root: TransitionRoot })
+export let Transition = Object.assign(TransitionRoot, {
+  Child: TransitionChild,
+  Root: TransitionRoot,
+})

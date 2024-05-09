@@ -661,9 +661,14 @@ export interface _internal_ComponentTabPanel extends HasDisplayName {
 }
 
 let TabRoot = forwardRefWithAs(TabFn) as unknown as _internal_ComponentTab
-let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentTabGroup
-let List = forwardRefWithAs(ListFn) as unknown as _internal_ComponentTabList
-let Panels = forwardRefWithAs(PanelsFn) as unknown as _internal_ComponentTabPanels
-let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentTabPanel
+export let TabGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentTabGroup
+export let TabList = forwardRefWithAs(ListFn) as unknown as _internal_ComponentTabList
+export let TabPanels = forwardRefWithAs(PanelsFn) as unknown as _internal_ComponentTabPanels
+export let TabPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentTabPanel
 
-export let Tab = Object.assign(TabRoot, { Group, List, Panels, Panel })
+export let Tab = Object.assign(TabRoot, {
+  Group: TabGroup,
+  List: TabList,
+  Panels: TabPanels,
+  Panel: TabPanel,
+})

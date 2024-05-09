@@ -1084,9 +1084,16 @@ export interface _internal_ComponentPopoverGroup extends HasDisplayName {
 }
 
 let PopoverRoot = forwardRefWithAs(PopoverFn) as unknown as _internal_ComponentPopover
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentPopoverButton
-let Overlay = forwardRefWithAs(OverlayFn) as unknown as _internal_ComponentPopoverOverlay
-let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentPopoverPanel
-let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPopoverGroup
+export let PopoverButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentPopoverButton
+export let PopoverOverlay = forwardRefWithAs(
+  OverlayFn
+) as unknown as _internal_ComponentPopoverOverlay
+export let PopoverPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentPopoverPanel
+export let PopoverGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPopoverGroup
 
-export let Popover = Object.assign(PopoverRoot, { Button, Overlay, Panel, Group })
+export let Popover = Object.assign(PopoverRoot, {
+  Button: PopoverButton,
+  Overlay: PopoverOverlay,
+  Panel: PopoverPanel,
+  Group: PopoverGroup,
+})

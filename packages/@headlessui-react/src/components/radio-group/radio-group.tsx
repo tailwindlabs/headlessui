@@ -505,10 +505,14 @@ export interface _internal_ComponentRadioLabel extends _internal_ComponentLabel 
 export interface _internal_ComponentRadioDescription extends _internal_ComponentDescription {}
 
 let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as _internal_ComponentRadioGroup
-let Option = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentRadioOption
+export let RadioGroupOption = forwardRefWithAs(
+  OptionFn
+) as unknown as _internal_ComponentRadioOption
+export let RadioGroupLabel = Label as unknown as _internal_ComponentRadioLabel
+export let RadioGroupDescription = Description as unknown as _internal_ComponentRadioDescription
 
 export let RadioGroup = Object.assign(RadioGroupRoot, {
-  Option,
-  Label: Label as _internal_ComponentRadioLabel,
-  Description: Description as _internal_ComponentRadioDescription,
+  Option: RadioGroupOption,
+  Label: RadioGroupLabel,
+  Description: RadioGroupDescription,
 })

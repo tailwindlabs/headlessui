@@ -223,6 +223,8 @@ export interface _internal_ComponentPortalGroup extends HasDisplayName {
 }
 
 let PortalRoot = forwardRefWithAs(PortalFn) as unknown as _internal_ComponentPortal
-let Group = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPortalGroup
+export let PortalGroup = forwardRefWithAs(GroupFn) as unknown as _internal_ComponentPortalGroup
 
-export let Portal = Object.assign(PortalRoot, { Group })
+export let Portal = Object.assign(PortalRoot, {
+  Group: PortalGroup,
+})

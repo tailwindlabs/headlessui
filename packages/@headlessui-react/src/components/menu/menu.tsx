@@ -748,8 +748,12 @@ export interface _internal_ComponentMenuItem extends HasDisplayName {
 }
 
 let MenuRoot = forwardRefWithAs(MenuFn) as unknown as _internal_ComponentMenu
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentMenuButton
-let Items = forwardRefWithAs(ItemsFn) as unknown as _internal_ComponentMenuItems
-let Item = forwardRefWithAs(ItemFn) as unknown as _internal_ComponentMenuItem
+export let MenuButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentMenuButton
+export let MenuItems = forwardRefWithAs(ItemsFn) as unknown as _internal_ComponentMenuItems
+export let MenuItem = forwardRefWithAs(ItemFn) as unknown as _internal_ComponentMenuItem
 
-export let Menu = Object.assign(MenuRoot, { Button, Items, Item })
+export let Menu = Object.assign(MenuRoot, {
+  Button: MenuButton,
+  Items: MenuItems,
+  Item: MenuItem,
+})

@@ -1065,9 +1065,16 @@ export interface _internal_ComponentListboxOption extends HasDisplayName {
 }
 
 let ListboxRoot = forwardRefWithAs(ListboxFn) as unknown as _internal_ComponentListbox
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentListboxButton
-let Label = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentListboxLabel
-let Options = forwardRefWithAs(OptionsFn) as unknown as _internal_ComponentListboxOptions
-let Option = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentListboxOption
+export let ListboxButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentListboxButton
+export let ListboxLabel = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentListboxLabel
+export let ListboxOptions = forwardRefWithAs(
+  OptionsFn
+) as unknown as _internal_ComponentListboxOptions
+export let ListboxOption = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentListboxOption
 
-export let Listbox = Object.assign(ListboxRoot, { Button, Label, Options, Option })
+export let Listbox = Object.assign(ListboxRoot, {
+  Button: ListboxButton,
+  Label: ListboxLabel,
+  Options: ListboxOptions,
+  Option: ListboxOption,
+})

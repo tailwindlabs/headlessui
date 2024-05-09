@@ -446,7 +446,14 @@ export interface _internal_ComponentDisclosurePanel extends HasDisplayName {
 }
 
 let DisclosureRoot = forwardRefWithAs(DisclosureFn) as unknown as _internal_ComponentDisclosure
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentDisclosureButton
-let Panel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDisclosurePanel
+export let DisclosureButton = forwardRefWithAs(
+  ButtonFn
+) as unknown as _internal_ComponentDisclosureButton
+export let DisclosurePanel = forwardRefWithAs(
+  PanelFn
+) as unknown as _internal_ComponentDisclosurePanel
 
-export let Disclosure = Object.assign(DisclosureRoot, { Button, Panel })
+export let Disclosure = Object.assign(DisclosureRoot, {
+  Button: DisclosureButton,
+  Panel: DisclosurePanel,
+})

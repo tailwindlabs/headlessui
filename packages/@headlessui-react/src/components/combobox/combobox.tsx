@@ -1887,10 +1887,22 @@ export interface _internal_ComponentComboboxOption extends HasDisplayName {
 }
 
 let ComboboxRoot = forwardRefWithAs(ComboboxFn) as unknown as _internal_ComponentCombobox
-let Button = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentComboboxButton
-let Input = forwardRefWithAs(InputFn) as unknown as _internal_ComponentComboboxInput
-let Label = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentComboboxLabel
-let Options = forwardRefWithAs(OptionsFn) as unknown as _internal_ComponentComboboxOptions
-let Option = forwardRefWithAs(OptionFn) as unknown as _internal_ComponentComboboxOption
+export let ComboboxButton = forwardRefWithAs(
+  ButtonFn
+) as unknown as _internal_ComponentComboboxButton
+export let ComboboxInput = forwardRefWithAs(InputFn) as unknown as _internal_ComponentComboboxInput
+export let ComboboxLabel = LabelFn as unknown as _internal_ComponentComboboxLabel
+export let ComboboxOptions = forwardRefWithAs(
+  OptionsFn
+) as unknown as _internal_ComponentComboboxOptions
+export let ComboboxOption = forwardRefWithAs(
+  OptionFn
+) as unknown as _internal_ComponentComboboxOption
 
-export let Combobox = Object.assign(ComboboxRoot, { Input, Button, Label, Options, Option })
+export let Combobox = Object.assign(ComboboxRoot, {
+  Input: ComboboxInput,
+  Button: ComboboxButton,
+  Label: ComboboxLabel,
+  Options: ComboboxOptions,
+  Option: ComboboxOption,
+})
