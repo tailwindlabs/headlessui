@@ -17,7 +17,12 @@ import React, {
   type MutableRefObject,
   type Ref,
 } from 'react'
-import { useComputed } from '../../hooks/use-computed'
+import {
+  Label,
+  useLabelledBy,
+  useLabels,
+  _internal_ComponentLabel,
+} from '../../components/label/label'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
@@ -914,50 +919,64 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     })
   }, [form, theirOnChange /* Explicitly ignoring `defaultValue` */])
 
+  let [labelledby, LabelProvider] = useLabels()
+
   return (
-    <ComboboxActionsContext.Provider value={actions}>
-      <ComboboxDataContext.Provider value={data}>
-        <OpenClosedProvider
-          value={match(data.comboboxState, {
-            [ComboboxState.Open]: State.Open,
-            [ComboboxState.Closed]: State.Closed,
-          })}
-        >
-          {name != null &&
-            value != null &&
-            objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
-              <Hidden
-                features={HiddenFeatures.Hidden}
-                ref={
-                  idx === 0
-                    ? (element: HTMLInputElement | null) => {
-                        form.current = element?.closest('form') ?? null
-                      }
-                    : undefined
-                }
-                {...compact({
-                  key: name,
-                  as: 'input',
-                  type: 'hidden',
-                  hidden: true,
-                  readOnly: true,
-                  form: formName,
-                  disabled,
-                  name,
-                  value,
-                })}
-              />
-            ))}
-          {render({
-            ourProps,
-            theirProps,
-            slot,
-            defaultTag: DEFAULT_COMBOBOX_TAG,
-            name: 'Combobox',
-          })}
-        </OpenClosedProvider>
-      </ComboboxDataContext.Provider>
-    </ComboboxActionsContext.Provider>
+    <LabelProvider
+      name="Combobox.Label"
+      value={labelledby}
+      props={{
+        htmlFor: data.inputRef.current?.id,
+      }}
+      slot={{
+        open: data.comboboxState === ComboboxState.Open,
+        disabled,
+      }}
+    >
+      <ComboboxActionsContext.Provider value={actions}>
+        <ComboboxDataContext.Provider value={data}>
+          <OpenClosedProvider
+            value={match(data.comboboxState, {
+              [ComboboxState.Open]: State.Open,
+              [ComboboxState.Closed]: State.Closed,
+            })}
+          >
+            {name != null &&
+              value != null &&
+              objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
+                <Hidden
+                  features={HiddenFeatures.Hidden}
+                  ref={
+                    idx === 0
+                      ? (element: HTMLInputElement | null) => {
+                          form.current = element?.closest('form') ?? null
+                        }
+                      : undefined
+                  }
+                  {...compact({
+                    key: name,
+                    as: 'input',
+                    type: 'hidden',
+                    hidden: true,
+                    readOnly: true,
+                    form: formName,
+                    disabled,
+                    name,
+                    value,
+                  })}
+                />
+              ))}
+            {render({
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_COMBOBOX_TAG,
+              name: 'Combobox',
+            })}
+          </OpenClosedProvider>
+        </ComboboxDataContext.Provider>
+      </ComboboxActionsContext.Provider>
+    </LabelProvider>
   )
 }
 
@@ -1342,10 +1361,7 @@ function InputFn<
 
   // TODO: Verify this. The spec says that, for the input/combobox, the label is the labelling element when present
   // Otherwise it's the ID of the non-label element
-  let labelledby = useComputed(() => {
-    if (!data.labelId) return undefined
-    return [data.labelId].join(' ')
-  }, [data.labelId])
+  let labelledBy = useLabelledBy()
 
   let slot = useMemo<InputRenderPropArg>(
     () => ({ open: data.comboboxState === ComboboxState.Open, disabled: data.disabled }),
@@ -1372,7 +1388,7 @@ function InputFn<
               )
           )?.id
         : data.options[data.activeOptionIndex]?.id,
-    'aria-labelledby': labelledby,
+    'aria-labelledby': labelledBy,
     'aria-autocomplete': 'list',
     defaultValue:
       props.defaultValue ??
@@ -1483,10 +1499,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     d.nextFrame(() => data.inputRef.current?.focus({ preventScroll: true }))
   })
 
-  let labelledby = useComputed(() => {
-    if (!data.labelId) return undefined
-    return [data.labelId, id].join(' ')
-  }, [data.labelId, id])
+  let labelledBy = useLabelledBy([id])
 
   let slot = useMemo<ButtonRenderPropArg>(
     () => ({
@@ -1504,7 +1517,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     'aria-haspopup': 'listbox',
     'aria-controls': data.optionsRef.current?.id,
     'aria-expanded': data.comboboxState === ComboboxState.Open,
-    'aria-labelledby': labelledby,
+    'aria-labelledby': labelledBy,
     disabled: data.disabled,
     onClick: handleClick,
     onKeyDown: handleKeyDown,
@@ -1618,17 +1631,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     },
   })
 
-  let labelledby = useComputed(
-    () => data.labelId ?? data.buttonRef.current?.id,
-    [data.labelId, data.buttonRef.current]
-  )
+  let labelledBy = useLabelledBy() ?? data.buttonRef.current?.id
 
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: data.comboboxState === ComboboxState.Open, option: undefined }),
     [data]
   )
   let ourProps = {
-    'aria-labelledby': labelledby,
+    'aria-labelledby': labelledBy,
     role: 'listbox',
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     id,
@@ -1891,7 +1901,7 @@ export let ComboboxButton = forwardRefWithAs(
   ButtonFn
 ) as unknown as _internal_ComponentComboboxButton
 export let ComboboxInput = forwardRefWithAs(InputFn) as unknown as _internal_ComponentComboboxInput
-export let ComboboxLabel = LabelFn as unknown as _internal_ComponentComboboxLabel
+export let ComboboxLabel = Label as unknown as _internal_ComponentLabel
 export let ComboboxOptions = forwardRefWithAs(
   OptionsFn
 ) as unknown as _internal_ComponentComboboxOptions

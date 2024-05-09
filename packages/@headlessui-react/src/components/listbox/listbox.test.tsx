@@ -56,10 +56,17 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Listbox />',
     suppressConsoleLogs((name, Component) => {
-      // @ts-expect-error This is fine
-      expect(() => render(createElement(Component))).toThrowError(
-        `<${name} /> is missing a parent <Listbox /> component.`
-      )
+      if (name === 'Listbox.Label') {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          'You used a <Label /> component, but it is not inside a relevant parent.'
+        )
+      } else {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          `<${name} /> is missing a parent <Listbox /> component.`
+        )
+      }
     })
   )
 
@@ -502,7 +509,7 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-listbox-button-2' },
         })
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertListbox({ state: ListboxState.InvisibleUnmounted })
@@ -510,7 +517,7 @@ describe('Rendering', () => {
         await click(getListboxButton())
 
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertListbox({ state: ListboxState.Visible })
@@ -534,7 +541,7 @@ describe('Rendering', () => {
         )
 
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
@@ -542,7 +549,7 @@ describe('Rendering', () => {
 
         await click(getListboxButton())
         assertListboxLabel({
-          attributes: { id: 'headlessui-listbox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })

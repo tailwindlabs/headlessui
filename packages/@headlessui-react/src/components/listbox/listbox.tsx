@@ -14,6 +14,12 @@ import React, {
   type MutableRefObject,
   type Ref,
 } from 'react'
+import {
+  Label,
+  useLabelledBy,
+  useLabels,
+  _internal_ComponentLabel,
+} from '../../components/label/label'
 import { useComputed } from '../../hooks/use-computed'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -538,44 +544,64 @@ function ListboxFn<
     })
   }, [form, theirOnChange /* Explicitly ignoring `defaultValue` */])
 
+  let [labelledby, LabelProvider] = useLabels({ inherit: true })
+
   return (
-    <ListboxActionsContext.Provider value={actions}>
-      <ListboxDataContext.Provider value={data}>
-        <OpenClosedProvider
-          value={match(data.listboxState, {
-            [ListboxStates.Open]: State.Open,
-            [ListboxStates.Closed]: State.Closed,
-          })}
-        >
-          {name != null &&
-            value != null &&
-            objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
-              <Hidden
-                features={HiddenFeatures.Hidden}
-                ref={
-                  idx === 0
-                    ? (element: HTMLInputElement | null) => {
-                        form.current = element?.closest('form') ?? null
-                      }
-                    : undefined
-                }
-                {...compact({
-                  key: name,
-                  as: 'input',
-                  type: 'hidden',
-                  hidden: true,
-                  readOnly: true,
-                  form: formName,
-                  disabled,
-                  name,
-                  value,
-                })}
-              />
-            ))}
-          {render({ ourProps, theirProps, slot, defaultTag: DEFAULT_LISTBOX_TAG, name: 'Listbox' })}
-        </OpenClosedProvider>
-      </ListboxDataContext.Provider>
-    </ListboxActionsContext.Provider>
+    <LabelProvider
+      name="Listbox.Label"
+      value={labelledby}
+      props={{
+        htmlFor: data.buttonRef.current?.id,
+      }}
+      slot={{
+        open: data.listboxState === ListboxStates.Open,
+        disabled,
+      }}
+    >
+      <ListboxActionsContext.Provider value={actions}>
+        <ListboxDataContext.Provider value={data}>
+          <OpenClosedProvider
+            value={match(data.listboxState, {
+              [ListboxStates.Open]: State.Open,
+              [ListboxStates.Closed]: State.Closed,
+            })}
+          >
+            {name != null &&
+              value != null &&
+              objectToFormEntries({ [name]: value }).map(([name, value], idx) => (
+                <Hidden
+                  features={HiddenFeatures.Hidden}
+                  ref={
+                    idx === 0
+                      ? (element: HTMLInputElement | null) => {
+                          form.current = element?.closest('form') ?? null
+                        }
+                      : undefined
+                  }
+                  {...compact({
+                    key: name,
+                    as: 'input',
+                    type: 'hidden',
+                    hidden: true,
+                    readOnly: true,
+                    form: formName,
+                    disabled,
+                    name,
+                    value,
+                  })}
+                />
+              ))}
+            {render({
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_LISTBOX_TAG,
+              name: 'Listbox',
+            })}
+          </OpenClosedProvider>
+        </ListboxDataContext.Provider>
+      </ListboxActionsContext.Provider>
+    </LabelProvider>
   )
 }
 
@@ -658,10 +684,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let labelledby = useComputed(() => {
-    if (!data.labelId) return undefined
-    return [data.labelId, id].join(' ')
-  }, [data.labelId, id])
+  let labelledBy = useLabelledBy([id])
 
   let slot = useMemo<ButtonRenderPropArg>(
     () => ({
@@ -679,7 +702,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     'aria-haspopup': 'listbox',
     'aria-controls': data.optionsRef.current?.id,
     'aria-expanded': data.listboxState === ListboxStates.Open,
-    'aria-labelledby': labelledby,
+    'aria-labelledby': labelledBy,
     disabled: data.disabled,
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
@@ -859,6 +882,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })
 
   let labelledby = useComputed(() => data.buttonRef.current?.id, [data.buttonRef.current])
+
   let slot = useMemo<OptionsRenderPropArg>(
     () => ({ open: data.listboxState === ListboxStates.Open }),
     [data]
@@ -1042,13 +1066,6 @@ export interface _internal_ComponentListboxButton extends HasDisplayName {
     props: ListboxButtonProps<TTag> & RefProp<typeof ButtonFn>
   ): JSX.Element
 }
-
-export interface _internal_ComponentListboxLabel extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
-    props: ListboxLabelProps<TTag> & RefProp<typeof LabelFn>
-  ): JSX.Element
-}
-
 export interface _internal_ComponentListboxOptions extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     props: ListboxOptionsProps<TTag> & RefProp<typeof OptionsFn>
@@ -1066,7 +1083,7 @@ export interface _internal_ComponentListboxOption extends HasDisplayName {
 
 let ListboxRoot = forwardRefWithAs(ListboxFn) as unknown as _internal_ComponentListbox
 export let ListboxButton = forwardRefWithAs(ButtonFn) as unknown as _internal_ComponentListboxButton
-export let ListboxLabel = forwardRefWithAs(LabelFn) as unknown as _internal_ComponentListboxLabel
+export let ListboxLabel = Label as _internal_ComponentLabel
 export let ListboxOptions = forwardRefWithAs(
   OptionsFn
 ) as unknown as _internal_ComponentListboxOptions

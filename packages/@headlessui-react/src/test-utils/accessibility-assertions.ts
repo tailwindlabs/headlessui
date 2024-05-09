@@ -214,7 +214,7 @@ export function assertMenuItem(
 // ---
 
 export function getComboboxLabel(): HTMLElement | null {
-  return document.querySelector('label,[id^="headlessui-combobox-label"]')
+  return document.querySelector('label,[id^="headlessui-label"]')
 }
 
 export function getComboboxButton(): HTMLElement | null {
@@ -644,7 +644,7 @@ export function assertComboboxOption(
 // ---
 
 export function getListboxLabel(): HTMLElement | null {
-  return document.querySelector('label,[id^="headlessui-listbox-label"]')
+  return document.querySelector('label,[id^="headlessui-label"]')
 }
 
 export function getListboxButton(): HTMLElement | null {

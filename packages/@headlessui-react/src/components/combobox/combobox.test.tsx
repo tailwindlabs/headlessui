@@ -70,10 +70,17 @@ describe('safeguards', () => {
   ])(
     'should error when we are using a <%s /> without a parent <Combobox />',
     suppressConsoleLogs((name, Component) => {
-      // @ts-expect-error This is fine
-      expect(() => render(createElement(Component))).toThrowError(
-        `<${name} /> is missing a parent <Combobox /> component.`
-      )
+      if (name === 'Combobox.Label') {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          'You used a <Label /> component, but it is not inside a relevant parent.'
+        )
+      } else {
+        // @ts-expect-error This is fine
+        expect(() => render(createElement(Component))).toThrow(
+          `<${name} /> is missing a parent <Combobox /> component.`
+        )
+      }
     })
   )
 
@@ -830,7 +837,7 @@ describe('Rendering', () => {
           attributes: { id: 'headlessui-combobox-button-3' },
         })
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
         })
         assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
@@ -838,7 +845,7 @@ describe('Rendering', () => {
         await click(getComboboxButton())
 
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
         })
         assertComboboxList({ state: ComboboxState.Visible })
@@ -880,7 +887,7 @@ describe('Rendering', () => {
         )
 
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: false, disabled: false }),
           tag: 'p',
         })
@@ -888,7 +895,7 @@ describe('Rendering', () => {
 
         await click(getComboboxButton())
         assertComboboxLabel({
-          attributes: { id: 'headlessui-combobox-label-1' },
+          attributes: { id: 'headlessui-label-1' },
           textContent: JSON.stringify({ open: true, disabled: false }),
           tag: 'p',
         })

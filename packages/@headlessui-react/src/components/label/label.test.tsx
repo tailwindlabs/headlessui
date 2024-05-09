@@ -52,11 +52,12 @@ it('should be possible to use a LabelProvider and a single Label, and have them 
     <div
       aria-labelledby="headlessui-label-1"
     >
-      <label
+      <div
+        data-headlessui-state=""
         id="headlessui-label-1"
       >
         I am a label
-      </label>
+      </div>
       <span>
         Contents
       </span>
@@ -90,19 +91,21 @@ it('should be possible to use a LabelProvider and multiple Label components, and
     <div
       aria-labelledby="headlessui-label-1 headlessui-label-2"
     >
-      <label
+      <div
+        data-headlessui-state=""
         id="headlessui-label-1"
       >
         I am a label
-      </label>
+      </div>
       <span>
         Contents
       </span>
-      <label
+      <div
+        data-headlessui-state=""
         id="headlessui-label-2"
       >
         I am also a label
-      </label>
+      </div>
     </div>
   `)
 })
