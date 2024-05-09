@@ -19,7 +19,12 @@ import {
   _internal_ComponentDescription,
 } from '../../components/description/description'
 import { Keys } from '../../components/keyboard'
-import { Label, useLabels, _internal_ComponentLabel } from '../../components/label/label'
+import {
+  Label,
+  useLabelledBy,
+  useLabels,
+  _internal_ComponentLabel,
+} from '../../components/label/label'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
@@ -29,7 +34,9 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
+import { useDisabled } from '../../internal/disabled'
 import { Features as HiddenFeatures, Hidden } from '../../internal/hidden'
+import { useProvidedId } from '../../internal/id'
 import type { Expand, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, focusIn, FocusResult, sortByDomNode } from '../../utils/focus-management'
@@ -39,6 +46,7 @@ import { getOwnerDocument } from '../../utils/owner'
 import {
   compact,
   forwardRefWithAs,
+  mergeProps,
   render,
   type HasDisplayName,
   type RefProp,
@@ -489,6 +497,114 @@ function OptionFn<
 
 // ---
 
+let DEFAULT_RADIO_TAG = 'span' as const
+type RadioRenderPropArg = {
+  checked: boolean
+  focus: boolean
+  disabled: boolean
+}
+type RadioPropsWeControl =
+  | 'aria-checked'
+  | 'aria-describedby'
+  | 'aria-labelledby'
+  | 'role'
+  | 'tabIndex'
+
+export type RadioProps<TTag extends ElementType = typeof DEFAULT_RADIO_TAG, TType = string> = Props<
+  TTag,
+  RadioRenderPropArg,
+  RadioPropsWeControl,
+  {
+    value: TType
+    disabled?: boolean
+  }
+>
+
+function RadioFn<
+  TTag extends ElementType = typeof DEFAULT_RADIO_TAG,
+  // TODO: One day we will be able to infer this type from the generic in RadioGroup itself.
+  // But today is not that day..
+  TType = Parameters<typeof RadioGroupRoot>[0]['value']
+>(props: RadioProps<TTag, TType>, ref: Ref<HTMLElement>) {
+  let data = useData('Radio')
+  let actions = useActions('Radio')
+
+  let internalId = useId()
+  let providedId = useProvidedId()
+  let providedDisabled = useDisabled()
+  let {
+    id = providedId || `headlessui-radio-${internalId}`,
+    value,
+    disabled = data.disabled || providedDisabled || false,
+    ...theirProps
+  } = props
+  let internalRadioRef = useRef<HTMLElement | null>(null)
+  let radioRef = useSyncRefs(internalRadioRef, ref)
+
+  let { addFlag, removeFlag, hasFlag } = useFlags(OptionState.Empty)
+
+  let labelledby = useLabelledBy()
+  let describedby = 'TODO' // useDescribedBy()
+
+  let propsRef = useLatestValue({ value, disabled })
+
+  useIsoMorphicEffect(
+    () => actions.registerOption({ id, element: internalRadioRef, propsRef }),
+    [id, actions, internalRadioRef, propsRef]
+  )
+
+  let handleClick = useEvent((event: ReactMouseEvent) => {
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    if (!actions.change(value)) return
+
+    addFlag(OptionState.Active)
+    internalRadioRef.current?.focus()
+  })
+
+  let handleFocus = useEvent((event: ReactFocusEvent) => {
+    if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
+    addFlag(OptionState.Active)
+  })
+
+  let handleBlur = useEvent(() => removeFlag(OptionState.Active))
+
+  let isFirstOption = data.firstOption?.id === id
+
+  let checked = data.compare(data.value as TType, value)
+  let ourProps = mergeProps({
+    ref: radioRef,
+    id,
+    role: 'radio',
+    'aria-checked': checked ? 'true' : 'false',
+    'aria-labelledby': labelledby,
+    'aria-describedby': describedby,
+    'aria-disabled': disabled ? true : undefined,
+    tabIndex: (() => {
+      if (disabled) return -1
+      if (checked) return 0
+      if (!data.containsCheckedOption && isFirstOption) return 0
+      return -1
+    })(),
+    onClick: disabled ? undefined : handleClick,
+    onFocus: disabled ? undefined : handleFocus,
+    onBlur: disabled ? undefined : handleBlur,
+  })
+
+  let slot: RadioRenderPropArg = useMemo(() => {
+    return { checked, disabled, focus }
+  }, [checked, disabled, focus])
+
+  return render({
+    ourProps,
+    theirProps,
+    slot,
+    defaultTag: DEFAULT_RADIO_TAG,
+    name: 'Radio',
+  })
+}
+
+// ---
+
 export interface _internal_ComponentRadioGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
     props: RadioGroupProps<TTag, TType> & RefProp<typeof RadioGroupFn>
@@ -501,9 +617,16 @@ export interface _internal_ComponentRadioOption extends HasDisplayName {
   ): JSX.Element
 }
 
+export interface _internal_ComponentRadio extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_RADIO_TAG, TType = string>(
+    props: RadioProps<TTag, TType> & RefProp<typeof RadioFn>
+  ): JSX.Element
+}
+
 export interface _internal_ComponentRadioLabel extends _internal_ComponentLabel {}
 
 let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as _internal_ComponentRadioGroup
+export let Radio = forwardRefWithAs(RadioFn) as _internal_ComponentRadio
 export let RadioGroupOption = forwardRefWithAs(
   OptionFn
 ) as unknown as _internal_ComponentRadioOption

@@ -268,7 +268,7 @@ function defaultMergeRefs(...refs: any[]) {
       }
 }
 
-function mergeProps(...listOfProps: Props<any, any>[]) {
+export function mergeProps(...listOfProps: Props<any, any>[]) {
   if (listOfProps.length === 0) return {}
   if (listOfProps.length === 1) return listOfProps[0]
 

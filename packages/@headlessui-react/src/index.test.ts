@@ -37,6 +37,7 @@ it('should expose the correct components', () => {
     'PopoverPanel',
     'PopoverGroup',
     'Popover',
+    'Radio',
     'RadioGroupOption',
     'RadioGroupLabel',
     'RadioGroupDescription',
