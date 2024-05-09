@@ -229,12 +229,11 @@ export interface _internal_ComponentSwitchGroup extends HasDisplayName {
 }
 
 export interface _internal_ComponentSwitchLabel extends _internal_ComponentLabel {}
-export interface _internal_ComponentSwitchDescription extends _internal_ComponentDescription {}
 
 let SwitchRoot = forwardRefWithAs(SwitchFn) as unknown as _internal_ComponentSwitch
 export let SwitchGroup = GroupFn as unknown as _internal_ComponentSwitchGroup
 export let SwitchLabel = Label as unknown as _internal_ComponentSwitchLabel
-export let SwitchDescription = Description as unknown as _internal_ComponentSwitchDescription
+export let SwitchDescription = Description as unknown as _internal_ComponentDescription
 
 export let Switch = Object.assign(SwitchRoot, {
   Group: SwitchGroup,

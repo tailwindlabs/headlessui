@@ -502,14 +502,13 @@ export interface _internal_ComponentRadioOption extends HasDisplayName {
 }
 
 export interface _internal_ComponentRadioLabel extends _internal_ComponentLabel {}
-export interface _internal_ComponentRadioDescription extends _internal_ComponentDescription {}
 
 let RadioGroupRoot = forwardRefWithAs(RadioGroupFn) as unknown as _internal_ComponentRadioGroup
 export let RadioGroupOption = forwardRefWithAs(
   OptionFn
 ) as unknown as _internal_ComponentRadioOption
 export let RadioGroupLabel = Label as unknown as _internal_ComponentRadioLabel
-export let RadioGroupDescription = Description as unknown as _internal_ComponentRadioDescription
+export let RadioGroupDescription = Description as unknown as _internal_ComponentDescription
 
 export let RadioGroup = Object.assign(RadioGroupRoot, {
   Option: RadioGroupOption,

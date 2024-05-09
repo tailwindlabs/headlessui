@@ -652,19 +652,17 @@ export interface _internal_ComponentDialogTitle extends HasDisplayName {
   ): JSX.Element
 }
 
-export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription {}
-
 let DialogRoot = forwardRefWithAs(DialogFn) as unknown as _internal_ComponentDialog
 let Backdrop = forwardRefWithAs(BackdropFn) as unknown as _internal_ComponentDialogBackdrop
 let Overlay = forwardRefWithAs(OverlayFn) as unknown as _internal_ComponentDialogOverlay
 export let DialogPanel = forwardRefWithAs(PanelFn) as unknown as _internal_ComponentDialogPanel
 export let DialogTitle = forwardRefWithAs(TitleFn) as unknown as _internal_ComponentDialogTitle
-export let DialogDescription = Description as unknown as _internal_ComponentDialogDescription
+export let DialogDescription = Description as unknown as _internal_ComponentDescription
 
 export let Dialog = Object.assign(DialogRoot, {
   Backdrop,
   Panel: DialogPanel,
   Overlay,
   Title: DialogTitle,
-  Description: Description as _internal_ComponentDialogDescription,
+  Description: DialogDescription,
 })
