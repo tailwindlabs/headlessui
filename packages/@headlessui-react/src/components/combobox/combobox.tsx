@@ -1688,6 +1688,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     event.preventDefault()
   })
 
+  // When the user scrolls **using the native scrollbar**, the only event fired is
+  // the onScroll event. We need to make sure to set the current activation
+  // trigger to pointer, in order to let them scroll through the list.
+  let handleScroll = useEvent(() => {
+    if (isMobile()) return
+    actions.setActivationTrigger(ActivationTrigger.Pointer)
+  })
+
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-labelledby': labelledBy,
     role: 'listbox',
@@ -1702,6 +1710,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     } as CSSProperties,
     onWheel: handleWheel,
     onMouseDown: handleMouseDown,
+    onScroll: handleScroll,
   })
 
   // Map the children in a scrollable container when virtualization is enabled
