@@ -393,7 +393,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
                   <PortalWrapper>
                     <FocusTrap
                       initialFocus={initialFocus}
-                      initialFocusFallback={internalDialogRef}
+                      initialFocusFallback={__demoMode ? undefined : internalDialogRef}
                       containers={resolveRootContainers}
                       features={focusTrapFeatures}
                     >
