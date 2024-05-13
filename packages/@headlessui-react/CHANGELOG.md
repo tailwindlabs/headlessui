@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Require React 18 ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887), [#3092](https://github.com/tailwindlabs/headlessui/pull/3092), [#3131](https://github.com/tailwindlabs/headlessui/pull/3131))
 - Always render hidden form input fields for `Checkbox`, `Switch`, and `RadioGroup` components ([#3095](https://github.com/tailwindlabs/headlessui/pull/3095))
 - Deprecate the `RadioGroup.Option` component in favor of new `Radio` component ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
-- Deprecated the `MenuItem` `active` prop in favor of new `focus` prop ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
+- Deprecate the `MenuItem` `active` prop in favor of new `focus` prop ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
 - Dialog is now focused by default instead of the first focusable element ([#2887](https://github.com/tailwindlabs/headlessui/pull/2887))
 - Change default tags for `ListboxOptions`, `ListboxOption`, `ComboboxOptions`, `ComboboxOption`, and `TabGroup` components ([#3109](https://github.com/tailwindlabs/headlessui/pull/3109))
 - Change default tag from `div` to `Fragment` on `Transition` components ([#3110](https://github.com/tailwindlabs/headlessui/pull/3110), [#3147](https://github.com/tailwindlabs/headlessui/pull/3147))
