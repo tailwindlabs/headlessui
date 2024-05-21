@@ -310,6 +310,21 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (event.key !== Keys.Escape) return
     event.preventDefault()
     event.stopPropagation()
+
+    // Ensure that we blur the current activeElement to prevent maintaining
+    // focus and potentially scrolling the page to the end (because the Dialog
+    // is rendered in a Portal at the end of the document.body and the browser
+    // tries to keep the focused element in view)
+    //
+    // Typically only happens in Safari.
+    if (
+      document.activeElement &&
+      'blur' in document.activeElement &&
+      typeof document.activeElement.blur === 'function'
+    ) {
+      document.activeElement.blur()
+    }
+
     close()
   })
 
