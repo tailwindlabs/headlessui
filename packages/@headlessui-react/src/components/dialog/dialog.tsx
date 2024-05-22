@@ -357,7 +357,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     id,
     role,
     tabIndex: -1,
-    'aria-modal': dialogState === DialogStates.Open ? true : undefined,
+    'aria-modal': __demoMode ? undefined : dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,
   }
