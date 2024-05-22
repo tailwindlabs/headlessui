@@ -17,6 +17,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
 
 // ---
@@ -34,11 +35,11 @@ LabelContext.displayName = 'LabelContext'
 
 export function useLabelContext() {
   let context = useContext(LabelContext)
-  if (context === null) {
-    let err = new Error('You used a <Label /> component, but it is not inside a relevant parent.')
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useLabelContext)
-    throw err
-  }
+  assert(
+    context !== null,
+    'You used a <Label /> component, but it is not inside a relevant parent.',
+    useLabelContext
+  )
   return context
 }
 

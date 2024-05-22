@@ -28,6 +28,7 @@ import {
 } from '../../internal/floating'
 import { State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { match } from '../../utils/match'
 import {
   RenderFeatures,
@@ -157,11 +158,11 @@ TooltipActionsContext.displayName = 'TooltipActionsContext'
 
 function useActions(component: string) {
   let context = useContext(TooltipActionsContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Tooltip /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useActions)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Tooltip /> component.`,
+    useActions
+  )
   return context
 }
 type _Actions = ReturnType<typeof useActions>
@@ -171,11 +172,7 @@ TooltipDataContext.displayName = 'TooltipDataContext'
 
 function useData(component: string) {
   let context = useContext(TooltipDataContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Tooltip /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useData)
-    throw err
-  }
+  assert(context !== null, `<${component} /> is missing a parent <Tooltip /> component.`, useData)
   return context
 }
 type _Data = ReturnType<typeof useData>

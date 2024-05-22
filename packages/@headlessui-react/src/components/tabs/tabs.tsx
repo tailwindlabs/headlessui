@@ -24,6 +24,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { FocusSentinel } from '../../internal/focus-sentinel'
 import { Hidden } from '../../internal/hidden'
 import type { Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
@@ -186,11 +187,7 @@ TabsDataContext.displayName = 'TabsDataContext'
 
 function useData(component: string) {
   let context = useContext(TabsDataContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Tab.Group /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useData)
-    throw err
-  }
+  assert(context !== null, `<${component} /> is missing a parent <Tab.Group /> component.`, useData)
   return context
 }
 type _Data = ReturnType<typeof useData>
@@ -204,11 +201,11 @@ TabsActionsContext.displayName = 'TabsActionsContext'
 
 function useActions(component: string) {
   let context = useContext(TabsActionsContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Tab.Group /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useActions)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Tab.Group /> component.`,
+    useActions
+  )
   return context
 }
 type _Actions = ReturnType<typeof useActions>

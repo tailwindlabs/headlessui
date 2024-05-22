@@ -26,6 +26,7 @@ import { useDisabled } from '../../internal/disabled'
 import { FormFields } from '../../internal/form-fields'
 import { useProvidedId } from '../../internal/id'
 import type { Expand, Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, FocusResult, focusIn, sortByDomNode } from '../../utils/focus-management'
 import { attemptSubmit } from '../../utils/form'
@@ -106,11 +107,11 @@ RadioGroupDataContext.displayName = 'RadioGroupDataContext'
 
 function useData(component: string) {
   let context = useContext(RadioGroupDataContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <RadioGroup /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useData)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <RadioGroup /> component.`,
+    useData
+  )
   return context
 }
 type _Data = ReturnType<typeof useData>
@@ -123,11 +124,11 @@ RadioGroupActionsContext.displayName = 'RadioGroupActionsContext'
 
 function useActions(component: string) {
   let context = useContext(RadioGroupActionsContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <RadioGroup /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useActions)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <RadioGroup /> component.`,
+    useActions
+  )
   return context
 }
 type _Actions = ReturnType<typeof useActions>

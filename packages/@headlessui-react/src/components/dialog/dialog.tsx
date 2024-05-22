@@ -35,6 +35,7 @@ import { State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import { StackMessage, StackProvider } from '../../internal/stack-context'
 import type { Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { match } from '../../utils/match'
 import {
   RenderFeatures,
@@ -96,11 +97,11 @@ DialogContext.displayName = 'DialogContext'
 
 function useDialogContext(component: string) {
   let context = useContext(DialogContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Dialog /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useDialogContext)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Dialog /> component.`,
+    useDialogContext
+  )
   return context
 }
 
