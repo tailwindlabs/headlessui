@@ -27,6 +27,7 @@ import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { CloseProvider } from '../../internal/close-provider'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
@@ -119,11 +120,11 @@ DisclosureContext.displayName = 'DisclosureContext'
 
 function useDisclosureContext(component: string) {
   let context = useContext(DisclosureContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Disclosure /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useDisclosureContext)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Disclosure /> component.`,
+    useDisclosureContext
+  )
   return context
 }
 
@@ -134,11 +135,11 @@ DisclosureAPIContext.displayName = 'DisclosureAPIContext'
 
 function useDisclosureAPIContext(component: string) {
   let context = useContext(DisclosureAPIContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Disclosure /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useDisclosureAPIContext)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Disclosure /> component.`,
+    useDisclosureAPIContext
+  )
   return context
 }
 

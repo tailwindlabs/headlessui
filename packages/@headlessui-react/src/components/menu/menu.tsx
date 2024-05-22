@@ -48,6 +48,7 @@ import {
 } from '../../internal/floating'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
@@ -339,11 +340,11 @@ MenuContext.displayName = 'MenuContext'
 
 function useMenuContext(component: string) {
   let context = useContext(MenuContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Menu /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useMenuContext)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Menu /> component.`,
+    useMenuContext
+  )
   return context
 }
 

@@ -54,6 +54,7 @@ import { FormFields } from '../../internal/form-fields'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { EnsureArray, Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
@@ -390,11 +391,11 @@ ListboxActionsContext.displayName = 'ListboxActionsContext'
 
 function useActions(component: string) {
   let context = useContext(ListboxActionsContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Listbox /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useActions)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Listbox /> component.`,
+    useActions
+  )
   return context
 }
 type _Actions = ReturnType<typeof useActions>
@@ -426,11 +427,7 @@ ListboxDataContext.displayName = 'ListboxDataContext'
 
 function useData(component: string) {
   let context = useContext(ListboxDataContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Listbox /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useData)
-    throw err
-  }
+  assert(context !== null, `<${component} /> is missing a parent <Listbox /> component.`, useData)
   return context
 }
 type _Data = ReturnType<typeof useData>

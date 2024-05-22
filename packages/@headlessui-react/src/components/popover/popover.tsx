@@ -48,6 +48,7 @@ import {
 import { Hidden, HiddenFeatures } from '../../internal/hidden'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
+import { assert } from '../../utils/assert'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import {
   Focus,
@@ -157,11 +158,11 @@ PopoverContext.displayName = 'PopoverContext'
 
 function usePopoverContext(component: string) {
   let context = useContext(PopoverContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Popover /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, usePopoverContext)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Popover /> component.`,
+    usePopoverContext
+  )
   return context
 }
 
@@ -175,11 +176,11 @@ PopoverAPIContext.displayName = 'PopoverAPIContext'
 
 function usePopoverAPIContext(component: string) {
   let context = useContext(PopoverAPIContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Popover /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, usePopoverAPIContext)
-    throw err
-  }
+  assert(
+    context !== null,
+    `<${component} /> is missing a parent <Popover /> component.`,
+    usePopoverAPIContext
+  )
   return context
 }
 
