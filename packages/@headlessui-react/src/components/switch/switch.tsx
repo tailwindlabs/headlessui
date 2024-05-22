@@ -269,6 +269,7 @@ export interface _internal_ComponentSwitchLabel extends _internal_ComponentLabel
 export interface _internal_ComponentSwitchDescription extends _internal_ComponentDescription {}
 
 let SwitchRoot = forwardRefWithAs(SwitchFn) as _internal_ComponentSwitch
+/** @deprecated use `<Field>` instead of `<SwitchGroup>` */
 export let SwitchGroup = GroupFn as _internal_ComponentSwitchGroup
 /** @deprecated use `<Label>` instead of `<SwitchLabel>` */
 export let SwitchLabel = Label as _internal_ComponentSwitchLabel
@@ -276,7 +277,7 @@ export let SwitchLabel = Label as _internal_ComponentSwitchLabel
 export let SwitchDescription = Description as _internal_ComponentSwitchDescription
 
 export let Switch = Object.assign(SwitchRoot, {
-  /** @deprecated use `<SwitchGroup>` instead of `<Switch.Group>` */
+  /** @deprecated use `<Field>` instead of `<Switch.Group>` */
   Group: SwitchGroup,
   /** @deprecated use `<Label>` instead of `<Switch.Label>` */
   Label: SwitchLabel,
