@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [internal] Don’t set a focus fallback for Dialog’s in demo mode ([#3194](https://github.com/tailwindlabs/headlessui/pull/3194))
 - Ensure page doesn't scroll down when pressing `Escape` to close the `Dialog` component ([#3218](https://github.com/tailwindlabs/headlessui/pull/3218))
 
+### Deprecated
+
+- Mark `SwitchGroup` as deprecated, prefer `Field` instead ([#3232](https://github.com/tailwindlabs/headlessui/pull/3232))
+
 ## [2.0.3] - 2024-05-07
 
 ### Fixed
