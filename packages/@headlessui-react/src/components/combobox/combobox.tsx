@@ -24,6 +24,7 @@ import React, {
 import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
+import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
@@ -635,7 +636,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let providedDisabled = useDisabled()
   let {
     value: controlledValue,
-    defaultValue,
+    defaultValue: _defaultValue,
     onChange: controlledOnChange,
     form,
     name,
@@ -651,6 +652,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     nullable: _nullable,
     ...theirProps
   } = props
+  let defaultValue = useDefaultValue(_defaultValue)
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
     controlledValue,
     controlledOnChange,
@@ -887,8 +889,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let ourProps = ref === null ? {} : { ref }
 
   let reset = useCallback(() => {
+    if (defaultValue === undefined) return
     return theirOnChange?.(defaultValue)
-  }, [theirOnChange /* Explicitly ignoring `defaultValue` */])
+  }, [theirOnChange, defaultValue])
 
   return (
     <LabelProvider

@@ -24,6 +24,7 @@ import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useComputed } from '../../hooks/use-computed'
 import { useControllable } from '../../hooks/use-controllable'
+import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDidElementMove } from '../../hooks/use-did-element-move'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
@@ -481,7 +482,7 @@ function ListboxFn<
   let providedDisabled = useDisabled()
   let {
     value: controlledValue,
-    defaultValue,
+    defaultValue: _defaultValue,
     form,
     name,
     onChange: controlledOnChange,
@@ -493,9 +494,11 @@ function ListboxFn<
     __demoMode = false,
     ...theirProps
   } = props
+
   const orientation = horizontal ? 'horizontal' : 'vertical'
   let listboxRef = useSyncRefs(ref)
 
+  let defaultValue = useDefaultValue(_defaultValue)
   let [value = multiple ? [] : undefined, theirOnChange] = useControllable<any>(
     controlledValue,
     controlledOnChange,
@@ -660,8 +663,9 @@ function ListboxFn<
   let ourProps = { ref: listboxRef }
 
   let reset = useCallback(() => {
+    if (defaultValue === undefined) return
     return theirOnChange?.(defaultValue)
-  }, [theirOnChange /* Explicitly ignoring `defaultValue` */])
+  }, [theirOnChange, defaultValue])
 
   return (
     <LabelProvider

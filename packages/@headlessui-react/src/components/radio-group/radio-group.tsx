@@ -17,6 +17,7 @@ import React, {
 } from 'react'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
+import { useDefaultValue } from '../../hooks/use-default-value'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -171,15 +172,14 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   let {
     id = `headlessui-radiogroup-${internalId}`,
     value: controlledValue,
-    defaultValue,
     form,
     name,
     onChange: controlledOnChange,
     by,
     disabled = providedDisabled || false,
+    defaultValue: _defaultValue,
     ...theirProps
   } = props
-
   let compare = useByComparator(by)
   let [state, dispatch] = useReducer(stateReducer, { options: [] } as StateDefinition<TType>)
   let options = state.options as Option<TType>[]
@@ -188,6 +188,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   let internalRadioGroupRef = useRef<HTMLElement | null>(null)
   let radioGroupRef = useSyncRefs(internalRadioGroupRef, ref)
 
+  let defaultValue = useDefaultValue(_defaultValue)
   let [value, onChange] = useControllable(controlledValue, controlledOnChange, defaultValue)
 
   let firstOption = useMemo(
@@ -304,8 +305,9 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   let slot = useMemo(() => ({ value }) satisfies RadioGroupRenderPropArg<TType>, [value])
 
   let reset = useCallback(() => {
-    return triggerChange(defaultValue!)
-  }, [triggerChange /* Explicitly ignoring `defaultValue` */])
+    if (defaultValue === undefined) return
+    return triggerChange(defaultValue)
+  }, [triggerChange, defaultValue])
 
   return (
     <DescriptionProvider name="RadioGroup.Description">

@@ -17,6 +17,7 @@ import React, {
 } from 'react'
 import { useActivePress } from '../../hooks/use-active-press'
 import { useControllable } from '../../hooks/use-controllable'
+import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
@@ -146,7 +147,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     id = providedId || `headlessui-switch-${internalId}`,
     disabled = providedDisabled || false,
     checked: controlledChecked,
-    defaultChecked = false,
+    defaultChecked: _defaultChecked,
     onChange: controlledOnChange,
     name,
     value,
@@ -162,7 +163,12 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     groupContext === null ? null : groupContext.setSwitch
   )
 
-  let [checked, onChange] = useControllable(controlledChecked, controlledOnChange, defaultChecked)
+  let defaultChecked = useDefaultValue(_defaultChecked)
+  let [checked, onChange] = useControllable(
+    controlledChecked,
+    controlledOnChange,
+    defaultChecked ?? false
+  )
 
   let d = useDisposables()
   let [changing, setChanging] = useState(false)
@@ -232,8 +238,9 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   )
 
   let reset = useCallback(() => {
+    if (defaultChecked === undefined) return
     return onChange?.(defaultChecked)
-  }, [onChange /* Explicitly ignoring `defaultChecked` */])
+  }, [onChange, defaultChecked])
 
   return (
     <>

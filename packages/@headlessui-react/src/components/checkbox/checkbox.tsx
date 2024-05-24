@@ -13,6 +13,7 @@ import React, {
 } from 'react'
 import { useActivePress } from '../../hooks/use-active-press'
 import { useControllable } from '../../hooks/use-controllable'
+import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
@@ -85,7 +86,7 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
     disabled = providedDisabled || false,
     autoFocus = false,
     checked: controlledChecked,
-    defaultChecked = false,
+    defaultChecked: _defaultChecked,
     onChange: controlledOnChange,
     name,
     value,
@@ -94,7 +95,12 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
     ...theirProps
   } = props
 
-  let [checked, onChange] = useControllable(controlledChecked, controlledOnChange, defaultChecked)
+  let defaultChecked = useDefaultValue(_defaultChecked)
+  let [checked, onChange] = useControllable(
+    controlledChecked,
+    controlledOnChange,
+    defaultChecked ?? false
+  )
 
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
@@ -166,8 +172,9 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
   }, [checked, indeterminate, disabled, hover, focus, active, changing, autoFocus])
 
   let reset = useCallback(() => {
+    if (defaultChecked === undefined) return
     return onChange?.(defaultChecked)
-  }, [onChange /* Explicitly ignoring `defaultChecked` */])
+  }, [onChange, defaultChecked])
 
   return (
     <>
