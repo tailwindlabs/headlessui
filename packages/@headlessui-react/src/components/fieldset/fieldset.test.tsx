@@ -39,9 +39,21 @@ describe('Rendering', () => {
     expect(fieldset).toHaveAttribute('role', 'group')
   })
 
-  it('should add an `aria-disabled` attribute when disabling the `Fieldset`', async () => {
+  it('should forward the `disabled` attribute when disabling the `Fieldset`', async () => {
     let { container } = render(
       <Fieldset disabled>
+        <input />
+      </Fieldset>
+    )
+
+    let fieldset = container.firstChild
+
+    expect(fieldset).toHaveAttribute('disabled')
+  })
+
+  it('should add an `aria-disabled` attribute when disabling the `Fieldset` when using another element via the `as` prop', async () => {
+    let { container } = render(
+      <Fieldset as="span" disabled>
         <input />
       </Fieldset>
     )

@@ -30,15 +30,20 @@ function FieldsetFn<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(
   let [labelledBy, LabelProvider] = useLabels()
 
   let slot = useMemo(() => ({ disabled }) satisfies FieldsetRenderPropArg, [disabled])
+  let usesFieldset = (props.as ?? DEFAULT_FIELDSET_TAG) === 'fieldset'
 
-  let ourProps = {
-    ref,
-    role: (props.as ?? DEFAULT_FIELDSET_TAG) === 'fieldset' ? undefined : 'group',
-
-    'aria-labelledby': labelledBy,
-    'aria-disabled': disabled || undefined,
-    disabled: disabled || undefined,
-  }
+  let ourProps = usesFieldset
+    ? {
+        ref,
+        'aria-labelledby': labelledBy,
+        disabled: disabled || undefined,
+      }
+    : {
+        ref,
+        role: 'group',
+        'aria-labelledby': labelledBy,
+        'aria-disabled': disabled || undefined,
+      }
 
   return (
     <DisabledProvider value={disabled}>
