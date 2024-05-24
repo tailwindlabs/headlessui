@@ -9,7 +9,7 @@ import { useLabels } from '../label/label'
 let DEFAULT_FIELDSET_TAG = 'div' as const
 
 type FieldsetRenderPropArg = {}
-type FieldsetPropsWeControl = 'aria-controls'
+type FieldsetPropsWeControl = 'aria-labelledby' | 'aria-disabled' | 'role'
 
 export type FieldsetProps<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG> = Props<
   TTag,
