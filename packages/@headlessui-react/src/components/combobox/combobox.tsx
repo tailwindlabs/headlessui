@@ -889,6 +889,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let ourProps = ref === null ? {} : { ref }
 
   let reset = useCallback(() => {
+    if (defaultValue === undefined) return
     return theirOnChange?.(defaultValue)
   }, [theirOnChange, defaultValue])
 

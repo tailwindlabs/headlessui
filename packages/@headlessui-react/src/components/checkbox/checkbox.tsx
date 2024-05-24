@@ -86,7 +86,7 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
     disabled = providedDisabled || false,
     autoFocus = false,
     checked: controlledChecked,
-    defaultChecked: _defaultChecked = false,
+    defaultChecked: _defaultChecked,
     onChange: controlledOnChange,
     name,
     value,
@@ -96,7 +96,11 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
   } = props
 
   let defaultChecked = useDefaultValue(_defaultChecked)
-  let [checked, onChange] = useControllable(controlledChecked, controlledOnChange, defaultChecked)
+  let [checked, onChange] = useControllable(
+    controlledChecked,
+    controlledOnChange,
+    defaultChecked ?? false
+  )
 
   let labelledBy = useLabelledBy()
   let describedBy = useDescribedBy()
@@ -168,6 +172,7 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
   }, [checked, indeterminate, disabled, hover, focus, active, changing, autoFocus])
 
   let reset = useCallback(() => {
+    if (defaultChecked === undefined) return
     return onChange?.(defaultChecked)
   }, [onChange, defaultChecked])
 

@@ -305,7 +305,8 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   let slot = useMemo(() => ({ value }) satisfies RadioGroupRenderPropArg<TType>, [value])
 
   let reset = useCallback(() => {
-    return triggerChange(defaultValue!)
+    if (defaultValue === undefined) return
+    return triggerChange(defaultValue)
   }, [triggerChange, defaultValue])
 
   return (

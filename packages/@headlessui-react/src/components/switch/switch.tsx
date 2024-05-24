@@ -147,7 +147,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     id = providedId || `headlessui-switch-${internalId}`,
     disabled = providedDisabled || false,
     checked: controlledChecked,
-    defaultChecked: _defaultChecked = false,
+    defaultChecked: _defaultChecked,
     onChange: controlledOnChange,
     name,
     value,
@@ -164,7 +164,11 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   )
 
   let defaultChecked = useDefaultValue(_defaultChecked)
-  let [checked, onChange] = useControllable(controlledChecked, controlledOnChange, defaultChecked)
+  let [checked, onChange] = useControllable(
+    controlledChecked,
+    controlledOnChange,
+    defaultChecked ?? false
+  )
 
   let d = useDisposables()
   let [changing, setChanging] = useState(false)
@@ -234,6 +238,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
   )
 
   let reset = useCallback(() => {
+    if (defaultChecked === undefined) return
     return onChange?.(defaultChecked)
   }, [onChange, defaultChecked])
 

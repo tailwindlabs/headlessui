@@ -663,6 +663,7 @@ function ListboxFn<
   let ourProps = { ref: listboxRef }
 
   let reset = useCallback(() => {
+    if (defaultValue === undefined) return
     return theirOnChange?.(defaultValue)
   }, [theirOnChange, defaultValue])
 
