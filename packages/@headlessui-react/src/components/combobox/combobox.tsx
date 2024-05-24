@@ -182,7 +182,7 @@ type Actions<T> =
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
   | {
       type: ActionTypes.UpdateVirtualConfiguration
-      disabled: (value: any) => boolean
+      disabled: ((value: any) => boolean) | null
       options: T[]
     }
 
@@ -378,7 +378,7 @@ let reducers: {
     }
   },
   [ActionTypes.UpdateVirtualConfiguration]: (state, action) => {
-    if (state.virtual?.options === action.options) {
+    if (state.virtual?.options === action.options && state.virtual?.disabled === action.disabled) {
       return state
     }
 
@@ -395,7 +395,7 @@ let reducers: {
     return {
       ...state,
       activeOptionIndex: adjustedActiveOptionIndex,
-      virtual: { disabled: action.disabled, options: action.options },
+      virtual: { disabled: action.disabled ?? (() => false), options: action.options },
     }
   },
 }
@@ -754,7 +754,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     if (!virtual) return
     dispatch({
       type: ActionTypes.UpdateVirtualConfiguration,
-      disabled: virtual.disabled ?? (() => false),
+      disabled: virtual.disabled ?? null,
       options: virtual.options,
     })
   }, [virtual, virtual?.options, virtual?.disabled])
