@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Mark `SwitchGroup` as deprecated, prefer `Field` instead ([#3232](https://github.com/tailwindlabs/headlessui/pull/3232))
 
+### Changed
+
+- Use native `fieldset` instead of `div` by default for `<Fieldset />` component ([#3237](https://github.com/tailwindlabs/headlessui/pull/3237))
+
 ## [2.0.3] - 2024-05-07
 
 ### Fixed
