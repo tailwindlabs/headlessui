@@ -6,7 +6,7 @@ import type { Props } from '../../types'
 import { forwardRefWithAs, render, type HasDisplayName } from '../../utils/render'
 import { useLabels } from '../label/label'
 
-let DEFAULT_FIELDSET_TAG = 'div' as const
+let DEFAULT_FIELDSET_TAG = 'fieldset' as const
 
 type FieldsetRenderPropArg = {}
 type FieldsetPropsWeControl = 'aria-labelledby' | 'aria-disabled' | 'role'
