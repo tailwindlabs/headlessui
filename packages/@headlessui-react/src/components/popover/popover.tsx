@@ -92,6 +92,7 @@ interface StateDefinition {
 
   beforePanelSentinel: MutableRefObject<HTMLButtonElement | null>
   afterPanelSentinel: MutableRefObject<HTMLButtonElement | null>
+  afterButtonSentinel: MutableRefObject<HTMLButtonElement | null>
 
   __demoMode: boolean
 }
@@ -256,9 +257,19 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     panelId: null,
     beforePanelSentinel: createRef(),
     afterPanelSentinel: createRef(),
+    afterButtonSentinel: createRef(),
   } as StateDefinition)
   let [
-    { popoverState, button, buttonId, panel, panelId, beforePanelSentinel, afterPanelSentinel },
+    {
+      popoverState,
+      button,
+      buttonId,
+      panel,
+      panelId,
+      beforePanelSentinel,
+      afterPanelSentinel,
+      afterButtonSentinel,
+    },
     dispatch,
   ] = reducerBag
 
@@ -346,6 +357,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
       if (root.contains(event.target)) return
       if (beforePanelSentinel.current?.contains?.(event.target)) return
       if (afterPanelSentinel.current?.contains?.(event.target)) return
+      if (afterButtonSentinel.current?.contains?.(event.target)) return
 
       dispatch({ type: ActionTypes.ClosePopover })
     },
@@ -700,6 +712,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       {visible && !isWithinPanel && isPortalled && (
         <Hidden
           id={sentinelId}
+          ref={state.afterButtonSentinel}
           features={HiddenFeatures.Focusable}
           data-headlessui-focus-guard
           as="button"
