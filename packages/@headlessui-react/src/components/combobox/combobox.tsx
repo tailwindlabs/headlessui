@@ -243,7 +243,7 @@ let reducers: {
               resolveItems: () => state.virtual!.options,
               resolveActiveIndex: () =>
                 state.activeOptionIndex ??
-                state.virtual!.options.findIndex((option) => !state.virtual!.disabled(option)) ??
+                state.virtual?.options.findIndex((option) => !state.virtual?.disabled?.(option)) ??
                 null,
               resolveDisabled: state.virtual!.disabled,
               resolveId() {
@@ -391,7 +391,10 @@ let reducers: {
     return {
       ...state,
       activeOptionIndex: adjustedActiveOptionIndex,
-      virtual: Object.assign({}, state.virtual, { options: action.options }),
+      virtual:
+        state.virtual === null
+          ? { disabled: () => false, options: action.options }
+          : { ...state.virtual, options: action.options },
     }
   },
 }
@@ -710,7 +713,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       defaultValue,
       disabled,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
-      virtual: state.virtual,
+      virtual: virtual ? state.virtual : null,
       get activeOptionIndex() {
         if (
           defaultToFirstOption.current &&
@@ -1757,7 +1760,7 @@ function OptionFn<
   let {
     id = `headlessui-combobox-option-${internalId}`,
     value,
-    disabled = data.virtual?.disabled(value) ?? false,
+    disabled = data.virtual?.disabled?.(value) ?? false,
     order = null,
     ...theirProps
   } = props
