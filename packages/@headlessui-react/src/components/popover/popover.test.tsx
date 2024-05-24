@@ -16,7 +16,7 @@ import { Keys, MouseButton, click, focus, press, shift } from '../../test-utils/
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Portal } from '../portal/portal'
 import { Transition } from '../transition/transition'
-import { Popover } from './popover'
+import { Popover, PopoverButton, PopoverPanel } from './popover'
 
 jest.mock('../../hooks/use-id')
 
@@ -1303,6 +1303,45 @@ describe('Keyboard interactions', () => {
   })
 
   describe('`Tab` key', () => {
+    it(
+      'should be possible to Tab through the panel contents and end up in the Button again (without PopoverGroup)',
+      suppressConsoleLogs(async () => {
+        render(
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel portal>
+              <a href="/">Link 1</a>
+              <a href="/">Link 2</a>
+            </PopoverPanel>
+          </Popover>
+        )
+
+        // Focus the button of the first Popover
+        getByText('Trigger')?.focus()
+
+        // Open popover
+        await click(getByText('Trigger'))
+
+        // Verify we are focused on the first link
+        await press(Keys.Tab)
+        assertActiveElement(getByText('Link 1'))
+
+        // Verify we are focused on the second link
+        await press(Keys.Tab)
+        assertActiveElement(getByText('Link 2'))
+
+        // Let's Tab again
+        await press(Keys.Tab)
+
+        // Verify that the first Popover is still open
+        assertPopoverButton({ state: PopoverState.Visible })
+        assertPopoverPanel({ state: PopoverState.Visible })
+
+        // Verify that the button is focused again
+        assertActiveElement(getByText('Trigger'))
+      })
+    )
+
     it(
       'should be possible to Tab through the panel contents onto the next Popover.Button',
       suppressConsoleLogs(async () => {
