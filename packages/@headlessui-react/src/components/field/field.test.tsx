@@ -55,7 +55,7 @@ describe('Rendering', () => {
     let fieldset = container.firstChild
     let field = fieldset?.firstChild
 
-    expect(fieldset).toHaveAttribute('aria-disabled', 'true')
+    expect(fieldset).toHaveAttribute('disabled')
     expect(field).toHaveAttribute('aria-disabled', 'true')
   })
 })

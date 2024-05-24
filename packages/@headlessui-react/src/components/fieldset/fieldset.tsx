@@ -1,15 +1,17 @@
 'use client'
 
 import React, { useMemo, type ElementType, type Ref } from 'react'
+import { useResolvedTag } from '../../hooks/use-resolved-tag'
+import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { DisabledProvider, useDisabled } from '../../internal/disabled'
 import type { Props } from '../../types'
 import { forwardRefWithAs, render, type HasDisplayName } from '../../utils/render'
 import { useLabels } from '../label/label'
 
-let DEFAULT_FIELDSET_TAG = 'div' as const
+let DEFAULT_FIELDSET_TAG = 'fieldset' as const
 
 type FieldsetRenderPropArg = {}
-type FieldsetPropsWeControl = 'aria-controls'
+type FieldsetPropsWeControl = 'aria-labelledby' | 'aria-disabled' | 'role'
 
 export type FieldsetProps<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG> = Props<
   TTag,
@@ -27,17 +29,26 @@ function FieldsetFn<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(
   let providedDisabled = useDisabled()
   let { disabled = providedDisabled || false, ...theirProps } = props
 
+  let [tag, resolveTag] = useResolvedTag(props.as ?? DEFAULT_FIELDSET_TAG)
+  let fieldsetRef = useSyncRefs(ref, resolveTag)
+
   let [labelledBy, LabelProvider] = useLabels()
 
   let slot = useMemo(() => ({ disabled }) satisfies FieldsetRenderPropArg, [disabled])
 
-  let ourProps = {
-    ref,
-    role: 'group',
-
-    'aria-labelledby': labelledBy,
-    'aria-disabled': disabled || undefined,
-  }
+  let ourProps =
+    tag === 'fieldset'
+      ? {
+          ref: fieldsetRef,
+          'aria-labelledby': labelledBy,
+          disabled: disabled || undefined,
+        }
+      : {
+          ref: fieldsetRef,
+          role: 'group',
+          'aria-labelledby': labelledBy,
+          'aria-disabled': disabled || undefined,
+        }
 
   return (
     <DisabledProvider value={disabled}>
