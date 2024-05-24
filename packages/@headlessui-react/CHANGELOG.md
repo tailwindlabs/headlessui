@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.0.4] - 2024-05-25
+
 ### Fixed
 
 - [internal] Don’t set a focus fallback for Dialog’s in demo mode ([#3194](https://github.com/tailwindlabs/headlessui/pull/3194))
@@ -693,7 +697,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.3...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.4...HEAD
+[2.0.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.3...@headlessui/react@v2.0.4
 [2.0.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.2...@headlessui/react@v2.0.3
 [2.0.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.1...@headlessui/react@v2.0.2
 [2.0.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.0...@headlessui/react@v2.0.1
