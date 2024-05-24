@@ -125,7 +125,7 @@ enum ActionTypes {
 
   SetActivationTrigger,
 
-  UpdateVirtualOptions,
+  UpdateVirtualConfiguration,
 }
 
 function adjustOrderedState<T>(
@@ -180,7 +180,11 @@ type Actions<T> =
     }
   | { type: ActionTypes.UnregisterOption; id: string }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
-  | { type: ActionTypes.UpdateVirtualOptions; options: T[] }
+  | {
+      type: ActionTypes.UpdateVirtualConfiguration
+      options: T[]
+      disabled: ((value: any) => boolean) | null
+    }
 
 let reducers: {
   [P in ActionTypes]: <T>(
@@ -236,16 +240,15 @@ let reducers: {
     }
 
     if (state.virtual) {
+      let { options, disabled } = state.virtual
       let activeOptionIndex =
         action.focus === Focus.Specific
           ? action.idx
           : calculateActiveIndex(action, {
-              resolveItems: () => state.virtual!.options,
+              resolveItems: () => options,
               resolveActiveIndex: () =>
-                state.activeOptionIndex ??
-                state.virtual!.options.findIndex((option) => !state.virtual!.disabled(option)) ??
-                null,
-              resolveDisabled: state.virtual!.disabled,
+                state.activeOptionIndex ?? options.findIndex((option) => !disabled(option)) ?? null,
+              resolveDisabled: disabled,
               resolveId() {
                 throw new Error('Function not implemented.')
               },
@@ -373,14 +376,21 @@ let reducers: {
       activationTrigger: action.trigger,
     }
   },
-  [ActionTypes.UpdateVirtualOptions]: (state, action) => {
-    if (state.virtual?.options === action.options) {
+  [ActionTypes.UpdateVirtualConfiguration]: (state, action) => {
+    if (state.virtual === null) {
+      return {
+        ...state,
+        virtual: { options: action.options, disabled: action.disabled ?? (() => false) },
+      }
+    }
+
+    if (state.virtual.options === action.options && state.virtual.disabled === action.disabled) {
       return state
     }
 
     let adjustedActiveOptionIndex = state.activeOptionIndex
     if (state.activeOptionIndex !== null) {
-      let idx = action.options.indexOf(state.virtual!.options[state.activeOptionIndex])
+      let idx = action.options.indexOf(state.virtual.options[state.activeOptionIndex])
       if (idx !== -1) {
         adjustedActiveOptionIndex = idx
       } else {
@@ -391,7 +401,7 @@ let reducers: {
     return {
       ...state,
       activeOptionIndex: adjustedActiveOptionIndex,
-      virtual: Object.assign({}, state.virtual, { options: action.options }),
+      virtual: { options: action.options, disabled: action.disabled ?? (() => false) },
     }
   },
 }
@@ -425,6 +435,7 @@ function VirtualProvider(props: {
   children: (data: { option: unknown; open: boolean }) => React.ReactElement
 }) {
   let data = useData('VirtualProvider')
+  let { options } = data.virtual!
 
   let [paddingStart, paddingEnd] = useMemo(() => {
     let el = data.optionsRef.current
@@ -441,7 +452,7 @@ function VirtualProvider(props: {
   let virtualizer = useVirtualizer({
     scrollPaddingStart: paddingStart,
     scrollPaddingEnd: paddingEnd,
-    count: data.virtual!.options.length,
+    count: options.length,
     estimateSize() {
       return 40
     },
@@ -454,7 +465,7 @@ function VirtualProvider(props: {
   let [baseKey, setBaseKey] = useState(0)
   useIsoMorphicEffect(() => {
     setBaseKey((v) => v + 1)
-  }, [data.virtual?.options])
+  }, [options])
 
   let items = virtualizer.getVirtualItems()
 
@@ -487,10 +498,7 @@ function VirtualProvider(props: {
               return
             }
 
-            if (
-              data.activeOptionIndex !== null &&
-              data.virtual!.options.length > data.activeOptionIndex
-            ) {
+            if (data.activeOptionIndex !== null && options.length > data.activeOptionIndex) {
               virtualizer.scrollToIndex(data.activeOptionIndex)
             }
           }
@@ -501,13 +509,13 @@ function VirtualProvider(props: {
             <Fragment key={item.key}>
               {React.cloneElement(
                 props.children?.({
-                  option: data.virtual!.options[item.index],
+                  option: options[item.index],
                   open: data.comboboxState === ComboboxState.Open,
                 }),
                 {
                   key: `${baseKey}-${item.key}`,
                   'data-index': item.index,
-                  'aria-setsize': data.virtual!.options.length,
+                  'aria-setsize': options.length,
                   'aria-posinset': item.index + 1,
                   style: {
                     position: 'absolute',
@@ -710,7 +718,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       defaultValue,
       disabled,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
-      virtual: state.virtual,
+      virtual: virtual ? state.virtual : null,
       get activeOptionIndex() {
         if (
           defaultToFirstOption.current &&
@@ -719,7 +727,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
         ) {
           if (virtual) {
             let localActiveOptionIndex = virtual.options.findIndex(
-              (option) => !(virtual?.disabled?.(option) ?? false)
+              (option) => !(virtual.disabled?.(option) ?? false)
             )
 
             if (localActiveOptionIndex !== -1) {
@@ -748,8 +756,12 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   useIsoMorphicEffect(() => {
     if (!virtual) return
-    dispatch({ type: ActionTypes.UpdateVirtualOptions, options: virtual.options })
-  }, [virtual, virtual?.options])
+    dispatch({
+      type: ActionTypes.UpdateVirtualConfiguration,
+      options: virtual.options,
+      disabled: virtual.disabled ?? null,
+    })
+  }, [virtual, virtual?.options, virtual?.disabled])
 
   useIsoMorphicEffect(() => {
     state.dataRef.current = data
@@ -1757,7 +1769,7 @@ function OptionFn<
   let {
     id = `headlessui-combobox-option-${internalId}`,
     value,
-    disabled = data.virtual?.disabled(value) ?? false,
+    disabled = data.virtual?.disabled?.(value) ?? false,
     order = null,
     ...theirProps
   } = props
