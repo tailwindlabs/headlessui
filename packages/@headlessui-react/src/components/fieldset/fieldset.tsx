@@ -37,6 +37,7 @@ function FieldsetFn<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(
 
     'aria-labelledby': labelledBy,
     'aria-disabled': disabled || undefined,
+    disabled: disabled || undefined,
   }
 
   return (
