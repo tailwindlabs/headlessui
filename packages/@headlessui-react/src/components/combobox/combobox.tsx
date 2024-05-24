@@ -240,16 +240,15 @@ let reducers: {
     }
 
     if (state.virtual) {
+      let { options, disabled } = state.virtual
       let activeOptionIndex =
         action.focus === Focus.Specific
           ? action.idx
           : calculateActiveIndex(action, {
               resolveItems: () => state.virtual!.options,
               resolveActiveIndex: () =>
-                state.activeOptionIndex ??
-                state.virtual?.options.findIndex((option) => !state.virtual?.disabled?.(option)) ??
-                null,
-              resolveDisabled: state.virtual!.disabled,
+                state.activeOptionIndex ?? options.findIndex((option) => !disabled(option)) ?? null,
+              resolveDisabled: disabled,
               resolveId() {
                 throw new Error('Function not implemented.')
               },
@@ -384,7 +383,7 @@ let reducers: {
 
     let adjustedActiveOptionIndex = state.activeOptionIndex
     if (state.activeOptionIndex !== null) {
-      let idx = action.options.indexOf(state.virtual!.options[state.activeOptionIndex])
+      let idx = action.options.indexOf(state.virtual.options[state.activeOptionIndex])
       if (idx !== -1) {
         adjustedActiveOptionIndex = idx
       } else {
@@ -429,6 +428,7 @@ function VirtualProvider(props: {
   children: (data: { option: unknown; open: boolean }) => React.ReactElement
 }) {
   let data = useData('VirtualProvider')
+  let { options } = data.virtual!
 
   let [paddingStart, paddingEnd] = useMemo(() => {
     let el = data.optionsRef.current
@@ -445,7 +445,7 @@ function VirtualProvider(props: {
   let virtualizer = useVirtualizer({
     scrollPaddingStart: paddingStart,
     scrollPaddingEnd: paddingEnd,
-    count: data.virtual!.options.length,
+    count: options.length,
     estimateSize() {
       return 40
     },
@@ -458,7 +458,7 @@ function VirtualProvider(props: {
   let [baseKey, setBaseKey] = useState(0)
   useIsoMorphicEffect(() => {
     setBaseKey((v) => v + 1)
-  }, [data.virtual?.options])
+  }, [options])
 
   let items = virtualizer.getVirtualItems()
 
@@ -491,10 +491,7 @@ function VirtualProvider(props: {
               return
             }
 
-            if (
-              data.activeOptionIndex !== null &&
-              data.virtual!.options.length > data.activeOptionIndex
-            ) {
+            if (data.activeOptionIndex !== null && options.length > data.activeOptionIndex) {
               virtualizer.scrollToIndex(data.activeOptionIndex)
             }
           }
@@ -505,13 +502,13 @@ function VirtualProvider(props: {
             <Fragment key={item.key}>
               {React.cloneElement(
                 props.children?.({
-                  option: data.virtual!.options[item.index],
+                  option: options[item.index],
                   open: data.comboboxState === ComboboxState.Open,
                 }),
                 {
                   key: `${baseKey}-${item.key}`,
                   'data-index': item.index,
-                  'aria-setsize': data.virtual!.options.length,
+                  'aria-setsize': options.length,
                   'aria-posinset': item.index + 1,
                   style: {
                     position: 'absolute',
@@ -723,7 +720,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
         ) {
           if (virtual) {
             let localActiveOptionIndex = virtual.options.findIndex(
-              (option) => !(virtual?.disabled?.(option) ?? false)
+              (option) => !(virtual.disabled?.(option) ?? false)
             )
 
             if (localActiveOptionIndex !== -1) {
