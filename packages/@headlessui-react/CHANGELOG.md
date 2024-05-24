@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [internal] Don’t set a focus fallback for Dialog’s in demo mode ([#3194](https://github.com/tailwindlabs/headlessui/pull/3194))
 - Ensure page doesn't scroll down when pressing `Escape` to close the `Dialog` component ([#3218](https://github.com/tailwindlabs/headlessui/pull/3218))
+- Fix crash when toggling between `virtual` and non-virtual mode in `Combobox` component ([#3236](https://github.com/tailwindlabs/headlessui/pull/3236))
 
 ### Deprecated
 
