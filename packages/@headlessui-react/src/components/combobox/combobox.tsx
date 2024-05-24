@@ -125,7 +125,7 @@ enum ActionTypes {
 
   SetActivationTrigger,
 
-  UpdateVirtualOptions,
+  UpdateVirtualConfiguration,
 }
 
 function adjustOrderedState<T>(
@@ -180,7 +180,11 @@ type Actions<T> =
     }
   | { type: ActionTypes.UnregisterOption; id: string }
   | { type: ActionTypes.SetActivationTrigger; trigger: ActivationTrigger }
-  | { type: ActionTypes.UpdateVirtualOptions; options: T[] }
+  | {
+      type: ActionTypes.UpdateVirtualConfiguration
+      disabled: (value: any) => boolean
+      options: T[]
+    }
 
 let reducers: {
   [P in ActionTypes]: <T>(
@@ -373,7 +377,7 @@ let reducers: {
       activationTrigger: action.trigger,
     }
   },
-  [ActionTypes.UpdateVirtualOptions]: (state, action) => {
+  [ActionTypes.UpdateVirtualConfiguration]: (state, action) => {
     if (state.virtual?.options === action.options) {
       return state
     }
@@ -391,10 +395,7 @@ let reducers: {
     return {
       ...state,
       activeOptionIndex: adjustedActiveOptionIndex,
-      virtual:
-        state.virtual === null
-          ? { disabled: () => false, options: action.options }
-          : { ...state.virtual, options: action.options },
+      virtual: { disabled: action.disabled, options: action.options },
     }
   },
 }
@@ -751,8 +752,12 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   useIsoMorphicEffect(() => {
     if (!virtual) return
-    dispatch({ type: ActionTypes.UpdateVirtualOptions, options: virtual.options })
-  }, [virtual, virtual?.options])
+    dispatch({
+      type: ActionTypes.UpdateVirtualConfiguration,
+      disabled: virtual.disabled ?? (() => false),
+      options: virtual.options,
+    })
+  }, [virtual, virtual?.options, virtual?.disabled])
 
   useIsoMorphicEffect(() => {
     state.dataRef.current = data
