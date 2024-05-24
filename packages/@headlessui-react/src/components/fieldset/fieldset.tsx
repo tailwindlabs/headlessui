@@ -33,7 +33,7 @@ function FieldsetFn<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(
 
   let ourProps = {
     ref,
-    role: 'group',
+    role: (props.as ?? DEFAULT_FIELDSET_TAG) === 'fieldset' ? undefined : 'group',
 
     'aria-labelledby': labelledBy,
     'aria-disabled': disabled || undefined,
