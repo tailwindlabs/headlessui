@@ -245,7 +245,7 @@ let reducers: {
         action.focus === Focus.Specific
           ? action.idx
           : calculateActiveIndex(action, {
-              resolveItems: () => state.virtual!.options,
+              resolveItems: () => options,
               resolveActiveIndex: () =>
                 state.activeOptionIndex ?? options.findIndex((option) => !disabled(option)) ?? null,
               resolveDisabled: disabled,
@@ -377,7 +377,14 @@ let reducers: {
     }
   },
   [ActionTypes.UpdateVirtualConfiguration]: (state, action) => {
-    if (state.virtual?.options === action.options && state.virtual?.disabled === action.disabled) {
+    if (state.virtual === null) {
+      return {
+        ...state,
+        virtual: { options: action.options, disabled: action.disabled ?? (() => false) },
+      }
+    }
+
+    if (state.virtual.options === action.options && state.virtual.disabled === action.disabled) {
       return state
     }
 
