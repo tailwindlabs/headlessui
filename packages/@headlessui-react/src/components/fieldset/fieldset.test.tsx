@@ -22,6 +22,20 @@ describe('Rendering', () => {
 
     let fieldset = container.firstChild
 
+    expect(fieldset).toBeInstanceOf(HTMLFieldSetElement)
+    expect(fieldset).not.toHaveAttribute('role', 'group')
+  })
+
+  it('should render a `Fieldset` using a custom component', async () => {
+    let { container } = render(
+      <Fieldset as="span">
+        <input />
+      </Fieldset>
+    )
+
+    let fieldset = container.firstChild
+
+    expect(fieldset).toBeInstanceOf(HTMLSpanElement)
     expect(fieldset).toHaveAttribute('role', 'group')
   })
 
@@ -34,8 +48,19 @@ describe('Rendering', () => {
 
     let fieldset = container.firstChild
 
-    expect(fieldset).toHaveAttribute('role', 'group')
     expect(fieldset).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('should make nested inputs disabled when the fieldset is disabled', async () => {
+    let { container } = render(
+      <Fieldset disabled>
+        <input />
+      </Fieldset>
+    )
+
+    let fieldset = container.firstChild
+
+    expect(fieldset?.firstChild).toBeDisabled()
   })
 
   it('should link a `Fieldset` to a nested `Legend`', async () => {
