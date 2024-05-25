@@ -296,11 +296,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })
 
   // Scroll lock
-  let scrollLockEnabled = __demoMode
-    ? false
-    : isClosing
-      ? false
-      : (position & Position.Leaf) === Position.Leaf
+  let scrollLockEnabled = __demoMode ? false : isClosing ? false : enabled
   useScrollLock(scrollLockEnabled, ownerDocument, resolveRootContainers)
 
   // Ensure we close the dialog as soon as the dialog itself becomes hidden
