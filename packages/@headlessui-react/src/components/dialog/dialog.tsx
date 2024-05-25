@@ -253,11 +253,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     usesOpenClosedState !== null ? (usesOpenClosedState & State.Closing) === State.Closing : false
 
   // Ensure other elements can't be interacted with
-  let inertEnabled = __demoMode
-    ? false
-    : isClosing
-      ? false
-      : (position & Position.Leaf) === Position.Leaf
+  let inertEnabled = __demoMode ? false : isClosing ? false : enabled
   useInertOthers(inertEnabled, {
     allowed: useEvent(() => [
       // Allow the headlessui-portal of the Dialog to be interactive. This

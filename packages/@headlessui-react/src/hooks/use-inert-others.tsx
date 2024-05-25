@@ -1,5 +1,6 @@
 import { disposables } from '../utils/disposables'
 import { getOwnerDocument } from '../utils/owner'
+import { Position, useHierarchy } from './use-hierarchy'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 let originals = new Map<HTMLElement, { 'aria-hidden': string | null; inert: boolean }>()
@@ -79,8 +80,11 @@ export function useInertOthers(
     disallowed,
   }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {}
 ) {
+  let position = useHierarchy(enabled, 'inert-others')
+  let isLeafNode = (position & Position.Leaf) === Position.Leaf
+
   useIsoMorphicEffect(() => {
-    if (!enabled) return
+    if (!isLeafNode) return
 
     let d = disposables()
 
@@ -118,5 +122,5 @@ export function useInertOthers(
     }
 
     return d.dispose
-  }, [enabled, allowed, disallowed])
+  }, [isLeafNode, allowed, disallowed])
 }
