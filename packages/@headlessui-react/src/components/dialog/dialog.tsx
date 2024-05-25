@@ -16,8 +16,8 @@ import React, {
   type Ref,
   type RefObject,
 } from 'react'
+import { useEscape } from '../../hooks/use-escape'
 import { useEvent } from '../../hooks/use-event'
-import { useEventListener } from '../../hooks/use-event-listener'
 import { Position, useHierarchy } from '../../hooks/use-hierarchy'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
@@ -48,7 +48,6 @@ import {
   type _internal_ComponentDescription,
 } from '../description/description'
 import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap'
-import { Keys } from '../keyboard'
 import { Portal, useNestedPortals } from '../portal/portal'
 
 enum DialogStates {
@@ -275,29 +274,30 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   // Handle `Escape` to close
   let escapeToCloseEnabled = (position & Position.Leaf) === Position.Leaf
-  useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
-    if (!escapeToCloseEnabled) return
-    if (event.defaultPrevented) return
-    if (event.key !== Keys.Escape) return
-    event.preventDefault()
-    event.stopPropagation()
+  useEscape(
+    escapeToCloseEnabled,
+    (event) => {
+      event.preventDefault()
+      event.stopPropagation()
 
-    // Ensure that we blur the current activeElement to prevent maintaining
-    // focus and potentially scrolling the page to the end (because the Dialog
-    // is rendered in a Portal at the end of the document.body and the browser
-    // tries to keep the focused element in view)
-    //
-    // Typically only happens in Safari.
-    if (
-      document.activeElement &&
-      'blur' in document.activeElement &&
-      typeof document.activeElement.blur === 'function'
-    ) {
-      document.activeElement.blur()
-    }
+      // Ensure that we blur the current activeElement to prevent maintaining
+      // focus and potentially scrolling the page to the end (because the Dialog
+      // is rendered in a Portal at the end of the document.body and the browser
+      // tries to keep the focused element in view)
+      //
+      // Typically only happens in Safari.
+      if (
+        document.activeElement &&
+        'blur' in document.activeElement &&
+        typeof document.activeElement.blur === 'function'
+      ) {
+        document.activeElement.blur()
+      }
 
-    close()
-  })
+      close()
+    },
+    ownerDocument?.defaultView
+  )
 
   // Scroll lock
   let scrollLockEnabled = __demoMode
