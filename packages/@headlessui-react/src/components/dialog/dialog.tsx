@@ -252,8 +252,8 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     usesOpenClosedState !== null ? (usesOpenClosedState & State.Closing) === State.Closing : false
 
   // Ensure other elements can't be interacted with
-  let inertEnabled = __demoMode ? false : isClosing ? false : enabled
-  useInertOthers(inertEnabled, {
+  let inertOthersEnabled = __demoMode ? false : isClosing ? false : enabled
+  useInertOthers(inertOthersEnabled, {
     allowed: useEvent(() => [
       // Allow the headlessui-portal of the Dialog to be interactive. This
       // contains the current dialog and the necessary focus guard elements.
@@ -267,14 +267,14 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })
 
   // Close Dialog on outside click
-  useOutsideClick(enabled, resolveRootContainers, (event) => {
+  let outsideClickEnabled = enabled
+  useOutsideClick(outsideClickEnabled, resolveRootContainers, (event) => {
     event.preventDefault()
     close()
   })
 
   // Handle `Escape` to close
-  let escapeToCloseEnabled = (position & Position.Leaf) === Position.Leaf
-  useEscape(escapeToCloseEnabled, ownerDocument?.defaultView, (event) => {
+  useEscape(enabled, ownerDocument?.defaultView, (event) => {
     event.preventDefault()
     event.stopPropagation()
 
