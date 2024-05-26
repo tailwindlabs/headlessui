@@ -8,7 +8,7 @@ export function useScrollLock(
 ) {
   let isTopLayer = useHierarchy(enabled, 'scroll-lock')
 
-  useDocumentOverflowLockedEffect(ownerDocument, isTopLayer, (meta) => ({
+  useDocumentOverflowLockedEffect(isTopLayer, ownerDocument, (meta) => ({
     containers: [...(meta.containers ?? []), resolveAllowedContainers],
   }))
 }
