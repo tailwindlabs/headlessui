@@ -10,6 +10,7 @@ import React, {
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
+import { Position, useHierarchy } from '../../hooks/use-hierarchy'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
@@ -141,6 +142,9 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     })
   })
 
+  let position = useHierarchy(Boolean(features & FocusTrapFeatures.TabLock), 'focus-trap#tab-lock')
+  let tabLockEnabled = (position & Position.Leaf) === Position.Leaf
+
   let d = useDisposables()
   let recentlyUsedTabKey = useRef(false)
   let ourProps = {
@@ -193,7 +197,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   return (
     <>
-      {Boolean(features & FocusTrapFeatures.TabLock) && (
+      {tabLockEnabled && (
         <Hidden
           as="button"
           type="button"
@@ -208,7 +212,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
         defaultTag: DEFAULT_FOCUS_TRAP_TAG,
         name: 'FocusTrap',
       })}
-      {Boolean(features & FocusTrapFeatures.TabLock) && (
+      {tabLockEnabled && (
         <Hidden
           as="button"
           type="button"
@@ -307,7 +311,11 @@ function useInitialFocus(
   }
 ) {
   let previousActiveElement = useRef<HTMLElement | null>(null)
-  let enabled = Boolean(features & FocusTrapFeatures.InitialFocus)
+  let position = useHierarchy(
+    Boolean(features & FocusTrapFeatures.InitialFocus),
+    'focus-trap#initial-focus'
+  )
+  let enabled = (position & Position.Leaf) === Position.Leaf
 
   let mounted = useIsMounted()
 
@@ -317,7 +325,7 @@ function useInitialFocus(
       return
     }
 
-    if (!(features & FocusTrapFeatures.InitialFocus)) {
+    if (!enabled) {
       // If we are disabling the initialFocus, then we should focus the fallback element if one is
       // provided. This is needed to ensure _something_ is focused. Typically a wrapping element
       // (e.g.: `Dialog` component).
