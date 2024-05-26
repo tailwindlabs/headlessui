@@ -18,7 +18,6 @@ import React, {
 } from 'react'
 import { useEscape } from '../../hooks/use-escape'
 import { useEvent } from '../../hooks/use-event'
-import { Position, useHierarchy } from '../../hooks/use-hierarchy'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsTouchDevice } from '../../hooks/use-is-touch-device'
@@ -222,8 +221,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   let enabled = ready ? dialogState === DialogStates.Open : false
   let [portals, PortalWrapper] = useNestedPortals()
 
-  let position = useHierarchy(enabled, 'dialog')
-
   // We use this because reading these values during initial render(s)
   // can result in `null` rather then the actual elements
   // This doesn't happen when using certain components like a
@@ -330,11 +327,8 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   if (enabled && !__demoMode) {
     focusTrapFeatures |= FocusTrapFeatures.RestoreFocus
-
-    if (position & Position.Leaf) {
-      focusTrapFeatures |= FocusTrapFeatures.InitialFocus
-      focusTrapFeatures |= FocusTrapFeatures.TabLock
-    }
+    focusTrapFeatures |= FocusTrapFeatures.InitialFocus
+    focusTrapFeatures |= FocusTrapFeatures.TabLock
 
     // Enable AutoFocus feature
     if (autoFocus) {
