@@ -10,7 +10,7 @@ import React, {
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
-import { Position, useHierarchy } from '../../hooks/use-hierarchy'
+import { useHierarchy } from '../../hooks/use-hierarchy'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
@@ -142,8 +142,10 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     })
   })
 
-  let position = useHierarchy(Boolean(features & FocusTrapFeatures.TabLock), 'focus-trap#tab-lock')
-  let tabLockEnabled = (position & Position.Leaf) === Position.Leaf
+  let tabLockEnabled = useHierarchy(
+    Boolean(features & FocusTrapFeatures.TabLock),
+    'focus-trap#tab-lock'
+  )
 
   let d = useDisposables()
   let recentlyUsedTabKey = useRef(false)
@@ -311,11 +313,10 @@ function useInitialFocus(
   }
 ) {
   let previousActiveElement = useRef<HTMLElement | null>(null)
-  let position = useHierarchy(
+  let enabled = useHierarchy(
     Boolean(features & FocusTrapFeatures.InitialFocus),
     'focus-trap#initial-focus'
   )
-  let enabled = (position & Position.Leaf) === Position.Leaf
 
   let mounted = useIsMounted()
 
