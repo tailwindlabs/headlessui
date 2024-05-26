@@ -388,18 +388,15 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   let menuRef = useSyncRefs(ref)
 
   // Handle outside click
-  useOutsideClick(
-    [buttonRef, itemsRef],
-    (event, target) => {
-      dispatch({ type: ActionTypes.CloseMenu })
+  let outsideClickEnabled = menuState === MenuStates.Open
+  useOutsideClick(outsideClickEnabled, [buttonRef, itemsRef], (event, target) => {
+    dispatch({ type: ActionTypes.CloseMenu })
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        buttonRef.current?.focus()
-      }
-    },
-    menuState === MenuStates.Open
-  )
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      buttonRef.current?.focus()
+    }
+  })
 
   let close = useEvent(() => {
     dispatch({ type: ActionTypes.CloseMenu })
@@ -624,19 +621,20 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   })()
 
   // Ensure we close the menu as soon as the button becomes hidden
-  useOnDisappear(state.buttonRef, () => dispatch({ type: ActionTypes.CloseMenu }), visible)
+  let onDisappearEnabled = visible
+  useOnDisappear(onDisappearEnabled, state.buttonRef, () => {
+    dispatch({ type: ActionTypes.CloseMenu })
+  })
 
   // Enable scroll locking when the menu is visible, and `modal` is enabled
-  useScrollLock(
-    ownerDocument,
-    state.__demoMode ? false : modal && state.menuState === MenuStates.Open
-  )
+  let scrollLockEnabled = state.__demoMode ? false : modal && state.menuState === MenuStates.Open
+  useScrollLock(scrollLockEnabled, ownerDocument)
 
   // Mark other elements as inert when the menu is visible, and `modal` is enabled
-  useInertOthers(
-    { allowed: useEvent(() => [state.buttonRef.current, state.itemsRef.current]) },
-    state.__demoMode ? false : modal && state.menuState === MenuStates.Open
-  )
+  let inertOthersEnabled = state.__demoMode ? false : modal && state.menuState === MenuStates.Open
+  useInertOthers(inertOthersEnabled, {
+    allowed: useEvent(() => [state.buttonRef.current, state.itemsRef.current]),
+  })
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
   // closed. If the button moved, then we want to cancel pending transitions to prevent that the
@@ -647,7 +645,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   //
   // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
   // want to transition the y-axis for example you will run into the same issue again.
-  let didButtonMove = useDidElementMove(state.buttonRef, state.menuState !== MenuStates.Open)
+  let didButtonMoveEnabled = state.menuState !== MenuStates.Open
+  let didButtonMove = useDidElementMove(didButtonMoveEnabled, state.buttonRef)
 
   // Now that we know that the button did move or not, we can either disable the panel and all of
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
@@ -662,9 +661,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     container.focus({ preventScroll: true })
   }, [state.menuState, state.itemsRef, ownerDocument, state.itemsRef.current])
 
-  useTreeWalker({
+  useTreeWalker(state.menuState === MenuStates.Open, {
     container: state.itemsRef.current,
-    enabled: state.menuState === MenuStates.Open,
     accept(node) {
       if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
       if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP

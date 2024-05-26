@@ -260,28 +260,25 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     usesOpenClosedState !== null ? (usesOpenClosedState & State.Closing) === State.Closing : false
 
   // Ensure other elements can't be interacted with
-  let inertEnabled = (() => {
+  let inertOthersEnabled = (() => {
+    if (__demoMode) return false
     // Only the top-most dialog should be allowed, all others should be inert
     if (hasNestedDialogs) return false
     if (isClosing) return false
     return enabled
   })()
-
-  useInertOthers(
-    {
-      allowed: useEvent(() => [
-        // Allow the headlessui-portal of the Dialog to be interactive. This
-        // contains the current dialog and the necessary focus guard elements.
-        internalDialogRef.current?.closest<HTMLElement>('[data-headlessui-portal]') ?? null,
-      ]),
-      disallowed: useEvent(() => [
-        // Disallow the "main" tree root node
-        mainTreeNodeRef.current?.closest<HTMLElement>('body > *:not(#headlessui-portal-root)') ??
-          null,
-      ]),
-    },
-    __demoMode ? false : inertEnabled
-  )
+  useInertOthers(inertOthersEnabled, {
+    allowed: useEvent(() => [
+      // Allow the headlessui-portal of the Dialog to be interactive. This
+      // contains the current dialog and the necessary focus guard elements.
+      internalDialogRef.current?.closest<HTMLElement>('[data-headlessui-portal]') ?? null,
+    ]),
+    disallowed: useEvent(() => [
+      // Disallow the "main" tree root node
+      mainTreeNodeRef.current?.closest<HTMLElement>('body > *:not(#headlessui-portal-root)') ??
+        null,
+    ]),
+  })
 
   // Close Dialog on outside click
   let outsideClickEnabled = (() => {
@@ -289,14 +286,10 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasNestedDialogs) return false
     return true
   })()
-  useOutsideClick(
-    resolveRootContainers,
-    (event) => {
-      event.preventDefault()
-      close()
-    },
-    outsideClickEnabled
-  )
+  useOutsideClick(outsideClickEnabled, resolveRootContainers, (event) => {
+    event.preventDefault()
+    close()
+  })
 
   // Handle `Escape` to close
   let escapeToCloseEnabled = (() => {
@@ -335,10 +328,11 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     if (hasParentDialog) return false
     return true
   })()
-  useScrollLock(ownerDocument, __demoMode ? false : scrollLockEnabled, resolveRootContainers)
+  useScrollLock(scrollLockEnabled, ownerDocument, resolveRootContainers)
 
   // Ensure we close the dialog as soon as the dialog itself becomes hidden
-  useOnDisappear(internalDialogRef, close, dialogState === DialogStates.Open)
+  let onDisappearEnabled = dialogState === DialogStates.Open
+  useOnDisappear(onDisappearEnabled, internalDialogRef, close)
 
   let [describedby, DescriptionProvider] = useDescriptions()
 

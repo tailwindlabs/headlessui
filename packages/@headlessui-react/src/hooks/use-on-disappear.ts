@@ -10,9 +10,9 @@ import { useLatestValue } from './use-latest-value'
  * viewport is smaller than `md` the element will disappear.
  */
 export function useOnDisappear(
+  enabled: boolean,
   ref: MutableRefObject<HTMLElement | null> | HTMLElement | null,
-  cb: () => void,
-  enabled = true
+  cb: () => void
 ) {
   let listenerRef = useLatestValue((element: HTMLElement) => {
     let rect = element.getBoundingClientRect()

@@ -9,9 +9,9 @@ type ContainerCollection = Container[] | Set<Container>
 type ContainerInput = Container | ContainerCollection
 
 export function useOutsideClick(
+  enabled: boolean,
   containers: ContainerInput | (() => ContainerInput),
-  cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void,
-  enabled: boolean = true
+  cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void
 ) {
   // TODO: remove this once the React bug has been fixed: https://github.com/facebook/react/issues/24657
   let enabledRef = useRef(false)

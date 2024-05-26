@@ -1,10 +1,7 @@
 import { useRef, type MutableRefObject } from 'react'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
-export function useDidElementMove(
-  element: MutableRefObject<HTMLElement | null>,
-  enabled: boolean = true
-) {
+export function useDidElementMove(enabled: boolean, element: MutableRefObject<HTMLElement | null>) {
   let elementPosition = useRef({ left: 0, top: 0 })
   useIsoMorphicEffect(() => {
     let el = element.current

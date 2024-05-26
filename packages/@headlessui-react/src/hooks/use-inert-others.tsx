@@ -73,11 +73,11 @@ function markNotInert(element: HTMLElement) {
  * ```
  */
 export function useInertOthers(
+  enabled: boolean,
   {
     allowed,
     disallowed,
-  }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {},
-  enabled = true
+  }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {}
 ) {
   useIsoMorphicEffect(() => {
     if (!enabled) return

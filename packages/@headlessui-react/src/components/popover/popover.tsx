@@ -365,18 +365,15 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   )
 
   // Handle outside click
-  useOutsideClick(
-    root.resolveContainers,
-    (event, target) => {
-      dispatch({ type: ActionTypes.ClosePopover })
+  let outsideClickEnabled = popoverState === PopoverStates.Open
+  useOutsideClick(outsideClickEnabled, root.resolveContainers, (event, target) => {
+    dispatch({ type: ActionTypes.ClosePopover })
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        button?.focus()
-      }
-    },
-    popoverState === PopoverStates.Open
-  )
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      button?.focus()
+    }
+  })
 
   let close = useEvent(
     (
@@ -868,10 +865,14 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   })()
 
   // Ensure we close the popover as soon as the button becomes hidden
-  useOnDisappear(state.button, () => dispatch({ type: ActionTypes.ClosePopover }), visible)
+  let onDisappearEnabled = visible
+  useOnDisappear(onDisappearEnabled, state.button, () => {
+    dispatch({ type: ActionTypes.ClosePopover })
+  })
 
   // Enable scroll locking when the popover is visible, and `modal` is enabled
-  useScrollLock(ownerDocument, state.__demoMode ? false : modal && visible)
+  let scrollLockEnabled = state.__demoMode ? false : modal && visible
+  useScrollLock(scrollLockEnabled, ownerDocument)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
