@@ -108,16 +108,13 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   let ownerDocument = useOwnerDocument(container)
 
-  useRestoreFocus({ ownerDocument }, Boolean(features & FocusTrapFeatures.RestoreFocus))
+  useRestoreFocus({ ownerDocument }, features)
   let previousActiveElement = useInitialFocus(
     { ownerDocument, container, initialFocus, initialFocusFallback },
     features
   )
 
-  useFocusLock(
-    { ownerDocument, container, containers, previousActiveElement },
-    Boolean(features & FocusTrapFeatures.FocusLock)
-  )
+  useFocusLock({ ownerDocument, container, containers, previousActiveElement }, features)
 
   let direction = useTabDirection()
   let handleFocus = useEvent((e: ReactFocusEvent) => {
@@ -155,7 +152,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
       }
     },
     onBlur(e: ReactFocusEvent) {
-      if (!Boolean(features & FocusTrapFeatures.FocusLock)) return
+      if (!(features & FocusTrapFeatures.FocusLock)) return
 
       let allContainers = resolveContainers(containers)
       if (container.current instanceof HTMLElement) allContainers.add(container.current)
@@ -268,7 +265,12 @@ function useRestoreElement(enabled: boolean = true) {
   })
 }
 
-function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, enabled: boolean) {
+function useRestoreFocus(
+  { ownerDocument }: { ownerDocument: Document | null },
+  features: FocusTrapFeatures
+) {
+  let enabled = Boolean(features & FocusTrapFeatures.RestoreFocus)
+
   let getRestoreElement = useRestoreElement(enabled)
 
   // Restore the focus to the previous element when `enabled` becomes false again
@@ -302,14 +304,18 @@ function useInitialFocus(
   },
   features: FocusTrapFeatures
 ) {
-  let enabled = Boolean(features & FocusTrapFeatures.InitialFocus)
   let previousActiveElement = useRef<HTMLElement | null>(null)
+  let enabled = Boolean(features & FocusTrapFeatures.InitialFocus)
 
   let mounted = useIsMounted()
 
   // Handle initial focus
   useWatch(() => {
-    if (!enabled) {
+    if (features === FocusTrapFeatures.None) {
+      return
+    }
+
+    if (!(features & FocusTrapFeatures.InitialFocus)) {
       // If we are disabling the initialFocus, then we should focus the fallback element if one is
       // provided. This is needed to ensure _something_ is focused. Typically a wrapping element
       // (e.g.: `Dialog` component).
@@ -399,9 +405,10 @@ function useFocusLock(
     containers?: Containers
     previousActiveElement: MutableRefObject<HTMLElement | null>
   },
-  enabled: boolean
+  features: FocusTrapFeatures
 ) {
   let mounted = useIsMounted()
+  let enabled = Boolean(features & FocusTrapFeatures.FocusLock)
 
   // Prevent programmatically escaping the container
   useEventListener(
