@@ -328,13 +328,13 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   let focusTrapFeatures = FocusTrapFeatures.None
 
-  if (enabled) {
+  if (enabled && !__demoMode) {
     if (position & Position.Leaf) {
       focusTrapFeatures = FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock
     }
 
     if (position & Position.HasChild) {
-      focusTrapFeatures = FocusTrapFeatures.RestoreFocus
+      focusTrapFeatures |= FocusTrapFeatures.RestoreFocus
     }
 
     // Enable AutoFocus feature
@@ -345,10 +345,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     // Remove initialFocus when we should not auto focus at all
     if (!shouldAutoFocus) {
       focusTrapFeatures &= ~FocusTrapFeatures.InitialFocus
-    }
-
-    if (__demoMode) {
-      focusTrapFeatures = FocusTrapFeatures.None
     }
   }
 
