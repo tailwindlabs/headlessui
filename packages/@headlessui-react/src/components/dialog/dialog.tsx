@@ -321,23 +321,19 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     'aria-describedby': describedby,
   }
 
-  let shouldAutoFocus = !useIsTouchDevice()
-
+  let shouldMoveFocusInside = !useIsTouchDevice()
   let focusTrapFeatures = FocusTrapFeatures.None
 
   if (enabled && !__demoMode) {
     focusTrapFeatures |= FocusTrapFeatures.RestoreFocus
-    focusTrapFeatures |= FocusTrapFeatures.InitialFocus
     focusTrapFeatures |= FocusTrapFeatures.TabLock
 
-    // Enable AutoFocus feature
     if (autoFocus) {
       focusTrapFeatures |= FocusTrapFeatures.AutoFocus
     }
 
-    // Remove initialFocus when we should not auto focus at all
-    if (!shouldAutoFocus) {
-      focusTrapFeatures &= ~FocusTrapFeatures.InitialFocus
+    if (shouldMoveFocusInside) {
+      focusTrapFeatures |= FocusTrapFeatures.InitialFocus
     }
   }
 
@@ -349,7 +345,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
             <PortalWrapper>
               <FocusTrap
                 initialFocus={initialFocus}
-                initialFocusFallback={__demoMode ? undefined : internalDialogRef}
+                initialFocusFallback={internalDialogRef}
                 containers={resolveRootContainers}
                 features={focusTrapFeatures}
               >

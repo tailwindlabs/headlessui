@@ -321,6 +321,7 @@ function useInitialFocus(
 
   // Handle initial focus
   useWatch(() => {
+    // No focus management needed
     if (features === FocusTrapFeatures.None) {
       return
     }
