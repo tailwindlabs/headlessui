@@ -15,7 +15,10 @@ let hierarchyStores = new DefaultMap(() =>
     },
     REMOVE(id: string) {
       let idx = this.indexOf(id)
-      return idx === -1 ? this : this.toSpliced(idx, 1)
+      if (idx === -1) return this
+      let copy = this.slice()
+      copy.splice(idx, 1)
+      return copy
     },
   })
 )
