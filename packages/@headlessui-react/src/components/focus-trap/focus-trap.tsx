@@ -65,9 +65,6 @@ export enum FocusTrapFeatures {
 
   /** Initial focus should look for the `data-autofocus` */
   AutoFocus = 1 << 4,
-
-  /** Enable all features. */
-  All = InitialFocus | TabLock | FocusLock | RestoreFocus,
 }
 
 type FocusTrapRenderPropArg = {}
@@ -98,7 +95,10 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     initialFocus,
     initialFocusFallback,
     containers,
-    features = FocusTrapFeatures.All,
+    features = FocusTrapFeatures.InitialFocus |
+      FocusTrapFeatures.TabLock |
+      FocusTrapFeatures.FocusLock |
+      FocusTrapFeatures.RestoreFocus,
     ...theirProps
   } = props
 

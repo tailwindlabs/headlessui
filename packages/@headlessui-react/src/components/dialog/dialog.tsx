@@ -330,7 +330,9 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   if (enabled && !__demoMode) {
     if (position & Position.Leaf) {
-      focusTrapFeatures = FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock
+      focusTrapFeatures |= FocusTrapFeatures.InitialFocus
+      focusTrapFeatures |= FocusTrapFeatures.TabLock
+      focusTrapFeatures |= FocusTrapFeatures.RestoreFocus
     }
 
     if (position & Position.HasChild) {
