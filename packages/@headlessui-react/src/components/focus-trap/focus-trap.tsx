@@ -108,13 +108,15 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   let ownerDocument = useOwnerDocument(container)
 
-  useRestoreFocus({ ownerDocument }, features)
-  let previousActiveElement = useInitialFocus(
-    { ownerDocument, container, initialFocus, initialFocusFallback },
-    features
-  )
+  useRestoreFocus(features, { ownerDocument })
+  let previousActiveElement = useInitialFocus(features, {
+    ownerDocument,
+    container,
+    initialFocus,
+    initialFocusFallback,
+  })
 
-  useFocusLock({ ownerDocument, container, containers, previousActiveElement }, features)
+  useFocusLock(features, { ownerDocument, container, containers, previousActiveElement })
 
   let direction = useTabDirection()
   let handleFocus = useEvent((e: ReactFocusEvent) => {
@@ -266,8 +268,8 @@ function useRestoreElement(enabled: boolean = true) {
 }
 
 function useRestoreFocus(
-  { ownerDocument }: { ownerDocument: Document | null },
-  features: FocusTrapFeatures
+  features: FocusTrapFeatures,
+  { ownerDocument }: { ownerDocument: Document | null }
 ) {
   let enabled = Boolean(features & FocusTrapFeatures.RestoreFocus)
 
@@ -291,6 +293,7 @@ function useRestoreFocus(
 }
 
 function useInitialFocus(
+  features: FocusTrapFeatures,
   {
     ownerDocument,
     container,
@@ -301,8 +304,7 @@ function useInitialFocus(
     container: MutableRefObject<HTMLElement | null>
     initialFocus?: MutableRefObject<HTMLElement | null>
     initialFocusFallback?: MutableRefObject<HTMLElement | null>
-  },
-  features: FocusTrapFeatures
+  }
 ) {
   let previousActiveElement = useRef<HTMLElement | null>(null)
   let enabled = Boolean(features & FocusTrapFeatures.InitialFocus)
@@ -394,6 +396,7 @@ function useInitialFocus(
 }
 
 function useFocusLock(
+  features: FocusTrapFeatures,
   {
     ownerDocument,
     container,
@@ -404,8 +407,7 @@ function useFocusLock(
     container: MutableRefObject<HTMLElement | null>
     containers?: Containers
     previousActiveElement: MutableRefObject<HTMLElement | null>
-  },
-  features: FocusTrapFeatures
+  }
 ) {
   let mounted = useIsMounted()
   let enabled = Boolean(features & FocusTrapFeatures.FocusLock)
