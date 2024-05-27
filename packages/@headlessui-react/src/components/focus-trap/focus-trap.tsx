@@ -11,6 +11,7 @@ import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
 import { useIsMounted } from '../../hooks/use-is-mounted'
+import { useIsTopLayer } from '../../hooks/use-is-top-layer'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
@@ -49,25 +50,22 @@ let DEFAULT_FOCUS_TRAP_TAG = 'div' as const
 
 export enum FocusTrapFeatures {
   /** No features enabled for the focus trap. */
-  None = 1 << 0,
+  None = 0,
 
   /** Ensure that we move focus initially into the container. */
-  InitialFocus = 1 << 1,
+  InitialFocus = 1 << 0,
 
   /** Ensure that pressing `Tab` and `Shift+Tab` is trapped within the container. */
-  TabLock = 1 << 2,
+  TabLock = 1 << 1,
 
   /** Ensure that programmatically moving focus outside of the container is disallowed. */
-  FocusLock = 1 << 3,
+  FocusLock = 1 << 2,
 
   /** Ensure that we restore the focus when unmounting the focus trap. */
-  RestoreFocus = 1 << 4,
+  RestoreFocus = 1 << 3,
 
   /** Initial focus should look for the `data-autofocus` */
-  AutoFocus = 1 << 5,
-
-  /** Enable all features. */
-  All = InitialFocus | TabLock | FocusLock | RestoreFocus,
+  AutoFocus = 1 << 4,
 }
 
 type FocusTrapRenderPropArg = {}
@@ -98,7 +96,10 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     initialFocus,
     initialFocusFallback,
     containers,
-    features = FocusTrapFeatures.All,
+    features = FocusTrapFeatures.InitialFocus |
+      FocusTrapFeatures.TabLock |
+      FocusTrapFeatures.FocusLock |
+      FocusTrapFeatures.RestoreFocus,
     ...theirProps
   } = props
 
@@ -108,16 +109,15 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   let ownerDocument = useOwnerDocument(container)
 
-  useRestoreFocus({ ownerDocument }, Boolean(features & FocusTrapFeatures.RestoreFocus))
-  let previousActiveElement = useInitialFocus(
-    { ownerDocument, container, initialFocus, initialFocusFallback },
-    features
-  )
+  useRestoreFocus(features, { ownerDocument })
+  let previousActiveElement = useInitialFocus(features, {
+    ownerDocument,
+    container,
+    initialFocus,
+    initialFocusFallback,
+  })
 
-  useFocusLock(
-    { ownerDocument, container, containers, previousActiveElement },
-    Boolean(features & FocusTrapFeatures.FocusLock)
-  )
+  useFocusLock(features, { ownerDocument, container, containers, previousActiveElement })
 
   let direction = useTabDirection()
   let handleFocus = useEvent((e: ReactFocusEvent) => {
@@ -142,6 +142,11 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     })
   })
 
+  let tabLockEnabled = useIsTopLayer(
+    Boolean(features & FocusTrapFeatures.TabLock),
+    'focus-trap#tab-lock'
+  )
+
   let d = useDisposables()
   let recentlyUsedTabKey = useRef(false)
   let ourProps = {
@@ -155,7 +160,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
       }
     },
     onBlur(e: ReactFocusEvent) {
-      if (!Boolean(features & FocusTrapFeatures.FocusLock)) return
+      if (!(features & FocusTrapFeatures.FocusLock)) return
 
       let allContainers = resolveContainers(containers)
       if (container.current instanceof HTMLElement) allContainers.add(container.current)
@@ -194,7 +199,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 
   return (
     <>
-      {Boolean(features & FocusTrapFeatures.TabLock) && (
+      {tabLockEnabled && (
         <Hidden
           as="button"
           type="button"
@@ -209,7 +214,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
         defaultTag: DEFAULT_FOCUS_TRAP_TAG,
         name: 'FocusTrap',
       })}
-      {Boolean(features & FocusTrapFeatures.TabLock) && (
+      {tabLockEnabled && (
         <Hidden
           as="button"
           type="button"
@@ -268,7 +273,12 @@ function useRestoreElement(enabled: boolean = true) {
   })
 }
 
-function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, enabled: boolean) {
+function useRestoreFocus(
+  features: FocusTrapFeatures,
+  { ownerDocument }: { ownerDocument: Document | null }
+) {
+  let enabled = Boolean(features & FocusTrapFeatures.RestoreFocus)
+
   let getRestoreElement = useRestoreElement(enabled)
 
   // Restore the focus to the previous element when `enabled` becomes false again
@@ -289,6 +299,7 @@ function useRestoreFocus({ ownerDocument }: { ownerDocument: Document | null }, 
 }
 
 function useInitialFocus(
+  features: FocusTrapFeatures,
   {
     ownerDocument,
     container,
@@ -299,16 +310,23 @@ function useInitialFocus(
     container: MutableRefObject<HTMLElement | null>
     initialFocus?: MutableRefObject<HTMLElement | null>
     initialFocusFallback?: MutableRefObject<HTMLElement | null>
-  },
-  features: FocusTrapFeatures
+  }
 ) {
-  let enabled = Boolean(features & FocusTrapFeatures.InitialFocus)
   let previousActiveElement = useRef<HTMLElement | null>(null)
+  let enabled = useIsTopLayer(
+    Boolean(features & FocusTrapFeatures.InitialFocus),
+    'focus-trap#initial-focus'
+  )
 
   let mounted = useIsMounted()
 
   // Handle initial focus
   useWatch(() => {
+    // No focus management needed
+    if (features === FocusTrapFeatures.None) {
+      return
+    }
+
     if (!enabled) {
       // If we are disabling the initialFocus, then we should focus the fallback element if one is
       // provided. This is needed to ensure _something_ is focused. Typically a wrapping element
@@ -388,6 +406,7 @@ function useInitialFocus(
 }
 
 function useFocusLock(
+  features: FocusTrapFeatures,
   {
     ownerDocument,
     container,
@@ -398,10 +417,10 @@ function useFocusLock(
     container: MutableRefObject<HTMLElement | null>
     containers?: Containers
     previousActiveElement: MutableRefObject<HTMLElement | null>
-  },
-  enabled: boolean
+  }
 ) {
   let mounted = useIsMounted()
+  let enabled = Boolean(features & FocusTrapFeatures.FocusLock)
 
   // Prevent programmatically escaping the container
   useEventListener(

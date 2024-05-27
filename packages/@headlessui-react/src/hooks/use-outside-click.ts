@@ -2,6 +2,7 @@ import { useEffect, useRef, type MutableRefObject } from 'react'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
+import { useIsTopLayer } from './use-is-top-layer'
 import { useWindowEvent } from './use-window-event'
 
 type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
@@ -13,19 +14,21 @@ export function useOutsideClick(
   containers: ContainerInput | (() => ContainerInput),
   cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void
 ) {
+  let isTopLayer = useIsTopLayer(enabled, 'outside-click')
+
   // TODO: remove this once the React bug has been fixed: https://github.com/facebook/react/issues/24657
   let enabledRef = useRef(false)
   useEffect(
     process.env.NODE_ENV === 'test'
       ? () => {
-          enabledRef.current = enabled
+          enabledRef.current = isTopLayer
         }
       : () => {
           requestAnimationFrame(() => {
-            enabledRef.current = enabled
+            enabledRef.current = isTopLayer
           })
         },
-    [enabled]
+    [isTopLayer]
   )
 
   function handleOutsideClick<E extends MouseEvent | PointerEvent | FocusEvent | TouchEvent>(

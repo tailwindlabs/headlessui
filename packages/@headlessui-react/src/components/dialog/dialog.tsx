@@ -9,7 +9,6 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  useState,
   type ContextType,
   type ElementType,
   type MutableRefObject,
@@ -17,8 +16,8 @@ import React, {
   type Ref,
   type RefObject,
 } from 'react'
+import { useEscape } from '../../hooks/use-escape'
 import { useEvent } from '../../hooks/use-event'
-import { useEventListener } from '../../hooks/use-event-listener'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsTouchDevice } from '../../hooks/use-is-touch-device'
@@ -33,7 +32,6 @@ import { CloseProvider } from '../../internal/close-provider'
 import { HoistFormFields } from '../../internal/form-fields'
 import { State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
-import { StackMessage, StackProvider } from '../../internal/stack-context'
 import type { Props } from '../../types'
 import { match } from '../../utils/match'
 import {
@@ -50,8 +48,7 @@ import {
   type _internal_ComponentDescription,
 } from '../description/description'
 import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap'
-import { Keys } from '../keyboard'
-import { Portal, useNestedPortals } from '../portal/portal'
+import { Portal, PortalGroup, useNestedPortals } from '../portal/portal'
 
 enum DialogStates {
   Open,
@@ -147,7 +144,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     __demoMode = false,
     ...theirProps
   } = props
-  let [nestedDialogCount, setNestedDialogCount] = useState(0)
 
   let didWarnOnRole = useRef(false)
 
@@ -224,8 +220,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   let ready = useServerHandoffComplete()
   let enabled = ready ? dialogState === DialogStates.Open : false
-  let hasNestedDialogs = nestedDialogCount > 1 // 1 is the current dialog
-  let hasParentDialog = useContext(DialogContext) !== null
   let [portals, PortalWrapper] = useNestedPortals()
 
   // We use this because reading these values during initial render(s)
@@ -247,10 +241,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     defaultContainers: [defaultContainer],
   })
 
-  // If there are multiple dialogs, then you can be the root, the leaf or one
-  // in between. We only care about whether you are the top most one or not.
-  let position = !hasNestedDialogs ? 'leaf' : 'parent'
-
   // When the `Dialog` is wrapped in a `Transition` (or another Headless UI component that exposes
   // the OpenClosed state) then we get some information via context about its state. When the
   // `Transition` is about to close, then the `State.Closing` state will be exposed. This allows us
@@ -260,13 +250,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     usesOpenClosedState !== null ? (usesOpenClosedState & State.Closing) === State.Closing : false
 
   // Ensure other elements can't be interacted with
-  let inertOthersEnabled = (() => {
-    if (__demoMode) return false
-    // Only the top-most dialog should be allowed, all others should be inert
-    if (hasNestedDialogs) return false
-    if (isClosing) return false
-    return enabled
-  })()
+  let inertOthersEnabled = __demoMode ? false : isClosing ? false : enabled
   useInertOthers(inertOthersEnabled, {
     allowed: useEvent(() => [
       // Allow the headlessui-portal of the Dialog to be interactive. This
@@ -281,26 +265,13 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })
 
   // Close Dialog on outside click
-  let outsideClickEnabled = (() => {
-    if (!enabled) return false
-    if (hasNestedDialogs) return false
-    return true
-  })()
-  useOutsideClick(outsideClickEnabled, resolveRootContainers, (event) => {
+  useOutsideClick(enabled, resolveRootContainers, (event) => {
     event.preventDefault()
     close()
   })
 
   // Handle `Escape` to close
-  let escapeToCloseEnabled = (() => {
-    if (hasNestedDialogs) return false
-    if (dialogState !== DialogStates.Open) return false
-    return true
-  })()
-  useEventListener(ownerDocument?.defaultView, 'keydown', (event) => {
-    if (!escapeToCloseEnabled) return
-    if (event.defaultPrevented) return
-    if (event.key !== Keys.Escape) return
+  useEscape(enabled, ownerDocument?.defaultView, (event) => {
     event.preventDefault()
     event.stopPropagation()
 
@@ -322,12 +293,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })
 
   // Scroll lock
-  let scrollLockEnabled = (() => {
-    if (isClosing) return false
-    if (dialogState !== DialogStates.Open) return false
-    if (hasParentDialog) return false
-    return true
-  })()
+  let scrollLockEnabled = __demoMode ? false : isClosing ? false : enabled
   useScrollLock(scrollLockEnabled, ownerDocument, resolveRootContainers)
 
   // Ensure we close the dialog as soon as the dialog itself becomes hidden
@@ -355,53 +321,34 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     'aria-describedby': describedby,
   }
 
-  let shouldAutoFocus = !useIsTouchDevice()
+  let shouldMoveFocusInside = !useIsTouchDevice()
+  let focusTrapFeatures = FocusTrapFeatures.None
 
-  let focusTrapFeatures = enabled
-    ? match(position, {
-        parent: FocusTrapFeatures.RestoreFocus,
-        leaf: FocusTrapFeatures.All & ~FocusTrapFeatures.FocusLock,
-      })
-    : FocusTrapFeatures.None
+  if (enabled && !__demoMode) {
+    focusTrapFeatures |= FocusTrapFeatures.RestoreFocus
+    focusTrapFeatures |= FocusTrapFeatures.TabLock
 
-  // Enable AutoFocus feature
-  if (autoFocus) {
-    focusTrapFeatures |= FocusTrapFeatures.AutoFocus
-  }
+    if (autoFocus) {
+      focusTrapFeatures |= FocusTrapFeatures.AutoFocus
+    }
 
-  // Remove initialFocus when we should not auto focus at all
-  if (!shouldAutoFocus) {
-    focusTrapFeatures &= ~FocusTrapFeatures.InitialFocus
-  }
-
-  if (__demoMode) {
-    focusTrapFeatures = FocusTrapFeatures.None
+    if (shouldMoveFocusInside) {
+      focusTrapFeatures |= FocusTrapFeatures.InitialFocus
+    }
   }
 
   return (
-    <StackProvider
-      type="Dialog"
-      enabled={dialogState === DialogStates.Open}
-      element={internalDialogRef}
-      onUpdate={useEvent((message, type) => {
-        if (type !== 'Dialog') return
-
-        match(message, {
-          [StackMessage.Add]: () => setNestedDialogCount((count) => count + 1),
-          [StackMessage.Remove]: () => setNestedDialogCount((count) => count - 1),
-        })
-      })}
-    >
+    <>
       <ForcePortalRoot force={true}>
         <Portal>
           <DialogContext.Provider value={contextBag}>
-            <Portal.Group target={internalDialogRef}>
+            <PortalGroup target={internalDialogRef}>
               <ForcePortalRoot force={false}>
-                <DescriptionProvider slot={slot} name="Dialog.Description">
+                <DescriptionProvider slot={slot}>
                   <PortalWrapper>
                     <FocusTrap
                       initialFocus={initialFocus}
-                      initialFocusFallback={__demoMode ? undefined : internalDialogRef}
+                      initialFocusFallback={internalDialogRef}
                       containers={resolveRootContainers}
                       features={focusTrapFeatures}
                     >
@@ -420,14 +367,14 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
                   </PortalWrapper>
                 </DescriptionProvider>
               </ForcePortalRoot>
-            </Portal.Group>
+            </PortalGroup>
           </DialogContext.Provider>
         </Portal>
       </ForcePortalRoot>
       <HoistFormFields>
         <MainTreeNode />
       </HoistFormFields>
-    </StackProvider>
+    </>
   )
 }
 

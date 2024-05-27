@@ -3,8 +3,8 @@ import { useIsoMorphicEffect } from '../use-iso-morphic-effect'
 import { overflows } from './overflow-store'
 
 export function useDocumentOverflowLockedEffect(
-  doc: Document | null,
   shouldBeLocked: boolean,
+  doc: Document | null,
   meta: (meta: Record<string, any>) => Record<string, any> = () => ({ containers: [] })
 ) {
   let store = useStore(overflows)
