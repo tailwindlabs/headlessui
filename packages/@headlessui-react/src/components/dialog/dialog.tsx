@@ -31,6 +31,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { CloseProvider } from '../../internal/close-provider'
 import { HoistFormFields } from '../../internal/form-fields'
 import { State, useOpenClosed } from '../../internal/open-closed'
+import { ForcePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
 import { match } from '../../utils/match'
 import {
@@ -47,7 +48,7 @@ import {
   type _internal_ComponentDescription,
 } from '../description/description'
 import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap'
-import { Portal, useNestedPortals } from '../portal/portal'
+import { Portal, PortalGroup, useNestedPortals } from '../portal/portal'
 
 enum DialogStates {
   Open,
@@ -338,32 +339,38 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   return (
     <>
-      <Portal>
-        <DialogContext.Provider value={contextBag}>
-          <DescriptionProvider slot={slot}>
-            <PortalWrapper>
-              <FocusTrap
-                initialFocus={initialFocus}
-                initialFocusFallback={internalDialogRef}
-                containers={resolveRootContainers}
-                features={focusTrapFeatures}
-              >
-                <CloseProvider value={close}>
-                  {render({
-                    ourProps,
-                    theirProps,
-                    slot,
-                    defaultTag: DEFAULT_DIALOG_TAG,
-                    features: DialogRenderFeatures,
-                    visible: dialogState === DialogStates.Open,
-                    name: 'Dialog',
-                  })}
-                </CloseProvider>
-              </FocusTrap>
-            </PortalWrapper>
-          </DescriptionProvider>
-        </DialogContext.Provider>
-      </Portal>
+      <ForcePortalRoot force={true}>
+        <Portal>
+          <DialogContext.Provider value={contextBag}>
+            <PortalGroup target={internalDialogRef}>
+              <ForcePortalRoot force={false}>
+                <DescriptionProvider slot={slot}>
+                  <PortalWrapper>
+                    <FocusTrap
+                      initialFocus={initialFocus}
+                      initialFocusFallback={internalDialogRef}
+                      containers={resolveRootContainers}
+                      features={focusTrapFeatures}
+                    >
+                      <CloseProvider value={close}>
+                        {render({
+                          ourProps,
+                          theirProps,
+                          slot,
+                          defaultTag: DEFAULT_DIALOG_TAG,
+                          features: DialogRenderFeatures,
+                          visible: dialogState === DialogStates.Open,
+                          name: 'Dialog',
+                        })}
+                      </CloseProvider>
+                    </FocusTrap>
+                  </PortalWrapper>
+                </DescriptionProvider>
+              </ForcePortalRoot>
+            </PortalGroup>
+          </DialogContext.Provider>
+        </Portal>
+      </ForcePortalRoot>
       <HoistFormFields>
         <MainTreeNode />
       </HoistFormFields>
