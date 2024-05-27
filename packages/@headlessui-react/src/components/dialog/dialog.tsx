@@ -331,8 +331,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   useScrollLock(scrollLockEnabled, ownerDocument, resolveRootContainers)
 
   // Ensure we close the dialog as soon as the dialog itself becomes hidden
-  let onDisappearEnabled = dialogState === DialogStates.Open
-  useOnDisappear(onDisappearEnabled, internalDialogRef, close)
+  useOnDisappear(enabled, internalDialogRef, close)
 
   let [describedby, DescriptionProvider] = useDescriptions()
 

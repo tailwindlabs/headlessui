@@ -865,8 +865,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   })()
 
   // Ensure we close the popover as soon as the button becomes hidden
-  let onDisappearEnabled = visible
-  useOnDisappear(onDisappearEnabled, state.button, () => {
+  useOnDisappear(visible, state.button, () => {
     dispatch({ type: ActionTypes.ClosePopover })
   })
 

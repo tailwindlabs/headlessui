@@ -924,8 +924,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })()
 
   // Ensure we close the listbox as soon as the button becomes hidden
-  let onDisappearEnabled = visible
-  useOnDisappear(onDisappearEnabled, data.buttonRef, actions.closeListbox)
+  useOnDisappear(visible, data.buttonRef, actions.closeListbox)
 
   // Enable scroll locking when the listbox is visible, and `modal` is enabled
   let scrollLockEnabled = data.__demoMode

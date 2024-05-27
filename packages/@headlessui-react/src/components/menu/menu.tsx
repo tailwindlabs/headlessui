@@ -621,8 +621,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   })()
 
   // Ensure we close the menu as soon as the button becomes hidden
-  let onDisappearEnabled = visible
-  useOnDisappear(onDisappearEnabled, state.buttonRef, () => {
+  useOnDisappear(visible, state.buttonRef, () => {
     dispatch({ type: ActionTypes.CloseMenu })
   })
 

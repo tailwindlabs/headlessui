@@ -1622,8 +1622,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })()
 
   // Ensure we close the combobox as soon as the input becomes hidden
-  let onDisappearEnabled = visible
-  useOnDisappear(onDisappearEnabled, data.inputRef, actions.closeCombobox)
+  useOnDisappear(visible, data.inputRef, actions.closeCombobox)
 
   // Enable scroll locking when the combobox is visible, and `modal` is enabled
   let scrollLockEnabled = data.__demoMode

@@ -586,7 +586,7 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   )
 
   // Ensure we change the tree state to hidden once the transition becomes hidden
-  useOnDisappear(internalTransitionRef, () => setState(TreeStates.Hidden))
+  useOnDisappear(show, internalTransitionRef, () => setState(TreeStates.Hidden))
 
   useIsoMorphicEffect(() => {
     if (show) {
