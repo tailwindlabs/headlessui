@@ -73,7 +73,7 @@ export default function App() {
 
       <MyDialog level={2} open={openConfirm} onClose={setOpenConfirm}>
         <div>Are you sure??</div>
-        <div className="flex-1 py-8">...</div>
+        <div className="flex-1 py-8">If confirmed, this dialog will close.</div>
         <div className="flex gap-2">
           <Button
             data-autofocus
