@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Added
+
+- Add ability to render multiple `<Dialog />` components at once (without nesting them) ([#3242](https://github.com/tailwindlabs/headlessui/pull/3242))
 
 ## [2.0.4] - 2024-05-25
 
