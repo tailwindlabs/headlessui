@@ -2,7 +2,7 @@ import { useEffect, useRef, type MutableRefObject } from 'react'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
-import { useHierarchy } from './use-hierarchy'
+import { useIsTopLayer } from './use-is-top-layer'
 import { useWindowEvent } from './use-window-event'
 
 type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
@@ -14,7 +14,7 @@ export function useOutsideClick(
   containers: ContainerInput | (() => ContainerInput),
   cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void
 ) {
-  let isTopLayer = useHierarchy(enabled, 'outside-click')
+  let isTopLayer = useIsTopLayer(enabled, 'outside-click')
 
   // TODO: remove this once the React bug has been fixed: https://github.com/facebook/react/issues/24657
   let enabledRef = useRef(false)

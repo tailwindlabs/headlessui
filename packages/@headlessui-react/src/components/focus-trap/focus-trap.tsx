@@ -10,8 +10,8 @@ import React, {
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
 import { useEventListener } from '../../hooks/use-event-listener'
-import { useHierarchy } from '../../hooks/use-hierarchy'
 import { useIsMounted } from '../../hooks/use-is-mounted'
+import { useIsTopLayer } from '../../hooks/use-is-top-layer'
 import { useOnUnmount } from '../../hooks/use-on-unmount'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
@@ -142,7 +142,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     })
   })
 
-  let tabLockEnabled = useHierarchy(
+  let tabLockEnabled = useIsTopLayer(
     Boolean(features & FocusTrapFeatures.TabLock),
     'focus-trap#tab-lock'
   )
@@ -313,7 +313,7 @@ function useInitialFocus(
   }
 ) {
   let previousActiveElement = useRef<HTMLElement | null>(null)
-  let enabled = useHierarchy(
+  let enabled = useIsTopLayer(
     Boolean(features & FocusTrapFeatures.InitialFocus),
     'focus-trap#initial-focus'
   )

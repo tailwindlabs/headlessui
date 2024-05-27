@@ -24,9 +24,9 @@ let hierarchyStores = new DefaultMap(() =>
 )
 
 /**
- * A hook that returns whether the current node in the hierarchy is at the very
- * top for a given scope. The hierarchy is based on the order of the hooks being
- * called.
+ * A hook that returns whether the current node is on the top of the hierarchy,
+ * aka "top layer". Note: this does not use the native DOM "top-layer" but
+ * conceptually it's the same thing.
  *
  * The hierarchy is also shared across multiple components that use the same
  * scope.
@@ -36,14 +36,17 @@ let hierarchyStores = new DefaultMap(() =>
  *
  * A use case for this is to use this inside of a `useOutsideClick` hook where
  * only the last rendered component should handle the outside click event.
+ *
+ * ```ts
  * <Dialog>
  *   <Menu>
  *     <MenuButton></MenuButton> // Pressing escape on an open `Menu` should close the `Menu` and not the `Dialog`.
  *     // …
  *   </Menu>
  * </Dialog>
+ * ```
  */
-export function useHierarchy(enabled: boolean, scope: string) {
+export function useIsTopLayer(enabled: boolean, scope: string) {
   let hierarchyStore = hierarchyStores.get(scope)
   let id = useId()
   let hierarchy = useStore(hierarchyStore)

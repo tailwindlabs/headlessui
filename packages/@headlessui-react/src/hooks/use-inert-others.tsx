@@ -1,6 +1,6 @@
 import { disposables } from '../utils/disposables'
 import { getOwnerDocument } from '../utils/owner'
-import { useHierarchy } from './use-hierarchy'
+import { useIsTopLayer } from './use-is-top-layer'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 let originals = new Map<HTMLElement, { 'aria-hidden': string | null; inert: boolean }>()
@@ -80,7 +80,7 @@ export function useInertOthers(
     disallowed,
   }: { allowed?: () => (HTMLElement | null)[]; disallowed?: () => (HTMLElement | null)[] } = {}
 ) {
-  let isTopLayer = useHierarchy(enabled, 'inert-others')
+  let isTopLayer = useIsTopLayer(enabled, 'inert-others')
 
   useIsoMorphicEffect(() => {
     if (!isTopLayer) return

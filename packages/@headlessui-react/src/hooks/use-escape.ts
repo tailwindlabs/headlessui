@@ -1,13 +1,13 @@
 import { Keys } from '../components/keyboard'
 import { useEventListener } from './use-event-listener'
-import { useHierarchy } from './use-hierarchy'
+import { useIsTopLayer } from './use-is-top-layer'
 
 export function useEscape(
   enabled: boolean,
   view = typeof document !== 'undefined' ? document.defaultView : null,
   cb: (event: KeyboardEvent) => void
 ) {
-  let isTopLayer = useHierarchy(enabled, 'escape')
+  let isTopLayer = useIsTopLayer(enabled, 'escape')
 
   useEventListener(view, 'keydown', (event) => {
     if (!isTopLayer) return

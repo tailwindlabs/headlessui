@@ -1,12 +1,12 @@
 import { useDocumentOverflowLockedEffect } from './document-overflow/use-document-overflow'
-import { useHierarchy } from './use-hierarchy'
+import { useIsTopLayer } from './use-is-top-layer'
 
 export function useScrollLock(
   enabled: boolean,
   ownerDocument: Document | null,
   resolveAllowedContainers: () => HTMLElement[] = () => [document.body]
 ) {
-  let isTopLayer = useHierarchy(enabled, 'scroll-lock')
+  let isTopLayer = useIsTopLayer(enabled, 'scroll-lock')
 
   useDocumentOverflowLockedEffect(isTopLayer, ownerDocument, (meta) => ({
     containers: [...(meta.containers ?? []), resolveAllowedContainers],
