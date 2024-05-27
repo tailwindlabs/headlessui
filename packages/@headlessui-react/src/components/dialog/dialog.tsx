@@ -264,8 +264,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   })
 
   // Close Dialog on outside click
-  let outsideClickEnabled = enabled
-  useOutsideClick(outsideClickEnabled, resolveRootContainers, (event) => {
+  useOutsideClick(enabled, resolveRootContainers, (event) => {
     event.preventDefault()
     close()
   })
