@@ -9,7 +9,6 @@ import {
   TransitionChild,
 } from '@headlessui/react'
 import { useState } from 'react'
-import { unstable_batchedUpdates } from 'react-dom'
 import { Button } from '../../components/button'
 
 export default function App() {
@@ -79,10 +78,8 @@ export default function App() {
           <Button
             data-autofocus
             onClick={() => {
-              unstable_batchedUpdates(() => {
-                setOpenDeleted(true)
-                setOpenConfirm(false)
-              })
+              setOpenDeleted(true)
+              setOpenConfirm(false)
             }}
           >
             CONFIRM
