@@ -13,7 +13,7 @@ it('should be possible to inert an element', async () => {
   function Example() {
     let ref = useRef(null)
     let [enabled, setEnabled] = useState(true)
-    useInertOthers({ disallowed: () => [ref.current] }, enabled)
+    useInertOthers(enabled, { disallowed: () => [ref.current] })
 
     return (
       <div ref={ref} id="main">
@@ -59,7 +59,7 @@ it('should not mark an element as inert when the hook is disabled', async () => 
   function Example() {
     let ref = useRef(null)
     let [enabled, setEnabled] = useState(false)
-    useInertOthers({ disallowed: () => [ref.current] }, enabled)
+    useInertOthers(enabled, { disallowed: () => [ref.current] })
 
     return (
       <div ref={ref} id="main">
@@ -95,7 +95,7 @@ it('should mark the element as not inert anymore, once all references are gone',
     let ref = useRef<HTMLDivElement | null>(null)
 
     let [enabled, setEnabled] = useState(false)
-    useInertOthers({ disallowed: () => [ref.current?.parentElement ?? null] }, enabled)
+    useInertOthers(enabled, { disallowed: () => [ref.current?.parentElement ?? null] })
 
     return (
       <div ref={ref}>
@@ -143,10 +143,9 @@ it('should mark the element as not inert anymore, once all references are gone',
 it('should be possible to mark everything but allowed containers as inert', async () => {
   function Example({ children }: { children: ReactNode }) {
     let [enabled, setEnabled] = useState(false)
-    useInertOthers(
-      { allowed: () => [document.getElementById('a-a-b')!, document.getElementById('a-a-c')!] },
-      enabled
-    )
+    useInertOthers(enabled, {
+      allowed: () => [document.getElementById('a-a-b')!, document.getElementById('a-a-c')!],
+    })
 
     return (
       <div>

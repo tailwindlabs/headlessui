@@ -560,18 +560,15 @@ function ListboxFn<
   }, [data])
 
   // Handle outside click
-  useOutsideClick(
-    [data.buttonRef, data.optionsRef],
-    (event, target) => {
-      dispatch({ type: ActionTypes.CloseListbox })
+  let outsideClickEnabled = data.listboxState === ListboxStates.Open
+  useOutsideClick(outsideClickEnabled, [data.buttonRef, data.optionsRef], (event, target) => {
+    dispatch({ type: ActionTypes.CloseListbox })
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        data.buttonRef.current?.focus()
-      }
-    },
-    data.listboxState === ListboxStates.Open
-  )
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      data.buttonRef.current?.focus()
+    }
+  })
 
   let slot = useMemo(() => {
     return {
@@ -927,19 +924,21 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })()
 
   // Ensure we close the listbox as soon as the button becomes hidden
-  useOnDisappear(data.buttonRef, actions.closeListbox, visible)
+  useOnDisappear(visible, data.buttonRef, actions.closeListbox)
 
   // Enable scroll locking when the listbox is visible, and `modal` is enabled
-  useScrollLock(
-    ownerDocument,
-    data.__demoMode ? false : modal && data.listboxState === ListboxStates.Open
-  )
+  let scrollLockEnabled = data.__demoMode
+    ? false
+    : modal && data.listboxState === ListboxStates.Open
+  useScrollLock(scrollLockEnabled, ownerDocument)
 
   // Mark other elements as inert when the listbox is visible, and `modal` is enabled
-  useInertOthers(
-    { allowed: useEvent(() => [data.buttonRef.current, data.optionsRef.current]) },
-    data.__demoMode ? false : modal && data.listboxState === ListboxStates.Open
-  )
+  let inertOthersEnabled = data.__demoMode
+    ? false
+    : modal && data.listboxState === ListboxStates.Open
+  useInertOthers(inertOthersEnabled, {
+    allowed: useEvent(() => [data.buttonRef.current, data.optionsRef.current]),
+  })
 
   let initialOption = useRef<number | null>(null)
 
@@ -970,7 +969,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   //
   // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
   // want to transition the y-axis for example you will run into the same issue again.
-  let didButtonMove = useDidElementMove(data.buttonRef, data.listboxState !== ListboxStates.Open)
+  let didElementMoveEnabled = data.listboxState !== ListboxStates.Open
+  let didButtonMove = useDidElementMove(didElementMoveEnabled, data.buttonRef)
 
   // Now that we know that the button did move or not, we can either disable the panel and all of
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.

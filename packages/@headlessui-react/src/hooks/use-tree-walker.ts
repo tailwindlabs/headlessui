@@ -9,17 +9,18 @@ type AcceptNode = (
   | typeof NodeFilter.FILTER_SKIP
   | typeof NodeFilter.FILTER_REJECT
 
-export function useTreeWalker({
-  container,
-  accept,
-  walk,
-  enabled = true,
-}: {
-  container: HTMLElement | null
-  accept: AcceptNode
-  walk(node: HTMLElement): void
-  enabled?: boolean
-}) {
+export function useTreeWalker(
+  enabled: boolean,
+  {
+    container,
+    accept,
+    walk,
+  }: {
+    container: HTMLElement | null
+    accept: AcceptNode
+    walk(node: HTMLElement): void
+  }
+) {
   let acceptRef = useRef(accept)
   let walkRef = useRef(walk)
 

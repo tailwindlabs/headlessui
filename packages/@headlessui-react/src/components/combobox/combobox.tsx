@@ -770,10 +770,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   }, [data])
 
   // Handle outside click
-  useOutsideClick(
-    [data.buttonRef, data.inputRef, data.optionsRef],
-    () => actions.closeCombobox(),
-    data.comboboxState === ComboboxState.Open
+  let outsideClickEnabled = data.comboboxState === ComboboxState.Open
+  useOutsideClick(outsideClickEnabled, [data.buttonRef, data.inputRef, data.optionsRef], () =>
+    actions.closeCombobox()
   )
 
   let slot = useMemo(() => {
@@ -1623,25 +1622,25 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })()
 
   // Ensure we close the combobox as soon as the input becomes hidden
-  useOnDisappear(data.inputRef, actions.closeCombobox, visible)
+  useOnDisappear(visible, data.inputRef, actions.closeCombobox)
 
   // Enable scroll locking when the combobox is visible, and `modal` is enabled
-  useScrollLock(
-    ownerDocument,
-    data.__demoMode ? false : modal && data.comboboxState === ComboboxState.Open
-  )
+  let scrollLockEnabled = data.__demoMode
+    ? false
+    : modal && data.comboboxState === ComboboxState.Open
+  useScrollLock(scrollLockEnabled, ownerDocument)
 
   // Mark other elements as inert when the combobox is visible, and `modal` is enabled
-  useInertOthers(
-    {
-      allowed: useEvent(() => [
-        data.inputRef.current,
-        data.buttonRef.current,
-        data.optionsRef.current,
-      ]),
-    },
-    data.__demoMode ? false : modal && data.comboboxState === ComboboxState.Open
-  )
+  let inertOthersEnabled = data.__demoMode
+    ? false
+    : modal && data.comboboxState === ComboboxState.Open
+  useInertOthers(inertOthersEnabled, {
+    allowed: useEvent(() => [
+      data.inputRef.current,
+      data.buttonRef.current,
+      data.optionsRef.current,
+    ]),
+  })
 
   useIsoMorphicEffect(() => {
     data.optionsPropsRef.current.static = props.static ?? false
@@ -1650,9 +1649,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     data.optionsPropsRef.current.hold = hold
   }, [data.optionsPropsRef, hold])
 
-  useTreeWalker({
+  useTreeWalker(data.comboboxState === ComboboxState.Open, {
     container: data.optionsRef.current,
-    enabled: data.comboboxState === ComboboxState.Open,
     accept(node) {
       if (node.getAttribute('role') === 'option') return NodeFilter.FILTER_REJECT
       if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
