@@ -1676,13 +1676,13 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     actions.setActivationTrigger(ActivationTrigger.Pointer)
   })
 
-  // When clicking inside of the scrollbar then a `click` will be triggered on
+  // When clicking inside of the scrollbar, a `click` event will be triggered on
   // the focusable element _below_ the scrollbar. If you use a `<Combobox>`
-  // inside of a `<Dialog>`, then clicking in the scrollbar of the
+  // inside of a `<Dialog>`, clicking the scrollbar of the
   // `<ComboboxOptions>` will move focus to the `<Dialog>` which blurs the
-  // `<ComboboxInput>` which closes the `<Combobox>`.
+  // `<ComboboxInput>` and closes the `<Combobox>`.
   //
-  // Preventing this default behavior in the `mousedown` event (which happens
+  // Preventing the default behavior in the `mousedown` event (which happens
   // before `click`) will prevent this issue because the `click` never fires.
   let handleMouseDown = useEvent((event: ReactMouseEvent) => {
     event.preventDefault()
