@@ -1678,9 +1678,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   // When clicking inside of the scrollbar, a `click` event will be triggered on
   // the focusable element _below_ the scrollbar. If you use a `<Combobox>`
-  // inside of a `<Dialog>`, clicking the scrollbar of the
-  // `<ComboboxOptions>` will move focus to the `<Dialog>` which blurs the
-  // `<ComboboxInput>` and closes the `<Combobox>`.
+  // inside of a `<Dialog>`, clicking the scrollbar of the `<ComboboxOptions>`
+  // will move focus to the `<Dialog>` which blurs the `<ComboboxInput>` and
+  // closes the `<Combobox>`.
   //
   // Preventing the default behavior in the `mousedown` event (which happens
   // before `click`) will prevent this issue because the `click` never fires.
