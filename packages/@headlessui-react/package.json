@@ -46,17 +46,17 @@
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@testing-library/react": "^15.0.5",
-    "@types/react": "^18.3.1",
+    "@testing-library/react": "^15.0.7",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "snapshot-diff": "^0.10.0"
   },
   "dependencies": {
-    "@floating-ui/react": "^0.26.13",
+    "@floating-ui/react": "^0.26.16",
     "@tanstack/react-virtual": "3.5.0",
-    "@react-aria/focus": "^3.16.2",
-    "@react-aria/interactions": "^3.21.1"
+    "@react-aria/focus": "^3.17.1",
+    "@react-aria/interactions": "^3.21.3"
   }
 }
