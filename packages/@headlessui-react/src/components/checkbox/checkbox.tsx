@@ -148,7 +148,7 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
       'aria-describedby': describedBy,
       'aria-disabled': disabled ? true : undefined,
       indeterminate: indeterminate ? 'true' : undefined,
-      tabIndex: 0,
+      tabIndex: disabled ? undefined : 0,
       onKeyUp: disabled ? undefined : handleKeyUp,
       onKeyPress: disabled ? undefined : handleKeyPress,
       onClick: disabled ? undefined : handleClick,
