@@ -774,6 +774,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     tabIndex: 0,
     ref: itemsRef,
     style: {
+      ...theirProps.style,
       ...style,
       '--button-width': useElementSize(state.buttonRef, true).width,
     } as CSSProperties,

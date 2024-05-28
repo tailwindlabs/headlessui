@@ -1095,6 +1095,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     role: 'listbox',
     tabIndex: 0,
     style: {
+      ...theirProps.style,
       ...style,
       '--button-width': useElementSize(data.buttonRef, true).width,
     } as CSSProperties,

@@ -1695,6 +1695,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     id,
     ref: optionsRef,
     style: {
+      ...theirProps.style,
       ...style,
       '--input-width': useElementSize(data.inputRef, true).width,
       '--button-width': useElementSize(data.buttonRef, true).width,
