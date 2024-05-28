@@ -1688,8 +1688,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     event.preventDefault()
   })
 
-  // When the user scrolls **using the native scrollbar**, the only event fired is
-  // the onScroll event. We need to make sure to set the current activation
+  // When the user scrolls **using the native scrollbar**, the only event fired
+  // is the onScroll event. We need to make sure to set the current activation
   // trigger to pointer, in order to let them scroll through the list.
   let handleScroll = useEvent(() => {
     if (isMobile()) return
