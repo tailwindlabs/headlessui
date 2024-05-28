@@ -1676,6 +1676,18 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     actions.setActivationTrigger(ActivationTrigger.Pointer)
   })
 
+  // When clicking inside of the scrollbar then a `click` will be triggered on
+  // the focusable element _below_ the scrollbar. If you use a `<Combobox>`
+  // inside of a `<Dialog>`, then clicking in the scrollbar of the
+  // `<ComboboxOptions>` will move focus to the `<Dialog>` which blurs the
+  // `<ComboboxInput>` which closes the `<Combobox>`.
+  //
+  // Preventing this default behavior in the `mousedown` event (which happens
+  // before `click`) will prevent this issue because the `click` never fires.
+  let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+    event.preventDefault()
+  })
+
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-labelledby': labelledBy,
     role: 'listbox',
@@ -1688,6 +1700,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       '--button-width': useElementSize(data.buttonRef, true).width,
     } as CSSProperties,
     onWheel: handleWheel,
+    onMouseDown: handleMouseDown,
   })
 
   // Map the children in a scrollable container when virtualization is enabled
