@@ -943,6 +943,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
         : undefined,
     tabIndex: -1,
     style: {
+      ...theirProps.style,
       ...style,
       '--button-width': useElementSize(state.button, true).width,
     } as React.CSSProperties,
