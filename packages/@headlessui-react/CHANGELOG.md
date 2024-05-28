@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Keep `<Combobox />` open when clicking in scrollbar on `<ComboboxOptions>` ([#3249](https://github.com/tailwindlabs/headlessui/pull/3249))
+- Keep `<Combobox />` open when clicking scrollbar in `<ComboboxOptions>` ([#3249](https://github.com/tailwindlabs/headlessui/pull/3249))
 
 ## [2.0.4] - 2024-05-25
 
