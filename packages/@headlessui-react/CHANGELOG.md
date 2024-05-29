@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Merge incoming `style` prop on `ComboboxOptions`, `ListboxOptions`, `MenuItems`, and `PopoverPanel` components ([#3250](https://github.com/tailwindlabs/headlessui/pull/3250))
 - Prevent focus on `<Checkbox />` when it is `disabled` ([#3251](https://github.com/tailwindlabs/headlessui/pull/3251))
 - Fix visual jitter in `Combobox` component when using native scrollbar ([#3190](https://github.com/tailwindlabs/headlessui/pull/3190))
+- Use `useId` instead of React internals (for React 19 compatibility) ([#3254](https://github.com/tailwindlabs/headlessui/pull/3254))
 
 ## [2.0.4] - 2024-05-25
 
