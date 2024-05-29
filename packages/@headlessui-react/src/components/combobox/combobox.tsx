@@ -1671,21 +1671,26 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }, [data])
 
   // When the user scrolls **using the mouse** (so scroll event isn't appropriate)
-  // we want to make sure that the current activation trigger is set to pointer
+  // we want to make sure that the current activation trigger is set to pointer.
   let handleWheel = useEvent(() => {
     actions.setActivationTrigger(ActivationTrigger.Pointer)
   })
 
-  // When clicking inside of the scrollbar, a `click` event will be triggered on
-  // the focusable element _below_ the scrollbar. If you use a `<Combobox>`
-  // inside of a `<Dialog>`, clicking the scrollbar of the `<ComboboxOptions>`
-  // will move focus to the `<Dialog>` which blurs the `<ComboboxInput>` and
-  // closes the `<Combobox>`.
-  //
-  // Preventing the default behavior in the `mousedown` event (which happens
-  // before `click`) will prevent this issue because the `click` never fires.
   let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+    // When clicking inside of the scrollbar, a `click` event will be triggered
+    // on the focusable element _below_ the scrollbar. If you use a `<Combobox>`
+    // inside of a `<Dialog>`, clicking the scrollbar of the `<ComboboxOptions>`
+    // will move focus to the `<Dialog>` which blurs the `<ComboboxInput>` and
+    // closes the `<Combobox>`.
+    //
+    // Preventing the default behavior in the `mousedown` event (which happens
+    // before `click`) will prevent this issue because the `click` never fires.
     event.preventDefault()
+
+    // When the user clicks in the `<Options/>`, we want to make sure that we
+    // set the activation trigger to `pointer` to prevent auto scrolling to the
+    // active option while the user is scrolling.
+    actions.setActivationTrigger(ActivationTrigger.Pointer)
   })
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
@@ -1700,7 +1705,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       '--input-width': useElementSize(data.inputRef, true).width,
       '--button-width': useElementSize(data.buttonRef, true).width,
     } as CSSProperties,
-    onWheel: handleWheel,
+    onWheel: data.activationTrigger === ActivationTrigger.Pointer ? undefined : handleWheel,
     onMouseDown: handleMouseDown,
   })
 
