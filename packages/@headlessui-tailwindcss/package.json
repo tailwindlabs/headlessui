@@ -5,6 +5,7 @@
   "main": "dist/index.cjs",
   "types": "dist/index.d.ts",
   "module": "dist/headlessui.esm.js",
+  "type": "module",
   "license": "MIT",
   "files": [
     "README.md",
@@ -32,7 +33,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "../../scripts/build.sh --external:tailwindcss && node ./scripts/fix-types.js",
+    "build": "../../scripts/build.sh --external:tailwindcss && node ./scripts/fix-types.cjs",
     "watch": "../../scripts/watch.sh --external:tailwindcss",
     "test": "../../scripts/test.sh",
     "lint": "../../scripts/lint.sh",

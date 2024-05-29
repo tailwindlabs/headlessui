@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix ESM types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
+- Improve CJS types ([#2880](https://github.com/tailwindlabs/headlessui/pull/2880))
+- Improve ESM types ([#3051](https://github.com/tailwindlabs/headlessui/pull/3051))
 
 ## [0.2.0] - 2023-07-27
 
