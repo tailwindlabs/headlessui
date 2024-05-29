@@ -1676,23 +1676,20 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     actions.setActivationTrigger(ActivationTrigger.Pointer)
   })
 
-  // When clicking inside of the scrollbar, a `click` event will be triggered on
-  // the focusable element _below_ the scrollbar. If you use a `<Combobox>`
-  // inside of a `<Dialog>`, clicking the scrollbar of the `<ComboboxOptions>`
-  // will move focus to the `<Dialog>` which blurs the `<ComboboxInput>` and
-  // closes the `<Combobox>`.
-  //
-  // Preventing the default behavior in the `mousedown` event (which happens
-  // before `click`) will prevent this issue because the `click` never fires.
   let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+    // When clicking inside of the scrollbar, a `click` event will be triggered
+    // on the focusable element _below_ the scrollbar. If you use a `<Combobox>`
+    // inside of a `<Dialog>`, clicking the scrollbar of the `<ComboboxOptions>`
+    // will move focus to the `<Dialog>` which blurs the `<ComboboxInput>` and
+    // closes the `<Combobox>`.
+    //
+    // Preventing the default behavior in the `mousedown` event (which happens
+    // before `click`) will prevent this issue because the `click` never fires.
     event.preventDefault()
-  })
 
-  // When the user scrolls **using the native scrollbar**, the only event fired
-  // is the onScroll event. We need to make sure to set the current activation
-  // trigger to pointer, in order to let them scroll through the list.
-  let handleScroll = useEvent(() => {
-    if (isMobile()) return
+    // When the user clicks in the `<Options/>`, we want to make sure that we
+    // set the activation trigger to `pointer` to prevent auto scrolling to the
+    // active option while the user is scrolling.
     actions.setActivationTrigger(ActivationTrigger.Pointer)
   })
 
@@ -1710,7 +1707,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     } as CSSProperties,
     onWheel: handleWheel,
     onMouseDown: handleMouseDown,
-    onScroll: handleScroll,
   })
 
   // Map the children in a scrollable container when virtualization is enabled
