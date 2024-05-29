@@ -18,8 +18,9 @@ function createCollection() {
       }
 
       let renders = list.get(key) ?? 0
-      // FIXME: This is a side-effect during render.
-      // `release` is only called in an effect cleanup so we may never release if we had to render multiple times before commit e.g. when a sibling suspends.
+      // FIXME: This is a side-effect during render. `release` is only called in
+      // an effect cleanup so we may never release if we had to render multiple
+      // times before commit e.g. when a sibling suspends.
       list.set(key, renders + 1)
 
       let index = Array.from(list.keys()).indexOf(key)
