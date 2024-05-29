@@ -254,7 +254,10 @@ export async function rawClick(
         let next: HTMLElement | null = element as HTMLElement | null
         while (next !== null) {
           if (next.matches(focusableSelector)) {
-            next.focus()
+            act(() => {
+              // act scopes are called immediately. `next` should keep its type refinements.
+              next!.focus()
+            })
             break
           }
           next = next.parentElement
@@ -288,37 +291,40 @@ export async function rawClick(
 }
 
 export async function focus(element: Document | Element | Window | Node | null) {
-  try {
-    if (element === null) return expect(element).not.toBe(null)
+  await act(async () => {
+    try {
+      if (element === null) return expect(element).not.toBe(null)
+      if (element instanceof HTMLElement) {
+        element.focus()
+      } else {
+        fireEvent.focus(element)
+      }
 
-    if (element instanceof HTMLElement) {
-      element.focus()
-    } else {
-      fireEvent.focus(element)
+      await new Promise(nextFrame)
+    } catch (err) {
+      if (err instanceof Error) Error.captureStackTrace(err, focus)
+      throw err
     }
-
-    await new Promise(nextFrame)
-  } catch (err) {
-    if (err instanceof Error) Error.captureStackTrace(err, focus)
-    throw err
-  }
+  })
 }
 
 export async function blur(element: Document | Element | Window | Node | null) {
-  try {
-    if (element === null) return expect(element).not.toBe(null)
+  await act(async () => {
+    try {
+      if (element === null) return expect(element).not.toBe(null)
 
-    if (element instanceof HTMLElement) {
-      element.blur()
-    } else {
-      fireEvent.blur(element)
+      if (element instanceof HTMLElement) {
+        element.blur()
+      } else {
+        fireEvent.blur(element)
+      }
+
+      await new Promise(nextFrame)
+    } catch (err) {
+      if (err instanceof Error) Error.captureStackTrace(err, blur)
+      throw err
     }
-
-    await new Promise(nextFrame)
-  } catch (err) {
-    if (err instanceof Error) Error.captureStackTrace(err, blur)
-    throw err
-  }
+  })
 }
 
 export async function mouseEnter(element: Document | Element | Window | null) {
@@ -401,7 +407,10 @@ export async function mouseDrag(
       let next: HTMLElement | null = startingElement as HTMLElement | null
       while (next !== null) {
         if (next.matches(focusableSelector)) {
-          next.focus()
+          act(() => {
+            // act scopes are called immediately. `next` should keep its type refinements.
+            next!.focus()
+          })
           break
         }
         next = next.parentElement
@@ -455,7 +464,11 @@ function focusNext(event: Partial<KeyboardEvent>) {
     let currentIdx = focusableElements.indexOf(document.activeElement as HTMLElement)
     let next = focusableElements[(currentIdx + total + direction + offset) % total] as HTMLElement
 
-    if (next) next?.focus({ preventScroll: true })
+    if (next) {
+      act(() => {
+        next?.focus({ preventScroll: true })
+      })
+    }
 
     if (next !== document.activeElement) return innerFocusNext(offset + direction)
     return next
