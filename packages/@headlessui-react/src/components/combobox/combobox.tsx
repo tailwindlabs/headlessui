@@ -1671,7 +1671,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }, [data])
 
   // When the user scrolls **using the mouse** (so scroll event isn't appropriate)
-  // we want to make sure that the current activation trigger is set to pointer
+  // we want to make sure that the current activation trigger is set to pointer.
   let handleWheel = useEvent(() => {
     actions.setActivationTrigger(ActivationTrigger.Pointer)
   })
@@ -1705,7 +1705,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       '--input-width': useElementSize(data.inputRef, true).width,
       '--button-width': useElementSize(data.buttonRef, true).width,
     } as CSSProperties,
-    onWheel: handleWheel,
+    onWheel: data.activationTrigger === ActivationTrigger.Pointer ? undefined : handleWheel,
     onMouseDown: handleMouseDown,
   })
 
