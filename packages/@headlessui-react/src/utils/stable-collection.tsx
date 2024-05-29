@@ -51,15 +51,8 @@ export function useStableCollectionIndex(group: string) {
   let collection = React.useContext(StableCollectionContext)
   if (!collection) throw new Error('You must wrap your component in a <StableCollection>')
 
-  let key = useStableCollectionKey()
+  let key = React.useId()
   let [idx, cleanupIdx] = collection.current.get(group, key)
   React.useEffect(() => cleanupIdx, [])
   return idx
-}
-
-/**
- * Return a stable key based on the position of this node.
- */
-function useStableCollectionKey(): string {
-  return React.useId()
 }
