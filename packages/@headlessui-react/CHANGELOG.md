@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Prevent focus on `<Checkbox />` when it is `disabled` ([#3251](https://github.com/tailwindlabs/headlessui/pull/3251))
 - Fix visual jitter in `Combobox` component when using native scrollbar ([#3190](https://github.com/tailwindlabs/headlessui/pull/3190))
 - Use `useId` instead of React internals (for React 19 compatibility) ([#3254](https://github.com/tailwindlabs/headlessui/pull/3254))
+- Ensure `ComboboxInput` does not sync with current value while typing ([#3259](https://github.com/tailwindlabs/headlessui/pull/3259))
 
 ## [2.0.4] - 2024-05-25
 
