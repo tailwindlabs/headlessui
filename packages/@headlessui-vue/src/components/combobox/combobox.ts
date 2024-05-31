@@ -1068,6 +1068,7 @@ export let ComboboxInput = defineComponent({
     function handleKeyDown(event: KeyboardEvent) {
       isTyping.value = true
       debounce(() => {
+        if (isComposing.value) return
         isTyping.value = false
       })
 
