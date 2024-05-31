@@ -424,7 +424,7 @@ let ComboboxActionsContext = createContext<{
   registerOption(id: string, dataRef: ComboboxOptionDataRef<unknown>): () => void
   goToOption(focus: Focus.Specific, idx: number, trigger?: ActivationTrigger): void
   goToOption(focus: Focus, idx?: number, trigger?: ActivationTrigger): void
-  setIsTyping(isTyping?: boolean): void
+  setIsTyping(isTyping: boolean): void
   selectActiveOption(): void
   setActivationTrigger(trigger: ActivationTrigger): void
   onChange(value: unknown): void
@@ -831,7 +831,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     onClose?.()
   })
 
-  let setIsTyping = useEvent((isTyping = true) => {
+  let setIsTyping = useEvent((isTyping: boolean) => {
     dispatch({ type: ActionTypes.SetTyping, isTyping })
   })
 
