@@ -28,7 +28,6 @@ import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useElementSize } from '../../hooks/use-element-size'
 import { useEvent } from '../../hooks/use-event'
-import { useFrameDebounce } from '../../hooks/use-frame-debounce'
 import { useId } from '../../hooks/use-id'
 import { useInertOthers } from '../../hooks/use-inert-others'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
@@ -112,6 +111,8 @@ interface StateDefinition<T> {
   activeOptionIndex: number | null
   activationTrigger: ActivationTrigger
 
+  isTyping: boolean
+
   __demoMode: boolean
 }
 
@@ -120,6 +121,7 @@ enum ActionTypes {
   CloseCombobox,
 
   GoToOption,
+  SetTyping,
 
   RegisterOption,
   UnregisterOption,
@@ -170,6 +172,7 @@ type Actions<T> =
       idx: number
       trigger?: ActivationTrigger
     }
+  | { type: ActionTypes.SetTyping; isTyping: boolean }
   | {
       type: ActionTypes.GoToOption
       focus: Exclude<Focus, Focus.Specific>
@@ -202,6 +205,8 @@ let reducers: {
       activeOptionIndex: null,
       comboboxState: ComboboxState.Closed,
 
+      isTyping: false,
+
       // Clear the last known activation trigger
       // This is because if a user interacts with the combobox using a mouse
       // resulting in it closing we might incorrectly handle the next interaction
@@ -229,6 +234,10 @@ let reducers: {
     }
 
     return { ...state, comboboxState: ComboboxState.Open, __demoMode: false }
+  },
+  [ActionTypes.SetTyping](state, action) {
+    if (state.isTyping === action.isTyping) return state
+    return { ...state, isTyping: action.isTyping }
   },
   [ActionTypes.GoToOption](state, action) {
     if (state.dataRef.current?.disabled) return state
@@ -268,6 +277,7 @@ let reducers: {
         ...state,
         activeOptionIndex,
         activationTrigger,
+        isTyping: false,
         __demoMode: false,
       }
     }
@@ -308,6 +318,7 @@ let reducers: {
     return {
       ...state,
       ...adjustedState,
+      isTyping: false,
       activeOptionIndex,
       activationTrigger,
       __demoMode: false,
@@ -413,6 +424,7 @@ let ComboboxActionsContext = createContext<{
   registerOption(id: string, dataRef: ComboboxOptionDataRef<unknown>): () => void
   goToOption(focus: Focus.Specific, idx: number, trigger?: ActivationTrigger): void
   goToOption(focus: Focus, idx?: number, trigger?: ActivationTrigger): void
+  setIsTyping(isTyping?: boolean): void
   selectActiveOption(): void
   setActivationTrigger(trigger: ActivationTrigger): void
   onChange(value: unknown): void
@@ -662,6 +674,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let [state, dispatch] = useReducer(stateReducer, {
     dataRef: createRef(),
     comboboxState: __demoMode ? ComboboxState.Open : ComboboxState.Closed,
+    isTyping: false,
     options: [],
     virtual: virtual
       ? { options: virtual.options, disabled: virtual.disabled ?? (() => false) }
@@ -793,6 +806,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   let selectActiveOption = useEvent(() => {
     if (data.activeOptionIndex === null) return
 
+    actions.setIsTyping(false)
+
     if (data.virtual) {
       onChange(data.virtual.options[data.activeOptionIndex])
     } else {
@@ -814,6 +829,10 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     dispatch({ type: ActionTypes.CloseCombobox })
     defaultToFirstOption.current = false
     onClose?.()
+  })
+
+  let setIsTyping = useEvent((isTyping = true) => {
+    dispatch({ type: ActionTypes.SetTyping, isTyping })
   })
 
   let goToOption = useEvent((focus, idx, trigger) => {
@@ -875,6 +894,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       onChange,
       registerOption,
       goToOption,
+      setIsTyping,
       closeCombobox,
       openCombobox,
       setActivationTrigger,
@@ -995,8 +1015,6 @@ function InputFn<
   let inputRef = useSyncRefs(data.inputRef, ref, useFloatingReference())
   let ownerDocument = useOwnerDocument(data.inputRef)
 
-  let isTyping = useRef(false)
-
   let d = useDisposables()
 
   let clear = useEvent(() => {
@@ -1044,7 +1062,7 @@ function InputFn<
     ([currentDisplayValue, state], [oldCurrentDisplayValue, oldState]) => {
       // When the user is typing, we want to not touch the `input` at all. Especially when they are
       // using an IME, we don't want to mess with the input at all.
-      if (isTyping.current) return
+      if (data.isTyping) return
 
       let input = data.inputRef.current
       if (!input) return
@@ -1060,7 +1078,7 @@ function InputFn<
       // the user is currently typing, because we don't want to mess with the cursor position while
       // typing.
       requestAnimationFrame(() => {
-        if (isTyping.current) return
+        if (data.isTyping) return
         if (!input) return
 
         // Bail when the input is not the currently focused element. When it is not the focused
@@ -1080,7 +1098,7 @@ function InputFn<
         input.setSelectionRange(input.value.length, input.value.length)
       })
     },
-    [currentDisplayValue, data.comboboxState, ownerDocument]
+    [currentDisplayValue, data.comboboxState, ownerDocument, data.isTyping]
   )
 
   // Trick VoiceOver in behaving a little bit better. Manually "resetting" the input makes VoiceOver
@@ -1094,7 +1112,7 @@ function InputFn<
       if (newState === ComboboxState.Open && oldState === ComboboxState.Closed) {
         // When the user is typing, we want to not touch the `input` at all. Especially when they are
         // using an IME, we don't want to mess with the input at all.
-        if (isTyping.current) return
+        if (data.isTyping) return
 
         let input = data.inputRef.current
         if (!input) return
@@ -1128,18 +1146,13 @@ function InputFn<
     })
   })
 
-  let debounce = useFrameDebounce()
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLInputElement>) => {
-    isTyping.current = true
-    debounce(() => {
-      isTyping.current = false
-    })
+    actions.setIsTyping(true)
 
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menu/#keyboard-interaction-12
 
       case Keys.Enter:
-        isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
 
         // When the user is still in the middle of composing by using an IME, then we don't want to
@@ -1162,16 +1175,15 @@ function InputFn<
         break
 
       case Keys.ArrowDown:
-        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
+
         return match(data.comboboxState, {
           [ComboboxState.Open]: () => actions.goToOption(Focus.Next),
           [ComboboxState.Closed]: () => actions.openCombobox(),
         })
 
       case Keys.ArrowUp:
-        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return match(data.comboboxState, {
@@ -1191,13 +1203,11 @@ function InputFn<
           break
         }
 
-        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.First)
 
       case Keys.PageUp:
-        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.First)
@@ -1207,19 +1217,16 @@ function InputFn<
           break
         }
 
-        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.Last)
 
       case Keys.PageDown:
-        isTyping.current = false
         event.preventDefault()
         event.stopPropagation()
         return actions.goToOption(Focus.Last)
 
       case Keys.Escape:
-        isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
         event.preventDefault()
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
@@ -1240,7 +1247,6 @@ function InputFn<
         return actions.closeCombobox()
 
       case Keys.Tab:
-        isTyping.current = false
         if (data.comboboxState !== ComboboxState.Open) return
         if (data.mode === ValueMode.Single && data.activationTrigger !== ActivationTrigger.Focus) {
           actions.selectActiveOption()
@@ -1275,7 +1281,6 @@ function InputFn<
   let handleBlur = useEvent((event: ReactFocusEvent) => {
     let relatedTarget =
       (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
-    isTyping.current = false
 
     // Focus is moved into the list, we don't want to close yet.
     if (data.optionsRef.current?.contains(relatedTarget)) return
@@ -1819,7 +1824,10 @@ function OptionFn<
     virtualizer ? virtualizer.measureElement : null
   )
 
-  let select = useEvent(() => actions.onChange(value))
+  let select = useEvent(() => {
+    actions.setIsTyping(false)
+    actions.onChange(value)
+  })
   useIsoMorphicEffect(() => actions.registerOption(id, bag), [bag, id])
 
   let enableScrollIntoView = useRef(data.virtual || data.__demoMode ? false : true)
