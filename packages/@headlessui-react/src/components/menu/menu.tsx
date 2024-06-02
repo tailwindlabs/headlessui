@@ -479,18 +479,14 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => {
-          dispatch({ type: ActionTypes.OpenMenu })
-        })
+        flushSync(() => dispatch({ type: ActionTypes.OpenMenu }))
         dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => {
-          dispatch({ type: ActionTypes.OpenMenu })
-        })
+        flushSync(() => dispatch({ type: ActionTypes.OpenMenu }))
         dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
         break
     }
@@ -511,9 +507,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
     if (state.menuState === MenuStates.Open) {
-      flushSync(() => {
-        dispatch({ type: ActionTypes.CloseMenu })
-      })
+      flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
       state.buttonRef.current?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
@@ -727,18 +721,14 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
       case Keys.Escape:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => {
-          dispatch({ type: ActionTypes.CloseMenu })
-        })
+        flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
         state.buttonRef.current?.focus({ preventScroll: true })
         break
 
       case Keys.Tab:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => {
-          dispatch({ type: ActionTypes.CloseMenu })
-        })
+        flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
         focusFrom(
           state.buttonRef.current!,
           event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next

@@ -767,17 +767,13 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.Space:
       case Keys.ArrowDown:
         event.preventDefault()
-        flushSync(() => {
-          actions.openListbox()
-        })
+        flushSync(() => actions.openListbox())
         if (!data.value) actions.goToOption(Focus.First)
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
-        flushSync(() => {
-          actions.openListbox()
-        })
+        flushSync(() => actions.openListbox())
         if (!data.value) actions.goToOption(Focus.Last)
         break
     }
@@ -797,9 +793,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (data.listboxState === ListboxStates.Open) {
-      flushSync(() => {
-        actions.closeListbox()
-      })
+      flushSync(() => actions.closeListbox())
       data.buttonRef.current?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
@@ -1030,9 +1024,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
           actions.onChange(dataRef.current.value)
         }
         if (data.mode === ValueMode.Single) {
-          flushSync(() => {
-            actions.closeListbox()
-          })
+          flushSync(() => actions.closeListbox())
           data.buttonRef.current?.focus({ preventScroll: true })
         }
         break
@@ -1062,9 +1054,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       case Keys.Escape:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => {
-          actions.closeListbox()
-        })
+        flushSync(() => actions.closeListbox())
         data.buttonRef.current?.focus({ preventScroll: true })
         return
 
@@ -1231,9 +1221,7 @@ function OptionFn<
     if (disabled) return event.preventDefault()
     actions.onChange(value)
     if (data.mode === ValueMode.Single) {
-      flushSync(() => {
-        actions.closeListbox()
-      })
+      flushSync(() => actions.closeListbox())
       data.buttonRef.current?.focus({ preventScroll: true })
     }
   })

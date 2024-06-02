@@ -1190,9 +1190,7 @@ function InputFn<
         return match(data.comboboxState, {
           [ComboboxState.Open]: () => actions.goToOption(Focus.Previous),
           [ComboboxState.Closed]: () => {
-            flushSync(() => {
-              actions.openCombobox()
-            })
+            flushSync(() => actions.openCombobox())
             if (!data.value) actions.goToOption(Focus.Last)
           },
         })
@@ -1319,9 +1317,7 @@ function InputFn<
     if (!data.immediate) return
     if (data.comboboxState === ComboboxState.Open) return
 
-    flushSync(() => {
-      actions.openCombobox()
-    })
+    flushSync(() => actions.openCombobox())
 
     // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
     // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
@@ -1450,9 +1446,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         event.preventDefault()
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
-          flushSync(() => {
-            actions.openCombobox()
-          })
+          flushSync(() => actions.openCombobox())
         }
         refocusInput()
         return
@@ -1461,9 +1455,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         event.preventDefault()
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
-          flushSync(() => {
-            actions.openCombobox()
-          })
+          flushSync(() => actions.openCombobox())
           if (!data.value) actions.goToOption(Focus.First)
         }
         refocusInput()
@@ -1473,9 +1465,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         event.preventDefault()
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
-          flushSync(() => {
-            actions.openCombobox()
-          })
+          flushSync(() => actions.openCombobox())
           if (!data.value) actions.goToOption(Focus.Last)
         }
         refocusInput()
@@ -1487,9 +1477,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
           event.stopPropagation()
         }
-        flushSync(() => {
-          actions.closeCombobox()
-        })
+        flushSync(() => actions.closeCombobox())
         refocusInput()
         return
 
