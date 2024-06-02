@@ -21,6 +21,7 @@ import React, {
   type MouseEvent as ReactMouseEvent,
   type Ref,
 } from 'react'
+import { flushSync } from 'react-dom'
 import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useControllable } from '../../hooks/use-controllable'
@@ -1189,12 +1190,13 @@ function InputFn<
         return match(data.comboboxState, {
           [ComboboxState.Open]: () => actions.goToOption(Focus.Previous),
           [ComboboxState.Closed]: () => {
-            actions.openCombobox()
-            d.nextFrame(() => {
-              if (!data.value) {
-                actions.goToOption(Focus.Last)
-              }
+            flushSync(() => {
+              actions.openCombobox()
             })
+
+            if (!data.value) {
+              actions.goToOption(Focus.Last)
+            }
           },
         })
 
@@ -1320,14 +1322,14 @@ function InputFn<
     if (!data.immediate) return
     if (data.comboboxState === ComboboxState.Open) return
 
-    actions.openCombobox()
+    flushSync(() => {
+      actions.openCombobox()
+    })
 
     // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
     // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
     // selecting the active option when the user tabs away.
-    d.nextFrame(() => {
-      actions.setActivationTrigger(ActivationTrigger.Focus)
-    })
+    actions.setActivationTrigger(ActivationTrigger.Focus)
   })
 
   let labelledBy = useLabelledBy()
@@ -1439,7 +1441,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     autoFocus = false,
     ...theirProps
   } = props
-  let d = useDisposables()
 
   let refocusInput = useRefocusableInput(data.inputRef)
 
@@ -1452,37 +1453,40 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         event.preventDefault()
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
-          actions.openCombobox()
+          flushSync(() => {
+            actions.openCombobox()
+          })
         }
-
-        return d.nextFrame(() => refocusInput())
+        refocusInput()
+        return
 
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
-          actions.openCombobox()
-          d.nextFrame(() => {
-            if (!data.value) {
-              actions.goToOption(Focus.First)
-            }
+          flushSync(() => {
+            actions.openCombobox()
           })
+          if (!data.value) {
+            actions.goToOption(Focus.First)
+          }
         }
-
-        return d.nextFrame(() => refocusInput())
+        refocusInput()
+        return
 
       case Keys.ArrowUp:
         event.preventDefault()
         event.stopPropagation()
         if (data.comboboxState === ComboboxState.Closed) {
-          actions.openCombobox()
-          d.nextFrame(() => {
-            if (!data.value) {
-              actions.goToOption(Focus.Last)
-            }
+          flushSync(() => {
+            actions.openCombobox()
           })
+          if (!data.value) {
+            actions.goToOption(Focus.Last)
+          }
         }
-        return d.nextFrame(() => refocusInput())
+        refocusInput()
+        return
 
       case Keys.Escape:
         if (data.comboboxState !== ComboboxState.Open) return
@@ -1490,8 +1494,11 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
           event.stopPropagation()
         }
-        actions.closeCombobox()
-        return d.nextFrame(() => refocusInput())
+        flushSync(() => {
+          actions.closeCombobox()
+        })
+        refocusInput()
+        return
 
       default:
         return

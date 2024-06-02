@@ -20,6 +20,7 @@ import React, {
   type MouseEvent as ReactMouseEvent,
   type Ref,
 } from 'react'
+import { flushSync } from 'react-dom'
 import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
 import { useComputed } from '../../hooks/use-computed'
@@ -755,8 +756,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let buttonRef = useSyncRefs(data.buttonRef, ref, useFloatingReference())
   let getFloatingReferenceProps = useFloatingReferenceProps()
 
-  let d = useDisposables()
-
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/#keyboard-interaction-13
@@ -768,18 +767,18 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.Space:
       case Keys.ArrowDown:
         event.preventDefault()
-        actions.openListbox()
-        d.nextFrame(() => {
-          if (!data.value) actions.goToOption(Focus.First)
+        flushSync(() => {
+          actions.openListbox()
         })
+        if (!data.value) actions.goToOption(Focus.First)
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
-        actions.openListbox()
-        d.nextFrame(() => {
-          if (!data.value) actions.goToOption(Focus.Last)
+        flushSync(() => {
+          actions.openListbox()
         })
+        if (!data.value) actions.goToOption(Focus.Last)
         break
     }
   })
@@ -798,8 +797,10 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (data.listboxState === ListboxStates.Open) {
-      actions.closeListbox()
-      d.nextFrame(() => data.buttonRef.current?.focus({ preventScroll: true }))
+      flushSync(() => {
+        actions.closeListbox()
+      })
+      data.buttonRef.current?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
       actions.openListbox()
@@ -995,7 +996,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let getFloatingPanelProps = useFloatingPanelProps()
   let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
 
-  let d = useDisposables()
   let searchDisposables = useDisposables()
 
   useEffect(() => {
@@ -1030,8 +1030,10 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
           actions.onChange(dataRef.current.value)
         }
         if (data.mode === ValueMode.Single) {
-          actions.closeListbox()
-          disposables().nextFrame(() => data.buttonRef.current?.focus({ preventScroll: true }))
+          flushSync(() => {
+            actions.closeListbox()
+          })
+          data.buttonRef.current?.focus({ preventScroll: true })
         }
         break
 
@@ -1060,8 +1062,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       case Keys.Escape:
         event.preventDefault()
         event.stopPropagation()
-        actions.closeListbox()
-        return d.nextFrame(() => data.buttonRef.current?.focus({ preventScroll: true }))
+        flushSync(() => {
+          actions.closeListbox()
+        })
+        data.buttonRef.current?.focus({ preventScroll: true })
+        return
 
       case Keys.Tab:
         event.preventDefault()
@@ -1228,8 +1233,10 @@ function OptionFn<
     if (disabled) return event.preventDefault()
     actions.onChange(value)
     if (data.mode === ValueMode.Single) {
-      actions.closeListbox()
-      disposables().nextFrame(() => data.buttonRef.current?.focus({ preventScroll: true }))
+      flushSync(() => {
+        actions.closeListbox()
+      })
+      data.buttonRef.current?.focus({ preventScroll: true })
     }
   })
 
