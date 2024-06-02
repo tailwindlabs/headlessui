@@ -844,11 +844,9 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     if (state.menuState !== MenuStates.Open) return
     if (!active) return
     if (state.activationTrigger === ActivationTrigger.Pointer) return
-    let d = disposables()
-    d.requestAnimationFrame(() => {
+    return disposables().requestAnimationFrame(() => {
       internalItemRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-    return d.dispose
   }, [
     state.__demoMode,
     internalItemRef,

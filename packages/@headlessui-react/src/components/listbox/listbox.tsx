@@ -1210,11 +1210,9 @@ function OptionFn<
     if (data.listboxState !== ListboxStates.Open) return
     if (!active) return
     if (data.activationTrigger === ActivationTrigger.Pointer) return
-    let d = disposables()
-    d.requestAnimationFrame(() => {
+    return disposables().requestAnimationFrame(() => {
       internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-    return d.dispose
   }, [
     internalOptionRef,
     active,
