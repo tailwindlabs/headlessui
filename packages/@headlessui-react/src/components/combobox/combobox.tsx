@@ -1193,10 +1193,7 @@ function InputFn<
             flushSync(() => {
               actions.openCombobox()
             })
-
-            if (!data.value) {
-              actions.goToOption(Focus.Last)
-            }
+            if (!data.value) actions.goToOption(Focus.Last)
           },
         })
 
@@ -1467,9 +1464,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           flushSync(() => {
             actions.openCombobox()
           })
-          if (!data.value) {
-            actions.goToOption(Focus.First)
-          }
+          if (!data.value) actions.goToOption(Focus.First)
         }
         refocusInput()
         return
@@ -1481,9 +1476,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           flushSync(() => {
             actions.openCombobox()
           })
-          if (!data.value) {
-            actions.goToOption(Focus.Last)
-          }
+          if (!data.value) actions.goToOption(Focus.Last)
         }
         refocusInput()
         return
