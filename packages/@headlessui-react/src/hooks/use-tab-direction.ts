@@ -8,8 +8,10 @@ export enum Direction {
 
 export function useTabDirection() {
   let direction = useRef(Direction.Forwards)
+  let enabled = true
 
   useWindowEvent(
+    enabled,
     'keydown',
     (event) => {
       if (event.key === 'Tab') {
