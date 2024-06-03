@@ -93,26 +93,25 @@ export function useOutsideClick(
   let initialClickTarget = ref<EventTarget | null>(null)
 
   useDocumentEvent(
+    enabled,
     'pointerdown',
     (event) => {
-      if (enabled.value) {
-        initialClickTarget.value = event.composedPath?.()?.[0] || event.target
-      }
+      initialClickTarget.value = event.composedPath?.()?.[0] || event.target
     },
     true
   )
 
   useDocumentEvent(
+    enabled,
     'mousedown',
     (event) => {
-      if (enabled.value) {
-        initialClickTarget.value = event.composedPath?.()?.[0] || event.target
-      }
+      initialClickTarget.value = event.composedPath?.()?.[0] || event.target
     },
     true
   )
 
   useDocumentEvent(
+    enabled,
     'click',
     (event) => {
       if (isMobile()) {
@@ -139,6 +138,7 @@ export function useOutsideClick(
 
   let startPosition = { x: 0, y: 0 }
   useDocumentEvent(
+    enabled,
     'touchstart',
     (event) => {
       startPosition.x = event.touches[0].clientX
@@ -148,6 +148,7 @@ export function useOutsideClick(
   )
 
   useDocumentEvent(
+    enabled,
     'touchend',
     (event) => {
       // If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more,
@@ -183,6 +184,7 @@ export function useOutsideClick(
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
   useWindowEvent(
+    enabled,
     'blur',
     (event) => {
       return handleOutsideClick(event, () => {

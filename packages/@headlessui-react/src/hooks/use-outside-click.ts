@@ -31,8 +31,6 @@ export function useOutsideClick(
       event: E,
       resolveTarget: (event: E) => HTMLElement | null
     ) {
-      if (!isTopLayer) return
-
       // Check whether the event got prevented already. This can happen if you
       // use the useOutsideClick hook in both a Dialog and a Menu and the inner
       // Menu "cancels" the default behavior so that only the Menu closes and
@@ -103,32 +101,31 @@ export function useOutsideClick(
 
       return cbRef.current(event, target)
     },
-    [isTopLayer, cbRef]
+    [cbRef]
   )
 
   let initialClickTarget = useRef<EventTarget | null>(null)
 
   useDocumentEvent(
+    isTopLayer,
     'pointerdown',
     (event) => {
-      if (isTopLayer) {
-        initialClickTarget.current = event.composedPath?.()?.[0] || event.target
-      }
+      initialClickTarget.current = event.composedPath?.()?.[0] || event.target
     },
     true
   )
 
   useDocumentEvent(
+    isTopLayer,
     'mousedown',
     (event) => {
-      if (isTopLayer) {
-        initialClickTarget.current = event.composedPath?.()?.[0] || event.target
-      }
+      initialClickTarget.current = event.composedPath?.()?.[0] || event.target
     },
     true
   )
 
   useDocumentEvent(
+    isTopLayer,
     'click',
     (event) => {
       if (isMobile()) {
@@ -155,6 +152,7 @@ export function useOutsideClick(
 
   let startPosition = useRef({ x: 0, y: 0 })
   useDocumentEvent(
+    isTopLayer,
     'touchstart',
     (event) => {
       startPosition.current.x = event.touches[0].clientX
@@ -164,6 +162,7 @@ export function useOutsideClick(
   )
 
   useDocumentEvent(
+    isTopLayer,
     'touchend',
     (event) => {
       // If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more,
@@ -199,6 +198,7 @@ export function useOutsideClick(
   // If so this was because of a click, focus, or other interaction with the child iframe
   // and we can consider it an "outside click"
   useWindowEvent(
+    isTopLayer,
     'blur',
     (event) => {
       return handleOutsideClick(event, () => {
