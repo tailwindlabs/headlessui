@@ -20,6 +20,7 @@ import React, {
   type MouseEvent as ReactMouseEvent,
   type Ref,
 } from 'react'
+import { flushSync } from 'react-dom'
 import { useActivePress } from '../../hooks/use-active-press'
 import { useDidElementMove } from '../../hooks/use-did-element-move'
 import { useDisposables } from '../../hooks/use-disposables'
@@ -469,8 +470,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let getFloatingReferenceProps = useFloatingReferenceProps()
   let buttonRef = useSyncRefs(state.buttonRef, ref, useFloatingReference())
 
-  let d = useDisposables()
-
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
       // Ref: https://www.w3.org/WAI/ARIA/apg/patterns/menubutton/#keyboard-interaction-13
@@ -480,15 +479,15 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
-        dispatch({ type: ActionTypes.OpenMenu })
-        d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.First }))
+        flushSync(() => dispatch({ type: ActionTypes.OpenMenu }))
+        dispatch({ type: ActionTypes.GoToItem, focus: Focus.First })
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
         event.stopPropagation()
-        dispatch({ type: ActionTypes.OpenMenu })
-        d.nextFrame(() => dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last }))
+        flushSync(() => dispatch({ type: ActionTypes.OpenMenu }))
+        dispatch({ type: ActionTypes.GoToItem, focus: Focus.Last })
         break
     }
   })
@@ -508,8 +507,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
     if (state.menuState === MenuStates.Open) {
-      dispatch({ type: ActionTypes.CloseMenu })
-      d.nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+      flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
+      state.buttonRef.current?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
       dispatch({ type: ActionTypes.OpenMenu })
@@ -722,20 +721,18 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
       case Keys.Escape:
         event.preventDefault()
         event.stopPropagation()
-        dispatch({ type: ActionTypes.CloseMenu })
-        disposables().nextFrame(() => state.buttonRef.current?.focus({ preventScroll: true }))
+        flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
+        state.buttonRef.current?.focus({ preventScroll: true })
         break
 
       case Keys.Tab:
         event.preventDefault()
         event.stopPropagation()
-        dispatch({ type: ActionTypes.CloseMenu })
-        disposables().microTask(() => {
-          focusFrom(
-            state.buttonRef.current!,
-            event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
-          )
-        })
+        flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
+        focusFrom(
+          state.buttonRef.current!,
+          event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
+        )
         break
 
       default:
@@ -837,11 +834,9 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     if (state.menuState !== MenuStates.Open) return
     if (!active) return
     if (state.activationTrigger === ActivationTrigger.Pointer) return
-    let d = disposables()
-    d.requestAnimationFrame(() => {
+    return disposables().requestAnimationFrame(() => {
       internalItemRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-    return d.dispose
   }, [
     state.__demoMode,
     internalItemRef,
