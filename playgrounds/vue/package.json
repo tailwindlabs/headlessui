@@ -24,13 +24,13 @@
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
     "tailwindcss": "^3.3.3",
-    "vue": "^3.2.27",
+    "vue": "^3.4.27",
     "vue-flatpickr-component": "^9.0.5",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@floating-ui/vue": "^1.0.2",
-    "@vitejs/plugin-vue": "^3.0.3",
-    "vite": "^3.0.0"
+    "@vitejs/plugin-vue": "^5.0.5",
+    "vite": "^5.2.12"
   }
 }
