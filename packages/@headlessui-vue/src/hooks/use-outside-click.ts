@@ -9,6 +9,14 @@ type Container = Ref<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
 type ContainerInput = Container | ContainerCollection
 
+// If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more, we'll
+// assume that they are scrolling and not clicking. This will prevent the click
+// from being triggered when the user is scrolling.
+//
+// This also allows you to "cancel" the click by moving your finger more than
+// the threshold in pixels in any direction.
+const MOVE_THRESHOLD_PX = 30
+
 export function useOutsideClick(
   containers: ContainerInput | (() => ContainerInput),
   cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void,
@@ -18,8 +26,6 @@ export function useOutsideClick(
     event: E,
     resolveTarget: (event: E) => HTMLElement | null
   ) {
-    if (!enabled.value) return
-
     // Check whether the event got prevented already. This can happen if you use the
     // useOutsideClick hook in both a Dialog and a Menu and the inner Menu "cancels" the default
     // behaviour so that only the Menu closes and not the Dialog (yet)
@@ -131,9 +137,29 @@ export function useOutsideClick(
     true
   )
 
+  let startPosition = { x: 0, y: 0 }
+  useDocumentEvent(
+    'touchstart',
+    (event) => {
+      startPosition.x = event.touches[0].clientX
+      startPosition.y = event.touches[0].clientY
+    },
+    true
+  )
+
   useDocumentEvent(
     'touchend',
     (event) => {
+      // If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more,
+      // we'll assume that they are scrolling and not clicking.
+      let endPosition = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY }
+      if (
+        Math.abs(endPosition.x - startPosition.x) >= MOVE_THRESHOLD_PX ||
+        Math.abs(endPosition.y - startPosition.y) >= MOVE_THRESHOLD_PX
+      ) {
+        return
+      }
+
       return handleOutsideClick(event, () => {
         if (event.target instanceof HTMLElement) {
           return event.target

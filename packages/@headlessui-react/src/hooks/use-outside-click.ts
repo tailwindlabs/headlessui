@@ -10,6 +10,14 @@ type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
 type ContainerInput = Container | ContainerCollection
 
+// If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more, we'll
+// assume that they are scrolling and not clicking. This will prevent the click
+// from being triggered when the user is scrolling.
+//
+// This also allows you to "cancel" the click by moving your finger more than
+// the threshold in pixels in any direction.
+const MOVE_THRESHOLD_PX = 30
+
 export function useOutsideClick(
   enabled: boolean,
   containers: ContainerInput | (() => ContainerInput),
@@ -145,9 +153,29 @@ export function useOutsideClick(
     true
   )
 
+  let startPosition = useRef({ x: 0, y: 0 })
+  useDocumentEvent(
+    'touchstart',
+    (event) => {
+      startPosition.current.x = event.touches[0].clientX
+      startPosition.current.y = event.touches[0].clientY
+    },
+    true
+  )
+
   useDocumentEvent(
     'touchend',
     (event) => {
+      // If the user moves their finger by ${MOVE_THRESHOLD_PX} pixels or more,
+      // we'll assume that they are scrolling and not clicking.
+      let endPosition = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY }
+      if (
+        Math.abs(endPosition.x - startPosition.current.x) >= MOVE_THRESHOLD_PX ||
+        Math.abs(endPosition.y - startPosition.current.y) >= MOVE_THRESHOLD_PX
+      ) {
+        return
+      }
+
       return handleOutsideClick(event, () => {
         if (event.target instanceof HTMLElement) {
           return event.target
