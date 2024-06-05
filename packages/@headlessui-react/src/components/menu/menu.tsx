@@ -37,6 +37,7 @@ import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import {
   FloatingProvider,
@@ -564,7 +565,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 let DEFAULT_ITEMS_TAG = 'div' as const
 type ItemsRenderPropArg = {
   open: boolean
-}
+} & TransitionData
 type ItemsPropsWeControl = 'aria-activedescendant' | 'aria-labelledby' | 'role' | 'tabIndex'
 
 let ItemsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -577,6 +578,7 @@ export type MenuItemsProps<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG> 
     anchor?: AnchorProps
     portal?: boolean
     modal?: boolean
+    transition?: boolean
 
     // ItemsRenderFeatures
     static?: boolean
@@ -594,6 +596,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     anchor: rawAnchor,
     portal = false,
     modal = true,
+    transition = false,
     ...theirProps
   } = props
   let anchor = useResolvedAnchor(rawAnchor)
@@ -608,16 +611,14 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     portal = true
   }
 
-  let searchDisposables = useDisposables()
-
   let usesOpenClosedState = useOpenClosed()
-  let visible = (() => {
-    if (usesOpenClosedState !== null) {
-      return (usesOpenClosedState & State.Open) === State.Open
-    }
-
-    return state.menuState === MenuStates.Open
-  })()
+  let [visible, transitionData] = useTransitionData(
+    transition,
+    state.itemsRef,
+    usesOpenClosedState !== null
+      ? (usesOpenClosedState & State.Open) === State.Open
+      : state.menuState === MenuStates.Open
+  )
 
   // Ensure we close the menu as soon as the button becomes hidden
   useOnDisappear(visible, state.buttonRef, () => {
@@ -671,6 +672,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     },
   })
 
+  let searchDisposables = useDisposables()
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     searchDisposables.dispose()
 
@@ -755,10 +757,12 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     }
   })
 
-  let slot = useMemo(
-    () => ({ open: state.menuState === MenuStates.Open }) satisfies ItemsRenderPropArg,
-    [state]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: state.menuState === MenuStates.Open,
+      ...transitionData,
+    } satisfies ItemsRenderPropArg
+  }, [state, transitionData])
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-activedescendant':
