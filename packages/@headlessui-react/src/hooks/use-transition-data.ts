@@ -75,7 +75,14 @@ export function useTransitionData(
       return transition(node, {
         inFlight,
         prepare() {
-          cancelledRef.current = inFlight.current
+          if (cancelledRef.current) {
+            // Cancelled a cancellation, we're back to the original state.
+            cancelledRef.current = false
+          } else {
+            // If we were already in-flight, then we want to cancel the current
+            // transition.
+            cancelledRef.current = inFlight.current
+          }
 
           inFlight.current = true
 
@@ -91,12 +98,22 @@ export function useTransitionData(
         },
         run() {
           if (cancelledRef.current) {
+            // If we cancelled a transition, then the `show` state is going to
+            // be inverted already, but that doesn't mean we have to go to that
+            // new state.
+            //
+            // What we actually want is to revert to the "idle" state (the
+            // stable state where an `Enter` transitions to, and an `Exit`
+            // transitions from.)
+            //
+            // Because of this, it might look like we are swapping the flags in
+            // the following branches, but that's not the case.
             if (show) {
-              removeFlag(TransitionState.Exit | TransitionState.From)
-              addFlag(TransitionState.Enter)
+              removeFlag(TransitionState.Enter | TransitionState.From)
+              addFlag(TransitionState.Exit)
             } else {
-              removeFlag(TransitionState.Enter)
-              addFlag(TransitionState.Exit | TransitionState.From)
+              removeFlag(TransitionState.Exit)
+              addFlag(TransitionState.Enter | TransitionState.From)
             }
           } else {
             if (show) {
@@ -107,7 +124,9 @@ export function useTransitionData(
           }
         },
         done() {
-          if (cancelledRef.current) return
+          if (cancelledRef.current && node.getAnimations().length > 0) {
+            return
+          }
 
           inFlight.current = false
 
