@@ -50,6 +50,7 @@ export function useTransitionData(
     visible ? TransitionState.From : TransitionState.None
   )
   let inFlight = useRef(false)
+  let cancelledRef = useRef(false)
 
   let d = useDisposables()
 
@@ -74,7 +75,11 @@ export function useTransitionData(
       return transition(node, {
         inFlight,
         prepare() {
+          cancelledRef.current = inFlight.current
+
           inFlight.current = true
+
+          if (cancelledRef.current) return
 
           if (show) {
             addFlag(TransitionState.Enter | TransitionState.From)
@@ -85,13 +90,25 @@ export function useTransitionData(
           }
         },
         run() {
-          if (show) {
-            removeFlag(TransitionState.From)
+          if (cancelledRef.current) {
+            if (show) {
+              removeFlag(TransitionState.Exit | TransitionState.From)
+              addFlag(TransitionState.Enter)
+            } else {
+              removeFlag(TransitionState.Enter)
+              addFlag(TransitionState.Exit | TransitionState.From)
+            }
           } else {
-            addFlag(TransitionState.From)
+            if (show) {
+              removeFlag(TransitionState.From)
+            } else {
+              addFlag(TransitionState.From)
+            }
           }
         },
         done() {
+          if (cancelledRef.current) return
+
           inFlight.current = false
 
           removeFlag(TransitionState.Enter | TransitionState.Exit | TransitionState.From)
