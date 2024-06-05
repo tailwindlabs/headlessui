@@ -184,7 +184,7 @@ export function transition(
   return d.dispose
 }
 
-function prepareTransition(
+export function prepareTransition(
   node: HTMLElement,
   { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
 ) {

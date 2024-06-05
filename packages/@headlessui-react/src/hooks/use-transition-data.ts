@@ -1,5 +1,5 @@
 import { useRef, useState, type MutableRefObject } from 'react'
-import { waitForTransition } from '../components/transition/utils/transition'
+import { prepareTransition, waitForTransition } from '../components/transition/utils/transition'
 import { disposables } from '../utils/disposables'
 import { useDisposables } from './use-disposables'
 import { useFlags } from './use-flags'
@@ -208,33 +208,4 @@ function transition(
   })
 
   return d.dispose
-}
-
-function prepareTransition(
-  node: HTMLElement,
-  {
-    prepare,
-    inFlight,
-  }: {
-    prepare: () => void
-    inFlight: MutableRefObject<boolean>
-  }
-) {
-  if (inFlight.current) {
-    prepare()
-    return
-  }
-
-  let previous = node.style.transition
-
-  // Force cancel current transition
-  node.style.transition = 'none'
-
-  prepare()
-
-  // Trigger a reflow, flushing the CSS changes
-  node.offsetHeight
-
-  // Reset the transition to what it was before
-  node.style.transition = previous
 }
