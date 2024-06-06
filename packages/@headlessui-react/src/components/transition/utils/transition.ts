@@ -11,7 +11,7 @@ function removeClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.remove(...classes)
 }
 
-function waitForTransition(node: HTMLElement, _done: () => void) {
+export function waitForTransition(node: HTMLElement, _done: () => void) {
   let done = once(_done)
   let d = disposables()
 
