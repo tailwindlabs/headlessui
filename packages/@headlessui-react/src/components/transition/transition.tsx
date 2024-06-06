@@ -21,6 +21,7 @@ import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
+import { useTransitionData } from '../../hooks/use-transition-data'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props, ReactTag } from '../../types'
 import { classNames } from '../../utils/class-names'
@@ -501,6 +502,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     if (theirProps.className === '') delete theirProps.className
   }
 
+  let [, slot] = useTransitionData(ready, container, show)
+
   return (
     <NestingContext.Provider value={nesting}>
       <OpenClosedProvider
@@ -514,6 +517,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
         {render({
           ourProps,
           theirProps,
+          slot,
           defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
           features: TransitionChildRenderFeatures,
           visible: state === TreeStates.Visible,
