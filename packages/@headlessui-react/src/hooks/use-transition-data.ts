@@ -124,8 +124,10 @@ export function useTransitionData(
           }
         },
         done() {
-          if (cancelledRef.current && node.getAnimations().length > 0) {
-            return
+          if (cancelledRef.current) {
+            if (typeof node.getAnimations === 'function' && node.getAnimations().length > 0) {
+              return
+            }
           }
 
           inFlight.current = false
