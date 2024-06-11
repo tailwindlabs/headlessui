@@ -1956,17 +1956,20 @@ describe('Keyboard interactions', () => {
 
   describe('`Tab` key', () => {
     it(
-      'should focus trap when we use Tab',
+      'should not focus trap when we use Tab',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option value="a">Option A</Listbox.Option>
-              <Listbox.Option value="b">Option B</Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
+          <>
+            <Listbox value={undefined} onChange={(x) => console.log(x)}>
+              <Listbox.Button>Trigger</Listbox.Button>
+              <Listbox.Options>
+                <Listbox.Option value="a">Option A</Listbox.Option>
+                <Listbox.Option value="b">Option B</Listbox.Option>
+                <Listbox.Option value="c">Option C</Listbox.Option>
+              </Listbox.Options>
+            </Listbox>
+            <a href="#">After</a>
+          </>
         )
 
         assertListboxButton({
@@ -1996,28 +1999,31 @@ describe('Keyboard interactions', () => {
         options.forEach((option) => assertListboxOption(option))
         assertActiveListboxOption(options[0])
 
-        // Try to tab
+        // Tab to the next element
         await press(Keys.Tab)
 
-        // Verify it is still open
-        assertListboxButton({ state: ListboxState.Visible })
-        assertListbox({ state: ListboxState.Visible })
-        assertActiveElement(getListbox())
+        // Verify the listbox is closed
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+        assertActiveElement(getByText('After'))
       })
     )
 
     it(
-      'should focus trap when we use Shift+Tab',
+      'should not focus trap when we use Shift+Tab',
       suppressConsoleLogs(async () => {
         render(
-          <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button>Trigger</Listbox.Button>
-            <Listbox.Options>
-              <Listbox.Option value="a">Option A</Listbox.Option>
-              <Listbox.Option value="b">Option B</Listbox.Option>
-              <Listbox.Option value="c">Option C</Listbox.Option>
-            </Listbox.Options>
-          </Listbox>
+          <>
+            <a href="#">Before</a>
+            <Listbox value={undefined} onChange={(x) => console.log(x)}>
+              <Listbox.Button>Trigger</Listbox.Button>
+              <Listbox.Options>
+                <Listbox.Option value="a">Option A</Listbox.Option>
+                <Listbox.Option value="b">Option B</Listbox.Option>
+                <Listbox.Option value="c">Option C</Listbox.Option>
+              </Listbox.Options>
+            </Listbox>
+          </>
         )
 
         assertListboxButton({
@@ -2050,10 +2056,10 @@ describe('Keyboard interactions', () => {
         // Try to Shift+Tab
         await press(shift(Keys.Tab))
 
-        // Verify it is still open
-        assertListboxButton({ state: ListboxState.Visible })
-        assertListbox({ state: ListboxState.Visible })
-        assertActiveElement(getListbox())
+        // Verify the listbox is closed
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+        assertActiveElement(getByText('Before'))
       })
     )
   })
