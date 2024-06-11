@@ -60,7 +60,13 @@ import type { EnsureArray, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
-import { FocusableMode, isFocusableElement, sortByDomNode } from '../../utils/focus-management'
+import {
+  Focus as FocusManagementFocus,
+  FocusableMode,
+  focusFrom,
+  isFocusableElement,
+  sortByDomNode,
+} from '../../utils/focus-management'
 import { attemptSubmit } from '../../utils/form'
 import { match } from '../../utils/match'
 import { getOwnerDocument } from '../../utils/owner'
@@ -1064,6 +1070,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       case Keys.Tab:
         event.preventDefault()
         event.stopPropagation()
+        flushSync(() => actions.closeListbox())
+        focusFrom(
+          data.buttonRef.current!,
+          event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
+        )
         break
 
       default:
@@ -1093,7 +1104,10 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     'aria-orientation': data.orientation,
     onKeyDown: handleKeyDown,
     role: 'listbox',
-    tabIndex: 0,
+    // When the `Listbox` is closed, it should not be focusable. This allows us
+    // to skip focusing the `ListboxOptions` when pressing the tab key on an
+    // open `Listbox`, and go to the next focusable element.
+    tabIndex: data.listboxState === ListboxStates.Open ? 0 : undefined,
     style: {
       ...theirProps.style,
       ...style,

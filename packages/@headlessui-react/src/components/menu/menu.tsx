@@ -762,7 +762,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
       open: state.menuState === MenuStates.Open,
       ...transitionData,
     } satisfies ItemsRenderPropArg
-  }, [state, transitionData])
+  }, [state.menuState, transitionData])
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-activedescendant':
@@ -772,7 +772,10 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
     role: 'menu',
-    tabIndex: 0,
+    // When the `Menu` is closed, it should not be focusable. This allows us
+    // to skip focusing the `MenuItems` when pressing the tab key on an
+    // open `Menu`, and go to the next focusable element.
+    tabIndex: state.menuState === MenuStates.Open ? 0 : undefined,
     ref: itemsRef,
     style: {
       ...theirProps.style,
