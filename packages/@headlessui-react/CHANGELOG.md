@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure `ComboboxInput` does not sync with current value while typing ([#3259](https://github.com/tailwindlabs/headlessui/pull/3259))
 - Cancel outside click behavior on touch devices when scrolling ([#3266](https://github.com/tailwindlabs/headlessui/pull/3266))
 
+### Changed
+
+- Allow using the `Tab` and `Shift+Tab` keys when the `Listbox` component is open ([#3284](https://github.com/tailwindlabs/headlessui/pull/3284))
+
 ## [2.0.4] - 2024-05-25
 
 ### Fixed
