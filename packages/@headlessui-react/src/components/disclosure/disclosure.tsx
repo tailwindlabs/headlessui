@@ -24,6 +24,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
+import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
 import { CloseProvider } from '../../internal/close-provider'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
@@ -419,7 +420,7 @@ let DEFAULT_PANEL_TAG = 'div' as const
 type PanelRenderPropArg = {
   open: boolean
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
-}
+} & TransitionData
 type DisclosurePanelPropsWeControl = never
 
 let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -428,7 +429,7 @@ export type DisclosurePanelProps<TTag extends ElementType = typeof DEFAULT_PANEL
   TTag,
   PanelRenderPropArg,
   DisclosurePanelPropsWeControl,
-  PropsForFeatures<typeof PanelRenderFeatures>
+  { transition?: boolean } & PropsForFeatures<typeof PanelRenderFeatures>
 >
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
@@ -436,7 +437,11 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-disclosure-panel-${internalId}`, ...theirProps } = props
+  let {
+    id = `headlessui-disclosure-panel-${internalId}`,
+    transition = false,
+    ...theirProps
+  } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
   let mergeRefs = useMergeRefsFn()
@@ -453,20 +458,21 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }, [id, dispatch])
 
   let usesOpenClosedState = useOpenClosed()
-  let visible = (() => {
-    if (usesOpenClosedState !== null) {
-      return (usesOpenClosedState & State.Open) === State.Open
-    }
-
-    return state.disclosureState === DisclosureStates.Open
-  })()
+  let [visible, transitionData] = useTransitionData(
+    transition,
+    state.panelRef,
+    usesOpenClosedState !== null
+      ? (usesOpenClosedState & State.Open) === State.Open
+      : state.disclosureState === DisclosureStates.Open
+  )
 
   let slot = useMemo(() => {
     return {
       open: state.disclosureState === DisclosureStates.Open,
       close,
+      ...transitionData,
     } satisfies PanelRenderPropArg
-  }, [state, close])
+  }, [state.disclosureState, close, transitionData])
 
   let ourProps = {
     ref: panelRef,

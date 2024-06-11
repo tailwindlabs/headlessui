@@ -11,7 +11,7 @@ function removeClasses(node: HTMLElement, ...classes: string[]) {
   node && classes.length > 0 && node.classList.remove(...classes)
 }
 
-function waitForTransition(node: HTMLElement, _done: () => void) {
+export function waitForTransition(node: HTMLElement, _done: () => void) {
   let done = once(_done)
   let d = disposables()
 
@@ -184,7 +184,7 @@ export function transition(
   return d.dispose
 }
 
-function prepareTransition(
+export function prepareTransition(
   node: HTMLElement,
   { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
 ) {

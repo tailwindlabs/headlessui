@@ -36,6 +36,7 @@ import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-contain
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
+import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
 import { CloseProvider } from '../../internal/close-provider'
 import {
   FloatingProvider,
@@ -726,7 +727,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 let DEFAULT_OVERLAY_TAG = 'div' as const
 type OverlayRenderPropArg = {
   open: boolean
-}
+} & TransitionData
 type OverlayPropsWeControl = 'aria-hidden'
 
 let OverlayRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -735,7 +736,7 @@ export type PopoverOverlayProps<TTag extends ElementType = typeof DEFAULT_OVERLA
   TTag,
   OverlayRenderPropArg,
   OverlayPropsWeControl,
-  PropsForFeatures<typeof OverlayRenderFeatures>
+  { transition?: boolean } & PropsForFeatures<typeof OverlayRenderFeatures>
 >
 
 function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
@@ -743,28 +744,31 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-popover-overlay-${internalId}`, ...theirProps } = props
+  let { id = `headlessui-popover-overlay-${internalId}`, transition = false, ...theirProps } = props
   let [{ popoverState }, dispatch] = usePopoverContext('Popover.Overlay')
-  let overlayRef = useSyncRefs(ref)
+  let internalOverlayRef = useRef<HTMLElement | null>(null)
+  let overlayRef = useSyncRefs(ref, internalOverlayRef)
 
   let usesOpenClosedState = useOpenClosed()
-  let visible = (() => {
-    if (usesOpenClosedState !== null) {
-      return (usesOpenClosedState & State.Open) === State.Open
-    }
-
-    return popoverState === PopoverStates.Open
-  })()
+  let [visible, transitionData] = useTransitionData(
+    transition,
+    internalOverlayRef,
+    usesOpenClosedState !== null
+      ? (usesOpenClosedState & State.Open) === State.Open
+      : popoverState === PopoverStates.Open
+  )
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     dispatch({ type: ActionTypes.ClosePopover })
   })
 
-  let slot = useMemo(
-    () => ({ open: popoverState === PopoverStates.Open }) satisfies OverlayRenderPropArg,
-    [popoverState]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: popoverState === PopoverStates.Open,
+      ...transitionData,
+    } satisfies OverlayRenderPropArg
+  }, [popoverState, transitionData])
 
   let ourProps = {
     ref: overlayRef,
@@ -790,7 +794,7 @@ let DEFAULT_PANEL_TAG = 'div' as const
 type PanelRenderPropArg = {
   open: boolean
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
-}
+} & TransitionData
 
 let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
@@ -805,6 +809,7 @@ export type PopoverPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TA
     anchor?: AnchorProps
     portal?: boolean
     modal?: boolean
+    transition?: boolean
 
     // ItemsRenderFeatures
     static?: boolean
@@ -823,6 +828,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     anchor: rawAnchor,
     portal = false,
     modal = false,
+    transition = false,
     ...theirProps
   } = props
 
@@ -856,13 +862,13 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }, [id, dispatch])
 
   let usesOpenClosedState = useOpenClosed()
-  let visible = (() => {
-    if (usesOpenClosedState !== null) {
-      return (usesOpenClosedState & State.Open) === State.Open
-    }
-
-    return state.popoverState === PopoverStates.Open
-  })()
+  let [visible, transitionData] = useTransitionData(
+    transition,
+    internalPanelRef,
+    usesOpenClosedState !== null
+      ? (usesOpenClosedState & State.Open) === State.Open
+      : state.popoverState === PopoverStates.Open
+  )
 
   // Ensure we close the popover as soon as the button becomes hidden
   useOnDisappear(visible, state.button, () => {
@@ -914,10 +920,13 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     focusIn(internalPanelRef.current, Focus.First)
   }, [state.__demoMode, focus, internalPanelRef, state.popoverState])
 
-  let slot = useMemo(
-    () => ({ open: state.popoverState === PopoverStates.Open, close }) satisfies PanelRenderPropArg,
-    [state, close]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: state.popoverState === PopoverStates.Open,
+      close,
+      ...transitionData,
+    } satisfies PanelRenderPropArg
+  }, [state.popoverState, close, transitionData])
 
   let ourProps: Record<string, any> = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     ref: panelRef,

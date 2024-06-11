@@ -42,6 +42,7 @@ import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
 import { useDisabled } from '../../internal/disabled'
 import {
   FloatingProvider,
@@ -863,7 +864,7 @@ let SelectedOptionContext = createContext(false)
 let DEFAULT_OPTIONS_TAG = 'div' as const
 type OptionsRenderPropArg = {
   open: boolean
-}
+} & TransitionData
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
@@ -882,6 +883,7 @@ export type ListboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTION
     anchor?: AnchorPropsWithSelection
     portal?: boolean
     modal?: boolean
+    transition?: boolean
   } & PropsForFeatures<typeof OptionsRenderFeatures>
 >
 
@@ -895,6 +897,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     anchor: rawAnchor,
     portal = false,
     modal = true,
+    transition = false,
     ...theirProps
   } = props
   let anchor = useResolvedAnchor(rawAnchor)
@@ -910,13 +913,13 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let ownerDocument = useOwnerDocument(data.optionsRef)
 
   let usesOpenClosedState = useOpenClosed()
-  let visible = (() => {
-    if (usesOpenClosedState !== null) {
-      return (usesOpenClosedState & State.Open) === State.Open
-    }
-
-    return data.listboxState === ListboxStates.Open
-  })()
+  let [visible, transitionData] = useTransitionData(
+    transition,
+    data.optionsRef,
+    usesOpenClosedState !== null
+      ? (usesOpenClosedState & State.Open) === State.Open
+      : data.listboxState === ListboxStates.Open
+  )
 
   // Ensure we close the listbox as soon as the button becomes hidden
   useOnDisappear(visible, data.buttonRef, actions.closeListbox)
@@ -1073,10 +1076,12 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })
 
   let labelledby = useComputed(() => data.buttonRef.current?.id, [data.buttonRef.current])
-  let slot = useMemo(
-    () => ({ open: data.listboxState === ListboxStates.Open }) satisfies OptionsRenderPropArg,
-    [data]
-  )
+  let slot = useMemo(() => {
+    return {
+      open: data.listboxState === ListboxStates.Open,
+      ...transitionData,
+    } satisfies OptionsRenderPropArg
+  }, [data.listboxState, transitionData])
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     id,

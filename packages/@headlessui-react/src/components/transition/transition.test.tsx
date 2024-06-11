@@ -358,6 +358,11 @@ describe('Setup API', () => {
           <div
             class="foo1
         foo2"
+            data-enter=""
+            data-from=""
+            data-headlessui-state="from enter transition"
+            data-transition=""
+            style=""
           >
             Children
           </div>
@@ -370,18 +375,22 @@ describe('Setup API', () => {
       // The `foo1\nfoo2` should be gone
       // I think this is a quirk of JSDOM
       expect(container.firstChild).toMatchInlineSnapshot(`
-        <div>
-          <button>
-            toggle
-          </button>
-          <div
-            class="foo1
-        foo2 foo1 foo2 leave"
-            style=""
-          >
-            Children
-          </div>
-        </div>
+         <div>
+           <button>
+             toggle
+           </button>
+           <div
+             class="foo1
+         foo2 foo1 foo2 leave"
+             data-enter=""
+             data-from=""
+             data-headlessui-state="from enter transition"
+             data-transition=""
+             style=""
+           >
+             Children
+           </div>
+         </div>
       `)
     })
 

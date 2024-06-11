@@ -41,6 +41,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
+import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useWatch } from '../../hooks/use-watch'
 import { useDisabled } from '../../internal/disabled'
@@ -446,6 +447,7 @@ type _Actions = ReturnType<typeof useActions>
 let VirtualContext = createContext<Virtualizer<any, any> | null>(null)
 
 function VirtualProvider(props: {
+  slot: OptionsRenderPropArg
   children: (data: { option: unknown; open: boolean }) => React.ReactElement
 }) {
   let data = useData('VirtualProvider')
@@ -523,8 +525,8 @@ function VirtualProvider(props: {
             <Fragment key={item.key}>
               {React.cloneElement(
                 props.children?.({
+                  ...props.slot,
                   option: options[item.index],
-                  open: data.comboboxState === ComboboxState.Open,
                 }),
                 {
                   key: `${baseKey}-${item.key}`,
@@ -1561,7 +1563,7 @@ let DEFAULT_OPTIONS_TAG = 'div' as const
 type OptionsRenderPropArg = {
   open: boolean
   option: unknown
-}
+} & TransitionData
 type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role' | 'tabIndex'
 
 let OptionsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -1575,6 +1577,7 @@ export type ComboboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTIO
     anchor?: AnchorProps
     portal?: boolean
     modal?: boolean
+    transition?: boolean
   }
 >
 
@@ -1589,6 +1592,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     anchor: rawAnchor,
     portal = false,
     modal = true,
+    transition = false,
     ...theirProps
   } = props
   let data = useData('Combobox.Options')
@@ -1606,13 +1610,13 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let ownerDocument = useOwnerDocument(data.optionsRef)
 
   let usesOpenClosedState = useOpenClosed()
-  let visible = (() => {
-    if (usesOpenClosedState !== null) {
-      return (usesOpenClosedState & State.Open) === State.Open
-    }
-
-    return data.comboboxState === ComboboxState.Open
-  })()
+  let [visible, transitionData] = useTransitionData(
+    transition,
+    data.optionsRef,
+    usesOpenClosedState !== null
+      ? (usesOpenClosedState & State.Open) === State.Open
+      : data.comboboxState === ComboboxState.Open
+  )
 
   // Ensure we close the combobox as soon as the input becomes hidden
   useOnDisappear(visible, data.inputRef, actions.closeCombobox)
@@ -1660,8 +1664,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     return {
       open: data.comboboxState === ComboboxState.Open,
       option: undefined,
+      ...transitionData,
     } satisfies OptionsRenderPropArg
-  }, [data])
+  }, [data.comboboxState, transitionData])
 
   // When the user scrolls **using the mouse** (so scroll event isn't appropriate)
   // we want to make sure that the current activation trigger is set to pointer.
@@ -1706,7 +1711,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   if (data.virtual && visible) {
     Object.assign(theirProps, {
       // @ts-expect-error The `children` prop now is a callback function that receives `{ option }`.
-      children: <VirtualProvider>{theirProps.children}</VirtualProvider>,
+      children: <VirtualProvider slot={slot}>{theirProps.children}</VirtualProvider>,
     })
   }
 

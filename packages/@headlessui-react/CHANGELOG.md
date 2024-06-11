@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add ability to render multiple `<Dialog />` components at once (without nesting them) ([#3242](https://github.com/tailwindlabs/headlessui/pull/3242))
+- Add CSS based transitions using `data-*` attributes ([#3273](https://github.com/tailwindlabs/headlessui/pull/3273))
 
 ### Fixed
 
