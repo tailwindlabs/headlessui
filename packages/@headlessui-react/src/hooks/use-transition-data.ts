@@ -7,35 +7,35 @@ import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
 /**
  * ```
- * ┌─────┐              │       ┌────────────┐
- * │From │              │       │From        │
- * └─────┘              │       └────────────┘
- * ┌─────┐┌─────┐┌─────┐│┌─────┐┌─────┐┌─────┐
- * │Frame││Frame││Frame│││Frame││Frame││Frame│
- * └─────┘└─────┘└─────┘│└─────┘└─────┘└─────┘
- * ┌───────────────────┐│┌───────────────────┐
- * │Enter              │││Exit               │
- * └───────────────────┘│└───────────────────┘
- * ┌───────────────────┐│┌───────────────────┐
- * │Transition         │││Transition         │
- * ├───────────────────┘│└───────────────────┘
+ * ┌──────┐                │        ┌──────────────┐
+ * │Closed│                │        │Closed        │
+ * └──────┘                │        └──────────────┘
+ * ┌──────┐┌──────┐┌──────┐│┌──────┐┌──────┐┌──────┐
+ * │Frame ││Frame ││Frame │││Frame ││Frame ││Frame │
+ * └──────┘└──────┘└──────┘│└──────┘└──────┘└──────┘
+ * ┌──────────────────────┐│┌──────────────────────┐
+ * │Enter                 │││Leave                 │
+ * └──────────────────────┘│└──────────────────────┘
+ * ┌──────────────────────┐│┌──────────────────────┐
+ * │Transition            │││Transition            │
+ * ├──────────────────────┘│└──────────────────────┘
  * │
- * └─ Applied when `Enter` or `Exit` is applied.
+ * └─ Applied when `Enter` or `Leave` is applied.
  * ```
  */
 enum TransitionState {
   None = 0,
 
-  From = 1 << 0,
+  Closed = 1 << 0,
 
   Enter = 1 << 1,
-  Exit = 1 << 2,
+  Leave = 1 << 2,
 }
 
 export type TransitionData = {
-  from?: boolean
+  closed?: boolean
   enter?: boolean
-  exit?: boolean
+  leave?: boolean
   transition?: boolean
 }
 
@@ -47,7 +47,7 @@ export function useTransitionData(
   let [visible, setVisible] = useState(show)
 
   let { hasFlag, addFlag, removeFlag } = useFlags(
-    visible ? TransitionState.From : TransitionState.None
+    visible ? TransitionState.Closed : TransitionState.None
   )
   let inFlight = useRef(false)
   let cancelledRef = useRef(false)
@@ -66,7 +66,7 @@ export function useTransitionData(
       if (!node) {
         // Retry if the DOM node isn't available yet
         if (show) {
-          addFlag(TransitionState.Enter | TransitionState.From)
+          addFlag(TransitionState.Enter | TransitionState.Closed)
           return d.nextFrame(() => retry())
         }
         return
@@ -89,10 +89,10 @@ export function useTransitionData(
           if (cancelledRef.current) return
 
           if (show) {
-            addFlag(TransitionState.Enter | TransitionState.From)
-            removeFlag(TransitionState.Exit)
+            addFlag(TransitionState.Enter | TransitionState.Closed)
+            removeFlag(TransitionState.Leave)
           } else {
-            addFlag(TransitionState.Exit)
+            addFlag(TransitionState.Leave)
             removeFlag(TransitionState.Enter)
           }
         },
@@ -103,23 +103,23 @@ export function useTransitionData(
             // new state.
             //
             // What we actually want is to revert to the "idle" state (the
-            // stable state where an `Enter` transitions to, and an `Exit`
+            // stable state where an `Enter` transitions to, and a `Leave`
             // transitions from.)
             //
             // Because of this, it might look like we are swapping the flags in
             // the following branches, but that's not the case.
             if (show) {
-              removeFlag(TransitionState.Enter | TransitionState.From)
-              addFlag(TransitionState.Exit)
+              removeFlag(TransitionState.Enter | TransitionState.Closed)
+              addFlag(TransitionState.Leave)
             } else {
-              removeFlag(TransitionState.Exit)
-              addFlag(TransitionState.Enter | TransitionState.From)
+              removeFlag(TransitionState.Leave)
+              addFlag(TransitionState.Enter | TransitionState.Closed)
             }
           } else {
             if (show) {
-              removeFlag(TransitionState.From)
+              removeFlag(TransitionState.Closed)
             } else {
-              addFlag(TransitionState.From)
+              addFlag(TransitionState.Closed)
             }
           }
         },
@@ -132,7 +132,7 @@ export function useTransitionData(
 
           inFlight.current = false
 
-          removeFlag(TransitionState.Enter | TransitionState.Exit | TransitionState.From)
+          removeFlag(TransitionState.Enter | TransitionState.Leave | TransitionState.Closed)
 
           if (!show) {
             setVisible(false)
@@ -147,9 +147,9 @@ export function useTransitionData(
     return [
       show,
       {
-        from: undefined,
+        closed: undefined,
         enter: undefined,
-        exit: undefined,
+        leave: undefined,
         transition: undefined,
       },
     ] as const
@@ -158,10 +158,10 @@ export function useTransitionData(
   return [
     visible,
     {
-      from: hasFlag(TransitionState.From),
+      closed: hasFlag(TransitionState.Closed),
       enter: hasFlag(TransitionState.Enter),
-      exit: hasFlag(TransitionState.Exit),
-      transition: hasFlag(TransitionState.Enter) || hasFlag(TransitionState.Exit),
+      leave: hasFlag(TransitionState.Leave),
+      transition: hasFlag(TransitionState.Enter) || hasFlag(TransitionState.Leave),
     },
   ] as const
 }

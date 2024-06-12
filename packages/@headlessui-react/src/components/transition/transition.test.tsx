@@ -358,9 +358,9 @@ describe('Setup API', () => {
           <div
             class="foo1
         foo2"
+            data-closed=""
             data-enter=""
-            data-from=""
-            data-headlessui-state="from enter transition"
+            data-headlessui-state="closed enter transition"
             data-transition=""
             style=""
           >
@@ -382,9 +382,9 @@ describe('Setup API', () => {
            <div
              class="foo1
          foo2 foo1 foo2 leave"
+             data-closed=""
              data-enter=""
-             data-from=""
-             data-headlessui-state="from enter transition"
+             data-headlessui-state="closed enter transition"
              data-transition=""
              style=""
            >

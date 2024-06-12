@@ -5,25 +5,25 @@ exports[`Setup API nested should be possible to change the underlying DOM tag of
   class="My Page"
 >
   <article
+    data-closed=""
     data-enter=""
-    data-from=""
-    data-headlessui-state="from enter transition"
+    data-headlessui-state="closed enter transition"
     data-transition=""
     style=""
   >
     <aside
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
       style=""
     >
       Sidebar
     </aside>
     <section
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
       style=""
     >
@@ -38,25 +38,25 @@ exports[`Setup API nested should be possible to change the underlying DOM tag of
   class="My Page"
 >
   <div
+    data-closed=""
     data-enter=""
-    data-from=""
-    data-headlessui-state="from enter transition"
+    data-headlessui-state="closed enter transition"
     data-transition=""
     style=""
   >
     <aside
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
       style=""
     >
       Sidebar
     </aside>
     <section
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
       style=""
     >
@@ -71,25 +71,25 @@ exports[`Setup API nested should be possible to nest transition components 1`] =
   class="My Page"
 >
   <div
+    data-closed=""
     data-enter=""
-    data-from=""
-    data-headlessui-state="from enter transition"
+    data-headlessui-state="closed enter transition"
     data-transition=""
     style=""
   >
     <div
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
       style=""
     >
       Sidebar
     </div>
     <div
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
       style=""
     >
@@ -104,23 +104,23 @@ exports[`Setup API nested should be possible to use render props on the Transiti
   class="My Page"
 >
   <article
+    data-closed=""
     data-enter=""
-    data-from=""
-    data-headlessui-state="from enter transition"
+    data-headlessui-state="closed enter transition"
     data-transition=""
   >
     <aside
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
     >
       Sidebar
     </aside>
     <section
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
     >
       Content
@@ -134,24 +134,24 @@ exports[`Setup API nested should be possible to use render props on the Transiti
   class="My Page"
 >
   <div
+    data-closed=""
     data-enter=""
-    data-from=""
-    data-headlessui-state="from enter transition"
+    data-headlessui-state="closed enter transition"
     data-transition=""
     style=""
   >
     <aside
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
     >
       Sidebar
     </aside>
     <section
+      data-closed=""
       data-enter=""
-      data-from=""
-      data-headlessui-state="from enter transition"
+      data-headlessui-state="closed enter transition"
       data-transition=""
     >
       Content
@@ -168,9 +168,9 @@ exports[`Setup API nested should yell at us when we forgot to forward the ref on
 
 exports[`Setup API shallow should be possible to change the underlying DOM tag 1`] = `
 <span
+  data-closed=""
   data-enter=""
-  data-from=""
-  data-headlessui-state="from enter transition"
+  data-headlessui-state="closed enter transition"
   data-transition=""
   style=""
 >
@@ -180,9 +180,9 @@ exports[`Setup API shallow should be possible to change the underlying DOM tag 1
 
 exports[`Setup API shallow should be possible to use a render prop 1`] = `
 <span
+  data-closed=""
   data-enter=""
-  data-from=""
-  data-headlessui-state="from enter transition"
+  data-headlessui-state="closed enter transition"
   data-transition=""
 >
   Children
@@ -192,9 +192,9 @@ exports[`Setup API shallow should be possible to use a render prop 1`] = `
 exports[`Setup API shallow should passthrough all the props (that we do not use internally) 1`] = `
 <div
   class="text-blue-400"
+  data-closed=""
   data-enter=""
-  data-from=""
-  data-headlessui-state="from enter transition"
+  data-headlessui-state="closed enter transition"
   data-transition=""
   id="root"
   style=""
@@ -206,9 +206,9 @@ exports[`Setup API shallow should passthrough all the props (that we do not use 
 exports[`Setup API shallow should passthrough all the props (that we do not use internally) even when using an \`as\` prop 1`] = `
 <a
   class="text-blue-400"
+  data-closed=""
   data-enter=""
-  data-from=""
-  data-headlessui-state="from enter transition"
+  data-headlessui-state="closed enter transition"
   data-transition=""
   href="/"
   style=""
@@ -219,9 +219,9 @@ exports[`Setup API shallow should passthrough all the props (that we do not use 
 
 exports[`Setup API shallow should render another component if the \`as\` prop is used and its children by default 1`] = `
 <a
+  data-closed=""
   data-enter=""
-  data-from=""
-  data-headlessui-state="from enter transition"
+  data-headlessui-state="closed enter transition"
   data-transition=""
   style=""
 >
@@ -235,9 +235,9 @@ exports[`Setup API shallow should yell at us when we forget to forward the ref w
 
 exports[`Setup API transition classes should be possible to passthrough the transition classes 1`] = `
 <div
+  data-closed=""
   data-enter=""
-  data-from=""
-  data-headlessui-state="from enter transition"
+  data-headlessui-state="closed enter transition"
   data-transition=""
   style=""
 >
@@ -248,8 +248,8 @@ exports[`Setup API transition classes should be possible to passthrough the tran
 exports[`Setup API transition classes should be possible to passthrough the transition classes and immediately apply the enter transitions when appear is set to true 1`] = `
 <div
   class="enter enter-from"
-  data-from=""
-  data-headlessui-state="from"
+  data-closed=""
+  data-headlessui-state="closed"
   style=""
 >
   Children
