@@ -1,6 +1,6 @@
 import { useRef, useState, type MutableRefObject } from 'react'
-import { prepareTransition, waitForTransition } from '../components/transition/utils/transition'
 import { disposables } from '../utils/disposables'
+import { once } from '../utils/once'
 import { useDisposables } from './use-disposables'
 import { useFlags } from './use-flags'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
@@ -217,6 +217,105 @@ function transition(
 
     // Initiate the transition by applying the new classes.
     run()
+  })
+
+  return d.dispose
+}
+
+function waitForTransition(node: HTMLElement, _done: () => void) {
+  let done = once(_done)
+  let d = disposables()
+
+  if (!node) return d.dispose
+
+  // Safari returns a comma separated list of values, so let's sort them and take the highest value.
+  let { transitionDuration, transitionDelay } = getComputedStyle(node)
+
+  let [durationMs, delayMs] = [transitionDuration, transitionDelay].map((value) => {
+    let [resolvedValue = 0] = value
+      .split(',')
+      // Remove falsy we can't work with
+      .filter(Boolean)
+      // Values are returned as `0.3s` or `75ms`
+      .map((v) => (v.includes('ms') ? parseFloat(v) : parseFloat(v) * 1000))
+      .sort((a, z) => z - a)
+
+    return resolvedValue
+  })
+
+  let totalDuration = durationMs + delayMs
+
+  if (totalDuration !== 0) {
+    if (process.env.NODE_ENV === 'test') {
+      let dispose = d.setTimeout(() => {
+        done()
+        dispose()
+      }, totalDuration)
+    } else {
+      let disposeGroup = d.group((d) => {
+        // Mark the transition as done when the timeout is reached. This is a fallback in case the
+        // transitionrun event is not fired.
+        let cancelTimeout = d.setTimeout(() => {
+          done()
+          d.dispose()
+        }, totalDuration)
+
+        // The moment the transitionrun event fires, we should cleanup the timeout fallback, because
+        // then we know that we can use the native transition events because something is
+        // transitioning.
+        d.addEventListener(node, 'transitionrun', (event) => {
+          if (event.target !== event.currentTarget) return
+          cancelTimeout()
+
+          d.addEventListener(node, 'transitioncancel', (event) => {
+            if (event.target !== event.currentTarget) return
+            done()
+            disposeGroup()
+          })
+        })
+      })
+
+      d.addEventListener(node, 'transitionend', (event) => {
+        if (event.target !== event.currentTarget) return
+        done()
+        d.dispose()
+      })
+    }
+  } else {
+    // No transition is happening, so we should cleanup already. Otherwise we have to wait until we
+    // get disposed.
+    done()
+  }
+
+  return d.dispose
+}
+
+function prepareTransition(
+  node: HTMLElement,
+  { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
+) {
+  let d = disposables()
+
+  // If we are already transitioning, then we don't need to force cancel the
+  // current transition (by triggering a reflow).
+  if (inFlight?.current) {
+    prepare()
+    return d.dispose
+  }
+
+  let previous = node.style.transition
+
+  // Force cancel current transition
+  node.style.transition = 'none'
+
+  prepare()
+
+  d.microTask(() => {
+    // Trigger a reflow, flushing the CSS changes
+    node.offsetHeight
+
+    // Reset the transition to what it was before
+    node.style.transition = previous
   })
 
   return d.dispose
