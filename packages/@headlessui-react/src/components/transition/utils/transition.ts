@@ -188,11 +188,13 @@ export function prepareTransition(
   node: HTMLElement,
   { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
 ) {
+  let d = disposables()
+
   // If we are already transitioning, then we don't need to force cancel the
   // current transition (by triggering a reflow).
   if (inFlight?.current) {
     prepare()
-    return
+    return d.dispose
   }
 
   let previous = node.style.transition
@@ -202,9 +204,13 @@ export function prepareTransition(
 
   prepare()
 
-  // Trigger a reflow, flushing the CSS changes
-  node.offsetHeight
+  d.microTask(() => {
+    // Trigger a reflow, flushing the CSS changes
+    node.offsetHeight
 
-  // Reset the transition to what it was before
-  node.style.transition = previous
+    // Reset the transition to what it was before
+    node.style.transition = previous
+  })
+
+  return d.dispose
 }
