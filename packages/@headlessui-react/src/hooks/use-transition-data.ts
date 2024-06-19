@@ -42,7 +42,11 @@ export type TransitionData = {
 export function useTransitionData(
   enabled: boolean,
   elementRef: MutableRefObject<HTMLElement | null>,
-  show: boolean
+  show: boolean,
+  events?: {
+    start?(show: boolean): void
+    end?(show: boolean): void
+  }
 ): [visible: boolean, data: TransitionData] {
   let [visible, setVisible] = useState(show)
 
@@ -71,6 +75,8 @@ export function useTransitionData(
         }
         return
       }
+
+      events?.start?.(show)
 
       return transition(node, {
         inFlight,
@@ -137,6 +143,8 @@ export function useTransitionData(
           if (!show) {
             setVisible(false)
           }
+
+          events?.end?.(show)
         },
       })
     },
