@@ -51,7 +51,7 @@ export function useTransition(
   let [visible, setVisible] = useState(show)
 
   let { hasFlag, addFlag, removeFlag } = useFlags(
-    visible ? TransitionState.Closed : TransitionState.None
+    enabled && visible ? TransitionState.Enter | TransitionState.Closed : TransitionState.None
   )
   let inFlight = useRef(false)
   let cancelledRef = useRef(false)
@@ -192,12 +192,10 @@ function transition(
 
   // Prepare the transitions by ensuring that all the "before" classes are
   // applied and flushed to the DOM.
-  d.add(
-    prepareTransition(node, {
-      prepare,
-      inFlight,
-    })
-  )
+  prepareTransition(node, {
+    prepare,
+    inFlight,
+  })
 
   // This is a workaround for a bug in all major browsers.
   //
@@ -294,13 +292,11 @@ function prepareTransition(
   node: HTMLElement,
   { inFlight, prepare }: { inFlight?: MutableRefObject<boolean>; prepare: () => void }
 ) {
-  let d = disposables()
-
   // If we are already transitioning, then we don't need to force cancel the
   // current transition (by triggering a reflow).
   if (inFlight?.current) {
     prepare()
-    return d.dispose
+    return
   }
 
   let previous = node.style.transition
@@ -310,13 +306,9 @@ function prepareTransition(
 
   prepare()
 
-  d.microTask(() => {
-    // Trigger a reflow, flushing the CSS changes
-    node.offsetHeight
+  // Trigger a reflow, flushing the CSS changes
+  node.offsetHeight
 
-    // Reset the transition to what it was before
-    node.style.transition = previous
-  })
-
-  return d.dispose
+  // Reset the transition to what it was before
+  node.style.transition = previous
 }
