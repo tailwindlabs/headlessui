@@ -20,7 +20,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { useTransitionData } from '../../hooks/use-transition-data'
+import { useTransition } from '../../hooks/use-transition'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props, ReactTag } from '../../types'
 import { classNames } from '../../utils/class-names'
@@ -428,7 +428,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   // a leave transition on the `<Transition>` is done, but there is still a
   // child `<TransitionChild>` busy, then `visible` would be `false`, while
   // `state` would still be `TreeStates.Visible`.
-  let [, slot] = useTransitionData(enabled, container, show, { start, end })
+  let [, slot] = useTransition(enabled, container, show, { start, end })
 
   let ourProps = compact({
     ref: transitionRef,

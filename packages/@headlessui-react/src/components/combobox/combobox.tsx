@@ -41,7 +41,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
+import { useTransition, type TransitionData } from '../../hooks/use-transition'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useWatch } from '../../hooks/use-watch'
 import { useDisabled } from '../../internal/disabled'
@@ -1610,7 +1610,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let ownerDocument = useOwnerDocument(data.optionsRef)
 
   let usesOpenClosedState = useOpenClosed()
-  let [visible, transitionData] = useTransitionData(
+  let [visible, transitionData] = useTransition(
     transition,
     data.optionsRef,
     usesOpenClosedState !== null

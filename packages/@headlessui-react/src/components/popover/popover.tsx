@@ -36,7 +36,7 @@ import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-contain
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
-import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
+import { useTransition, type TransitionData } from '../../hooks/use-transition'
 import { CloseProvider } from '../../internal/close-provider'
 import {
   FloatingProvider,
@@ -750,7 +750,7 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
   let overlayRef = useSyncRefs(ref, internalOverlayRef)
 
   let usesOpenClosedState = useOpenClosed()
-  let [visible, transitionData] = useTransitionData(
+  let [visible, transitionData] = useTransition(
     transition,
     internalOverlayRef,
     usesOpenClosedState !== null
@@ -862,7 +862,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }, [id, dispatch])
 
   let usesOpenClosedState = useOpenClosed()
-  let [visible, transitionData] = useTransitionData(
+  let [visible, transitionData] = useTransition(
     transition,
     internalPanelRef,
     usesOpenClosedState !== null

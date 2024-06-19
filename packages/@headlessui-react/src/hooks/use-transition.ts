@@ -39,7 +39,7 @@ export type TransitionData = {
   transition?: boolean
 }
 
-export function useTransitionData(
+export function useTransition(
   enabled: boolean,
   elementRef: MutableRefObject<HTMLElement | null>,
   show: boolean,
