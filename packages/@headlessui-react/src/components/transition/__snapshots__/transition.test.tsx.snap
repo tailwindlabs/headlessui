@@ -4,29 +4,11 @@ exports[`Setup API nested should be possible to change the underlying DOM tag of
 <div
   class="My Page"
 >
-  <article
-    data-closed=""
-    data-enter=""
-    data-headlessui-state="closed enter transition"
-    data-transition=""
-    style=""
-  >
-    <aside
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-      style=""
-    >
+  <article>
+    <aside>
       Sidebar
     </aside>
-    <section
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-      style=""
-    >
+    <section>
       Content
     </section>
   </article>
@@ -37,29 +19,11 @@ exports[`Setup API nested should be possible to change the underlying DOM tag of
 <div
   class="My Page"
 >
-  <div
-    data-closed=""
-    data-enter=""
-    data-headlessui-state="closed enter transition"
-    data-transition=""
-    style=""
-  >
-    <aside
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-      style=""
-    >
+  <div>
+    <aside>
       Sidebar
     </aside>
-    <section
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-      style=""
-    >
+    <section>
       Content
     </section>
   </div>
@@ -70,29 +34,11 @@ exports[`Setup API nested should be possible to nest transition components 1`] =
 <div
   class="My Page"
 >
-  <div
-    data-closed=""
-    data-enter=""
-    data-headlessui-state="closed enter transition"
-    data-transition=""
-    style=""
-  >
-    <div
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-      style=""
-    >
+  <div>
+    <div>
       Sidebar
     </div>
-    <div
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-      style=""
-    >
+    <div>
       Content
     </div>
   </div>
@@ -103,26 +49,11 @@ exports[`Setup API nested should be possible to use render props on the Transiti
 <div
   class="My Page"
 >
-  <article
-    data-closed=""
-    data-enter=""
-    data-headlessui-state="closed enter transition"
-    data-transition=""
-  >
-    <aside
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-    >
+  <article>
+    <aside>
       Sidebar
     </aside>
-    <section
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-    >
+    <section>
       Content
     </section>
   </article>
@@ -133,27 +64,11 @@ exports[`Setup API nested should be possible to use render props on the Transiti
 <div
   class="My Page"
 >
-  <div
-    data-closed=""
-    data-enter=""
-    data-headlessui-state="closed enter transition"
-    data-transition=""
-    style=""
-  >
-    <aside
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-    >
+  <div>
+    <aside>
       Sidebar
     </aside>
-    <section
-      data-closed=""
-      data-enter=""
-      data-headlessui-state="closed enter transition"
-      data-transition=""
-    >
+    <section>
       Content
     </section>
   </div>
@@ -167,24 +82,13 @@ exports[`Setup API nested should yell at us when we forgot to forward a ref on t
 exports[`Setup API nested should yell at us when we forgot to forward the ref on one of the Transition.Child components 1`] = `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`;
 
 exports[`Setup API shallow should be possible to change the underlying DOM tag 1`] = `
-<span
-  data-closed=""
-  data-enter=""
-  data-headlessui-state="closed enter transition"
-  data-transition=""
-  style=""
->
+<span>
   Children
 </span>
 `;
 
 exports[`Setup API shallow should be possible to use a render prop 1`] = `
-<span
-  data-closed=""
-  data-enter=""
-  data-headlessui-state="closed enter transition"
-  data-transition=""
->
+<span>
   Children
 </span>
 `;
@@ -192,12 +96,7 @@ exports[`Setup API shallow should be possible to use a render prop 1`] = `
 exports[`Setup API shallow should passthrough all the props (that we do not use internally) 1`] = `
 <div
   class="text-blue-400"
-  data-closed=""
-  data-enter=""
-  data-headlessui-state="closed enter transition"
-  data-transition=""
   id="root"
-  style=""
 >
   Children
 </div>
@@ -206,25 +105,14 @@ exports[`Setup API shallow should passthrough all the props (that we do not use 
 exports[`Setup API shallow should passthrough all the props (that we do not use internally) even when using an \`as\` prop 1`] = `
 <a
   class="text-blue-400"
-  data-closed=""
-  data-enter=""
-  data-headlessui-state="closed enter transition"
-  data-transition=""
   href="/"
-  style=""
 >
   Children
 </a>
 `;
 
 exports[`Setup API shallow should render another component if the \`as\` prop is used and its children by default 1`] = `
-<a
-  data-closed=""
-  data-enter=""
-  data-headlessui-state="closed enter transition"
-  data-transition=""
-  style=""
->
+<a>
   Children
 </a>
 `;
@@ -234,13 +122,7 @@ exports[`Setup API shallow should render nothing when the show prop is false 1`]
 exports[`Setup API shallow should yell at us when we forget to forward the ref when using a render prop 1`] = `"Did you forget to passthrough the \`ref\` to the actual DOM node?"`;
 
 exports[`Setup API transition classes should be possible to passthrough the transition classes 1`] = `
-<div
-  data-closed=""
-  data-enter=""
-  data-headlessui-state="closed enter transition"
-  data-transition=""
-  style=""
->
+<div>
   Children
 </div>
 `;
@@ -250,7 +132,7 @@ exports[`Setup API transition classes should be possible to passthrough the tran
   class="enter enter-from"
   data-closed=""
   data-headlessui-state="closed"
-  style=""
+  style="transition: none;"
 >
   Children
 </div>
