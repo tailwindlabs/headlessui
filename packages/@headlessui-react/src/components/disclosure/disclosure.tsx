@@ -24,7 +24,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
-import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
+import { useTransition, type TransitionData } from '../../hooks/use-transition'
 import { CloseProvider } from '../../internal/close-provider'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props } from '../../types'
@@ -458,7 +458,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }, [id, dispatch])
 
   let usesOpenClosedState = useOpenClosed()
-  let [visible, transitionData] = useTransitionData(
+  let [visible, transitionData] = useTransition(
     transition,
     state.panelRef,
     usesOpenClosedState !== null

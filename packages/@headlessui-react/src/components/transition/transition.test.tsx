@@ -358,11 +358,6 @@ describe('Setup API', () => {
           <div
             class="foo1
         foo2"
-            data-closed=""
-            data-enter=""
-            data-headlessui-state="closed enter transition"
-            data-transition=""
-            style=""
           >
             Children
           </div>
@@ -371,9 +366,6 @@ describe('Setup API', () => {
 
       await click(getByText('toggle'))
 
-      // TODO: This is not quite right
-      // The `foo1\nfoo2` should be gone
-      // I think this is a quirk of JSDOM
       expect(container.firstChild).toMatchInlineSnapshot(`
          <div>
            <button>
@@ -381,10 +373,9 @@ describe('Setup API', () => {
            </button>
            <div
              class="foo1
-         foo2 foo1 foo2 leave"
-             data-closed=""
-             data-enter=""
-             data-headlessui-state="closed enter transition"
+         foo2 leave"
+             data-headlessui-state="leave transition"
+             data-leave=""
              data-transition=""
              style=""
            >

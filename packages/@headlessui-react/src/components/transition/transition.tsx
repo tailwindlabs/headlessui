@@ -4,6 +4,7 @@ import React, {
   Fragment,
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -13,7 +14,6 @@ import React, {
 } from 'react'
 import { useDisposables } from '../../hooks/use-disposables'
 import { useEvent } from '../../hooks/use-event'
-import { useFlags } from '../../hooks/use-flags'
 import { useIsMounted } from '../../hooks/use-is-mounted'
 import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useLatestValue } from '../../hooks/use-latest-value'
@@ -21,7 +21,6 @@ import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition } from '../../hooks/use-transition'
-import { useTransitionData } from '../../hooks/use-transition-data'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props, ReactTag } from '../../types'
 import { classNames } from '../../utils/class-names'
@@ -29,6 +28,7 @@ import { match } from '../../utils/match'
 import {
   RenderFeatures,
   RenderStrategy,
+  compact,
   forwardRefWithAs,
   render,
   type HasDisplayName,
@@ -38,17 +38,7 @@ import {
 
 type ContainerElement = MutableRefObject<HTMLElement | null>
 
-type TransitionDirection = 'enter' | 'leave' | 'idle'
-
-/**
- * Split class lists by whitespace
- *
- * We can't check for just spaces as all whitespace characters are
- * invalid in a class name, so we have to split on ANY whitespace.
- */
-function splitClasses(classes: string = '') {
-  return classes.split(/\s+/).filter((className) => className.length > 1)
-}
+type TransitionDirection = 'enter' | 'leave'
 
 /**
  * Check if we should forward the ref to the child element or not. This is to
@@ -224,11 +214,7 @@ function useNesting(done?: () => void, parent?: NestingContextValues) {
 
   let chains = useRef<
     Record<TransitionDirection, [identifier: ContainerElement, promise: Promise<void>][]>
-  >({
-    enter: [],
-    leave: [],
-    idle: [],
-  })
+  >({ enter: [], leave: [] })
 
   let onStart = useEvent(
     (
@@ -328,13 +314,13 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     leaveTo,
 
     // @ts-expect-error
-    ...rest
+    ...theirProps
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
   let requiresRef = shouldForwardRef(props)
 
   let transitionRef = useSyncRefs(...(requiresRef ? [container, ref] : ref === null ? [] : [ref]))
-  let strategy = rest.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
+  let strategy = theirProps.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
 
@@ -362,24 +348,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     })
   }, [state, container, register, unregister, show, strategy])
 
-  let classes = useLatestValue({
-    base: splitClasses(rest.className),
-    enter: splitClasses(enter),
-    enterFrom: splitClasses(enterFrom),
-    enterTo: splitClasses(enterTo),
-    entered: splitClasses(entered),
-    leave: splitClasses(leave),
-    leaveFrom: splitClasses(leaveFrom),
-    leaveTo: splitClasses(leaveTo),
-  })
-
-  let events = useLatestValue({
-    beforeEnter,
-    afterEnter,
-    beforeLeave,
-    afterLeave,
-  })
-
   let ready = useServerHandoffComplete()
 
   useIsoMorphicEffect(() => {
@@ -394,43 +362,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   let skip = initial && !appear
   let immediate = appear && show && initial
 
-  let transitionDirection = (() => {
-    if (immediate) return 'enter'
-    if (!ready) return 'idle'
-    if (skip) return 'idle'
-    return show ? 'enter' : 'leave'
-  })() as TransitionDirection
-
-  let transitionStateFlags = useFlags(0)
-
-  let beforeEvent = useEvent((direction: TransitionDirection) => {
-    return match(direction, {
-      enter: () => {
-        transitionStateFlags.addFlag(State.Opening)
-        events.current.beforeEnter?.()
-      },
-      leave: () => {
-        transitionStateFlags.addFlag(State.Closing)
-        events.current.beforeLeave?.()
-      },
-      idle: () => {},
-    })
-  })
-
-  let afterEvent = useEvent((direction: TransitionDirection) => {
-    return match(direction, {
-      enter: () => {
-        transitionStateFlags.removeFlag(State.Opening)
-        events.current.afterEnter?.()
-      },
-      leave: () => {
-        transitionStateFlags.removeFlag(State.Closing)
-        events.current.afterLeave?.()
-      },
-      idle: () => {},
-    })
-  })
-
   let isTransitioning = useRef(false)
 
   let nesting = useNesting(() => {
@@ -443,77 +374,97 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     unregister(container)
   }, parentNesting)
 
-  useTransition({
-    container,
-    classes,
-    direction: transitionDirection,
-    onStart: useLatestValue((direction) => {
-      isTransitioning.current = true
-      nesting.onStart(container, direction, beforeEvent)
-    }),
-    onStop: useLatestValue((direction) => {
-      isTransitioning.current = false
-      nesting.onStop(container, direction, afterEvent)
+  let start = useEvent((show: boolean) => {
+    isTransitioning.current = true
+    let direction: TransitionDirection = show ? 'enter' : 'leave'
 
-      if (direction === 'leave' && !hasChildren(nesting)) {
-        // When we don't have children anymore we can safely unregister from the
-        // parent and hide ourselves.
-        setState(TreeStates.Hidden)
-        unregister(container)
-      }
-    }),
+    nesting.onStart(container, direction, (direction) => {
+      if (direction === 'enter') beforeEnter?.()
+      else if (direction === 'leave') beforeLeave?.()
+    })
   })
 
-  let theirProps = rest
-  let ourProps = { ref: transitionRef }
+  let end = useEvent((show: boolean) => {
+    let direction: TransitionDirection = show ? 'enter' : 'leave'
 
-  // Already apply the `enter` and `enterFrom` on the server if required
-  if (immediate) {
-    theirProps = {
-      ...theirProps,
-      className: classNames(rest.className, ...classes.current.enter, ...classes.current.enterFrom),
+    isTransitioning.current = false
+    nesting.onStop(container, direction, (direction) => {
+      if (direction === 'enter') afterEnter?.()
+      else if (direction === 'leave') afterLeave?.()
+    })
+
+    if (direction === 'leave' && !hasChildren(nesting)) {
+      // When we don't have children anymore we can safely unregister from the
+      // parent and hide ourselves.
+      setState(TreeStates.Hidden)
+      unregister(container)
     }
-  }
+  })
 
-  // If we are re-rendering while we are transitioning, then we should ensure that the classes are
-  // not mutated by React itself because we are handling the transition ourself.
-  else if (isTransitioning.current) {
-    // When we re-render while we are in the middle of the transition, then we should take the
-    // incoming className and the current classes that are applied.
-    //
-    // This is a bit dirty, but we need to make sure React is not applying changes to the class
-    // attribute while we are transitioning.
-    theirProps.className = classNames(rest.className, container.current?.className)
-    if (theirProps.className === '') delete theirProps.className
-  }
+  useEffect(() => {
+    if (requiresRef) return
 
-  // If we were never transitioning, or we're not transitioning anymore, then
-  // apply the `enterTo` and `leaveTo` classes as the final state.
-  else {
-    theirProps.className = classNames(
-      rest.className,
-      container.current?.className,
-      ...match(transitionDirection, {
-        enter: [...classes.current.enterTo, ...classes.current.entered],
-        leave: classes.current.leaveTo,
-        idle: [],
-      })
-    )
-    if (theirProps.className === '') delete theirProps.className
-  }
+    // When we don't transition, then we can complete the transition
+    // immediately.
+    start(show)
+    end(show)
+  }, [show, requiresRef])
 
-  let [, slot] = useTransitionData(ready, container, show)
+  let enabled = (() => {
+    // If we don't require a ref, then we can't transition.
+    if (!requiresRef) return false
+
+    // If the server handoff isn't completed yet, we can't transition.
+    if (!ready) return false
+
+    // If we start in a `show` state but without the `appear` prop, then we skip
+    // the initial transition.
+    if (skip) return false
+
+    return true
+  })()
+
+  // Ignoring the `visible` state because this doesn't handle the hierarchy. If
+  // a leave transition on the `<Transition>` is done, but there is still a
+  // child `<TransitionChild>` busy, then `visible` would be `false`, while
+  // `state` would still be `TreeStates.Visible`.
+  let [, slot] = useTransition(enabled, container, show, { start, end })
+
+  let ourProps = compact({
+    ref: transitionRef,
+    className:
+      classNames(
+        // Incoming classes if any
+        theirProps.className,
+
+        // Apply these classes immediately
+        immediate && enter,
+        immediate && enterFrom,
+
+        // Map data attributes to `enter`, `enterFrom` and `enterTo` classes
+        slot.enter && enter,
+        slot.enter && slot.closed && enterFrom,
+        slot.enter && !slot.closed && enterTo,
+
+        // Map data attributes to `leave`, `leaveFrom` and `leaveTo` classes
+        slot.leave && leave,
+        slot.leave && !slot.closed && leaveFrom,
+        slot.leave && slot.closed && leaveTo,
+
+        // Map data attributes to `entered` class (backwards compatibility)
+        !slot.transition && show && entered
+      )?.trim() || undefined, // If `className` is an empty string, we can omit it
+  })
+
+  let openClosedState = 0
+  if (state === TreeStates.Visible) openClosedState |= State.Open
+  if (state === TreeStates.Hidden) openClosedState |= State.Closed
+  if (slot.enter) openClosedState |= State.Opening
+  if (slot.leave) openClosedState |= State.Closing
 
   return (
     <NestingContext.Provider value={nesting}>
-      <OpenClosedProvider
-        value={
-          match(state, {
-            [TreeStates.Visible]: State.Open,
-            [TreeStates.Hidden]: State.Closed,
-          }) | transitionStateFlags.flags
-        }
-      >
+      <OpenClosedProvider value={openClosedState}>
         {render({
           ourProps,
           theirProps,

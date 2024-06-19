@@ -37,7 +37,7 @@ import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
+import { useTransition, type TransitionData } from '../../hooks/use-transition'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import {
   FloatingProvider,
@@ -612,7 +612,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   }
 
   let usesOpenClosedState = useOpenClosed()
-  let [visible, transitionData] = useTransitionData(
+  let [visible, transitionData] = useTransition(
     transition,
     state.itemsRef,
     usesOpenClosedState !== null

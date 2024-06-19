@@ -42,7 +42,7 @@ import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTransitionData, type TransitionData } from '../../hooks/use-transition-data'
+import { useTransition, type TransitionData } from '../../hooks/use-transition'
 import { useDisabled } from '../../internal/disabled'
 import {
   FloatingProvider,
@@ -919,7 +919,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let ownerDocument = useOwnerDocument(data.optionsRef)
 
   let usesOpenClosedState = useOpenClosed()
-  let [visible, transitionData] = useTransitionData(
+  let [visible, transitionData] = useTransition(
     transition,
     data.optionsRef,
     usesOpenClosedState !== null

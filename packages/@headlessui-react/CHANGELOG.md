@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `useId` instead of React internals (for React 19 compatibility) ([#3254](https://github.com/tailwindlabs/headlessui/pull/3254))
 - Ensure `ComboboxInput` does not sync with current value while typing ([#3259](https://github.com/tailwindlabs/headlessui/pull/3259))
 - Cancel outside click behavior on touch devices when scrolling ([#3266](https://github.com/tailwindlabs/headlessui/pull/3266))
+- Correctly apply conditional classses when using `<Transition />` and `<TransitionChild />` components ([#3303](https://github.com/tailwindlabs/headlessui/pull/3303))
 
 ### Changed
 
