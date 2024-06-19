@@ -192,10 +192,12 @@ function transition(
 
   // Prepare the transitions by ensuring that all the "before" classes are
   // applied and flushed to the DOM.
-  prepareTransition(node, {
-    prepare,
-    inFlight,
-  })
+  d.add(
+    prepareTransition(node, {
+      prepare,
+      inFlight,
+    })
+  )
 
   // This is a workaround for a bug in all major browsers.
   //
