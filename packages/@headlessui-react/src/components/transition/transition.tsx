@@ -437,7 +437,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
         // Incoming classes if any
         theirProps.className,
 
-        // Already apply these classes immediately
+        // Apply these classes immediately
         immediate && enter,
         immediate && enterFrom,
 
