@@ -61,6 +61,7 @@ it('should expose the correct components', () => {
     'MenuSeparator',
 
     'Popover',
+    'PopoverBackdrop',
     'PopoverButton',
     'PopoverGroup',
     'PopoverOverlay',

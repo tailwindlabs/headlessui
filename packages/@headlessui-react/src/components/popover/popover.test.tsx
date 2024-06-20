@@ -36,7 +36,8 @@ describe('Safe guards', () => {
   it.each([
     ['Popover.Button', Popover.Button],
     ['Popover.Panel', Popover.Panel],
-    ['Popover.Overlay', Popover.Overlay],
+    ['Popover.Backdrop', Popover.Backdrop],
+    ['Popover.Backdrop', Popover.Overlay],
   ])(
     'should error when we are using a <%s /> without a parent <Popover />',
     suppressConsoleLogs((name, Component) => {
