@@ -424,7 +424,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   }
 
   let inTransitionComponent = useOpenClosed() !== null
-  if (!inTransitionComponent && open !== undefined) {
+  if (!inTransitionComponent && open !== undefined && !rest.static) {
     return (
       <Transition show={open} transition={transition} unmount={rest.unmount}>
         <InternalDialog ref={ref} {...rest} />
