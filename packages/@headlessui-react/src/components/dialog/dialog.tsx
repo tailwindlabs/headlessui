@@ -152,39 +152,6 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
 
   let ownerDocument = useOwnerDocument(internalDialogRef)
 
-  // Validations
-  let hasOpen = props.hasOwnProperty('open') || usesOpenClosedState !== null
-  let hasOnClose = props.hasOwnProperty('onClose')
-  if (!hasOpen && !hasOnClose) {
-    throw new Error(
-      `You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component.`
-    )
-  }
-
-  if (!hasOpen) {
-    throw new Error(
-      `You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop.`
-    )
-  }
-
-  if (!hasOnClose) {
-    throw new Error(
-      `You provided an \`open\` prop to the \`Dialog\`, but forgot an \`onClose\` prop.`
-    )
-  }
-
-  if (typeof open !== 'boolean') {
-    throw new Error(
-      `You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${open}`
-    )
-  }
-
-  if (typeof onClose !== 'function') {
-    throw new Error(
-      `You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${onClose}`
-    )
-  }
-
   let dialogState = open ? DialogStates.Open : DialogStates.Closed
 
   let [state, dispatch] = useReducer(stateReducer, {
