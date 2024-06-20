@@ -80,17 +80,17 @@ export default function Home() {
               <Transition.Child
                 enter="ease-out duration-300"
                 enterFrom="opacity-0"
-                enterTo="opacity-75"
+                enterTo="opacity-100"
                 leave="ease-in duration-200"
-                leaveFrom="opacity-75"
+                leaveFrom="opacity-100"
                 leaveTo="opacity-0"
-                entered="opacity-75"
+                entered="opacity-100"
                 beforeEnter={() => console.log('[Transition.Child] [Overlay] Before enter')}
                 afterEnter={() => console.log('[Transition.Child] [Overlay] After enter')}
                 beforeLeave={() => console.log('[Transition.Child] [Overlay] Before leave')}
                 afterLeave={() => console.log('[Transition.Child] [Overlay] After leave')}
               >
-                <div className="fixed inset-0 bg-gray-500 transition-opacity" />
+                <div className="fixed inset-0 bg-gray-500/75 transition-opacity" />
               </Transition.Child>
 
               <Transition.Child
