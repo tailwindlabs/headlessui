@@ -1750,7 +1750,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
           theirProps: {
             ...theirProps,
             children: (
-              <Frozen freeze={visible && data.comboboxState === ComboboxState.Closed}>
+              <Frozen freeze={shouldFreeze}>
                 {typeof theirProps.children === 'function'
                   ? // @ts-expect-error The `children` prop now is a callback function
                     theirProps.children?.(slot)
