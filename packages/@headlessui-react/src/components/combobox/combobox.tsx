@@ -1708,10 +1708,9 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     onMouseDown: handleMouseDown,
   })
 
-  // We should freeze when the `visible` state is true and if the `visible`
-  // state and the `comboboxState` are not in sync. This means that a transition
-  // is happening and the component is still visible (for the transition effect)
-  // but closed from a functionality perspective.
+  // We should freeze when the combobox is visible but "closed". This means that
+  // a transition is currently happening and the component is still visible (for
+  // the transition) but closed from a functionality perspective.
   let shouldFreeze = visible && data.comboboxState === ComboboxState.Closed
 
   let options = useFrozenData(shouldFreeze, data.virtual?.options)
