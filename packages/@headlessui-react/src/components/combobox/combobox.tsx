@@ -54,6 +54,7 @@ import {
   type AnchorProps,
 } from '../../internal/floating'
 import { FormFields } from '../../internal/form-fields'
+import { Frozen, useFrozenData } from '../../internal/frozen'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { EnsureArray, Props } from '../../types'
@@ -1707,23 +1708,39 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     onMouseDown: handleMouseDown,
   })
 
+  // We should freeze when the `visible` state is true and if the `visible`
+  // state and the `comboboxState` are not in sync. This means that a transition
+  // is happening and the component is still visible (for the transition effect)
+  // but closed from a functionality perspective.
+  let shouldFreeze = visible && data.comboboxState === ComboboxState.Closed
+
+  let options = useFrozenData(shouldFreeze, data.virtual?.options)
+
   // Map the children in a scrollable container when virtualization is enabled
-  if (data.virtual && visible) {
+  if (data.virtual) {
+    if (options === undefined) throw new Error('Missing `options` in virtual mode')
+
     Object.assign(theirProps, {
-      // @ts-expect-error The `children` prop now is a callback function that receives `{ option }`.
-      children: <VirtualProvider slot={slot}>{theirProps.children}</VirtualProvider>,
+      children: (
+        <ComboboxDataContext.Provider
+          value={
+            options !== data.virtual.options
+              ? { ...data, virtual: { ...data.virtual, options } }
+              : data
+          }
+        >
+          {/* @ts-expect-error The `children` prop now is a callback function that receives `{option}` */}
+          <VirtualProvider slot={slot}>{theirProps.children}</VirtualProvider>
+        </ComboboxDataContext.Provider>
+      ),
     })
   }
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Combobox />
-  let [frozenValue, setFrozenValue] = useState(data.value)
-  if (
-    data.value !== frozenValue &&
-    data.comboboxState === ComboboxState.Open &&
-    data.mode !== ValueMode.Multi
-  ) {
-    setFrozenValue(data.value)
-  }
+  let frozenValue = useFrozenData(
+    !(data.comboboxState === ComboboxState.Open && data.mode !== ValueMode.Multi),
+    data.value
+  )
 
   let isSelected = useEvent((compareValue: unknown) => {
     return data.compare(frozenValue, compareValue)
@@ -1736,7 +1753,17 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       >
         {render({
           ourProps,
-          theirProps,
+          theirProps: {
+            ...theirProps,
+            children: (
+              <Frozen freeze={visible && data.comboboxState === ComboboxState.Closed}>
+                {typeof theirProps.children === 'function'
+                  ? // @ts-expect-error The `children` prop now is a callback function
+                    theirProps.children?.(slot)
+                  : theirProps.children}
+              </Frozen>
+            ),
+          },
           slot,
           defaultTag: DEFAULT_OPTIONS_TAG,
           features: OptionsRenderFeatures,
