@@ -298,7 +298,10 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   ref: Ref<HTMLElement>
 ) {
   let {
-    transition = true, // Should the current component expose transition or not
+    // Wether or not to enable transitions on the current element (by exposing
+    // transition data). When set to false, the `Transition` component still
+    // acts as a transition boundary for `TransitionChild` components.
+    transition = true,
 
     // Event "handlers"
     beforeEnter,
