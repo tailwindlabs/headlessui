@@ -31,7 +31,7 @@ import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complet
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { CloseProvider } from '../../internal/close-provider'
 import { HoistFormFields } from '../../internal/form-fields'
-import { State, useOpenClosed } from '../../internal/open-closed'
+import { ResetOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
 import { match } from '../../utils/match'
@@ -51,8 +51,6 @@ import {
 import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap'
 import { Portal, PortalGroup, useNestedPortals } from '../portal/portal'
 import { Transition, TransitionChild } from '../transition/transition'
-
-let WithTransitionWrapper = createContext(false)
 
 enum DialogStates {
   Open,
@@ -111,33 +109,9 @@ function stateReducer(state: StateDefinition, action: Actions) {
 
 // ---
 
-let DEFAULT_DIALOG_TAG = 'div' as const
-type DialogRenderPropArg = {
-  open: boolean
-}
-type DialogPropsWeControl = 'aria-describedby' | 'aria-labelledby' | 'aria-modal'
-
-let DialogRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
-
-export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = Props<
-  TTag,
-  DialogRenderPropArg,
-  DialogPropsWeControl,
-  PropsForFeatures<typeof DialogRenderFeatures> & {
-    open?: boolean
-    onClose(value: boolean): void
-    initialFocus?: MutableRefObject<HTMLElement | null>
-    role?: 'dialog' | 'alertdialog'
-    autoFocus?: boolean
-    __demoMode?: boolean
-    transition?: boolean
-  }
->
-
-function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
-  props: DialogProps<TTag>,
-  ref: Ref<HTMLElement>
-) {
+let InternalDialog = forwardRefWithAs(function InternalDialog<
+  TTag extends ElementType = typeof DEFAULT_DIALOG_TAG,
+>(props: DialogProps<TTag>, ref: Ref<HTMLElement>) {
   let internalId = useId()
   let {
     id = `headlessui-dialog-${internalId}`,
@@ -146,7 +120,6 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     initialFocus,
     role = 'dialog',
     autoFocus = true,
-    transition = false,
     __demoMode = false,
     ...theirProps
   } = props
@@ -343,19 +316,8 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     }
   }
 
-  if (transition) {
-    let { transition: _transition, open, ...rest } = props
-    return (
-      <WithTransitionWrapper.Provider value={true}>
-        <Transition show={open}>
-          <Dialog ref={ref} {...rest} />
-        </Transition>
-      </WithTransitionWrapper.Provider>
-    )
-  }
-
   return (
-    <>
+    <ResetOpenClosedProvider>
       <ForcePortalRoot force={true}>
         <Portal>
           <DialogContext.Provider value={contextBag}>
@@ -391,8 +353,50 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
       <HoistFormFields>
         <MainTreeNode />
       </HoistFormFields>
-    </>
+    </ResetOpenClosedProvider>
   )
+})
+
+// ---
+
+let DEFAULT_DIALOG_TAG = 'div' as const
+type DialogRenderPropArg = {
+  open: boolean
+}
+type DialogPropsWeControl = 'aria-describedby' | 'aria-labelledby' | 'aria-modal'
+
+let DialogRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
+
+export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = Props<
+  TTag,
+  DialogRenderPropArg,
+  DialogPropsWeControl,
+  PropsForFeatures<typeof DialogRenderFeatures> & {
+    open?: boolean
+    onClose(value: boolean): void
+    initialFocus?: MutableRefObject<HTMLElement | null>
+    role?: 'dialog' | 'alertdialog'
+    autoFocus?: boolean
+    transition?: boolean
+    __demoMode?: boolean
+  }
+>
+
+function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
+  props: DialogProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
+  let { transition = false, open, ...rest } = props
+  let inTransitionComponent = useOpenClosed() !== null
+  if (!inTransitionComponent && open !== undefined) {
+    return (
+      <Transition show={open} transition={transition}>
+        <InternalDialog ref={ref} {...rest} />
+      </Transition>
+    )
+  }
+
+  return <InternalDialog ref={ref} open={open} {...rest} />
 }
 
 // ---
@@ -404,7 +408,9 @@ type PanelRenderPropArg = {
 
 export type DialogPanelProps<TTag extends ElementType = typeof DEFAULT_PANEL_TAG> = Props<
   TTag,
-  PanelRenderPropArg
+  PanelRenderPropArg,
+  never,
+  { transition?: boolean }
 >
 
 function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
@@ -412,7 +418,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-dialog-panel-${internalId}`, ...theirProps } = props
+  let { id = `headlessui-dialog-panel-${internalId}`, transition = false, ...theirProps } = props
   let [{ dialogState }, state] = useDialogContext('Dialog.Panel')
   let panelRef = useSyncRefs(ref, state.panelRef)
 
@@ -433,20 +439,18 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     onClick: handleClick,
   }
 
-  let Wrapper = useContext(WithTransitionWrapper) ? TransitionChild : Fragment
+  let Wrapper = transition ? TransitionChild : Fragment
 
   return (
-    <WithTransitionWrapper.Provider value={false}>
-      <Wrapper>
-        {render({
-          ourProps,
-          theirProps,
-          slot,
-          defaultTag: DEFAULT_PANEL_TAG,
-          name: 'Dialog.Panel',
-        })}
-      </Wrapper>
-    </WithTransitionWrapper.Provider>
+    <Wrapper>
+      {render({
+        ourProps,
+        theirProps,
+        slot,
+        defaultTag: DEFAULT_PANEL_TAG,
+        name: 'Dialog.Panel',
+      })}
+    </Wrapper>
   )
 }
 
@@ -459,14 +463,16 @@ type BackdropRenderPropArg = {
 
 export type DialogBackdropProps<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG> = Props<
   TTag,
-  BackdropRenderPropArg
+  BackdropRenderPropArg,
+  never,
+  { transition?: boolean }
 >
 
 function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
   props: DialogBackdropProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let theirProps = props
+  let { transition = false, ...theirProps } = props
   let [{ dialogState }] = useDialogContext('Dialog.Backdrop')
 
   let slot = useMemo(
@@ -476,7 +482,7 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
 
   let ourProps = { ref }
 
-  let Wrapper = useContext(WithTransitionWrapper) ? TransitionChild : Fragment
+  let Wrapper = transition ? TransitionChild : Fragment
 
   return (
     <Wrapper>
