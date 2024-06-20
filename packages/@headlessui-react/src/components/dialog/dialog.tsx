@@ -2,6 +2,7 @@
 
 // WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/
 import React, {
+  Fragment,
   createContext,
   createRef,
   useContext,
@@ -49,6 +50,9 @@ import {
 } from '../description/description'
 import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap'
 import { Portal, PortalGroup, useNestedPortals } from '../portal/portal'
+import { Transition, TransitionChild } from '../transition/transition'
+
+let WithTransitionWrapper = createContext(false)
 
 enum DialogStates {
   Open,
@@ -126,6 +130,7 @@ export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = 
     role?: 'dialog' | 'alertdialog'
     autoFocus?: boolean
     __demoMode?: boolean
+    transition?: boolean
   }
 >
 
@@ -141,6 +146,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     initialFocus,
     role = 'dialog',
     autoFocus = true,
+    transition = false,
     __demoMode = false,
     ...theirProps
   } = props
@@ -337,6 +343,17 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     }
   }
 
+  if (transition) {
+    let { transition: _transition, open, ...rest } = props
+    return (
+      <WithTransitionWrapper.Provider value={true}>
+        <Transition show={open}>
+          <Dialog ref={ref} {...rest} />
+        </Transition>
+      </WithTransitionWrapper.Provider>
+    )
+  }
+
   return (
     <>
       <ForcePortalRoot force={true}>
@@ -416,13 +433,62 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     onClick: handleClick,
   }
 
-  return render({
-    ourProps,
-    theirProps,
-    slot,
-    defaultTag: DEFAULT_PANEL_TAG,
-    name: 'Dialog.Panel',
-  })
+  let Wrapper = useContext(WithTransitionWrapper) ? TransitionChild : Fragment
+
+  return (
+    <WithTransitionWrapper.Provider value={false}>
+      <Wrapper>
+        {render({
+          ourProps,
+          theirProps,
+          slot,
+          defaultTag: DEFAULT_PANEL_TAG,
+          name: 'Dialog.Panel',
+        })}
+      </Wrapper>
+    </WithTransitionWrapper.Provider>
+  )
+}
+
+// ---
+
+let DEFAULT_BACKDROP_TAG = 'div' as const
+type BackdropRenderPropArg = {
+  open: boolean
+}
+
+export type DialogBackdropProps<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG> = Props<
+  TTag,
+  BackdropRenderPropArg
+>
+
+function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+  props: DialogBackdropProps<TTag>,
+  ref: Ref<HTMLElement>
+) {
+  let theirProps = props
+  let [{ dialogState }] = useDialogContext('Dialog.Backdrop')
+
+  let slot = useMemo(
+    () => ({ open: dialogState === DialogStates.Open }) satisfies BackdropRenderPropArg,
+    [dialogState]
+  )
+
+  let ourProps = { ref }
+
+  let Wrapper = useContext(WithTransitionWrapper) ? TransitionChild : Fragment
+
+  return (
+    <Wrapper>
+      {render({
+        ourProps,
+        theirProps,
+        slot,
+        defaultTag: DEFAULT_BACKDROP_TAG,
+        name: 'Dialog.Backdrop',
+      })}
+    </Wrapper>
+  )
 }
 
 // ---
@@ -482,6 +548,12 @@ export interface _internal_ComponentDialogPanel extends HasDisplayName {
   ): JSX.Element
 }
 
+export interface _internal_ComponentDialogBackdrop extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+    props: DialogBackdropProps<TTag> & RefProp<typeof BackdropFn>
+  ): JSX.Element
+}
+
 export interface _internal_ComponentDialogTitle extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     props: DialogTitleProps<TTag> & RefProp<typeof TitleFn>
@@ -492,6 +564,7 @@ export interface _internal_ComponentDialogDescription extends _internal_Componen
 
 let DialogRoot = forwardRefWithAs(DialogFn) as _internal_ComponentDialog
 export let DialogPanel = forwardRefWithAs(PanelFn) as _internal_ComponentDialogPanel
+export let DialogBackdrop = forwardRefWithAs(BackdropFn) as _internal_ComponentDialogBackdrop
 export let DialogTitle = forwardRefWithAs(TitleFn) as _internal_ComponentDialogTitle
 /** @deprecated use `<Description>` instead of `<DialogDescription>` */
 export let DialogDescription = Description as _internal_ComponentDialogDescription
