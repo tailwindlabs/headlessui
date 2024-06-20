@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `immediate` prop to `<Combobox />` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
+- Add `immediate` prop to `Combobox` for immediately opening the Combobox when the `input` receives focus ([#2686](https://github.com/tailwindlabs/headlessui/pull/2686))
 - Add `virtual` prop to `Combobox` component ([#2779](https://github.com/tailwindlabs/headlessui/pull/2779))
 
 ### Fixed
@@ -34,13 +34,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Expose `disabled` state on `<Tab />` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
+- Expose `disabled` state on `Tab` component ([#2918](https://github.com/tailwindlabs/headlessui/pull/2918))
 - Prevent default behaviour when clicking outside of a `DialogPanel` ([#2919](https://github.com/tailwindlabs/headlessui/pull/2919))
-- Don’t override explicit `disabled` prop for components inside `<MenuItem>` ([#2929](https://github.com/tailwindlabs/headlessui/pull/2929))
-- Add `hidden` attribute to internal `<Hidden />` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
-- Allow setting custom `tabIndex` on the `<Switch />` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
+- Don’t override explicit `disabled` prop for components inside `MenuItem` ([#2929](https://github.com/tailwindlabs/headlessui/pull/2929))
+- Add `hidden` attribute to internal `Hidden` component when the `Features.Hidden` feature is used ([#2955](https://github.com/tailwindlabs/headlessui/pull/2955))
+- Allow setting custom `tabIndex` on the `Switch` component ([#2966](https://github.com/tailwindlabs/headlessui/pull/2966))
 - Forward `disabled` state to hidden inputs in form-like components ([#3004](https://github.com/tailwindlabs/headlessui/pull/3004))
-- Respect `selectedIndex` for controlled `<Tab/>` components ([#3037](https://github.com/tailwindlabs/headlessui/pull/3037))
+- Respect `selectedIndex` for controlled `Tab` components ([#3037](https://github.com/tailwindlabs/headlessui/pull/3037))
 
 ## [1.7.19] - 2024-02-07
 
@@ -56,12 +56,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Don't call `<Dialog>`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
+- Don't call `Dialog`'s `onClose` twice on mobile devices ([#2690](https://github.com/tailwindlabs/headlessui/pull/2690))
 - Fix Portal SSR hydration mismatches ([#2700](https://github.com/tailwindlabs/headlessui/pull/2700))
 - Ensure hidden `TabPanel` components are hidden from the accessibility tree ([#2708](https://github.com/tailwindlabs/headlessui/pull/2708))
-- Add support for `role="alertdialog"` to `<Dialog>` component ([#2709](https://github.com/tailwindlabs/headlessui/pull/2709))
+- Add support for `role="alertdialog"` to `Dialog` component ([#2709](https://github.com/tailwindlabs/headlessui/pull/2709))
 - Ensure blurring the `ComboboxInput` component closes the `Combobox` ([#2712](https://github.com/tailwindlabs/headlessui/pull/2712))
-- Allow `<button>` to be in nested components in `<PopoverButton>` ([#2715](https://github.com/tailwindlabs/headlessui/pull/2715))
+- Allow `button` to be in nested components in `PopoverButton` ([#2715](https://github.com/tailwindlabs/headlessui/pull/2715))
 - Don't overwrite user-defined template refs when rendering ([#2720](https://github.com/tailwindlabs/headlessui/pull/2720))
 - Fix missing `data-headlessui-state` attribute when `as="template"` ([#2787](https://github.com/tailwindlabs/headlessui/pull/2787))
 - Fix VoiceOver bug for `Listbox` component in Chrome ([#2824](https://github.com/tailwindlabs/headlessui/pull/2824))
@@ -75,9 +75,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix form elements for uncontrolled `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))
 - Use correct value when resetting `<Listbox multiple>` and `<Combobox multiple>` ([#2626](https://github.com/tailwindlabs/headlessui/pull/2626))
-- Render `<MainTreeNode />` in `PopoverGroup` component only ([#2634](https://github.com/tailwindlabs/headlessui/pull/2634))
+- Render `MainTreeNode` in `PopoverGroup` component only ([#2634](https://github.com/tailwindlabs/headlessui/pull/2634))
 - Disable smooth scrolling when opening/closing `Dialog` components on iOS ([#2635](https://github.com/tailwindlabs/headlessui/pull/2635))
-- Don't assume `<Tab />` components are available when setting the next index ([#2642](https://github.com/tailwindlabs/headlessui/pull/2642))
+- Don't assume `Tab` components are available when setting the next index ([#2642](https://github.com/tailwindlabs/headlessui/pull/2642))
 - Improve SSR of the `Disclosure` component ([#2645](https://github.com/tailwindlabs/headlessui/pull/2645))
 - Fix incorrectly focused `ComboboxInput` component on page load ([#2654](https://github.com/tailwindlabs/headlessui/pull/2654))
 - Improve resetting values when using the `nullable` prop on the `Combobox` component ([#2660](https://github.com/tailwindlabs/headlessui/pull/2660))
@@ -116,9 +116,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix focus styles showing up when using the mouse ([#2347](https://github.com/tailwindlabs/headlessui/pull/2347))
 - Disable `ComboboxInput` when its `Combobox` is disabled ([#2375](https://github.com/tailwindlabs/headlessui/pull/2375))
 - Add `FocusTrap` event listeners once document has loaded ([#2389](https://github.com/tailwindlabs/headlessui/pull/2389))
-- Don't scroll-lock `<Dialog>` when wrapping transition isn't showing ([#2422](https://github.com/tailwindlabs/headlessui/pull/2422))
+- Don't scroll-lock `Dialog` when wrapping transition isn't showing ([#2422](https://github.com/tailwindlabs/headlessui/pull/2422))
 - Ensure DOM `ref` is properly handled in the `RadioGroup` component ([#2424](https://github.com/tailwindlabs/headlessui/pull/2424))
-- Correctly handle IME composition in `<Combobox.Input>` ([#2426](https://github.com/tailwindlabs/headlessui/pull/2426))
+- Correctly handle IME composition in `Combobox.Input` ([#2426](https://github.com/tailwindlabs/headlessui/pull/2426))
 
 ### Added
 
@@ -128,7 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Enable native label behavior for `<Switch>` where possible ([#2265](https://github.com/tailwindlabs/headlessui/pull/2265))
+- Enable native label behavior for `Switch` where possible ([#2265](https://github.com/tailwindlabs/headlessui/pull/2265))
 - Allow root containers from the `Dialog` component in the `FocusTrap` component ([#2322](https://github.com/tailwindlabs/headlessui/pull/2322))
 - Cleanup internal TypeScript types ([#2329](https://github.com/tailwindlabs/headlessui/pull/2329))
 - Fix restore focus to buttons in Safari, when `Dialog` component closes ([#2326](https://github.com/tailwindlabs/headlessui/pull/2326))
@@ -200,7 +200,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Reset form-like components when the parent `<form>` resets ([#2004](https://github.com/tailwindlabs/headlessui/pull/2004))
+- Reset form-like components when the parent `form` resets ([#2004](https://github.com/tailwindlabs/headlessui/pull/2004))
 - Ensure Popover doesn't crash when `focus` is going to `window` ([#2019](https://github.com/tailwindlabs/headlessui/pull/2019))
 - Ensure `shift+home` and `shift+end` works as expected in the `ComboboxInput` component ([#2024](https://github.com/tailwindlabs/headlessui/pull/2024))
 - Improve syncing of the `ComboboxInput` value ([#2042](https://github.com/tailwindlabs/headlessui/pull/2042))
@@ -218,7 +218,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expose `close` function for `Menu` and `MenuItem` components ([#1897](https://github.com/tailwindlabs/headlessui/pull/1897))
 - Fix `useOutsideClick`, add improvements for ShadowDOM ([#1914](https://github.com/tailwindlabs/headlessui/pull/1914))
 - Prevent default slot warning when using a component for `as` prop ([#1915](https://github.com/tailwindlabs/headlessui/pull/1915))
-- Fire `<ComboboxInput>`'s `@change` handler when changing the value internally ([#1916](https://github.com/tailwindlabs/headlessui/pull/1916))
+- Fire `ComboboxInput`'s `@change` handler when changing the value internally ([#1916](https://github.com/tailwindlabs/headlessui/pull/1916))
 
 ## [1.7.3] - 2022-09-30
 
@@ -264,9 +264,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve outside click on Safari iOS ([#1712](https://github.com/tailwindlabs/headlessui/pull/1712))
 - Improve event handler merging ([#1715](https://github.com/tailwindlabs/headlessui/pull/1715))
 - Fix incorrect scrolling to the bottom when opening a `Dialog` ([#1716](https://github.com/tailwindlabs/headlessui/pull/1716))
-- Don't overwrite `element.focus()` on `<PopoverPanel>` ([#1719](https://github.com/tailwindlabs/headlessui/pull/1719))
+- Don't overwrite `element.focus()` on `PopoverPanel` ([#1719](https://github.com/tailwindlabs/headlessui/pull/1719))
 - Improve `Combobox` re-opening keyboard issue on mobile ([#1732](https://github.com/tailwindlabs/headlessui/pull/1732))
-- Only select the active option when using "singular" mode when pressing `<tab>` in the `Combobox` component ([#1750](https://github.com/tailwindlabs/headlessui/pull/1750))
+- Only select the active option when using "singular" mode when pressing `tab` in the `Combobox` component ([#1750](https://github.com/tailwindlabs/headlessui/pull/1750))
 - Only restore focus to the `MenuButton` if necessary when activating a `MenuOption` ([#1782](https://github.com/tailwindlabs/headlessui/pull/1782))
 - Don't scroll when wrapping around in focus trap ([#1789](https://github.com/tailwindlabs/headlessui/pull/1789))
 - Improve accessibility when announcing `ListboxOption` and `ComboboxOption` components ([#1812](https://github.com/tailwindlabs/headlessui/pull/1812))
@@ -286,15 +286,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix getting Vue dom elements ([#1610](https://github.com/tailwindlabs/headlessui/pull/1610))
 - Ensure `CMD`+`Backspace` works in nullable mode for `Combobox` component ([#1617](https://github.com/tailwindlabs/headlessui/pull/1617))
 - Properly merge incoming props with own props ([#1651](https://github.com/tailwindlabs/headlessui/pull/1651))
-- Ensure `PopoverPanel` can be used inside `<transition>` ([#1653](https://github.com/tailwindlabs/headlessui/pull/1653))
+- Ensure `PopoverPanel` can be used inside `transition` ([#1653](https://github.com/tailwindlabs/headlessui/pull/1653))
 
 ## [1.6.5] - 2022-06-20
 
 ### Fixed
 
-- Support `<slot>` children when using `as="template"` ([#1548](https://github.com/tailwindlabs/headlessui/pull/1548))
+- Support `slot` children when using `as="template"` ([#1548](https://github.com/tailwindlabs/headlessui/pull/1548))
 - Improve outside click of `Dialog` component ([#1546](https://github.com/tailwindlabs/headlessui/pull/1546))
-- Detect outside clicks from within `<iframe>` elements ([#1552](https://github.com/tailwindlabs/headlessui/pull/1552))
+- Detect outside clicks from within `iframe` elements ([#1552](https://github.com/tailwindlabs/headlessui/pull/1552))
 - Only render the `Dialog` on the client ([#1566](https://github.com/tailwindlabs/headlessui/pull/1566))
 - Improve Combobox input cursor position ([#1574](https://github.com/tailwindlabs/headlessui/pull/1574))
 - Fix scrolling issue in `Tab` component when using arrow keys ([#1584](https://github.com/tailwindlabs/headlessui/pull/1584))
