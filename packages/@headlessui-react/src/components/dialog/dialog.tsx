@@ -390,7 +390,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     )
   }
 
-  let inTransitionComponent = useOpenClosed() !== null
+  let inTransitionComponent = usesOpenClosedState !== null
   if (!inTransitionComponent && open !== undefined && !rest.static) {
     return (
       <Transition show={open} transition={transition} unmount={rest.unmount}>
