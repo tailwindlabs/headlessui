@@ -119,7 +119,7 @@ export type TransitionChildProps<TTag extends ReactTag> = Props<
   TransitionChildPropsWeControl,
   PropsForFeatures<typeof TransitionChildRenderFeatures> &
     TransitionClasses &
-    TransitionEvents & { appear?: boolean }
+    TransitionEvents & { transition?: boolean; appear?: boolean }
 >
 
 function useTransitionContext() {
@@ -298,6 +298,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   ref: Ref<HTMLElement>
 ) {
   let {
+    transition = true, // Should the current component expose transition or not
+
     // Event "handlers"
     beforeEnter,
     afterEnter,
@@ -402,15 +404,19 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   })
 
   useEffect(() => {
-    if (requiresRef) return
+    if (requiresRef && transition) return
 
     // When we don't transition, then we can complete the transition
     // immediately.
     start(show)
     end(show)
-  }, [show, requiresRef])
+  }, [show, requiresRef, transition])
 
   let enabled = (() => {
+    // Should the current component transition? If not, then we can still
+    // orchestrate the child transitions.
+    if (!transition) return false
+
     // If we don't require a ref, then we can't transition.
     if (!requiresRef) return false
 
