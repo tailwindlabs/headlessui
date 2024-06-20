@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add ability to render multiple `<Dialog />` components at once (without nesting them) ([#3242](https://github.com/tailwindlabs/headlessui/pull/3242))
 - Add CSS based transitions using `data-*` attributes ([#3273](https://github.com/tailwindlabs/headlessui/pull/3273), [#3285](https://github.com/tailwindlabs/headlessui/pull/3285))
+- Add a `transition` prop to `<Dialog />` component ([#3307](https://github.com/tailwindlabs/headlessui/pull/3307))
+- Re-introduce `<DialogBackdrop />` component ([#3307](https://github.com/tailwindlabs/headlessui/pull/3307))
 
 ### Fixed
 
@@ -21,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `useId` instead of React internals (for React 19 compatibility) ([#3254](https://github.com/tailwindlabs/headlessui/pull/3254))
 - Ensure `ComboboxInput` does not sync with current value while typing ([#3259](https://github.com/tailwindlabs/headlessui/pull/3259))
 - Cancel outside click behavior on touch devices when scrolling ([#3266](https://github.com/tailwindlabs/headlessui/pull/3266))
-- Correctly apply conditional classses when using `<Transition />` and `<TransitionChild />` components ([#3303](https://github.com/tailwindlabs/headlessui/pull/3303))
+- Correctly apply conditional classes when using `<Transition />` and `<TransitionChild />` components ([#3303](https://github.com/tailwindlabs/headlessui/pull/3303))
 - Improve UX by freezing `ComboboxOptions` while closing ([#3304](https://github.com/tailwindlabs/headlessui/pull/3304))
 
 ### Changed
