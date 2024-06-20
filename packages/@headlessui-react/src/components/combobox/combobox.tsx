@@ -1715,6 +1715,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let options = useFrozenData(shouldFreeze, data.virtual?.options)
 
+  // Frozen state, the selected value will only update visually when the user re-opens the <Combobox />
+  let frozenValue = useFrozenData(shouldFreeze, data.value)
+
+  let isSelected = useEvent((compareValue) => data.compare(frozenValue, compareValue))
+
   // Map the children in a scrollable container when virtualization is enabled
   if (data.virtual) {
     if (options === undefined) throw new Error('Missing `options` in virtual mode')
@@ -1734,16 +1739,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       ),
     })
   }
-
-  // Frozen state, the selected value will only update visually when the user re-opens the <Combobox />
-  let frozenValue = useFrozenData(
-    !(data.comboboxState === ComboboxState.Open && data.mode !== ValueMode.Multi),
-    data.value
-  )
-
-  let isSelected = useEvent((compareValue: unknown) => {
-    return data.compare(frozenValue, compareValue)
-  })
 
   return (
     <Portal enabled={portal ? props.static || visible : false}>
