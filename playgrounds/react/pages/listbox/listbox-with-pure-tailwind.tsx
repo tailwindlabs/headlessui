@@ -73,12 +73,12 @@ export default function Home() {
                       <Listbox.Option
                         key={name}
                         value={name}
-                        className="ui-active:bg-indigo-600 ui-active:text-white ui-not-active:text-gray-900 relative cursor-default select-none py-2 pl-3 pr-9 focus:outline-none"
+                        className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 focus:outline-none data-[active]:bg-indigo-600 data-[active]:text-white"
                       >
-                        <span className="ui-selected:font-semibold ui-not-selected:font-normal block truncate">
+                        <span className="block truncate font-normal group-data-[selected]:font-semibold">
                           {name}
                         </span>
-                        <span className="ui-not-selected:hidden ui-selected:flex ui-active:text-white ui-not-active:text-indigo-600 absolute inset-y-0 right-0 items-center pr-4">
+                        <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-[selected]:flex group-data-[active]:text-white">
                           <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path
                               fillRule="evenodd"
