@@ -104,101 +104,107 @@ function Example({ virtual = true, data, initial }: { virtual?: boolean; data; i
                 </Combobox.Button>
               </span>
 
-              <div className="absolute mt-1 w-full rounded-md bg-white shadow-lg">
-                {virtual ? (
-                  <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
-                    {({ option }) => {
-                      return (
-                        <Combobox.Option
-                          value={option}
-                          className={({ active }) => {
-                            return classNames(
-                              'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
-                              active ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                            )
-                          }}
-                        >
-                          {({ active, selected }) => (
-                            <>
+              {virtual ? (
+                <Combobox.Options
+                  transition
+                  anchor="bottom start"
+                  className="w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-1000 [--anchor-gap:theme(spacing.1)] [--anchor-max-height:theme(spacing.60)] focus:outline-none data-[closed]:opacity-0 sm:text-sm sm:leading-5"
+                >
+                  {({ option }) => {
+                    return (
+                      <Combobox.Option
+                        value={option}
+                        className={({ active }) => {
+                          return classNames(
+                            'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                            active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                          )
+                        }}
+                      >
+                        {({ active, selected }) => (
+                          <>
+                            <span
+                              className={classNames(
+                                'block truncate',
+                                selected ? 'font-semibold' : 'font-normal'
+                              )}
+                            >
+                              {option as any}
+                            </span>
+                            {selected && (
                               <span
                                 className={classNames(
-                                  'block truncate',
-                                  selected ? 'font-semibold' : 'font-normal'
+                                  'absolute inset-y-0 right-0 flex items-center pr-4',
+                                  active ? 'text-white' : 'text-indigo-600'
                                 )}
                               >
-                                {option as any}
+                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
                               </span>
-                              {selected && (
-                                <span
-                                  className={classNames(
-                                    'absolute inset-y-0 right-0 flex items-center pr-4',
-                                    active ? 'text-white' : 'text-indigo-600'
-                                  )}
-                                >
-                                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </span>
+                            )}
+                          </>
+                        )}
+                      </Combobox.Option>
+                    )
+                  }}
+                </Combobox.Options>
+              ) : (
+                <Combobox.Options
+                  transition
+                  anchor="bottom start"
+                  className="w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-1000 [--anchor-gap:theme(spacing.1)] [--anchor-max-height:theme(spacing.60)] focus:outline-none data-[closed]:opacity-0 sm:text-sm sm:leading-5"
+                >
+                  {timezones.map((timezone, idx) => {
+                    return (
+                      <Combobox.Option
+                        key={timezone}
+                        order={virtual ? idx : undefined}
+                        value={timezone}
+                        className={({ active }) => {
+                          return classNames(
+                            'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
+                            active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                          )
+                        }}
+                      >
+                        {({ active, selected }) => (
+                          <>
+                            <span
+                              className={classNames(
+                                'block truncate',
+                                selected ? 'font-semibold' : 'font-normal'
                               )}
-                            </>
-                          )}
-                        </Combobox.Option>
-                      )
-                    }}
-                  </Combobox.Options>
-                ) : (
-                  <Combobox.Options className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5">
-                    {timezones.map((timezone, idx) => {
-                      return (
-                        <Combobox.Option
-                          key={timezone}
-                          order={virtual ? idx : undefined}
-                          value={timezone}
-                          className={({ active }) => {
-                            return classNames(
-                              'relative w-full cursor-default select-none py-2 pl-3 pr-9 focus:outline-none',
-                              active ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                            )
-                          }}
-                        >
-                          {({ active, selected }) => (
-                            <>
+                            >
+                              {timezone}
+                            </span>
+                            {selected && (
                               <span
                                 className={classNames(
-                                  'block truncate',
-                                  selected ? 'font-semibold' : 'font-normal'
+                                  'absolute inset-y-0 right-0 flex items-center pr-4',
+                                  active ? 'text-white' : 'text-indigo-600'
                                 )}
                               >
-                                {timezone}
+                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
                               </span>
-                              {selected && (
-                                <span
-                                  className={classNames(
-                                    'absolute inset-y-0 right-0 flex items-center pr-4',
-                                    active ? 'text-white' : 'text-indigo-600'
-                                  )}
-                                >
-                                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </Combobox.Option>
-                      )
-                    })}
-                  </Combobox.Options>
-                )}
-              </div>
+                            )}
+                          </>
+                        )}
+                      </Combobox.Option>
+                    )
+                  })}
+                </Combobox.Options>
+              )}
             </div>
           </Combobox>
         </div>
