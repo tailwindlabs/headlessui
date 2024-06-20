@@ -5,18 +5,28 @@ import { classNames } from '../../utils/class-names'
 
 export default function Home() {
   let [isOpen, setIsOpen] = useState(false)
-  let [transition, setTransition] = useState(true)
+  let [transitionBackdrop, setTransitionBackdrop] = useState(true)
+  let [transitionPanel, setTransitionPanel] = useState(true)
 
   return (
     <>
       <div className="flex gap-4 p-12">
         <Button onClick={() => setIsOpen((v) => !v)}>Toggle!</Button>
-        <Button onClick={() => setTransition((v) => !v)}>
-          <span>Toggle transition</span>
+        <Button onClick={() => setTransitionBackdrop((v) => !v)}>
+          <span>Toggle transition backdrop</span>
           <span
             className={classNames(
               'ml-2 inline-flex size-4 rounded-md',
-              transition ? 'bg-green-500' : 'bg-red-500'
+              transitionBackdrop ? 'bg-green-500' : 'bg-red-500'
+            )}
+          ></span>
+        </Button>
+        <Button onClick={() => setTransitionPanel((v) => !v)}>
+          <span>Toggle transition panel</span>
+          <span
+            className={classNames(
+              'ml-2 inline-flex size-4 rounded-md',
+              transitionPanel ? 'bg-green-500' : 'bg-red-500'
             )}
           ></span>
         </Button>
@@ -24,13 +34,18 @@ export default function Home() {
 
       <Dialog
         open={isOpen}
-        transition={transition}
         onClose={() => setIsOpen(false)}
-        className="relative z-50"
+        className="relative z-50 duration-500 data-[closed]:opacity-0"
       >
-        <DialogBackdrop className="fixed inset-0 bg-black/30 duration-500 ease-out data-[closed]:opacity-0" />
+        <DialogBackdrop
+          transition={transitionBackdrop}
+          className="fixed inset-0 bg-black/30 duration-500 ease-out data-[closed]:opacity-0"
+        />
         <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="w-full max-w-lg space-y-4 bg-white p-12 duration-500 ease-out data-[closed]:scale-95 data-[closed]:opacity-0">
+          <DialogPanel
+            transition={transitionPanel}
+            className="w-full max-w-lg space-y-4 bg-white p-12 duration-500 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+          >
             <h1 className="text-2xl font-bold">Dialog</h1>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pulvinar, nunc nec

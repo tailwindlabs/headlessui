@@ -47,7 +47,12 @@ import {
   type AnchorProps,
 } from '../../internal/floating'
 import { Hidden, HiddenFeatures } from '../../internal/hidden'
-import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import {
+  OpenClosedProvider,
+  ResetOpenClosedProvider,
+  State,
+  useOpenClosed,
+} from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import {
@@ -1043,44 +1048,46 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   })
 
   return (
-    <PopoverPanelContext.Provider value={id}>
-      <PopoverAPIContext.Provider value={{ close, isPortalled }}>
-        <Portal enabled={portal ? props.static || visible : false}>
-          {visible && isPortalled && (
-            <Hidden
-              id={beforePanelSentinelId}
-              ref={state.beforePanelSentinel}
-              features={HiddenFeatures.Focusable}
-              data-headlessui-focus-guard
-              as="button"
-              type="button"
-              onFocus={handleBeforeFocus}
-            />
-          )}
-          {render({
-            mergeRefs,
-            ourProps,
-            theirProps,
-            slot,
-            defaultTag: DEFAULT_PANEL_TAG,
-            features: PanelRenderFeatures,
-            visible,
-            name: 'Popover.Panel',
-          })}
-          {visible && isPortalled && (
-            <Hidden
-              id={afterPanelSentinelId}
-              ref={state.afterPanelSentinel}
-              features={HiddenFeatures.Focusable}
-              data-headlessui-focus-guard
-              as="button"
-              type="button"
-              onFocus={handleAfterFocus}
-            />
-          )}
-        </Portal>
-      </PopoverAPIContext.Provider>
-    </PopoverPanelContext.Provider>
+    <ResetOpenClosedProvider>
+      <PopoverPanelContext.Provider value={id}>
+        <PopoverAPIContext.Provider value={{ close, isPortalled }}>
+          <Portal enabled={portal ? props.static || visible : false}>
+            {visible && isPortalled && (
+              <Hidden
+                id={beforePanelSentinelId}
+                ref={state.beforePanelSentinel}
+                features={HiddenFeatures.Focusable}
+                data-headlessui-focus-guard
+                as="button"
+                type="button"
+                onFocus={handleBeforeFocus}
+              />
+            )}
+            {render({
+              mergeRefs,
+              ourProps,
+              theirProps,
+              slot,
+              defaultTag: DEFAULT_PANEL_TAG,
+              features: PanelRenderFeatures,
+              visible,
+              name: 'Popover.Panel',
+            })}
+            {visible && isPortalled && (
+              <Hidden
+                id={afterPanelSentinelId}
+                ref={state.afterPanelSentinel}
+                features={HiddenFeatures.Focusable}
+                data-headlessui-focus-guard
+                as="button"
+                type="button"
+                onFocus={handleAfterFocus}
+              />
+            )}
+          </Portal>
+        </PopoverAPIContext.Provider>
+      </PopoverPanelContext.Provider>
+    </ResetOpenClosedProvider>
   )
 }
 

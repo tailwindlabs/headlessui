@@ -26,7 +26,12 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTransition, type TransitionData } from '../../hooks/use-transition'
 import { CloseProvider } from '../../internal/close-provider'
-import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import {
+  OpenClosedProvider,
+  ResetOpenClosedProvider,
+  State,
+  useOpenClosed,
+} from '../../internal/open-closed'
 import type { Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
 import { match } from '../../utils/match'
@@ -480,18 +485,20 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }
 
   return (
-    <DisclosurePanelContext.Provider value={state.panelId}>
-      {render({
-        mergeRefs,
-        ourProps,
-        theirProps,
-        slot,
-        defaultTag: DEFAULT_PANEL_TAG,
-        features: PanelRenderFeatures,
-        visible,
-        name: 'Disclosure.Panel',
-      })}
-    </DisclosurePanelContext.Provider>
+    <ResetOpenClosedProvider>
+      <DisclosurePanelContext.Provider value={state.panelId}>
+        {render({
+          mergeRefs,
+          ourProps,
+          theirProps,
+          slot,
+          defaultTag: DEFAULT_PANEL_TAG,
+          features: PanelRenderFeatures,
+          visible,
+          name: 'Disclosure.Panel',
+        })}
+      </DisclosurePanelContext.Provider>
+    </ResetOpenClosedProvider>
   )
 }
 
