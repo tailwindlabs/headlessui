@@ -12,7 +12,6 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  useState,
   type CSSProperties,
   type ElementType,
   type MutableRefObject,
@@ -54,6 +53,7 @@ import {
   type AnchorPropsWithSelection,
 } from '../../internal/floating'
 import { FormFields } from '../../internal/form-fields'
+import { useFrozenData } from '../../internal/frozen'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { EnsureArray, Props } from '../../types'
@@ -1116,14 +1116,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   })
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
-  let [frozenValue, setFrozenValue] = useState(data.value)
-  if (
-    data.value !== frozenValue &&
-    data.listboxState === ListboxStates.Open &&
-    data.mode !== ValueMode.Multi
-  ) {
-    setFrozenValue(data.value)
-  }
+  let frozenValue = useFrozenData(
+    !(data.listboxState === ListboxStates.Open && data.mode !== ValueMode.Multi),
+    data.value
+  )
+
   let isSelected = useEvent((compareValue: unknown) => {
     return data.compare(frozenValue, compareValue)
   })
