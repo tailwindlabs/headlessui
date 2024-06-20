@@ -1326,7 +1326,7 @@ export function getPopoverPanel(): HTMLElement | null {
 }
 
 export function getPopoverOverlay(): HTMLElement | null {
-  return document.querySelector('[id^="headlessui-popover-overlay-"]')
+  return document.querySelector('[id^="headlessui-popover-backdrop-"]')
 }
 
 // ---

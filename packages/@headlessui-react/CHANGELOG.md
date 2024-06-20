@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add CSS based transitions using `data-*` attributes ([#3273](https://github.com/tailwindlabs/headlessui/pull/3273), [#3285](https://github.com/tailwindlabs/headlessui/pull/3285))
 - Add a `transition` prop to `<Dialog />` component ([#3307](https://github.com/tailwindlabs/headlessui/pull/3307))
 - Re-introduce `<DialogBackdrop />` component ([#3307](https://github.com/tailwindlabs/headlessui/pull/3307))
+- Added `PopoverBackdrop` component to replace `PopoverOverlay` ([#3308](https://github.com/tailwindlabs/headlessui/pull/3308))
 
 ### Fixed
 

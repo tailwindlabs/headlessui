@@ -724,35 +724,42 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
 // ---
 
-let DEFAULT_OVERLAY_TAG = 'div' as const
-type OverlayRenderPropArg = {
+let DEFAULT_BACKDROP_TAG = 'div' as const
+type BackdropRenderPropArg = {
   open: boolean
 } & TransitionData
-type OverlayPropsWeControl = 'aria-hidden'
+type BackdropPropsWeControl = 'aria-hidden'
 
-let OverlayRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
+let BackdropRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
-export type PopoverOverlayProps<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG> = Props<
+export type PopoverBackdropProps<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG> = Props<
   TTag,
-  OverlayRenderPropArg,
-  OverlayPropsWeControl,
-  { transition?: boolean } & PropsForFeatures<typeof OverlayRenderFeatures>
+  BackdropRenderPropArg,
+  BackdropPropsWeControl,
+  { transition?: boolean } & PropsForFeatures<typeof BackdropRenderFeatures>
 >
 
-function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
-  props: PopoverOverlayProps<TTag>,
+export type PopoverOverlayProps<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG> =
+  PopoverBackdropProps<TTag>
+
+function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+  props: PopoverBackdropProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
   let internalId = useId()
-  let { id = `headlessui-popover-overlay-${internalId}`, transition = false, ...theirProps } = props
-  let [{ popoverState }, dispatch] = usePopoverContext('Popover.Overlay')
-  let internalOverlayRef = useRef<HTMLElement | null>(null)
-  let overlayRef = useSyncRefs(ref, internalOverlayRef)
+  let {
+    id = `headlessui-popover-backdrop-${internalId}`,
+    transition = false,
+    ...theirProps
+  } = props
+  let [{ popoverState }, dispatch] = usePopoverContext('Popover.Backdrop')
+  let internalBackdropRef = useRef<HTMLElement | null>(null)
+  let backdropRef = useSyncRefs(ref, internalBackdropRef)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    internalOverlayRef,
+    internalBackdropRef,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : popoverState === PopoverStates.Open
@@ -767,11 +774,11 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
     return {
       open: popoverState === PopoverStates.Open,
       ...transitionData,
-    } satisfies OverlayRenderPropArg
+    } satisfies BackdropRenderPropArg
   }, [popoverState, transitionData])
 
   let ourProps = {
-    ref: overlayRef,
+    ref: backdropRef,
     id,
     'aria-hidden': true,
     onClick: handleClick,
@@ -781,10 +788,10 @@ function OverlayFn<TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
     ourProps,
     theirProps,
     slot,
-    defaultTag: DEFAULT_OVERLAY_TAG,
-    features: OverlayRenderFeatures,
+    defaultTag: DEFAULT_BACKDROP_TAG,
+    features: BackdropRenderFeatures,
     visible,
-    name: 'Popover.Overlay',
+    name: 'Popover.Backdrop',
   })
 }
 
@@ -1187,9 +1194,9 @@ export interface _internal_ComponentPopoverButton extends HasDisplayName {
   ): JSX.Element
 }
 
-export interface _internal_ComponentPopoverOverlay extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_OVERLAY_TAG>(
-    props: PopoverOverlayProps<TTag> & RefProp<typeof OverlayFn>
+export interface _internal_ComponentPopoverBackdrop extends HasDisplayName {
+  <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
+    props: PopoverBackdropProps<TTag> & RefProp<typeof BackdropFn>
   ): JSX.Element
 }
 
@@ -1207,13 +1214,17 @@ export interface _internal_ComponentPopoverGroup extends HasDisplayName {
 
 let PopoverRoot = forwardRefWithAs(PopoverFn) as _internal_ComponentPopover
 export let PopoverButton = forwardRefWithAs(ButtonFn) as _internal_ComponentPopoverButton
-export let PopoverOverlay = forwardRefWithAs(OverlayFn) as _internal_ComponentPopoverOverlay
+/** @deprecated use `<PopoverBackdrop>` instead of `<PopoverOverlay>` */
+export let PopoverOverlay = forwardRefWithAs(BackdropFn) as _internal_ComponentPopoverBackdrop
+export let PopoverBackdrop = forwardRefWithAs(BackdropFn) as _internal_ComponentPopoverBackdrop
 export let PopoverPanel = forwardRefWithAs(PanelFn) as _internal_ComponentPopoverPanel
 export let PopoverGroup = forwardRefWithAs(GroupFn) as _internal_ComponentPopoverGroup
 
 export let Popover = Object.assign(PopoverRoot, {
   /** @deprecated use `<PopoverButton>` instead of `<Popover.Button>` */
   Button: PopoverButton,
+  /** @deprecated use `<PopoverBackdrop>` instead of `<Popover.Backdrop>` */
+  Backdrop: PopoverBackdrop,
   /** @deprecated use `<PopoverOverlay>` instead of `<Popover.Overlay>` */
   Overlay: PopoverOverlay,
   /** @deprecated use `<PopoverPanel>` instead of `<Popover.Panel>` */
