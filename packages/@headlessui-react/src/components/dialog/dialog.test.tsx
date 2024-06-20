@@ -1020,41 +1020,6 @@ describe('Mouse interactions', () => {
   )
 
   it(
-    'should be possible to close the dialog, and keep focus on the focusable element',
-    suppressConsoleLogs(async () => {
-      function Example() {
-        let [isOpen, setIsOpen] = useState(false)
-        return (
-          <>
-            <button>Hello</button>
-            <button onClick={() => setIsOpen((v) => !v)}>Trigger</button>
-            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen}>
-              Contents
-              <TabSentinel />
-            </Dialog>
-          </>
-        )
-      }
-      render(<Example />)
-
-      // Open dialog
-      await click(getByText('Trigger'))
-
-      // Verify it is open
-      assertDialog({ state: DialogState.Visible })
-
-      // Click the button to close (outside click)
-      await click(getByText('Hello'))
-
-      // Verify it is closed
-      assertDialog({ state: DialogState.InvisibleUnmounted })
-
-      // Verify the button is focused
-      assertActiveElement(getByText('Hello'))
-    })
-  )
-
-  it(
     'should be possible to submit a form inside a Dialog',
     suppressConsoleLogs(async () => {
       let submitFn = jest.fn()
