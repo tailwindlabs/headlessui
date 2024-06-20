@@ -387,6 +387,42 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let { transition = false, open, ...rest } = props
+
+  // Validations
+  let usesOpenClosedState = useOpenClosed()
+  let hasOpen = props.hasOwnProperty('open') || usesOpenClosedState !== null
+  let hasOnClose = props.hasOwnProperty('onClose')
+
+  if (!hasOpen && !hasOnClose) {
+    throw new Error(
+      `You have to provide an \`open\` and an \`onClose\` prop to the \`Dialog\` component.`
+    )
+  }
+
+  if (!hasOpen) {
+    throw new Error(
+      `You provided an \`onClose\` prop to the \`Dialog\`, but forgot an \`open\` prop.`
+    )
+  }
+
+  if (!hasOnClose) {
+    throw new Error(
+      `You provided an \`open\` prop to the \`Dialog\`, but forgot an \`onClose\` prop.`
+    )
+  }
+
+  if (!usesOpenClosedState && typeof props.open !== 'boolean') {
+    throw new Error(
+      `You provided an \`open\` prop to the \`Dialog\`, but the value is not a boolean. Received: ${props.open}`
+    )
+  }
+
+  if (typeof props.onClose !== 'function') {
+    throw new Error(
+      `You provided an \`onClose\` prop to the \`Dialog\`, but the value is not a function. Received: ${props.onClose}`
+    )
+  }
+
   let inTransitionComponent = useOpenClosed() !== null
   if (!inTransitionComponent && open !== undefined) {
     return (
