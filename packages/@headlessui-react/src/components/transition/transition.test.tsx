@@ -374,7 +374,6 @@ describe('Setup API', () => {
            <div
              class="foo1
          foo2 leave"
-             data-headlessui-state="leave transition"
              data-leave=""
              data-transition=""
              style=""

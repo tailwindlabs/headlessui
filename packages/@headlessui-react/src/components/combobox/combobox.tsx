@@ -41,7 +41,7 @@ import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTransition, type TransitionData } from '../../hooks/use-transition'
+import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import { useWatch } from '../../hooks/use-watch'
 import { useDisabled } from '../../internal/disabled'
@@ -1564,7 +1564,7 @@ let DEFAULT_OPTIONS_TAG = 'div' as const
 type OptionsRenderPropArg = {
   open: boolean
   option: unknown
-} & TransitionData
+}
 type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role' | 'tabIndex'
 
 let OptionsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -1665,9 +1665,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     return {
       open: data.comboboxState === ComboboxState.Open,
       option: undefined,
-      ...transitionData,
     } satisfies OptionsRenderPropArg
-  }, [data.comboboxState, transitionData])
+  }, [data.comboboxState])
 
   // When the user scrolls **using the mouse** (so scroll event isn't appropriate)
   // we want to make sure that the current activation trigger is set to pointer.
@@ -1706,6 +1705,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     } as CSSProperties,
     onWheel: data.activationTrigger === ActivationTrigger.Pointer ? undefined : handleWheel,
     onMouseDown: handleMouseDown,
+    ...transitionDataAttributes(transitionData),
   })
 
   // We should freeze when the combobox is visible but "closed". This means that

@@ -20,7 +20,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { useTransition } from '../../hooks/use-transition'
+import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props, ReactTag } from '../../types'
 import { classNames } from '../../utils/class-names'
@@ -437,7 +437,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   // a leave transition on the `<Transition>` is done, but there is still a
   // child `<TransitionChild>` busy, then `visible` would be `false`, while
   // `state` would still be `TreeStates.Visible`.
-  let [, slot] = useTransition(enabled, container, show, { start, end })
+  let [, transitionData] = useTransition(enabled, container, show, { start, end })
 
   let ourProps = compact({
     ref: transitionRef,
@@ -451,25 +451,26 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
         immediate && enterFrom,
 
         // Map data attributes to `enter`, `enterFrom` and `enterTo` classes
-        slot.enter && enter,
-        slot.enter && slot.closed && enterFrom,
-        slot.enter && !slot.closed && enterTo,
+        transitionData.enter && enter,
+        transitionData.enter && transitionData.closed && enterFrom,
+        transitionData.enter && !transitionData.closed && enterTo,
 
         // Map data attributes to `leave`, `leaveFrom` and `leaveTo` classes
-        slot.leave && leave,
-        slot.leave && !slot.closed && leaveFrom,
-        slot.leave && slot.closed && leaveTo,
+        transitionData.leave && leave,
+        transitionData.leave && !transitionData.closed && leaveFrom,
+        transitionData.leave && transitionData.closed && leaveTo,
 
         // Map data attributes to `entered` class (backwards compatibility)
-        !slot.transition && show && entered
+        !transitionData.transition && show && entered
       )?.trim() || undefined, // If `className` is an empty string, we can omit it
+    ...transitionDataAttributes(transitionData),
   })
 
   let openClosedState = 0
   if (state === TreeStates.Visible) openClosedState |= State.Open
   if (state === TreeStates.Hidden) openClosedState |= State.Closed
-  if (slot.enter) openClosedState |= State.Opening
-  if (slot.leave) openClosedState |= State.Closing
+  if (transitionData.enter) openClosedState |= State.Opening
+  if (transitionData.leave) openClosedState |= State.Closing
 
   return (
     <NestingContext.Provider value={nesting}>
@@ -477,7 +478,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
         {render({
           ourProps,
           theirProps,
-          slot,
           defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
           features: TransitionChildRenderFeatures,
           visible: state === TreeStates.Visible,

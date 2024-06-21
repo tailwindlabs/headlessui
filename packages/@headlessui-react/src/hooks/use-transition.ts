@@ -32,11 +32,21 @@ enum TransitionState {
   Leave = 1 << 2,
 }
 
-export type TransitionData = {
+type TransitionData = {
   closed?: boolean
   enter?: boolean
   leave?: boolean
   transition?: boolean
+}
+
+export function transitionDataAttributes(data: TransitionData) {
+  let attributes: Record<string, string> = {}
+  for (let key in data) {
+    if (data[key as keyof TransitionData] === true) {
+      attributes[`data-${key}`] = ''
+    }
+  }
+  return attributes
 }
 
 export function useTransition(

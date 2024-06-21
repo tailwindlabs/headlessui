@@ -24,7 +24,7 @@ import { useEvent } from '../../hooks/use-event'
 import { useId } from '../../hooks/use-id'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
-import { useTransition, type TransitionData } from '../../hooks/use-transition'
+import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { CloseProvider } from '../../internal/close-provider'
 import {
   OpenClosedProvider,
@@ -425,7 +425,7 @@ let DEFAULT_PANEL_TAG = 'div' as const
 type PanelRenderPropArg = {
   open: boolean
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
-} & TransitionData
+}
 type DisclosurePanelPropsWeControl = never
 
 let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -475,13 +475,13 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     return {
       open: state.disclosureState === DisclosureStates.Open,
       close,
-      ...transitionData,
     } satisfies PanelRenderPropArg
-  }, [state.disclosureState, close, transitionData])
+  }, [state.disclosureState, close])
 
   let ourProps = {
     ref: panelRef,
     id,
+    ...transitionDataAttributes(transitionData),
   }
 
   return (
