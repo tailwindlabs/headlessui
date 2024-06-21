@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.0] - 2024-06-21
+
 ### Added
 
 - Add ability to render multiple `Dialog` components at once (without nesting them) ([#3242](https://github.com/tailwindlabs/headlessui/pull/3242))
@@ -718,7 +722,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.4...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.0...HEAD
+[2.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.4...@headlessui/react@v2.1.0
 [2.0.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.3...@headlessui/react@v2.0.4
 [2.0.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.2...@headlessui/react@v2.0.3
 [2.0.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.1...@headlessui/react@v2.0.2
