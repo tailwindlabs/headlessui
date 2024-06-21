@@ -483,7 +483,7 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     [dialogState]
   )
 
-  let ourProps = { ref }
+  let ourProps = { ref, 'aria-hidden': true }
 
   let Wrapper = transition ? TransitionChild : Fragment
 
