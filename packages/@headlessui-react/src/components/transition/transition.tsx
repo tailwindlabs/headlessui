@@ -318,7 +318,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     leaveFrom,
     leaveTo,
 
-    // @ts-expect-error
     ...theirProps
   } = props as typeof props
   let container = useRef<HTMLElement | null>(null)
@@ -444,6 +443,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
     className:
       classNames(
         // Incoming classes if any
+        // @ts-expect-error: className may not exist because not
+        // all components accept className (but all HTML elements do)
         theirProps.className,
 
         // Apply these classes immediately
@@ -498,7 +499,6 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
   props: TransitionRootProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  // @ts-expect-error
   let { show, appear = false, unmount = true, ...theirProps } = props as typeof props
   let internalTransitionRef = useRef<HTMLElement | null>(null)
   let requiresRef = shouldForwardRef(props)
@@ -610,10 +610,8 @@ function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>
   return (
     <>
       {!hasTransitionContext && hasOpenClosedContext ? (
-        // @ts-expect-error This is an object
         <TransitionRoot ref={ref} {...props} />
       ) : (
-        // @ts-expect-error This is an object
         <InternalTransitionChild ref={ref} {...props} />
       )}
     </>

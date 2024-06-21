@@ -11,7 +11,7 @@ import {
   type ReactElement,
   type Ref,
 } from 'react'
-import type { Expand, Props, XOR, __ } from '../types'
+import type { Expand, Props } from '../types'
 import { classNames } from './class-names'
 import { match } from './match'
 
@@ -40,17 +40,21 @@ export enum RenderStrategy {
   Hidden,
 }
 
+type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any
+  ? R
+  : never
+
 type PropsForFeature<
   TPassedInFeatures extends RenderFeatures,
   TForFeature extends RenderFeatures,
   TProps,
-> = {
-  [P in TPassedInFeatures]: P extends TForFeature ? TProps : __
-}[TPassedInFeatures]
+> = TPassedInFeatures extends TForFeature ? TProps : {}
 
-export type PropsForFeatures<T extends RenderFeatures> = XOR<
-  PropsForFeature<T, RenderFeatures.Static, { static?: boolean }>,
-  PropsForFeature<T, RenderFeatures.RenderStrategy, { unmount?: boolean }>
+export type PropsForFeatures<T extends RenderFeatures> = Expand<
+  UnionToIntersection<
+    | PropsForFeature<T, RenderFeatures.Static, { static?: boolean }>
+    | PropsForFeature<T, RenderFeatures.RenderStrategy, { unmount?: boolean }>
+  >
 >
 
 export function render<TFeature extends RenderFeatures, TTag extends ElementType, TSlot>({

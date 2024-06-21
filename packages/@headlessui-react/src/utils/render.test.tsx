@@ -424,9 +424,11 @@ describe('Features.Static | Features.RenderStrategy', () => {
   }
 
   // TODO: Can we "legit" test this? 🤔
-  it('should result in a typescript error', () => {
+  it.skip('should result in a typescript error', () => {
     testRender(
-      // @ts-expect-error static & unmount together are incompatible
+      // Properly setting up the types for this causes way more problems than it solves.
+      // Omit<…> has issues for instance when spreading the rest of the props on the component.
+      // @!ts-expect-error static & unmount together are incompatible
       <Dummy show={false} static unmount>
         Contents
       </Dummy>
