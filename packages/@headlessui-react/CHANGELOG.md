@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add ability to render multiple `Dialog` components at once (without nesting them) ([#3242](https://github.com/tailwindlabs/headlessui/pull/3242))
-- Add new data-attribute-based transition API ([#3273](https://github.com/tailwindlabs/headlessui/pull/3273), [#3285](https://github.com/tailwindlabs/headlessui/pull/3285), [#3307](https://github.com/tailwindlabs/headlessui/pull/3307), [#3309](https://github.com/tailwindlabs/headlessui/pull/3309))
+- Add new data-attribute-based transition API ([#3273](https://github.com/tailwindlabs/headlessui/pull/3273), [#3285](https://github.com/tailwindlabs/headlessui/pull/3285), [#3307](https://github.com/tailwindlabs/headlessui/pull/3307), [#3309](https://github.com/tailwindlabs/headlessui/pull/3309), [#3312](https://github.com/tailwindlabs/headlessui/pull/3312))
 - Add `DialogBackdrop` component ([#3307](https://github.com/tailwindlabs/headlessui/pull/3307), [#3310](https://github.com/tailwindlabs/headlessui/pull/3310))
 - Add `PopoverBackdrop` component to replace `PopoverOverlay` ([#3308](https://github.com/tailwindlabs/headlessui/pull/3308))
 
