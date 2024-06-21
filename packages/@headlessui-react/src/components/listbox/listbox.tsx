@@ -41,7 +41,7 @@ import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTransition, type TransitionData } from '../../hooks/use-transition'
+import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { useDisabled } from '../../internal/disabled'
 import {
   FloatingProvider,
@@ -870,7 +870,7 @@ let SelectedOptionContext = createContext(false)
 let DEFAULT_OPTIONS_TAG = 'div' as const
 type OptionsRenderPropArg = {
   open: boolean
-} & TransitionData
+}
 type OptionsPropsWeControl =
   | 'aria-activedescendant'
   | 'aria-labelledby'
@@ -1090,9 +1090,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let slot = useMemo(() => {
     return {
       open: data.listboxState === ListboxStates.Open,
-      ...transitionData,
     } satisfies OptionsRenderPropArg
-  }, [data.listboxState, transitionData])
+  }, [data.listboxState])
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     id,
@@ -1113,6 +1112,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       ...style,
       '--button-width': useElementSize(data.buttonRef, true).width,
     } as CSSProperties,
+    ...transitionDataAttributes(transitionData),
   })
 
   // We should freeze when the listbox is visible but "closed". This means that

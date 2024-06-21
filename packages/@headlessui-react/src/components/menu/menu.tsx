@@ -37,7 +37,7 @@ import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useTextValue } from '../../hooks/use-text-value'
 import { useTrackedPointer } from '../../hooks/use-tracked-pointer'
-import { useTransition, type TransitionData } from '../../hooks/use-transition'
+import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { useTreeWalker } from '../../hooks/use-tree-walker'
 import {
   FloatingProvider,
@@ -565,7 +565,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 let DEFAULT_ITEMS_TAG = 'div' as const
 type ItemsRenderPropArg = {
   open: boolean
-} & TransitionData
+}
 type ItemsPropsWeControl = 'aria-activedescendant' | 'aria-labelledby' | 'role' | 'tabIndex'
 
 let ItemsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -760,9 +760,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let slot = useMemo(() => {
     return {
       open: state.menuState === MenuStates.Open,
-      ...transitionData,
     } satisfies ItemsRenderPropArg
-  }, [state.menuState, transitionData])
+  }, [state.menuState])
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-activedescendant':
@@ -782,6 +781,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
       ...style,
       '--button-width': useElementSize(state.buttonRef, true).width,
     } as CSSProperties,
+    ...transitionDataAttributes(transitionData),
   })
 
   return (

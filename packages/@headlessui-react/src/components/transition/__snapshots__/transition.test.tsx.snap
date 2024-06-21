@@ -132,7 +132,6 @@ exports[`Setup API transition classes should be possible to passthrough the tran
   class="enter enter-from"
   data-closed=""
   data-enter=""
-  data-headlessui-state="closed enter transition"
   data-transition=""
   style=""
 >

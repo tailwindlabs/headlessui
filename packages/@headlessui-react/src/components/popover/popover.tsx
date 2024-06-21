@@ -36,7 +36,7 @@ import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-contain
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
-import { useTransition, type TransitionData } from '../../hooks/use-transition'
+import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { CloseProvider } from '../../internal/close-provider'
 import {
   FloatingProvider,
@@ -732,7 +732,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 let DEFAULT_BACKDROP_TAG = 'div' as const
 type BackdropRenderPropArg = {
   open: boolean
-} & TransitionData
+}
 type BackdropPropsWeControl = 'aria-hidden'
 
 let BackdropRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
@@ -778,15 +778,15 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
   let slot = useMemo(() => {
     return {
       open: popoverState === PopoverStates.Open,
-      ...transitionData,
     } satisfies BackdropRenderPropArg
-  }, [popoverState, transitionData])
+  }, [popoverState])
 
   let ourProps = {
     ref: backdropRef,
     id,
     'aria-hidden': true,
     onClick: handleClick,
+    ...transitionDataAttributes(transitionData),
   }
 
   return render({
@@ -806,7 +806,7 @@ let DEFAULT_PANEL_TAG = 'div' as const
 type PanelRenderPropArg = {
   open: boolean
   close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
-} & TransitionData
+}
 
 let PanelRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
@@ -936,9 +936,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     return {
       open: state.popoverState === PopoverStates.Open,
       close,
-      ...transitionData,
     } satisfies PanelRenderPropArg
-  }, [state.popoverState, close, transitionData])
+  }, [state.popoverState, close])
 
   let ourProps: Record<string, any> = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     ref: panelRef,
@@ -968,6 +967,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
       ...style,
       '--button-width': useElementSize(state.button, true).width,
     } as React.CSSProperties,
+    ...transitionDataAttributes(transitionData),
   })
 
   let direction = useTabDirection()

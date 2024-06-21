@@ -20,7 +20,7 @@ import { useLatestValue } from '../../hooks/use-latest-value'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
-import { useTransition } from '../../hooks/use-transition'
+import { transitionDataAttributes, useTransition } from '../../hooks/use-transition'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import type { Props, ReactTag } from '../../types'
 import { classNames } from '../../utils/class-names'
@@ -463,6 +463,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
         // Map data attributes to `entered` class (backwards compatibility)
         !slot.transition && show && entered
       )?.trim() || undefined, // If `className` is an empty string, we can omit it
+    ...transitionDataAttributes(slot),
   })
 
   let openClosedState = 0
@@ -477,7 +478,6 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
         {render({
           ourProps,
           theirProps,
-          slot,
           defaultTag: DEFAULT_TRANSITION_CHILD_TAG,
           features: TransitionChildRenderFeatures,
           visible: state === TreeStates.Visible,
