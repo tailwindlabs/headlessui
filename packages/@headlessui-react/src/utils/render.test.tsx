@@ -423,16 +423,6 @@ describe('Features.Static | Features.RenderStrategy', () => {
     )
   }
 
-  // TODO: Can we "legit" test this? 🤔
-  it('should result in a typescript error', () => {
-    testRender(
-      // @ts-expect-error static & unmount together are incompatible
-      <Dummy show={false} static unmount>
-        Contents
-      </Dummy>
-    )
-  })
-
   // To avoid duplication, and to make sure that the features tested in isolation can also be
   // re-used when they are combined.
   testStaticFeature(Dummy)

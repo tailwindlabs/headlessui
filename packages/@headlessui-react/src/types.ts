@@ -2,12 +2,6 @@ import type { JSXElementConstructor, ReactElement, ReactNode } from 'react'
 
 export type ReactTag = keyof JSX.IntrinsicElements | JSXElementConstructor<any>
 
-// A unique placeholder we can use as a default. This is nice because we can use this instead of
-// defaulting to null / never / ... and possibly collide with actual data.
-// Ideally we use a unique symbol here.
-let __ = '1D45E01E-AF44-47C4-988A-19A94EBAF55C' as const
-export type __ = typeof __
-
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 
 export type PropsOf<TTag extends ReactTag> = TTag extends React.ElementType
@@ -54,16 +48,5 @@ export type Props<
   OurProps<TTag, TSlot> &
   ClassNameOverride<TTag, TSlot> &
   Overrides
-
-type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
-export type XOR<T, U> = T | U extends __
-  ? never
-  : T extends __
-    ? U
-    : U extends __
-      ? T
-      : T | U extends object
-        ? (Without<T, U> & U) | (Without<U, T> & T)
-        : T | U
 
 export type EnsureArray<T> = T extends any[] ? T : Expand<T>[]
