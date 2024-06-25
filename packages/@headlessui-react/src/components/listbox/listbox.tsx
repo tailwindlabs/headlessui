@@ -944,26 +944,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     allowed: useEvent(() => [data.buttonRef.current, data.optionsRef.current]),
   })
 
-  let initialOption = useRef<number | null>(null)
-
-  useEffect(() => {
-    if (!anchor?.to?.includes('selection')) return
-
-    if (!visible) {
-      initialOption.current = null
-      return
-    }
-
-    let elements = Array.from(data.listRef.current.values())
-    // TODO: Do not rely on DOM elements here
-    initialOption.current = elements.findIndex((el) => el?.dataset.selected === '')
-    // Default to first option if nothing is selected
-    if (initialOption.current === -1) {
-      initialOption.current = elements.findIndex((el) => el?.dataset.disabled === undefined)
-      actions.goToOption(Focus.First)
-    }
-  }, [visible, data.listRef])
-
   // We keep track whether the button moved or not, we only check this when the menu state becomes
   // closed. If the button moved, then we want to cancel pending transitions to prevent that the
   // attached `MenuItems` is still transitioning while the button moved away.
@@ -980,9 +960,30 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
   let panelEnabled = didButtonMove ? false : visible
 
+  // We should freeze when the listbox is visible but "closed". This means that
+  // a transition is currently happening and the component is still visible (for
+  // the transition) but closed from a functionality perspective.
+  let shouldFreeze = visible && data.listboxState === ListboxStates.Closed
+
+  // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
+  let frozenValue = useFrozenData(shouldFreeze, data.value)
+
+  let isSelected = useEvent((compareValue: unknown) => data.compare(frozenValue, compareValue))
+
+  let selectedOptionIndex = useMemo(() => {
+    if (anchor == null) return null
+    if (!anchor?.to?.includes('selection')) return null
+
+    // Only compute the selected option index when using `selection` in the
+    // `anchor` prop.
+    let idx = data.options.findIndex((option) => isSelected(option.dataRef.current.value))
+    // Ensure that if no data is selected, we default to the first item.
+    if (idx === -1) idx = 0
+    return idx
+  }, [anchor, data.options])
+
   let anchorOptions = (() => {
-    if (anchor == null) return undefined
-    if (data.listRef.current.size <= 0) return { ...anchor, inner: undefined }
+    if (selectedOptionIndex === null) return { ...anchor, inner: undefined }
 
     let elements = Array.from(data.listRef.current.values())
 
@@ -990,7 +991,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       ...anchor,
       inner: {
         listRef: { current: elements },
-        index: initialOption.current!,
+        index: selectedOptionIndex,
       },
     }
   })()
@@ -1114,16 +1115,6 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     } as CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
-
-  // We should freeze when the listbox is visible but "closed". This means that
-  // a transition is currently happening and the component is still visible (for
-  // the transition) but closed from a functionality perspective.
-  let shouldFreeze = visible && data.listboxState === ListboxStates.Closed
-
-  // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
-  let frozenValue = useFrozenData(shouldFreeze, data.value)
-
-  let isSelected = useEvent((compareValue: unknown) => data.compare(frozenValue, compareValue))
 
   return (
     <Portal enabled={portal ? props.static || visible : false}>
