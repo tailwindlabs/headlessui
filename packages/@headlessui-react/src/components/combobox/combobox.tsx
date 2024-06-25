@@ -1752,8 +1752,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
             children: (
               <Frozen freeze={shouldFreeze}>
                 {typeof theirProps.children === 'function'
-                  ? // @ts-expect-error The `children` prop now is a callback function
-                    theirProps.children?.(slot)
+                  ? theirProps.children?.(slot)
                   : theirProps.children}
               </Frozen>
             ),
