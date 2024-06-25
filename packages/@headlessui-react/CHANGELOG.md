@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix issues spreading omitted props onto components ([#3313](https://github.com/tailwindlabs/headlessui/pull/3313))
+- Fix initial `anchor="selection"` positioning ([#3324](https://github.com/tailwindlabs/headlessui/pull/3324))
 
 ## [2.1.0] - 2024-06-21
 
