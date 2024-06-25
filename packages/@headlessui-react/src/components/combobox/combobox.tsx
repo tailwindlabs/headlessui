@@ -1563,7 +1563,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 let DEFAULT_OPTIONS_TAG = 'div' as const
 type OptionsRenderPropArg = {
   open: boolean
-  option: unknown
+  option: any
 }
 type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role' | 'tabIndex'
 
