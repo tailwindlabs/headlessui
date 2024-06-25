@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix issues spreading omitted props onto components ([#3313](https://github.com/tailwindlabs/headlessui/pull/3313))
 - Fix initial `anchor="selection"` positioning ([#3324](https://github.com/tailwindlabs/headlessui/pull/3324))
+- Fix render prop in `ComboboxOptions` to use `any` instead of `unknown` ([#3327](https://github.com/tailwindlabs/headlessui/pull/3327))
 
 ## [2.1.0] - 2024-06-21
 
