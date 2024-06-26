@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.1] - 2024-06-26
+
 ### Fixed
 
 - Fix issues spreading omitted props onto components ([#3313](https://github.com/tailwindlabs/headlessui/pull/3313))
@@ -727,7 +731,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.0...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.1...HEAD
+[2.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.0...@headlessui/react@v2.1.1
 [2.1.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.4...@headlessui/react@v2.1.0
 [2.0.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.3...@headlessui/react@v2.0.4
 [2.0.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.0.2...@headlessui/react@v2.0.3
