@@ -1,21 +1,20 @@
 import { render } from '@testing-library/react'
-import React, { createElement, Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import React, { Fragment, createElement, useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { OpenClosedProvider, State } from '../../internal/open-closed'
 import {
+  DialogState,
+  PopoverState,
   assertActiveElement,
   assertDialog,
   assertDialogDescription,
   assertDialogTitle,
   assertPopoverPanel,
-  DialogState,
   getByText,
   getDialog,
   getDialogs,
   getPopoverButton,
-  PopoverState,
 } from '../../test-utils/accessibility-assertions'
-import { click, focus, Keys, mouseDrag, press, shift } from '../../test-utils/interactions'
+import { Keys, click, focus, mouseDrag, press, shift } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import type { PropsOf } from '../../types'
 import { Popover } from '../popover/popover'
@@ -498,25 +497,51 @@ describe('Rendering', () => {
     it(
       'should remove the scroll lock when the open closed state is `Closing`',
       suppressConsoleLogs(async () => {
-        function Example({ value = State.Open }) {
+        function Example({ open = true }) {
           return (
-            <OpenClosedProvider value={value}>
-              <Dialog autoFocus={false} open={true} onClose={() => {}}>
-                <input id="a" type="text" />
-                <input id="b" type="text" />
-                <input id="c" type="text" />
-              </Dialog>
-            </OpenClosedProvider>
+            <Dialog transition autoFocus={false} open={open} onClose={() => {}}>
+              <input id="a" type="text" />
+              <input id="b" type="text" />
+              <input id="c" type="text" />
+            </Dialog>
           )
         }
 
-        let { rerender } = render(<Example value={State.Open} />)
+        let { rerender } = render(<Example open={true} />)
 
         // The overflow should be there
         expect(document.documentElement.style.overflow).toBe('hidden')
 
-        // Re-render but with the `Closing` state
-        rerender(<Example value={State.Open | State.Closing} />)
+        // Re-render but with an exit transition
+        rerender(<Example open={false} />)
+
+        // The moment the dialog is closing, the overflow should be gone
+        expect(document.documentElement.style.overflow).toBe('')
+      })
+    )
+
+    it(
+      'should remove the scroll lock when the open closed state is `Closing` (using Transition wrapper)',
+      suppressConsoleLogs(async () => {
+        function Example({ open = true }) {
+          return (
+            <Transition show={open}>
+              <Dialog autoFocus={false} onClose={() => {}}>
+                <input id="a" type="text" />
+                <input id="b" type="text" />
+                <input id="c" type="text" />
+              </Dialog>
+            </Transition>
+          )
+        }
+
+        let { rerender } = render(<Example open={true} />)
+
+        // The overflow should be there
+        expect(document.documentElement.style.overflow).toBe('hidden')
+
+        // Re-render but with an exit transition
+        rerender(<Example open={false} />)
 
         // The moment the dialog is closing, the overflow should be gone
         expect(document.documentElement.style.overflow).toBe('')
