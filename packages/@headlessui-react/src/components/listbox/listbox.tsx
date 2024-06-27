@@ -983,6 +983,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }, [anchor, data.options])
 
   let anchorOptions = (() => {
+    if (anchor == null) return undefined
     if (selectedOptionIndex === null) return { ...anchor, inner: undefined }
 
     let elements = Array.from(data.listRef.current.values())

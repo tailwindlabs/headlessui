@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix prematurely added anchoring styles on `ListboxOptions` ([#3337](https://github.com/tailwindlabs/headlessui/pull/3337))
 
 ## [2.1.1] - 2024-06-26
 
