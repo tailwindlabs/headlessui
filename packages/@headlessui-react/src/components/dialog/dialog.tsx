@@ -84,6 +84,7 @@ let DialogContext = createContext<
   | [
       {
         dialogState: DialogStates
+        unmount: boolean
         close(): void
         setTitleId(id: string | null): void
       },
@@ -121,6 +122,7 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     role = 'dialog',
     autoFocus = true,
     __demoMode = false,
+    unmount = false,
     ...theirProps
   } = props
 
@@ -248,8 +250,8 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
   let [describedby, DescriptionProvider] = useDescriptions()
 
   let contextBag = useMemo<ContextType<typeof DialogContext>>(
-    () => [{ dialogState, close, setTitleId }, state],
-    [dialogState, state, close, setTitleId]
+    () => [{ dialogState, close, setTitleId, unmount }, state],
+    [dialogState, state, close, setTitleId, unmount]
   )
 
   let slot = useMemo(
@@ -265,6 +267,7 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     'aria-modal': __demoMode ? undefined : dialogState === DialogStates.Open ? true : undefined,
     'aria-labelledby': state.titleId,
     'aria-describedby': describedby,
+    unmount,
   }
 
   let shouldMoveFocusInside = !useIsTouchDevice()
@@ -421,7 +424,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 ) {
   let internalId = useId()
   let { id = `headlessui-dialog-panel-${internalId}`, transition = false, ...theirProps } = props
-  let [{ dialogState }, state] = useDialogContext('Dialog.Panel')
+  let [{ dialogState, unmount }, state] = useDialogContext('Dialog.Panel')
   let panelRef = useSyncRefs(ref, state.panelRef)
 
   let slot = useMemo(
@@ -442,9 +445,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }
 
   let Wrapper = transition ? TransitionChild : Fragment
+  let wrapperProps = transition ? { unmount } : {}
 
   return (
-    <Wrapper>
+    <Wrapper {...wrapperProps}>
       {render({
         ourProps,
         theirProps,
@@ -475,7 +479,7 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let { transition = false, ...theirProps } = props
-  let [{ dialogState }] = useDialogContext('Dialog.Backdrop')
+  let [{ dialogState, unmount }] = useDialogContext('Dialog.Backdrop')
 
   let slot = useMemo(
     () => ({ open: dialogState === DialogStates.Open }) satisfies BackdropRenderPropArg,
@@ -485,9 +489,10 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
   let ourProps = { ref, 'aria-hidden': true }
 
   let Wrapper = transition ? TransitionChild : Fragment
+  let wrapperProps = transition ? { unmount } : {}
 
   return (
-    <Wrapper>
+    <Wrapper {...wrapperProps}>
       {render({
         ourProps,
         theirProps,
