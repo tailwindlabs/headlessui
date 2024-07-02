@@ -467,6 +467,7 @@ function VirtualProvider(props: {
   }, [data.optionsRef.current])
 
   let virtualizer = useVirtualizer({
+    enabled: options.length !== 0,
     scrollPaddingStart: paddingStart,
     scrollPaddingEnd: paddingEnd,
     count: options.length,
