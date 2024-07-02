@@ -55,8 +55,8 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.16",
-    "@tanstack/react-virtual": "3.5.0",
     "@react-aria/focus": "^3.17.1",
-    "@react-aria/interactions": "^3.21.3"
+    "@react-aria/interactions": "^3.21.3",
+    "@tanstack/react-virtual": "^3.8.1"
   }
 }
