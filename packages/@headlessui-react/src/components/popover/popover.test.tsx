@@ -804,6 +804,26 @@ describe('Rendering', () => {
         assertActiveElement(getByText('restorable'))
       })
     )
+
+    it(
+      'should be possible to use the `anchor` prop on the `PopoverPanel`',
+      suppressConsoleLogs(async () => {
+        render(
+          <Popover>
+            <PopoverButton>Trigger</PopoverButton>
+            <PopoverPanel anchor="bottom">Panel open</PopoverPanel>
+          </Popover>
+        )
+
+        assertPopoverButton({ state: PopoverState.InvisibleUnmounted })
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+
+        await click(getPopoverButton())
+
+        assertPopoverButton({ state: PopoverState.Visible })
+        assertPopoverPanel({ state: PopoverState.Visible })
+      })
+    )
   })
 
   describe('Multiple `Popover.Button` warnings', () => {
