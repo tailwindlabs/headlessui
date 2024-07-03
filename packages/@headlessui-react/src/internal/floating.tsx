@@ -375,9 +375,16 @@ function useFixScrollingPixel(element: HTMLElement | null) {
     if (!element) return
 
     let observer = new MutationObserver(() => {
-      let maxHeight = element.style.maxHeight
-      if (parseFloat(maxHeight) !== parseInt(maxHeight)) {
-        element.style.maxHeight = `${Math.ceil(parseFloat(maxHeight))}px`
+      let maxHeight = window.getComputedStyle(element).maxHeight
+
+      let maxHeightFloat = parseFloat(maxHeight)
+      if (isNaN(maxHeightFloat)) return
+
+      let maxHeightInt = parseInt(maxHeight)
+      if (isNaN(maxHeightInt)) return
+
+      if (maxHeightFloat !== maxHeightInt) {
+        element.style.maxHeight = `${Math.ceil(maxHeightFloat)}px`
       }
     })
 
