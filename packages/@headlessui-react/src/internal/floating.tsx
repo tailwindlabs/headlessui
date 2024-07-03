@@ -175,6 +175,7 @@ export function FloatingProvider({
   let overflowRef = useRef(null)
 
   let [floatingEl, setFloatingElement] = useState<HTMLElement | null>(null)
+  useFixScrollingPixel(floatingEl)
 
   let isEnabled = enabled && config !== null && floatingEl !== null
 
@@ -316,7 +317,7 @@ export function FloatingProvider({
           Object.assign(elements.floating.style, {
             overflow: 'auto',
             maxWidth: `${availableWidth}px`,
-            maxHeight: `round(up, min(var(--anchor-max-height, 100vh), ${availableHeight}px), 1px)`,
+            maxHeight: `min(var(--anchor-max-height, 100vh), ${availableHeight}px)`,
           })
         },
       }),
@@ -367,6 +368,35 @@ export function FloatingProvider({
       </FloatingContext.Provider>
     </PlacementContext.Provider>
   )
+}
+
+function useFixScrollingPixel(element: HTMLElement | null) {
+  useIsoMorphicEffect(() => {
+    if (!element) return
+
+    let observer = new MutationObserver(() => {
+      let maxHeight = window.getComputedStyle(element).maxHeight
+
+      let maxHeightFloat = parseFloat(maxHeight)
+      if (isNaN(maxHeightFloat)) return
+
+      let maxHeightInt = parseInt(maxHeight)
+      if (isNaN(maxHeightInt)) return
+
+      if (maxHeightFloat !== maxHeightInt) {
+        element.style.maxHeight = `${Math.ceil(maxHeightFloat)}px`
+      }
+    })
+
+    observer.observe(element, {
+      attributes: true,
+      attributeFilter: ['style'],
+    })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [element])
 }
 
 function useResolvedConfig(
