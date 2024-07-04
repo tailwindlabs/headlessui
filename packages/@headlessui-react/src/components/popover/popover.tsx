@@ -32,7 +32,11 @@ import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
 import { useResolveButtonType } from '../../hooks/use-resolve-button-type'
-import { useMainTreeNode, useRootContainers } from '../../hooks/use-root-containers'
+import {
+  MainTreeProvider,
+  useMainTreeNode,
+  useRootContainers,
+} from '../../hooks/use-root-containers'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { optionalRef, useSyncRefs } from '../../hooks/use-sync-refs'
 import { Direction as TabDirection, useTabDirection } from '../../hooks/use-tab-direction'
@@ -195,7 +199,6 @@ let PopoverGroupContext = createContext<{
   unregisterPopover(registerBag: PopoverRegisterBag): void
   isFocusWithinPopoverGroup(): boolean
   closeOthers(buttonId: string): void
-  mainTreeNodeRef: MutableRefObject<HTMLElement | null>
 } | null>(null)
 PopoverGroupContext.displayName = 'PopoverGroupContext'
 
@@ -343,8 +346,9 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   useEffect(() => registerPopover?.(registerBag), [registerPopover, registerBag])
 
   let [portals, PortalWrapper] = useNestedPortals()
+  let mainTreeNode = useMainTreeNode(button)
   let root = useRootContainers({
-    mainTreeNodeRef: groupContext?.mainTreeNodeRef,
+    mainTreeNode,
     portals,
     defaultContainers: [button, panel],
   })
@@ -416,33 +420,34 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   let ourProps = { ref: popoverRef }
 
   return (
-    <FloatingProvider>
-      <PopoverPanelContext.Provider value={null}>
-        <PopoverContext.Provider value={reducerBag}>
-          <PopoverAPIContext.Provider value={api}>
-            <CloseProvider value={close}>
-              <OpenClosedProvider
-                value={match(popoverState, {
-                  [PopoverStates.Open]: State.Open,
-                  [PopoverStates.Closed]: State.Closed,
-                })}
-              >
-                <PortalWrapper>
-                  {render({
-                    ourProps,
-                    theirProps,
-                    slot,
-                    defaultTag: DEFAULT_POPOVER_TAG,
-                    name: 'Popover',
+    <MainTreeProvider node={mainTreeNode}>
+      <FloatingProvider>
+        <PopoverPanelContext.Provider value={null}>
+          <PopoverContext.Provider value={reducerBag}>
+            <PopoverAPIContext.Provider value={api}>
+              <CloseProvider value={close}>
+                <OpenClosedProvider
+                  value={match(popoverState, {
+                    [PopoverStates.Open]: State.Open,
+                    [PopoverStates.Closed]: State.Closed,
                   })}
-                  <root.MainTreeNode />
-                </PortalWrapper>
-              </OpenClosedProvider>
-            </CloseProvider>
-          </PopoverAPIContext.Provider>
-        </PopoverContext.Provider>
-      </PopoverPanelContext.Provider>
-    </FloatingProvider>
+                >
+                  <PortalWrapper>
+                    {render({
+                      ourProps,
+                      theirProps,
+                      slot,
+                      defaultTag: DEFAULT_POPOVER_TAG,
+                      name: 'Popover',
+                    })}
+                  </PortalWrapper>
+                </OpenClosedProvider>
+              </CloseProvider>
+            </PopoverAPIContext.Provider>
+          </PopoverContext.Provider>
+        </PopoverPanelContext.Provider>
+      </FloatingProvider>
+    </MainTreeProvider>
   )
 }
 
@@ -1110,7 +1115,6 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
   let internalGroupRef = useRef<HTMLElement | null>(null)
   let groupRef = useSyncRefs(internalGroupRef, ref)
   let [popovers, setPopovers] = useState<PopoverRegisterBag[]>([])
-  let root = useMainTreeNode()
 
   let unregisterPopover = useEvent((registerBag: PopoverRegisterBag) => {
     setPopovers((existing) => {
@@ -1157,15 +1161,8 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
       unregisterPopover: unregisterPopover,
       isFocusWithinPopoverGroup,
       closeOthers,
-      mainTreeNodeRef: root.mainTreeNodeRef,
     }),
-    [
-      registerPopover,
-      unregisterPopover,
-      isFocusWithinPopoverGroup,
-      closeOthers,
-      root.mainTreeNodeRef,
-    ]
+    [registerPopover, unregisterPopover, isFocusWithinPopoverGroup, closeOthers]
   )
 
   let slot = useMemo(() => ({}) satisfies GroupRenderPropArg, [])
@@ -1174,16 +1171,17 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
   let ourProps = { ref: groupRef }
 
   return (
-    <PopoverGroupContext.Provider value={contextBag}>
-      {render({
-        ourProps,
-        theirProps,
-        slot,
-        defaultTag: DEFAULT_GROUP_TAG,
-        name: 'Popover.Group',
-      })}
-      <root.MainTreeNode />
-    </PopoverGroupContext.Provider>
+    <MainTreeProvider>
+      <PopoverGroupContext.Provider value={contextBag}>
+        {render({
+          ourProps,
+          theirProps,
+          slot,
+          defaultTag: DEFAULT_GROUP_TAG,
+          name: 'Popover.Group',
+        })}
+      </PopoverGroupContext.Provider>
+    </MainTreeProvider>
   )
 }
 

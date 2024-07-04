@@ -1,20 +1,21 @@
-import React, { useMemo, useRef, type MutableRefObject } from 'react'
+import React, { createContext, useContext, useState, type MutableRefObject } from 'react'
 import { Hidden, HiddenFeatures } from '../internal/hidden'
+import { getOwnerDocument } from '../utils/owner'
 import { useEvent } from './use-event'
 import { useOwnerDocument } from './use-owner'
 
 export function useRootContainers({
   defaultContainers = [],
   portals,
-  mainTreeNodeRef: _mainTreeNodeRef,
+
+  // Reference to a node in the "main" tree, not in the portalled Dialog tree.
+  mainTreeNode,
 }: {
   defaultContainers?: (HTMLElement | null | MutableRefObject<HTMLElement | null>)[]
   portals?: MutableRefObject<HTMLElement[]>
-  mainTreeNodeRef?: MutableRefObject<HTMLElement | null>
+  mainTreeNode?: HTMLElement | null
 } = {}) {
-  // Reference to a node in the "main" tree, not in the portalled Dialog tree.
-  let mainTreeNodeRef = useRef<HTMLElement | null>(_mainTreeNodeRef?.current ?? null)
-  let ownerDocument = useOwnerDocument(mainTreeNodeRef)
+  let ownerDocument = useOwnerDocument(mainTreeNode)
 
   let resolveContainers = useEvent(() => {
     let containers: HTMLElement[] = []
@@ -42,8 +43,10 @@ export function useRootContainers({
       if (container === document.head) continue // Skip `<head>`
       if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
       if (container.id === 'headlessui-portal-root') continue // Skip the Headless UI portal root
-      if (container.contains(mainTreeNodeRef.current)) continue // Skip if it is the main app
-      if (container.contains((mainTreeNodeRef.current?.getRootNode() as ShadowRoot)?.host)) continue // Skip if it is the main app (and the component is inside a shadow root)
+      if (mainTreeNode) {
+        if (container.contains(mainTreeNode)) continue // Skip if it is the main app
+        if (container.contains((mainTreeNode?.getRootNode() as ShadowRoot)?.host)) continue // Skip if it is the main app (and the component is inside a shadow root)
+      }
       if (containers.some((defaultContainer) => container.contains(defaultContainer))) continue // Skip if the current container is part of a container we've already seen (e.g.: default container / portal)
 
       containers.push(container)
@@ -57,25 +60,89 @@ export function useRootContainers({
     contains: useEvent((element: HTMLElement) =>
       resolveContainers().some((container) => container.contains(element))
     ),
-    mainTreeNodeRef,
-    MainTreeNode: useMemo(() => {
-      return function MainTreeNode() {
-        if (_mainTreeNodeRef != null) return null
-        return <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNodeRef} />
-      }
-    }, [mainTreeNodeRef, _mainTreeNodeRef]),
   }
 }
 
-export function useMainTreeNode() {
-  let mainTreeNodeRef = useRef<HTMLElement | null>(null)
+let MainTreeContext = createContext<HTMLElement | null>(null)
 
-  return {
-    mainTreeNodeRef,
-    MainTreeNode: useMemo(() => {
-      return function MainTreeNode() {
-        return <Hidden features={HiddenFeatures.Hidden} ref={mainTreeNodeRef} />
-      }
-    }, [mainTreeNodeRef]),
-  }
+/**
+ * A provider for the main tree node.
+ *
+ * When a component is rendered in a `Portal`, it is no longer part of the main
+ * tree. This provider helps to find the main tree node and pass it along to the
+ * components that need it.
+ *
+ * The main tree node is used for features such as outside click behavior, where
+ * we allow clicks in 3rd party contains, but not in the parent of the "main
+ * tree".
+ *
+ * In case of a `Popover`, we can use the `PopoverButton` as a marker in the
+ * "main tree", the `PopoverPanel` can't be used because it could be rendered in
+ * a `Portal` (e.g.: when using the `anchor` props).
+ *
+ * However, we can't use the `PopoverButton` when it's nested inside of another
+ * `Popover`'s `PopoverPanel` component (if that parent `PopoverPanel` is
+ * rendered in a `Portal`).
+ *
+ * This is where the `MainTreeProvider` comes in. It will find the "main tree"
+ * node and pass it on. The top-level `PopoverButton` will be used as a marker
+ * in the "main tree" and nested `Popover` use this button as well.
+ */
+export function MainTreeProvider({
+  children,
+  node,
+}: {
+  children: React.ReactNode
+  node?: HTMLElement | null
+}) {
+  let [mainTreeNode, setMainTreeNode] = useState<HTMLElement | null>(null)
+
+  // 1. Prefer the main tree node from context
+  // 2. Prefer the provided node
+  // 3. Create a new node at this point, and find the main tree node
+  let resolvedMainTreeNode = useMainTreeNode(node ?? mainTreeNode)
+
+  return (
+    <MainTreeContext.Provider value={resolvedMainTreeNode}>
+      {children}
+
+      {/**
+       * If no main tree node is found at this point, then we briefly render an
+       * element to find the main tree node and pass it along.
+       */}
+      {resolvedMainTreeNode === null && (
+        <Hidden
+          features={HiddenFeatures.Hidden}
+          ref={(el) => {
+            if (el) {
+              // We will only render this when no `mainTreeNode` is found. This
+              // means that if we render this element and use it as the
+              // `mainTreeNode` that we will be unmounting it later again.
+              //
+              // However, we can resolve the actual root container of the main
+              // tree node and use that instead.
+              for (let container of getOwnerDocument(el)?.querySelectorAll('html > *, body > *') ??
+                []) {
+                if (container === document.body) continue // Skip `<body>`
+                if (container === document.head) continue // Skip `<head>`
+                if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
+                if (container?.contains(el)) {
+                  setMainTreeNode(container)
+                  break
+                }
+              }
+            }
+          }}
+        />
+      )}
+    </MainTreeContext.Provider>
+  )
+}
+
+/**
+ * Get the main tree node from context or fallback to the optionally provided node.
+ */
+export function useMainTreeNode(fallbackMainTreeNode: HTMLElement | null = null) {
+  // Prefer the main tree node from context, but fallback to the provided node.
+  return useContext(MainTreeContext) ?? fallbackMainTreeNode
 }

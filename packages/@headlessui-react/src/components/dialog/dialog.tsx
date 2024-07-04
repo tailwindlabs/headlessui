@@ -25,12 +25,15 @@ import { useIsTouchDevice } from '../../hooks/use-is-touch-device'
 import { useOnDisappear } from '../../hooks/use-on-disappear'
 import { useOutsideClick } from '../../hooks/use-outside-click'
 import { useOwnerDocument } from '../../hooks/use-owner'
-import { useRootContainers } from '../../hooks/use-root-containers'
+import {
+  MainTreeProvider,
+  useMainTreeNode,
+  useRootContainers,
+} from '../../hooks/use-root-containers'
 import { useScrollLock } from '../../hooks/use-scroll-lock'
 import { useServerHandoffComplete } from '../../hooks/use-server-handoff-complete'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { CloseProvider } from '../../internal/close-provider'
-import { HoistFormFields } from '../../internal/form-fields'
 import { ResetOpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
 import { ForcePortalRoot } from '../../internal/portal-force-root'
 import type { Props } from '../../types'
@@ -180,11 +183,9 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     },
   }
 
-  let {
-    resolveContainers: resolveRootContainers,
-    mainTreeNodeRef,
-    MainTreeNode,
-  } = useRootContainers({
+  let mainTreeNode = useMainTreeNode()
+  let { resolveContainers: resolveRootContainers } = useRootContainers({
+    mainTreeNode,
     portals,
     defaultContainers: [defaultContainer],
   })
@@ -207,8 +208,7 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     ]),
     disallowed: useEvent(() => [
       // Disallow the "main" tree root node
-      mainTreeNodeRef.current?.closest<HTMLElement>('body > *:not(#headlessui-portal-root)') ??
-        null,
+      mainTreeNode?.closest<HTMLElement>('body > *:not(#headlessui-portal-root)') ?? null,
     ]),
   })
 
@@ -320,9 +320,6 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
           </DialogContext.Provider>
         </Portal>
       </ForcePortalRoot>
-      <HoistFormFields>
-        <MainTreeNode />
-      </HoistFormFields>
     </ResetOpenClosedProvider>
   )
 })
@@ -395,13 +392,19 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
 
   if ((open !== undefined || transition) && !rest.static) {
     return (
-      <Transition show={open} transition={transition} unmount={rest.unmount}>
-        <InternalDialog ref={ref} {...rest} />
-      </Transition>
+      <MainTreeProvider>
+        <Transition show={open} transition={transition} unmount={rest.unmount}>
+          <InternalDialog ref={ref} {...rest} />
+        </Transition>
+      </MainTreeProvider>
     )
   }
 
-  return <InternalDialog ref={ref} open={open} {...rest} />
+  return (
+    <MainTreeProvider>
+      <InternalDialog ref={ref} open={open} {...rest} />
+    </MainTreeProvider>
+  )
 }
 
 // ---
