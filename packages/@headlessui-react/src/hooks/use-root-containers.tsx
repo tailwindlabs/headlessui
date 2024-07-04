@@ -73,7 +73,7 @@ let MainTreeContext = createContext<HTMLElement | null>(null)
  * components that need it.
  *
  * The main tree node is used for features such as outside click behavior, where
- * we allow clicks in 3rd party contains, but not in the parent of the "main
+ * we allow clicks in 3rd party containers, but not in the parent of the "main
  * tree".
  *
  * In case of a `Popover`, we can use the `PopoverButton` as a marker in the
