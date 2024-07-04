@@ -114,22 +114,22 @@ export function MainTreeProvider({
         <Hidden
           features={HiddenFeatures.Hidden}
           ref={(el) => {
-            if (el) {
-              // We will only render this when no `mainTreeNode` is found. This
-              // means that if we render this element and use it as the
-              // `mainTreeNode` that we will be unmounting it later.
-              //
-              // However, we can resolve the actual root container of the main
-              // tree node and use that instead.
-              for (let container of getOwnerDocument(el)?.querySelectorAll('html > *, body > *') ??
-                []) {
-                if (container === document.body) continue // Skip `<body>`
-                if (container === document.head) continue // Skip `<head>`
-                if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
-                if (container?.contains(el)) {
-                  setMainTreeNode(container)
-                  break
-                }
+            if (!el) return
+
+            // We will only render this when no `mainTreeNode` is found. This
+            // means that if we render this element and use it as the
+            // `mainTreeNode` that we will be unmounting it later.
+            //
+            // However, we can resolve the actual root container of the main
+            // tree node and use that instead.
+            for (let container of getOwnerDocument(el)?.querySelectorAll('html > *, body > *') ??
+              []) {
+              if (container === document.body) continue // Skip `<body>`
+              if (container === document.head) continue // Skip `<head>`
+              if (!(container instanceof HTMLElement)) continue // Skip non-HTMLElements
+              if (container?.contains(el)) {
+                setMainTreeNode(container)
+                break
               }
             }
           }}
