@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix crash in `Combobox` component when in `virtual` mode when options are empty ([#3356](https://github.com/tailwindlabs/headlessui/pull/3356))
 - Fix hanging tests when using `anchor` prop ([#3357](https://github.com/tailwindlabs/headlessui/pull/3357))
 - Fix `transition` and `focus` prop combination for `PopoverPanel` component ([#3361](https://github.com/tailwindlabs/headlessui/pull/3361))
+- Fix outside click in nested portalled `Popover` components ([#3362](https://github.com/tailwindlabs/headlessui/pull/3362))
 
 ## [2.1.1] - 2024-06-26
 
