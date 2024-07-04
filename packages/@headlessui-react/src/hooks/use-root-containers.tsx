@@ -86,7 +86,7 @@ let MainTreeContext = createContext<HTMLElement | null>(null)
  *
  * This is where the `MainTreeProvider` comes in. It will find the "main tree"
  * node and pass it on. The top-level `PopoverButton` will be used as a marker
- * in the "main tree" and nested `Popover` use this button as well.
+ * in the "main tree" and nested `Popover` will use this button as well.
  */
 export function MainTreeProvider({
   children,
