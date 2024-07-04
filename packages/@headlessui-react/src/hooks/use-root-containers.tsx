@@ -81,8 +81,8 @@ let MainTreeContext = createContext<HTMLElement | null>(null)
  * a `Portal` (e.g. when using the `anchor` props).
  *
  * However, we can't use the `PopoverButton` when it's nested inside of another
- * `Popover`'s `PopoverPanel` component (if that parent `PopoverPanel` is
- * rendered in a `Portal`).
+ * `Popover`'s `PopoverPanel` component if the parent `PopoverPanel` is
+ * rendered in a `Portal`.
  *
  * This is where the `MainTreeProvider` comes in. It will find the "main tree"
  * node and pass it on. The top-level `PopoverButton` will be used as a marker
