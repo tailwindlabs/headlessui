@@ -117,7 +117,7 @@ export function MainTreeProvider({
             if (el) {
               // We will only render this when no `mainTreeNode` is found. This
               // means that if we render this element and use it as the
-              // `mainTreeNode` that we will be unmounting it later again.
+              // `mainTreeNode` that we will be unmounting it later.
               //
               // However, we can resolve the actual root container of the main
               // tree node and use that instead.
