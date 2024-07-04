@@ -924,13 +924,13 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     if (state.__demoMode) return
     if (!focus) return
     if (state.popoverState !== PopoverStates.Open) return
-    if (!internalPanelRef.current) return
+    if (!state.panel) return
 
     let activeElement = ownerDocument?.activeElement as HTMLElement
-    if (internalPanelRef.current.contains(activeElement)) return // Already focused within Dialog
+    if (state.panel.contains(activeElement)) return // Already focused within Dialog
 
-    focusIn(internalPanelRef.current, Focus.First)
-  }, [state.__demoMode, focus, internalPanelRef, state.popoverState])
+    focusIn(state.panel, Focus.First)
+  }, [state.__demoMode, focus, state.panel, state.popoverState])
 
   let slot = useMemo(() => {
     return {
@@ -948,8 +948,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
         ? (event: ReactFocusEvent) => {
             let el = event.relatedTarget as HTMLElement
             if (!el) return
-            if (!internalPanelRef.current) return
-            if (internalPanelRef.current?.contains(el)) return
+            if (!state.panel) return
+            if (state.panel.contains(el)) return
 
             dispatch({ type: ActionTypes.ClosePopover })
 
