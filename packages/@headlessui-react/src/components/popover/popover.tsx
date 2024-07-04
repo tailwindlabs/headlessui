@@ -930,7 +930,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     if (internalPanelRef.current.contains(activeElement)) return // Already focused within Dialog
 
     focusIn(internalPanelRef.current, Focus.First)
-  }, [state.__demoMode, focus, internalPanelRef, state.popoverState])
+  }, [state.__demoMode, focus, internalPanelRef.current, state.popoverState])
 
   let slot = useMemo(() => {
     return {
