@@ -2,7 +2,7 @@ import type { ElementType, Ref } from 'react'
 import type { Props } from '../types'
 import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../utils/render'
 
-let DEFAULT_VISUALLY_HIDDEN_TAG = 'div' as const
+let DEFAULT_VISUALLY_HIDDEN_TAG = 'span' as const
 
 export enum HiddenFeatures {
   // The default, no features.
