@@ -1,4 +1,5 @@
 import { onDocumentReady } from './document-ready'
+import { focusableSelector } from './focus-management'
 
 export let history: HTMLElement[] = []
 onDocumentReady(() => {
@@ -7,7 +8,21 @@ onDocumentReady(() => {
     if (e.target === document.body) return
     if (history[0] === e.target) return
 
-    history.unshift(e.target)
+    let focusableElement = e.target as HTMLElement
+
+    // Figure out the closest focusable element, this is needed in a situation
+    // where you click on a non-focusable element inside a focusable element.
+    //
+    // E.g.:
+    //
+    // ```html
+    // <button>
+    //   <span>Click me</span>
+    // </button>
+    // ```
+    focusableElement = focusableElement.closest(focusableSelector) as HTMLElement
+
+    history.unshift(focusableElement ?? e.target)
 
     // Filter out DOM Nodes that don't exist anymore
     history = history.filter((x) => x != null && x.isConnected)

@@ -4,7 +4,7 @@ import { getOwnerDocument } from './owner'
 
 // Credit:
 //  - https://stackoverflow.com/a/30753870
-let focusableSelector = [
+export let focusableSelector = [
   '[contentEditable=true]',
   '[tabindex]',
   'a[href]',
