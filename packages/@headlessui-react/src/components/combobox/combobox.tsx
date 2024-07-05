@@ -1321,12 +1321,36 @@ function InputFn<
     if (!data.immediate) return
     if (data.comboboxState === ComboboxState.Open) return
 
-    flushSync(() => actions.openCombobox())
+    // In a scenario where you have this setup:
+    //
+    // ```ts
+    // {condition && (
+    //   <Combobox immediate>
+    //     <ComboboxInput autoFocus />
+    //   </Combobox>
+    // )}
+    // ```
+    //
+    // Then we will trigger the `openCombobox` in a `flushSync`, but we are
+    // already in the middle of rendering. This will result in the following
+    // warning:
+    //
+    // ```
+    // Warning: flushSync was called from inside a lifecycle method. React
+    // cannot flush when React is already rendering. Consider moving this call
+    // to a scheduler task or micro task.
+    // ```
+    //
+    // Which is why we wrap this in a `microTask` to make sure we are not in the
+    // middle of rendering.
+    d.microTask(() => {
+      flushSync(() => actions.openCombobox())
 
-    // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
-    // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
-    // selecting the active option when the user tabs away.
-    actions.setActivationTrigger(ActivationTrigger.Focus)
+      // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
+      // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
+      // selecting the active option when the user tabs away.
+      actions.setActivationTrigger(ActivationTrigger.Focus)
+    })
   })
 
   let labelledBy = useLabelledBy()
