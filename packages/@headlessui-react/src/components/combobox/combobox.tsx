@@ -1346,9 +1346,10 @@ function InputFn<
     d.microTask(() => {
       flushSync(() => actions.openCombobox())
 
-      // We need to make sure that tabbing through a form doesn't result in incorrectly setting the
-      // value of the combobox. We will set the activation trigger to `Focus`, and we will ignore
-      // selecting the active option when the user tabs away.
+      // We need to make sure that tabbing through a form doesn't result in
+      // incorrectly setting the value of the combobox. We will set the
+      // activation trigger to `Focus`, and we will ignore selecting the active
+      // option when the user tabs away.
       actions.setActivationTrigger(ActivationTrigger.Focus)
     })
   })
