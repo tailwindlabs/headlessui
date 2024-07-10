@@ -23,7 +23,7 @@ npm install @headlessui/vue
 
 ## Documentation
 
-For full documentation, visit [headlessui.dev](https://headlessui.dev/vue/menu).
+For full documentation, visit [headlessui.com](https://headlessui.com/v1/vue).
 
 ## Community
 
