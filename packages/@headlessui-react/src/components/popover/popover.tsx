@@ -297,7 +297,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
       }
     }
 
-    // Use another heuristic to try and calculate wether or not the focusable
+    // Use another heuristic to try and calculate whether or not the focusable
     // elements are near each other (aka, following the default focus/tab order
     // from the browser). If they are then it doesn't really matter if they are
     // portalled or not because we can follow the default tab order. But if they
