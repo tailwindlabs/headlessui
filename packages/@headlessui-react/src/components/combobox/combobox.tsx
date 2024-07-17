@@ -636,8 +636,10 @@ export type ComboboxProps<
     name?: string
     immediate?: boolean
     virtual?: {
-      options: NoInfer<TValue>[]
-      disabled?: (value: NoInfer<TValue>) => boolean
+      options: TMultiple extends true ? EnsureArray<NoInfer<TValue>> : NoInfer<TValue>[]
+      disabled?: (
+        value: TMultiple extends true ? EnsureArray<NoInfer<TValue>>[number] : NoInfer<TValue>
+      ) => boolean
     } | null
 
     onClose?(): void
