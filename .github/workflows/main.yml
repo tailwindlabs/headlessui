@@ -14,7 +14,7 @@ env:
 
 jobs:
   install:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Begin CI...
