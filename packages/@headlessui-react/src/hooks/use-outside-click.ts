@@ -101,7 +101,7 @@ export function useOutsideClick(
 
       return cbRef.current(event, target)
     },
-    [cbRef]
+    [cbRef, containers]
   )
 
   let initialClickTarget = useRef<EventTarget | null>(null)
