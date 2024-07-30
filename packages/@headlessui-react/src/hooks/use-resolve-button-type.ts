@@ -12,7 +12,7 @@ function resolveType<TTag>(props: { type?: string; as?: TTag }) {
 
 export function useResolveButtonType<TTag>(
   props: { type?: string; as?: TTag },
-  ref: MutableRefObject<HTMLElement | null>
+  ref: MutableRefObject<HTMLElement | null> | HTMLElement | null
 ) {
   let [type, setType] = useState(() => resolveType(props))
 
@@ -22,9 +22,11 @@ export function useResolveButtonType<TTag>(
 
   useIsoMorphicEffect(() => {
     if (type) return
-    if (!ref.current) return
 
-    if (ref.current instanceof HTMLButtonElement && !ref.current.hasAttribute('type')) {
+    let node = ref === null ? null : ref instanceof HTMLElement ? ref : ref.current
+    if (!node) return
+
+    if (node instanceof HTMLButtonElement && !node.hasAttribute('type')) {
       setType('button')
     }
   }, [type, ref])
