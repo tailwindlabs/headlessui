@@ -13,7 +13,7 @@ export function useResolveButtonType<TTag>(
     if (typeof tag === 'string' && tag.toLowerCase() === 'button') return 'button'
 
     // Resolve the type based on the HTML element
-    if (element instanceof HTMLButtonElement && !element.hasAttribute('type')) return 'button'
+    if (element?.tagName === 'BUTTON' && !element.hasAttribute('type')) return 'button'
 
     // Could not resolve the type
     return undefined
