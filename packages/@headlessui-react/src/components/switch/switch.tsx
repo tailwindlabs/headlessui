@@ -156,11 +156,13 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     ...theirProps
   } = props
   let groupContext = useContext(GroupContext)
+  let [switchElement, setSwitchElement] = useState<HTMLButtonElement | null>(null)
   let internalSwitchRef = useRef<HTMLButtonElement | null>(null)
   let switchRef = useSyncRefs(
     internalSwitchRef,
     ref,
-    groupContext === null ? null : groupContext.setSwitch
+    groupContext === null ? null : groupContext.setSwitch,
+    setSwitchElement
   )
 
   let defaultChecked = useDefaultValue(_defaultChecked)
@@ -221,7 +223,7 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
       id,
       ref: switchRef,
       role: 'switch',
-      type: useResolveButtonType(props, internalSwitchRef),
+      type: useResolveButtonType(props, switchElement),
       tabIndex: props.tabIndex === -1 ? 0 : props.tabIndex ?? 0,
       'aria-checked': checked,
       'aria-labelledby': labelledBy,

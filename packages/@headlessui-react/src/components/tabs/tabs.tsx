@@ -8,6 +8,7 @@ import React, {
   useMemo,
   useReducer,
   useRef,
+  useState,
   type ElementType,
   type MutableRefObject,
   type KeyboardEvent as ReactKeyboardEvent,
@@ -431,8 +432,9 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
   let actions = useActions('Tab')
   let data = useData('Tab')
 
+  let [tabElement, setTabElement] = useState<HTMLElement | null>(null)
   let internalTabRef = useRef<HTMLElement | null>(null)
-  let tabRef = useSyncRefs(internalTabRef, ref)
+  let tabRef = useSyncRefs(internalTabRef, ref, setTabElement)
 
   useIsoMorphicEffect(() => actions.registerTab(internalTabRef), [actions, internalTabRef])
 
@@ -542,7 +544,7 @@ function TabFn<TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
       onClick: handleSelection,
       id,
       role: 'tab',
-      type: useResolveButtonType(props, internalTabRef),
+      type: useResolveButtonType(props, tabElement),
       'aria-controls': panels[myIndex]?.current?.id,
       'aria-selected': selected,
       tabIndex: selected ? 0 : -1,

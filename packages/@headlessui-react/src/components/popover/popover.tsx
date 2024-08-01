@@ -643,7 +643,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     } satisfies ButtonRenderPropArg
   }, [visible, hover, focus, active, disabled, autoFocus])
 
-  let type = useResolveButtonType(props, internalButtonRef)
+  let type = useResolveButtonType(props, state.button)
   let ourProps = isWithinPanel
     ? mergeProps(
         {
