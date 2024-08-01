@@ -1,4 +1,4 @@
-import { useCallback, useRef, type MutableRefObject } from 'react'
+import { useCallback, useRef } from 'react'
 import { FocusableMode, isFocusableElement } from '../utils/focus-management'
 import { isMobile } from '../utils/platform'
 import { useDocumentEvent } from './use-document-event'
@@ -6,7 +6,7 @@ import { useIsTopLayer } from './use-is-top-layer'
 import { useLatestValue } from './use-latest-value'
 import { useWindowEvent } from './use-window-event'
 
-type Container = MutableRefObject<HTMLElement | null> | HTMLElement | null
+type Container = HTMLElement | null
 type ContainerCollection = Container[] | Set<Container>
 type ContainerInput = Container | ContainerCollection
 
@@ -69,15 +69,14 @@ export function useOutsideClick(
       // Ignore if the target exists in one of the containers
       for (let container of _containers) {
         if (container === null) continue
-        let domNode = container instanceof HTMLElement ? container : container.current
-        if (domNode?.contains(target)) {
+        if (container.contains(target)) {
           return
         }
 
         // If the click crossed a shadow boundary, we need to check if the
         // container is inside the tree by using `composedPath` to "pierce" the
         // shadow boundary
-        if (event.composed && event.composedPath().includes(domNode as EventTarget)) {
+        if (event.composed && event.composedPath().includes(container as EventTarget)) {
           return
         }
       }
