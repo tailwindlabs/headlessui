@@ -57,10 +57,8 @@ enum DisclosureStates {
 interface StateDefinition {
   disclosureState: DisclosureStates
 
-  linkedPanel: boolean
-
-  buttonRef: MutableRefObject<HTMLButtonElement | null>
-  panelRef: MutableRefObject<HTMLElement | null>
+  buttonElement: HTMLButtonElement | null
+  panelElement: HTMLElement | null
 
   buttonId: string | null
   panelId: string | null
@@ -73,8 +71,8 @@ enum ActionTypes {
   SetButtonId,
   SetPanelId,
 
-  LinkPanel,
-  UnlinkPanel,
+  SetButtonElement,
+  SetPanelElement,
 }
 
 type Actions =
@@ -82,8 +80,8 @@ type Actions =
   | { type: ActionTypes.CloseDisclosure }
   | { type: ActionTypes.SetButtonId; buttonId: string | null }
   | { type: ActionTypes.SetPanelId; panelId: string | null }
-  | { type: ActionTypes.LinkPanel }
-  | { type: ActionTypes.UnlinkPanel }
+  | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
+  | { type: ActionTypes.SetPanelElement; element: HTMLElement | null }
 
 let reducers: {
   [P in ActionTypes]: (
@@ -102,14 +100,6 @@ let reducers: {
     if (state.disclosureState === DisclosureStates.Closed) return state
     return { ...state, disclosureState: DisclosureStates.Closed }
   },
-  [ActionTypes.LinkPanel](state) {
-    if (state.linkedPanel === true) return state
-    return { ...state, linkedPanel: true }
-  },
-  [ActionTypes.UnlinkPanel](state) {
-    if (state.linkedPanel === false) return state
-    return { ...state, linkedPanel: false }
-  },
   [ActionTypes.SetButtonId](state, action) {
     if (state.buttonId === action.buttonId) return state
     return { ...state, buttonId: action.buttonId }
@@ -117,6 +107,14 @@ let reducers: {
   [ActionTypes.SetPanelId](state, action) {
     if (state.panelId === action.panelId) return state
     return { ...state, panelId: action.panelId }
+  },
+  [ActionTypes.SetButtonElement](state, action) {
+    if (state.buttonElement === action.element) return state
+    return { ...state, buttonElement: action.element }
+  },
+  [ActionTypes.SetPanelElement](state, action) {
+    if (state.panelElement === action.element) return state
+    return { ...state, panelElement: action.element }
   },
 }
 
@@ -195,14 +193,10 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
     )
   )
 
-  let panelRef = useRef<StateDefinition['panelRef']['current']>(null)
-  let buttonRef = useRef<StateDefinition['buttonRef']['current']>(null)
-
   let reducerBag = useReducer(stateReducer, {
     disclosureState: defaultOpen ? DisclosureStates.Open : DisclosureStates.Closed,
-    linkedPanel: false,
-    buttonRef,
-    panelRef,
+    buttonElement: null,
+    panelElement: null,
     buttonId: null,
     panelId: null,
   } as StateDefinition)
@@ -301,7 +295,13 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let isWithinPanel = panelContext === null ? false : panelContext === state.panelId
 
   let internalButtonRef = useRef<HTMLButtonElement | null>(null)
-  let buttonRef = useSyncRefs(internalButtonRef, ref, !isWithinPanel ? state.buttonRef : null)
+  let buttonRef = useSyncRefs(
+    internalButtonRef,
+    ref,
+    !isWithinPanel
+      ? useEvent((element) => dispatch({ type: ActionTypes.SetButtonElement, element }))
+      : null
+  )
   let mergeRefs = useMergeRefsFn()
 
   useEffect(() => {
@@ -323,7 +323,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           event.preventDefault()
           event.stopPropagation()
           dispatch({ type: ActionTypes.ToggleDisclosure })
-          state.buttonRef.current?.focus()
+          state.buttonElement?.focus()
           break
       }
     } else {
@@ -355,7 +355,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
     if (isWithinPanel) {
       dispatch({ type: ActionTypes.ToggleDisclosure })
-      state.buttonRef.current?.focus()
+      state.buttonElement?.focus()
     } else {
       dispatch({ type: ActionTypes.ToggleDisclosure })
     }
@@ -397,7 +397,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           id,
           type,
           'aria-expanded': state.disclosureState === DisclosureStates.Open,
-          'aria-controls': state.linkedPanel ? state.panelId : undefined,
+          'aria-controls': state.panelElement ? state.panelId : undefined,
           disabled: disabled || undefined,
           autoFocus,
           onKeyDown: handleKeyDown,
@@ -451,9 +451,12 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
   let mergeRefs = useMergeRefsFn()
 
-  let panelRef = useSyncRefs(ref, state.panelRef, (el) => {
-    startTransition(() => dispatch({ type: el ? ActionTypes.LinkPanel : ActionTypes.UnlinkPanel }))
-  })
+  let panelRef = useSyncRefs(
+    ref,
+    useEvent((element) => {
+      startTransition(() => dispatch({ type: ActionTypes.SetPanelElement, element }))
+    })
+  )
 
   useEffect(() => {
     dispatch({ type: ActionTypes.SetPanelId, panelId: id })
@@ -465,7 +468,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    state.panelRef,
+    state.panelElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : state.disclosureState === DisclosureStates.Open
