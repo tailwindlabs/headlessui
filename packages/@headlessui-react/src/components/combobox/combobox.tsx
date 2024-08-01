@@ -116,6 +116,10 @@ interface StateDefinition<T> {
 
   isTyping: boolean
 
+  inputElement: HTMLInputElement | null
+  buttonElement: HTMLButtonElement | null
+  optionsElement: HTMLElement | null
+
   __demoMode: boolean
 }
 
@@ -132,6 +136,10 @@ enum ActionTypes {
   SetActivationTrigger,
 
   UpdateVirtualConfiguration,
+
+  SetInputElement,
+  SetButtonElement,
+  SetOptionsElement,
 }
 
 function adjustOrderedState<T>(
@@ -192,6 +200,9 @@ type Actions<T> =
       options: T[]
       disabled: ((value: any) => boolean) | null
     }
+  | { type: ActionTypes.SetInputElement; element: HTMLInputElement | null }
+  | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
+  | { type: ActionTypes.SetOptionsElement; element: HTMLElement | null }
 
 let reducers: {
   [P in ActionTypes]: <T>(
@@ -245,7 +256,7 @@ let reducers: {
   [ActionTypes.GoToOption](state, action) {
     if (state.dataRef.current?.disabled) return state
     if (
-      state.dataRef.current?.optionsRef.current &&
+      state.optionsElement &&
       !state.dataRef.current?.optionsPropsRef.current.static &&
       state.comboboxState === ComboboxState.Closed
     ) {
@@ -419,6 +430,18 @@ let reducers: {
       virtual: { options: action.options, disabled: action.disabled ?? (() => false) },
     }
   },
+  [ActionTypes.SetInputElement]: (state, action) => {
+    if (state.inputElement === action.element) return state
+    return { ...state, inputElement: action.element }
+  },
+  [ActionTypes.SetButtonElement]: (state, action) => {
+    if (state.buttonElement === action.element) return state
+    return { ...state, buttonElement: action.element }
+  },
+  [ActionTypes.SetOptionsElement]: (state, action) => {
+    if (state.optionsElement === action.element) return state
+    return { ...state, optionsElement: action.element }
+  },
 }
 
 let ComboboxActionsContext = createContext<{
@@ -431,6 +454,10 @@ let ComboboxActionsContext = createContext<{
   selectActiveOption(): void
   setActivationTrigger(trigger: ActivationTrigger): void
   onChange(value: unknown): void
+
+  setInputElement(element: HTMLInputElement | null): void
+  setButtonElement(element: HTMLButtonElement | null): void
+  setOptionsElement(element: HTMLElement | null): void
 } | null>(null)
 ComboboxActionsContext.displayName = 'ComboboxActionsContext'
 
@@ -455,7 +482,7 @@ function VirtualProvider(props: {
   let { options } = data.virtual!
 
   let [paddingStart, paddingEnd] = useMemo(() => {
-    let el = data.optionsRef.current
+    let el = data.optionsElement
     if (!el) return [0, 0]
 
     let styles = window.getComputedStyle(el)
@@ -464,7 +491,7 @@ function VirtualProvider(props: {
       parseFloat(styles.paddingBlockStart || styles.paddingTop),
       parseFloat(styles.paddingBlockEnd || styles.paddingBottom),
     ]
-  }, [data.optionsRef.current])
+  }, [data.optionsElement])
 
   let virtualizer = useVirtualizer({
     enabled: options.length !== 0,
@@ -475,7 +502,7 @@ function VirtualProvider(props: {
       return 40
     },
     getScrollElement() {
-      return (data.optionsRef.current ?? null) as HTMLElement | null
+      return data.optionsElement
     },
     overscan: 12,
   })
@@ -573,10 +600,6 @@ let ComboboxDataContext = createContext<
         static: boolean
         hold: boolean
       }>
-
-      inputRef: MutableRefObject<HTMLInputElement | null>
-      buttonRef: MutableRefObject<HTMLButtonElement | null>
-      optionsRef: MutableRefObject<HTMLElement | null>
     } & Omit<StateDefinition<unknown>, 'dataRef'>)
   | null
 >(null)
@@ -688,16 +711,15 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       : null,
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
+    inputElement: null,
+    buttonElement: null,
+    optionsElement: null,
     __demoMode,
   } as StateDefinition<TValue>)
 
   let defaultToFirstOption = useRef(false)
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
-
-  let inputRef = useRef<_Data['inputRef']['current']>(null)
-  let buttonRef = useRef<_Data['buttonRef']['current']>(null)
-  let optionsRef = useRef<_Data['optionsRef']['current']>(null)
 
   type TActualValue = true extends typeof multiple ? EnsureArray<TValue>[number] : TValue
   let compare = useByComparator<TActualValue>(by)
@@ -733,9 +755,6 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       ...state,
       immediate,
       optionsPropsRef,
-      inputRef,
-      buttonRef,
-      optionsRef,
       value,
       defaultValue,
       disabled,
@@ -791,8 +810,10 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   // Handle outside click
   let outsideClickEnabled = data.comboboxState === ComboboxState.Open
-  useOutsideClick(outsideClickEnabled, [data.buttonRef, data.inputRef, data.optionsRef], () =>
-    actions.closeCombobox()
+  useOutsideClick(
+    outsideClickEnabled,
+    [data.buttonElement, data.inputElement, data.optionsElement],
+    () => actions.closeCombobox()
   )
 
   let slot = useMemo(() => {
@@ -896,6 +917,18 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     dispatch({ type: ActionTypes.SetActivationTrigger, trigger })
   })
 
+  let setInputElement = useEvent((element: HTMLInputElement | null) => {
+    dispatch({ type: ActionTypes.SetInputElement, element })
+  })
+
+  let setButtonElement = useEvent((element: HTMLButtonElement | null) => {
+    dispatch({ type: ActionTypes.SetButtonElement, element })
+  })
+
+  let setOptionsElement = useEvent((element: HTMLElement | null) => {
+    dispatch({ type: ActionTypes.SetOptionsElement, element })
+  })
+
   let actions = useMemo<_Actions>(
     () => ({
       onChange,
@@ -906,6 +939,9 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       openCombobox,
       setActivationTrigger,
       selectActiveOption,
+      setInputElement,
+      setButtonElement,
+      setOptionsElement,
     }),
     []
   )
@@ -923,7 +959,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     <LabelProvider
       value={labelledby}
       props={{
-        htmlFor: data.inputRef.current?.id,
+        htmlFor: data.inputElement?.id,
       }}
       slot={{
         open: data.comboboxState === ComboboxState.Open,
@@ -1019,15 +1055,16 @@ function InputFn<
     ...theirProps
   } = props
 
-  let inputRef = useSyncRefs(data.inputRef, ref, useFloatingReference())
-  let ownerDocument = useOwnerDocument(data.inputRef)
+  let internalInputRef = useRef<HTMLInputElement | null>(null)
+  let inputRef = useSyncRefs(internalInputRef, ref, useFloatingReference(), actions.setInputElement)
+  let ownerDocument = useOwnerDocument(data.inputElement)
 
   let d = useDisposables()
 
   let clear = useEvent(() => {
     actions.onChange(null)
-    if (data.optionsRef.current) {
-      data.optionsRef.current.scrollTop = 0
+    if (data.optionsElement) {
+      data.optionsElement.scrollTop = 0
     }
     actions.goToOption(Focus.Nothing)
   })
@@ -1071,7 +1108,7 @@ function InputFn<
       // using an IME, we don't want to mess with the input at all.
       if (data.isTyping) return
 
-      let input = data.inputRef.current
+      let input = internalInputRef.current
       if (!input) return
 
       if (oldState === ComboboxState.Open && state === ComboboxState.Closed) {
@@ -1121,7 +1158,7 @@ function InputFn<
         // using an IME, we don't want to mess with the input at all.
         if (data.isTyping) return
 
-        let input = data.inputRef.current
+        let input = internalInputRef.current
         if (!input) return
 
         // Capture current state
@@ -1232,7 +1269,7 @@ function InputFn<
       case Keys.Escape:
         if (data.comboboxState !== ComboboxState.Open) return
         event.preventDefault()
-        if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
+        if (data.optionsElement && !data.optionsPropsRef.current.static) {
           event.stopPropagation()
         }
 
@@ -1286,10 +1323,10 @@ function InputFn<
       (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
 
     // Focus is moved into the list, we don't want to close yet.
-    if (data.optionsRef.current?.contains(relatedTarget)) return
+    if (data.optionsElement?.contains(relatedTarget)) return
 
     // Focus is moved to the button, we don't want to close yet.
-    if (data.buttonRef.current?.contains(relatedTarget)) return
+    if (data.buttonElement?.contains(relatedTarget)) return
 
     // Focus is moved, but the combobox is not open. This can mean two things:
     //
@@ -1316,8 +1353,8 @@ function InputFn<
   let handleFocus = useEvent((event: ReactFocusEvent) => {
     let relatedTarget =
       (event.relatedTarget as HTMLElement) ?? history.find((x) => x !== event.currentTarget)
-    if (data.buttonRef.current?.contains(relatedTarget)) return
-    if (data.optionsRef.current?.contains(relatedTarget)) return
+    if (data.buttonElement?.contains(relatedTarget)) return
+    if (data.optionsElement?.contains(relatedTarget)) return
     if (data.disabled) return
 
     if (!data.immediate) return
@@ -1378,7 +1415,7 @@ function InputFn<
       id,
       role: 'combobox',
       type,
-      'aria-controls': data.optionsRef.current?.id,
+      'aria-controls': data.optionsElement?.id,
       'aria-expanded': data.comboboxState === ComboboxState.Open,
       'aria-activedescendant':
         data.activeOptionIndex === null
@@ -1457,7 +1494,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 ) {
   let data = useData('Combobox.Button')
   let actions = useActions('Combobox.Button')
-  let buttonRef = useSyncRefs(data.buttonRef, ref)
+  let buttonRef = useSyncRefs(ref, actions.setButtonElement)
+
   let internalId = useId()
   let {
     id = `headlessui-combobox-button-${internalId}`,
@@ -1466,7 +1504,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     ...theirProps
   } = props
 
-  let refocusInput = useRefocusableInput(data.inputRef)
+  let refocusInput = useRefocusableInput(data.inputElement)
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     switch (event.key) {
@@ -1505,7 +1543,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.Escape:
         if (data.comboboxState !== ComboboxState.Open) return
         event.preventDefault()
-        if (data.optionsRef.current && !data.optionsPropsRef.current.static) {
+        if (data.optionsElement && !data.optionsPropsRef.current.static) {
           event.stopPropagation()
         }
         flushSync(() => actions.closeCombobox())
@@ -1561,10 +1599,10 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     {
       ref: buttonRef,
       id,
-      type: useResolveButtonType(props, data.buttonRef),
+      type: useResolveButtonType(props, data.buttonElement),
       tabIndex: -1,
       'aria-haspopup': 'listbox',
-      'aria-controls': data.optionsRef.current?.id,
+      'aria-controls': data.optionsElement?.id,
       'aria-expanded': data.comboboxState === ComboboxState.Open,
       'aria-labelledby': labelledBy,
       disabled: disabled || undefined,
@@ -1635,20 +1673,20 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
-  let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
-  let ownerDocument = useOwnerDocument(data.optionsRef)
+  let optionsRef = useSyncRefs(ref, anchor ? floatingRef : null, actions.setOptionsElement)
+  let ownerDocument = useOwnerDocument(data.optionsElement)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    data.optionsRef,
+    data.optionsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : data.comboboxState === ComboboxState.Open
   )
 
   // Ensure we close the combobox as soon as the input becomes hidden
-  useOnDisappear(visible, data.inputRef, actions.closeCombobox)
+  useOnDisappear(visible, data.inputElement, actions.closeCombobox)
 
   // Enable scroll locking when the combobox is visible, and `modal` is enabled
   let scrollLockEnabled = data.__demoMode
@@ -1661,11 +1699,10 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ? false
     : modal && data.comboboxState === ComboboxState.Open
   useInertOthers(inertOthersEnabled, {
-    allowed: useEvent(() => [
-      data.inputRef.current,
-      data.buttonRef.current,
-      data.optionsRef.current,
-    ]),
+    allowed: useCallback(
+      () => [data.inputElement, data.buttonElement, data.optionsElement],
+      [data.inputElement, data.buttonElement, data.optionsElement]
+    ),
   })
 
   useIsoMorphicEffect(() => {
@@ -1676,7 +1713,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }, [data.optionsPropsRef, hold])
 
   useTreeWalker(data.comboboxState === ComboboxState.Open, {
-    container: data.optionsRef.current,
+    container: data.optionsElement,
     accept(node) {
       if (node.getAttribute('role') === 'option') return NodeFilter.FILTER_REJECT
       if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
@@ -1687,7 +1724,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     },
   })
 
-  let labelledBy = useLabelledBy([data.buttonRef.current?.id])
+  let labelledBy = useLabelledBy([data.buttonElement?.id])
 
   let slot = useMemo(() => {
     return {
@@ -1728,8 +1765,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     style: {
       ...theirProps.style,
       ...style,
-      '--input-width': useElementSize(data.inputRef, true).width,
-      '--button-width': useElementSize(data.buttonRef, true).width,
+      '--input-width': useElementSize(data.inputElement, true).width,
+      '--button-width': useElementSize(data.buttonElement, true).width,
     } as CSSProperties,
     onWheel: data.activationTrigger === ActivationTrigger.Pointer ? undefined : handleWheel,
     onMouseDown: handleMouseDown,
@@ -1840,7 +1877,7 @@ function OptionFn<
     ...theirProps
   } = props
 
-  let refocusInput = useRefocusableInput(data.inputRef)
+  let refocusInput = useRefocusableInput(data.inputElement)
 
   let active = data.virtual
     ? data.activeOptionIndex === data.calculateIndex(value)
