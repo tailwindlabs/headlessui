@@ -1,4 +1,4 @@
-import { useRef, type MutableRefObject } from 'react'
+import { useRef } from 'react'
 import { useEvent } from './use-event'
 import { useEventListener } from './use-event-listener'
 
@@ -8,9 +8,7 @@ import { useEventListener } from './use-event-listener'
  * This hook will also keep the cursor position into account to make sure the
  * cursor is placed at the correct position as-if we didn't loose focus at all.
  */
-export function useRefocusableInput(
-  ref: MutableRefObject<HTMLInputElement | null> | HTMLInputElement | null
-) {
+export function useRefocusableInput(input: HTMLInputElement | null) {
   // Track the cursor position and the value of the input
   let info = useRef({
     value: '',
@@ -18,9 +16,7 @@ export function useRefocusableInput(
     selectionEnd: null as number | null,
   })
 
-  let element = ref === null ? null : ref instanceof HTMLInputElement ? ref : ref.current
-
-  useEventListener(element, 'blur', (event) => {
+  useEventListener(input, 'blur', (event) => {
     let target = event.target
     if (!(target instanceof HTMLInputElement)) return
 
@@ -32,8 +28,6 @@ export function useRefocusableInput(
   })
 
   return useEvent(() => {
-    let input = ref === null ? null : ref instanceof HTMLInputElement ? ref : ref.current
-
     // If the input is already focused, we don't need to do anything
     if (document.activeElement === input) return
 
