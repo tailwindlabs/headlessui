@@ -537,7 +537,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     useFloatingReference(),
     isWithinPanel
       ? null
-      : (button) => {
+      : useEvent((button) => {
           if (button) {
             state.buttons.current.push(uniqueIdentifier)
           } else {
@@ -552,7 +552,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
           }
 
           button && dispatch({ type: ActionTypes.SetButton, button })
-        }
+        })
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
   let ownerDocument = useOwnerDocument(internalButtonRef)
@@ -643,7 +643,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     } satisfies ButtonRenderPropArg
   }, [visible, hover, focus, active, disabled, autoFocus])
 
-  let type = useResolveButtonType(props, internalButtonRef)
+  let type = useResolveButtonType(props, state.button)
   let ourProps = isWithinPanel
     ? mergeProps(
         {
@@ -763,13 +763,13 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     ...theirProps
   } = props
   let [{ popoverState }, dispatch] = usePopoverContext('Popover.Backdrop')
-  let internalBackdropRef = useRef<HTMLElement | null>(null)
-  let backdropRef = useSyncRefs(ref, internalBackdropRef)
+  let [backdropElement, setBackdropElement] = useState<HTMLElement | null>(null)
+  let backdropRef = useSyncRefs(ref, setBackdropElement)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    internalBackdropRef,
+    backdropElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : popoverState === PopoverStates.Open
@@ -865,9 +865,12 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     portal = true
   }
 
-  let panelRef = useSyncRefs(internalPanelRef, ref, anchor ? floatingRef : null, (panel) => {
-    dispatch({ type: ActionTypes.SetPanel, panel })
-  })
+  let panelRef = useSyncRefs(
+    internalPanelRef,
+    ref,
+    anchor ? floatingRef : null,
+    useEvent((panel) => dispatch({ type: ActionTypes.SetPanel, panel }))
+  )
   let ownerDocument = useOwnerDocument(internalPanelRef)
   let mergeRefs = useMergeRefsFn()
 
@@ -881,7 +884,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    internalPanelRef,
+    state.panel,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : state.popoverState === PopoverStates.Open

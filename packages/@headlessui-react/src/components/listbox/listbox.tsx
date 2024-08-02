@@ -22,7 +22,6 @@ import React, {
 import { flushSync } from 'react-dom'
 import { useActivePress } from '../../hooks/use-active-press'
 import { useByComparator, type ByComparator } from '../../hooks/use-by-comparator'
-import { useComputed } from '../../hooks/use-computed'
 import { useControllable } from '../../hooks/use-controllable'
 import { useDefaultValue } from '../../hooks/use-default-value'
 import { useDidElementMove } from '../../hooks/use-did-element-move'
@@ -116,6 +115,9 @@ interface StateDefinition<T> {
   activeOptionIndex: number | null
   activationTrigger: ActivationTrigger
 
+  buttonElement: HTMLButtonElement | null
+  optionsElement: HTMLElement | null
+
   __demoMode: boolean
 }
 
@@ -129,6 +131,9 @@ enum ActionTypes {
 
   RegisterOption,
   UnregisterOption,
+
+  SetButtonElement,
+  SetOptionsElement,
 }
 
 function adjustOrderedState<T>(
@@ -173,6 +178,8 @@ type Actions<T> =
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef<T> }
   | { type: ActionTypes.UnregisterOption; id: string }
+  | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
+  | { type: ActionTypes.SetOptionsElement; element: HTMLElement | null }
 
 let reducers: {
   [P in ActionTypes]: <T>(
@@ -381,6 +388,14 @@ let reducers: {
       activationTrigger: ActivationTrigger.Other,
     }
   },
+  [ActionTypes.SetButtonElement]: (state, action) => {
+    if (state.buttonElement === action.element) return state
+    return { ...state, buttonElement: action.element }
+  },
+  [ActionTypes.SetOptionsElement]: (state, action) => {
+    if (state.optionsElement === action.element) return state
+    return { ...state, optionsElement: action.element }
+  },
 }
 
 let ListboxActionsContext = createContext<{
@@ -394,6 +409,8 @@ let ListboxActionsContext = createContext<{
   onChange(value: unknown): void
   search(query: string): void
   clearSearch(): void
+  setButtonElement(element: HTMLButtonElement | null): void
+  setOptionsElement(element: HTMLElement | null): void
 } | null>(null)
 ListboxActionsContext.displayName = 'ListboxActionsContext'
 
@@ -425,9 +442,6 @@ let ListboxDataContext = createContext<
       }>
 
       listRef: MutableRefObject<Map<string, HTMLElement | null>>
-
-      buttonRef: MutableRefObject<HTMLButtonElement | null>
-      optionsRef: MutableRefObject<HTMLElement | null>
     } & Omit<StateDefinition<unknown>, 'dataRef'>)
   | null
 >(null)
@@ -521,13 +535,13 @@ function ListboxFn<
     activeOptionIndex: null,
     activationTrigger: ActivationTrigger.Other,
     optionsVisible: false,
+    buttonElement: null,
+    optionsElement: null,
     __demoMode,
   } as StateDefinition<TType>)
 
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
-  let buttonRef = useRef<_Data['buttonRef']['current']>(null)
-  let optionsRef = useRef<_Data['optionsRef']['current']>(null)
   let listRef = useRef<_Data['listRef']['current']>(new Map())
 
   let compare = useByComparator(by)
@@ -556,8 +570,6 @@ function ListboxFn<
       compare,
       isSelected,
       optionsPropsRef,
-      buttonRef,
-      optionsRef,
       listRef,
     }),
     [value, disabled, invalid, multiple, state, listRef]
@@ -569,14 +581,18 @@ function ListboxFn<
 
   // Handle outside click
   let outsideClickEnabled = data.listboxState === ListboxStates.Open
-  useOutsideClick(outsideClickEnabled, [data.buttonRef, data.optionsRef], (event, target) => {
-    dispatch({ type: ActionTypes.CloseListbox })
+  useOutsideClick(
+    outsideClickEnabled,
+    [data.buttonElement, data.optionsElement],
+    (event, target) => {
+      dispatch({ type: ActionTypes.CloseListbox })
 
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      data.buttonRef.current?.focus()
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        data.buttonElement?.focus()
+      }
     }
-  })
+  )
 
   let slot = useMemo(() => {
     return {
@@ -647,6 +663,12 @@ function ListboxFn<
 
   let search = useEvent((value: string) => dispatch({ type: ActionTypes.Search, value }))
   let clearSearch = useEvent(() => dispatch({ type: ActionTypes.ClearSearch }))
+  let setButtonElement = useEvent((element: HTMLButtonElement | null) => {
+    dispatch({ type: ActionTypes.SetButtonElement, element })
+  })
+  let setOptionsElement = useEvent((element: HTMLElement | null) => {
+    dispatch({ type: ActionTypes.SetOptionsElement, element })
+  })
 
   let actions = useMemo<_Actions>(
     () => ({
@@ -659,6 +681,8 @@ function ListboxFn<
       selectOption,
       search,
       clearSearch,
+      setButtonElement,
+      setOptionsElement,
     }),
     []
   )
@@ -676,7 +700,7 @@ function ListboxFn<
     <LabelProvider
       value={labelledby}
       props={{
-        htmlFor: data.buttonRef.current?.id,
+        htmlFor: data.buttonElement?.id,
       }}
       slot={{
         open: data.listboxState === ListboxStates.Open,
@@ -760,7 +784,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     autoFocus = false,
     ...theirProps
   } = props
-  let buttonRef = useSyncRefs(data.buttonRef, ref, useFloatingReference())
+  let buttonRef = useSyncRefs(ref, useFloatingReference(), actions.setButtonElement)
   let getFloatingReferenceProps = useFloatingReferenceProps()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -801,7 +825,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (data.listboxState === ListboxStates.Open) {
       flushSync(() => actions.closeListbox())
-      data.buttonRef.current?.focus({ preventScroll: true })
+      data.buttonElement?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
       actions.openListbox()
@@ -836,9 +860,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     {
       ref: buttonRef,
       id,
-      type: useResolveButtonType(props, data.buttonRef),
+      type: useResolveButtonType(props, data.buttonElement),
       'aria-haspopup': 'listbox',
-      'aria-controls': data.optionsRef.current?.id,
+      'aria-controls': data.optionsElement?.id,
       'aria-expanded': data.listboxState === ListboxStates.Open,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
@@ -916,19 +940,19 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let data = useData('Listbox.Options')
   let actions = useActions('Listbox.Options')
 
-  let ownerDocument = useOwnerDocument(data.optionsRef)
+  let ownerDocument = useOwnerDocument(data.optionsElement)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    data.optionsRef,
+    data.optionsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : data.listboxState === ListboxStates.Open
   )
 
   // Ensure we close the listbox as soon as the button becomes hidden
-  useOnDisappear(visible, data.buttonRef, actions.closeListbox)
+  useOnDisappear(visible, data.buttonElement, actions.closeListbox)
 
   // Enable scroll locking when the listbox is visible, and `modal` is enabled
   let scrollLockEnabled = data.__demoMode
@@ -941,7 +965,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ? false
     : modal && data.listboxState === ListboxStates.Open
   useInertOthers(inertOthersEnabled, {
-    allowed: useEvent(() => [data.buttonRef.current, data.optionsRef.current]),
+    allowed: useEvent(() => [data.buttonElement, data.optionsElement]),
   })
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
@@ -954,7 +978,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
   // want to transition the y-axis for example you will run into the same issue again.
   let didElementMoveEnabled = data.listboxState !== ListboxStates.Open
-  let didButtonMove = useDidElementMove(didElementMoveEnabled, data.buttonRef)
+  let didButtonMove = useDidElementMove(didElementMoveEnabled, data.buttonElement)
 
   // Now that we know that the button did move or not, we can either disable the panel and all of
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
@@ -999,18 +1023,18 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let [floatingRef, style] = useFloatingPanel(anchorOptions)
   let getFloatingPanelProps = useFloatingPanelProps()
-  let optionsRef = useSyncRefs(data.optionsRef, ref, anchor ? floatingRef : null)
+  let optionsRef = useSyncRefs(ref, anchor ? floatingRef : null, actions.setOptionsElement)
 
   let searchDisposables = useDisposables()
 
   useEffect(() => {
-    let container = data.optionsRef.current
+    let container = data.optionsElement
     if (!container) return
     if (data.listboxState !== ListboxStates.Open) return
     if (container === getOwnerDocument(container)?.activeElement) return
 
     container?.focus({ preventScroll: true })
-  }, [data.listboxState, data.optionsRef, data.optionsRef.current])
+  }, [data.listboxState, data.optionsElement])
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     searchDisposables.dispose()
@@ -1036,7 +1060,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
         }
         if (data.mode === ValueMode.Single) {
           flushSync(() => actions.closeListbox())
-          data.buttonRef.current?.focus({ preventScroll: true })
+          data.buttonElement?.focus({ preventScroll: true })
         }
         break
 
@@ -1066,7 +1090,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
         event.preventDefault()
         event.stopPropagation()
         flushSync(() => actions.closeListbox())
-        data.buttonRef.current?.focus({ preventScroll: true })
+        data.buttonElement?.focus({ preventScroll: true })
         return
 
       case Keys.Tab:
@@ -1074,7 +1098,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
         event.stopPropagation()
         flushSync(() => actions.closeListbox())
         focusFrom(
-          data.buttonRef.current!,
+          data.buttonElement!,
           event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
         )
         break
@@ -1088,7 +1112,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     }
   })
 
-  let labelledby = useComputed(() => data.buttonRef.current?.id, [data.buttonRef.current])
+  let labelledby = data.buttonElement?.id
   let slot = useMemo(() => {
     return {
       open: data.listboxState === ListboxStates.Open,
@@ -1112,7 +1136,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     style: {
       ...theirProps.style,
       ...style,
-      '--button-width': useElementSize(data.buttonRef, true).width,
+      '--button-width': useElementSize(data.buttonElement, true).width,
     } as CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
@@ -1230,7 +1254,7 @@ function OptionFn<
     actions.onChange(value)
     if (data.mode === ValueMode.Single) {
       flushSync(() => actions.closeListbox())
-      data.buttonRef.current?.focus({ preventScroll: true })
+      data.buttonElement?.focus({ preventScroll: true })
     }
   })
 

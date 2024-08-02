@@ -1,33 +1,21 @@
-import { useState, type MutableRefObject } from 'react'
-import { useIsoMorphicEffect } from './use-iso-morphic-effect'
-
-function resolveType<TTag>(props: { type?: string; as?: TTag }) {
-  if (props.type) return props.type
-
-  let tag = props.as ?? 'button'
-  if (typeof tag === 'string' && tag.toLowerCase() === 'button') return 'button'
-
-  return undefined
-}
+import { useMemo } from 'react'
 
 export function useResolveButtonType<TTag>(
   props: { type?: string; as?: TTag },
-  ref: MutableRefObject<HTMLElement | null>
+  element: HTMLElement | null
 ) {
-  let [type, setType] = useState(() => resolveType(props))
+  return useMemo(() => {
+    // A type was provided
+    if (props.type) return props.type
 
-  useIsoMorphicEffect(() => {
-    setType(resolveType(props))
-  }, [props.type, props.as])
+    // Resolve the type based on the `as` prop
+    let tag = props.as ?? 'button'
+    if (typeof tag === 'string' && tag.toLowerCase() === 'button') return 'button'
 
-  useIsoMorphicEffect(() => {
-    if (type) return
-    if (!ref.current) return
+    // Resolve the type based on the HTML element
+    if (element?.tagName === 'BUTTON' && !element.hasAttribute('type')) return 'button'
 
-    if (ref.current instanceof HTMLButtonElement && !ref.current.hasAttribute('type')) {
-      setType('button')
-    }
-  }, [type, ref])
-
-  return type
+    // Could not resolve the type
+    return undefined
+  }, [props.type, props.as, element])
 }

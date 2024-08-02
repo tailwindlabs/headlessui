@@ -51,7 +51,7 @@ export function transitionDataAttributes(data: TransitionData) {
 
 export function useTransition(
   enabled: boolean,
-  elementRef: MutableRefObject<HTMLElement | null>,
+  element: HTMLElement | null,
   show: boolean,
   events?: {
     start?(show: boolean): void
@@ -68,98 +68,92 @@ export function useTransition(
 
   let d = useDisposables()
 
-  useIsoMorphicEffect(
-    function retry() {
-      if (!enabled) return
+  useIsoMorphicEffect(() => {
+    if (!enabled) return
 
+    if (show) {
+      setVisible(true)
+    }
+
+    if (!element) {
       if (show) {
-        setVisible(true)
+        addFlag(TransitionState.Enter | TransitionState.Closed)
       }
+      return
+    }
 
-      let node = elementRef.current
-      if (!node) {
-        // Retry if the DOM node isn't available yet
+    events?.start?.(show)
+
+    return transition(element, {
+      inFlight,
+      prepare() {
+        if (cancelledRef.current) {
+          // Cancelled a cancellation, we're back to the original state.
+          cancelledRef.current = false
+        } else {
+          // If we were already in-flight, then we want to cancel the current
+          // transition.
+          cancelledRef.current = inFlight.current
+        }
+
+        inFlight.current = true
+
+        if (cancelledRef.current) return
+
         if (show) {
           addFlag(TransitionState.Enter | TransitionState.Closed)
-          return d.nextFrame(() => retry())
+          removeFlag(TransitionState.Leave)
+        } else {
+          addFlag(TransitionState.Leave)
+          removeFlag(TransitionState.Enter)
         }
-        return
-      }
-
-      events?.start?.(show)
-
-      return transition(node, {
-        inFlight,
-        prepare() {
-          if (cancelledRef.current) {
-            // Cancelled a cancellation, we're back to the original state.
-            cancelledRef.current = false
-          } else {
-            // If we were already in-flight, then we want to cancel the current
-            // transition.
-            cancelledRef.current = inFlight.current
-          }
-
-          inFlight.current = true
-
-          if (cancelledRef.current) return
-
+      },
+      run() {
+        if (cancelledRef.current) {
+          // If we cancelled a transition, then the `show` state is going to
+          // be inverted already, but that doesn't mean we have to go to that
+          // new state.
+          //
+          // What we actually want is to revert to the "idle" state (the
+          // stable state where an `Enter` transitions to, and a `Leave`
+          // transitions from.)
+          //
+          // Because of this, it might look like we are swapping the flags in
+          // the following branches, but that's not the case.
           if (show) {
-            addFlag(TransitionState.Enter | TransitionState.Closed)
-            removeFlag(TransitionState.Leave)
-          } else {
+            removeFlag(TransitionState.Enter | TransitionState.Closed)
             addFlag(TransitionState.Leave)
-            removeFlag(TransitionState.Enter)
-          }
-        },
-        run() {
-          if (cancelledRef.current) {
-            // If we cancelled a transition, then the `show` state is going to
-            // be inverted already, but that doesn't mean we have to go to that
-            // new state.
-            //
-            // What we actually want is to revert to the "idle" state (the
-            // stable state where an `Enter` transitions to, and a `Leave`
-            // transitions from.)
-            //
-            // Because of this, it might look like we are swapping the flags in
-            // the following branches, but that's not the case.
-            if (show) {
-              removeFlag(TransitionState.Enter | TransitionState.Closed)
-              addFlag(TransitionState.Leave)
-            } else {
-              removeFlag(TransitionState.Leave)
-              addFlag(TransitionState.Enter | TransitionState.Closed)
-            }
           } else {
-            if (show) {
-              removeFlag(TransitionState.Closed)
-            } else {
-              addFlag(TransitionState.Closed)
-            }
+            removeFlag(TransitionState.Leave)
+            addFlag(TransitionState.Enter | TransitionState.Closed)
           }
-        },
-        done() {
-          if (cancelledRef.current) {
-            if (typeof node.getAnimations === 'function' && node.getAnimations().length > 0) {
-              return
-            }
+        } else {
+          if (show) {
+            removeFlag(TransitionState.Closed)
+          } else {
+            addFlag(TransitionState.Closed)
           }
-
-          inFlight.current = false
-
-          removeFlag(TransitionState.Enter | TransitionState.Leave | TransitionState.Closed)
-
-          if (!show) {
-            setVisible(false)
+        }
+      },
+      done() {
+        if (cancelledRef.current) {
+          if (typeof element.getAnimations === 'function' && element.getAnimations().length > 0) {
+            return
           }
+        }
 
-          events?.end?.(show)
-        },
-      })
-    },
-    [enabled, show, elementRef, d]
-  )
+        inFlight.current = false
+
+        removeFlag(TransitionState.Enter | TransitionState.Leave | TransitionState.Closed)
+
+        if (!show) {
+          setVisible(false)
+        }
+
+        events?.end?.(show)
+      },
+    })
+  }, [enabled, show, element, d])
 
   if (!enabled) {
     return [

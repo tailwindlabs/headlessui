@@ -7,11 +7,7 @@ function computeSize(element: HTMLElement | null) {
   return { width, height }
 }
 
-export function useElementSize(
-  ref: React.MutableRefObject<HTMLElement | null> | HTMLElement | null,
-  unit = false
-) {
-  let element = ref === null ? null : 'current' in ref ? ref.current : ref
+export function useElementSize(element: HTMLElement | null, unit = false) {
   let [identity, forceRerender] = useReducer(() => ({}), {})
 
   // When the element changes during a re-render, we want to make sure we

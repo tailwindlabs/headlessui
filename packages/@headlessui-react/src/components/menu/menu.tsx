@@ -6,7 +6,7 @@ import { useHover } from '@react-aria/interactions'
 import React, {
   Fragment,
   createContext,
-  createRef,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -94,8 +94,8 @@ type MenuItemDataRef = MutableRefObject<{
 interface StateDefinition {
   __demoMode: boolean
   menuState: MenuStates
-  buttonRef: MutableRefObject<HTMLButtonElement | null>
-  itemsRef: MutableRefObject<HTMLElement | null>
+  buttonElement: HTMLButtonElement | null
+  itemsElement: HTMLElement | null
   items: { id: string; dataRef: MenuItemDataRef }[]
   searchQuery: string
   activeItemIndex: number | null
@@ -111,6 +111,9 @@ enum ActionTypes {
   ClearSearch,
   RegisterItem,
   UnregisterItem,
+
+  SetButtonElement,
+  SetItemsElement,
 }
 
 function adjustOrderedState(
@@ -152,6 +155,8 @@ type Actions =
   | { type: ActionTypes.ClearSearch }
   | { type: ActionTypes.RegisterItem; id: string; dataRef: MenuItemDataRef }
   | { type: ActionTypes.UnregisterItem; id: string }
+  | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
+  | { type: ActionTypes.SetItemsElement; element: HTMLElement | null }
 
 let reducers: {
   [P in ActionTypes]: (
@@ -334,6 +339,14 @@ let reducers: {
       activationTrigger: ActivationTrigger.Other,
     }
   },
+  [ActionTypes.SetButtonElement]: (state, action) => {
+    if (state.buttonElement === action.element) return state
+    return { ...state, buttonElement: action.element }
+  },
+  [ActionTypes.SetItemsElement]: (state, action) => {
+    if (state.itemsElement === action.element) return state
+    return { ...state, itemsElement: action.element }
+  },
 }
 
 let MenuContext = createContext<[StateDefinition, Dispatch<Actions>] | null>(null)
@@ -379,24 +392,24 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   let reducerBag = useReducer(stateReducer, {
     __demoMode,
     menuState: __demoMode ? MenuStates.Open : MenuStates.Closed,
-    buttonRef: createRef(),
-    itemsRef: createRef(),
+    buttonElement: null,
+    itemsElement: null,
     items: [],
     searchQuery: '',
     activeItemIndex: null,
     activationTrigger: ActivationTrigger.Other,
   } as StateDefinition)
-  let [{ menuState, itemsRef, buttonRef }, dispatch] = reducerBag
+  let [{ menuState, itemsElement, buttonElement }, dispatch] = reducerBag
   let menuRef = useSyncRefs(ref)
 
   // Handle outside click
   let outsideClickEnabled = menuState === MenuStates.Open
-  useOutsideClick(outsideClickEnabled, [buttonRef, itemsRef], (event, target) => {
+  useOutsideClick(outsideClickEnabled, [buttonElement, itemsElement], (event, target) => {
     dispatch({ type: ActionTypes.CloseMenu })
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {
       event.preventDefault()
-      buttonRef.current?.focus()
+      buttonElement?.focus()
     }
   })
 
@@ -469,7 +482,11 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   } = props
   let [state, dispatch] = useMenuContext('Menu.Button')
   let getFloatingReferenceProps = useFloatingReferenceProps()
-  let buttonRef = useSyncRefs(state.buttonRef, ref, useFloatingReference())
+  let buttonRef = useSyncRefs(
+    ref,
+    useFloatingReference(),
+    useEvent((element) => dispatch({ type: ActionTypes.SetButtonElement, element }))
+  )
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
     switch (event.key) {
@@ -509,7 +526,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     if (disabled) return
     if (state.menuState === MenuStates.Open) {
       flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
-      state.buttonRef.current?.focus({ preventScroll: true })
+      state.buttonElement?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
       dispatch({ type: ActionTypes.OpenMenu })
@@ -536,9 +553,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     {
       ref: buttonRef,
       id,
-      type: useResolveButtonType(props, state.buttonRef),
+      type: useResolveButtonType(props, state.buttonElement),
       'aria-haspopup': 'menu',
-      'aria-controls': state.itemsRef.current?.id,
+      'aria-controls': state.itemsElement?.id,
       'aria-expanded': state.menuState === MenuStates.Open,
       disabled: disabled || undefined,
       autoFocus,
@@ -603,8 +620,12 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let [state, dispatch] = useMenuContext('Menu.Items')
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
-  let itemsRef = useSyncRefs(state.itemsRef, ref, anchor ? floatingRef : null)
-  let ownerDocument = useOwnerDocument(state.itemsRef)
+  let itemsRef = useSyncRefs(
+    ref,
+    anchor ? floatingRef : null,
+    useEvent((element) => dispatch({ type: ActionTypes.SetItemsElement, element }))
+  )
+  let ownerDocument = useOwnerDocument(state.itemsElement)
 
   // Always enable `portal` functionality, when `anchor` is enabled
   if (anchor) {
@@ -614,14 +635,14 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    state.itemsRef,
+    state.itemsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : state.menuState === MenuStates.Open
   )
 
   // Ensure we close the menu as soon as the button becomes hidden
-  useOnDisappear(visible, state.buttonRef, () => {
+  useOnDisappear(visible, state.buttonElement, () => {
     dispatch({ type: ActionTypes.CloseMenu })
   })
 
@@ -632,7 +653,10 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   // Mark other elements as inert when the menu is visible, and `modal` is enabled
   let inertOthersEnabled = state.__demoMode ? false : modal && state.menuState === MenuStates.Open
   useInertOthers(inertOthersEnabled, {
-    allowed: useEvent(() => [state.buttonRef.current, state.itemsRef.current]),
+    allowed: useCallback(
+      () => [state.buttonElement, state.itemsElement],
+      [state.buttonElement, state.itemsElement]
+    ),
   })
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
@@ -645,23 +669,23 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
   // want to transition the y-axis for example you will run into the same issue again.
   let didButtonMoveEnabled = state.menuState !== MenuStates.Open
-  let didButtonMove = useDidElementMove(didButtonMoveEnabled, state.buttonRef)
+  let didButtonMove = useDidElementMove(didButtonMoveEnabled, state.buttonElement)
 
   // Now that we know that the button did move or not, we can either disable the panel and all of
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
   let panelEnabled = didButtonMove ? false : visible
 
   useEffect(() => {
-    let container = state.itemsRef.current
+    let container = state.itemsElement
     if (!container) return
     if (state.menuState !== MenuStates.Open) return
     if (container === ownerDocument?.activeElement) return
 
     container.focus({ preventScroll: true })
-  }, [state.menuState, state.itemsRef, ownerDocument, state.itemsRef.current])
+  }, [state.menuState, state.itemsElement, ownerDocument])
 
   useTreeWalker(state.menuState === MenuStates.Open, {
-    container: state.itemsRef.current,
+    container: state.itemsElement,
     accept(node) {
       if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
       if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
@@ -695,7 +719,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
           let { dataRef } = state.items[state.activeItemIndex]
           dataRef.current?.domRef.current?.click()
         }
-        restoreFocusIfNecessary(state.buttonRef.current)
+        restoreFocusIfNecessary(state.buttonElement)
         break
 
       case Keys.ArrowDown:
@@ -724,7 +748,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
         event.preventDefault()
         event.stopPropagation()
         flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
-        state.buttonRef.current?.focus({ preventScroll: true })
+        state.buttonElement?.focus({ preventScroll: true })
         break
 
       case Keys.Tab:
@@ -732,7 +756,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
         event.stopPropagation()
         flushSync(() => dispatch({ type: ActionTypes.CloseMenu }))
         focusFrom(
-          state.buttonRef.current!,
+          state.buttonElement!,
           event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
         )
         break
@@ -766,7 +790,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     'aria-activedescendant':
       state.activeItemIndex === null ? undefined : state.items[state.activeItemIndex]?.id,
-    'aria-labelledby': state.buttonRef.current?.id,
+    'aria-labelledby': state.buttonElement?.id,
     id,
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
@@ -779,7 +803,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     style: {
       ...theirProps.style,
       ...style,
-      '--button-width': useElementSize(state.buttonRef, true).width,
+      '--button-width': useElementSize(state.buttonElement, true).width,
     } as CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
@@ -879,7 +903,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   let handleClick = useEvent((event: MouseEvent) => {
     if (disabled) return event.preventDefault()
     dispatch({ type: ActionTypes.CloseMenu })
-    restoreFocusIfNecessary(state.buttonRef.current)
+    restoreFocusIfNecessary(state.buttonElement)
   })
 
   let handleFocus = useEvent(() => {

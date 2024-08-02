@@ -319,10 +319,13 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
 
     ...theirProps
   } = props as typeof props
+  let [containerElement, setContainerElement] = useState<HTMLElement | null>(null)
   let container = useRef<HTMLElement | null>(null)
   let requiresRef = shouldForwardRef(props)
 
-  let transitionRef = useSyncRefs(...(requiresRef ? [container, ref] : ref === null ? [] : [ref]))
+  let transitionRef = useSyncRefs(
+    ...(requiresRef ? [container, ref, setContainerElement] : ref === null ? [] : [ref])
+  )
   let strategy = theirProps.unmount ?? true ? RenderStrategy.Unmount : RenderStrategy.Hidden
 
   let { show, appear, initial } = useTransitionContext()
@@ -435,7 +438,7 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   // a leave transition on the `<Transition>` is done, but there is still a
   // child `<TransitionChild>` busy, then `visible` would be `false`, while
   // `state` would still be `TreeStates.Visible`.
-  let [, transitionData] = useTransition(enabled, container, show, { start, end })
+  let [, transitionData] = useTransition(enabled, containerElement, show, { start, end })
 
   let ourProps = compact({
     ref: transitionRef,
