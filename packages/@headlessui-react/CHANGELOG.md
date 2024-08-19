@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ensure `Transition` component state doesn't change when it becomes hidden ([#3372](https://github.com/tailwindlabs/headlessui/pull/3372))
 - Fix closing components using the `transition` prop, and after scrolling the page ([#3407](https://github.com/tailwindlabs/headlessui/pull/3407))
+- Ensure all client components are marked correctly to avoid a crash with React 19 and Turbopack ([#3429](https://github.com/tailwindlabs/headlessui/pull/3429))
 
 ## [2.1.2] - 2024-07-05
 
