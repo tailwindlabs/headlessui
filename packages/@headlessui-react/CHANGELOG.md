@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.4] - 2024-09-03
+
 ### Fixed
 
 - Fix components not closing properly when using the `transition` prop ([#3448](https://github.com/tailwindlabs/headlessui/pull/3448))
@@ -754,7 +758,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.3...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.4...HEAD
+[2.1.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.3...@headlessui/react@v2.1.4
 [2.1.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.2...@headlessui/react@v2.1.3
 [2.1.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.1...@headlessui/react@v2.1.2
 [2.1.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.0...@headlessui/react@v2.1.1
