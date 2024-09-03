@@ -1432,8 +1432,9 @@ export let ComboboxOption = defineComponent({
     },
     disabled: { type: Boolean, default: false },
     order: { type: [Number], default: null },
+    emits: { 'optionSelected': (_value: any) => true },
   },
-  setup(props, { slots, attrs, expose }) {
+  setup(props, { slots, attrs, expose, emit }) {
     let api = useComboboxContext('ComboboxOption')
     let id = `headlessui-combobox-option-${useId()}`
     let internalOptionRef = ref<HTMLElement | null>(null)
@@ -1495,6 +1496,8 @@ export let ComboboxOption = defineComponent({
 
       if (disabled.value) return
       api.selectOption(id)
+
+      emit('optionSelected', props.value)
 
       // We want to make sure that we don't accidentally trigger the virtual
       // keyboard.
