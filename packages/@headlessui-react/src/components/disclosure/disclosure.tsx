@@ -11,6 +11,7 @@ import React, {
   useMemo,
   useReducer,
   useRef,
+  useState,
   type ContextType,
   type Dispatch,
   type ElementType,
@@ -451,11 +452,18 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
   let mergeRefs = useMergeRefsFn()
 
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
+  let [localPanelElement, setLocalPanelElement] = useState<HTMLElement | null>(null)
+
   let panelRef = useSyncRefs(
     ref,
     useEvent((element) => {
       startTransition(() => dispatch({ type: ActionTypes.SetPanelElement, element }))
-    })
+    }),
+    setLocalPanelElement
   )
 
   useEffect(() => {
@@ -468,7 +476,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    state.panelElement,
+    localPanelElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : state.disclosureState === DisclosureStates.Open

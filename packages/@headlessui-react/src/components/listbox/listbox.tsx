@@ -12,6 +12,7 @@ import React, {
   useMemo,
   useReducer,
   useRef,
+  useState,
   type CSSProperties,
   type ElementType,
   type MutableRefObject,
@@ -932,6 +933,12 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   } = props
   let anchor = useResolvedAnchor(rawAnchor)
 
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
+  let [localOptionsElement, setLocalOptionsElement] = useState<HTMLElement | null>(null)
+
   // Always enable `portal` functionality, when `anchor` is enabled
   if (anchor) {
     portal = true
@@ -945,7 +952,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    data.optionsElement,
+    localOptionsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : data.listboxState === ListboxStates.Open
@@ -1023,7 +1030,12 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
   let [floatingRef, style] = useFloatingPanel(anchorOptions)
   let getFloatingPanelProps = useFloatingPanelProps()
-  let optionsRef = useSyncRefs(ref, anchor ? floatingRef : null, actions.setOptionsElement)
+  let optionsRef = useSyncRefs(
+    ref,
+    anchor ? floatingRef : null,
+    actions.setOptionsElement,
+    setLocalOptionsElement
+  )
 
   let searchDisposables = useDisposables()
 

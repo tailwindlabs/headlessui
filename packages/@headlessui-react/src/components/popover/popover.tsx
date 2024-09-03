@@ -763,13 +763,19 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     ...theirProps
   } = props
   let [{ popoverState }, dispatch] = usePopoverContext('Popover.Backdrop')
-  let [backdropElement, setBackdropElement] = useState<HTMLElement | null>(null)
-  let backdropRef = useSyncRefs(ref, setBackdropElement)
+
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
+  let [localBackdropElement, setLocalBackdropElement] = useState<HTMLElement | null>(null)
+
+  let backdropRef = useSyncRefs(ref, setLocalBackdropElement)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    backdropElement,
+    localBackdropElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : popoverState === PopoverStates.Open
@@ -865,11 +871,18 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     portal = true
   }
 
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
+  let [localPanelElement, setLocalPanelElement] = useState<HTMLElement | null>(null)
+
   let panelRef = useSyncRefs(
     internalPanelRef,
     ref,
     anchor ? floatingRef : null,
-    useEvent((panel) => dispatch({ type: ActionTypes.SetPanel, panel }))
+    useEvent((panel) => dispatch({ type: ActionTypes.SetPanel, panel })),
+    setLocalPanelElement
   )
   let ownerDocument = useOwnerDocument(internalPanelRef)
   let mergeRefs = useMergeRefsFn()
@@ -884,7 +897,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    state.panel,
+    localPanelElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : state.popoverState === PopoverStates.Open
@@ -1028,7 +1041,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 
           // Ignore sentinel buttons and items inside the panel
           for (let element of combined.slice()) {
-            if (element.dataset.headlessuiFocusGuard === 'true' || state.panel?.contains(element)) {
+            if (
+              element.dataset.headlessuiFocusGuard === 'true' ||
+              localPanelElement?.contains(element)
+            ) {
               let idx = combined.indexOf(element)
               if (idx !== -1) combined.splice(idx, 1)
             }

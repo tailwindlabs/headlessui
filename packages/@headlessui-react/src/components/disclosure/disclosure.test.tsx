@@ -1,18 +1,18 @@
-import { render } from '@testing-library/react'
-import React, { createElement, Suspense, useEffect, useRef } from 'react'
+import { render, waitFor } from '@testing-library/react'
+import React, { Suspense, createElement, useEffect, useRef } from 'react'
 import {
+  DisclosureState,
   assertActiveElement,
   assertDisclosureButton,
   assertDisclosurePanel,
-  DisclosureState,
   getByText,
   getDisclosureButton,
   getDisclosurePanel,
 } from '../../test-utils/accessibility-assertions'
-import { click, focus, Keys, MouseButton, press } from '../../test-utils/interactions'
+import { Keys, MouseButton, click, focus, press } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
-import { Disclosure } from './disclosure'
+import { Disclosure, DisclosureButton, DisclosurePanel } from './disclosure'
 
 jest.mock('../../hooks/use-id')
 
@@ -981,6 +981,43 @@ describe('Mouse interactions', () => {
       assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
 
       // Verify we restored the Open button
+      assertActiveElement(getDisclosureButton())
+    })
+  )
+})
+
+describe('transitions', () => {
+  it(
+    'should be possible to close the Disclosure when using the `transition` prop',
+    suppressConsoleLogs(async () => {
+      render(
+        <Disclosure>
+          <DisclosureButton>Toggle</DisclosureButton>
+          <DisclosurePanel transition>Contents</DisclosurePanel>
+        </Disclosure>
+      )
+
+      // Focus the button
+      await focus(getDisclosureButton())
+
+      // Ensure the button is focused
+      assertActiveElement(getDisclosureButton())
+
+      // Open the disclosure
+      await click(getDisclosureButton())
+
+      // Ensure the disclosure is visible
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      // Close the disclosure
+      await click(getDisclosureButton())
+
+      // Wait for the transition to finish, and the disclosure to close
+      await waitFor(() => {
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+      })
+
+      // Ensure the button got the restored focus
       assertActiveElement(getDisclosureButton())
     })
   )

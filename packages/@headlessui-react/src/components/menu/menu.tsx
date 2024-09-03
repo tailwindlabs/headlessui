@@ -12,6 +12,7 @@ import React, {
   useMemo,
   useReducer,
   useRef,
+  useState,
   type CSSProperties,
   type Dispatch,
   type ElementType,
@@ -620,10 +621,18 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let [state, dispatch] = useMenuContext('Menu.Items')
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
+
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
+  let [localItemsElement, setLocalItemsElement] = useState<HTMLElement | null>(null)
+
   let itemsRef = useSyncRefs(
     ref,
     anchor ? floatingRef : null,
-    useEvent((element) => dispatch({ type: ActionTypes.SetItemsElement, element }))
+    useEvent((element) => dispatch({ type: ActionTypes.SetItemsElement, element })),
+    setLocalItemsElement
   )
   let ownerDocument = useOwnerDocument(state.itemsElement)
 
@@ -635,7 +644,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    state.itemsElement,
+    localItemsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : state.menuState === MenuStates.Open
