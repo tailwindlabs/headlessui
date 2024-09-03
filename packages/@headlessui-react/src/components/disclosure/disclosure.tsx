@@ -451,6 +451,11 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
   let mergeRefs = useMergeRefsFn()
+
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
   let [localPanelElement, setLocalPanelElement] = useState<HTMLElement | null>(null)
 
   let panelRef = useSyncRefs(

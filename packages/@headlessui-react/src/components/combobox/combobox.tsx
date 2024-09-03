@@ -1672,7 +1672,13 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }
 
   let [floatingRef, style] = useFloatingPanel(anchor)
+
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
   let [localOptionsElement, setLocalOptionsElement] = useState<HTMLElement | null>(null)
+
   let getFloatingPanelProps = useFloatingPanelProps()
   let optionsRef = useSyncRefs(
     ref,

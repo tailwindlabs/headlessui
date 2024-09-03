@@ -763,7 +763,13 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     ...theirProps
   } = props
   let [{ popoverState }, dispatch] = usePopoverContext('Popover.Backdrop')
+
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
   let [localBackdropElement, setLocalBackdropElement] = useState<HTMLElement | null>(null)
+
   let backdropRef = useSyncRefs(ref, setLocalBackdropElement)
 
   let usesOpenClosedState = useOpenClosed()
@@ -865,7 +871,12 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     portal = true
   }
 
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
   let [localPanelElement, setLocalPanelElement] = useState<HTMLElement | null>(null)
+
   let panelRef = useSyncRefs(
     internalPanelRef,
     ref,

@@ -621,6 +621,11 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let [state, dispatch] = useMenuContext('Menu.Items')
   let [floatingRef, style] = useFloatingPanel(anchor)
   let getFloatingPanelProps = useFloatingPanelProps()
+
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
   let [localItemsElement, setLocalItemsElement] = useState<HTMLElement | null>(null)
 
   let itemsRef = useSyncRefs(

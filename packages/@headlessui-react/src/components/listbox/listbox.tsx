@@ -932,6 +932,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ...theirProps
   } = props
   let anchor = useResolvedAnchor(rawAnchor)
+
+  // To improve the correctness of transitions (timing related race conditions),
+  // we track the element locally to this component, instead of relying on the
+  // context value. This way, the component can re-render independently of the
+  // parent component when the `useTransition(…)` hook performs a state change.
   let [localOptionsElement, setLocalOptionsElement] = useState<HTMLElement | null>(null)
 
   // Always enable `portal` functionality, when `anchor` is enabled
