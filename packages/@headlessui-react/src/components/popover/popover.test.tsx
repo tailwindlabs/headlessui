@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import React, { Fragment, act, createElement, useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import {
@@ -2841,6 +2841,43 @@ describe('Nested popovers', () => {
           '[data-testid="popover-b"] [id^="headlessui-popover-panel-"]'
         ) as HTMLElement
       )
+    })
+  )
+})
+
+describe('transitions', () => {
+  it(
+    'should be possible to close the Popover when using the `transition` prop',
+    suppressConsoleLogs(async () => {
+      render(
+        <Popover>
+          <PopoverButton>Toggle</PopoverButton>
+          <PopoverPanel transition>Contents</PopoverPanel>
+        </Popover>
+      )
+
+      // Focus the button
+      await focus(getPopoverButton())
+
+      // Ensure the button is focused
+      assertActiveElement(getPopoverButton())
+
+      // Open the popover
+      await click(getPopoverButton())
+
+      // Ensure the popover is visible
+      assertPopoverPanel({ state: PopoverState.Visible })
+
+      // Close the popover
+      await click(getPopoverButton())
+
+      // Wait for the transition to finish, and the popover to close
+      await waitFor(() => {
+        assertPopoverPanel({ state: PopoverState.InvisibleUnmounted })
+      })
+
+      // Ensure the button got the restored focus
+      assertActiveElement(getPopoverButton())
     })
   )
 })

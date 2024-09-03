@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import React, { createElement, useEffect, useState } from 'react'
 import {
   ListboxMode,
@@ -35,7 +35,7 @@ import {
 } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
-import { Listbox } from './listbox'
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from './listbox'
 
 jest.mock('../../hooks/use-id')
 
@@ -4810,4 +4810,45 @@ describe('Form compatibility', () => {
       ['delivery[extra][info]', 'Some extra info'],
     ])
   })
+})
+
+describe('transitions', () => {
+  it(
+    'should be possible to close the Listbox when using the `transition` prop',
+    suppressConsoleLogs(async () => {
+      render(
+        <Listbox>
+          <ListboxButton>Toggle</ListboxButton>
+          <ListboxOptions transition>
+            <ListboxOption value="alice">Alice</ListboxOption>
+            <ListboxOption value="bob">Bob</ListboxOption>
+            <ListboxOption value="charlie">Charlie</ListboxOption>
+          </ListboxOptions>
+        </Listbox>
+      )
+
+      // Focus the button
+      await focus(getListboxButton())
+
+      // Ensure the button is focused
+      assertActiveElement(getListboxButton())
+
+      // Open the listbox
+      await click(getListboxButton())
+
+      // Ensure the listbox is visible
+      assertListbox({ state: ListboxState.Visible })
+
+      // Close the listbox
+      await click(getListboxButton())
+
+      // Wait for the transition to finish, and the listbox to close
+      await waitFor(() => {
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+      })
+
+      // Ensure the button got the restored focus
+      assertActiveElement(getListboxButton())
+    })
+  )
 })

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import React, { Fragment, createElement, useEffect, useState } from 'react'
 import {
   ComboboxMode,
@@ -42,7 +42,13 @@ import {
 } from '../../test-utils/interactions'
 import { mockingConsoleLogs, suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
-import { Combobox } from './combobox'
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+} from './combobox'
 
 let NOOP = () => {}
 
@@ -6059,4 +6065,40 @@ describe('Form compatibility', () => {
       ['delivery[extra][info]', 'Some extra info'],
     ])
   })
+})
+
+describe('transitions', () => {
+  it(
+    'should be possible to close the Combobox when using the `transition` prop',
+    suppressConsoleLogs(async () => {
+      render(
+        <Combobox>
+          <ComboboxButton>Toggle</ComboboxButton>
+          <ComboboxInput />
+          <ComboboxOptions transition>
+            <ComboboxOption value="alice">Alice</ComboboxOption>
+            <ComboboxOption value="bob">Bob</ComboboxOption>
+            <ComboboxOption value="charlie">Charlie</ComboboxOption>
+          </ComboboxOptions>
+        </Combobox>
+      )
+
+      // Open the combobox
+      await click(getComboboxButton())
+
+      // Ensure the combobox is visible
+      assertCombobox({ state: ComboboxState.Visible })
+
+      // Close the combobox
+      await click(getComboboxButton())
+
+      // Wait for the transition to finish, and the combobox to close
+      await waitFor(() => {
+        assertComboboxList({ state: ComboboxState.InvisibleUnmounted })
+      })
+
+      // Ensure the input got the restored focus
+      assertActiveElement(getComboboxInput())
+    })
+  )
 })

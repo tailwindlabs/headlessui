@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import React, { createElement, useEffect } from 'react'
 import {
   MenuState,
@@ -31,7 +31,7 @@ import {
 } from '../../test-utils/interactions'
 import { suppressConsoleLogs } from '../../test-utils/suppress-console-logs'
 import { Transition } from '../transition/transition'
-import { Menu } from './menu'
+import { Menu, MenuButton, MenuItem, MenuItems } from './menu'
 
 jest.mock('../../hooks/use-id')
 
@@ -3528,6 +3528,47 @@ describe('Mouse interactions', () => {
       // Activate the last item
       await click(getMenuItems()[2])
       expect(clickHandler).not.toHaveBeenCalled()
+    })
+  )
+})
+
+describe('transitions', () => {
+  it(
+    'should be possible to close the Menu when using the `transition` prop',
+    suppressConsoleLogs(async () => {
+      render(
+        <Menu>
+          <MenuButton>Toggle</MenuButton>
+          <MenuItems transition>
+            <MenuItem as="a">Alice</MenuItem>
+            <MenuItem as="a">Bob</MenuItem>
+            <MenuItem as="a">Charlie</MenuItem>
+          </MenuItems>
+        </Menu>
+      )
+
+      // Focus the button
+      await focus(getMenuButton())
+
+      // Ensure the button is focused
+      assertActiveElement(getMenuButton())
+
+      // Open the menu
+      await click(getMenuButton())
+
+      // Ensure the menu is visible
+      assertMenu({ state: MenuState.Visible })
+
+      // Close the menu
+      await click(getMenuButton())
+
+      // Wait for the transition to finish, and the menu to close
+      await waitFor(() => {
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+      })
+
+      // Ensure the button got the restored focus
+      assertActiveElement(getMenuButton())
     })
   )
 })
