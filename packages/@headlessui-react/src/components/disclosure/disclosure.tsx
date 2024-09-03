@@ -11,6 +11,7 @@ import React, {
   useMemo,
   useReducer,
   useRef,
+  useState,
   type ContextType,
   type Dispatch,
   type ElementType,
@@ -450,12 +451,14 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
   let mergeRefs = useMergeRefsFn()
+  let [localPanelElement, setLocalPanelElement] = useState<HTMLElement | null>(null)
 
   let panelRef = useSyncRefs(
     ref,
     useEvent((element) => {
       startTransition(() => dispatch({ type: ActionTypes.SetPanelElement, element }))
-    })
+    }),
+    setLocalPanelElement
   )
 
   useEffect(() => {
@@ -468,7 +471,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    state.panelElement,
+    localPanelElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : state.disclosureState === DisclosureStates.Open

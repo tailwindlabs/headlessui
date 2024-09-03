@@ -1672,14 +1672,20 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }
 
   let [floatingRef, style] = useFloatingPanel(anchor)
+  let [localOptionsElement, setLocalOptionsElement] = useState<HTMLElement | null>(null)
   let getFloatingPanelProps = useFloatingPanelProps()
-  let optionsRef = useSyncRefs(ref, anchor ? floatingRef : null, actions.setOptionsElement)
+  let optionsRef = useSyncRefs(
+    ref,
+    anchor ? floatingRef : null,
+    actions.setOptionsElement,
+    setLocalOptionsElement
+  )
   let ownerDocument = useOwnerDocument(data.optionsElement)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
     transition,
-    data.optionsElement,
+    localOptionsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
       : data.comboboxState === ComboboxState.Open
