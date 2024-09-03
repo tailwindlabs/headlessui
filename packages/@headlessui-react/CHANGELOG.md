@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fix components not properly closing when using the `transition` prop ([#3448](https://github.com/tailwindlabs/headlessui/pull/3448))
+- Fix components not closing properly when using the `transition` prop ([#3448](https://github.com/tailwindlabs/headlessui/pull/3448))
 
 ## [2.1.3] - 2024-08-23
 
