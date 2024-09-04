@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix transition bug on Firefox, triggered by clicking the `PopoverButton` in rapid succession ([#3452](https://github.com/tailwindlabs/headlessui/pull/3452))
 
 ## [2.1.4] - 2024-09-03
 
