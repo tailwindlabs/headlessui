@@ -1,6 +1,5 @@
 import { useRef, useState, type MutableRefObject } from 'react'
 import { disposables } from '../utils/disposables'
-import { once } from '../utils/once'
 import { useDisposables } from './use-disposables'
 import { useFlags } from './use-flags'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
@@ -211,83 +210,42 @@ function transition(
   // This means that no transition happens at all. To fix this, we delay the
   // actual transition by one frame.
   d.nextFrame(() => {
-    // Wait for the transition, once the transition is complete we can cleanup.
-    // This is registered first to prevent race conditions, otherwise it could
-    // happen that the transition is already done before we start waiting for
-    // the actual event.
-    d.add(waitForTransition(node, done))
-
     // Initiate the transition by applying the new classes.
     run()
+
+    // Wait for the transition, once the transition is complete we can cleanup.
+    // We wait for a frame such that the browser has time to flush the changes
+    // to the DOM.
+    d.requestAnimationFrame(() => {
+      d.add(waitForTransition(node, done))
+    })
   })
 
   return d.dispose
 }
 
-function waitForTransition(node: HTMLElement, _done: () => void) {
-  let done = once(_done)
+function waitForTransition(node: HTMLElement | null, done: () => void) {
   let d = disposables()
-
   if (!node) return d.dispose
 
-  // Safari returns a comma separated list of values, so let's sort them and take the highest value.
-  let { transitionDuration, transitionDelay } = getComputedStyle(node)
-
-  let [durationMs, delayMs] = [transitionDuration, transitionDelay].map((value) => {
-    let [resolvedValue = 0] = value
-      .split(',')
-      // Remove falsy we can't work with
-      .filter(Boolean)
-      // Values are returned as `0.3s` or `75ms`
-      .map((v) => (v.includes('ms') ? parseFloat(v) : parseFloat(v) * 1000))
-      .sort((a, z) => z - a)
-
-    return resolvedValue
+  let cancelled = false
+  d.add(() => {
+    cancelled = true
   })
 
-  let totalDuration = durationMs + delayMs
-
-  if (totalDuration !== 0) {
-    if (process.env.NODE_ENV === 'test') {
-      let dispose = d.setTimeout(() => {
-        done()
-        dispose()
-      }, totalDuration)
-    } else {
-      let disposeGroup = d.group((d) => {
-        // Mark the transition as done when the timeout is reached. This is a fallback in case the
-        // transitionrun event is not fired.
-        let cancelTimeout = d.setTimeout(() => {
-          done()
-          d.dispose()
-        }, totalDuration)
-
-        // The moment the transitionrun event fires, we should cleanup the timeout fallback, because
-        // then we know that we can use the native transition events because something is
-        // transitioning.
-        d.addEventListener(node, 'transitionrun', (event) => {
-          if (event.target !== event.currentTarget) return
-          cancelTimeout()
-
-          d.addEventListener(node, 'transitioncancel', (event) => {
-            if (event.target !== event.currentTarget) return
-            done()
-            disposeGroup()
-          })
-        })
-      })
-
-      d.addEventListener(node, 'transitionend', (event) => {
-        if (event.target !== event.currentTarget) return
-        done()
-        d.dispose()
-      })
-    }
-  } else {
-    // No transition is happening, so we should cleanup already. Otherwise we have to wait until we
-    // get disposed.
+  let transitions = node.getAnimations().filter((animation) => animation instanceof CSSTransition)
+  // If there are no transitions, we can stop early.
+  if (transitions.length === 0) {
     done()
+    return d.dispose
   }
+
+  // Wait for all the transitions to complete.
+  Promise.allSettled(transitions.map((transition) => transition.finished)).then(() => {
+    if (!cancelled) {
+      done()
+    }
+  })
 
   return d.dispose
 }
