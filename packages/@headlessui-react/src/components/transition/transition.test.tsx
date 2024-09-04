@@ -1050,8 +1050,8 @@ describe('Events', () => {
         'child-2-2: beforeEnter',
 
         'child-1: afterEnter',
-        'child-2-2: afterEnter',
         'child-2-1: afterEnter',
+        'child-2-2: afterEnter',
         'child-2: afterEnter',
         'root: afterEnter',
 
@@ -1064,8 +1064,8 @@ describe('Events', () => {
         'root: beforeLeave',
 
         'child-1: afterLeave',
-        'child-2-2: afterLeave',
         'child-2-1: afterLeave',
+        'child-2-2: afterLeave',
         'child-2: afterLeave',
         'root: afterLeave',
 
@@ -1078,8 +1078,8 @@ describe('Events', () => {
         'child-2-2: beforeEnter',
 
         'child-1: afterEnter',
-        'child-2-2: afterEnter',
         'child-2-1: afterEnter',
+        'child-2-2: afterEnter',
         'child-2: afterEnter',
         'root: afterEnter',
 
@@ -1092,8 +1092,8 @@ describe('Events', () => {
         'root: beforeLeave',
 
         'child-1: afterLeave',
-        'child-2-2: afterLeave',
         'child-2-1: afterLeave',
+        'child-2-2: afterLeave',
         'child-2: afterLeave',
         'root: afterLeave',
       ])
