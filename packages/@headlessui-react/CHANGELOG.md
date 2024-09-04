@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.5] - 2024-09-04
+
 ### Fixed
 
 - Fix transition bug on Firefox, triggered by clicking the `PopoverButton` in rapid succession ([#3452](https://github.com/tailwindlabs/headlessui/pull/3452))
@@ -760,7 +764,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.4...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.5...HEAD
+[2.1.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.4...@headlessui/react@v2.1.5
 [2.1.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.3...@headlessui/react@v2.1.4
 [2.1.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.2...@headlessui/react@v2.1.3
 [2.1.2]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.1...@headlessui/react@v2.1.2
