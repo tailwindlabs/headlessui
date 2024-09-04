@@ -228,9 +228,9 @@ function waitForTransition(node: HTMLElement | null, done: () => void) {
   let d = disposables()
   if (!node) return d.dispose
 
-  let canceled = false
+  let cancelled = false
   d.add(() => {
-    canceled = true
+    cancelled = true
   })
 
   let transitions = node.getAnimations().filter((animation) => animation instanceof CSSTransition)
@@ -242,7 +242,7 @@ function waitForTransition(node: HTMLElement | null, done: () => void) {
 
   // Wait for all the transitions to complete.
   Promise.allSettled(transitions.map((transition) => transition.finished)).then(() => {
-    if (!canceled) {
+    if (!cancelled) {
       done()
     }
   })
