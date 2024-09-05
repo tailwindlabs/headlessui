@@ -3,9 +3,8 @@ import { inject, InjectionKey, provide, useId as vueUseId } from 'vue'
 const GENERATE_ID: InjectionKey<() => string> = Symbol('headlessui.useid')
 
 export function useId() {
-  return inject(GENERATE_ID, () => {
-    return vueUseId()
-  })
+  const generateId = inject(GENERATE_ID, vueUseId)
+  return generateId()
 }
 
 /**
