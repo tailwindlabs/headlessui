@@ -42,7 +42,7 @@
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {
-    "vue": "^3.2.0"
+    "vue": "^3.5.0"
   },
   "devDependencies": {
     "@testing-library/vue": "^5.8.2",
