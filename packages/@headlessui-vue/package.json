@@ -42,12 +42,12 @@
     "clean": "rimraf ./dist"
   },
   "peerDependencies": {
-    "vue": "^3.5.0"
+    "vue": "^3.2.0"
   },
   "devDependencies": {
     "@testing-library/vue": "^5.8.2",
     "@vue/test-utils": "^2.0.0-rc.18",
-    "vue": "^3.5.0"
+    "vue": "^3.2.29"
   },
   "dependencies": {
     "@tanstack/vue-virtual": "^3.0.0-beta.60"
