@@ -1,15 +1,22 @@
-import { inject, InjectionKey, provide, useId as vueUseId } from 'vue'
+import * as Vue from 'vue'
 
-const GENERATE_ID: InjectionKey<() => string> = Symbol('headlessui.useid')
+let GENERATE_ID: Vue.InjectionKey<() => string> = Symbol('headlessui.useid')
+let globalId = 0
 
-export function useId() {
-  const generateId = inject(GENERATE_ID, vueUseId)
-  return generateId()
-}
+export const useId =
+  // Prefer Vue's `useId` if it's available.
+  // @ts-expect-error - `useId` doesn't exist in Vue < 3.5.
+  Vue.useId ??
+  function useId() {
+    let generateId = Vue.inject(GENERATE_ID, () => {
+      return `${++globalId}`
+    })
 
+    return generateId()
+  }
 /**
  * This function allows users to provide a custom ID generator.
  */
 export function provideUseId(fn: () => string) {
-  provide(GENERATE_ID, fn)
+  Vue.provide(GENERATE_ID, fn)
 }
