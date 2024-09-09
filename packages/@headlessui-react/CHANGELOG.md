@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.6] - 2024-09-09
+
 ### Fixed
 
 - Fix `ListboxOptions` being incorrectly marked as `inert` ([#3466](https://github.com/tailwindlabs/headlessui/pull/3466))
@@ -767,7 +771,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.5...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.6...HEAD
+[2.1.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.5...@headlessui/react@v2.1.6
 [2.1.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.4...@headlessui/react@v2.1.5
 [2.1.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.3...@headlessui/react@v2.1.4
 [2.1.3]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.2...@headlessui/react@v2.1.3
