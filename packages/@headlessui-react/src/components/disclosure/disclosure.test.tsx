@@ -337,6 +337,49 @@ describe('Rendering', () => {
       })
     )
 
+    it('should behave as a close button when used inside of the Disclosure.Panel', async () => {
+      render(
+        <Disclosure>
+          <Disclosure.Button>Open</Disclosure.Button>
+          <Disclosure.Panel>
+            <Disclosure.Button>Close</Disclosure.Button>
+          </Disclosure.Panel>
+        </Disclosure>
+      )
+
+      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+      await click(getByText('Open'))
+
+      assertDisclosureButton({ state: DisclosureState.Visible })
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      await click(getByText('Close'))
+
+      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+    })
+
+    it('should behave as a close button when used inside of the Disclosure.Panel (defaultOpen)', async () => {
+      render(
+        <Disclosure defaultOpen>
+          <Disclosure.Button>Open</Disclosure.Button>
+          <Disclosure.Panel>
+            <Disclosure.Button>Close</Disclosure.Button>
+          </Disclosure.Panel>
+        </Disclosure>
+      )
+
+      assertDisclosureButton({ state: DisclosureState.Visible })
+      assertDisclosurePanel({ state: DisclosureState.Visible })
+
+      await click(getByText('Close'))
+
+      assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+      assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+    })
+
     describe('`type` attribute', () => {
       it('should set the `type` to "button" by default', async () => {
         render(
