@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix `ListboxOptions` being incorrectly marked as `inert` ([#3466](https://github.com/tailwindlabs/headlessui/pull/3466))
+- Fix crash when using `DisclosureButton` inside of a `DisclosurePanel` when the `Disclosure` is open by default ([#3465](https://github.com/tailwindlabs/headlessui/pull/3465))
 
 ## [2.1.5] - 2024-09-04
 
