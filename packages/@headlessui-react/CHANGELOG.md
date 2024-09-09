@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Fix `ListboxOptions` being incorrectly marked as `inert` ([#3466](https://github.com/tailwindlabs/headlessui/pull/3466))
 
 ## [2.1.5] - 2024-09-04
 
