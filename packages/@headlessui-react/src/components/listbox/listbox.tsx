@@ -972,7 +972,10 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ? false
     : modal && data.listboxState === ListboxStates.Open
   useInertOthers(inertOthersEnabled, {
-    allowed: useEvent(() => [data.buttonElement, data.optionsElement]),
+    allowed: useCallback(
+      () => [data.buttonElement, data.optionsElement],
+      [data.buttonElement, data.optionsElement]
+    ),
   })
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
