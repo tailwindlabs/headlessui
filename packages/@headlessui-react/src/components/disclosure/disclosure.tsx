@@ -299,9 +299,10 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let buttonRef = useSyncRefs(
     internalButtonRef,
     ref,
-    !isWithinPanel
-      ? useEvent((element) => dispatch({ type: ActionTypes.SetButtonElement, element }))
-      : null
+    useEvent((element) => {
+      if (isWithinPanel) return
+      return dispatch({ type: ActionTypes.SetButtonElement, element })
+    })
   )
   let mergeRefs = useMergeRefsFn()
 
