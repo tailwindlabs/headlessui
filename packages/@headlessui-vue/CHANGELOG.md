@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- use native `useId` from Vue.js 3.5 when available ([#3458](https://github.com/tailwindlabs/headlessui/pull/3458))
 
 ## [1.7.22] - 2024-05-08
 
