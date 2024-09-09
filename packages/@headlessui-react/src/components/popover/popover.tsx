@@ -535,24 +535,23 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     internalButtonRef,
     ref,
     useFloatingReference(),
-    isWithinPanel
-      ? null
-      : useEvent((button) => {
-          if (button) {
-            state.buttons.current.push(uniqueIdentifier)
-          } else {
-            let idx = state.buttons.current.indexOf(uniqueIdentifier)
-            if (idx !== -1) state.buttons.current.splice(idx, 1)
-          }
+    useEvent((button) => {
+      if (isWithinPanel) return
+      if (button) {
+        state.buttons.current.push(uniqueIdentifier)
+      } else {
+        let idx = state.buttons.current.indexOf(uniqueIdentifier)
+        if (idx !== -1) state.buttons.current.splice(idx, 1)
+      }
 
-          if (state.buttons.current.length > 1) {
-            console.warn(
-              'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
-            )
-          }
+      if (state.buttons.current.length > 1) {
+        console.warn(
+          'You are already using a <Popover.Button /> but only 1 <Popover.Button /> is supported.'
+        )
+      }
 
-          button && dispatch({ type: ActionTypes.SetButton, button })
-        })
+      button && dispatch({ type: ActionTypes.SetButton, button })
+    })
   )
   let withinPanelButtonRef = useSyncRefs(internalButtonRef, ref)
   let ownerDocument = useOwnerDocument(internalButtonRef)
