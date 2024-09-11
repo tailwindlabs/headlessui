@@ -17,7 +17,7 @@ if (
       console.warn(
         [
           'Headless UI has polyfilled `Element.prototype.getAnimations` for your tests.',
-          'Please install a proper polyfill e.g. from `jsdom-testing-mocks`, to silence these warnings.',
+          'Please install a proper polyfill e.g. `jsdom-testing-mocks`, to silence these warnings.',
           '',
           'Example usage:',
           '```js',
