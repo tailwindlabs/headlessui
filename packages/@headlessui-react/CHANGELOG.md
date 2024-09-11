@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.7] - 2024-09-11
+
 ### Fixed
 
 - Prevent crash in environments where `Element.prototype.getAnimations` is not available ([#3473](https://github.com/tailwindlabs/headlessui/pull/3473))
@@ -773,7 +777,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.6...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.7...HEAD
+[2.1.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.6...@headlessui/react@v2.1.7
 [2.1.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.5...@headlessui/react@v2.1.6
 [2.1.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.4...@headlessui/react@v2.1.5
 [2.1.4]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.3...@headlessui/react@v2.1.4
