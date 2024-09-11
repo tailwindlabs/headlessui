@@ -4,6 +4,34 @@ import { useDisposables } from './use-disposables'
 import { useFlags } from './use-flags'
 import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 
+if (
+  typeof process !== 'undefined' &&
+  typeof globalThis !== 'undefined' &&
+  // Strange string concatenation is on purpose to prevent `esbuild` from
+  // replacing `process.env.NODE_ENV` with `production` in the build output,
+  // eliminating this whole branch.
+  process?.env?.['NODE' + '_' + 'ENV'] === 'test'
+) {
+  if (typeof Element.prototype.getAnimations === 'undefined') {
+    Element.prototype.getAnimations = function getAnimationsPolyfill() {
+      console.warn(
+        [
+          'Headless UI has polyfilled `Element.prototype.getAnimations` for your tests.',
+          'Please install a proper polyfill e.g. `jsdom-testing-mocks`, to silence these warnings.',
+          '',
+          'Example usage:',
+          '```js',
+          "import { mockAnimationsApi } from 'jsdom-testing-mocks'",
+          'mockAnimationsApi()',
+          '```',
+        ].join('\n')
+      )
+
+      return []
+    }
+  }
+}
+
 /**
  * ```
  * ┌──────┐                │        ┌──────────────┐
@@ -233,7 +261,8 @@ function waitForTransition(node: HTMLElement | null, done: () => void) {
     cancelled = true
   })
 
-  let transitions = node.getAnimations().filter((animation) => animation instanceof CSSTransition)
+  let transitions =
+    node.getAnimations?.().filter((animation) => animation instanceof CSSTransition) ?? []
   // If there are no transitions, we can stop early.
   if (transitions.length === 0) {
     done()
