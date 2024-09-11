@@ -1,8 +1,7 @@
-import ResizeObserverPolyfill from 'resize-observer-polyfill'
+import { mockAnimationsApi, mockResizeObserver } from 'jsdom-testing-mocks'
 
-if (typeof ResizeObserver === 'undefined') {
-  global.ResizeObserver = ResizeObserverPolyfill
-}
+mockAnimationsApi() // `Element.prototype.getAnimations` and `CSSTransition` polyfill
+mockResizeObserver() // `ResizeObserver` polyfill
 
 // JSDOM Doesn't implement innerText yet: https://github.com/jsdom/jsdom/issues/1245
 // So this is a hacky way of implementing it using `textContent`.
