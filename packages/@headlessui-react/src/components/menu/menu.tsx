@@ -68,6 +68,7 @@ import {
   forwardRefWithAs,
   mergeProps,
   render,
+  useMergeRefsFn,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -483,6 +484,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   } = props
   let [state, dispatch] = useMenuContext('Menu.Button')
   let getFloatingReferenceProps = useFloatingReferenceProps()
+  let mergeRefs = useMergeRefsFn()
   let buttonRef = useSyncRefs(
     ref,
     useFloatingReference(),
@@ -570,6 +572,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   )
 
   return render({
+    mergeRefs,
     ourProps,
     theirProps,
     slot,
