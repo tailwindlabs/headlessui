@@ -10,6 +10,7 @@ import {
   forwardRefWithAs,
   mergeProps,
   render,
+  useMergeRefsFn,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -41,6 +42,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   ref: Ref<HTMLElement>
 ) {
   let providedDisabled = useDisabled()
+  let mergeRefs = useMergeRefsFn()
   let { disabled = providedDisabled || false, autoFocus = false, ...theirProps } = props
 
   let { isFocusVisible: focus, focusProps } = useFocusRing({ autoFocus })
@@ -64,6 +66,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   }, [disabled, hover, focus, active, autoFocus])
 
   return render({
+    mergeRefs,
     ourProps,
     theirProps,
     slot,
