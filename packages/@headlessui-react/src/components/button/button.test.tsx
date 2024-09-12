@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Button } from './button'
 
 describe('Rendering', () => {
@@ -34,6 +34,16 @@ describe('Rendering', () => {
       render(<Button autoFocus>My Button</Button>)
 
       expect(screen.getByRole('button')).toHaveAttribute('data-autofocus')
+    })
+
+    it('should be possible to render a Button using as={Fragment}', async () => {
+      render(
+        <Button as={Fragment}>
+          <button>Toggle</button>
+        </Button>
+      )
+
+      expect(screen.getByRole('button')).toHaveAttribute('type')
     })
   })
 })

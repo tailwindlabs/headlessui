@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
-import React, { createElement, useEffect, useState } from 'react'
+import React, { Fragment, createElement, useEffect, useState } from 'react'
 import {
   ListboxMode,
   ListboxState,
@@ -760,6 +760,32 @@ describe('Rendering', () => {
         expect(getListboxButton()).not.toHaveAttribute('type')
       })
     })
+
+    it(
+      'should be possible to render a ListboxButton using as={Fragment}',
+      suppressConsoleLogs(async () => {
+        render(
+          <Listbox>
+            <ListboxButton as={Fragment}>
+              <button>Toggle</button>
+            </ListboxButton>
+            <ListboxOptions>
+              <ListboxOption value="a">Option A</ListboxOption>
+              <ListboxOption value="b">Option B</ListboxOption>
+              <ListboxOption value="c">Option C</ListboxOption>
+            </ListboxOptions>
+          </Listbox>
+        )
+
+        assertListboxButton({ state: ListboxState.InvisibleUnmounted })
+        assertListbox({ state: ListboxState.InvisibleUnmounted })
+
+        await click(getListboxButton())
+
+        assertListboxButton({ state: ListboxState.Visible })
+        assertListbox({ state: ListboxState.Visible })
+      })
+    )
   })
 
   describe('Listbox.Options', () => {

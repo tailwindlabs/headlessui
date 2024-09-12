@@ -70,6 +70,7 @@ import {
   forwardRefWithAs,
   mergeProps,
   render,
+  useMergeRefsFn,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -1495,6 +1496,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let data = useData('Combobox.Button')
   let actions = useActions('Combobox.Button')
   let buttonRef = useSyncRefs(ref, actions.setButtonElement)
+  let mergeRefs = useMergeRefsFn()
 
   let internalId = useId()
   let {
@@ -1616,6 +1618,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   )
 
   return render({
+    mergeRefs,
     ourProps,
     theirProps,
     slot,

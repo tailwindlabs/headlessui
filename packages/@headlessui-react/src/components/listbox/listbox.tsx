@@ -75,6 +75,7 @@ import {
   forwardRefWithAs,
   mergeProps,
   render,
+  useMergeRefsFn,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -785,6 +786,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     autoFocus = false,
     ...theirProps
   } = props
+  let mergeRefs = useMergeRefsFn()
   let buttonRef = useSyncRefs(ref, useFloatingReference(), actions.setButtonElement)
   let getFloatingReferenceProps = useFloatingReferenceProps()
 
@@ -880,6 +882,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   )
 
   return render({
+    mergeRefs,
     ourProps,
     theirProps,
     slot,
