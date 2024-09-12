@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.8] - 2024-09-12
+
 ### Fixed
 
 - Fix crash when using `as={Fragment}` on `MenuButton`, `ListboxButton`, `DisclosureButton` or `Button` components ([#3478](https://github.com/tailwindlabs/headlessui/pull/3478))
@@ -779,7 +783,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.7...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.8...HEAD
+[2.1.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.7...@headlessui/react@v2.1.8
 [2.1.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.6...@headlessui/react@v2.1.7
 [2.1.6]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.5...@headlessui/react@v2.1.6
 [2.1.5]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.4...@headlessui/react@v2.1.5
