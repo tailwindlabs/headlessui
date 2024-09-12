@@ -1211,6 +1211,31 @@ describe('Rendering', () => {
         expect(getComboboxButton()).not.toHaveAttribute('type')
       })
     })
+
+    it(
+      'should be possible to render a ComboboxButton using as={Fragment}',
+      suppressConsoleLogs(async () => {
+        render(
+          <Combobox>
+            <ComboboxInput />
+            <ComboboxButton as={Fragment}>
+              <button>Toggle</button>
+            </ComboboxButton>
+            <ComboboxOptions>
+              <ComboboxOption value="a">Option A</ComboboxOption>
+              <ComboboxOption value="b">Option B</ComboboxOption>
+              <ComboboxOption value="c">Option C</ComboboxOption>
+            </ComboboxOptions>
+          </Combobox>
+        )
+
+        assertComboboxButton({ state: ComboboxState.InvisibleUnmounted })
+
+        await click(getComboboxButton())
+
+        assertComboboxButton({ state: ComboboxState.Visible })
+      })
+    )
   })
 
   describe('Combobox.Options', () => {

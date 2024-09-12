@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
-import React, { Suspense, createElement, useEffect, useRef } from 'react'
+import React, { Fragment, Suspense, createElement, useEffect, useRef } from 'react'
 import {
   DisclosureState,
   assertActiveElement,
@@ -439,6 +439,28 @@ describe('Rendering', () => {
         expect(getDisclosureButton()).not.toHaveAttribute('type')
       })
     })
+
+    it(
+      'should be possible to render a DisclosureButton using as={Fragment}',
+      suppressConsoleLogs(async () => {
+        render(
+          <Disclosure>
+            <DisclosureButton as={Fragment}>
+              <button>Toggle</button>
+            </DisclosureButton>
+            <DisclosurePanel>Contents</DisclosurePanel>
+          </Disclosure>
+        )
+
+        assertDisclosureButton({ state: DisclosureState.InvisibleUnmounted })
+        assertDisclosurePanel({ state: DisclosureState.InvisibleUnmounted })
+
+        await click(getDisclosureButton())
+
+        assertDisclosureButton({ state: DisclosureState.Visible })
+        assertDisclosurePanel({ state: DisclosureState.Visible })
+      })
+    )
   })
 
   describe('Disclosure.Panel', () => {

@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
-import React, { createElement, useEffect } from 'react'
+import React, { Fragment, createElement, useEffect } from 'react'
 import {
   MenuState,
   assertActiveElement,
@@ -306,6 +306,32 @@ describe('Rendering', () => {
         expect(getMenuButton()).not.toHaveAttribute('type')
       })
     })
+
+    it(
+      'should be possible to render a MenuButton using as={Fragment}',
+      suppressConsoleLogs(async () => {
+        render(
+          <Menu>
+            <MenuButton as={Fragment}>
+              <button>Toggle</button>
+            </MenuButton>
+            <MenuItems>
+              <MenuItem as="a">Item A</MenuItem>
+              <MenuItem as="a">Item B</MenuItem>
+              <MenuItem as="a">Item C</MenuItem>
+            </MenuItems>
+          </Menu>
+        )
+
+        assertMenuButton({ state: MenuState.InvisibleUnmounted })
+        assertMenu({ state: MenuState.InvisibleUnmounted })
+
+        await click(getMenuButton())
+
+        assertMenuButton({ state: MenuState.Visible })
+        assertMenu({ state: MenuState.Visible })
+      })
+    )
   })
 
   describe('Menu.Items', () => {
