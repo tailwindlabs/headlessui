@@ -177,9 +177,9 @@ function usePopoverContext(component: string) {
 }
 
 let PopoverAPIContext = createContext<{
-  close(
+  close: (
     focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null> | MouseEvent<HTMLElement>
-  ): void
+  ) => void
   isPortalled: boolean
 } | null>(null)
 PopoverAPIContext.displayName = 'PopoverAPIContext'
@@ -195,10 +195,10 @@ function usePopoverAPIContext(component: string) {
 }
 
 let PopoverGroupContext = createContext<{
-  registerPopover(registerBag: PopoverRegisterBag): void
-  unregisterPopover(registerBag: PopoverRegisterBag): void
-  isFocusWithinPopoverGroup(): boolean
-  closeOthers(buttonId: string): void
+  registerPopover: (registerBag: PopoverRegisterBag) => void
+  unregisterPopover: (registerBag: PopoverRegisterBag) => void
+  isFocusWithinPopoverGroup: () => boolean
+  closeOthers: (buttonId: string) => void
 } | null>(null)
 PopoverGroupContext.displayName = 'PopoverGroupContext'
 
@@ -216,7 +216,7 @@ function usePopoverPanelContext() {
 interface PopoverRegisterBag {
   buttonId: MutableRefObject<string | null>
   panelId: MutableRefObject<string | null>
-  close(): void
+  close: () => void
 }
 function stateReducer(state: StateDefinition, action: Actions) {
   return match(action.type, reducers, state, action)
@@ -227,9 +227,9 @@ function stateReducer(state: StateDefinition, action: Actions) {
 let DEFAULT_POPOVER_TAG = 'div' as const
 type PopoverRenderPropArg = {
   open: boolean
-  close(
+  close: (
     focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null> | MouseEvent<HTMLElement>
-  ): void
+  ) => void
 }
 type PopoverPropsWeControl = never
 
