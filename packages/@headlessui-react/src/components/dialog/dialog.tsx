@@ -88,8 +88,8 @@ let DialogContext = createContext<
       {
         dialogState: DialogStates
         unmount: boolean
-        close(): void
-        setTitleId(id: string | null): void
+        close: () => void
+        setTitleId: (id: string | null) => void
       },
       StateDefinition,
     ]
@@ -340,7 +340,7 @@ export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = 
   DialogPropsWeControl,
   PropsForFeatures<typeof DialogRenderFeatures> & {
     open?: boolean
-    onClose(value: boolean): void
+    onClose: (value: boolean) => void
     initialFocus?: MutableRefObject<HTMLElement | null>
     role?: 'dialog' | 'alertdialog'
     autoFocus?: boolean

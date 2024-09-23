@@ -133,7 +133,7 @@ function useDisclosureContext(component: string) {
 }
 
 let DisclosureAPIContext = createContext<{
-  close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
+  close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
 } | null>(null)
 DisclosureAPIContext.displayName = 'DisclosureAPIContext'
 
@@ -163,7 +163,7 @@ function stateReducer(state: StateDefinition, action: Actions) {
 let DEFAULT_DISCLOSURE_TAG = Fragment
 type DisclosureRenderPropArg = {
   open: boolean
-  close(focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>): void
+  close: (focusableElement?: HTMLElement | MutableRefObject<HTMLElement | null>) => void
 }
 type DisclosurePropsWeControl = never
 
