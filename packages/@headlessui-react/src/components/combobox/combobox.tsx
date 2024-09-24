@@ -535,7 +535,7 @@ function VirtualProvider(props: {
           // Scroll to the active index
           {
             // Ignore this when we are in a test environment
-            if (typeof process !== 'undefined' && process.env.JEST_WORKER_ID !== undefined) {
+            if (process.env.NODE_ENV === 'test' && process.env.JEST_WORKER_ID !== undefined) {
               return
             }
 
