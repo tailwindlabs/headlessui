@@ -532,21 +532,14 @@ function VirtualProvider(props: {
             return
           }
 
+          // Do not scroll when the mouse/pointer is being used
+          if (data.activationTrigger === ActivationTrigger.Pointer) {
+            return
+          }
+
           // Scroll to the active index
-          {
-            // Ignore this when we are in a test environment
-            if (typeof process !== 'undefined' && process.env.JEST_WORKER_ID !== undefined) {
-              return
-            }
-
-            // Do not scroll when the mouse/pointer is being used
-            if (data.activationTrigger === ActivationTrigger.Pointer) {
-              return
-            }
-
-            if (data.activeOptionIndex !== null && options.length > data.activeOptionIndex) {
-              virtualizer.scrollToIndex(data.activeOptionIndex)
-            }
+          if (data.activeOptionIndex !== null && options.length > data.activeOptionIndex) {
+            virtualizer.scrollToIndex(data.activeOptionIndex)
           }
         }}
       >

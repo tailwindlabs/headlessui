@@ -190,24 +190,17 @@ let VirtualProvider = defineComponent({
                 return
               }
 
+              // Do not scroll when the mouse/pointer is being used
+              if (api.activationTrigger.value === ActivationTrigger.Pointer) {
+                return
+              }
+
               // Scroll to the active index
-              {
-                // Ignore this when we are in a test environment
-                if (typeof process !== 'undefined' && process.env.JEST_WORKER_ID !== undefined) {
-                  return
-                }
-
-                // Do not scroll when the mouse/pointer is being used
-                if (api.activationTrigger.value === ActivationTrigger.Pointer) {
-                  return
-                }
-
-                if (
-                  api.activeOptionIndex.value !== null &&
-                  api.virtual.value!.options.length > api.activeOptionIndex.value
-                ) {
-                  virtualizer.value.scrollToIndex(api.activeOptionIndex.value)
-                }
+              if (
+                api.activeOptionIndex.value !== null &&
+                api.virtual.value!.options.length > api.activeOptionIndex.value
+              ) {
+                virtualizer.value.scrollToIndex(api.activeOptionIndex.value)
               }
             },
           },
