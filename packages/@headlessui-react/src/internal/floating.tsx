@@ -133,17 +133,12 @@ export function useFloatingPanel(
   let stablePlacement = useMemo(
     () => placement,
     [
-      JSON.stringify(
-        placement,
-        typeof HTMLElement !== 'undefined'
-          ? (_, v) => {
-              if (v instanceof HTMLElement) {
-                return v.outerHTML
-              }
-              return v
-            }
-          : undefined
-      ),
+      JSON.stringify(placement, (_, v) => {
+        if (typeof v === 'object' && v !== null && 'outerHTML' in v) {
+          return v.outerHTML
+        }
+        return v
+      }),
     ]
   )
   useIsoMorphicEffect(() => {
