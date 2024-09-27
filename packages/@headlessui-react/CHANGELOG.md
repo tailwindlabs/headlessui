@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Fixed
+
+- Ensure `Element` is available before polyfilling to prevent crashes in non-browser environments ([#3493](https://github.com/tailwindlabs/headlessui/pull/3493))
 
 ## [2.1.8] - 2024-09-12
 

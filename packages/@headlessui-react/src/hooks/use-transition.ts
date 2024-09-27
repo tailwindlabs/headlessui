@@ -7,12 +7,13 @@ import { useIsoMorphicEffect } from './use-iso-morphic-effect'
 if (
   typeof process !== 'undefined' &&
   typeof globalThis !== 'undefined' &&
+  typeof Element !== 'undefined' &&
   // Strange string concatenation is on purpose to prevent `esbuild` from
   // replacing `process.env.NODE_ENV` with `production` in the build output,
   // eliminating this whole branch.
   process?.env?.['NODE' + '_' + 'ENV'] === 'test'
 ) {
-  if (typeof Element.prototype.getAnimations === 'undefined') {
+  if (typeof Element?.prototype?.getAnimations === 'undefined') {
     Element.prototype.getAnimations = function getAnimationsPolyfill() {
       console.warn(
         [
