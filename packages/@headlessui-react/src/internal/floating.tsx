@@ -133,17 +133,14 @@ export function useFloatingPanel(
   let stablePlacement = useMemo(
     () => placement,
     [
-      JSON.stringify(
-        placement,
-        typeof HTMLElement !== 'undefined'
-          ? (_, v) => {
-              if (v instanceof HTMLElement) {
-                return v.outerHTML
-              }
-              return v
-            }
-          : undefined
-      ),
+      JSON.stringify(placement, (_, v) => {
+        // When we are trying to stringify a DOM element, we want to return the
+        // `outerHTML` of the element. In all other cases, we want to return the
+        // value as-is.
+        // It's not safe enough to check whether `v` is an instanceof
+        // `HTMLElement` because some tools (like AG Grid) polyfill it to be `{}`.
+        return v?.outerHTML ?? v
+      }),
     ]
   )
   useIsoMorphicEffect(() => {
