@@ -134,10 +134,12 @@ export function useFloatingPanel(
     () => placement,
     [
       JSON.stringify(placement, (_, v) => {
-        if (typeof v === 'object' && v !== null && 'outerHTML' in v) {
-          return v.outerHTML
-        }
-        return v
+        // When we are trying to stringify a DOM element, we want to return the
+        // `outerHTML` of the element. In all other cases, we want to return the
+        // value as-is.
+        // It's not safe enough to check whether `v` is an instanceof
+        // `HTMLElement` because some tools (like AG Grid) polyfill it to be `{}`.
+        return v?.outerHTML ?? v
       }),
     ]
   )
