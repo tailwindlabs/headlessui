@@ -6,6 +6,7 @@ import {
   isValidElement,
   useCallback,
   useRef,
+  type ComponentPropsWithRef,
   type ElementType,
   type MutableRefObject,
   type ReactElement,
@@ -385,6 +386,10 @@ export type HasDisplayName = {
 export type RefProp<T extends Function> = T extends (props: any, ref: Ref<infer RefType>) => any
   ? { ref?: Ref<RefType> }
   : never
+
+export type NewRefProp<T extends ElementType> = unknown extends ComponentPropsWithRef<T>['ref']
+  ? {}
+  : { ref?: ComponentPropsWithRef<T>['ref'] }
 
 // TODO: add proper return type, but this is not exposed as public API so it's fine for now
 export function mergeProps<T extends Props<any, any>[]>(...listOfProps: T) {
