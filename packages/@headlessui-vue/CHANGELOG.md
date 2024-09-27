@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Cancel outside click behavior on touch devices when scrolling ([#3266](https://github.com/tailwindlabs/headlessui/pull/3266))
 - Fix restoring focus to correct element when closing `Dialog` component ([#3365](https://github.com/tailwindlabs/headlessui/pull/3365))
+- Cleanup `process` in Combobox component when using virtualization ([#3495](https://github.com/tailwindlabs/headlessui/pull/3495))
 
 ## [1.7.22] - 2024-05-08
 
