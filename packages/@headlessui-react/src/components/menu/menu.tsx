@@ -70,6 +70,7 @@ import {
   render,
   useMergeRefsFn,
   type HasDisplayName,
+  type NewRefProp,
   type RefProp,
 } from '../../utils/render'
 import { useDescriptions } from '../description/description'
@@ -1096,7 +1097,7 @@ function SeparatorFn<TTag extends ElementType = typeof DEFAULT_SEPARATOR_TAG>(
 
 export interface _internal_ComponentMenu extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
-    props: MenuProps<TTag> & RefProp<typeof MenuFn>
+    props: MenuProps<TTag> & NewRefProp<TTag>
   ): JSX.Element
 }
 
