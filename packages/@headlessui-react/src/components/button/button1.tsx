@@ -33,7 +33,7 @@ export type ButtonProps<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG> = 
   {
     disabled?: boolean
     autoFocus?: boolean
-    type?: 'button' | 'submit' | 'reset' | 'menu'
+    type?: 'button'  | 'reset' | 'menu'
   }
 >
 
