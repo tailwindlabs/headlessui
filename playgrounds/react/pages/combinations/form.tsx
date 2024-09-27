@@ -12,6 +12,7 @@ function Section({ title, children }) {
   )
 }
 
+
 let sizes = ['xs', 'sm', 'md', 'lg', 'xl']
 let people = [
   { id: 1, name: { first: 'Alice' } },
