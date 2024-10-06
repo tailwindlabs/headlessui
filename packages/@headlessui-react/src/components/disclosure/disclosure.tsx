@@ -519,19 +519,19 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 export interface _internal_ComponentDisclosure extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
     props: DisclosureProps<TTag> & RefProp<typeof DisclosureFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentDisclosureButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: DisclosureButtonProps<TTag> & RefProp<typeof ButtonFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentDisclosurePanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: DisclosurePanelProps<TTag> & RefProp<typeof PanelFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let DisclosureRoot = forwardRefWithAs(DisclosureFn) as _internal_ComponentDisclosure

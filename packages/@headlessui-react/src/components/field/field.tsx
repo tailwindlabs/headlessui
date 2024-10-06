@@ -73,7 +73,7 @@ function FieldFn<TTag extends ElementType = typeof DEFAULT_FIELD_TAG>(
 }
 
 export interface _internal_ComponentField extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_FIELD_TAG>(props: FieldProps<TTag>): JSX.Element
+  <TTag extends ElementType = typeof DEFAULT_FIELD_TAG>(props: FieldProps<TTag>): React.JSX.Element
 }
 
 export let Field = forwardRefWithAs(FieldFn) as _internal_ComponentField

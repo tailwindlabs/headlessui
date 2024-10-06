@@ -53,7 +53,7 @@ interface DescriptionProviderProps extends SharedData {
 
 export function useDescriptions(): [
   string | undefined,
-  (props: DescriptionProviderProps) => JSX.Element,
+  (props: DescriptionProviderProps) => React.JSX.Element,
 ] {
   let [descriptionIds, setDescriptionIds] = useState<string[]>([])
 
@@ -134,7 +134,7 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
 export interface _internal_ComponentDescription extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG>(
     props: DescriptionProps<TTag> & RefProp<typeof DescriptionFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let DescriptionRoot = forwardRefWithAs(DescriptionFn) as _internal_ComponentDescription

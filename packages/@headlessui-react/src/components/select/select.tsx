@@ -101,7 +101,7 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
 export interface _internal_ComponentSelect extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
     props: SelectProps<TTag> & RefProp<typeof SelectFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export let Select = forwardRefWithAs(SelectFn) as _internal_ComponentSelect

@@ -28,7 +28,9 @@ function LegendFn<TTag extends ElementType = typeof DEFAULT_LEGEND_TAG>(
 }
 
 export interface _internal_ComponentLegend extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_LEGEND_TAG>(props: LegendProps<TTag>): JSX.Element
+  <TTag extends ElementType = typeof DEFAULT_LEGEND_TAG>(
+    props: LegendProps<TTag>
+  ): React.JSX.Element
 }
 
 export let Legend = forwardRefWithAs(LegendFn) as _internal_ComponentLegend

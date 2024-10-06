@@ -90,7 +90,7 @@ function TextareaFn<TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
 export interface _internal_ComponentTextarea extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
     props: TextareaProps<TTag> & RefProp<typeof TextareaFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export let Textarea = forwardRefWithAs(TextareaFn) as _internal_ComponentTextarea

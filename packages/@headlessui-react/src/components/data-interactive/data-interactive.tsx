@@ -59,7 +59,7 @@ function DataInteractiveFn<TTag extends ElementType = typeof DEFAULT_DATA_INTERA
 export interface _internal_ComponentDataInteractive extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DATA_INTERACTIVE_TAG>(
     props: DataInteractiveProps<TTag> & RefProp<typeof DataInteractiveFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export let DataInteractive = forwardRefWithAs(

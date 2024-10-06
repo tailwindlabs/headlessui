@@ -23,7 +23,7 @@ function redentSnapshot(input: string) {
 }
 
 export async function executeTimeline(
-  element: JSX.Element,
+  element: React.JSX.Element,
   steps: ((tools: ReturnType<typeof render>) => (null | number)[])[]
 ) {
   let d = disposables()

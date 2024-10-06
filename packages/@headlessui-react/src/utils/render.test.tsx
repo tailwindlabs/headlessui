@@ -272,7 +272,7 @@ describe('Default functionality', () => {
 
 // ---
 
-function testStaticFeature(Dummy: (props: any) => JSX.Element) {
+function testStaticFeature(Dummy: (props: any) => React.JSX.Element) {
   it('should be possible to render a `static` dummy component (show = true)', () => {
     testRender(
       <Dummy show={true} static>
@@ -325,7 +325,7 @@ describe('Features.Static', () => {
 
 // ---
 
-function testRenderStrategyFeature(Dummy: (props: any) => JSX.Element) {
+function testRenderStrategyFeature(Dummy: (props: any) => React.JSX.Element) {
   describe('Unmount render strategy', () => {
     it('should be possible to render an `unmount` dummy component (show = true)', () => {
       testRender(

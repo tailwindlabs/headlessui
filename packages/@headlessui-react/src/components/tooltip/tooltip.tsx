@@ -473,19 +473,19 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 export interface _internal_ComponentTooltip extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TOOLTIP_TAG>(
     props: TooltipProps<TTag> & RefProp<typeof TooltipFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentTrigger extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TRIGGER_TAG>(
     props: TooltipTriggerProps<TTag> & RefProp<typeof TriggerFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: TooltipPanelProps<TTag> & RefProp<typeof PanelFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export let Tooltip = forwardRefWithAs(TooltipFn) as _internal_ComponentTooltip

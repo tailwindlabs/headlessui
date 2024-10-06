@@ -571,19 +571,19 @@ function RadioFn<
 export interface _internal_ComponentRadioGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG, TType = string>(
     props: RadioGroupProps<TTag, TType> & RefProp<typeof RadioGroupFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentRadioOption extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTION_TAG, TType = string>(
     props: RadioOptionProps<TTag, TType> & RefProp<typeof OptionFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentRadio extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_RADIO_TAG, TType = string>(
     props: RadioProps<TTag, TType> & RefProp<typeof RadioFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentRadioLabel extends _internal_ComponentLabel {}

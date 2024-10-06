@@ -1208,31 +1208,31 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
 export interface _internal_ComponentPopover extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
     props: PopoverProps<TTag> & RefProp<typeof PopoverFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentPopoverButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: PopoverButtonProps<TTag> & RefProp<typeof ButtonFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentPopoverBackdrop extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     props: PopoverBackdropProps<TTag> & RefProp<typeof BackdropFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentPopoverPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: PopoverPanelProps<TTag> & RefProp<typeof PanelFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentPopoverGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
     props: PopoverGroupProps<TTag> & RefProp<typeof GroupFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let PopoverRoot = forwardRefWithAs(PopoverFn) as _internal_ComponentPopover

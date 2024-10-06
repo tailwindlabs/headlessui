@@ -90,7 +90,7 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
 export interface _internal_ComponentInput extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
     props: InputProps<TTag> & RefProp<typeof InputFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export let Input = forwardRefWithAs(InputFn) as _internal_ComponentInput

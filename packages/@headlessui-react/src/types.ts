@@ -1,6 +1,6 @@
 import type { JSXElementConstructor, ReactElement, ReactNode } from 'react'
 
-export type ReactTag = keyof JSX.IntrinsicElements | JSXElementConstructor<any>
+export type ReactTag = keyof React.JSX.IntrinsicElements | JSXElementConstructor<any>
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 
