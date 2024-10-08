@@ -41,7 +41,7 @@ import { match } from '../../utils/match'
 import {
   RenderFeatures,
   forwardRefWithAs,
-  render,
+  useRender,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -286,6 +286,8 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     }
   }
 
+  let render = useRender()
+
   return (
     <ResetOpenClosedProvider>
       <ForcePortalRoot force={true}>
@@ -450,6 +452,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   let Wrapper = transition ? TransitionChild : Fragment
   let wrapperProps = transition ? { unmount } : {}
 
+  let render = useRender()
+
   return (
     <Wrapper {...wrapperProps}>
       {render({
@@ -493,6 +497,8 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
 
   let Wrapper = transition ? TransitionChild : Fragment
   let wrapperProps = transition ? { unmount } : {}
+
+  let render = useRender()
 
   return (
     <Wrapper {...wrapperProps}>
@@ -540,6 +546,8 @@ function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
   )
 
   let ourProps = { ref: titleRef, id }
+
+  let render = useRender()
 
   return render({
     ourProps,

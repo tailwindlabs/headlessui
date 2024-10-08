@@ -69,8 +69,7 @@ import {
   RenderFeatures,
   forwardRefWithAs,
   mergeProps,
-  render,
-  useMergeRefsFn,
+  useRender,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -949,6 +948,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     return theirOnChange?.(defaultValue)
   }, [theirOnChange, defaultValue])
 
+  let render = useRender()
+
   return (
     <LabelProvider
       value={labelledby}
@@ -1444,6 +1445,8 @@ function InputFn<
     hoverProps
   )
 
+  let render = useRender()
+
   return render({
     ourProps,
     theirProps,
@@ -1489,7 +1492,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let data = useData('Combobox.Button')
   let actions = useActions('Combobox.Button')
   let buttonRef = useSyncRefs(ref, actions.setButtonElement)
-  let mergeRefs = useMergeRefsFn()
 
   let internalId = useId()
   let {
@@ -1610,8 +1612,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     pressProps
   )
 
+  let render = useRender()
+
   return render({
-    mergeRefs,
     ourProps,
     theirProps,
     slot,
@@ -1812,6 +1815,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
       ),
     })
   }
+
+  let render = useRender()
 
   return (
     <Portal enabled={portal ? props.static || visible : false}>
@@ -2036,6 +2041,8 @@ function OptionFn<
     onPointerLeave: handleLeave,
     onMouseLeave: handleLeave,
   }
+
+  let render = useRender()
 
   return render({
     ourProps,

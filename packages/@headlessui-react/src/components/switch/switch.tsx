@@ -32,7 +32,7 @@ import { attemptSubmit } from '../../utils/form'
 import {
   forwardRefWithAs,
   mergeProps,
-  render,
+  useRender,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -73,6 +73,8 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
 
   let ourProps = {}
   let theirProps = props
+
+  let render = useRender()
 
   return (
     <DescriptionProvider name="Switch.Description" value={describedby}>
@@ -243,6 +245,8 @@ function SwitchFn<TTag extends ElementType = typeof DEFAULT_SWITCH_TAG>(
     if (defaultChecked === undefined) return
     return onChange?.(defaultChecked)
   }, [onChange, defaultChecked])
+
+  let render = useRender()
 
   return (
     <>

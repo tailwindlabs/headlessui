@@ -29,7 +29,7 @@ import {
   RenderStrategy,
   compact,
   forwardRefWithAs,
-  render,
+  useRender,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -475,6 +475,8 @@ function TransitionChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_
   if (transitionData.enter) openClosedState |= State.Opening
   if (transitionData.leave) openClosedState |= State.Closing
 
+  let render = useRender()
+
   return (
     <NestingContext.Provider value={nesting}>
       <OpenClosedProvider value={openClosedState}>
@@ -570,6 +572,8 @@ function TransitionRootFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_C
     if (initial) setInitial(false)
     props.beforeLeave?.()
   })
+
+  let render = useRender()
 
   return (
     <NestingContext.Provider value={nestingBag}>

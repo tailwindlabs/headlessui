@@ -26,7 +26,7 @@ import { attemptSubmit } from '../../utils/form'
 import {
   forwardRefWithAs,
   mergeProps,
-  render,
+  useRender,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -175,6 +175,8 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
     if (defaultChecked === undefined) return
     return onChange?.(defaultChecked)
   }, [onChange, defaultChecked])
+
+  let render = useRender()
 
   return (
     <>

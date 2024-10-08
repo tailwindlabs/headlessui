@@ -11,7 +11,7 @@ import type { Props } from '../../types'
 import {
   forwardRefWithAs,
   mergeProps,
-  render,
+  useRender,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -88,6 +88,8 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
       autofocus: autoFocus,
     } satisfies SelectRenderPropArg
   }, [disabled, invalid, hover, focus, active, autoFocus])
+
+  let render = useRender()
 
   return render({
     ourProps,

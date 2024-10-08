@@ -10,7 +10,7 @@ import type { Props } from '../../types'
 import {
   forwardRefWithAs,
   mergeProps,
-  render,
+  useRender,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -77,6 +77,8 @@ function TextareaFn<TTag extends ElementType = typeof DEFAULT_TEXTAREA_TAG>(
   let slot = useMemo(() => {
     return { disabled, invalid, hover, focus, autofocus: autoFocus } satisfies TextareaRenderPropArg
   }, [disabled, invalid, hover, focus, autoFocus])
+
+  let render = useRender()
 
   return render({
     ourProps,

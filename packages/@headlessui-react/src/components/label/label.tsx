@@ -17,7 +17,7 @@ import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import { useProvidedId } from '../../internal/id'
 import type { Props } from '../../types'
-import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
+import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
 // ---
 
@@ -202,6 +202,8 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
       delete (theirProps as any)['onClick']
     }
   }
+
+  let render = useRender()
 
   return render({
     ourProps,

@@ -35,7 +35,7 @@ import { getOwnerDocument } from '../../utils/owner'
 import {
   forwardRefWithAs,
   mergeProps,
-  render,
+  useRender,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -309,6 +309,8 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     return triggerChange(defaultValue)
   }, [triggerChange, defaultValue])
 
+  let render = useRender()
+
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
@@ -444,6 +446,8 @@ function OptionFn<
     } satisfies OptionRenderPropArg
   }, [checked, disabled, hover, focus, autoFocus])
 
+  let render = useRender()
+
   return (
     <DescriptionProvider name="RadioGroup.Description">
       <LabelProvider name="RadioGroup.Label">
@@ -556,6 +560,8 @@ function RadioFn<
   let slot = useMemo(() => {
     return { checked, disabled, hover, focus, autofocus: autoFocus } satisfies RadioRenderPropArg
   }, [checked, disabled, hover, focus, autoFocus])
+
+  let render = useRender()
 
   return render({
     ourProps,

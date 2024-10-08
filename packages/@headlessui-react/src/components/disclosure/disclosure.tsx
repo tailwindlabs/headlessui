@@ -41,8 +41,7 @@ import {
   RenderFeatures,
   forwardRefWithAs,
   mergeProps,
-  render,
-  useMergeRefsFn,
+  useRender,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -233,6 +232,8 @@ function DisclosureFn<TTag extends ElementType = typeof DEFAULT_DISCLOSURE_TAG>(
     ref: disclosureRef,
   }
 
+  let render = useRender()
+
   return (
     <DisclosureContext.Provider value={reducerBag}>
       <DisclosureAPIContext.Provider value={api}>
@@ -304,7 +305,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       return dispatch({ type: ActionTypes.SetButtonElement, element })
     })
   )
-  let mergeRefs = useMergeRefsFn()
 
   useEffect(() => {
     if (isWithinPanel) return
@@ -411,8 +411,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
         pressProps
       )
 
+  let render = useRender()
+
   return render({
-    mergeRefs,
     ourProps,
     theirProps,
     slot,
@@ -451,7 +452,6 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   } = props
   let [state, dispatch] = useDisclosureContext('Disclosure.Panel')
   let { close } = useDisclosureAPIContext('Disclosure.Panel')
-  let mergeRefs = useMergeRefsFn()
 
   // To improve the correctness of transitions (timing related race conditions),
   // we track the element locally to this component, instead of relying on the
@@ -496,11 +496,12 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     ...transitionDataAttributes(transitionData),
   }
 
+  let render = useRender()
+
   return (
     <ResetOpenClosedProvider>
       <DisclosurePanelContext.Provider value={state.panelId}>
         {render({
-          mergeRefs,
           ourProps,
           theirProps,
           slot,
