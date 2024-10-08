@@ -57,7 +57,16 @@ export type PropsForFeatures<T extends RenderFeatures> = Expand<
   >
 >
 
-export function render<TFeature extends RenderFeatures, TTag extends ElementType, TSlot>({
+export function useRender() {
+  let mergeRefs = useMergeRefsFn()
+
+  return useCallback(
+    (args: Parameters<typeof render>[0]) => render({ mergeRefs, ...args }),
+    [render, mergeRefs]
+  ) as typeof render
+}
+
+function render<TFeature extends RenderFeatures, TTag extends ElementType, TSlot>({
   ourProps,
   theirProps,
   slot,
@@ -77,7 +86,7 @@ export function render<TFeature extends RenderFeatures, TTag extends ElementType
   visible?: boolean
   name: string
   mergeRefs?: ReturnType<typeof useMergeRefsFn>
-}) {
+}): ReturnType<typeof _render> | null {
   mergeRefs = mergeRefs ?? defaultMergeRefs
 
   let props = mergePropsAdvanced(theirProps, ourProps)
@@ -281,7 +290,7 @@ function _render<TTag extends ElementType, TSlot>(
  * the `function` that updates these refs and can only do
  * so once the ref that contains the list is updated.
  */
-export function useMergeRefsFn() {
+function useMergeRefsFn() {
   type MaybeRef<T> = MutableRefObject<T> | ((value: T) => void) | null | undefined
   let currentRefs = useRef<MaybeRef<any>[]>([])
   let mergedRef = useCallback((value: any) => {
