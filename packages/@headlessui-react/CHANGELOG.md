@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Use `React.JSX` instead of deprecated global `JSX` ([#3511](https://github.com/tailwindlabs/headlessui/pull/3511))
+- Fix crash in `ListboxOptions` when using `as={Fragment}` ([#3513](https://github.com/tailwindlabs/headlessui/pull/3513))
 
 ## [2.1.9] - 2024-10-03
 
