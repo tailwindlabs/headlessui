@@ -62,7 +62,7 @@ export function useRender() {
 
   return useCallback(
     (args: Parameters<typeof render>[0]) => render({ mergeRefs, ...args }),
-    [render, mergeRefs]
+    [mergeRefs]
   ) as typeof render
 }
 
