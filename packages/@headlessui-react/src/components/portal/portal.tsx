@@ -249,13 +249,13 @@ export function useNestedPortals() {
 export interface _internal_ComponentPortal extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
     props: PortalProps<TTag> & RefProp<typeof PortalFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentPortalGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
     props: PortalGroupProps<TTag> & RefProp<typeof GroupFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let PortalRoot = forwardRefWithAs(PortalFn) as unknown as _internal_ComponentPortal

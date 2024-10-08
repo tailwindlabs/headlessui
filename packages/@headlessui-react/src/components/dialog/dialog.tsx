@@ -555,25 +555,25 @@ function TitleFn<TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
 export interface _internal_ComponentDialog extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
     props: DialogProps<TTag> & RefProp<typeof DialogFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentDialogPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: DialogPanelProps<TTag> & RefProp<typeof PanelFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentDialogBackdrop extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     props: DialogBackdropProps<TTag> & RefProp<typeof BackdropFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentDialogTitle extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TITLE_TAG>(
     props: DialogTitleProps<TTag> & RefProp<typeof TitleFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentDialogDescription extends _internal_ComponentDescription {}

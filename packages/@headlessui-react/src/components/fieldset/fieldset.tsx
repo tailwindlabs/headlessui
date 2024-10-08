@@ -66,7 +66,9 @@ function FieldsetFn<TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(
 }
 
 export interface _internal_ComponentFieldset extends HasDisplayName {
-  <TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(props: FieldsetProps<TTag>): JSX.Element
+  <TTag extends ElementType = typeof DEFAULT_FIELDSET_TAG>(
+    props: FieldsetProps<TTag>
+  ): React.JSX.Element
 }
 
 export let Fieldset = forwardRefWithAs(FieldsetFn) as _internal_ComponentFieldset

@@ -620,13 +620,13 @@ function ChildFn<TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>
 export interface _internal_ComponentTransitionRoot extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
     props: TransitionRootProps<TTag> & RefProp<typeof TransitionRootFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentTransitionChild extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TRANSITION_CHILD_TAG>(
     props: TransitionChildProps<TTag> & RefProp<typeof TransitionChildFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let TransitionRoot = forwardRefWithAs(TransitionRootFn) as _internal_ComponentTransitionRoot

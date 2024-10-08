@@ -3,7 +3,7 @@
 import { Portal } from '@headlessui/react'
 import { lazy, Suspense } from 'react'
 
-function MyComponent({ children }: { children(message: string): JSX.Element }) {
+function MyComponent({ children }: { children(message: string): React.JSX.Element }) {
   return <>{children('test')}</>
 }
 

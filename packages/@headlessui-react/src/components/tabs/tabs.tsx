@@ -670,31 +670,31 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
 export interface _internal_ComponentTab extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TAB_TAG>(
     props: TabProps<TTag> & RefProp<typeof TabFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentTabGroup extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_TABS_TAG>(
     props: TabGroupProps<TTag> & RefProp<typeof GroupFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentTabList extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LIST_TAG>(
     props: TabListProps<TTag> & RefProp<typeof ListFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentTabPanels extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANELS_TAG>(
     props: TabPanelsProps<TTag> & RefProp<typeof PanelsFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentTabPanel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     props: TabPanelProps<TTag> & RefProp<typeof PanelFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let TabRoot = forwardRefWithAs(TabFn) as _internal_ComponentTab

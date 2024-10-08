@@ -1408,13 +1408,13 @@ export interface _internal_ComponentListbox extends HasDisplayName {
     TActualType = TType extends (infer U)[] ? U : TType,
   >(
     props: ListboxProps<TTag, TType, TActualType> & RefProp<typeof ListboxFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentListboxButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: ListboxButtonProps<TTag> & RefProp<typeof ButtonFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentListboxLabel extends _internal_ComponentLabel {}
@@ -1422,7 +1422,7 @@ export interface _internal_ComponentListboxLabel extends _internal_ComponentLabe
 export interface _internal_ComponentListboxOptions extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     props: ListboxOptionsProps<TTag> & RefProp<typeof OptionsFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentListboxOption extends HasDisplayName {
@@ -1431,13 +1431,13 @@ export interface _internal_ComponentListboxOption extends HasDisplayName {
     TType = Parameters<typeof ListboxRoot>[0]['value'],
   >(
     props: ListboxOptionProps<TTag, TType> & RefProp<typeof OptionFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentListboxSelectedOption extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_SELECTED_OPTION_TAG>(
     props: ListboxSelectedOptionProps<TTag> & RefProp<typeof SelectedFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let ListboxRoot = forwardRefWithAs(ListboxFn) as _internal_ComponentListbox

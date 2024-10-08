@@ -67,7 +67,7 @@ function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDE
 interface ComponentHidden extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDEN_TAG>(
     props: HiddenProps<TTag> & RefProp<typeof VisuallyHidden>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export let Hidden = forwardRefWithAs(VisuallyHidden) as ComponentHidden

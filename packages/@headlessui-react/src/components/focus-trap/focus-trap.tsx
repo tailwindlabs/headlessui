@@ -232,7 +232,7 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
 export interface _internal_ComponentFocusTrap extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
     props: FocusTrapProps<TTag> & RefProp<typeof FocusTrapFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let FocusTrapRoot = forwardRefWithAs(FocusTrapFn) as _internal_ComponentFocusTrap

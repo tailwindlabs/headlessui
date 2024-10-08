@@ -57,7 +57,7 @@ interface LabelProviderProps extends SharedData {
 
 export function useLabels({ inherit = false } = {}): [
   string | undefined,
-  (props: LabelProviderProps & { inherit?: boolean }) => JSX.Element,
+  (props: LabelProviderProps & { inherit?: boolean }) => React.JSX.Element,
 ] {
   let parentLabelledBy = useLabelledBy()
   let [labelIds, setLabelIds] = useState<string[]>([])
@@ -217,7 +217,7 @@ function LabelFn<TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
 export interface _internal_ComponentLabel extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_LABEL_TAG>(
     props: LabelProps<TTag> & RefProp<typeof LabelFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let LabelRoot = forwardRefWithAs(LabelFn) as _internal_ComponentLabel

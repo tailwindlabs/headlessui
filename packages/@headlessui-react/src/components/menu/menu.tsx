@@ -1097,43 +1097,43 @@ function SeparatorFn<TTag extends ElementType = typeof DEFAULT_SEPARATOR_TAG>(
 export interface _internal_ComponentMenu extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
     props: MenuProps<TTag> & RefProp<typeof MenuFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentMenuButton extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: MenuButtonProps<TTag> & RefProp<typeof ButtonFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentMenuItems extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     props: MenuItemsProps<TTag> & RefProp<typeof ItemsFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentMenuItem extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     props: MenuItemProps<TTag> & RefProp<typeof ItemFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentMenuSection extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_SECTION_TAG>(
     props: MenuSectionProps<TTag> & RefProp<typeof SectionFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentMenuHeading extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_HEADING_TAG>(
     props: MenuHeadingProps<TTag> & RefProp<typeof HeadingFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 export interface _internal_ComponentMenuSeparator extends HasDisplayName {
   <TTag extends ElementType = typeof DEFAULT_SEPARATOR_TAG>(
     props: MenuSeparatorProps<TTag> & RefProp<typeof SeparatorFn>
-  ): JSX.Element
+  ): React.JSX.Element
 }
 
 let MenuRoot = forwardRefWithAs(MenuFn) as _internal_ComponentMenu
