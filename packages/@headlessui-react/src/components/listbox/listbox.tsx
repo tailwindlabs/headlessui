@@ -934,6 +934,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     transition = false,
     ...theirProps
   } = props
+  let mergeRefs = useMergeRefsFn()
   let anchor = useResolvedAnchor(rawAnchor)
 
   // To improve the correctness of transitions (timing related race conditions),
@@ -1165,6 +1166,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
         value={data.mode === ValueMode.Multi ? data : { ...data, isSelected }}
       >
         {render({
+          mergeRefs,
           ourProps,
           theirProps,
           slot,
