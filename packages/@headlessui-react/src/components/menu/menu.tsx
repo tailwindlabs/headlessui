@@ -67,8 +67,7 @@ import {
   RenderFeatures,
   forwardRefWithAs,
   mergeProps,
-  render,
-  useMergeRefsFn,
+  useRender,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -426,6 +425,8 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
 
   let ourProps = { ref: menuRef }
 
+  let render = useRender()
+
   return (
     <FloatingProvider>
       <MenuContext.Provider value={reducerBag}>
@@ -484,7 +485,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   } = props
   let [state, dispatch] = useMenuContext('Menu.Button')
   let getFloatingReferenceProps = useFloatingReferenceProps()
-  let mergeRefs = useMergeRefsFn()
   let buttonRef = useSyncRefs(
     ref,
     useFloatingReference(),
@@ -571,8 +571,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     pressProps
   )
 
+  let render = useRender()
+
   return render({
-    mergeRefs,
     ourProps,
     theirProps,
     slot,
@@ -820,6 +821,8 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     ...transitionDataAttributes(transitionData),
   })
 
+  let render = useRender()
+
   return (
     <Portal enabled={portal ? props.static || visible : false}>
       {render({
@@ -982,6 +985,8 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     onMouseLeave: handleLeave,
   }
 
+  let render = useRender()
+
   return (
     <LabelProvider>
       <DescriptionProvider>
@@ -1017,6 +1022,8 @@ function SectionFn<TTag extends ElementType = typeof DEFAULT_SECTION_TAG>(
 
   let theirProps = props
   let ourProps = { ref, 'aria-labelledby': labelledby, role: 'group' }
+
+  let render = useRender()
 
   return (
     <LabelProvider>
@@ -1055,6 +1062,8 @@ function HeadingFn<TTag extends ElementType = typeof DEFAULT_HEADING_TAG>(
 
   let ourProps = { id, ref, role: 'presentation', ...context.props }
 
+  let render = useRender()
+
   return render({
     ourProps,
     theirProps,
@@ -1082,6 +1091,8 @@ function SeparatorFn<TTag extends ElementType = typeof DEFAULT_SEPARATOR_TAG>(
 ) {
   let theirProps = props
   let ourProps = { ref, role: 'separator' }
+
+  let render = useRender()
 
   return render({
     ourProps,

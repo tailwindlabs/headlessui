@@ -74,8 +74,7 @@ import {
   RenderFeatures,
   forwardRefWithAs,
   mergeProps,
-  render,
-  useMergeRefsFn,
+  useRender,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -698,6 +697,8 @@ function ListboxFn<
     return theirOnChange?.(defaultValue)
   }, [theirOnChange, defaultValue])
 
+  let render = useRender()
+
   return (
     <LabelProvider
       value={labelledby}
@@ -786,7 +787,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     autoFocus = false,
     ...theirProps
   } = props
-  let mergeRefs = useMergeRefsFn()
   let buttonRef = useSyncRefs(ref, useFloatingReference(), actions.setButtonElement)
   let getFloatingReferenceProps = useFloatingReferenceProps()
 
@@ -881,8 +881,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     pressProps
   )
 
+  let render = useRender()
+
   return render({
-    mergeRefs,
     ourProps,
     theirProps,
     slot,
@@ -1159,6 +1160,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     ...transitionDataAttributes(transitionData),
   })
 
+  let render = useRender()
+
   return (
     <Portal enabled={portal ? props.static || visible : false}>
       <ListboxDataContext.Provider
@@ -1336,6 +1339,8 @@ function OptionFn<
       }
     : {}
 
+  let render = useRender()
+
   if (!selected && usedInSelectedOption) {
     return null
   }
@@ -1382,6 +1387,8 @@ function SelectedFn<TTag extends ElementType = typeof DEFAULT_SELECTED_OPTION_TA
     data.value === undefined ||
     data.value === null ||
     (data.mode === ValueMode.Multi && Array.isArray(data.value) && data.value.length === 0)
+
+  let render = useRender()
 
   return (
     <SelectedOptionContext.Provider value={true}>

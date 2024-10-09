@@ -15,7 +15,7 @@ import { useIsoMorphicEffect } from '../../hooks/use-iso-morphic-effect'
 import { useSyncRefs } from '../../hooks/use-sync-refs'
 import { useDisabled } from '../../internal/disabled'
 import type { Props } from '../../types'
-import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
+import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
 // ---
 
@@ -120,6 +120,8 @@ function DescriptionFn<TTag extends ElementType = typeof DEFAULT_DESCRIPTION_TAG
   let disabled = providedDisabled || false
   let slot = useMemo(() => ({ ...context.slot, disabled }), [context.slot, disabled])
   let ourProps = { ref: descriptionRef, ...context.props, id }
+
+  let render = useRender()
 
   return render({
     ourProps,

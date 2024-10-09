@@ -74,8 +74,7 @@ import {
   RenderFeatures,
   forwardRefWithAs,
   mergeProps,
-  render,
-  useMergeRefsFn,
+  useRender,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -419,6 +418,8 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   let ourProps = { ref: popoverRef }
 
+  let render = useRender()
+
   return (
     <MainTreeProvider node={mainTreeNode}>
       <FloatingProvider>
@@ -707,6 +708,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
+  let render = useRender()
+
   return (
     <>
       {render({
@@ -799,6 +802,8 @@ function BackdropFn<TTag extends ElementType = typeof DEFAULT_BACKDROP_TAG>(
     ...transitionDataAttributes(transitionData),
   }
 
+  let render = useRender()
+
   return render({
     ourProps,
     theirProps,
@@ -884,7 +889,6 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     setLocalPanelElement
   )
   let ownerDocument = useOwnerDocument(internalPanelRef)
-  let mergeRefs = useMergeRefsFn()
 
   useIsoMorphicEffect(() => {
     dispatch({ type: ActionTypes.SetPanelId, panelId: id })
@@ -1070,6 +1074,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     }
   })
 
+  let render = useRender()
+
   return (
     <ResetOpenClosedProvider>
       <PopoverPanelContext.Provider value={id}>
@@ -1087,7 +1093,6 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
               />
             )}
             {render({
-              mergeRefs,
               ourProps,
               theirProps,
               slot,
@@ -1187,6 +1192,8 @@ function GroupFn<TTag extends ElementType = typeof DEFAULT_GROUP_TAG>(
 
   let theirProps = props
   let ourProps = { ref: groupRef }
+
+  let render = useRender()
 
   return (
     <MainTreeProvider>

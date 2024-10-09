@@ -24,7 +24,7 @@ import { history } from '../../utils/active-element-history'
 import { Focus, FocusResult, focusElement, focusIn } from '../../utils/focus-management'
 import { match } from '../../utils/match'
 import { microTask } from '../../utils/micro-task'
-import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../../utils/render'
+import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
 type Containers =
   // Lazy resolved containers
@@ -196,6 +196,8 @@ function FocusTrapFn<TTag extends ElementType = typeof DEFAULT_FOCUS_TRAP_TAG>(
       }
     },
   }
+
+  let render = useRender()
 
   return (
     <>

@@ -33,7 +33,7 @@ import {
   RenderFeatures,
   forwardRefWithAs,
   mergeProps,
-  render,
+  useRender,
   type HasDisplayName,
   type PropsForFeatures,
   type RefProp,
@@ -290,6 +290,8 @@ function TooltipFn<TTag extends ElementType = typeof DEFAULT_TOOLTIP_TAG>(
   )
   let actions = useMemo<_Actions>(() => ({ showTooltip, hideTooltip }), [showTooltip, hideTooltip])
 
+  let render = useRender()
+
   return (
     <DescriptionProvider value={describedBy}>
       <FloatingProvider>
@@ -395,6 +397,8 @@ function TriggerFn<TTag extends ElementType = typeof DEFAULT_TRIGGER_TAG>(
     hoverProps
   )
 
+  let render = useRender()
+
   return render({
     ourProps,
     theirProps,
@@ -447,6 +451,8 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
   }
 
   let slot = useMemo(() => ({}) satisfies PanelRenderPropArg, [])
+
+  let render = useRender()
 
   return render({
     ourProps: {

@@ -8,7 +8,7 @@ import type { Props } from '../../types'
 import {
   forwardRefWithAs,
   mergeProps,
-  render,
+  useRender,
   type HasDisplayName,
   type RefProp,
 } from '../../utils/render'
@@ -46,6 +46,8 @@ function DataInteractiveFn<TTag extends ElementType = typeof DEFAULT_DATA_INTERA
     () => ({ hover, focus, active }) satisfies DataInteractiveRenderPropArg,
     [hover, focus, active]
   )
+
+  let render = useRender()
 
   return render({
     ourProps,

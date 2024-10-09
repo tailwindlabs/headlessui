@@ -2,7 +2,7 @@ import { getByTestId, prettyDOM, render as testRender } from '@testing-library/r
 import React, { Fragment, createRef, type ElementType, type Ref } from 'react'
 import { suppressConsoleLogs } from '../test-utils/suppress-console-logs'
 import type { Expand, Props } from '../types'
-import { RenderFeatures, render, type PropsForFeatures } from './render'
+import { RenderFeatures, useRender, type PropsForFeatures } from './render'
 
 function contents(id = 'wrapper') {
   return prettyDOM(getByTestId(document.body, id), undefined, {
@@ -15,6 +15,7 @@ describe('Default functionality', () => {
   function Dummy<TTag extends ElementType = 'div'>(
     props: Props<TTag> & Partial<{ a: any; b: any; c: any }>
   ) {
+    let render = useRender()
     return (
       <div data-testid="wrapper">
         {render({
@@ -31,6 +32,7 @@ describe('Default functionality', () => {
   function DummyWithClassName<TTag extends ElementType = 'div'>(
     props: Props<TTag> & Partial<{ className: string | (() => string) }>
   ) {
+    let render = useRender()
     return (
       <div data-testid="wrapper-with-class">
         {render({
@@ -97,6 +99,7 @@ describe('Default functionality', () => {
     }
 
     function OtherDummy<TTag extends ElementType = 'div'>(props: Props<TTag>) {
+      let render = useRender()
       return (
         <div data-testid="wrapper">
           {render({
@@ -157,6 +160,7 @@ describe('Default functionality', () => {
     function Dummy<TTag extends ElementType = 'div'>(
       props: Props<TTag> & Partial<{ a: any; b: any; c: any }>
     ) {
+      let render = useRender()
       return (
         <div data-testid="wrapper">
           {render({
@@ -179,6 +183,7 @@ describe('Default functionality', () => {
     function Dummy<TTag extends ElementType = 'div'>(
       props: Props<TTag> & Partial<{ a: any; b: any; c: any }>
     ) {
+      let render = useRender()
       return (
         <div data-testid="wrapper">
           {render({
@@ -305,6 +310,7 @@ describe('Features.Static', () => {
     props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
     let { show, ...rest } = props
+    let render = useRender()
     return (
       <div data-testid="wrapper">
         {render({
@@ -380,6 +386,7 @@ describe('Features.RenderStrategy', () => {
     props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
     let { show, ...rest } = props
+    let render = useRender()
     return (
       <div data-testid="wrapper">
         {render({
@@ -408,6 +415,7 @@ describe('Features.Static | Features.RenderStrategy', () => {
     props: Expand<Props<TTag> & PropsForFeatures<typeof EnabledFeatures>> & { show: boolean }
   ) {
     let { show, ...rest } = props
+    let render = useRender()
     return (
       <div data-testid="wrapper">
         {render({

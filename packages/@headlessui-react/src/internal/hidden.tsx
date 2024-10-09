@@ -1,6 +1,6 @@
 import type { ElementType, Ref } from 'react'
 import type { Props } from '../types'
-import { forwardRefWithAs, render, type HasDisplayName, type RefProp } from '../utils/render'
+import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../utils/render'
 
 let DEFAULT_VISUALLY_HIDDEN_TAG = 'span' as const
 
@@ -54,6 +54,8 @@ function VisuallyHidden<TTag extends ElementType = typeof DEFAULT_VISUALLY_HIDDE
         }),
     },
   }
+
+  let render = useRender()
 
   return render({
     ourProps,
