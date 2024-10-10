@@ -467,6 +467,7 @@ let focusableSelector = [
   'iframe',
   'input:not([disabled])',
   'select:not([disabled])',
+  'summary',
   'textarea:not([disabled])',
 ]
   .map(
