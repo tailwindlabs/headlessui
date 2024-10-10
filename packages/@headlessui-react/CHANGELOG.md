@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.1.10] - 2024-10-10
+
 ### Fixed
 
 - Use `React.JSX` instead of deprecated global `JSX` ([#3511](https://github.com/tailwindlabs/headlessui/pull/3511))
@@ -794,7 +798,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.9...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.10...HEAD
+[2.1.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.9...@headlessui/react@v2.1.10
 [2.1.9]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.8...@headlessui/react@v2.1.9
 [2.1.8]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.7...@headlessui/react@v2.1.8
 [2.1.7]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.6...@headlessui/react@v2.1.7
