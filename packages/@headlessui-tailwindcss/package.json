@@ -17,7 +17,8 @@
       "require": "./dist/index.d.cts"
     },
     "import": "./dist/headlessui.esm.js",
-    "require": "./dist/index.cjs"
+    "require": "./dist/index.cjs",
+    "default": "./dist/headlessui.esm.js"
   },
   "sideEffects": false,
   "engines": {
