@@ -1,4 +1,4 @@
-import {
+import React, {
   Fragment,
   cloneElement,
   createElement,
@@ -257,7 +257,7 @@ function _render<TTag extends ElementType, TSlot>(
             mergedProps,
             dataAttributes,
             refRelatedProps,
-            { ref: mergeRefs((resolvedChildren as any).ref, refRelatedProps.ref) },
+            { ref: mergeRefs(getElementRef(resolvedChildren), refRelatedProps.ref) },
             classNameProps
           )
         )
@@ -459,4 +459,9 @@ function omit<T extends Record<any, any>>(object: T, keysToOmit: string[] = []) 
     if (key in clone) delete clone[key]
   }
   return clone
+}
+
+function getElementRef(element: React.ReactElement) {
+  // @ts-expect-error
+  return React.version.split('.')[0] >= '19' ? element.props.ref : element.ref
 }
