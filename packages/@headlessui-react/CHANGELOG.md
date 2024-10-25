@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+### Added
+
+- Add React 19 support ([#3543](https://github.com/tailwindlabs/headlessui/pull/3543))
 
 ## [2.1.10] - 2024-10-10
 
