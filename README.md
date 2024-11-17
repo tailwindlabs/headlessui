@@ -37,6 +37,24 @@ You can install the insiders version (which points to whatever the latest commit
 | [`@headlessui/vue`](https://github.com/tailwindlabs/headlessui/tree/main/packages/%40headlessui-vue)                 |         [![npm version](https://img.shields.io/npm/v/@headlessui/vue.svg)](https://www.npmjs.com/package/@headlessui/vue)         |         [![npm downloads](https://img.shields.io/npm/dt/@headlessui/vue.svg)](https://www.npmjs.com/package/@headlessui/vue)         |
 | [`@headlessui/tailwindcss`](https://github.com/tailwindlabs/headlessui/tree/main/packages/%40headlessui-tailwindcss) | [![npm version](https://img.shields.io/npm/v/@headlessui/tailwindcss.svg)](https://www.npmjs.com/package/@headlessui/tailwindcss) | [![npm downloads](https://img.shields.io/npm/dt/@headlessui/tailwindcss.svg)](https://www.npmjs.com/package/@headlessui/tailwindcss) |
 
+[Usage Trend of @headlessui/react](https://npm-compare.com/@headlessui/react#timeRange=THREE_YEARS):
+  
+<a href="https://npm-compare.com/@headlessui/react#timeRange=THREE_YEARS" target="_blank">
+  <img src="https://npm-compare.com/img/npm-trend/THREE_YEARS/@headlessui/react.png" width="50%" alt="NPM Usage Trend of @headlessui/react" />
+</a>
+
+[Usage Trend of @headlessui/vue](https://npm-compare.com/@headlessui/vue#timeRange=THREE_YEARS):
+  
+<a href="https://npm-compare.com/@headlessui/vue#timeRange=THREE_YEARS" target="_blank">
+  <img src="https://npm-compare.com/img/npm-trend/THREE_YEARS/@headlessui/vue.png" width="50%" alt="NPM Usage Trend of @headlessui/vue" />
+</a>
+
+[Usage Trend of @headlessui/tailwindcss](https://npm-compare.com/@headlessui/tailwindcss#timeRange=THREE_YEARS):
+  
+<a href="https://npm-compare.com/@headlessui/tailwindcss#timeRange=THREE_YEARS" target="_blank">
+  <img src="https://npm-compare.com/img/npm-trend/THREE_YEARS/@headlessui/tailwindcss.png" width="50%" alt="NPM Usage Trend of @headlessui/tailwindcss" />
+</a>
+
 ## Community
 
 For help, discussion about best practices, or any other conversation that would benefit from being searchable:
