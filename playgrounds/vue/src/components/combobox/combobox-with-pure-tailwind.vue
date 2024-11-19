@@ -33,18 +33,13 @@ export default defineComponent({
   },
   setup() {
     let query = ref('')
-    let activePerson = ref(everybody[2]) // everybody[Math.floor(Math.random() * everybody.length)]
+    let activePerson = ref(null)
     let filteredPeople = computed(() => {
       return query.value === ''
         ? everybody
         : everybody.filter((person) => {
             return person.name.toLowerCase().includes(query.value.toLowerCase())
           })
-    })
-
-    // Choose a random person on mount
-    onMounted(() => {
-      activePerson.value = everybody[Math.floor(Math.random() * everybody.length)]
     })
 
     watch(activePerson, () => {
@@ -67,7 +62,7 @@ export default defineComponent({
         Selected person: {{ activePerson?.name ?? 'Nobody yet' }}
       </div>
       <div class="space-y-1">
-        <Combobox v-model="activePerson" as="div">
+        <Combobox v-model="activePerson" as="div" nullable :default-to-first-option="false">
           <ComboboxLabel class="block text-sm font-medium leading-5 text-gray-700">
             Assigned to
           </ComboboxLabel>
