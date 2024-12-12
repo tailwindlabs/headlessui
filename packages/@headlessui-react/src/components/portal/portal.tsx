@@ -25,11 +25,9 @@ import type { Props } from '../../types'
 import { env } from '../../utils/env'
 import { forwardRefWithAs, useRender, type HasDisplayName, type RefProp } from '../../utils/render'
 
-function usePortalTarget(ref: MutableRefObject<HTMLElement | null>): HTMLElement | null {
+function usePortalTarget(ownerDocument: Document | null): HTMLElement | null {
   let forceInRoot = usePortalRoot()
   let groupTarget = useContext(PortalGroupContext)
-
-  let ownerDocument = useOwnerDocument(ref)
 
   let [target, setTarget] = useState(() => {
     // Group context is used, but still null
@@ -77,13 +75,14 @@ export type PortalProps<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG> = 
   PortalPropsWeControl,
   {
     enabled?: boolean
+    ownerDocument?: Document | null
   }
 >
 
 let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
   TTag extends ElementType = typeof DEFAULT_PORTAL_TAG,
 >(props: PortalProps<TTag>, ref: Ref<HTMLElement>) {
-  let theirProps = props
+  let { ownerDocument: incomingOwnerDocument = null, ...theirProps } = props
   let internalPortalRootRef = useRef<HTMLElement | null>(null)
   let portalRef = useSyncRefs(
     optionalRef<(typeof internalPortalRootRef)['current']>((ref) => {
@@ -91,8 +90,9 @@ let InternalPortalFn = forwardRefWithAs(function InternalPortalFn<
     }),
     ref
   )
-  let ownerDocument = useOwnerDocument(internalPortalRootRef)
-  let target = usePortalTarget(internalPortalRootRef)
+  let defaultOwnerDocument = useOwnerDocument(internalPortalRootRef)
+  let ownerDocument = incomingOwnerDocument ?? defaultOwnerDocument
+  let target = usePortalTarget(ownerDocument)
   let [element] = useState<HTMLDivElement | null>(() =>
     env.isServer ? null : ownerDocument?.createElement('div') ?? null
   )
@@ -154,12 +154,12 @@ function PortalFn<TTag extends ElementType = typeof DEFAULT_PORTAL_TAG>(
 ) {
   let portalRef = useSyncRefs(ref)
 
-  let { enabled = true, ...theirProps } = props
+  let { enabled = true, ownerDocument, ...theirProps } = props
 
   let render = useRender()
 
   return enabled ? (
-    <InternalPortalFn {...theirProps} ref={portalRef} />
+    <InternalPortalFn {...theirProps} ownerDocument={ownerDocument} ref={portalRef} />
   ) : (
     render({
       ourProps: { ref: portalRef },

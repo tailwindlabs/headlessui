@@ -951,6 +951,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let data = useData('Listbox.Options')
   let actions = useActions('Listbox.Options')
 
+  let portalOwnerDocument = useOwnerDocument(data.buttonElement)
   let ownerDocument = useOwnerDocument(data.optionsElement)
 
   let usesOpenClosedState = useOpenClosed()
@@ -1163,7 +1164,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let render = useRender()
 
   return (
-    <Portal enabled={portal ? props.static || visible : false}>
+    <Portal enabled={portal ? props.static || visible : false} ownerDocument={portalOwnerDocument}>
       <ListboxDataContext.Provider
         value={data.mode === ValueMode.Multi ? data : { ...data, isSelected }}
       >
