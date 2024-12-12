@@ -1685,6 +1685,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     actions.setOptionsElement,
     setLocalOptionsElement
   )
+  let portalOwnerDocument = useOwnerDocument(data.buttonElement || data.inputElement)
   let ownerDocument = useOwnerDocument(data.optionsElement)
 
   let usesOpenClosedState = useOpenClosed()
@@ -1819,7 +1820,7 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let render = useRender()
 
   return (
-    <Portal enabled={portal ? props.static || visible : false}>
+    <Portal enabled={portal ? props.static || visible : false} ownerDocument={portalOwnerDocument}>
       <ComboboxDataContext.Provider
         value={data.mode === ValueMode.Multi ? data : { ...data, isSelected }}
       >

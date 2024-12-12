@@ -638,6 +638,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     useEvent((element) => dispatch({ type: ActionTypes.SetItemsElement, element })),
     setLocalItemsElement
   )
+  let portalOwnerDocument = useOwnerDocument(state.buttonElement)
   let ownerDocument = useOwnerDocument(state.itemsElement)
 
   // Always enable `portal` functionality, when `anchor` is enabled
@@ -824,7 +825,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let render = useRender()
 
   return (
-    <Portal enabled={portal ? props.static || visible : false}>
+    <Portal enabled={portal ? props.static || visible : false} ownerDocument={portalOwnerDocument}>
       {render({
         ourProps,
         theirProps,

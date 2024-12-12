@@ -888,6 +888,7 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     useEvent((panel) => dispatch({ type: ActionTypes.SetPanel, panel })),
     setLocalPanelElement
   )
+  let portalOwnerDocument = useOwnerDocument(state.button)
   let ownerDocument = useOwnerDocument(internalPanelRef)
 
   useIsoMorphicEffect(() => {
@@ -1080,7 +1081,10 @@ function PanelFn<TTag extends ElementType = typeof DEFAULT_PANEL_TAG>(
     <ResetOpenClosedProvider>
       <PopoverPanelContext.Provider value={id}>
         <PopoverAPIContext.Provider value={{ close, isPortalled }}>
-          <Portal enabled={portal ? props.static || visible : false}>
+          <Portal
+            enabled={portal ? props.static || visible : false}
+            ownerDocument={portalOwnerDocument}
+          >
             {visible && isPortalled && (
               <Hidden
                 id={beforePanelSentinelId}
