@@ -848,6 +848,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
 
   let closeCombobox = useEvent(() => {
     dispatch({ type: ActionTypes.CloseCombobox })
+    actions.setIsTyping(false)
     defaultToFirstOption.current = false
     onClose?.()
   })
@@ -1282,6 +1283,7 @@ function InputFn<
         return actions.closeCombobox()
 
       case Keys.Tab:
+        actions.setIsTyping(false)
         if (data.comboboxState !== ComboboxState.Open) return
         if (data.mode === ValueMode.Single && data.activationTrigger !== ActivationTrigger.Focus) {
           actions.selectActiveOption()
