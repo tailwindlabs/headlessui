@@ -713,7 +713,7 @@ export let Combobox = defineComponent({
             ? null
             : api.virtual.value
               ? api.virtual.value.options[api.activeOptionIndex.value ?? 0]
-              : api.options.value[api.activeOptionIndex.value]?.dataRef.value ?? null,
+              : (api.options.value[api.activeOptionIndex.value]?.dataRef.value ?? null),
         value: value.value,
       }
 
@@ -911,6 +911,10 @@ export let ComboboxInput = defineComponent({
     displayValue: { type: Function as PropType<(item: unknown) => string> },
     defaultValue: { type: String, default: undefined },
     id: { type: String, default: () => `headlessui-combobox-input-${useId()}` },
+    autocomplete: {
+      type: String as PropType<HTMLInputElement['autocomplete']>,
+      default: 'off',
+    },
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
@@ -979,6 +983,7 @@ export let ComboboxInput = defineComponent({
           let input = dom(api.inputRef)
           if (!input) return
 
+          input.autocomplete = props.autocomplete
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
             input.value = currentDisplayValue
           } else if (currentDisplayValue !== oldCurrentDisplayValue) {
