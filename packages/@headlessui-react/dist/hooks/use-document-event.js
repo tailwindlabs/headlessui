@@ -1,0 +1,1 @@
+import{useEffect as c}from"react";import{useLatestValue as a}from'./use-latest-value.js';function i(t,e,o,n){let u=a(o);c(()=>{if(!t)return;function r(m){u.current(m)}return document.addEventListener(e,r,n),()=>document.removeEventListener(e,r,n)},[t,e,n])}export{i as useDocumentEvent};

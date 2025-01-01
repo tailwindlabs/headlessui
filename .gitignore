@@ -23,9 +23,6 @@
 /playgrounds/**/out/
 
 # production
-/dist
-/packages/**/dist
-/playgrounds/**/dist
 
 # misc
 .DS_Store

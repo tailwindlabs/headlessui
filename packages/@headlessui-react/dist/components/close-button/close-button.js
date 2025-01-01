@@ -1,0 +1,1 @@
+"use client";import n from"react";import{useClose as T}from'../../internal/close-provider.js';import{forwardRefWithAs as p,mergeProps as r}from'../../utils/render.js';import{Button as s}from'../button/button.js';let i="button";function l(t,e){let o=T();return n.createElement(s,{ref:e,...r({onClick:o},t)})}let y=p(l);export{y as CloseButton};

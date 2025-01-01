@@ -1,0 +1,1 @@
+"use client";import r,{createContext as n,useContext as i}from"react";let e=n(()=>{});function u(){return i(e)}function C({value:t,children:o}){return r.createElement(e.Provider,{value:t},o)}export{C as CloseProvider,u as useClose};

@@ -1,0 +1,1 @@
+import{useDocumentOverflowLockedEffect as l}from'./document-overflow/use-document-overflow.js';import{useIsTopLayer as m}from'./use-is-top-layer.js';function f(e,c,n=()=>[document.body]){let r=m(e,"scroll-lock");l(r,c,t=>{var o;return{containers:[...(o=t.containers)!=null?o:[],n]}})}export{f as useScrollLock};

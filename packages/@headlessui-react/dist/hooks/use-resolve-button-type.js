@@ -1,0 +1,1 @@
+import{useMemo as a}from"react";function e(t,u){return a(()=>{var n;if(t.type)return t.type;let r=(n=t.as)!=null?n:"button";if(typeof r=="string"&&r.toLowerCase()==="button"||(u==null?void 0:u.tagName)==="BUTTON"&&!u.hasAttribute("type"))return"button"},[t.type,t.as,u])}export{e as useResolveButtonType};

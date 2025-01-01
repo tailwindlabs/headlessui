@@ -1,0 +1,1 @@
+import{ref as o}from"vue";function r(e){return[e.screenX,e.screenY]}function u(){let e=o([-1,-1]);return{wasMoved(n){let t=r(n);return e.value[0]===t[0]&&e.value[1]===t[1]?!1:(e.value=t,!0)},update(n){e.value=r(n)}}}export{u as useTrackedPointer};

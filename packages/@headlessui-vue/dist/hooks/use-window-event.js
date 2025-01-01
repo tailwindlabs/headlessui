@@ -1,0 +1,1 @@
+import{watchEffect as r}from"vue";import{env as d}from'../utils/env.js';function w(o,e,n,t){d.isServer||r(i=>{o.value&&(window.addEventListener(e,n,t),i(()=>window.removeEventListener(e,n,t)))})}export{w as useWindowEvent};

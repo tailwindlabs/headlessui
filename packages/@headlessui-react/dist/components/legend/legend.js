@@ -1,0 +1,1 @@
+"use client";import p from"react";import{forwardRefWithAs as r}from'../../utils/render.js';import{Label as e}from'../label/label.js';let a=e;function o(t,n){return p.createElement(e,{as:"div",ref:n,...t})}let d=r(o);export{d as Legend};

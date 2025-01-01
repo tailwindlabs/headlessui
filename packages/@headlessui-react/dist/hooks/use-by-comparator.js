@@ -1,0 +1,1 @@
+import{useCallback as n}from"react";function l(e,r){return e!==null&&r!==null&&typeof e=="object"&&typeof r=="object"&&"id"in e&&"id"in r?e.id===r.id:e===r}function u(e=l){return n((r,t)=>{if(typeof e=="string"){let o=e;return(r==null?void 0:r[o])===(t==null?void 0:t[o])}return e(r,t)},[e])}export{u as useByComparator};
