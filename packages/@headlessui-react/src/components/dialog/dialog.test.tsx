@@ -768,6 +768,47 @@ describe('Keyboard interactions', () => {
     )
 
     it(
+      'should be not close the dialog with Escape if closeOnEscape is false',
+      suppressConsoleLogs(async () => {
+        function Example() {
+          let [isOpen, setIsOpen] = useState(false)
+          return (
+            <>
+              <button id="trigger" onClick={() => setIsOpen((v) => !v)}>
+                Trigger
+              </button>
+              <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen} closeOnEscape={false}>
+                Contents
+                <TabSentinel />
+              </Dialog>
+            </>
+          )
+        }
+        render(<Example />)
+
+        assertDialog({ state: DialogState.InvisibleUnmounted })
+
+        // Open dialog
+        await click(document.getElementById('trigger'))
+
+        // Verify it is open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+
+        // Press escape key
+        await press(Keys.Escape)
+
+        // Verify it is still open
+        assertDialog({
+          state: DialogState.Visible,
+          attributes: { id: 'headlessui-dialog-1' },
+        })
+      })
+    )
+
+    it(
       'should be possible to close the dialog with Escape, when a field is focused',
       suppressConsoleLogs(async () => {
         function Example() {
@@ -1041,6 +1082,37 @@ describe('Mouse interactions', () => {
 
       // Verify the button is focused
       assertActiveElement(getByText('Trigger'))
+    })
+  )
+
+  it(
+    'should not close the dialog when we click outside on the body element if closeOnOutsideClick is false',
+    suppressConsoleLogs(async () => {
+      function Example() {
+        let [isOpen, setIsOpen] = useState(false)
+        return (
+          <>
+            <button onClick={() => setIsOpen((v) => !v)}>Trigger</button>
+            <Dialog autoFocus={false} open={isOpen} onClose={setIsOpen} closeOnOutsideClick={false}>
+              Contents
+              <TabSentinel />
+            </Dialog>
+          </>
+        )
+      }
+      render(<Example />)
+
+      // Open dialog
+      await click(getByText('Trigger'))
+
+      // Verify it is open
+      assertDialog({ state: DialogState.Visible })
+
+      // Click the body
+      await click(document.body)
+
+      // Verify it is still open
+      assertDialog({ state: DialogState.Visible })
     })
   )
 
