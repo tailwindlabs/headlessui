@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Nothing yet!
+- Support installing with Tailwind CSS v4 ([#3634](https://github.com/tailwindlabs/headlessui/pull/3634))
 
 ## [0.2.1] - 2024-05-29
 
