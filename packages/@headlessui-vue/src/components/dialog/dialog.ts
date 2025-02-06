@@ -75,6 +75,8 @@ export let Dialog = defineComponent({
     initialFocus: { type: Object as PropType<HTMLElement | null>, default: null },
     id: { type: String, default: () => `headlessui-dialog-${useId()}` },
     role: { type: String as PropType<'dialog' | 'alertdialog'>, default: 'dialog' },
+    closeOnOutsideClick: { type: Boolean, default: true },
+    closeOnEscape: { type: Boolean, default: true },
   },
   emits: { close: (_close: boolean) => true },
   setup(props, { emit, attrs, slots, expose }) {
@@ -233,6 +235,7 @@ export let Dialog = defineComponent({
     let outsideClickEnabled = computed(() => {
       if (!enabled.value) return false
       if (hasNestedDialogs.value) return false
+      if (props.closeOnOutsideClick === false) return false
       return true
     })
     useOutsideClick(
@@ -249,6 +252,7 @@ export let Dialog = defineComponent({
     let escapeToCloseEnabled = computed(() => {
       if (hasNestedDialogs.value) return false
       if (dialogState.value !== DialogStates.Open) return false
+      if (props.closeOnEscape === false) return false
       return true
     })
     useEventListener(ownerDocument.value?.defaultView, 'keydown', (event) => {
