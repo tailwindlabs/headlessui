@@ -66,7 +66,7 @@ function InputFn<TTag extends ElementType = typeof DEFAULT_INPUT_TAG>(
       id,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
-      'aria-invalid': invalid ? '' : undefined,
+      'aria-invalid': invalid ? 'true' : undefined,
       disabled: disabled || undefined,
       autoFocus,
     },

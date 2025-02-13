@@ -69,7 +69,7 @@ function SelectFn<TTag extends ElementType = typeof DEFAULT_SELECT_TAG>(
       id,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
-      'aria-invalid': invalid ? '' : undefined,
+      'aria-invalid': invalid ? 'true' : undefined,
       disabled: disabled || undefined,
       autoFocus,
     },
