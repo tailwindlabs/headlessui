@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use correct `ownerDocument` when using internal `<Portal/>` element ([#3594](https://github.com/tailwindlabs/headlessui/pull/3594))
 - Bump `@tanstack/react-virtual` to be fix warnings in React 19 projects ([#3588](https://github.com/tailwindlabs/headlessui/pull/3588))
+- Fix `aria-invalid` attributes to have a valid `'true'` value ([#3639](https://github.com/tailwindlabs/headlessui/pull/3639))
 
 ## [2.2.0] - 2024-10-25
 
