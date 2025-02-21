@@ -100,6 +100,7 @@ let RadioGroupDataContext = createContext<
       containsCheckedOption: boolean
       disabled: boolean
       compare(a: unknown, z: unknown): boolean
+      tabIndex: number
     } & StateDefinition)
   | null
 >(null)
@@ -178,6 +179,7 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
     by,
     disabled = providedDisabled || false,
     defaultValue: _defaultValue,
+    tabIndex = 0,
     ...theirProps
   } = props
   let compare = useByComparator(by)
@@ -285,8 +287,8 @@ function RadioGroupFn<TTag extends ElementType = typeof DEFAULT_RADIO_GROUP_TAG,
   })
 
   let radioGroupData = useMemo<_Data>(
-    () => ({ value, firstOption, containsCheckedOption, disabled, compare, ...state }),
-    [value, firstOption, containsCheckedOption, disabled, compare, state]
+    () => ({ value, firstOption, containsCheckedOption, disabled, compare, tabIndex, ...state }),
+    [value, firstOption, containsCheckedOption, disabled, compare, tabIndex, state]
   )
   let radioGroupActions = useMemo<_Actions>(
     () => ({ registerOption, change: triggerChange }),
@@ -424,8 +426,8 @@ function OptionFn<
       'aria-disabled': disabled ? true : undefined,
       tabIndex: (() => {
         if (disabled) return -1
-        if (checked) return 0
-        if (!data.containsCheckedOption && isFirstOption) return 0
+        if (checked) return data.tabIndex
+        if (!data.containsCheckedOption && isFirstOption) return data.tabIndex
         return -1
       })(),
       onClick: disabled ? undefined : handleClick,
@@ -547,8 +549,8 @@ function RadioFn<
       'aria-disabled': disabled ? true : undefined,
       tabIndex: (() => {
         if (disabled) return -1
-        if (checked) return 0
-        if (!data.containsCheckedOption && isFirstOption) return 0
+        if (checked) return data.tabIndex
+        if (!data.containsCheckedOption && isFirstOption) return data.tabIndex
         return -1
       })(),
       autoFocus,
