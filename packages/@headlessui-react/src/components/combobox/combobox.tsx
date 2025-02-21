@@ -1626,17 +1626,20 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 // ---
 
 let DEFAULT_OPTIONS_TAG = 'div' as const
-type OptionsRenderPropArg = {
+type OptionsRenderPropArg<TValue = any> = {
   open: boolean
-  option: any
+  option: TValue
 }
 type OptionsPropsWeControl = 'aria-labelledby' | 'aria-multiselectable' | 'role' | 'tabIndex'
 
 let OptionsRenderFeatures = RenderFeatures.RenderStrategy | RenderFeatures.Static
 
-export type ComboboxOptionsProps<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG> = Props<
+export type ComboboxOptionsProps<
+  TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG,
+  TValue = any,
+> = Props<
   TTag,
-  OptionsRenderPropArg,
+  OptionsRenderPropArg<TValue>,
   OptionsPropsWeControl,
   PropsForFeatures<typeof OptionsRenderFeatures> & {
     hold?: boolean
