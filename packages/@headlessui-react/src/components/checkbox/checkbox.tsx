@@ -51,7 +51,6 @@ type CheckboxPropsWeControl =
   | 'aria-disabled'
   | 'aria-labelledby'
   | 'role'
-  | 'tabIndex'
 
 export type CheckboxProps<
   TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG,
@@ -71,6 +70,7 @@ export type CheckboxProps<
     form?: string
     name?: string
     onChange?: (checked: boolean) => void
+    tabIndex?: number
   }
 >
 
@@ -92,6 +92,7 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
     value,
     form,
     indeterminate = false,
+    tabIndex = 0,
     ...theirProps
   } = props
 
@@ -148,7 +149,7 @@ function CheckboxFn<TTag extends ElementType = typeof DEFAULT_CHECKBOX_TAG, TTyp
       'aria-describedby': describedBy,
       'aria-disabled': disabled ? true : undefined,
       indeterminate: indeterminate ? 'true' : undefined,
-      tabIndex: disabled ? undefined : 0,
+      tabIndex: disabled ? undefined : tabIndex,
       onKeyUp: disabled ? undefined : handleKeyUp,
       onKeyPress: disabled ? undefined : handleKeyPress,
       onClick: disabled ? undefined : handleClick,
