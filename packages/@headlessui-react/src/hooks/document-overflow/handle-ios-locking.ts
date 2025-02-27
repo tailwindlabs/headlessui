@@ -83,7 +83,9 @@ export function handleIOSLocking(): ScrollLockStep<ContainerMetadata> {
 
               d.style(rootContainer, 'overscrollBehavior', 'contain')
             } else {
-              d.style(e.target, 'touchAction', 'none')
+              // Disable all touch actions related to scrolling,
+              // but still allow pinch-to-zoom.
+              d.style(e.target, 'touchAction', 'pinch-zoom')
             }
           }
         })
