@@ -53,7 +53,7 @@ import {
 } from '../description/description'
 import { FocusTrap, FocusTrapFeatures } from '../focus-trap/focus-trap'
 import { Portal, PortalGroup, useNestedPortals } from '../portal/portal'
-import { Transition, TransitionChild } from '../transition/transition'
+import { Transition, TransitionChild, type TransitionRootProps } from '../transition/transition'
 
 enum DialogStates {
   Open,
@@ -347,6 +347,7 @@ export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = 
     role?: 'dialog' | 'alertdialog'
     autoFocus?: boolean
     transition?: boolean
+    TransitionProps?: TransitionRootProps
     __demoMode?: boolean
   }
 >
@@ -355,7 +356,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   props: DialogProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let { transition = false, open, ...rest } = props
+  let { TransitionProps, open, transition = false, ...rest } = props
 
   // Validations
   let usesOpenClosedState = useOpenClosed()
@@ -395,7 +396,7 @@ function DialogFn<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG>(
   if ((open !== undefined || transition) && !rest.static) {
     return (
       <MainTreeProvider>
-        <Transition show={open} transition={transition} unmount={rest.unmount}>
+        <Transition show={open} transition={transition} unmount={rest.unmount} {...TransitionProps}>
           <InternalDialog ref={ref} {...rest} />
         </Transition>
       </MainTreeProvider>
