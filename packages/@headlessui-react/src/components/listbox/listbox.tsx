@@ -492,7 +492,7 @@ export type ListboxProps<
     form?: string
     name?: string
     multiple?: boolean
-
+    outsideClickScope?: string
     __demoMode?: boolean
   }
 >
@@ -515,6 +515,7 @@ function ListboxFn<
     horizontal = false,
     multiple = false,
     __demoMode = false,
+    outsideClickScope,
     ...theirProps
   } = props
 
@@ -592,7 +593,8 @@ function ListboxFn<
         event.preventDefault()
         data.buttonElement?.focus()
       }
-    }
+    },
+    outsideClickScope
   )
 
   let slot = useMemo(() => {

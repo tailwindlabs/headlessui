@@ -126,6 +126,7 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
     autoFocus = true,
     __demoMode = false,
     unmount = false,
+    outsideClickScope,
     ...theirProps
   } = props
 
@@ -213,10 +214,15 @@ let InternalDialog = forwardRefWithAs(function InternalDialog<
   })
 
   // Close Dialog on outside click
-  useOutsideClick(enabled, resolveRootContainers, (event) => {
-    event.preventDefault()
-    close()
-  })
+  useOutsideClick(
+    enabled,
+    resolveRootContainers,
+    (event) => {
+      event.preventDefault()
+      close()
+    },
+    outsideClickScope
+  )
 
   // Handle `Escape` to close
   useEscape(enabled, ownerDocument?.defaultView, (event) => {
@@ -347,6 +353,7 @@ export type DialogProps<TTag extends ElementType = typeof DEFAULT_DIALOG_TAG> = 
     role?: 'dialog' | 'alertdialog'
     autoFocus?: boolean
     transition?: boolean
+    outsideClickScope?: string
     __demoMode?: boolean
   }
 >
