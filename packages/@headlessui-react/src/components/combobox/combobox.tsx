@@ -577,6 +577,7 @@ let ComboboxDataContext = createContext<
       value: unknown
       defaultValue: unknown
       disabled: boolean
+      invalid: boolean
       mode: ValueMode
       activeOptionIndex: number | null
       immediate: boolean
@@ -619,6 +620,7 @@ let DEFAULT_COMBOBOX_TAG = Fragment
 type ComboboxRenderPropArg<TValue, TActive = TValue> = {
   open: boolean
   disabled: boolean
+  invalid: boolean
   activeIndex: number | null
   activeOption: TActive | null
   value: TValue
@@ -648,6 +650,7 @@ export type ComboboxProps<
 
     multiple?: TMultiple
     disabled?: boolean
+    invalid?: boolean
     form?: string
     name?: string
     immediate?: boolean
@@ -676,6 +679,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     form,
     name,
     by,
+    invalid = false,
     disabled = providedDisabled || false,
     onClose,
     __demoMode = false,
@@ -751,6 +755,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       value,
       defaultValue,
       disabled,
+      invalid,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
       virtual: virtual ? state.virtual : null,
       get activeOptionIndex() {
@@ -785,7 +790,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
       isSelected,
       isActive,
     }),
-    [value, defaultValue, disabled, multiple, __demoMode, state, virtual]
+    [value, defaultValue, disabled, invalid, multiple, __demoMode, state, virtual]
   )
 
   useIsoMorphicEffect(() => {
@@ -813,6 +818,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     return {
       open: data.comboboxState === ComboboxState.Open,
       disabled,
+      invalid,
       activeIndex: data.activeOptionIndex,
       activeOption:
         data.activeOptionIndex === null
@@ -822,7 +828,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
             : (data.options[data.activeOptionIndex]?.dataRef.current.value as TValue) ?? null,
       value,
     } satisfies ComboboxRenderPropArg<unknown>
-  }, [data, disabled, value])
+  }, [data, disabled, value, invalid])
 
   let selectActiveOption = useEvent(() => {
     if (data.activeOptionIndex === null) return
@@ -999,6 +1005,7 @@ let DEFAULT_INPUT_TAG = 'input' as const
 type InputRenderPropArg = {
   open: boolean
   disabled: boolean
+  invalid: boolean
   hover: boolean
   focus: boolean
   autofocus: boolean
@@ -1398,11 +1405,12 @@ function InputFn<
     return {
       open: data.comboboxState === ComboboxState.Open,
       disabled,
+      invalid: data.invalid,
       hover,
       focus,
       autofocus: autoFocus,
     } satisfies InputRenderPropArg
-  }, [data, hover, focus, autoFocus, disabled])
+  }, [data, hover, focus, autoFocus, disabled, data.invalid])
 
   let ourProps = mergeProps(
     {
@@ -1463,6 +1471,7 @@ type ButtonRenderPropArg = {
   open: boolean
   active: boolean
   disabled: boolean
+  invalid: boolean
   value: any
   focus: boolean
   hover: boolean
@@ -1587,6 +1596,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       open: data.comboboxState === ComboboxState.Open,
       active: active || data.comboboxState === ComboboxState.Open,
       disabled,
+      invalid: data.invalid,
       value: data.value,
       hover,
       focus,
