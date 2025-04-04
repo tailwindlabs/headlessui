@@ -382,6 +382,7 @@ export type MenuProps<TTag extends ElementType = typeof DEFAULT_MENU_TAG> = Prop
   MenuPropsWeControl,
   {
     __demoMode?: boolean
+    outsideClickScope?: string
   }
 >
 
@@ -389,7 +390,7 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
   props: MenuProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let { __demoMode = false, ...theirProps } = props
+  let { __demoMode = false, outsideClickScope, ...theirProps } = props
   let reducerBag = useReducer(stateReducer, {
     __demoMode,
     menuState: __demoMode ? MenuStates.Open : MenuStates.Closed,
@@ -405,14 +406,19 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
 
   // Handle outside click
   let outsideClickEnabled = menuState === MenuStates.Open
-  useOutsideClick(outsideClickEnabled, [buttonElement, itemsElement], (event, target) => {
-    dispatch({ type: ActionTypes.CloseMenu })
+  useOutsideClick(
+    outsideClickEnabled,
+    [buttonElement, itemsElement],
+    (event, target) => {
+      dispatch({ type: ActionTypes.CloseMenu })
 
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      buttonElement?.focus()
-    }
-  })
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        buttonElement?.focus()
+      }
+    },
+    outsideClickScope
+  )
 
   let close = useEvent(() => {
     dispatch({ type: ActionTypes.CloseMenu })

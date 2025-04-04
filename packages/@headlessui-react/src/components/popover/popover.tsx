@@ -238,6 +238,7 @@ export type PopoverProps<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG> 
   PopoverPropsWeControl,
   {
     __demoMode?: boolean
+    outsideClickScope?: string
   }
 >
 
@@ -245,7 +246,7 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
   props: PopoverProps<TTag>,
   ref: Ref<HTMLElement>
 ) {
-  let { __demoMode = false, ...theirProps } = props
+  let { __demoMode = false, outsideClickScope, ...theirProps } = props
   let internalPopoverRef = useRef<HTMLElement | null>(null)
   let popoverRef = useSyncRefs(
     ref,
@@ -375,14 +376,19 @@ function PopoverFn<TTag extends ElementType = typeof DEFAULT_POPOVER_TAG>(
 
   // Handle outside click
   let outsideClickEnabled = popoverState === PopoverStates.Open
-  useOutsideClick(outsideClickEnabled, root.resolveContainers, (event, target) => {
-    dispatch({ type: ActionTypes.ClosePopover })
+  useOutsideClick(
+    outsideClickEnabled,
+    root.resolveContainers,
+    (event, target) => {
+      dispatch({ type: ActionTypes.ClosePopover })
 
-    if (!isFocusableElement(target, FocusableMode.Loose)) {
-      event.preventDefault()
-      button?.focus()
-    }
-  })
+      if (!isFocusableElement(target, FocusableMode.Loose)) {
+        event.preventDefault()
+        button?.focus()
+      }
+    },
+    outsideClickScope
+  )
 
   let close = useEvent(
     (

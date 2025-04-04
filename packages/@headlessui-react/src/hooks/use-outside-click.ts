@@ -21,9 +21,10 @@ const MOVE_THRESHOLD_PX = 30
 export function useOutsideClick(
   enabled: boolean,
   containers: ContainerInput | (() => ContainerInput),
-  cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void
+  cb: (event: MouseEvent | PointerEvent | FocusEvent | TouchEvent, target: HTMLElement) => void,
+  topLayerScope = 'outside-click'
 ) {
-  let isTopLayer = useIsTopLayer(enabled, 'outside-click')
+  let isTopLayer = useIsTopLayer(enabled, topLayerScope)
   let cbRef = useLatestValue(cb)
 
   let handleOutsideClick = useCallback(

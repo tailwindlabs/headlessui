@@ -668,7 +668,7 @@ export type ComboboxProps<
     } | null
 
     onClose?(): void
-
+    outsideClickScope?: string
     __demoMode?: boolean
   }
 >
@@ -695,6 +695,7 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
     // Deprecated, but let's pluck it from the props such that it doesn't end up
     // on the `Fragment`
     nullable: _nullable,
+    outsideClickScope,
     ...theirProps
   } = props
   let defaultValue = useDefaultValue(_defaultValue)
@@ -817,7 +818,8 @@ function ComboboxFn<TValue, TTag extends ElementType = typeof DEFAULT_COMBOBOX_T
   useOutsideClick(
     outsideClickEnabled,
     [data.buttonElement, data.inputElement, data.optionsElement],
-    () => actions.closeCombobox()
+    () => actions.closeCombobox(),
+    outsideClickScope
   )
 
   let slot = useMemo(() => {
