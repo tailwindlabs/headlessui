@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Nothing yet!
+
+## [2.2.1] - 2025-04-04
+
 ### Added
 
 - Accept `tabIndex` on the `Checkbox` component ([#3645](https://github.com/tailwindlabs/headlessui/pull/3645))
@@ -815,7 +819,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything!
 
-[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.0...HEAD
+[unreleased]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.1...HEAD
+[2.2.1]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.2.0...@headlessui/react@v2.2.1
 [2.2.0]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.10...@headlessui/react@v2.2.0
 [2.1.10]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.9...@headlessui/react@v2.1.10
 [2.1.9]: https://github.com/tailwindlabs/headlessui/compare/@headlessui/react@v2.1.8...@headlessui/react@v2.1.9
