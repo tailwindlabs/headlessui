@@ -108,7 +108,7 @@ function Example({ virtual = true, data, initial }: { virtual?: boolean; data; i
                 <Combobox.Options
                   transition
                   anchor="bottom start"
-                  className="w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-1000 [--anchor-gap:theme(spacing.1)] [--anchor-max-height:theme(spacing.60)] focus:outline-none data-[closed]:opacity-0 sm:text-sm sm:leading-5"
+                  className="w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-300 [--anchor-gap:theme(spacing.1)] [--anchor-max-height:theme(spacing.60)] focus:outline-none data-[closed]:opacity-0 sm:text-sm sm:leading-5"
                 >
                   {({ option }) => {
                     return (
@@ -157,7 +157,7 @@ function Example({ virtual = true, data, initial }: { virtual?: boolean; data; i
                 <Combobox.Options
                   transition
                   anchor="bottom start"
-                  className="w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-1000 [--anchor-gap:theme(spacing.1)] [--anchor-max-height:theme(spacing.60)] focus:outline-none data-[closed]:opacity-0 sm:text-sm sm:leading-5"
+                  className="w-[calc(var(--input-width)+var(--button-width))] overflow-auto rounded-md bg-white py-1 text-base leading-6 shadow-lg transition duration-300 [--anchor-gap:theme(spacing.1)] [--anchor-max-height:theme(spacing.60)] focus:outline-none data-[closed]:opacity-0 sm:text-sm sm:leading-5"
                 >
                   {timezones.map((timezone, idx) => {
                     return (
