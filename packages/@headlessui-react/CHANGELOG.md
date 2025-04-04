@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump `@tanstack/react-virtual` to fix warnings in React 19 projects ([#3588](https://github.com/tailwindlabs/headlessui/pull/3588))
 - Fix `aria-invalid` attributes to have a valid `'true'` value ([#3639](https://github.com/tailwindlabs/headlessui/pull/3639))
 - Add missing `invalid` prop to `Combobox` component ([#3677](https://github.com/tailwindlabs/headlessui/pull/3677))
+- Fix `Unexpected undefined` crash in `Combobox` component with `virtual` mode ([#3678](https://github.com/tailwindlabs/headlessui/pull/3678))
 
 ## [2.2.0] - 2024-10-25
 
