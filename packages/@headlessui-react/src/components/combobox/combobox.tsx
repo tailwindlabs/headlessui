@@ -479,6 +479,7 @@ function VirtualProvider(props: {
   children: (data: { option: unknown; open: boolean }) => React.ReactElement
 }) {
   let data = useData('VirtualProvider')
+  let d = useDisposables()
   let { options } = data.virtual!
 
   let [paddingStart, paddingEnd] = useMemo(() => {
@@ -528,6 +529,7 @@ function VirtualProvider(props: {
         }}
         ref={(el) => {
           if (!el) {
+            d.dispose()
             return
           }
 
@@ -537,9 +539,13 @@ function VirtualProvider(props: {
           }
 
           // Scroll to the active index
-          if (data.activeOptionIndex !== null && options.length > data.activeOptionIndex) {
-            virtualizer.scrollToIndex(data.activeOptionIndex)
-          }
+          //
+          // Workaround for: https://github.com/TanStack/virtual/issues/879
+          d.nextFrame(() => {
+            if (data.activeOptionIndex !== null && options.length > data.activeOptionIndex) {
+              virtualizer.scrollToIndex(data.activeOptionIndex)
+            }
+          })
         }}
       >
         {items.map((item) => {
