@@ -393,7 +393,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let handleClick = useEvent((event: ReactMouseEvent) => {
+  let handleMouseDown = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (machine.state.listboxState === ListboxStates.Open) {
       flushSync(() => machine.actions.closeListbox())
@@ -450,7 +450,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
       onKeyPress: handleKeyPress,
-      onClick: handleClick,
+      onMouseDown: handleMouseDown,
     },
     focusProps,
     hoverProps,
