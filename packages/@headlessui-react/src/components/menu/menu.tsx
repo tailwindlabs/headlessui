@@ -184,9 +184,11 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     autoFocus = false,
     ...theirProps
   } = props
+  let internalButtonRef = useRef<HTMLButtonElement | null>(null)
   let getFloatingReferenceProps = useFloatingReferenceProps()
   let buttonRef = useSyncRefs(
     ref,
+    internalButtonRef,
     useFloatingReference(),
     useEvent((element) => machine.send({ type: ActionTypes.SetButtonElement, element }))
   )
@@ -222,16 +224,17 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     }
   })
 
-  let menuState = useSlice(machine, (state) => state.menuState)
-  let buttonElement = useSlice(machine, (state) => state.buttonElement)
-  let itemsElement = useSlice(machine, (state) => state.itemsElement)
+  let [menuState, itemsElement] = useSlice(machine, (state) => [
+    state.menuState,
+    state.itemsElement,
+  ])
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
     if (menuState === MenuState.Open) {
       flushSync(() => machine.send({ type: ActionTypes.CloseMenu }))
-      buttonElement?.focus({ preventScroll: true })
+      internalButtonRef.current?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
       machine.send({
@@ -262,7 +265,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     {
       ref: buttonRef,
       id,
-      type: useResolveButtonType(props, buttonElement),
+      type: useResolveButtonType(props, internalButtonRef.current),
       'aria-haspopup': 'menu',
       'aria-controls': itemsElement?.id,
       'aria-expanded': menuState === MenuState.Open,
@@ -345,18 +348,18 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     setLocalItemsElement
   )
 
-  let buttonElement = useSlice(machine, (state) => state.buttonElement)
-  let itemsElement = useSlice(machine, (state) => state.itemsElement)
+  let [menuState, buttonElement] = useSlice(machine, (state) => [
+    state.menuState,
+    state.buttonElement,
+  ])
 
   let portalOwnerDocument = useOwnerDocument(buttonElement)
-  let ownerDocument = useOwnerDocument(itemsElement)
+  let ownerDocument = useOwnerDocument(localItemsElement)
 
   // Always enable `portal` functionality, when `anchor` is enabled
   if (anchor) {
     portal = true
   }
-
-  let menuState = useSlice(machine, (state) => state.menuState)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
@@ -380,7 +383,10 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   // Mark other elements as inert when the menu is visible, and `modal` is enabled
   let inertOthersEnabled = __demoMode ? false : modal && menuState === MenuState.Open
   useInertOthers(inertOthersEnabled, {
-    allowed: useCallback(() => [buttonElement, itemsElement], [buttonElement, itemsElement]),
+    allowed: useCallback(
+      () => [buttonElement, localItemsElement],
+      [buttonElement, localItemsElement]
+    ),
   })
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
@@ -400,16 +406,16 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
   let panelEnabled = didButtonMove ? false : visible
 
   useEffect(() => {
-    let container = itemsElement
+    let container = localItemsElement
     if (!container) return
     if (menuState !== MenuState.Open) return
     if (container === ownerDocument?.activeElement) return
 
     container.focus({ preventScroll: true })
-  }, [menuState, itemsElement, ownerDocument])
+  }, [menuState, localItemsElement, ownerDocument])
 
   useTreeWalker(menuState === MenuState.Open, {
-    container: itemsElement,
+    container: localItemsElement,
     accept(node) {
       if (node.getAttribute('role') === 'menuitem') return NodeFilter.FILTER_REJECT
       if (node.hasAttribute('role')) return NodeFilter.FILTER_SKIP
