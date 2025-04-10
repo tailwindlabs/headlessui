@@ -110,7 +110,7 @@ function MenuFn<TTag extends ElementType = typeof DEFAULT_MENU_TAG>(
 
     if (!isFocusableElement(target, FocusableMode.Loose)) {
       event.preventDefault()
-      buttonElement?.focus()
+      machine.state.buttonElement?.focus()
     }
   })
 
@@ -449,7 +449,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
           dataRef.current?.domRef.current?.click()
         }
         machine.send({ type: ActionTypes.CloseMenu })
-        restoreFocusIfNecessary(buttonElement)
+        restoreFocusIfNecessary(machine.state.buttonElement)
         break
 
       case Keys.ArrowDown:
@@ -478,7 +478,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
         event.preventDefault()
         event.stopPropagation()
         flushSync(() => machine.send({ type: ActionTypes.CloseMenu }))
-        buttonElement?.focus({ preventScroll: true })
+        machine.state.buttonElement?.focus({ preventScroll: true })
         break
 
       case Keys.Tab:
@@ -486,7 +486,7 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
         event.stopPropagation()
         flushSync(() => machine.send({ type: ActionTypes.CloseMenu }))
         focusFrom(
-          buttonElement!,
+          machine.state.buttonElement!,
           event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
         )
         break
@@ -626,11 +626,10 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
     machine.send({ type: ActionTypes.CloseMenu })
   })
 
-  let buttonElement = useSlice(machine, (state) => state.buttonElement)
   let handleClick = useEvent((event: MouseEvent) => {
     if (disabled) return event.preventDefault()
     machine.send({ type: ActionTypes.CloseMenu })
-    restoreFocusIfNecessary(buttonElement)
+    restoreFocusIfNecessary(machine.state.buttonElement)
   })
 
   let handleFocus = useEvent(() => {
