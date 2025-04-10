@@ -200,15 +200,13 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.ArrowDown:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => machine.send({ type: ActionTypes.OpenMenu }))
-        machine.send({ type: ActionTypes.GoToItem, focus: Focus.First })
+        machine.send({ type: ActionTypes.OpenMenu, focus: { focus: Focus.First } })
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => machine.send({ type: ActionTypes.OpenMenu }))
-        machine.send({ type: ActionTypes.GoToItem, focus: Focus.Last })
+        machine.send({ type: ActionTypes.OpenMenu, focus: { focus: Focus.Last } })
         break
     }
   })
@@ -236,7 +234,11 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       buttonElement?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
-      machine.send({ type: ActionTypes.OpenMenu })
+      machine.send({
+        type: ActionTypes.OpenMenu,
+        focus: { focus: Focus.Nothing },
+        trigger: ActivationTrigger.Pointer,
+      })
     }
   })
 

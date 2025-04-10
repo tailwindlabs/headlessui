@@ -32,6 +32,8 @@ export interface State {
   searchQuery: string
   activeItemIndex: number | null
   activationTrigger: ActivationTrigger
+
+  pendingFocus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
 }
 
 export enum ActionTypes {
@@ -76,7 +78,11 @@ function adjustOrderedState(
 
 export type Actions =
   | { type: ActionTypes.CloseMenu }
-  | { type: ActionTypes.OpenMenu }
+  | {
+      type: ActionTypes.OpenMenu
+      focus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
+      trigger?: ActivationTrigger
+    }
   | { type: ActionTypes.GoToItem; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
   | {
       type: ActionTypes.GoToItem
@@ -95,14 +101,20 @@ let reducers: {
 } = {
   [ActionTypes.CloseMenu](state) {
     if (state.menuState === MenuState.Closed) return state
-    return { ...state, activeItemIndex: null, menuState: MenuState.Closed }
+    return {
+      ...state,
+      activeItemIndex: null,
+      pendingFocus: { focus: Focus.Nothing },
+      menuState: MenuState.Closed,
+    }
   },
-  [ActionTypes.OpenMenu](state) {
+  [ActionTypes.OpenMenu](state, action) {
     if (state.menuState === MenuState.Open) return state
     return {
       ...state,
       /* We can turn off demo mode once we re-open the `Menu` */
       __demoMode: false,
+      pendingFocus: action.focus,
       menuState: MenuState.Open,
     }
   },
@@ -289,6 +301,7 @@ export class MenuMachine extends Machine<State, Actions> {
       searchQuery: '',
       activeItemIndex: null,
       activationTrigger: ActivationTrigger.Other,
+      pendingFocus: { focus: Focus.Nothing },
     })
   }
 
