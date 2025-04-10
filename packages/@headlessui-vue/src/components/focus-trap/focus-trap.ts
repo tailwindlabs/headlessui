@@ -89,7 +89,8 @@ export let FocusTrap = Object.assign(
 
       useRestoreFocus(
         { ownerDocument },
-        computed(() => mounted.value && Boolean(props.features & Features.RestoreFocus))
+        computed(() => Boolean(props.features & Features.RestoreFocus)),
+        computed(() => mounted.value)
       )
       let previousActiveElement = useInitialFocus(
         { ownerDocument, container, initialFocus: computed(() => props.initialFocus) },
@@ -239,7 +240,8 @@ function useRestoreElement(enabled: Ref<boolean>) {
 
 function useRestoreFocus(
   { ownerDocument }: { ownerDocument: Ref<Document | null> },
-  enabled: Ref<boolean>
+  enabled: Ref<boolean>,
+  mounted: Ref<boolean>
 ) {
   let getRestoreElement = useRestoreElement(enabled)
 
@@ -247,7 +249,7 @@ function useRestoreFocus(
   onMounted(() => {
     watchEffect(
       () => {
-        if (enabled.value) return
+        if (enabled.value && mounted.value) return
 
         if (ownerDocument.value?.activeElement === ownerDocument.value?.body) {
           focusElement(getRestoreElement())
