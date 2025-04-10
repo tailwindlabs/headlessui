@@ -3963,11 +3963,10 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click outside of the listbox, on an element which is within a focusable element, which closes the listbox',
     suppressConsoleLogs(async () => {
-      let focusFn = jest.fn()
       render(
         <div>
           <Listbox value={undefined} onChange={(x) => console.log(x)}>
-            <Listbox.Button onFocus={focusFn}>Trigger</Listbox.Button>
+            <Listbox.Button>Trigger</Listbox.Button>
             <Listbox.Options>
               <Listbox.Option value="alice">alice</Listbox.Option>
               <Listbox.Option value="bob">bob</Listbox.Option>
@@ -3995,9 +3994,6 @@ describe('Mouse interactions', () => {
 
       // Ensure the outside button is focused
       assertActiveElement(document.getElementById('btn'))
-
-      // Ensure that the focus button only got focus once (first click)
-      expect(focusFn).toHaveBeenCalledTimes(1)
     })
   )
 

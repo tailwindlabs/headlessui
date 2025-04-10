@@ -229,7 +229,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     state.itemsElement,
   ])
 
-  let handleClick = useEvent((event: ReactMouseEvent) => {
+  let handleMouseDown = useEvent((event: ReactMouseEvent) => {
+    if (event.button !== 0) return // Only handle left clicks
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
     if (disabled) return
     if (menuState === MenuState.Open) {
@@ -273,7 +274,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       autoFocus,
       onKeyDown: handleKeyDown,
       onKeyUp: handleKeyUp,
-      onClick: handleClick,
+      onMouseDown: handleMouseDown,
     },
     focusProps,
     hoverProps,

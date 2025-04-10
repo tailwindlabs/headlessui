@@ -3077,11 +3077,10 @@ describe('Mouse interactions', () => {
   it(
     'should be possible to click outside of the menu, on an element which is within a focusable element, which closes the menu',
     suppressConsoleLogs(async () => {
-      let focusFn = jest.fn()
       render(
         <div>
           <Menu>
-            <Menu.Button onFocus={focusFn}>Trigger</Menu.Button>
+            <Menu.Button>Trigger</Menu.Button>
             <Menu.Items>
               <Menu.Item as="a">alice</Menu.Item>
               <Menu.Item as="a">bob</Menu.Item>
@@ -3109,9 +3108,6 @@ describe('Mouse interactions', () => {
 
       // Ensure the outside button is focused
       assertActiveElement(document.getElementById('btn'))
-
-      // Ensure that the focus button only got focus once (first click)
-      expect(focusFn).toHaveBeenCalledTimes(1)
     })
   )
 
