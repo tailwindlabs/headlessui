@@ -511,15 +511,9 @@ function ItemsFn<TTag extends ElementType = typeof DEFAULT_ITEMS_TAG>(
     } satisfies ItemsRenderPropArg
   }, [menuState])
 
-  let activedescendant = useSlice(machine, (state) => {
-    let activeItemIdx = state.activeItemIndex
-    let items = state.items
-    return activeItemIdx === null ? undefined : items[activeItemIdx]?.id
-  })
-
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
-    'aria-activedescendant': activedescendant,
-    'aria-labelledby': buttonElement?.id,
+    'aria-activedescendant': useSlice(machine, machine.selectors.activeDescendantId),
+    'aria-labelledby': useSlice(machine, (state) => state.buttonElement?.id),
     id,
     onKeyDown: handleKeyDown,
     onKeyUp: handleKeyUp,
@@ -588,30 +582,20 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   let { id = `headlessui-menu-item-${internalId}`, disabled = false, ...theirProps } = props
   let machine = useMenuMachineContext('Menu.Item')
 
-  let active = useSlice(machine, (state) => {
-    let activeItemIdx = state.activeItemIndex
-    let items = state.items
-
-    return activeItemIdx !== null ? items[activeItemIdx]?.id === id : false
-  })
-
-  let shouldScrollIntoView = useSlice(machine, (state) => {
-    if (state.__demoMode) return false
-    if (state.menuState !== MenuState.Open) return false
-    if (state.activationTrigger === ActivationTrigger.Pointer) return false
-    return true
-  })
+  let active = useSlice(machine, (state) => machine.selectors.isActive(state, id))
 
   let internalItemRef = useRef<HTMLElement | null>(null)
   let itemRef = useSyncRefs(ref, internalItemRef)
 
+  let shouldScrollIntoView = useSlice(machine, (state) =>
+    machine.selectors.shouldScrollIntoView(state, id)
+  )
   useIsoMorphicEffect(() => {
     if (!shouldScrollIntoView) return
-    if (!active) return
     return disposables().requestAnimationFrame(() => {
       internalItemRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
-  }, [shouldScrollIntoView, active, internalItemRef])
+  }, [shouldScrollIntoView, internalItemRef])
 
   let getTextValue = useTextValue(internalItemRef)
 

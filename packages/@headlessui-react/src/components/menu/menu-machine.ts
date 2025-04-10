@@ -333,4 +333,26 @@ export class MenuMachine extends Machine<State, Actions> {
       ]
     }),
   }
+
+  selectors = {
+    activeDescendantId(state: State) {
+      let activeItemIndex = state.activeItemIndex
+      let items = state.items
+      return activeItemIndex === null ? undefined : items[activeItemIndex]?.id
+    },
+
+    isActive(state: State, id: string) {
+      let activeItemIndex = state.activeItemIndex
+      let items = state.items
+
+      return activeItemIndex !== null ? items[activeItemIndex]?.id === id : false
+    },
+
+    shouldScrollIntoView(state: State, id: string) {
+      if (state.__demoMode) return false
+      if (state.menuState !== MenuState.Open) return false
+      if (state.activationTrigger === ActivationTrigger.Pointer) return false
+      return this.isActive(state, id)
+    },
+  }
 }
