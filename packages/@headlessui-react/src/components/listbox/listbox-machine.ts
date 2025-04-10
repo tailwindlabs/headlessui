@@ -30,6 +30,8 @@ type ListboxOptionDataRef<T> = MutableRefObject<{
 }>
 
 interface State<T> {
+  __demoMode: boolean
+
   dataRef: MutableRefObject<{
     value: unknown
     disabled: boolean
@@ -58,10 +60,10 @@ interface State<T> {
   buttonElement: HTMLButtonElement | null
   optionsElement: HTMLElement | null
 
-  __demoMode: boolean
+  pendingShouldSort: boolean
 }
 
-enum ActionTypes {
+export enum ActionTypes {
   OpenListbox,
   CloseListbox,
 
@@ -69,11 +71,13 @@ enum ActionTypes {
   Search,
   ClearSearch,
 
-  RegisterOption,
+  RegisterOptions,
   UnregisterOption,
 
   SetButtonElement,
   SetOptionsElement,
+
+  SortOptions,
 }
 
 function adjustOrderedState<T>(
@@ -116,10 +120,14 @@ type Actions<T> =
     }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
-  | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef<T> }
+  | {
+      type: ActionTypes.RegisterOptions
+      options: { id: string; dataRef: ListboxOptionDataRef<T> }[]
+    }
   | { type: ActionTypes.UnregisterOption; id: string }
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetOptionsElement; element: HTMLElement | null }
+  | { type: ActionTypes.SortOptions }
 
 let reducers: {
   [P in ActionTypes]: <T>(state: State<T>, action: Extract<Actions<T>, { type: P }>) => State<T>
@@ -299,29 +307,38 @@ let reducers: {
     if (state.searchQuery === '') return state
     return { ...state, searchQuery: '' }
   },
-  [ActionTypes.RegisterOption]: (state, action) => {
-    let option = { id: action.id, dataRef: action.dataRef }
-    let adjustedState = adjustOrderedState(state, (options) => [...options, option])
+  [ActionTypes.RegisterOptions]: (state, action) => {
+    let options = state.options.concat(action.options)
+
+    let activeOptionIndex = state.activeOptionIndex
 
     // Check if we need to make the newly registered option active.
     if (state.activeOptionIndex === null) {
-      if (state.dataRef.current.isSelected?.(action.dataRef.current.value)) {
-        adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
+      let { isSelected } = state.dataRef.current
+      if (isSelected) {
+        let idx = options.findIndex((option) => isSelected?.(option.dataRef.current.value))
+        if (idx !== -1) activeOptionIndex = idx
       }
     }
 
-    return { ...state, ...adjustedState }
+    return {
+      ...state,
+      options,
+      activeOptionIndex,
+      pendingShouldSort: true,
+    }
   },
   [ActionTypes.UnregisterOption]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (options) => {
-      let idx = options.findIndex((a) => a.id === action.id)
-      if (idx !== -1) options.splice(idx, 1)
-      return options
-    })
+    let options = state.options
+    let idx = options.findIndex((a) => a.id === action.id)
+    if (idx !== -1) {
+      options = options.slice()
+      options.splice(idx, 1)
+    }
 
     return {
       ...state,
-      ...adjustedState,
+      options,
       activationTrigger: ActivationTrigger.Other,
     }
   },
@@ -332,6 +349,15 @@ let reducers: {
   [ActionTypes.SetOptionsElement]: (state, action) => {
     if (state.optionsElement === action.element) return state
     return { ...state, optionsElement: action.element }
+  },
+  [ActionTypes.SortOptions]: (state) => {
+    if (!state.pendingShouldSort) return state
+
+    return {
+      ...state,
+      ...adjustOrderedState(state),
+      pendingShouldSort: false,
+    }
   },
 }
 
@@ -348,6 +374,19 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
       buttonElement: null,
       optionsElement: null,
       __demoMode,
+    })
+  }
+
+  constructor(initialState: State<T>) {
+    super(initialState)
+
+    this.on(ActionTypes.RegisterOptions, () => {
+      // Schedule a sort of the options when the DOM is ready. This doesn't
+      // change anything rendering wise, but the sorted options are used when
+      // using arrow keys so we can jump to previous / next options.
+      requestAnimationFrame(() => {
+        this.send({ type: ActionTypes.SortOptions })
+      })
     })
   }
 
@@ -373,12 +412,15 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
         },
       })
     },
-    registerOption: (id: string, dataRef: ListboxOptionDataRef<T>) => {
-      this.send({ type: ActionTypes.RegisterOption, id, dataRef })
-      return () => {
-        this.send({ type: ActionTypes.UnregisterOption, id })
-      }
-    },
+    registerOption: batch(() => {
+      let options: { id: string; dataRef: ListboxOptionDataRef<T> }[] = []
+      return [
+        (id: string, dataRef: ListboxOptionDataRef<T>) => options.push({ id, dataRef }),
+        () => {
+          this.send({ type: ActionTypes.RegisterOptions, options: options.splice(0) })
+        },
+      ]
+    }),
     goToOption: batch(() => {
       let last: Extract<Actions<unknown>, { type: ActionTypes.GoToOption }> | null = null
       return [

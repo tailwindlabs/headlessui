@@ -81,7 +81,7 @@ import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
 import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
 import { Portal } from '../portal/portal'
-import { ActivationTrigger, ListboxStates, ValueMode } from './listbox-machine'
+import { ActionTypes, ActivationTrigger, ListboxStates, ValueMode } from './listbox-machine'
 import { ListboxContext, useListboxMachine, useListboxMachineContext } from './listbox-machine-glue'
 
 type ListboxOptionDataRef<T> = MutableRefObject<{
@@ -90,21 +90,6 @@ type ListboxOptionDataRef<T> = MutableRefObject<{
   value: T
   domRef: MutableRefObject<HTMLElement | null>
 }>
-
-enum ActionTypes {
-  OpenListbox,
-  CloseListbox,
-
-  GoToOption,
-  Search,
-  ClearSearch,
-
-  RegisterOption,
-  UnregisterOption,
-
-  SetButtonElement,
-  SetOptionsElement,
-}
 
 let ListboxDataContext = createContext<{
   value: unknown
@@ -861,7 +846,10 @@ function OptionFn<
 
   useIsoMorphicEffect(() => {
     if (usedInSelectedOption) return
-    return machine.actions.registerOption(id, bag)
+    machine.actions.registerOption(id, bag)
+    return () => {
+      machine.send({ type: ActionTypes.UnregisterOption, id })
+    }
   }, [bag, id, usedInSelectedOption])
 
   let handleClick = useEvent((event: { preventDefault: Function }) => {
