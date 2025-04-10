@@ -12,6 +12,7 @@ sharedOptions+=("--bundle")
 sharedOptions+=("--platform=browser")
 sharedOptions+=("--target=es2020")
 
+
 # Generate actual builds
-npx esbuild $input --format=esm  --outfile=$outdir/$name.esm.js --sourcemap ${sharedOptions[@]} $@ --watch
+NODE_ENV=development npx esbuild $input --format=esm  --outfile=$outdir/$name.esm.js --sourcemap ${sharedOptions[@]} $@ --watch
 
