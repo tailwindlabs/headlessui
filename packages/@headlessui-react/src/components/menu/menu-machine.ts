@@ -33,6 +33,7 @@ export interface State {
   activeItemIndex: number | null
   activationTrigger: ActivationTrigger
 
+  pendingShouldSort: boolean
   pendingFocus: { focus: Exclude<Focus, Focus.Specific> } | { focus: Focus.Specific; id: string }
 }
 
@@ -48,6 +49,8 @@ export enum ActionTypes {
 
   SetButtonElement,
   SetItemsElement,
+
+  SortItems,
 }
 
 function adjustOrderedState(
@@ -95,6 +98,7 @@ export type Actions =
   | { type: ActionTypes.UnregisterItem; id: string }
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetItemsElement; element: HTMLElement | null }
+  | { type: ActionTypes.SortItems }
 
 let reducers: {
   [P in ActionTypes]: (state: State, action: Extract<Actions, { type: P }>) => State
@@ -281,7 +285,7 @@ let reducers: {
   },
   [ActionTypes.UnregisterItem]: (state, action) => {
     let items = state.items
-      let idx = items.findIndex((a) => a.id === action.id)
+    let idx = items.findIndex((a) => a.id === action.id)
     if (idx !== -1) {
       items = items.slice()
       items.splice(idx, 1)
@@ -301,6 +305,15 @@ let reducers: {
     if (state.itemsElement === action.element) return state
     return { ...state, itemsElement: action.element }
   },
+  [ActionTypes.SortItems]: (state) => {
+    if (!state.pendingShouldSort) return state
+
+    return {
+      ...state,
+      ...adjustOrderedState(state),
+      pendingShouldSort: false,
+    }
+  },
 }
 
 export class MenuMachine extends Machine<State, Actions> {
@@ -314,7 +327,21 @@ export class MenuMachine extends Machine<State, Actions> {
       searchQuery: '',
       activeItemIndex: null,
       activationTrigger: ActivationTrigger.Other,
+      pendingShouldSort: false,
       pendingFocus: { focus: Focus.Nothing },
+    })
+  }
+
+  constructor(initialState: State) {
+    super(initialState)
+
+    this.on(ActionTypes.RegisterItems, () => {
+      // Schedule a sort of the items when the DOM is ready. This doesn't
+      // change anything rendering wise, but the sorted items are used when
+      // using arrow keys so we can jump to previous / next items.
+      requestAnimationFrame(() => {
+        this.send({ type: ActionTypes.SortItems })
+      })
     })
   }
 
