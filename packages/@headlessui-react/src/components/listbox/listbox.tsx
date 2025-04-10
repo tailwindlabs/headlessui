@@ -5,12 +5,10 @@ import { useHover } from '@react-aria/interactions'
 import React, {
   Fragment,
   createContext,
-  createRef,
   useCallback,
   useContext,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState,
   type CSSProperties,
@@ -56,16 +54,16 @@ import { FormFields } from '../../internal/form-fields'
 import { useFrozenData } from '../../internal/frozen'
 import { useProvidedId } from '../../internal/id'
 import { OpenClosedProvider, State, useOpenClosed } from '../../internal/open-closed'
+import { useSlice } from '../../react-glue'
 import type { EnsureArray, Props } from '../../types'
 import { isDisabledReactIssue7711 } from '../../utils/bugs'
-import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
+import { Focus } from '../../utils/calculate-active-index'
 import { disposables } from '../../utils/disposables'
 import {
   Focus as FocusManagementFocus,
   FocusableMode,
   focusFrom,
   isFocusableElement,
-  sortByDomNode,
 } from '../../utils/focus-management'
 import { attemptSubmit } from '../../utils/form'
 import { match } from '../../utils/match'
@@ -83,21 +81,8 @@ import { useDescribedBy } from '../description/description'
 import { Keys } from '../keyboard'
 import { Label, useLabelledBy, useLabels, type _internal_ComponentLabel } from '../label/label'
 import { Portal } from '../portal/portal'
-
-enum ListboxStates {
-  Open,
-  Closed,
-}
-
-enum ValueMode {
-  Single,
-  Multi,
-}
-
-enum ActivationTrigger {
-  Pointer,
-  Other,
-}
+import { ActivationTrigger, ListboxStates, ValueMode } from './listbox-machine'
+import { ListboxContext, useListboxMachine, useListboxMachineContext } from './listbox-machine-glue'
 
 type ListboxOptionDataRef<T> = MutableRefObject<{
   textValue?: string
@@ -105,22 +90,6 @@ type ListboxOptionDataRef<T> = MutableRefObject<{
   value: T
   domRef: MutableRefObject<HTMLElement | null>
 }>
-
-interface StateDefinition<T> {
-  dataRef: MutableRefObject<_Data>
-
-  listboxState: ListboxStates
-
-  options: { id: string; dataRef: ListboxOptionDataRef<T> }[]
-  searchQuery: string
-  activeOptionIndex: number | null
-  activationTrigger: ActivationTrigger
-
-  buttonElement: HTMLButtonElement | null
-  optionsElement: HTMLElement | null
-
-  __demoMode: boolean
-}
 
 enum ActionTypes {
   OpenListbox,
@@ -137,315 +106,23 @@ enum ActionTypes {
   SetOptionsElement,
 }
 
-function adjustOrderedState<T>(
-  state: StateDefinition<T>,
-  adjustment: (options: StateDefinition<T>['options']) => StateDefinition<T>['options'] = (i) => i
-) {
-  let currentActiveOption =
-    state.activeOptionIndex !== null ? state.options[state.activeOptionIndex] : null
-
-  let sortedOptions = sortByDomNode(
-    adjustment(state.options.slice()),
-    (option) => option.dataRef.current.domRef.current
-  )
-
-  // If we inserted an option before the current active option then the active option index
-  // would be wrong. To fix this, we will re-lookup the correct index.
-  let adjustedActiveOptionIndex = currentActiveOption
-    ? sortedOptions.indexOf(currentActiveOption)
-    : null
-
-  // Reset to `null` in case the currentActiveOption was removed.
-  if (adjustedActiveOptionIndex === -1) {
-    adjustedActiveOptionIndex = null
-  }
-
-  return {
-    options: sortedOptions,
-    activeOptionIndex: adjustedActiveOptionIndex,
-  }
-}
-
-type Actions<T> =
-  | { type: ActionTypes.CloseListbox }
-  | { type: ActionTypes.OpenListbox }
-  | { type: ActionTypes.GoToOption; focus: Focus.Specific; id: string; trigger?: ActivationTrigger }
-  | {
-      type: ActionTypes.GoToOption
-      focus: Exclude<Focus, Focus.Specific>
-      trigger?: ActivationTrigger
-    }
-  | { type: ActionTypes.Search; value: string }
-  | { type: ActionTypes.ClearSearch }
-  | { type: ActionTypes.RegisterOption; id: string; dataRef: ListboxOptionDataRef<T> }
-  | { type: ActionTypes.UnregisterOption; id: string }
-  | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
-  | { type: ActionTypes.SetOptionsElement; element: HTMLElement | null }
-
-let reducers: {
-  [P in ActionTypes]: <T>(
-    state: StateDefinition<T>,
-    action: Extract<Actions<T>, { type: P }>
-  ) => StateDefinition<T>
-} = {
-  [ActionTypes.CloseListbox](state) {
-    if (state.dataRef.current.disabled) return state
-    if (state.listboxState === ListboxStates.Closed) return state
-    return {
-      ...state,
-      activeOptionIndex: null,
-      listboxState: ListboxStates.Closed,
-      __demoMode: false,
-    }
-  },
-  [ActionTypes.OpenListbox](state) {
-    if (state.dataRef.current.disabled) return state
-    if (state.listboxState === ListboxStates.Open) return state
-
-    // Check if we have a selected value that we can make active
-    let activeOptionIndex = state.activeOptionIndex
-    let { isSelected } = state.dataRef.current
-    let optionIdx = state.options.findIndex((option) => isSelected(option.dataRef.current.value))
-
-    if (optionIdx !== -1) {
-      activeOptionIndex = optionIdx
-    }
-
-    return { ...state, listboxState: ListboxStates.Open, activeOptionIndex, __demoMode: false }
-  },
-  [ActionTypes.GoToOption](state, action) {
-    if (state.dataRef.current.disabled) return state
-    if (state.listboxState === ListboxStates.Closed) return state
-
-    let base = {
-      ...state,
-      searchQuery: '',
-      activationTrigger: action.trigger ?? ActivationTrigger.Other,
-      __demoMode: false,
-    }
-
-    // Optimization:
-    //
-    // There is no need to sort the DOM nodes if we know that we don't want to focus anything
-    if (action.focus === Focus.Nothing) {
-      return {
-        ...base,
-        activeOptionIndex: null,
-      }
-    }
-
-    // Optimization:
-    //
-    // There is no need to sort the DOM nodes if we know exactly where to go
-    if (action.focus === Focus.Specific) {
-      return {
-        ...base,
-        activeOptionIndex: state.options.findIndex((o) => o.id === action.id),
-      }
-    }
-
-    // Optimization:
-    //
-    // If the current DOM node and the previous DOM node are next to each other,
-    // or if the previous DOM node is already the first DOM node, then we don't
-    // have to sort all the DOM nodes.
-    else if (action.focus === Focus.Previous) {
-      let activeOptionIdx = state.activeOptionIndex
-      if (activeOptionIdx !== null) {
-        let currentDom = state.options[activeOptionIdx].dataRef.current.domRef
-        let previousOptionIndex = calculateActiveIndex(action, {
-          resolveItems: () => state.options,
-          resolveActiveIndex: () => state.activeOptionIndex,
-          resolveId: (option) => option.id,
-          resolveDisabled: (option) => option.dataRef.current.disabled,
-        })
-        if (previousOptionIndex !== null) {
-          let previousDom = state.options[previousOptionIndex].dataRef.current.domRef
-          if (
-            // Next to each other
-            currentDom.current?.previousElementSibling === previousDom.current ||
-            // Or already the first element
-            previousDom.current?.previousElementSibling === null
-          ) {
-            return {
-              ...base,
-              activeOptionIndex: previousOptionIndex,
-            }
-          }
-        }
-      }
-    }
-
-    // Optimization:
-    //
-    // If the current DOM node and the next DOM node are next to each other, or
-    // if the next DOM node is already the last DOM node, then we don't have to
-    // sort all the DOM nodes.
-    else if (action.focus === Focus.Next) {
-      let activeOptionIdx = state.activeOptionIndex
-      if (activeOptionIdx !== null) {
-        let currentDom = state.options[activeOptionIdx].dataRef.current.domRef
-        let nextOptionIndex = calculateActiveIndex(action, {
-          resolveItems: () => state.options,
-          resolveActiveIndex: () => state.activeOptionIndex,
-          resolveId: (option) => option.id,
-          resolveDisabled: (option) => option.dataRef.current.disabled,
-        })
-        if (nextOptionIndex !== null) {
-          let nextDom = state.options[nextOptionIndex].dataRef.current.domRef
-          if (
-            // Next to each other
-            currentDom.current?.nextElementSibling === nextDom.current ||
-            // Or already the last element
-            nextDom.current?.nextElementSibling === null
-          ) {
-            return {
-              ...base,
-              activeOptionIndex: nextOptionIndex,
-            }
-          }
-        }
-      }
-    }
-
-    // Slow path:
-    //
-    // Ensure all the options are correctly sorted according to DOM position
-    let adjustedState = adjustOrderedState(state)
-    let activeOptionIndex = calculateActiveIndex(action, {
-      resolveItems: () => adjustedState.options,
-      resolveActiveIndex: () => adjustedState.activeOptionIndex,
-      resolveId: (option) => option.id,
-      resolveDisabled: (option) => option.dataRef.current.disabled,
-    })
-
-    return {
-      ...base,
-      ...adjustedState,
-      activeOptionIndex,
-    }
-  },
-  [ActionTypes.Search]: (state, action) => {
-    if (state.dataRef.current.disabled) return state
-    if (state.listboxState === ListboxStates.Closed) return state
-
-    let wasAlreadySearching = state.searchQuery !== ''
-    let offset = wasAlreadySearching ? 0 : 1
-
-    let searchQuery = state.searchQuery + action.value.toLowerCase()
-
-    let reOrderedOptions =
-      state.activeOptionIndex !== null
-        ? state.options
-            .slice(state.activeOptionIndex + offset)
-            .concat(state.options.slice(0, state.activeOptionIndex + offset))
-        : state.options
-
-    let matchingOption = reOrderedOptions.find(
-      (option) =>
-        !option.dataRef.current.disabled &&
-        option.dataRef.current.textValue?.startsWith(searchQuery)
-    )
-
-    let matchIdx = matchingOption ? state.options.indexOf(matchingOption) : -1
-
-    if (matchIdx === -1 || matchIdx === state.activeOptionIndex) return { ...state, searchQuery }
-    return {
-      ...state,
-      searchQuery,
-      activeOptionIndex: matchIdx,
-      activationTrigger: ActivationTrigger.Other,
-    }
-  },
-  [ActionTypes.ClearSearch](state) {
-    if (state.dataRef.current.disabled) return state
-    if (state.listboxState === ListboxStates.Closed) return state
-    if (state.searchQuery === '') return state
-    return { ...state, searchQuery: '' }
-  },
-  [ActionTypes.RegisterOption]: (state, action) => {
-    let option = { id: action.id, dataRef: action.dataRef }
-    let adjustedState = adjustOrderedState(state, (options) => [...options, option])
-
-    // Check if we need to make the newly registered option active.
-    if (state.activeOptionIndex === null) {
-      if (state.dataRef.current.isSelected(action.dataRef.current.value)) {
-        adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
-      }
-    }
-
-    return { ...state, ...adjustedState }
-  },
-  [ActionTypes.UnregisterOption]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (options) => {
-      let idx = options.findIndex((a) => a.id === action.id)
-      if (idx !== -1) options.splice(idx, 1)
-      return options
-    })
-
-    return {
-      ...state,
-      ...adjustedState,
-      activationTrigger: ActivationTrigger.Other,
-    }
-  },
-  [ActionTypes.SetButtonElement]: (state, action) => {
-    if (state.buttonElement === action.element) return state
-    return { ...state, buttonElement: action.element }
-  },
-  [ActionTypes.SetOptionsElement]: (state, action) => {
-    if (state.optionsElement === action.element) return state
-    return { ...state, optionsElement: action.element }
-  },
-}
-
-let ListboxActionsContext = createContext<{
-  openListbox(): void
-  closeListbox(): void
-  registerOption(id: string, dataRef: ListboxOptionDataRef<unknown>): () => void
-  goToOption(focus: Focus.Specific, id: string, trigger?: ActivationTrigger): void
-  goToOption(focus: Focus, id?: string, trigger?: ActivationTrigger): void
-  selectOption(id: string): void
-  selectActiveOption(): void
+let ListboxDataContext = createContext<{
+  value: unknown
+  disabled: boolean
+  invalid: boolean
+  mode: ValueMode
+  orientation: 'horizontal' | 'vertical'
   onChange(value: unknown): void
-  search(query: string): void
-  clearSearch(): void
-  setButtonElement(element: HTMLButtonElement | null): void
-  setOptionsElement(element: HTMLElement | null): void
+  compare(a: unknown, z: unknown): boolean
+  isSelected(value: unknown): boolean
+
+  optionsPropsRef: MutableRefObject<{
+    static: boolean
+    hold: boolean
+  }>
+
+  listRef: MutableRefObject<Map<string, HTMLElement | null>>
 } | null>(null)
-ListboxActionsContext.displayName = 'ListboxActionsContext'
-
-function useActions(component: string) {
-  let context = useContext(ListboxActionsContext)
-  if (context === null) {
-    let err = new Error(`<${component} /> is missing a parent <Listbox /> component.`)
-    if (Error.captureStackTrace) Error.captureStackTrace(err, useActions)
-    throw err
-  }
-  return context
-}
-type _Actions = ReturnType<typeof useActions>
-
-let ListboxDataContext = createContext<
-  | ({
-      value: unknown
-      disabled: boolean
-      invalid: boolean
-      mode: ValueMode
-      orientation: 'horizontal' | 'vertical'
-      activeOptionIndex: number | null
-      compare(a: unknown, z: unknown): boolean
-      isSelected(value: unknown): boolean
-
-      optionsPropsRef: MutableRefObject<{
-        static: boolean
-        hold: boolean
-      }>
-
-      listRef: MutableRefObject<Map<string, HTMLElement | null>>
-    } & Omit<StateDefinition<unknown>, 'dataRef'>)
-  | null
->(null)
 ListboxDataContext.displayName = 'ListboxDataContext'
 
 function useData(component: string) {
@@ -458,10 +135,6 @@ function useData(component: string) {
   return context
 }
 type _Data = ReturnType<typeof useData>
-
-function stateReducer<T>(state: StateDefinition<T>, action: Actions<T>) {
-  return match(action.type, reducers, state, action)
-}
 
 // ---
 
@@ -528,19 +201,7 @@ function ListboxFn<
     defaultValue
   )
 
-  let [state, dispatch] = useReducer(stateReducer, {
-    dataRef: createRef(),
-    listboxState: __demoMode ? ListboxStates.Open : ListboxStates.Closed,
-    options: [],
-    searchQuery: '',
-    activeOptionIndex: null,
-    activationTrigger: ActivationTrigger.Other,
-    optionsVisible: false,
-    buttonElement: null,
-    optionsElement: null,
-    __demoMode,
-  } as StateDefinition<TType>)
-
+  let machine = useListboxMachine({ __demoMode })
   let optionsPropsRef = useRef<_Data['optionsPropsRef']['current']>({ static: false, hold: false })
 
   let listRef = useRef<_Data['listRef']['current']>(new Map())
@@ -562,131 +223,60 @@ function ListboxFn<
 
   let data = useMemo<_Data>(
     () => ({
-      ...state,
       value,
       disabled,
       invalid,
       mode: multiple ? ValueMode.Multi : ValueMode.Single,
       orientation,
+      onChange: theirOnChange,
       compare,
       isSelected,
       optionsPropsRef,
       listRef,
     }),
-    [value, disabled, invalid, multiple, state, listRef]
+    [
+      value,
+      disabled,
+      invalid,
+      multiple,
+      orientation,
+      theirOnChange,
+      compare,
+      isSelected,
+      optionsPropsRef,
+      listRef,
+    ]
   )
 
   useIsoMorphicEffect(() => {
-    state.dataRef.current = data
+    machine.state.dataRef.current = data
   }, [data])
 
-  // Handle outside click
-  let outsideClickEnabled = data.listboxState === ListboxStates.Open
-  useOutsideClick(
-    outsideClickEnabled,
-    [data.buttonElement, data.optionsElement],
-    (event, target) => {
-      dispatch({ type: ActionTypes.CloseListbox })
+  let listboxState = useSlice(machine, (state) => state.listboxState)
 
-      if (!isFocusableElement(target, FocusableMode.Loose)) {
-        event.preventDefault()
-        data.buttonElement?.focus()
-      }
+  // Handle outside click
+  let outsideClickEnabled = listboxState === ListboxStates.Open
+  let [buttonElement, optionsElement] = useSlice(machine, (state) => [
+    state.buttonElement,
+    state.optionsElement,
+  ])
+  useOutsideClick(outsideClickEnabled, [buttonElement, optionsElement], (event, target) => {
+    machine.send({ type: ActionTypes.CloseListbox })
+
+    if (!isFocusableElement(target, FocusableMode.Loose)) {
+      event.preventDefault()
+      buttonElement?.focus()
     }
-  )
+  })
 
   let slot = useMemo(() => {
     return {
-      open: data.listboxState === ListboxStates.Open,
+      open: listboxState === ListboxStates.Open,
       disabled,
       invalid,
       value,
     } satisfies ListboxRenderPropArg<TType>
-  }, [data, disabled, value, invalid])
-
-  let selectOption = useEvent((id: string) => {
-    let option = data.options.find((item) => item.id === id)
-    if (!option) return
-
-    onChange(option.dataRef.current.value)
-  })
-
-  let selectActiveOption = useEvent(() => {
-    if (data.activeOptionIndex !== null) {
-      let { dataRef, id } = data.options[data.activeOptionIndex]
-      onChange(dataRef.current.value)
-
-      // It could happen that the `activeOptionIndex` stored in state is actually null,
-      // but we are getting the fallback active option back instead.
-      dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
-    }
-  })
-
-  let openListbox = useEvent(() => dispatch({ type: ActionTypes.OpenListbox }))
-  let closeListbox = useEvent(() => dispatch({ type: ActionTypes.CloseListbox }))
-
-  let d = useDisposables()
-  let goToOption = useEvent((focus, id, trigger) => {
-    d.dispose()
-    d.microTask(() => {
-      if (focus === Focus.Specific) {
-        return dispatch({ type: ActionTypes.GoToOption, focus: Focus.Specific, id: id!, trigger })
-      }
-
-      return dispatch({ type: ActionTypes.GoToOption, focus, trigger })
-    })
-  })
-
-  let registerOption = useEvent((id, dataRef) => {
-    dispatch({ type: ActionTypes.RegisterOption, id, dataRef })
-    return () => dispatch({ type: ActionTypes.UnregisterOption, id })
-  })
-
-  let onChange = useEvent((value: unknown) => {
-    return match(data.mode, {
-      [ValueMode.Single]() {
-        return theirOnChange?.(value as TType)
-      },
-      [ValueMode.Multi]() {
-        let copy = (data.value as TActualType[]).slice()
-
-        let idx = copy.findIndex((item) => compare(item, value as TActualType))
-        if (idx === -1) {
-          copy.push(value as TActualType)
-        } else {
-          copy.splice(idx, 1)
-        }
-
-        return theirOnChange?.(copy as unknown as TType[])
-      },
-    })
-  })
-
-  let search = useEvent((value: string) => dispatch({ type: ActionTypes.Search, value }))
-  let clearSearch = useEvent(() => dispatch({ type: ActionTypes.ClearSearch }))
-  let setButtonElement = useEvent((element: HTMLButtonElement | null) => {
-    dispatch({ type: ActionTypes.SetButtonElement, element })
-  })
-  let setOptionsElement = useEvent((element: HTMLElement | null) => {
-    dispatch({ type: ActionTypes.SetOptionsElement, element })
-  })
-
-  let actions = useMemo<_Actions>(
-    () => ({
-      onChange,
-      registerOption,
-      goToOption,
-      closeListbox,
-      openListbox,
-      selectActiveOption,
-      selectOption,
-      search,
-      clearSearch,
-      setButtonElement,
-      setOptionsElement,
-    }),
-    []
-  )
+  }, [listboxState, disabled, invalid, value])
 
   let [labelledby, LabelProvider] = useLabels({ inherit: true })
 
@@ -702,19 +292,14 @@ function ListboxFn<
   return (
     <LabelProvider
       value={labelledby}
-      props={{
-        htmlFor: data.buttonElement?.id,
-      }}
-      slot={{
-        open: data.listboxState === ListboxStates.Open,
-        disabled,
-      }}
+      props={{ htmlFor: buttonElement?.id }}
+      slot={{ open: listboxState === ListboxStates.Open, disabled }}
     >
       <FloatingProvider>
-        <ListboxActionsContext.Provider value={actions}>
+        <ListboxContext.Provider value={machine}>
           <ListboxDataContext.Provider value={data}>
             <OpenClosedProvider
-              value={match(data.listboxState, {
+              value={match(listboxState, {
                 [ListboxStates.Open]: State.Open,
                 [ListboxStates.Closed]: State.Closed,
               })}
@@ -736,7 +321,7 @@ function ListboxFn<
               })}
             </OpenClosedProvider>
           </ListboxDataContext.Provider>
-        </ListboxActionsContext.Provider>
+        </ListboxContext.Provider>
       </FloatingProvider>
     </LabelProvider>
   )
@@ -776,18 +361,17 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   props: ListboxButtonProps<TTag>,
   ref: Ref<HTMLButtonElement>
 ) {
-  let data = useData('Listbox.Button')
-  let actions = useActions('Listbox.Button')
-
   let internalId = useId()
   let providedId = useProvidedId()
+  let data = useData('Listbox.Button')
+  let machine = useListboxMachineContext('Listbox.Button')
   let {
     id = providedId || `headlessui-listbox-button-${internalId}`,
     disabled = data.disabled || false,
     autoFocus = false,
     ...theirProps
   } = props
-  let buttonRef = useSyncRefs(ref, useFloatingReference(), actions.setButtonElement)
+  let buttonRef = useSyncRefs(ref, useFloatingReference(), machine.actions.setButtonElement)
   let getFloatingReferenceProps = useFloatingReferenceProps()
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLButtonElement>) => {
@@ -801,14 +385,17 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       case Keys.Space:
       case Keys.ArrowDown:
         event.preventDefault()
-        flushSync(() => actions.openListbox())
-        if (!data.value) actions.goToOption(Focus.First)
+        flushSync(() => machine.actions.openListbox())
+        if (!data.value)
+          machine.actions.goToOption({
+            focus: Focus.First,
+          })
         break
 
       case Keys.ArrowUp:
         event.preventDefault()
-        flushSync(() => actions.openListbox())
-        if (!data.value) actions.goToOption(Focus.Last)
+        flushSync(() => machine.actions.openListbox())
+        if (!data.value) machine.actions.goToOption({ focus: Focus.Last })
         break
     }
   })
@@ -826,12 +413,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 
   let handleClick = useEvent((event: ReactMouseEvent) => {
     if (isDisabledReactIssue7711(event.currentTarget)) return event.preventDefault()
-    if (data.listboxState === ListboxStates.Open) {
-      flushSync(() => actions.closeListbox())
-      data.buttonElement?.focus({ preventScroll: true })
+    if (machine.state.listboxState === ListboxStates.Open) {
+      flushSync(() => machine.actions.closeListbox())
+      machine.state.buttonElement?.focus({ preventScroll: true })
     } else {
       event.preventDefault()
-      actions.openListbox()
+      machine.actions.openListbox()
     }
   })
 
@@ -845,10 +432,12 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   let { isHovered: hover, hoverProps } = useHover({ isDisabled: disabled })
   let { pressed: active, pressProps } = useActivePress({ disabled })
 
+  let listboxState = useSlice(machine, (state) => state.listboxState)
+
   let slot = useMemo(() => {
     return {
-      open: data.listboxState === ListboxStates.Open,
-      active: active || data.listboxState === ListboxStates.Open,
+      open: listboxState === ListboxStates.Open,
+      active: active || listboxState === ListboxStates.Open,
       disabled,
       invalid: data.invalid,
       value: data.value,
@@ -856,17 +445,22 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       focus,
       autofocus: autoFocus,
     } satisfies ButtonRenderPropArg
-  }, [data.listboxState, data.value, disabled, hover, focus, active, data.invalid, autoFocus])
+  }, [listboxState, data.value, disabled, hover, focus, active, data.invalid, autoFocus])
 
+  let open = useSlice(machine, (state) => state.listboxState === ListboxStates.Open)
+  let [buttonElement, optionsElement] = useSlice(machine, (state) => [
+    state.buttonElement,
+    state.optionsElement,
+  ])
   let ourProps = mergeProps(
     getFloatingReferenceProps(),
     {
       ref: buttonRef,
       id,
-      type: useResolveButtonType(props, data.buttonElement),
+      type: useResolveButtonType(props, buttonElement),
       'aria-haspopup': 'listbox',
-      'aria-controls': data.optionsElement?.id,
-      'aria-expanded': data.listboxState === ListboxStates.Open,
+      'aria-controls': optionsElement?.id,
+      'aria-expanded': open,
       'aria-labelledby': labelledBy,
       'aria-describedby': describedBy,
       disabled: disabled || undefined,
@@ -949,10 +543,17 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   }
 
   let data = useData('Listbox.Options')
-  let actions = useActions('Listbox.Options')
+  let machine = useListboxMachineContext('Listbox.Options')
 
-  let portalOwnerDocument = useOwnerDocument(data.buttonElement)
-  let ownerDocument = useOwnerDocument(data.optionsElement)
+  let [listboxState, buttonElement, optionsElement, __demoMode] = useSlice(machine, (state) => [
+    state.listboxState,
+    state.buttonElement,
+    state.optionsElement,
+    state.__demoMode,
+  ])
+
+  let portalOwnerDocument = useOwnerDocument(buttonElement)
+  let ownerDocument = useOwnerDocument(optionsElement)
 
   let usesOpenClosedState = useOpenClosed()
   let [visible, transitionData] = useTransition(
@@ -960,27 +561,20 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     localOptionsElement,
     usesOpenClosedState !== null
       ? (usesOpenClosedState & State.Open) === State.Open
-      : data.listboxState === ListboxStates.Open
+      : listboxState === ListboxStates.Open
   )
 
   // Ensure we close the listbox as soon as the button becomes hidden
-  useOnDisappear(visible, data.buttonElement, actions.closeListbox)
+  useOnDisappear(visible, buttonElement, machine.actions.closeListbox)
 
   // Enable scroll locking when the listbox is visible, and `modal` is enabled
-  let scrollLockEnabled = data.__demoMode
-    ? false
-    : modal && data.listboxState === ListboxStates.Open
+  let scrollLockEnabled = __demoMode ? false : modal && listboxState === ListboxStates.Open
   useScrollLock(scrollLockEnabled, ownerDocument)
 
   // Mark other elements as inert when the listbox is visible, and `modal` is enabled
-  let inertOthersEnabled = data.__demoMode
-    ? false
-    : modal && data.listboxState === ListboxStates.Open
+  let inertOthersEnabled = __demoMode ? false : modal && listboxState === ListboxStates.Open
   useInertOthers(inertOthersEnabled, {
-    allowed: useCallback(
-      () => [data.buttonElement, data.optionsElement],
-      [data.buttonElement, data.optionsElement]
-    ),
+    allowed: useCallback(() => [buttonElement, optionsElement], [buttonElement, optionsElement]),
   })
 
   // We keep track whether the button moved or not, we only check this when the menu state becomes
@@ -992,8 +586,8 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   //
   // This can be solved by only transitioning the `opacity` instead of everything, but if you _do_
   // want to transition the y-axis for example you will run into the same issue again.
-  let didElementMoveEnabled = data.listboxState !== ListboxStates.Open
-  let didButtonMove = useDidElementMove(didElementMoveEnabled, data.buttonElement)
+  let didElementMoveEnabled = listboxState !== ListboxStates.Open
+  let didButtonMove = useDidElementMove(didElementMoveEnabled, buttonElement)
 
   // Now that we know that the button did move or not, we can either disable the panel and all of
   // its transitions, or rely on the `visible` state to hide the panel whenever necessary.
@@ -1002,12 +596,14 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   // We should freeze when the listbox is visible but "closed". This means that
   // a transition is currently happening and the component is still visible (for
   // the transition) but closed from a functionality perspective.
-  let shouldFreeze = visible && data.listboxState === ListboxStates.Closed
+  let shouldFreeze = visible && listboxState === ListboxStates.Closed
 
   // Frozen state, the selected value will only update visually when the user re-opens the <Listbox />
   let frozenValue = useFrozenData(shouldFreeze, data.value)
 
   let isSelected = useEvent((compareValue: unknown) => data.compare(frozenValue, compareValue))
+
+  let options = useSlice(machine, (state) => state.options)
 
   let selectedOptionIndex = useMemo(() => {
     if (anchor == null) return null
@@ -1015,11 +611,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
     // Only compute the selected option index when using `selection` in the
     // `anchor` prop.
-    let idx = data.options.findIndex((option) => isSelected(option.dataRef.current.value))
+    let idx = options.findIndex((option) => isSelected(option.dataRef.current.value))
     // Ensure that if no data is selected, we default to the first item.
     if (idx === -1) idx = 0
     return idx
-  }, [anchor, data.options])
+  }, [anchor, options])
 
   let anchorOptions = (() => {
     if (anchor == null) return undefined
@@ -1041,20 +637,20 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
   let optionsRef = useSyncRefs(
     ref,
     anchor ? floatingRef : null,
-    actions.setOptionsElement,
+    machine.actions.setOptionsElement,
     setLocalOptionsElement
   )
 
   let searchDisposables = useDisposables()
 
   useEffect(() => {
-    let container = data.optionsElement
+    let container = optionsElement
     if (!container) return
-    if (data.listboxState !== ListboxStates.Open) return
+    if (listboxState !== ListboxStates.Open) return
     if (container === getOwnerDocument(container)?.activeElement) return
 
     container?.focus({ preventScroll: true })
-  }, [data.listboxState, data.optionsElement])
+  }, [listboxState, optionsElement])
 
   let handleKeyDown = useEvent((event: ReactKeyboardEvent<HTMLElement>) => {
     searchDisposables.dispose()
@@ -1064,86 +660,93 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
 
       // @ts-expect-error Fallthrough is expected here
       case Keys.Space:
-        if (data.searchQuery !== '') {
+        if (machine.state.searchQuery !== '') {
           event.preventDefault()
           event.stopPropagation()
-          return actions.search(event.key)
+          return machine.actions.search(event.key)
         }
       // When in type ahead mode, fallthrough
       case Keys.Enter:
         event.preventDefault()
         event.stopPropagation()
 
-        if (data.activeOptionIndex !== null) {
-          let { dataRef } = data.options[data.activeOptionIndex]
-          actions.onChange(dataRef.current.value)
+        if (machine.state.activeOptionIndex !== null) {
+          let { dataRef } = machine.state.options[machine.state.activeOptionIndex]
+          machine.actions.onChange(dataRef.current.value)
         }
         if (data.mode === ValueMode.Single) {
-          flushSync(() => actions.closeListbox())
-          data.buttonElement?.focus({ preventScroll: true })
+          flushSync(() => machine.actions.closeListbox())
+          machine.state.buttonElement?.focus({ preventScroll: true })
         }
         break
 
-      case match(data.orientation, { vertical: Keys.ArrowDown, horizontal: Keys.ArrowRight }):
+      case match(data.orientation, {
+        vertical: Keys.ArrowDown,
+        horizontal: Keys.ArrowRight,
+      }):
         event.preventDefault()
         event.stopPropagation()
-        return actions.goToOption(Focus.Next)
+        return machine.actions.goToOption({ focus: Focus.Next })
 
-      case match(data.orientation, { vertical: Keys.ArrowUp, horizontal: Keys.ArrowLeft }):
+      case match(data.orientation, {
+        vertical: Keys.ArrowUp,
+        horizontal: Keys.ArrowLeft,
+      }):
         event.preventDefault()
         event.stopPropagation()
-        return actions.goToOption(Focus.Previous)
+        return machine.actions.goToOption({ focus: Focus.Previous })
 
       case Keys.Home:
       case Keys.PageUp:
         event.preventDefault()
         event.stopPropagation()
-        return actions.goToOption(Focus.First)
+        return machine.actions.goToOption({ focus: Focus.First })
 
       case Keys.End:
       case Keys.PageDown:
         event.preventDefault()
         event.stopPropagation()
-        return actions.goToOption(Focus.Last)
+        return machine.actions.goToOption({ focus: Focus.Last })
 
       case Keys.Escape:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => actions.closeListbox())
-        data.buttonElement?.focus({ preventScroll: true })
+        flushSync(() => machine.actions.closeListbox())
+        machine.state.buttonElement?.focus({ preventScroll: true })
         return
 
       case Keys.Tab:
         event.preventDefault()
         event.stopPropagation()
-        flushSync(() => actions.closeListbox())
+        flushSync(() => machine.actions.closeListbox())
         focusFrom(
-          data.buttonElement!,
+          machine.state.buttonElement!,
           event.shiftKey ? FocusManagementFocus.Previous : FocusManagementFocus.Next
         )
         break
 
       default:
         if (event.key.length === 1) {
-          actions.search(event.key)
-          searchDisposables.setTimeout(() => actions.clearSearch(), 350)
+          machine.actions.search(event.key)
+          searchDisposables.setTimeout(() => machine.actions.clearSearch(), 350)
         }
         break
     }
   })
 
-  let labelledby = data.buttonElement?.id
+  let activeOptionIndex = useSlice(machine, (state) => state.activeOptionIndex)
+  let labelledby = useSlice(machine, (state) => state.buttonElement?.id)
   let slot = useMemo(() => {
     return {
-      open: data.listboxState === ListboxStates.Open,
+      open: listboxState === ListboxStates.Open,
     } satisfies OptionsRenderPropArg
-  }, [data.listboxState])
+  }, [listboxState])
 
   let ourProps = mergeProps(anchor ? getFloatingPanelProps() : {}, {
     id,
     ref: optionsRef,
     'aria-activedescendant':
-      data.activeOptionIndex === null ? undefined : data.options[data.activeOptionIndex]?.id,
+      activeOptionIndex === null ? undefined : options[activeOptionIndex]?.id,
     'aria-multiselectable': data.mode === ValueMode.Multi ? true : undefined,
     'aria-labelledby': labelledby,
     'aria-orientation': data.orientation,
@@ -1152,11 +755,11 @@ function OptionsFn<TTag extends ElementType = typeof DEFAULT_OPTIONS_TAG>(
     // When the `Listbox` is closed, it should not be focusable. This allows us
     // to skip focusing the `ListboxOptions` when pressing the tab key on an
     // open `Listbox`, and go to the next focusable element.
-    tabIndex: data.listboxState === ListboxStates.Open ? 0 : undefined,
+    tabIndex: listboxState === ListboxStates.Open ? 0 : undefined,
     style: {
       ...theirProps.style,
       ...style,
-      '--button-width': useElementSize(data.buttonElement, true).width,
+      '--button-width': useElementSize(buttonElement, true).width,
     } as CSSProperties,
     ...transitionDataAttributes(transitionData),
   })
@@ -1224,10 +827,9 @@ function OptionFn<
   } = props
   let usedInSelectedOption = useContext(SelectedOptionContext) === true
   let data = useData('Listbox.Option')
-  let actions = useActions('Listbox.Option')
+  let machine = useListboxMachineContext('Listbox.Option')
 
-  let active =
-    data.activeOptionIndex !== null ? data.options[data.activeOptionIndex].id === id : false
+  let active = useSlice(machine, (state) => machine.selectors.isActive(state, id))
 
   let selected = data.isSelected(value)
   let internalOptionRef = useRef<HTMLElement | null>(null)
@@ -1249,40 +851,50 @@ function OptionFn<
     }
   })
 
+  let [listboxState, activationTrigger, __demoMode, activeOptionIndex] = useSlice(
+    machine,
+    (state) => [
+      state.listboxState,
+      state.activationTrigger,
+      state.__demoMode,
+      state.activeOptionIndex,
+    ]
+  )
   useIsoMorphicEffect(() => {
-    if (data.__demoMode) return
-    if (data.listboxState !== ListboxStates.Open) return
+    if (__demoMode) return
+    if (listboxState !== ListboxStates.Open) return
     if (!active) return
-    if (data.activationTrigger === ActivationTrigger.Pointer) return
+    if (activationTrigger === ActivationTrigger.Pointer) return
     return disposables().requestAnimationFrame(() => {
       internalOptionRef.current?.scrollIntoView?.({ block: 'nearest' })
     })
   }, [
     internalOptionRef,
     active,
-    data.__demoMode,
-    data.listboxState,
-    data.activationTrigger,
-    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */ data.activeOptionIndex,
+    __demoMode,
+    listboxState,
+    activationTrigger,
+    /* We also want to trigger this when the position of the active item changes so that we can re-trigger the scrollIntoView */
+    activeOptionIndex,
   ])
 
   useIsoMorphicEffect(() => {
     if (usedInSelectedOption) return
-    return actions.registerOption(id, bag)
+    return machine.actions.registerOption(id, bag)
   }, [bag, id, usedInSelectedOption])
 
   let handleClick = useEvent((event: { preventDefault: Function }) => {
     if (disabled) return event.preventDefault()
-    actions.onChange(value)
+    machine.actions.onChange(value)
     if (data.mode === ValueMode.Single) {
-      flushSync(() => actions.closeListbox())
-      data.buttonElement?.focus({ preventScroll: true })
+      flushSync(() => machine.actions.closeListbox())
+      machine.state.buttonElement?.focus({ preventScroll: true })
     }
   })
 
   let handleFocus = useEvent(() => {
-    if (disabled) return actions.goToOption(Focus.Nothing)
-    actions.goToOption(Focus.Specific, id)
+    if (disabled) return machine.actions.goToOption({ focus: Focus.Nothing })
+    machine.actions.goToOption({ focus: Focus.Specific, id })
   })
 
   let pointer = useTrackedPointer()
@@ -1291,21 +903,21 @@ function OptionFn<
     pointer.update(evt)
     if (disabled) return
     if (active) return
-    actions.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
+    machine.actions.goToOption({ focus: Focus.Specific, id }, ActivationTrigger.Pointer)
   })
 
   let handleMove = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (active) return
-    actions.goToOption(Focus.Specific, id, ActivationTrigger.Pointer)
+    machine.actions.goToOption({ focus: Focus.Specific, id }, ActivationTrigger.Pointer)
   })
 
   let handleLeave = useEvent((evt) => {
     if (!pointer.wasMoved(evt)) return
     if (disabled) return
     if (!active) return
-    actions.goToOption(Focus.Nothing)
+    machine.actions.goToOption({ focus: Focus.Nothing })
   })
 
   let slot = useMemo(() => {

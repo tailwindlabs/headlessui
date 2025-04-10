@@ -1,4 +1,4 @@
-import { Machine } from '../../machine'
+import { Machine, batch } from '../../machine'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
@@ -7,17 +7,17 @@ interface MutableRefObject<T> {
   current: T
 }
 
-enum ListboxStates {
+export enum ListboxStates {
   Open,
   Closed,
 }
 
-enum ValueMode {
+export enum ValueMode {
   Single,
   Multi,
 }
 
-enum ActivationTrigger {
+export enum ActivationTrigger {
   Pointer,
   Other,
 }
@@ -30,25 +30,23 @@ type ListboxOptionDataRef<T> = MutableRefObject<{
 }>
 
 interface State<T> {
-  dataRef: MutableRefObject<
-    {
-      value: unknown
-      disabled: boolean
-      invalid: boolean
-      mode: ValueMode
-      orientation: 'horizontal' | 'vertical'
-      activeOptionIndex: number | null
-      compare(a: unknown, z: unknown): boolean
-      isSelected(value: unknown): boolean
+  dataRef: MutableRefObject<{
+    value: unknown
+    disabled: boolean
+    invalid: boolean
+    mode: ValueMode
+    orientation: 'horizontal' | 'vertical'
+    onChange: (value: T) => void
+    compare(a: unknown, z: unknown): boolean
+    isSelected(value: unknown): boolean
 
-      optionsPropsRef: MutableRefObject<{
-        static: boolean
-        hold: boolean
-      }>
+    optionsPropsRef: MutableRefObject<{
+      static: boolean
+      hold: boolean
+    }>
 
-      listRef: MutableRefObject<Map<string, HTMLElement | null>>
-    } & Omit<State<T>, 'dataRef'>
-  >
+    listRef: MutableRefObject<Map<string, HTMLElement | null>>
+  }>
 
   listboxState: ListboxStates
 
@@ -307,7 +305,7 @@ let reducers: {
 
     // Check if we need to make the newly registered option active.
     if (state.activeOptionIndex === null) {
-      if (state.dataRef.current.isSelected(action.dataRef.current.value)) {
+      if (state.dataRef.current.isSelected?.(action.dataRef.current.value)) {
         adjustedState.activeOptionIndex = adjustedState.options.indexOf(option)
       }
     }
@@ -354,20 +352,89 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
   }
 
   actions = {
-    onChange() {},
-    registerOption() {},
-    goToOption() {},
-    closeListbox() {},
-    openListbox() {},
-    selectActiveOption() {},
-    selectOption() {},
-    search() {},
-    clearSearch() {},
-    setButtonElement() {},
-    setOptionsElement() {},
+    onChange: (newValue: T) => {
+      let { onChange, compare, mode, value } = this.state.dataRef.current
+
+      return match(mode, {
+        [ValueMode.Single]: () => {
+          return onChange?.(newValue)
+        },
+        [ValueMode.Multi]: () => {
+          let copy = (value as T[]).slice()
+
+          let idx = copy.findIndex((item) => compare(item, newValue))
+          if (idx === -1) {
+            copy.push(newValue)
+          } else {
+            copy.splice(idx, 1)
+          }
+
+          return onChange?.(copy as T)
+        },
+      })
+    },
+    registerOption: (id: string, dataRef: ListboxOptionDataRef<T>) => {
+      this.send({ type: ActionTypes.RegisterOption, id, dataRef })
+      return () => {
+        this.send({ type: ActionTypes.UnregisterOption, id })
+      }
+    },
+    goToOption: batch(() => {
+      let last: Extract<Actions<unknown>, { type: ActionTypes.GoToOption }> | null = null
+      return [
+        (
+          focus: { focus: Focus.Specific; id: string } | { focus: Exclude<Focus, Focus.Specific> },
+          trigger?: ActivationTrigger
+        ) => {
+          last = { type: ActionTypes.GoToOption, ...focus, trigger }
+        },
+        () => last && this.send(last),
+      ]
+    }),
+    closeListbox: () => {
+      this.send({ type: ActionTypes.CloseListbox })
+    },
+    openListbox: () => {
+      this.send({ type: ActionTypes.OpenListbox })
+    },
+    selectActiveOption: () => {
+      if (this.state.activeOptionIndex !== null) {
+        let { dataRef, id } = this.state.options[this.state.activeOptionIndex]
+        this.actions.onChange(dataRef.current.value)
+
+        // It could happen that the `activeOptionIndex` stored in state is actually null,
+        // but we are getting the fallback active option back instead.
+        this.send({ type: ActionTypes.GoToOption, focus: Focus.Specific, id })
+      }
+    },
+    selectOption: (id: string) => {
+      let option = this.state.options.find((item) => item.id === id)
+      if (!option) return
+
+      this.actions.onChange(option.dataRef.current.value)
+    },
+    search: (value: string) => {
+      this.send({ type: ActionTypes.Search, value })
+    },
+    clearSearch: () => {
+      this.send({ type: ActionTypes.ClearSearch })
+    },
+    setButtonElement: (element: HTMLButtonElement | null) => {
+      this.send({ type: ActionTypes.SetButtonElement, element })
+    },
+    setOptionsElement: (element: HTMLElement | null) => {
+      this.send({ type: ActionTypes.SetOptionsElement, element })
+    },
   }
 
-  selectors = {}
+  selectors = {
+    isActive(state: State<T>, id: string) {
+      let activeOptionIndex = state.activeOptionIndex
+      let options = state.options
+
+      return activeOptionIndex !== null ? options[activeOptionIndex]?.id === id : false
+    },
+  }
 
   reduce(state: Readonly<State<T>>, action: Actions<T>): State<T> {
     return match(action.type, reducers, state, action) as State<T>
