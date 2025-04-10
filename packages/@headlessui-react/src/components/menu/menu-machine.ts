@@ -1,4 +1,4 @@
-import { Machine } from '../../machine'
+import { Machine, batch } from '../../machine'
 import { Focus, calculateActiveIndex } from '../../utils/calculate-active-index'
 import { sortByDomNode } from '../../utils/focus-management'
 import { match } from '../../utils/match'
@@ -43,7 +43,7 @@ export enum ActionTypes {
   GoToItem,
   Search,
   ClearSearch,
-  RegisterItem,
+  RegisterItems,
   UnregisterItem,
 
   SetButtonElement,
@@ -91,7 +91,7 @@ export type Actions =
     }
   | { type: ActionTypes.Search; value: string }
   | { type: ActionTypes.ClearSearch }
-  | { type: ActionTypes.RegisterItem; id: string; dataRef: MenuItemDataRef }
+  | { type: ActionTypes.RegisterItems; items: { id: string; dataRef: MenuItemDataRef }[] }
   | { type: ActionTypes.UnregisterItem; id: string }
   | { type: ActionTypes.SetButtonElement; element: HTMLButtonElement | null }
   | { type: ActionTypes.SetItemsElement; element: HTMLElement | null }
@@ -259,24 +259,37 @@ let reducers: {
     if (state.searchQuery === '') return state
     return { ...state, searchQuery: '', searchActiveItemIndex: null }
   },
-  [ActionTypes.RegisterItem]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (items) => [
-      ...items,
-      { id: action.id, dataRef: action.dataRef },
-    ])
+  [ActionTypes.RegisterItems]: (state, action) => {
+    let items = state.items.concat(action.items.map((item) => item))
 
-    return { ...state, ...adjustedState }
+    let activeItemIndex = state.activeItemIndex
+    if (state.pendingFocus.focus !== Focus.Nothing) {
+      activeItemIndex = calculateActiveIndex(state.pendingFocus, {
+        resolveItems: () => items,
+        resolveActiveIndex: () => state.activeItemIndex,
+        resolveId: (item) => item.id,
+        resolveDisabled: (item) => item.dataRef.current.disabled,
+      })
+    }
+    return {
+      ...state,
+      items,
+      activeItemIndex,
+      pendingFocus: { focus: Focus.Nothing },
+      pendingShouldSort: true,
+    }
   },
   [ActionTypes.UnregisterItem]: (state, action) => {
-    let adjustedState = adjustOrderedState(state, (items) => {
+    let items = state.items
       let idx = items.findIndex((a) => a.id === action.id)
-      if (idx !== -1) items.splice(idx, 1)
-      return items
-    })
+    if (idx !== -1) {
+      items = items.slice()
+      items.splice(idx, 1)
+    }
 
     return {
       ...state,
-      ...adjustedState,
+      items,
       activationTrigger: ActivationTrigger.Other,
     }
   },
@@ -307,5 +320,17 @@ export class MenuMachine extends Machine<State, Actions> {
 
   reduce(state: Readonly<State>, action: Actions): State {
     return match(action.type, reducers, state, action)
+  }
+
+  actions = {
+    // Batched version to register multiple items at the same time
+    registerItem: batch(() => {
+      let items: { id: string; dataRef: MenuItemDataRef }[] = []
+
+      return [
+        (id: string, dataRef: MenuItemDataRef) => items.push({ id, dataRef }),
+        () => this.send({ type: ActionTypes.RegisterItems, items: items.splice(0) }),
+      ]
+    }),
   }
 }

@@ -628,7 +628,7 @@ function ItemFn<TTag extends ElementType = typeof DEFAULT_ITEM_TAG>(
   }, [bag, disabled])
 
   useIsoMorphicEffect(() => {
-    machine.send({ type: ActionTypes.RegisterItem, id, dataRef: bag })
+    machine.actions.registerItem(id, bag)
     return () => machine.send({ type: ActionTypes.UnregisterItem, id })
   }, [bag, id])
 
