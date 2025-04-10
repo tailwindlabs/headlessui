@@ -426,10 +426,17 @@ export class ListboxMachine<T> extends Machine<State<T>, Actions<T>> {
     },
     registerOption: batch(() => {
       let options: { id: string; dataRef: ListboxOptionDataRef<T> }[] = []
+      let seen = new Set<ListboxOptionDataRef<T>>()
+
       return [
-        (id: string, dataRef: ListboxOptionDataRef<T>) => options.push({ id, dataRef }),
+        (id: string, dataRef: ListboxOptionDataRef<T>) => {
+          if (seen.has(dataRef)) return
+          seen.add(dataRef)
+          options.push({ id, dataRef })
+        },
         () => {
-          this.send({ type: ActionTypes.RegisterOptions, options: options.splice(0) })
+          seen.clear()
+          return this.send({ type: ActionTypes.RegisterOptions, options: options.splice(0) })
         },
       ]
     }),
