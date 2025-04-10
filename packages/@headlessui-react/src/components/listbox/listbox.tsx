@@ -849,9 +849,7 @@ function OptionFn<
   useIsoMorphicEffect(() => {
     if (usedInSelectedOption) return
     machine.actions.registerOption(id, bag)
-    return () => {
-      machine.send({ type: ActionTypes.UnregisterOption, id })
-    }
+    return () => machine.actions.unregisterOption(id)
   }, [bag, id, usedInSelectedOption])
 
   let handleClick = useEvent((event: { preventDefault: Function }) => {
